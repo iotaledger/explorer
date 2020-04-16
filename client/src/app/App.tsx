@@ -30,7 +30,8 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
     /**
      * The component mounted.
      */
-    public async componentDidMount(): Promise<void> {
+    public componentDidMount(): void {
+        this.setNetwork(this.props.match.params.network);
     }
 
     /**
@@ -66,8 +67,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                 <div className="content">
                     <Switch>
                         <Route
-                            exact={true}
-                            path="/:network/:hash?"
+                            path="/:network?/:hash?"
                             component={(props: LandingProps) => (
                                 <Landing
                                     {...props}

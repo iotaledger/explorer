@@ -19,7 +19,7 @@ ReactDOM.render(
         <BrowserRouter>
             <Route
                 exact={true}
-                path="/:network/:hash?"
+                path="/:network?/:hash?"
                 component={(props: RouteComponentProps<AppRouteProps> & AppProps) => (
                     <App configuration={config} {...props} />)}
             />
