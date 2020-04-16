@@ -1,0 +1,84 @@
+@import '../../scss/fonts';
+@import '../../scss/media-queries';
+@import '../../scss/mixins';
+@import '../../scss/variables';
+
+footer {
+  display: flex;
+  justify-content: center;
+  padding: 32px 20px;
+  background-color: var(--primary);
+  color: var(--primary-text);
+
+  .inner {
+    flex: 1;
+    max-width: $desktop-width;
+
+    img {
+      width: 152px;
+      height: 48px;
+      margin-bottom: 28px;
+    }
+
+    .row {
+      flex-wrap: wrap;
+    }
+
+    section {
+      margin-right: 28px;
+      margin-bottom: 28px;
+
+      h1 {
+        @include font-size(16px, 24px);
+
+        margin-bottom: 16px;
+        color: $main-green;
+        font-family: $metropolis-bold;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      ul {
+        list-style: none;
+
+        li {
+          @include font-size(12px, 24px);
+
+          font-family: $inter;
+
+          a {
+            color: $primary-text;
+            font-family: inherit;
+            text-decoration: none;
+            white-space: nowrap;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+
+          pre {
+            font-family: inherit;
+          }
+        }
+      }
+    }
+
+    .sep {
+      margin-bottom: 28px;
+      border: 0;
+      border-top: 1px solid #485776;
+    }
+
+    .secondary {
+      @include font-size(12px, 20px);
+
+      color: $gray;
+      font-family: $inter;
+
+      a {
+        color: $main-green;
+      }
+    }
+  }
+}

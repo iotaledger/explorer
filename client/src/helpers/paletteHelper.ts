@@ -1,0 +1,18 @@
+import { IPalette} from "../models/config/IPalette";
+
+/**
+ * Methods to set the global palette.
+ */
+export class PaletteHelper {
+    /**
+     * Set the global palette.
+     * @param palette The palette to set.
+     */
+    public static setPalette(palette: IPalette): void {
+        const root = window.document.getElementById("root");
+        if (root) {
+            root.style.setProperty("--primary", palette.primary);
+            root.style.setProperty("--highlight", palette.highlight);
+        }
+    }
+}

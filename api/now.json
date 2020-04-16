@@ -1,0 +1,13 @@
+{
+    "version": 1,
+    "name": "tangle-explorer-api",
+    "features": {
+        "cloud": "v1"
+    },
+    "scale": {
+        "sfo": {
+            "min": 1,
+            "max": 1
+        }
+    }
+}

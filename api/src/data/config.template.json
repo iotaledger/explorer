@@ -1,0 +1,41 @@
+{
+    "networks": [
+        {
+            "network": "mainnet",
+            "label": "MainNet",
+            "node": {
+                "provider": "https://nodes.iota.cafe:443",
+                "depth": 3,
+                "mwm": 14
+            },
+            "zmqEndpoint": "tcp://zmq.iota.org:5556",
+            "zmqTransactionMessage": "tx_trytes",
+            "permaNodeEndpoint": "http://chronicle01.mainnet.iota.cafe:4000/api",
+            "coordinatorAddress": "EQSAUZXULTTYZCLNJNTXQTQHOMOFZERHTCGTXOLTVAHKSA9OGAZDEKECURBRIXIJWNPFCQIOVFVVXJVD9"
+        },
+        {
+            "network": "devnet",
+            "label": "DevNet",
+            "node": {
+                "provider": "https://nodes.devnet.iota.org:443",
+                "depth": 3,
+                "mwm": 9
+            },
+            "zmqEndpoint": "tcp://zmq.devnet.iota.org:5556",
+            "zmqTransactionMessage": "trytes",
+            "coordinatorAddress": "EQQFCZBIHRHWPXKMTOLMYUYPCN9XLMJPYZVFJSAY9FQHCCLWTOLLUGKKMXYFDBOOYFBLBI9WUEILGECYM"
+        }
+    ],
+    "cmcApiKey": "CMC_API_KEY",
+    "fixerApiKey": "FIXER_API_KEY",
+    "dynamoDbConnection": {
+        "region": "AWS-REGION",
+        "accessKeyId": "AWS-ACCESS-KEY-ID",
+        "secretAccessKey": "AWS-SECRET-ACCESS-KEY",
+        "dbTablePrefix": "DATABASE-TABLE-PREFIX"
+    },
+    "allowedDomains": [
+        "https://explorer.iota.works",
+        "https://explorer.iota.org"
+    ]
+}

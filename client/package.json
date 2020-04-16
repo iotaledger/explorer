@@ -1,0 +1,67 @@
+{
+    "name": "explorer-client",
+    "description": "Tangle Explorer UI",
+    "version": "1.0.0",
+    "author": "Martyn Janes <martyn.janes@iota.org>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/iotaledger/explorer.git/tree/master/client"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "@iota/core": "^1.0.0-beta.29",
+        "@iota/unit-converter": "^1.0.0-beta.23",
+        "axios": "^0.19.2",
+        "bluebird": "^3.7.2",
+        "classnames": "^2.2.6",
+        "curl.lib.js": "^1.0.22",
+        "moment": "^2.24.0",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1",
+        "react-icons": "^3.9.0",
+        "react-router-dom": "^5.1.2",
+        "react-scripts": "^3.4.1",
+        "socket.io-client": "^2.3.0"
+    },
+    "engines": {
+        "node": "10.x.x"
+    },
+    "scripts": {
+        "start": "cross-env PORT=3000 react-scripts start",
+        "lint": "tslint --project ./tsconfig.json",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject",
+        "sass-lint": "sass-lint -v -c ./.sass-lint.yml"
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not ie <= 11",
+        "not op_mini all"
+    ],
+    "devDependencies": {
+        "@types/bluebird": "^3.5.30",
+        "@types/classnames": "^2.2.10",
+        "@types/jest": "^25.2.1",
+        "@types/node": "^13.11.1",
+        "@types/react": "^16.9.34",
+        "@types/react-dom": "^16.9.6",
+        "@types/react-router-dom": "^5.1.4",
+        "@types/socket.io-client": "^1.4.32",
+        "cross-env": "^7.0.2",
+        "husky": "^4.2.5",
+        "node-sass": "^4.13.1",
+        "sass-lint": "^1.13.1",
+        "tslint": "^6.1.1",
+        "tslint-eslint-rules": "^5.4.0",
+        "tslint-microsoft-contrib": "^6.2.0",
+        "tslint-react": "^4.2.0",
+        "typescript": "^3.8.3"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm run lint"
+        }
+    }
+}

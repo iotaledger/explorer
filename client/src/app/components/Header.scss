@@ -1,0 +1,22 @@
+@import '../../scss/fonts';
+@import '../../scss/media-queries';
+@import '../../scss/mixins';
+@import '../../scss/variables';
+
+header {
+  display: flex;
+  justify-content: center;
+  padding: 15px 20px;
+  background-color: var(--primary);
+  color: var(--primary-text);
+
+  .inner {
+    flex: 1;
+    max-width: $desktop-width;
+
+    img {
+      width: 210px;
+      height: 48px;
+    }
+  }
+}

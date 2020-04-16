@@ -1,0 +1,10 @@
+.history
+node_modules
+
+/api/dist
+/client/build
+
+config.dev.json
+config.local.json
+config.staging.json
+config.prod.json

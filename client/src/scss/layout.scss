@@ -1,0 +1,21 @@
+.row {
+  display: flex;
+  flex-direction: row;
+
+  &.center {
+    justify-content: center;
+  }
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+
+  &.fill {
+    flex: 1;
+  }
+}
+
+.line-breaks {
+  white-space: pre;
+}
