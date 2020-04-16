@@ -1,7 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
 import App from "./app/App";
+import { AppProps } from "./app/AppProps";
+import { AppRouteProps } from "./app/AppRouteProps";
 import { PaletteHelper } from "./helpers/paletteHelper";
 import "./index.scss";
 import { IConfiguration } from "./models/config/IConfiguration";
@@ -15,9 +17,12 @@ PaletteHelper.setPalette(config.networks[0].palette);
 ReactDOM.render(
     (
         <BrowserRouter>
-            <React.Fragment>
-                <App configuration={config} />
-            </React.Fragment>
+            <Route
+                exact={true}
+                path="/:network/:hash?"
+                component={(props: RouteComponentProps<AppRouteProps> & AppProps) => (
+                    <App configuration={config} {...props} />)}
+            />
         </BrowserRouter>
     ),
     document.getElementById("root")

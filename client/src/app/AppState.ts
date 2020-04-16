@@ -1,11 +1,8 @@
+import { IClientNetworkConfiguration } from "../models/config/IClientNetworkConfiguration";
+
 export interface AppState {
     /**
-     * The status to display in the status message.
+     * The current active network.
      */
-    status: string;
-
-    /**
-     * Is the page busy.
-     */
-    isBusy: boolean;
+    networkConfig: IClientNetworkConfiguration;
 }

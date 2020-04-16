@@ -8,6 +8,11 @@ export interface IPalette {
     primary: string;
 
     /**
+     * The secondary color.
+     */
+    secondary: string;
+
+    /**
      * The highlight color.
      */
     highlight: string;

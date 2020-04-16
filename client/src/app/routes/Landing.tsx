@@ -34,7 +34,24 @@ class Landing extends Component<LandingProps, LandingState> {
     public render(): ReactNode {
         return (
             <div className="landing">
-                Landing Page
+                <div className="wrapper header-wrapper">
+                    <div className="inner">
+                        <div className="header">
+                            <h2>Searching</h2>
+                            <div className="row space-between wrap">
+                                <h1>{this.props.networkConfig.label}</h1>
+                                {this.props.switcher}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="wrapper">
+                    <div className="inner">
+                        <div className="feeds">
+                            Feeds
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

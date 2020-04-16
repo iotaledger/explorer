@@ -7,11 +7,13 @@ header {
   display: flex;
   justify-content: center;
   padding: 15px 20px;
-  background-color: var(--primary);
-  color: var(--primary-text);
+  background-color: var(--context-primary);
 
   .inner {
+    display: flex;
     flex: 1;
+    align-items: center;
+    justify-content: space-between;
     max-width: $desktop-width;
 
     img {

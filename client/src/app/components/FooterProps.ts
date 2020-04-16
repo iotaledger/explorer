@@ -1,5 +1,3 @@
-import { IFoundation} from "../../models/webassets/IFoundation";
-
 /**
  * The props for the Footer component.
  */

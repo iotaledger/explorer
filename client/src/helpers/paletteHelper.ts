@@ -11,8 +11,9 @@ export class PaletteHelper {
     public static setPalette(palette: IPalette): void {
         const root = window.document.getElementById("root");
         if (root) {
-            root.style.setProperty("--primary", palette.primary);
-            root.style.setProperty("--highlight", palette.highlight);
+            root.style.setProperty("--context-primary", palette.primary);
+            root.style.setProperty("--context-secondary", palette.secondary);
+            root.style.setProperty("--context-highlight", palette.highlight);
         }
     }
 }

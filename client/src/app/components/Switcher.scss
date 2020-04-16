@@ -1,0 +1,32 @@
+@import '../../scss/fonts';
+@import '../../scss/media-queries';
+@import '../../scss/mixins';
+@import '../../scss/variables';
+
+.switcher {
+  display: flex;
+  height: 30px;
+  padding: 5px;
+  border-radius: 6px;
+  background-color: rgba(72, 87, 118, 0.1);
+
+  button {
+    @include font-size(12px);
+    display: flex;
+    align-items: center;
+    height: 32px;
+    padding: 0px 21px;
+    border: 0;
+    border-radius: 6px;
+    outline: none;
+    background-color: transparent;
+    color: var(--context-text);
+    font-family: $metropolis;
+    cursor: pointer;
+
+    &.selected {
+      background-color: var(--context-highlight);
+      font-weight: 600;
+    }
+  }
+}

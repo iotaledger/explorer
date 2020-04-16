@@ -1,2 +1,59 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+
 .landing {
+  display: flex;
+  flex-direction: column;
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 0px 20px;
+
+    .inner {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      max-width: $desktop-width;
+
+      .header {
+        display: flex;
+        flex-direction: column;
+        height: 360px;
+        padding-top: 50px;
+        padding-right: 100px;
+        padding-left: 100px;
+        background-image: url('../../assets/globe.png');
+        background-repeat: no-repeat;
+        background-position: bottom;
+
+        h2 {
+          @include font-size(16px, 24px);
+          margin-bottom: 5px;
+          color: var(--context-highlight);
+          font-family: $metropolis;
+          text-transform: uppercase;
+        }
+
+        h1 {
+          @include font-size(40px, 48px);
+          margin-right: 20px;
+          margin-bottom: 12px;
+          color: var(--primary-text);
+          font-family: $metropolis-bold;
+        }
+      }
+
+      .feeds {
+        display: flex;
+        min-height: 408px;
+      }
+    }
+  }
+
+  .header-wrapper {
+    background: linear-gradient(to bottom, var(--context-primary), var(--context-secondary));
+  }
 }

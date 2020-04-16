@@ -28,6 +28,7 @@ class Header extends Component<any, any> {
                     <section className="row">
                         <img src={logoHeader} alt="Explorer" />
                     </section>
+                    {this.props.children}
                 </div>
             </header>
         );
