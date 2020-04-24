@@ -12,7 +12,7 @@
             "coordinatorAddress": "EQSAUZXULTTYZCLNJNTXQTQHOMOFZERHTCGTXOLTVAHKSA9OGAZDEKECURBRIXIJWNPFCQIOVFVVXJVD9",
             "palette": {
                 "primary": "#131F37",
-                "highlight": "#0FC1B7"
+                "secondary": "#485776"
             }
         },
         {
@@ -25,11 +25,38 @@
             },
             "coordinatorAddress": "EQQFCZBIHRHWPXKMTOLMYUYPCN9XLMJPYZVFJSAY9FQHCCLWTOLLUGKKMXYFDBOOYFBLBI9WUEILGECYM",
             "palette": {
-                "primary": "#0FC1B7",
-                "highlight": "#2E8698"
+                "primary": "#2E8698",
+                "secondary": "#10c0b7"
+            }
+        },
+        {
+            "network": "comnet",
+            "label": "ComNet",
+            "node": {
+                "provider": "https://nodes.devnet.iota.org:443",
+                "depth": 3,
+                "mwm": 9
+            },
+            "coordinatorAddress": "EQQFCZBIHRHWPXKMTOLMYUYPCN9XLMJPYZVFJSAY9FQHCCLWTOLLUGKKMXYFDBOOYFBLBI9WUEILGECYM",
+            "palette": {
+                "primary": "#2E8698",
+                "secondary": "#77c6d6"
+            }
+        },
+        {
+            "network": "beenet",
+            "label": "BeeNet",
+            "node": {
+                "provider": "https://nodes.devnet.iota.org:443",
+                "depth": 3,
+                "mwm": 9
+            },
+            "coordinatorAddress": "EQQFCZBIHRHWPXKMTOLMYUYPCN9XLMJPYZVFJSAY9FQHCCLWTOLLUGKKMXYFDBOOYFBLBI9WUEILGECYM",
+            "palette": {
+                "primary": "#8493AD",
+                "secondary": "#b2c1dc"
             }
         }
     ],
-    "googleMapsKey": "GOOGLE-MAPS-KEY",
     "googleAnalyticsId": ""
 }

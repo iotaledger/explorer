@@ -1,11 +1,10 @@
-import { Network } from "../network";
 import { FindTransactionsMode } from "./findTransactionsMode";
 
 export interface IFindTransactionsRequest {
     /**
      * The network to search on.
      */
-    network: Network;
+    network: string;
 
     /**
      * The hash to look for.

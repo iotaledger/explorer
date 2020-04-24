@@ -5,18 +5,19 @@
 
 .switcher {
   display: flex;
-  height: 30px;
+  height: 42px;
   padding: 5px;
   border-radius: 6px;
   background-color: rgba(72, 87, 118, 0.1);
 
   button {
     @include font-size(12px);
+
     display: flex;
     align-items: center;
     height: 32px;
     padding: 0px 21px;
-    border: 0;
+    border: 1px solid transparent;
     border-radius: 6px;
     outline: none;
     background-color: transparent;
@@ -25,8 +26,18 @@
     cursor: pointer;
 
     &.selected {
-      background-color: var(--context-highlight);
+      background-color: $main-green-highlight;
       font-weight: 600;
+    }
+
+    &:focus {
+      box-shadow: 0 0 3px 0 $main-green-highlight;
+    }
+
+    // sass-lint:disable no-vendor-prefixes
+    &:-moz-focusring {
+      color: transparent;
+      text-shadow: 0 0 0 var(--context-text);
     }
   }
 }

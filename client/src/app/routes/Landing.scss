@@ -10,7 +10,6 @@
   .wrapper {
     display: flex;
     justify-content: center;
-    padding: 0px 20px;
 
     .inner {
       display: flex;
@@ -23,37 +22,269 @@
         flex-direction: column;
         height: 360px;
         padding-top: 50px;
-        padding-right: 100px;
-        padding-left: 100px;
-        background-image: url('../../assets/globe.png');
-        background-repeat: no-repeat;
-        background-position: bottom;
+
+        @include tablet-down {
+          padding-top: 20px;
+        }
+
 
         h2 {
           @include font-size(16px, 24px);
-          margin-bottom: 5px;
-          color: var(--context-highlight);
+
+          margin: 0px 20px 5px 20px;
+          color: $main-green-highlight;
           font-family: $metropolis;
           text-transform: uppercase;
         }
 
         h1 {
           @include font-size(40px, 48px);
-          margin-right: 20px;
-          margin-bottom: 12px;
+
+          margin: 0px 20px 20px 20px;
           color: var(--primary-text);
           font-family: $metropolis-bold;
         }
+
+        .switcher {
+          margin: 0px 20px 20px 20px;
+        }
+
+        .search {
+          margin: 0px 20px 20px 20px;
+
+          .search--input {
+            @include font-size(14px);
+
+            flex: 1;
+            height: 48px;
+            padding: 0px 24px;
+            border: 1px solid $input-border;
+            border-radius: 6px 0px 0px 6px;
+            color: $input-text;
+            font-family: $inter;
+          }
+
+          .search--button {
+            @include font-size(14px);
+
+            width: 117px;
+            border: 2px solid $main-green-highlight;
+            border-radius: 0px 6px 6px 0px;
+            background-color: $main-green-highlight;
+            color: $white;
+            font-family: $inter;
+            font-weight: bold;
+
+            &:focus {
+              box-shadow: 0 0 3px 0 $white;
+            }
+          }
+        }
+
+        .info-box {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 270px;
+          margin: 0px 20px;
+          padding: 35px;
+          border-radius: 6px;
+          background: rgba(19, 31, 55, 0.5);
+          backdrop-filter: blur(2px);
+
+          @include tablet-down {
+            width: 33%;
+            padding: 2%;
+          }
+
+
+          .info-box--title {
+            @include font-size(12px);
+
+            @include tablet-down {
+              @include font-size(10px);
+            }
+
+
+            color: $main-green-highlight;
+            font-family: $metropolis;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+          }
+
+          .info-box--value {
+            @include font-size(20px);
+
+            @include tablet-down {
+              @include font-size(16px);
+            }
+
+
+            color: $white;
+            font-family: $metropolis;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+          }
+        }
       }
 
-      .feeds {
+      .feeds-section {
         display: flex;
-        min-height: 408px;
+        flex-direction: column;
+
+        h1 {
+          @include font-size(32px);
+
+          font-family: $metropolis;
+        }
+
+        .filters {
+          margin: 28px 0px;
+          padding: 23px;
+          border: 1px solid $border;
+          border-radius: 6px;
+          background-color: $white;
+          box-shadow: $box-shadow;
+
+          .col {
+            justify-content: center;
+            margin-right: 20px;
+
+            .filter--label,
+            .filter--value {
+              @include font-size(12px);
+
+              margin-bottom: 12px;
+              color: #b2c1dc;
+              font-family: $metropolis;
+              font-weight: bold;
+              text-transform: uppercase;
+              white-space: nowrap;
+            }
+
+            input {
+              width: 165px;
+              text-align: right;
+            }
+          }
+        }
+
+        .feeds {
+          @include tablet-down {
+            flex-direction: column;
+          }
+
+
+          .feed {
+            flex: 1;
+            margin-right: 30px;
+            border: 1px solid $border;
+            border-radius: 6px;
+            background-color: $white;
+            box-shadow: $box-shadow;
+            overflow: hidden;
+
+            @include tablet-down {
+              width: 100%;
+              margin-top: 20px;
+              margin-right: 0;
+            }
+
+
+            &:last-child {
+              margin-right: 0;
+            }
+
+            h2 {
+              @include font-size(20px);
+
+              padding: 30px;
+              border-bottom: 1px solid #eef2fa;
+              color: $input-text;
+              font-family: $metropolis;
+              font-weight: bold;
+            }
+
+            .feed-items {
+              min-height: 440px;
+              padding: 30px;
+              background-color: #fbfcfe;
+
+              .feed-item--header {
+                @include font-size(12px);
+
+                color: $gray-header;
+                font-family: $metropolis;
+                font-weight: bold;
+                text-transform: uppercase;
+
+                .feed-item--value {
+                  min-width: 90px;
+                }
+              }
+
+              .feed-item {
+                align-items: center;
+                margin-top: 20px;
+
+                .feed-item--value {
+                  @include font-size(12px);
+
+                  min-width: 90px;
+                  color: $main-green;
+                  font-family: $inter;
+
+                  button {
+                    border: 0;
+                    background: transparent;
+                    color: inherit;
+                    text-align: left;
+                    cursor: pointer;
+                  }
+                }
+
+                .feed-item--hash {
+                  @include font-size(9px);
+
+                  color: $input-text;
+                  font-family: $inter;
+                  text-overflow: ellipsis;
+                  overflow: hidden;
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
 
   .header-wrapper {
     background: linear-gradient(to bottom, var(--context-primary), var(--context-secondary));
+    box-shadow: $box-shadow;
+
+    .inner {
+      max-width: $desktop-width - 140px;
+    }
+
+    .header {
+      background-image: url('../../assets/globe.svg');
+      background-repeat: no-repeat;
+      background-position: center bottom;
+    }
+  }
+
+  .feeds-wrapper {
+    padding: 44px 20px;
+
+    .inner {
+      @include desktop-down {
+        max-width: 98%;
+      }
+    }
+
   }
 }

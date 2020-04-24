@@ -13,7 +13,6 @@ export class PaletteHelper {
         if (root) {
             root.style.setProperty("--context-primary", palette.primary);
             root.style.setProperty("--context-secondary", palette.secondary);
-            root.style.setProperty("--context-highlight", palette.highlight);
         }
     }
 }

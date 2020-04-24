@@ -21,9 +21,10 @@ export class StateService extends AmazonDynamoDbService<IState> {
     /**
      * Update the stored currencies.
      * @param config The configuration.
+     * @param force Force the update.
      * @returns Log of operations.
      */
-    public async updateCurrencies(config: IConfiguration): Promise<string> {
+    public async updateCurrencies(config: IConfiguration, force: boolean = false): Promise<string> {
         let currentState;
         let log = "Currency Updating\n";
         try {
@@ -32,7 +33,8 @@ export class StateService extends AmazonDynamoDbService<IState> {
             currentState = (await stateService.get("default")) || { id: "default" };
             if (!currentState ||
                 currentState.lastCurrencyUpdate === undefined ||
-                now - currentState.lastCurrencyUpdate > (3600000 * 4)) { // every 4 hours
+                now - currentState.lastCurrencyUpdate > (3600000 * 4) ||
+                force) { // every 4 hours
                 let updated = false;
 
                 log += `Updating fixer\n`;
@@ -56,6 +58,9 @@ export class StateService extends AmazonDynamoDbService<IState> {
 
                 if (currency && currency.quote && currency.quote.EUR) {
                     currentState.coinMarketCapRateEUR = currency.quote.EUR.price;
+                    currentState.marketCapEur = currency.quote.EUR.market_cap;
+                    currentState.volume24h = currency.quote.EUR.volume_24h;
+                    currentState.percentageChange24h = currency.quote.EUR.percent_change_24h;
                     updated = true;
                 }
 

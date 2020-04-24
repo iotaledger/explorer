@@ -57,7 +57,7 @@ export class TransactionsClient {
     /**
      * The subscribers.
      */
-    private readonly _subscribers: { [id: string]: () => Promise<void> };
+    private readonly _subscribers: { [id: string]: () => void };
 
     /**
      * Create a new instance of TransactionsClient.
@@ -77,63 +77,62 @@ export class TransactionsClient {
 
     /**
      * Perform a request to subscribe to transactions events.
+     * @param complete The subscription completed.
      * @param callback Callback called with transactions data.
      * @returns The response from the request.
      */
-    public async subscribe(callback: () => Promise<void>): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            try {
-                const subscriptionId = TrytesHelper.generateHash(27);
+    public subscribe(complete: (subscriptionId?: string) => void, callback: () => void): void {
+        try {
+            const subscriptionId = TrytesHelper.generateHash(27);
 
-                this._subscribers[subscriptionId] = callback;
+            this._subscribers[subscriptionId] = callback;
 
-                if (this._subscriptionId) {
-                    resolve(subscriptionId);
-                } else {
-                    const subscribeRequest: ITransactionsSubscribeRequest = {
-                        network: this._config.network
-                    };
-                    this._socket.emit("subscribe", subscribeRequest);
-                    this._socket.on("subscribe", (subscribeResponse: ITransactionsSubscribeResponse) => {
-                        if (subscribeResponse.success) {
-                            this._subscriptionId = subscribeResponse.subscriptionId;
-                            resolve(subscriptionId);
-                        } else {
-                            reject(new Error(`There was a problem communicating with the API.\n${subscribeResponse.message}`));
-                        }
-                    });
-                    this._socket.on("transactions", async (transactionsResponse: ITransactionsSubscriptionMessage) => {
-                        if (transactionsResponse.subscriptionId === this._subscriptionId) {
-                            this._tps = transactionsResponse.tps;
-                            this._tspInterval = transactionsResponse.tpsInterval;
+            if (this._subscriptionId) {
+                complete(subscriptionId);
+            } else {
+                const subscribeRequest: ITransactionsSubscribeRequest = {
+                    network: this._config.network
+                };
+                this._socket.emit("subscribe", subscribeRequest);
+                this._socket.on("subscribe", (subscribeResponse: ITransactionsSubscribeResponse) => {
+                    if (subscribeResponse.success) {
+                        this._subscriptionId = subscribeResponse.subscriptionId;
+                        complete(subscriptionId);
+                    } else {
+                        complete(undefined);
+                    }
+                });
+                this._socket.on("transactions", async (transactionsResponse: ITransactionsSubscriptionMessage) => {
+                    if (transactionsResponse.subscriptionId === this._subscriptionId) {
+                        this._tps = transactionsResponse.tps;
+                        this._tspInterval = transactionsResponse.tpsInterval;
 
-                            const newHashes = transactionsResponse.transactions;
-                            if (newHashes) {
-                                const newHashKeys = Object.keys(newHashes);
-                                for (const newHashKey of newHashKeys) {
-                                    if (this._transactions.findIndex(t => t.hash === newHashKey) === -1) {
-                                        this._transactions.unshift({
-                                            hash: newHashKey,
-                                            value: newHashes[newHashKey]
-                                        });
-                                    }
-                                }
-
-                                if (this._transactions.length > 200) {
-                                    this._transactions.splice(200, this._transactions.length - 200);
+                        const newHashes = transactionsResponse.transactions;
+                        if (newHashes) {
+                            const newHashKeys = Object.keys(newHashes);
+                            for (const newHashKey of newHashKeys) {
+                                if (this._transactions.findIndex(t => t.hash === newHashKey) === -1) {
+                                    this._transactions.unshift({
+                                        hash: newHashKey,
+                                        value: newHashes[newHashKey]
+                                    });
                                 }
                             }
 
-                            for (const sub in this._subscribers) {
-                                await this._subscribers[sub]();
+                            if (this._transactions.length > 200) {
+                                this._transactions.splice(2000, this._transactions.length - 2000);
                             }
                         }
-                    });
-                }
-            } catch (err) {
-                reject(new Error(`There was a problem communicating with the API.\n${err}`));
+
+                        for (const sub in this._subscribers) {
+                            this._subscribers[sub]();
+                        }
+                    }
+                });
             }
-        });
+        } catch (err) {
+            throw new Error(`There was a problem communicating with the API.\n${err}`);
+        }
     }
 
     /**
@@ -141,27 +140,20 @@ export class TransactionsClient {
      * @param subscriptionId The subscription id.
      * @returns The response from the request.
      */
-    public async unsubscribe(subscriptionId: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            try {
-                delete this._subscribers[subscriptionId];
+    public unsubscribe(subscriptionId: string): void {
+        try {
+            delete this._subscribers[subscriptionId];
 
-                if (this._subscriptionId && Object.keys(this._subscribers).length === 0) {
-                    const unsubscribeRequest: ITransactionsUnsubscribeRequest = {
-                        network: this._config.network,
-                        subscriptionId: this._subscriptionId
-                    };
-                    this._socket.emit("unsubscribe", unsubscribeRequest);
-                    this._socket.on("unsubscribe", () => {
-                        resolve();
-                    });
-                } else {
-                    resolve();
-                }
-            } catch (err) {
-                reject(new Error(`There was a problem communicating with the API.\n${err}`));
+            if (this._subscriptionId && Object.keys(this._subscribers).length === 0) {
+                const unsubscribeRequest: ITransactionsUnsubscribeRequest = {
+                    network: this._config.network,
+                    subscriptionId: this._subscriptionId
+                };
+                this._socket.emit("unsubscribe", unsubscribeRequest);
+                this._socket.on("unsubscribe", () => {});
             }
-        });
+        } catch {
+        }
     }
 
     /**

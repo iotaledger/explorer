@@ -1,10 +1,8 @@
-import { Network } from "../network";
-
 export interface IGetTrytesRequest {
     /**
      * The network to search on.
      */
-    network: Network;
+    network: string;
 
     /**
      * The hashes to look for.

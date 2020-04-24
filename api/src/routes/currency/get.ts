@@ -27,7 +27,10 @@ export async function get(config: IConfiguration, request: any): Promise<ICurren
                 message: "OK",
                 lastUpdated: state.lastCurrencyUpdate,
                 baseRate: state.coinMarketCapRateEUR,
-                currencies: state.exchangeRatesEUR
+                currencies: state.exchangeRatesEUR,
+                marketCap: state.marketCapEur,
+                volume24h: state.volume24h,
+                percentageChange24h: state.percentageChange24h
             };
         } else {
             return {

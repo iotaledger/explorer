@@ -13,7 +13,7 @@ export class TransactionsService {
     /**
      * The transaction per second interval.
      */
-    private static readonly TPS_INTERVAL: number = 5;
+    private static readonly TPS_INTERVAL: number = 10;
 
     /**
      * The network configuration.
@@ -89,18 +89,18 @@ export class TransactionsService {
         this._total = 0;
 
         this.startTimer();
-        await this.startZmq();
+        this.startZmq();
     }
 
     /**
      * Reset the service.
      */
-    public async reset(): Promise<void> {
+    public reset(): void {
         this.stopTimer();
         this.stopZmq();
 
         this.startTimer();
-        await this.startZmq();
+        this.startZmq();
     }
 
     /**
@@ -123,50 +123,13 @@ export class TransactionsService {
     }
 
     /**
-     * Update the subscriptions with newest trytes.
-     */
-    private async updateSubscriptions(): Promise<void> {
-        const now = Date.now();
-
-        const tranCount = Object.keys(this._transactions).length;
-
-        if (tranCount >= 5 ||
-            (now - this._lastSend > 15000 && tranCount > 0)) {
-
-            for (const subscriptionId in this._subscribers) {
-                const data: ITransactionsSubscriptionMessage = {
-                    subscriptionId,
-                    transactions: this._transactions,
-                    tps: this._tps,
-                    tpsInterval: TransactionsService.TPS_INTERVAL
-                };
-
-                await this._subscribers[subscriptionId](data);
-            }
-
-            this._transactions = {};
-            this._lastSend = now;
-        }
-    }
-
-    /**
-     * Handle the transactions per second calculations.
-     */
-    private handleTps(): void {
-        const lastTotal = this._total;
-        this._total = 0;
-        this._tps.unshift(lastTotal);
-        this._tps = this._tps.slice(0, 100);
-    }
-
-    /**
      * Start the zmq services.
      */
-    private async startZmq(): Promise<void> {
+    private startZmq(): void {
         this.stopZmq();
 
         const txMessage = this._config.zmqTransactionMessage || "tx_trytes";
-        this._subscriptionId = await this._zmqService.subscribe(
+        this._subscriptionId = this._zmqService.subscribe(
             txMessage, async (evnt: string, message: ITxTrytes) => {
                 if (!this._transactions[message.hash]) {
                     this._total++;
@@ -210,5 +173,42 @@ export class TransactionsService {
             clearInterval(this._timerId);
             this._timerId = undefined;
         }
+    }
+
+    /**
+     * Update the subscriptions with newest trytes.
+     */
+    private async updateSubscriptions(): Promise<void> {
+        const now = Date.now();
+
+        const tranCount = Object.keys(this._transactions).length;
+
+        if (tranCount > 0 ||
+            (now - this._lastSend > TransactionsService.TPS_INTERVAL * 1000)) {
+
+            for (const subscriptionId in this._subscribers) {
+                const data: ITransactionsSubscriptionMessage = {
+                    subscriptionId,
+                    transactions: this._transactions,
+                    tps: this._tps,
+                    tpsInterval: TransactionsService.TPS_INTERVAL
+                };
+
+                await this._subscribers[subscriptionId](data);
+            }
+
+            this._transactions = {};
+            this._lastSend = now;
+        }
+    }
+
+    /**
+     * Handle the transactions per second calculations.
+     */
+    private handleTps(): void {
+        const lastTotal = this._total;
+        this._total = 0;
+        this._tps.unshift(lastTotal);
+        this._tps = this._tps.slice(0, 100);
     }
 }

@@ -1,0 +1,102 @@
+@import './mixins';
+@import './variables';
+
+.select-wrapper {
+  display: inline-block;
+  position: relative;
+
+  svg {
+    @include font-size(16px);
+
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    color: $gray;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  select {
+    @include font-size(14px);
+
+    height: 40px;
+    margin: 0px;
+    padding: 0px 48px 0px 20px;
+    border: 1px solid $input-border;
+    border-radius: 6px;
+    outline: none;
+    color: $input-text;
+    font-family: $inter;
+    appearance: none;
+
+    &:focus {
+      box-shadow: 0 0 3px 0 $main-green-highlight;
+    }
+
+    // sass-lint:disable no-vendor-prefixes
+    &:-ms-expand {
+      display: none;
+    }
+
+    // sass-lint:disable no-vendor-prefixes
+    &:-moz-focusring {
+      color: transparent;
+      text-shadow: 0 0 0 $input-text;
+    }
+
+    &.select-plus {
+      position: relative;
+      margin-right: -1px;
+      border-radius: 6px 0px 0px 6px;
+
+      &:focus {
+        z-index: 1;
+      }
+    }
+  }
+}
+
+input {
+  @include font-size(14px);
+
+  height: 40px;
+  margin: 0px;
+  padding: 0px 20px;
+  border: 1px solid $input-border;
+  border-radius: 6px;
+  outline: none;
+  color: $input-text;
+  font-family: $inter;
+
+  &:focus {
+    box-shadow: 0 0 3px 0 $main-green-highlight;
+  }
+
+  // sass-lint:disable no-vendor-prefixes
+  &:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 $input-text;
+  }
+
+  &.input-plus {
+    position: relative;
+    border-radius: 0px 6px 6px 0px;
+
+    &:focus {
+      z-index: 1;
+    }
+  }
+}
+
+button {
+  outline: none;
+
+  &:focus {
+    box-shadow: 0 0 3px 0 $main-green-highlight;
+  }
+
+  // sass-lint:disable no-vendor-prefixes
+  &:-moz-focusring {
+    text-shadow: 0 0 0 $input-text;
+  }
+}

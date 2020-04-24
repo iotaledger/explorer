@@ -47,15 +47,15 @@ export class MilestonesService {
      * The most recent milestones.
      */
     private _milestones: {
-            /**
-             * The transaction hash.
-             */
-            hash: string;
-            /**
-             * The milestone index.
-             */
-            milestoneIndex: number;
-        }[];
+        /**
+         * The transaction hash.
+         */
+        hash: string;
+        /**
+         * The milestone index.
+         */
+        milestoneIndex: number;
+    }[];
 
     /**
      * Create a new instance of MilestoneService.
@@ -81,7 +81,7 @@ export class MilestonesService {
             }
         }
 
-        await this.initNetwork();
+        this.initNetwork();
 
         this.startTimer();
     }
@@ -94,7 +94,7 @@ export class MilestonesService {
 
         this.closeNetwork();
 
-        await this.initNetwork();
+        this.initNetwork();
 
         this.startTimer();
     }
@@ -119,14 +119,15 @@ export class MilestonesService {
     /**
      * Initialise network.
      */
-    private async initNetwork(): Promise<void> {
-        this._subscriptionId = await this._zmqService.subscribeAddress(
+    private initNetwork(): void {
+        this._subscriptionId = this._zmqService.subscribeAddress(
             this._config.coordinatorAddress,
             async (evnt: string, message: IAddress) => {
                 if (message.address === this._config.coordinatorAddress) {
                     this._lastUpdate = Date.now();
 
-                    if (!this._milestones.find(m => m.milestoneIndex === message.milestoneIndex)) {
+                    if (this._milestones.length === 0 ||
+                        message.milestoneIndex > this._milestones[0].milestoneIndex) {
                         this._milestones.unshift({
                             hash: message.transaction,
                             milestoneIndex: message.milestoneIndex
@@ -173,7 +174,7 @@ export class MilestonesService {
 
                         if (now - this._lastUpdate > 5 * 60 * 1000) {
                             this.closeNetwork();
-                            await this.initNetwork();
+                            this.initNetwork();
                         }
                     } catch (err) {
                         console.error(`Failed processing ${this._config.network} idle timeout`, err);

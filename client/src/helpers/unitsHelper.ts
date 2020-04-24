@@ -10,7 +10,7 @@ export class UnitsHelper {
      * @param includeI Include the long i version of the value.
      * @returns The formated value.
      */
-    public static formatBest(value: number, includeI: boolean = true): string {
+    public static formatBest(value: number): string {
         let bestUnits: Unit = Unit.i;
         const checkLength = Math.abs(value).toString().length;
         if (checkLength > 15) {
@@ -28,13 +28,9 @@ export class UnitsHelper {
         let ret;
 
         if (bestUnits === "i") {
-            ret = `${value} i`;
+            ret = `${value}i`;
         } else {
-            ret = `${convertUnits(value, Unit.i, bestUnits).toFixed(2)} ${bestUnits}`;
-
-            if (includeI) {
-                ret += ` [${value} i]`;
-            }
+            ret = `${convertUnits(value, Unit.i, bestUnits).toFixed(2)}${bestUnits}`;
         }
 
         return ret;

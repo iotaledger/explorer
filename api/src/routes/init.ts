@@ -17,7 +17,7 @@ export async function init(config: IConfiguration): Promise<string[]> {
         const milestoneStoreService = new MilestoneStoreService(config.dynamoDbConnection);
         log += await milestoneStoreService.createTable();
 
-        log += await stateService.updateCurrencies(config);
+        log += await stateService.updateCurrencies(config, true);
     } catch (err) {
         log += `Failed\n${err.toString()}\n`;
     }

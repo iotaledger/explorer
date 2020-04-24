@@ -16,6 +16,21 @@ export interface ICurrencySettings  {
     baseCurrencyRate?: number;
 
     /**
+     * The market cap.
+     */
+    marketCap?: number;
+
+    /**
+     * The volume in the last 24H.
+     */
+    volume24h?: number;
+
+    /**
+     * The percentage change in the last 24H.
+     */
+    percentageChange24h?: number;
+
+    /**
      * The currencies used for conversion.
      */
     currencies?: {

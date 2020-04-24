@@ -26,11 +26,11 @@ export class SettingsService {
     /**
      * Load the settings.
      */
-    public async load(): Promise<void> {
+    public load(): void {
         this._settings = this._localStorageService.load("settings");
         if (!this._settings) {
             this._settings = {
-                fiatCode: "EUR"
+                fiatCode: "USD"
             };
         }
     }
@@ -38,7 +38,7 @@ export class SettingsService {
     /**
      * Save the settings.
      */
-    public async save(): Promise<void> {
+    public save(): void {
         this._localStorageService.save("settings", this._settings);
     }
 
@@ -46,9 +46,9 @@ export class SettingsService {
      * Get all the settings.
      * @returns The settings.
      */
-    public async get(): Promise<ISettings> {
+    public get(): ISettings {
         if (!this._settings) {
-            await this.load();
+            this.load();
         }
         return this._settings;
     }

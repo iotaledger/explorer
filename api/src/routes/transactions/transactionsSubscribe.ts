@@ -31,7 +31,8 @@ export function transactionsSubscribe(
         response = {
             success: true,
             message: "OK",
-            subscriptionId
+            subscriptionId,
+            network: request.network
         };
     } catch (err) {
         response = {

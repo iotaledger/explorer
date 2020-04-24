@@ -11,9 +11,4 @@ export interface IPalette {
      * The secondary color.
      */
     secondary: string;
-
-    /**
-     * The highlight color.
-     */
-    highlight: string;
 }

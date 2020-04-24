@@ -24,6 +24,18 @@
             "zmqEndpoint": "tcp://zmq.devnet.iota.org:5556",
             "zmqTransactionMessage": "trytes",
             "coordinatorAddress": "EQQFCZBIHRHWPXKMTOLMYUYPCN9XLMJPYZVFJSAY9FQHCCLWTOLLUGKKMXYFDBOOYFBLBI9WUEILGECYM"
+        },
+        {
+            "network": "comnet",
+            "label": "ComNet",
+            "node": {
+                "provider": "https://comnet.iota.works:443",
+                "depth": 3,
+                "mwm": 10
+            },
+            "zmqEndpoint": "tcp://comnet.iota.works:5556",
+            "zmqTransactionMessage": "trytes",
+            "coordinatorAddress": "ZNCCPOTBCDZXCBQYBWUYYFO9PLRHNAROWOS9KGMYWNVIXWGYGUSJBZUTUQBNQRADHPUEONZZTYGVMSRZD"
         }
     ],
     "cmcApiKey": "CMC_API_KEY",

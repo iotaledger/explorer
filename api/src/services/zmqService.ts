@@ -33,11 +33,6 @@ export class ZmqService {
     private _socket?: Subscriber;
 
     /**
-     * Avoid interlock when connecting.
-     */
-    private _connecting: boolean;
-
-    /**
      * Last time a message was received.
      */
     private _lastMessageTime: number;
@@ -68,9 +63,8 @@ export class ZmqService {
         this._endpoint = endpoint;
         this._subscriptions = {};
         this._lastMessageTime = 0;
-        this._connecting = false;
 
-        setInterval(() => this.keepAlive(), 5000);
+        setInterval(() => this.keepAlive(), 15000);
     }
 
     /**
@@ -79,114 +73,114 @@ export class ZmqService {
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "antn", callback: (event: string, data: IAntn) => Promise<void>): Promise<string>;
+    public subscribe(event: "antn", callback: (event: string, data: IAntn) => Promise<void>): string;
     /**
      * Subscribe to dnscc event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "dnscc", callback: (event: string, data: IDnscc) => Promise<void>): Promise<string>;
+    public subscribe(event: "dnscc", callback: (event: string, data: IDnscc) => Promise<void>): string;
     /**
      * Subscribe to dnscu event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "dnscu", callback: (event: string, data: IDnscu) => Promise<void>): Promise<string>;
+    public subscribe(event: "dnscu", callback: (event: string, data: IDnscu) => Promise<void>): string;
     /**
      * Subscribe to dnscv event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "dnscv", callback: (event: string, data: IDnscv) => Promise<void>): Promise<string>;
+    public subscribe(event: "dnscv", callback: (event: string, data: IDnscv) => Promise<void>): string;
     /**
      * Subscribe to hmr event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "hmr", callback: (event: string, data: IHmr) => Promise<void>): Promise<string>;
+    public subscribe(event: "hmr", callback: (event: string, data: IHmr) => Promise<void>): string;
     /**
      * Subscribe to lmhs event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "lmhs", callback: (event: string, data: ILmhs) => Promise<void>): Promise<string>;
+    public subscribe(event: "lmhs", callback: (event: string, data: ILmhs) => Promise<void>): string;
     /**
      * Subscribe to lmi event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "lmi", callback: (event: string, data: ILmi) => Promise<void>): Promise<string>;
+    public subscribe(event: "lmi", callback: (event: string, data: ILmi) => Promise<void>): string;
     /**
      * Subscribe to lmsi event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "lmsi", callback: (event: string, data: ILmsi) => Promise<void>): Promise<string>;
+    public subscribe(event: "lmsi", callback: (event: string, data: ILmsi) => Promise<void>): string;
     /**
      * Subscribe to mctn event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "mctn", callback: (event: string, data: IMctn) => Promise<void>): Promise<string>;
+    public subscribe(event: "mctn", callback: (event: string, data: IMctn) => Promise<void>): string;
     /**
      * Subscribe to rntn event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "rntn", callback: (event: string, data: IRntn) => Promise<void>): Promise<string>;
+    public subscribe(event: "rntn", callback: (event: string, data: IRntn) => Promise<void>): string;
     /**
      * Subscribe to rstat event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "rstat", callback: (event: string, data: IRstat) => Promise<void>): Promise<string>;
+    public subscribe(event: "rstat", callback: (event: string, data: IRstat) => Promise<void>): string;
     /**
      * Subscribe to rtl event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "rtl", callback: (event: string, data: IRtl) => Promise<void>): Promise<string>;
+    public subscribe(event: "rtl", callback: (event: string, data: IRtl) => Promise<void>): string;
     /**
      * Subscribe to sn event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "sn", callback: (event: string, data: ISn) => Promise<void>): Promise<string>;
+    public subscribe(event: "sn", callback: (event: string, data: ISn) => Promise<void>): string;
     /**
      * Subscribe to tx event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "tx", callback: (event: string, data: ITx) => Promise<void>): Promise<string>;
+    public subscribe(event: "tx", callback: (event: string, data: ITx) => Promise<void>): string;
     /**
      * Subscribe to tx_trytes event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: "tx_trytes" | "trytes", callback: (event: string, data: ITxTrytes) => Promise<void>):
-        Promise<string>;
+    public subscribe(event: "tx_trytes" | "trytes", callback: (event: string, data: ITxTrytes) => Promise<void>):
+        string;
     /**
      * Subscribe to named event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribe(event: ZmqEvent, callback: (event: string, data: any) => Promise<void>):
-        Promise<string> {
+    public subscribe(event: ZmqEvent, callback: (event: string, data: any) => Promise<void>):
+        string {
         return this.internalAddEventCallback(event, callback);
     }
 
@@ -196,8 +190,8 @@ export class ZmqService {
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribeEvent(event: ZmqEvent, callback: (event: string, data: any) => Promise<void>)
-        : Promise<string> {
+    public subscribeEvent(event: ZmqEvent, callback: (event: string, data: any) => Promise<void>)
+        : string {
         return this.internalAddEventCallback(event, callback);
     }
 
@@ -207,8 +201,8 @@ export class ZmqService {
      * @param callback Callback to call with address data.
      * @returns An id to use for unsubscribe.
      */
-    public async subscribeAddress(address: string, callback: (event: string, data: IAddress) => Promise<void>)
-        : Promise<string> {
+    public subscribeAddress(address: string, callback: (event: string, data: IAddress) => Promise<void>)
+        : string {
         if (!/^[A-Z9]{81}$/.test(address)) {
             throw new Error(`The parameter 'address' must be 81 trytes.`);
         }
@@ -229,15 +223,10 @@ export class ZmqService {
                     this._subscriptions[eventKey].splice(j, 1);
                     if (this._subscriptions[eventKey].length === 0) {
                         if (this._socket) {
-                            console.log("Unsubscribe", keys[i], this._endpoint);
                             this._socket.unsubscribe(eventKey);
                         }
 
                         delete this._subscriptions[eventKey];
-
-                        if (Object.keys(this._subscriptions).length === 0) {
-                            this.disconnect();
-                        }
                     }
                     return;
                 }
@@ -248,30 +237,24 @@ export class ZmqService {
     /**
      * Connect the ZMQ service.
      */
-    private async connect(): Promise<void> {
+    public connect(): void {
         try {
-            if (!this._connecting && !this._socket) {
-                this._connecting = true;
-
-                const localSocket = new Subscriber();
-                localSocket.connect(this._endpoint);
-
-                console.log("Connect", this._endpoint);
+            if (!this._socket) {
+                this._socket = new Subscriber();
+                this._socket.connect(this._endpoint);
 
                 const keys = Object.keys(this._subscriptions);
                 for (let i = 0; i < keys.length; i++) {
-                    console.log("Subscribe", keys[i], this._endpoint);
-                    localSocket.subscribe(keys[i]);
+                    this._socket.subscribe(keys[i]);
                 }
 
-                this._socket = localSocket;
                 this._lastMessageTime = Date.now();
-                this._connecting = false;
 
                 // Run this as a background task otherwise
                 // it will block this method
                 setTimeout(
                     async () => {
+                        this._lastMessageTime = Date.now();
                         // tslint:disable-next-line: await-promise
                         for await (const [msg] of this._socket) {
                             await this.handleMessage(msg);
@@ -280,31 +263,25 @@ export class ZmqService {
                     500);
             }
         } catch (err) {
-            this._socket = undefined;
-            this._connecting = false;
-
-            console.log("ZMQ Connect Failed", err);
+            this.disconnect();
         }
     }
 
     /**
      * Disconnect the ZQM service.
      */
-    private disconnect(): void {
+    public disconnect(): void {
         const localSocket = this._socket;
         this._socket = undefined;
         if (localSocket) {
             try {
                 const keys = Object.keys(this._subscriptions);
                 for (let i = 0; i < keys.length; i++) {
-                    console.log("Unsubscribe", keys[i], this._endpoint);
                     localSocket.unsubscribe(keys[i]);
                 }
 
-                console.log("Close", this._endpoint);
                 localSocket.close();
             } catch (err) {
-                console.log("Error on close", err, this._endpoint);
             }
         }
     }
@@ -313,15 +290,9 @@ export class ZmqService {
      * Keep the connection alive.
      */
     private async keepAlive(): Promise<void> {
-        if (!this._connecting) {
-            if (Object.keys(this._subscriptions).length > 0) {
-                if (Date.now() - this._lastMessageTime > 15000) {
-                    console.log("Idle disconnect", this._endpoint);
-                    this._lastMessageTime = Date.now();
-                    this.disconnect();
-                    await this.connect();
-                }
-            }
+        if (Date.now() - this._lastMessageTime > 15000) {
+            this.disconnect();
+            this.connect();
         }
     }
 
@@ -331,19 +302,17 @@ export class ZmqService {
      * @param callback The callback to store for the event.
      * @returns The id of the subscription.
      */
-    private async internalAddEventCallback(event: string, callback: (event: string, data: any) => Promise<void>)
-        : Promise<string> {
+    private internalAddEventCallback(event: string, callback: (event: string, data: any) => Promise<void>)
+        : string {
         if (!this._subscriptions[event]) {
             this._subscriptions[event] = [];
             if (this._socket) {
-                console.log("Subscribe", event, this._endpoint);
                 this._socket.subscribe(event);
             }
         }
         const id = TrytesHelper.generateHash(27);
-        this._subscriptions[event].push({ id, callback });
 
-        await this.connect();
+        this._subscriptions[event].push({ id, callback });
 
         return id;
     }
@@ -500,20 +469,30 @@ export class ZmqService {
                 default: {
                     // Is this an address event
                     if (/^[A-Z9]{81}$/.test(event)) {
-                        data = <IAddress>{
-                            address: messageParams[0],
-                            transaction: messageParams[1],
-                            milestoneIndex: parseInt(messageParams[2], 10)
-                        };
+                        let mi = parseInt(messageParams[2], 10);
+                        let txIndex = 1;
+                        if (Number.isNaN(mi)) {
+                            mi = parseInt(messageParams[3], 10);
+                            txIndex++;
+                        }
+                        if (!Number.isNaN(mi)) {
+                            data = <IAddress>{
+                                address: messageParams[0],
+                                transaction: messageParams[txIndex],
+                                milestoneIndex: mi
+                            };
+                        }
                     }
                 }
             }
 
-            for (let i = 0; i < this._subscriptions[event].length; i++) {
-                try {
-                    await this._subscriptions[event][i].callback(event, data);
-                } catch (err) {
-                    console.error(`Exceptionin ZMQ callback`, event, data, err);
+            if (data) {
+                for (let i = 0; i < this._subscriptions[event].length; i++) {
+                    try {
+                        await this._subscriptions[event][i].callback(event, data);
+                    } catch (err) {
+                        console.error(`Exceptionin ZMQ callback`, event, data, err);
+                    }
                 }
             }
         }

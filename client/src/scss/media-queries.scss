@@ -1,7 +1,12 @@
 $desktop-width: 1024px;
 $tablet-width: 768px;
 $phone-width: 514px;
-$min-width: 320px;
+
+@mixin desktop-down {
+  @media (max-width: #{$desktop-width}) {
+    @content;
+  }
+}
 
 @mixin tablet-down {
   @media (max-width: #{$tablet-width}) {
