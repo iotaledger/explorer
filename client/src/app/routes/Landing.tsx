@@ -325,12 +325,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
             () => {
                 this._transactionsClient = ServiceFactory.get<TransactionsClient>(`transactions-${this.props.networkConfig.network}`);
 
-                this._transactionsClient.subscribe(
-                    subscriptionId => {
-                        this._txSubscriptionId = subscriptionId;
-                        this.updateTransactions();
-                        this.updateTps();
-                    },
+                this._txSubscriptionId = this._transactionsClient.subscribe(
                     () => {
                         if (this._isMounted) {
                             this.updateTransactions();
@@ -498,11 +493,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
             () => {
                 this._milestonesClient = ServiceFactory.get<MilestonesClient>(`milestones-${this.props.networkConfig.network}`);
 
-                this._milestonesClient.subscribe(
-                    subscriptionId => {
-                        this._miSubscriptionId = subscriptionId;
-                        this.updateMilestones();
-                    },
+                this._miSubscriptionId = this._milestonesClient.subscribe(
                     () => {
                         if (this._isMounted) {
                             this.updateMilestones();

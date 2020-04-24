@@ -77,19 +77,15 @@ export class TransactionsClient {
 
     /**
      * Perform a request to subscribe to transactions events.
-     * @param complete The subscription completed.
      * @param callback Callback called with transactions data.
-     * @returns The response from the request.
+     * @returns The subscription id.
      */
-    public subscribe(complete: (subscriptionId?: string) => void, callback: () => void): void {
+    public subscribe(callback: () => void): string {
+        const subscriptionId = TrytesHelper.generateHash(27);
+        this._subscribers[subscriptionId] = callback;
+
         try {
-            const subscriptionId = TrytesHelper.generateHash(27);
-
-            this._subscribers[subscriptionId] = callback;
-
-            if (this._subscriptionId) {
-                complete(subscriptionId);
-            } else {
+            if (!this._subscriptionId) {
                 const subscribeRequest: ITransactionsSubscribeRequest = {
                     network: this._config.network
                 };
@@ -97,9 +93,6 @@ export class TransactionsClient {
                 this._socket.on("subscribe", (subscribeResponse: ITransactionsSubscribeResponse) => {
                     if (subscribeResponse.success) {
                         this._subscriptionId = subscribeResponse.subscriptionId;
-                        complete(subscriptionId);
-                    } else {
-                        complete(undefined);
                     }
                 });
                 this._socket.on("transactions", async (transactionsResponse: ITransactionsSubscriptionMessage) => {
@@ -130,9 +123,10 @@ export class TransactionsClient {
                     }
                 });
             }
-        } catch (err) {
-            throw new Error(`There was a problem communicating with the API.\n${err}`);
-        }
+
+        } catch { }
+
+        return subscriptionId;
     }
 
     /**
@@ -150,7 +144,7 @@ export class TransactionsClient {
                     subscriptionId: this._subscriptionId
                 };
                 this._socket.emit("unsubscribe", unsubscribeRequest);
-                this._socket.on("unsubscribe", () => {});
+                this._socket.on("unsubscribe", () => { });
             }
         } catch {
         }

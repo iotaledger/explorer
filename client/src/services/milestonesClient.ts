@@ -55,18 +55,14 @@ export class MilestonesClient {
 
     /**
      * Perform a request to subscribe to milestone events.
-     * @param complete The subscription completed.
      * @param callback Callback called with milestones data.
-     * @returns The response from the request.
+     * @returns The subscription id.
      */
-    public subscribe(complete: (subscriptionId?: string) => void, callback: () => void): void {
+    public subscribe(callback: () => void): string {
         const subscriptionId = TrytesHelper.generateHash(27);
-
         this._subscribers[subscriptionId] = callback;
 
-        if (this._timerId) {
-            complete(subscriptionId);
-        } else {
+        if (!this._timerId) {
             this._timerId = setInterval(
                 async () => {
                     await this.updateMilestones();
@@ -78,6 +74,8 @@ export class MilestonesClient {
                 },
                 0);
         }
+
+        return subscriptionId;
     }
 
     /**
