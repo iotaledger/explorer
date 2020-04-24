@@ -28,9 +28,9 @@ export class UnitsHelper {
         let ret;
 
         if (bestUnits === "i") {
-            ret = `${value}i`;
+            ret = `${value} i`;
         } else {
-            ret = `${convertUnits(value, Unit.i, bestUnits).toFixed(2)}${bestUnits}`;
+            ret = `${convertUnits(value, Unit.i, bestUnits).toFixed(2)} ${bestUnits}`;
         }
 
         return ret;

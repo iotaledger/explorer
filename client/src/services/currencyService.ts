@@ -278,9 +278,14 @@ export class CurrencyService {
      * @param valueInBase The value in euros.
      * @param currencyData The currency data.
      * @param includeSymbol Include the symbol in the formatting.
+     * @param numDigits The number of digits to display.
      * @returns The converted fiat.
      */
-    public convertFiatBase(valueInBase: number, currencyData: ICurrencySettings, includeSymbol: boolean): string {
+    public convertFiatBase(
+        valueInBase: number,
+        currencyData: ICurrencySettings,
+        includeSymbol: boolean,
+        numDigits: number): string {
         let converted = "";
         if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
             const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
@@ -289,10 +294,10 @@ export class CurrencyService {
                 const fiat = valueInBase * selectedFiatToBase.rate;
 
                 if (includeSymbol) {
-                    converted += this.getSymbol(currencyData.fiatCode);
+                    converted += `${this.getSymbol(currencyData.fiatCode)} `;
                 }
 
-                converted += fiat.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                converted += fiat.toFixed(numDigits).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
         return converted;

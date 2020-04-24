@@ -82,7 +82,9 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
             priceCurrency: "--",
             transactions: [],
             milestones: [],
-            formatFull: false
+            formatFull: false,
+            currency: "USD",
+            currencies: []
         };
     }
 
@@ -165,14 +167,41 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                 <div className="info-box">
                                     <span className="info-box--title">Transactions per Second</span>
                                     <span className="info-box--value">{this.state.transactionsPerSecond}</span>
+                                    <span className="info-box--action">&nbsp;</span>
                                 </div>
                                 <div className="info-box">
                                     <span className="info-box--title">IOTA Market Cap</span>
                                     <span className="info-box--value">{this.state.marketCapCurrency}</span>
+                                    <span className="info-box--action">
+                                        <div className="select-wrapper select-wrapper--small">
+                                            <select
+                                                value={this.state.currency}
+                                                onChange={e => this.setCurrency(e.target.value)}
+                                            >
+                                                {this.state.currencies.map(cur => (
+                                                    <option value={cur} key={cur}>{cur}</option>
+                                                ))}
+                                            </select>
+                                            <FaChevronDown />
+                                        </div>
+                                    </span>
                                 </div>
                                 <div className="info-box">
                                     <span className="info-box--title">Price / MI</span>
                                     <span className="info-box--value">{this.state.priceCurrency}</span>
+                                    <span className="info-box--action">
+                                        <div className="select-wrapper select-wrapper--small">
+                                            <select
+                                                value={this.state.currency}
+                                                onChange={e => this.setCurrency(e.target.value)}
+                                            >
+                                                {this.state.currencies.map(cur => (
+                                                    <option value={cur} key={cur}>{cur}</option>
+                                                ))}
+                                            </select>
+                                            <FaChevronDown />
+                                        </div>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -281,7 +310,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                                         })}
                                                     >
                                                         {this.state.formatFull
-                                                            ? `${tx.value}i`
+                                                            ? `${tx.value} i`
                                                             : UnitsHelper.formatBest(tx.value)}
                                                     </button>
                                                 </span>
@@ -415,24 +444,57 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
             if (isAvailable && currencyData && this._isMounted) {
                 this._currencyData = currencyData;
 
-                this.setState({
-                    marketCapCurrency:
-                        this._currencyData.marketCap !== undefined
-                            ? this._currencyService.convertFiatBase(
-                                this._currencyData.marketCap,
-                                this._currencyData,
-                                true)
-                            : "--",
-                    priceCurrency: this._currencyData.baseCurrencyRate !== undefined
-                        ? this._currencyService.convertFiatBase(
-                            this._currencyData.baseCurrencyRate,
-                            this._currencyData,
-                            true)
-                        : "--"
-
-                });
+                this.setState(
+                    {
+                        currency: this._currencyData.fiatCode,
+                        currencies: (this._currencyData.currencies || []).map(c => c.id)
+                    },
+                    () => this.updateCurrency());
             }
         });
+    }
+
+    /**
+     * Set a new currency.
+     * @param currency The currency to set.
+     */
+    private setCurrency(currency: string): void {
+        if (this._currencyData) {
+            this._currencyData.fiatCode = currency;
+            this._currencyService.saveFiatCode(currency);
+            this.setState(
+                {
+                    currency
+                },
+                () => {
+                    this.updateCurrency();
+                });
+        }
+    }
+
+    /**
+     * Update formatted currencies.
+     */
+    private updateCurrency(): void {
+        if (this._currencyData) {
+            this.setState({
+                marketCapCurrency:
+                    this._currencyData.marketCap !== undefined
+                        ? this._currencyService.convertFiatBase(
+                            this._currencyData.marketCap,
+                            this._currencyData,
+                            true,
+                            0)
+                        : "--",
+                priceCurrency: this._currencyData.baseCurrencyRate !== undefined
+                    ? this._currencyService.convertFiatBase(
+                        this._currencyData.baseCurrencyRate,
+                        this._currencyData,
+                        true,
+                        2)
+                    : "--"
+            });
+        }
     }
 
     /**

@@ -5,6 +5,17 @@
   display: inline-block;
   position: relative;
 
+  &.select-wrapper--small {
+    select {
+      @include font-size(12px);
+      height: 32px;
+    }
+
+    svg {
+      top: 8px;
+    }
+  }
+
   svg {
     @include font-size(16px);
 
@@ -52,6 +63,11 @@
       &:focus {
         z-index: 1;
       }
+    }
+
+    option {
+      background-color: $white;
+      color: $gray-midnight;
     }
   }
 }

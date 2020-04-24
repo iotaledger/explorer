@@ -89,4 +89,14 @@ export interface LandingState {
      * Format the iota in full.
      */
     formatFull: boolean;
+
+    /**
+     * The list of currencies.
+     */
+    currencies: string[];
+
+    /**
+     * The selected currency.
+     */
+    currency: string;
 }
