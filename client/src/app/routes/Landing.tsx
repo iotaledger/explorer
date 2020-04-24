@@ -1,6 +1,7 @@
 import { convertUnits, Unit } from "@iota/unit-converter";
 import React, { ReactNode } from "react";
 import { FaChevronDown } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { UnitsHelper } from "../../helpers/unitsHelper";
 import { ICurrencySettings } from "../../models/services/ICurrencySettings";
@@ -59,7 +60,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
     private _timerId?: NodeJS.Timer;
 
     /**
-     * Create a new instance of Explore.
+     * Create a new instance of Landing.
      * @param props The props.
      */
     constructor(props: LandingProps) {
@@ -91,7 +92,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
     /**
      * The component mounted.
      */
-    public async componentDidMount(): Promise<void> {
+    public componentDidMount(): void {
         super.componentDidMount();
 
         const settings = this._settingsService.get();
@@ -116,7 +117,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
      * The component was updated.
      * @param prevProps The previous properties.
      */
-    public async componentDidUpdate(prevProps: LandingProps): Promise<void> {
+    public componentDidUpdate(prevProps: LandingProps): void {
         if (this.props.networkConfig !== prevProps.networkConfig) {
             this.closeTransactions();
             this.buildTransactions();
@@ -129,7 +130,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
     /**
      * The component will unmount from the dom.
      */
-    public async componentWillUnmount(): Promise<void> {
+    public componentWillUnmount(): void {
         this.closeTransactions();
         this.closeMilestones();
     }
@@ -314,7 +315,12 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                                             : UnitsHelper.formatBest(tx.value)}
                                                     </button>
                                                 </span>
-                                                <span className="feed-item--hash">{tx.hash}</span>
+                                                <Link
+                                                    className="feed-item--hash"
+                                                    to={`/${this.props.networkConfig.network}/transaction/${tx.hash}`}
+                                                >
+                                                    {tx.hash}
+                                                </Link>
                                             </div>
                                         ))}
                                     </div>
@@ -329,7 +335,12 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                         {this.state.milestones.slice(0, 10).map(tx => (
                                             <div className="row feed-item" key={tx.hash}>
                                                 <span className="feed-item--value">{tx.milestoneIndex}</span>
-                                                <span className="feed-item--hash">{tx.hash}</span>
+                                                <Link
+                                                    className="feed-item--hash"
+                                                    to={`/${this.props.networkConfig.network}/transaction/${tx.hash}`}
+                                                >
+                                                    {tx.hash}
+                                                </Link>
                                             </div>
                                         ))}
                                     </div>

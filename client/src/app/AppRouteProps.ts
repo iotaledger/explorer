@@ -6,6 +6,11 @@ export interface AppRouteProps {
     network?: string;
 
     /**
+     * The hash type from the location.
+     */
+    hashType?: string;
+
+    /**
      * The hash from the location.
      */
     hash?: string;

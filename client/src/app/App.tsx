@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from "react";
-import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import { PaletteHelper } from "../helpers/paletteHelper";
 import "./App.scss";
 import { AppProps } from "./AppProps";
@@ -9,7 +9,7 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Switcher from "./components/Switcher";
 import Landing from "./routes/Landing";
-import { LandingProps } from "./routes/LandingProps";
+import Transaction from "./routes/Transaction";
 
 /**
  * Main application class.
@@ -61,22 +61,25 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
         );
         return (
             <div className="app">
-                <Header>
-                    {this.props.match.params.hash && switcher}
+                <Header
+                    networkConfig={this.state.networkConfig}
+                >
+                    {this.props.match.params.hashType && this.props.match.params.hash && switcher}
                 </Header>
                 <div className="content">
-                    <Switch>
-                        <Route
-                            path="/:network?/:hash?"
-                            component={(props: LandingProps) => (
-                                <Landing
-                                    {...props}
-                                    networkConfig={this.state.networkConfig}
-                                    switcher={switcher}
-                                />
-                            )}
+                    {!this.props.match.params.hashType && !this.props.match.params.hash && (
+                        <Landing
+                            networkConfig={this.state.networkConfig}
+                            switcher={switcher}
                         />
-                    </Switch>
+                    )}
+                    {this.props.match.params.hashType && this.props.match.params.hash && (
+                        <Transaction
+                            networkConfig={this.state.networkConfig}
+                            hashType={this.props.match.params.hashType}
+                            hash={this.props.match.params.hash}
+                        />
+                    )}
                 </div>
                 <Footer
                     networks={this.props.configuration.networks.map(n => ({

@@ -248,6 +248,7 @@
 
               .feed-item {
                 align-items: center;
+                height: 16px;
                 margin-top: 20px;
 
                 .feed-item--value {
@@ -271,8 +272,13 @@
 
                   color: $input-text;
                   font-family: $inter;
+                  text-decoration: none;
                   text-overflow: ellipsis;
                   overflow: hidden;
+
+                  &:hover {
+                    text-decoration: underline;
+                  }
                 }
               }
             }
@@ -284,7 +290,6 @@
 
   .header-wrapper {
     background: linear-gradient(to bottom, var(--context-primary), var(--context-secondary));
-    box-shadow: $box-shadow;
 
     .inner {
       max-width: $desktop-width - 140px;

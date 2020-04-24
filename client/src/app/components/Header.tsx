@@ -1,16 +1,18 @@
 import React, { Component, ReactNode } from "react";
+import { Link } from "react-router-dom";
 import logoHeader from "../../assets/logo-header.svg";
 import "./Header.scss";
+import { HeaderProps } from "./HeaderProps";
 
 /**
  * Component which will will show the header.
  */
-class Header extends Component<any, any> {
+class Header extends Component<HeaderProps, any> {
     /**
      * Create a new instance of Header.
      * @param props The props.
      */
-    constructor(props: any) {
+    constructor(props: HeaderProps) {
         super(props);
 
         this.state = {
@@ -26,7 +28,9 @@ class Header extends Component<any, any> {
             <header>
                 <div className="inner">
                     <section className="row">
-                        <img src={logoHeader} alt="Explorer" />
+                        <Link to={`/${this.props.networkConfig.network}`}>
+                            <img src={logoHeader} alt="Explorer" />
+                        </Link>
                     </section>
                     {this.props.children}
                 </div>

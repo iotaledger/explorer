@@ -1,17 +1,18 @@
-import { ReactNode } from "react";
 import { IClientNetworkConfiguration } from "../../models/config/IClientNetworkConfiguration";
 
-/**
- * The props for the Header component.
- */
-export interface HeaderProps {
+export interface TransactionProps {
     /**
      * The current network.
      */
     networkConfig: IClientNetworkConfiguration;
 
     /**
-     * The children elements to display as content.
+     * The hash type from the location.
      */
-    children: ReactNode | ReactNode[];
+    hashType: string;
+
+    /**
+     * The hash from the location.
+     */
+    hash: string;
 }
