@@ -168,6 +168,14 @@ export class TransactionsClient {
     }
 
     /**
+     * Get the tps history array.
+     * @returns The tps.
+     */
+    public getTpsHistory(): number[] {
+        return this._tps;
+    }
+
+    /**
      * Calculate the tps.
      * @returns The tps.
      */

@@ -1,0 +1,26 @@
+@import '../../scss/variables';
+
+.line-container {
+  background-color: $panel-green;
+
+  .ct-chart {
+    width: 100%;
+    height: 80px;
+
+    svg {
+      .ct-series {
+        &.ct-series-a {
+          .ct-line {
+            stroke: $main-green-highlight;
+            stroke-width: 2px;
+          }
+
+          .ct-area {
+            fill: url(#gradient-a);
+            fill-opacity: 0.3;
+          }
+        }
+      }
+    }
+  }
+}

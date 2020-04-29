@@ -9,10 +9,27 @@
   width: 241px;
   min-height: 400px;
 
-  h1 {
-    @include font-size(20px);
+  &.card {
+    .card--header {
+      margin-bottom: 0px;
+      padding-bottom: 27px;
+    }
 
-    font-family: $metropolis;
-    font-weight: bold;
+    .card--label {
+      padding-left: 23px;
+      color: $gray-10;
+
+      &.card-label--highlight {
+        background: $panel-green;
+      }
+
+      &.card-label--large {
+        @include font-size(16px);
+      }
+    }
+
+    .line-container {
+      padding: 5px 0px;
+    }
   }
 }
