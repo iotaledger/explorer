@@ -1,0 +1,157 @@
+@import './scss/fonts';
+@import './scss/mixins';
+@import './scss/layout';
+@import './scss/variables';
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid $gray-noon;
+  border-radius: 6px;
+  background-color: $white;
+  box-shadow: $box-shadow;
+  overflow: hidden;
+
+  h2 {
+    display: flex;
+    align-items: center;
+  }
+
+  .card--header-count {
+    @include font-size(12px, 12px);
+
+    margin-left: 20px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background-color: $gray-light;
+    color: $gray;
+    font-family: $metropolis;
+    font-weight: normal;
+    white-space: nowrap;
+
+    &.card--header-count__success {
+      background-color: $main-green;
+      color: $white;
+    }
+
+    &.card--header-count__error {
+      background-color: $danger;
+      color: $white;
+    }
+  }
+
+  .card--header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 30px 26px 16px 26px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid $gray-noon;
+
+    &.card--header__space-between {
+      justify-content: space-between;
+    }
+  }
+
+  p {
+    @include font-size(14px);
+
+    color: $gray;
+    font-family: $metropolis;
+  }
+
+  .card--content {
+    padding: 0px 30px 20px 30px;
+  }
+
+  .card--label {
+    @include font-size(12px);
+    display: flex;
+    align-items: center;
+    height: 32px;
+
+    color: $gray-header;
+    font-family: $metropolis;
+    font-weight: bold;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .card--value {
+    @include font-size(12px);
+
+    margin-bottom: 12px;
+    color: $gray-10;
+    font-family: $inter;
+    word-break: break-all;
+
+    .card--value__secondary {
+      @include font-size(12px);
+
+      color: $main-green;
+    }
+
+    .card--value__tertiary {
+      @include font-size(10px);
+
+      color: $main-green;
+      font-weight: normal;
+    }
+
+    &.card--value__light,
+    .card--value__light {
+      color: $gray;
+    }
+
+    &.card--value__large,
+    .card--value__large {
+      @include font-size(18px);
+    }
+
+    &.card--value-textarea {
+      min-height: 50px;
+      max-height: 100px;
+      padding: 10px;
+      background: $gray-noon;
+      overflow: auto;
+
+      &.card--value-textarea__ascii {
+        max-height: 200px;
+        white-space: pre-wrap;
+      }
+
+      &.card--value-textarea__json {
+        max-height: 200px;
+        font-family: 'Courier New', Courier, monospace;
+        white-space: pre-wrap;
+      }
+    }
+
+    button {
+      @include font-size(12px);
+
+      border: 0;
+      background: none;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      text-align: left;
+      cursor: pointer;
+
+      &:hover {
+        color: $main-green-highlight;
+        text-decoration: underline;
+      }
+
+      &:focus {
+        box-shadow: none;
+      }
+
+      &:disabled {
+        cursor: default;
+        opacity: 0.3;
+      }
+    }
+  }
+}

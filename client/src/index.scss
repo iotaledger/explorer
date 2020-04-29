@@ -1,3 +1,4 @@
+@import './scss/card';
 @import './scss/fonts';
 @import './scss/forms';
 @import './scss/layout';
@@ -14,8 +15,23 @@ html {
   box-sizing: border-box;
 }
 
+h1 {
+  @include font-size(32px, 40px);
+
+  color: $gray-midnight;
+  font-family: $metropolis;
+  font-weight: bold;
+}
+
+h2 {
+  @include font-size(20px, 24px);
+
+  color: $gray-10;
+  font-family: $metropolis;
+  font-weight: bold;
+}
+
 body {
-  min-width: $phone-width;
   height: 100%;
   background-color: #f6f8fc;
 
@@ -24,8 +40,21 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    --primary: #{$gray-midnight};
-    --primary-text: #{$white};
-    --context-text: #{$white};
+
+    .success {
+      color: $success;
+    }
+
+    .warning {
+      color: $warning;
+    }
+
+    .danger {
+      color: $danger;
+    }
+
+    .info {
+      color: $info;
+    }
   }
 }

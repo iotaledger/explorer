@@ -1,0 +1,18 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+
+.side-panel {
+  display: flex;
+  flex-direction: row;
+  width: 241px;
+  min-height: 400px;
+
+  h1 {
+    @include font-size(20px);
+
+    font-family: $metropolis;
+    font-weight: bold;
+  }
+}

@@ -1,0 +1,51 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+
+.address {
+  display: flex;
+  flex-direction: column;
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+
+    .inner {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      max-width: $desktop-width;
+      margin: 40px 20px;
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      p {
+        @include font-size(12px);
+        color: $gray-10;
+        font-family: $metropolis;
+        font-weight: bold;
+      }
+
+      .status {
+        @include font-size(14px);
+      }
+
+      .cards {
+        flex: 1;
+        margin-right: 24px;
+        overflow: hidden;
+
+        .item-details + .item-details {
+          margin-top: 40px;
+        }
+
+        .card + .card {
+          margin-top: 23px;
+        }
+      }
+    }
+  }
+}

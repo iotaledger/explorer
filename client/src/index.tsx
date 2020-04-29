@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
 import App from "./app/App";
-import { AppProps } from "./app/AppProps";
 import { AppRouteProps } from "./app/AppRouteProps";
 import { ServiceFactory } from "./factories/serviceFactory";
 import { PaletteHelper } from "./helpers/paletteHelper";
@@ -13,6 +12,7 @@ import { CurrencyService } from "./services/currencyService";
 import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesClient } from "./services/milestonesClient";
 import { SettingsService } from "./services/settingsService";
+import { TangleCacheService } from "./services/tangleCacheService";
 import { TransactionsClient } from "./services/transactionsClient";
 
 const configId = process.env.REACT_APP_CONFIG_ID || "local";
@@ -29,9 +29,10 @@ ReactDOM.render(
             <Route
                 exact={true}
                 path="/:network?/:hashType?/:hash?"
-                component={(props: RouteComponentProps<AppRouteProps> & AppProps) => (
-                    <App configuration={config} {...props} />)}
+                component={(props: RouteComponentProps<AppRouteProps>) => (
+                    <App {...props} configuration={config} />)}
             />
+
         </BrowserRouter>
     ),
     document.getElementById("root")
@@ -45,6 +46,7 @@ function registerServices(): void {
     ServiceFactory.register("settings", () => new SettingsService());
     ServiceFactory.register("currency", () => new CurrencyService(config.apiEndpoint));
     ServiceFactory.register("api-client", () => new ApiClient(config.apiEndpoint));
+    ServiceFactory.register("tangle-cache", () => new TangleCacheService(config));
 
     for (const netConfig of config.networks) {
         ServiceFactory.register(

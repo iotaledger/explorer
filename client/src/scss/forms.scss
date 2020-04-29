@@ -8,19 +8,18 @@
   &.select-wrapper--small {
     select {
       @include font-size(12px);
+
       height: 32px;
     }
 
-    svg {
-      top: 8px;
+    img {
+      top: 12px;
     }
   }
 
-  svg {
-    @include font-size(16px);
-
+  img {
     position: absolute;
-    top: 12px;
+    top: 16px;
     right: 18px;
     color: $gray;
     z-index: 2;
@@ -36,7 +35,7 @@
     border: 1px solid $input-border;
     border-radius: 6px;
     outline: none;
-    color: $input-text;
+    color: $gray-10;
     font-family: $inter;
     appearance: none;
 
@@ -52,7 +51,7 @@
     // sass-lint:disable no-vendor-prefixes
     &:-moz-focusring {
       color: transparent;
-      text-shadow: 0 0 0 $input-text;
+      text-shadow: 0 0 0 $gray-10;
     }
 
     &.select-plus {
@@ -81,7 +80,7 @@ input {
   border: 1px solid $input-border;
   border-radius: 6px;
   outline: none;
-  color: $input-text;
+  color: $gray-10;
   font-family: $inter;
 
   &:focus {
@@ -91,7 +90,7 @@ input {
   // sass-lint:disable no-vendor-prefixes
   &:-moz-focusring {
     color: transparent;
-    text-shadow: 0 0 0 $input-text;
+    text-shadow: 0 0 0 $gray-10;
   }
 
   &.input-plus {
@@ -113,6 +112,6 @@ button {
 
   // sass-lint:disable no-vendor-prefixes
   &:-moz-focusring {
-    text-shadow: 0 0 0 $input-text;
+    text-shadow: 0 0 0 $gray-10;
   }
 }

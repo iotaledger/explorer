@@ -1,24 +1,22 @@
 import { convertUnits, Unit } from "@iota/unit-converter";
 import React, { ReactNode } from "react";
-import { FaChevronDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import chevronDownGray from "../../assets/chevron-down-gray.svg";
+import chevronDownWhite from "../../assets/chevron-down-white.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { UnitsHelper } from "../../helpers/unitsHelper";
-import { ICurrencySettings } from "../../models/services/ICurrencySettings";
 import { ValueFilter } from "../../models/services/valueFilter";
-import { CurrencyService } from "../../services/currencyService";
 import { MilestonesClient } from "../../services/milestonesClient";
-import { SettingsService } from "../../services/settingsService";
 import { TransactionsClient } from "../../services/transactionsClient";
-import AsyncComponent from "../components/AsyncComponent";
+import Currency from "../components/Currency";
 import "./Landing.scss";
 import { LandingProps } from "./LandingProps";
 import { LandingState } from "./LandingState";
 
 /**
- * Component which will will show the landing page.
+ * Component which will show the landing page.
  */
-class Landing extends AsyncComponent<LandingProps, LandingState> {
+class Landing extends Currency<LandingProps, LandingState> {
     /**
      * Transactions client.
      */
@@ -28,21 +26,6 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
      * Milestones client.
      */
     private _milestonesClient?: MilestonesClient;
-
-    /**
-     * The settings service.
-     */
-    private readonly _settingsService: SettingsService;
-
-    /**
-     * The currency service.
-     */
-    private readonly _currencyService: CurrencyService;
-
-    /**
-     * The currency data.
-     */
-    private _currencyData?: ICurrencySettings;
 
     /**
      * The transactions feed subscription.
@@ -66,11 +49,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
     constructor(props: LandingProps) {
         super(props);
 
-        this._currencyService = ServiceFactory.get<CurrencyService>("currency");
-        this._settingsService = ServiceFactory.get<SettingsService>("settings");
-
         this.state = {
-            search: "",
             valueMinimum: "0",
             valueMinimumUnits: Unit.i,
             valueMaximum: "1",
@@ -83,9 +62,9 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
             priceCurrency: "--",
             transactions: [],
             milestones: [],
-            formatFull: false,
             currency: "USD",
-            currencies: []
+            currencies: [],
+            formatFull: false
         };
     }
 
@@ -109,7 +88,6 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
         }
 
         this.buildTransactions();
-        this.buildCurrency();
         this.buildMilestones();
     }
 
@@ -150,19 +128,8 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                 <h1>{this.props.networkConfig.label}</h1>
                                 {this.props.switcher}
                             </div>
-                            <div className="row fill search">
-                                <input
-                                    className="search--input"
-                                    type="text"
-                                    value={this.state.search}
-                                    onChange={e => this.setState({
-                                        search: e.target.value
-                                    })}
-                                    placeholder="Search transactions, bundles, addresses, tags"
-                                />
-                                <button className="search--button">
-                                    Search
-                                </button>
+                            <div className="row fill">
+                                {this.props.search}
                             </div>
                             <div className="row space-between">
                                 <div className="info-box">
@@ -183,7 +150,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                                     <option value={cur} key={cur}>{cur}</option>
                                                 ))}
                                             </select>
-                                            <FaChevronDown />
+                                            <img src={chevronDownWhite} alt="expand" />
                                         </div>
                                     </span>
                                 </div>
@@ -200,7 +167,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                                     <option value={cur} key={cur}>{cur}</option>
                                                 ))}
                                             </select>
-                                            <FaChevronDown />
+                                            <img src={chevronDownWhite} alt="expand" />
                                         </div>
                                     </span>
                                 </div>
@@ -212,9 +179,9 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                     <div className="inner">
                         <div className="feeds-section">
                             <h1>Feeds</h1>
-                            <div className="row filters wrap">
+                            <div className="row filters wrap card">
                                 <div className="col">
-                                    <span className="filter--label">Value Filter</span>
+                                    <span className="card--label">Value Filter</span>
                                     <span className="filter--value">
                                         <div className="select-wrapper">
                                             <select
@@ -229,12 +196,12 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                                 <option value="zeroOnly">Zero Only</option>
                                                 <option value="nonZeroOnly">Non Zero Only</option>
                                             </select>
-                                            <FaChevronDown />
+                                            <img src={chevronDownGray} alt="expand" />
                                         </div>
                                     </span>
                                 </div>
                                 <div className="col">
-                                    <span className="filter--label">Minimum</span>
+                                    <span className="card--label">Minimum</span>
                                     <span className="filter--value">
                                         <div className="select-wrapper">
                                             <select
@@ -251,7 +218,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                                 <option value="Ti">Ti</option>
                                                 <option value="Pi">Pi</option>
                                             </select>
-                                            <FaChevronDown />
+                                            <img src={chevronDownGray} alt="expand" />
                                         </div>
                                         <input
                                             className="input-plus"
@@ -262,11 +229,11 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                     </span>
                                 </div>
                                 <div className="col">
-                                    <span className="filter--label">&nbsp;</span>
-                                    <span className="filter--label">To</span>
+                                    <span className="card--label">&nbsp;</span>
+                                    <span className="card--label">To</span>
                                 </div>
                                 <div className="col">
-                                    <span className="filter--label">Maximum</span>
+                                    <span className="card--label">Maximum</span>
                                     <span className="filter--value">
                                         <div className="select-wrapper">
                                             <select
@@ -283,7 +250,7 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                                 <option value="Ti">Ti</option>
                                                 <option value="Pi">Pi</option>
                                             </select>
-                                            <FaChevronDown />
+                                            <img src={chevronDownGray} alt="expand" />
                                         </div>
                                         <input
                                             className="input-plus"
@@ -295,12 +262,14 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                 </div>
                             </div>
                             <div className="row wrap feeds">
-                                <div className="feed">
-                                    <h2>{this.props.networkConfig.label} Feed</h2>
+                                <div className="feed card">
+                                    <div className="card--header">
+                                        <h2>{this.props.networkConfig.label} Feed</h2>
+                                    </div>
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
-                                            <span className="feed-item--value">Amount</span>
-                                            <span className="feed-item--hash">Transaction</span>
+                                            <span className="card--label">Amount</span>
+                                            <span className="card--label">Transaction</span>
                                         </div>
                                         {this.state.transactions.slice(0, 10).map(tx => (
                                             <div className="row feed-item" key={tx.hash}>
@@ -325,12 +294,14 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                                         ))}
                                     </div>
                                 </div>
-                                <div className="feed">
-                                    <h2>{this.props.networkConfig.label} Milestones</h2>
+                                <div className="feed card">
+                                    <div className="card--header">
+                                        <h2>{this.props.networkConfig.label} Milestones</h2>
+                                    </div>
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
-                                            <span className="feed-item--value">Milestone</span>
-                                            <span className="feed-item--hash">Transaction</span>
+                                            <span className="card--label">Milestone</span>
+                                            <span className="card--label">Transaction</span>
                                         </div>
                                         {this.state.milestones.slice(0, 10).map(tx => (
                                             <div className="row feed-item" key={tx.hash}>
@@ -351,6 +322,31 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
                 </div>
             </div>
         );
+    }
+
+    /**
+     * Update formatted currencies.
+     */
+    protected updateCurrency(): void {
+        if (this._currencyData) {
+            this.setState({
+                marketCapCurrency:
+                    this._currencyData.marketCap !== undefined
+                        ? this._currencyService.convertFiatBase(
+                            this._currencyData.marketCap,
+                            this._currencyData,
+                            true,
+                            0)
+                        : "--",
+                priceCurrency: this._currencyData.baseCurrencyRate !== undefined
+                    ? this._currencyService.convertFiatBase(
+                        this._currencyData.baseCurrencyRate,
+                        this._currencyData,
+                        true,
+                        2)
+                    : "--"
+            });
+        }
     }
 
     /**
@@ -443,67 +439,6 @@ class Landing extends AsyncComponent<LandingProps, LandingState> {
         if (this._isMounted && this._milestonesClient) {
             this.setState({
                 milestones: this._milestonesClient.getMilestones()
-            });
-        }
-    }
-
-    /**
-     * Build the currency information.
-     */
-    private buildCurrency(): void {
-        this._currencyService.loadCurrencies((isAvailable, currencyData, err) => {
-            if (isAvailable && currencyData && this._isMounted) {
-                this._currencyData = currencyData;
-
-                this.setState(
-                    {
-                        currency: this._currencyData.fiatCode,
-                        currencies: (this._currencyData.currencies || []).map(c => c.id)
-                    },
-                    () => this.updateCurrency());
-            }
-        });
-    }
-
-    /**
-     * Set a new currency.
-     * @param currency The currency to set.
-     */
-    private setCurrency(currency: string): void {
-        if (this._currencyData) {
-            this._currencyData.fiatCode = currency;
-            this._currencyService.saveFiatCode(currency);
-            this.setState(
-                {
-                    currency
-                },
-                () => {
-                    this.updateCurrency();
-                });
-        }
-    }
-
-    /**
-     * Update formatted currencies.
-     */
-    private updateCurrency(): void {
-        if (this._currencyData) {
-            this.setState({
-                marketCapCurrency:
-                    this._currencyData.marketCap !== undefined
-                        ? this._currencyService.convertFiatBase(
-                            this._currencyData.marketCap,
-                            this._currencyData,
-                            true,
-                            0)
-                        : "--",
-                priceCurrency: this._currencyData.baseCurrencyRate !== undefined
-                    ? this._currencyService.convertFiatBase(
-                        this._currencyData.baseCurrencyRate,
-                        this._currencyData,
-                        true,
-                        2)
-                    : "--"
             });
         }
     }

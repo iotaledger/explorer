@@ -1,4 +1,4 @@
-import { asciiToTrytes, trytesToAscii, TRYTE_ALPHABET } from "@iota/converter";
+import { asciiToTrytes, trytesToAscii, trytesToTrits, TRYTE_ALPHABET } from "@iota/converter";
 import { randomBytes } from "crypto";
 import { TextHelper } from "./textHelper";
 
@@ -50,17 +50,16 @@ export class TrytesHelper {
         /**
          * Is the message plain text.
          */
-        messageType: "" | "Trytes" | "ASCII" | "JSON";
+        messageType: "Trytes" | "ASCII" | "JSON";
     } {
         let message = trytes;
-        let messageType: "" | "Trytes" | "ASCII" | "JSON" = "Trytes";
+        let messageType: "Trytes" | "ASCII" | "JSON" = "Trytes";
         try {
             // Trim trailing 9s
             let trimmed = message.replace(/\9+$/, "");
 
             if (trimmed.length === 0) {
-                message = "<empty>";
-                messageType = "";
+                messageType = "Trytes";
             } else {
                 // And make sure it is even length (2 trytes per ascii char)
                 if (trimmed.length % 2 === 1) {
@@ -112,5 +111,23 @@ export class TrytesHelper {
         }
 
         return hash;
+    }
+
+    /**
+     * Calculate the mwm or the hash.
+     * @param hash The hash to calculate the mwm for.
+     * @returns The mwm.
+     */
+    public static calculateMwm(hash: string): number {
+        const trits = trytesToTrits(hash);
+
+        let mwm = 0;
+        for (let i = trits.length - 1; i >= 0; i--) {
+            if (trits[i] !== 0) {
+                break;
+            }
+            mwm++;
+        }
+        return mwm;
     }
 }

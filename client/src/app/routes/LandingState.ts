@@ -1,12 +1,8 @@
 import { Unit } from "@iota/unit-converter";
 import { ValueFilter } from "../../models/services/valueFilter";
+import { CurrencyState } from "../components/CurrencyState";
 
-export interface LandingState {
-    /**
-     * The search text.
-     */
-    search: string;
-
+export interface LandingState extends CurrencyState {
     /**
      * The transactions per second.
      */
@@ -84,19 +80,4 @@ export interface LandingState {
          */
         milestoneIndex: number;
     }[];
-
-    /**
-     * Format the iota in full.
-     */
-    formatFull: boolean;
-
-    /**
-     * The list of currencies.
-     */
-    currencies: string[];
-
-    /**
-     * The selected currency.
-     */
-    currency: string;
 }

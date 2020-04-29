@@ -1,14 +1,14 @@
 import { ReactNode } from "react";
-import { IClientNetworkConfiguration } from "../../models/config/IClientNetworkConfiguration";
+import { NetworkProps } from "../NetworkProps";
 
-export interface LandingProps {
-    /**
-     * The current network.
-     */
-    networkConfig: IClientNetworkConfiguration;
-
+export interface LandingProps extends NetworkProps {
     /**
      * Switcher component to display.
      */
     switcher: ReactNode;
+
+    /**
+     * Search component to display.
+     */
+    search: ReactNode;
 }

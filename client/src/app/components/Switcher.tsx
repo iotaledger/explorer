@@ -4,7 +4,7 @@ import "./Switcher.scss";
 import { SwitcherProps } from "./SwitcherProps";
 
 /**
- * Component which will will show the switcher.
+ * Component which will show the switcher.
  */
 class Switcher extends Component<SwitcherProps, any> {
     /**

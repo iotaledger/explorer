@@ -7,8 +7,8 @@ footer {
   display: flex;
   justify-content: center;
   padding: 32px 20px;
-  background-color: var(--primary);
-  color: var(--primary-text);
+  background-color: $gray-midnight;
+  color: $white;
 
   .inner {
     flex: 1;
@@ -28,7 +28,7 @@ footer {
       margin-right: 28px;
       margin-bottom: 28px;
 
-      h1 {
+      h3 {
         @include font-size(16px, 24px);
 
         margin-bottom: 16px;
@@ -47,7 +47,7 @@ footer {
           font-family: $inter;
 
           a {
-            color: var(--primary-text);
+            color: $white;
             font-family: inherit;
             text-decoration: none;
             white-space: nowrap;

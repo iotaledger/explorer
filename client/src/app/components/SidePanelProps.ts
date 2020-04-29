@@ -1,18 +1,8 @@
 import { IClientNetworkConfiguration } from "../../models/config/IClientNetworkConfiguration";
 
-export interface TransactionProps {
+export interface SidePanelProps {
     /**
      * The current network.
      */
     networkConfig: IClientNetworkConfiguration;
-
-    /**
-     * The hash type from the location.
-     */
-    hashType: string;
-
-    /**
-     * The hash from the location.
-     */
-    hash: string;
 }

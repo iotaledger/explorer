@@ -28,7 +28,21 @@ export class TransactionsService {
     /**
      * The most recent transactions.
      */
-    private _transactions: { [hash: string]: number };
+    private _transactionValues: { [hash: string]: number };
+
+    /**
+     * The most recent transactions.
+     */
+    private _transactionTrytes: {
+        /**
+         * The transaction hash.
+         */
+        hash: string;
+        /**
+         * The transaction trytes.
+         */
+        trytes: string;
+    }[];
 
     /**
      * The tps history.
@@ -84,7 +98,8 @@ export class TransactionsService {
      */
     public async init(): Promise<void> {
         this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._config.network}`);
-        this._transactions = {};
+        this._transactionValues = {};
+        this._transactionTrytes = [];
         this._tps = [];
         this._total = 0;
 
@@ -101,6 +116,17 @@ export class TransactionsService {
 
         this.startTimer();
         this.startZmq();
+    }
+
+    /**
+     * Find the transaction trytes for the hash.
+     * @param hash The transaction hash to look for
+     * @returns The transaction trytes if found.
+     */
+    public findTrytes(hash: string): string | undefined {
+        // tslint:disable-next-line: possible-timing-attack
+        const found = this._transactionTrytes.find(t => t.hash === hash);
+        return found ? found.trytes : undefined;
     }
 
     /**
@@ -131,10 +157,12 @@ export class TransactionsService {
         const txMessage = this._config.zmqTransactionMessage || "tx_trytes";
         this._subscriptionId = this._zmqService.subscribe(
             txMessage, async (evnt: string, message: ITxTrytes) => {
-                if (!this._transactions[message.hash]) {
+                if (!this._transactionValues[message.hash]) {
                     this._total++;
                     const tx = asTransactionObject(message.trytes);
-                    this._transactions[message.hash] = tx.value;
+                    this._transactionValues[message.hash] = tx.value;
+                    this._transactionTrytes.unshift({ hash: message.hash, trytes: message.trytes });
+                    this._transactionTrytes = this._transactionTrytes.slice(0, 1000);
                 }
             });
     }
@@ -181,7 +209,7 @@ export class TransactionsService {
     private async updateSubscriptions(): Promise<void> {
         const now = Date.now();
 
-        const tranCount = Object.keys(this._transactions).length;
+        const tranCount = Object.keys(this._transactionValues).length;
 
         if (tranCount > 0 ||
             (now - this._lastSend > TransactionsService.TPS_INTERVAL * 1000)) {
@@ -189,7 +217,7 @@ export class TransactionsService {
             for (const subscriptionId in this._subscribers) {
                 const data: ITransactionsSubscriptionMessage = {
                     subscriptionId,
-                    transactions: this._transactions,
+                    transactions: this._transactionValues,
                     tps: this._tps,
                     tpsInterval: TransactionsService.TPS_INTERVAL
                 };
@@ -197,7 +225,7 @@ export class TransactionsService {
                 await this._subscribers[subscriptionId](data);
             }
 
-            this._transactions = {};
+            this._transactionValues = {};
             this._lastSend = now;
         }
     }

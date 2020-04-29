@@ -13,6 +13,19 @@
   &.wrap {
     flex-wrap: wrap;
   }
+
+  &.top {
+    align-items: flex-start;
+  }
+
+  &.middle {
+    align-items: center;
+  }
+
+  &.bottom {
+    align-items: flex-end;
+  }
+
 }
 
 .col {
@@ -28,7 +41,51 @@
   white-space: pre;
 }
 
+.margin-b-2 {
+  margin-bottom: 2px !important;
+}
+
+.margin-r-2 {
+  margin-right: 2px !important;
+}
+
+.margin-t-2 {
+  margin-top: 2px !important;
+}
+
+.margin-l-2 {
+  margin-left: 2px !important;
+}
+
+
 .margin-b-s {
   margin-bottom: 20px;
 }
 
+.margin-r-s {
+  margin-right: 20px;
+}
+
+.margin-t-s {
+  margin-top: 20px;
+}
+
+.margin-l-s {
+  margin-left: 20px;
+}
+
+.margin-b-t {
+  margin-bottom: 10px;
+}
+
+.margin-r-t {
+  margin-right: 10px;
+}
+
+.margin-t-t {
+  margin-top: 10px;
+}
+
+.margin-l-t {
+  margin-left: 10px;
+}

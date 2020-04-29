@@ -1,0 +1,36 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/variables';
+
+.confirmation {
+  @include font-size(12px, 12px);
+
+  margin-left: 20px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background-color: $gray-light;
+  color: $gray-midnight;
+  font-family: $metropolis;
+  font-weight: normal;
+  white-space: nowrap;
+
+  &.confirmation__confirmed {
+    background-color: $main-green;
+    color: $white;
+  }
+
+  &.confirmation__pending {
+    background-color: $gray-light;
+    color: $gray-midnight;
+  }
+
+  &.confirmation__reattachment {
+    background-color: $gray;
+    color: $white;
+  }
+
+  &.confirmation__consistency {
+    background-color: $danger;
+    color: $white;
+  }
+}

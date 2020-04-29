@@ -11,7 +11,12 @@ export interface HeaderProps {
     networkConfig: IClientNetworkConfiguration;
 
     /**
-     * The children elements to display as content.
+     * The switch elements to display as content.
      */
-    children: ReactNode | ReactNode[];
+    switcher?: ReactNode;
+
+    /**
+     * The search elements to display as content.
+     */
+    search?: ReactNode;
 }

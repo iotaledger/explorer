@@ -12,9 +12,18 @@ header {
   .inner {
     display: flex;
     flex: 1;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     max-width: $desktop-width;
+
+    a {
+      margin-right: 30px;
+    }
+
+    .search-input {
+      margin: 10px 30px 10px 5px;
+      }
 
     img {
       width: 210px;

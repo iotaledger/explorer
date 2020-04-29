@@ -1,1 +1,1 @@
-export type FindTransactionsMode = "address" | "tag" | "bundle";
+export type FindTransactionsMode = "addresses" | "tags" | "bundles" | "transaction";

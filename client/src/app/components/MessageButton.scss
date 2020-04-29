@@ -1,0 +1,37 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/variables';
+
+.message-button {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 6px;
+  border: 0;
+  border-radius: 6px;
+  outline: none;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    background: $gray-light;
+  }
+}
+
+.message-button--message {
+  margin-left: 20px;
+  color: $main-green;
+  opacity: 1;
+  animation: fade 2s linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

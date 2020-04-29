@@ -5,7 +5,7 @@ import "./Header.scss";
 import { HeaderProps } from "./HeaderProps";
 
 /**
- * Component which will will show the header.
+ * Component which will show the header.
  */
 class Header extends Component<HeaderProps, any> {
     /**
@@ -26,14 +26,13 @@ class Header extends Component<HeaderProps, any> {
     public render(): ReactNode {
         return (
             <header>
-                <div className="inner">
-                    <section className="row">
-                        <Link to={`/${this.props.networkConfig.network}`}>
-                            <img src={logoHeader} alt="Explorer" />
-                        </Link>
-                    </section>
-                    {this.props.children}
-                </div>
+                <nav className="inner">
+                    <Link to={`/${this.props.networkConfig.network}`}>
+                        <img src={logoHeader} alt="Explorer" />
+                    </Link>
+                    {this.props.search}
+                    {this.props.switcher}
+                </nav>
             </header>
         );
     }

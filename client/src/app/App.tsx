@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { PaletteHelper } from "../helpers/paletteHelper";
 import "./App.scss";
 import { AppProps } from "./AppProps";
@@ -7,9 +7,19 @@ import { AppRouteProps } from "./AppRouteProps";
 import { AppState } from "./AppState";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
+import SearchInput from "./components/SearchInput";
 import Switcher from "./components/Switcher";
+import Address from "./routes/Address";
+import { AddressRouteProps } from "./routes/AddressRouteProps";
+import Bundle from "./routes/Bundle";
+import { BundleRouteProps } from "./routes/BundleRouteProps";
 import Landing from "./routes/Landing";
+import Search from "./routes/Search";
+import { SearchRouteProps } from "./routes/SearchRouteProps";
+import Tag from "./routes/Tag";
+import { TagRouteProps } from "./routes/TagRouteProps";
 import Transaction from "./routes/Transaction";
+import { TransactionRouteProps } from "./routes/TransactionRouteProps";
 
 /**
  * Main application class.
@@ -23,7 +33,8 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
         super(props);
 
         this.state = {
-            networkConfig: props.configuration.networks[0]
+            networkConfig: this.props.configuration.networks[0],
+            query: this.props.match.params.hashType === "search" ? this.props.match.params.hash : undefined
         };
     }
 
@@ -31,17 +42,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
      * The component mounted.
      */
     public componentDidMount(): void {
-        this.setNetwork(this.props.match.params.network);
-    }
-
-    /**
-     * The component was updated.
-     * @param prevProps The previous properties.
-     */
-    public componentDidUpdate(prevProps: RouteComponentProps<AppRouteProps> & AppProps): void {
-        if (this.props.match.params.network !== prevProps.match.params.network) {
-            this.setNetwork(this.props.match.params.network);
-        }
+        this.setNetwork(this.props.match.params.network, true);
     }
 
     /**
@@ -56,30 +57,94 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                     value: n.network
                 }))}
                 value={this.state.networkConfig.network}
-                onValueChanged={value => this.props.history.push(`/${value}`)}
+                onValueChanged={value => this.setNetwork(value, false)}
             />
         );
+
         return (
             <div className="app">
                 <Header
                     networkConfig={this.state.networkConfig}
-                >
-                    {this.props.match.params.hashType && this.props.match.params.hash && switcher}
-                </Header>
+                    switcher={this.props.match.params.hashType && switcher}
+                    search={this.props.match.params.hashType && (
+                        <SearchInput
+                            query={this.state.query}
+                            onSearch={query => this.setQuery(query)}
+                            compact={true}
+                        />
+                    )}
+                />
                 <div className="content">
-                    {!this.props.match.params.hashType && !this.props.match.params.hash && (
-                        <Landing
-                            networkConfig={this.state.networkConfig}
-                            switcher={switcher}
+                    <Switch>
+                        <Route
+                            exact={true}
+                            path="/:network?"
+                            component={() =>
+                                (
+                                    <Landing
+                                        networkConfig={this.state.networkConfig}
+                                        switcher={switcher}
+                                        search={(
+                                            <SearchInput
+                                                query={this.state.query}
+                                                onSearch={query => this.setQuery(query)}
+                                                compact={false}
+                                            />
+                                        )}
+                                    />
+                                )}
                         />
-                    )}
-                    {this.props.match.params.hashType && this.props.match.params.hash && (
-                        <Transaction
-                            networkConfig={this.state.networkConfig}
-                            hashType={this.props.match.params.hashType}
-                            hash={this.props.match.params.hash}
+                        <Route
+                            path="/:network/transaction/:hash"
+                            component={(props: RouteComponentProps<TransactionRouteProps>) =>
+                                (
+                                    <Transaction
+                                        {...props}
+                                        networkConfig={this.state.networkConfig}
+                                    />
+                                )}
                         />
-                    )}
+                        <Route
+                            path="/:network/tag/:hash"
+                            component={(props: RouteComponentProps<TagRouteProps>) =>
+                                (
+                                    <Tag
+                                        {...props}
+                                        networkConfig={this.state.networkConfig}
+                                    />
+                                )}
+                        />
+                        <Route
+                            path="/:network/address/:hash"
+                            component={(props: RouteComponentProps<AddressRouteProps>) =>
+                                (
+                                    <Address
+                                        {...props}
+                                        networkConfig={this.state.networkConfig}
+                                    />
+                                )}
+                        />
+                        <Route
+                            path="/:network/bundle/:hash"
+                            component={(props: RouteComponentProps<BundleRouteProps>) =>
+                                (
+                                    <Bundle
+                                        {...props}
+                                        networkConfig={this.state.networkConfig}
+                                    />
+                                )}
+                        />
+                        <Route
+                            path="/:network/search/:hash?"
+                            component={(props: RouteComponentProps<SearchRouteProps>) =>
+                                (
+                                    <Search
+                                        {...props}
+                                        networkConfig={this.state.networkConfig}
+                                    />
+                                )}
+                        />
+                    </Switch>
                 </div>
                 <Footer
                     networks={this.props.configuration.networks.map(n => ({
@@ -92,23 +157,47 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
     }
 
     /**
-     * Set th active network
+     * Set the active network
      * @param network The network to set.
+     * @param keepParams Keep the other path params.
      */
-    private setNetwork(network?: string): void {
+    private setNetwork(network: string | undefined, keepParams: boolean): void {
         const config = network ?
             this.props.configuration.networks.find(n => n.network === network) :
             this.props.configuration.networks[0];
 
-        if (config) {
+        if (config && config.network !== this.state.networkConfig.network) {
             this.setState(
                 { networkConfig: config },
                 () => {
                     PaletteHelper.setPalette(config.palette);
                     window.scrollTo(0, 0);
+                    let path = `/${config.network}`;
+                    if (keepParams) {
+                        if (this.props.match.params.hashType) {
+                            path += `/${this.props.match.params.hashType}`;
+                        }
+                        if (this.props.match.params.hash) {
+                            path += `/${this.props.match.params.hash}`;
+                        }
+                    }
+                    this.props.history.push(path);
                 }
             );
         }
+    }
+
+    /**
+     * Set the search query
+     * @param query The search query to set.
+     */
+    private setQuery(query?: string): void {
+        this.setState(
+            { query },
+            () => {
+                this.props.history.push(`/${this.state.networkConfig.network}/search/${this.state.query}`);
+            }
+        );
     }
 }
 

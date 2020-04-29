@@ -1,0 +1,52 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+
+.search {
+  display: flex;
+  flex-direction: column;
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+
+    .inner {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      max-width: $desktop-width;
+      margin: 40px 20px;
+
+      h1 {
+        @include font-size(32px);
+
+        margin-bottom: 20px;
+        font-family: $metropolis;
+        font-weight: bold;
+      }
+
+      p {
+        @include font-size(16px);
+
+        font-family: $metropolis;
+      }
+
+      ul {
+        @include font-size(16px);
+
+        margin-left: 40px;
+        font-family: $metropolis;
+
+        li {
+          > span {
+            &:first-child {
+              margin-right: 10px;
+              color: $main-green;
+            }
+          }
+        }
+      }
+    }
+  }
+}

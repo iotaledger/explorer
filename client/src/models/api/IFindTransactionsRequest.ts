@@ -14,5 +14,5 @@ export interface IFindTransactionsRequest {
     /**
      * The mode to look for transactions.
      */
-    mode: FindTransactionsMode;
+    mode?: FindTransactionsMode;
 }

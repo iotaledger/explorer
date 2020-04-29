@@ -33,7 +33,6 @@
 
           margin: 0px 20px 5px 20px;
           color: $main-green-highlight;
-          font-family: $metropolis;
           text-transform: uppercase;
         }
 
@@ -41,8 +40,7 @@
           @include font-size(40px, 48px);
 
           margin: 0px 20px 20px 20px;
-          color: var(--primary-text);
-          font-family: $metropolis-bold;
+          color: $white;
         }
 
         .switcher {
@@ -60,7 +58,7 @@
             padding: 0px 24px;
             border: 1px solid $input-border;
             border-radius: 6px 0px 0px 6px;
-            color: $input-text;
+            color: $gray-10;
             font-family: $inter;
           }
 
@@ -77,6 +75,10 @@
 
             &:focus {
               box-shadow: 0 0 3px 0 $white;
+            }
+
+            &:disabled {
+              opacity: 0.3;
             }
           }
         }
@@ -164,21 +166,16 @@
         .filters {
           margin: 28px 0px;
           padding: 23px;
-          border: 1px solid $border;
-          border-radius: 6px;
-          background-color: $white;
-          box-shadow: $box-shadow;
 
           .col {
             justify-content: center;
             margin-right: 20px;
 
-            .filter--label,
             .filter--value {
               @include font-size(12px);
 
               margin-bottom: 12px;
-              color: #b2c1dc;
+              color: $gray-header;
               font-family: $metropolis;
               font-weight: bold;
               text-transform: uppercase;
@@ -201,11 +198,15 @@
           .feed {
             flex: 1;
             margin-right: 30px;
-            border: 1px solid $border;
-            border-radius: 6px;
-            background-color: $white;
-            box-shadow: $box-shadow;
             overflow: hidden;
+
+            &.card {
+              h2 {
+                margin-bottom: 0px;
+                padding-top: 0px;
+                padding-left: 0px;
+              }
+            }
 
             @include tablet-down {
               width: 100%;
@@ -218,14 +219,8 @@
               margin-right: 0;
             }
 
-            h2 {
-              @include font-size(20px);
-
-              padding: 30px;
-              border-bottom: 1px solid #eef2fa;
-              color: $input-text;
-              font-family: $metropolis;
-              font-weight: bold;
+            .card--header {
+              margin-bottom: 0px;
             }
 
             .feed-items {
@@ -234,14 +229,9 @@
               background-color: #fbfcfe;
 
               .feed-item--header {
-                @include font-size(12px);
+                margin-bottom: 10px;
 
-                color: $gray-header;
-                font-family: $metropolis;
-                font-weight: bold;
-                text-transform: uppercase;
-
-                .feed-item--value {
+                .card--label {
                   min-width: 90px;
                 }
               }
@@ -249,7 +239,6 @@
               .feed-item {
                 align-items: center;
                 height: 16px;
-                margin-top: 20px;
 
                 .feed-item--value {
                   @include font-size(12px);
@@ -270,7 +259,7 @@
                 .feed-item--hash {
                   @include font-size(9px);
 
-                  color: $input-text;
+                  color: $gray-10;
                   font-family: $inter;
                   text-decoration: none;
                   text-overflow: ellipsis;
@@ -280,6 +269,10 @@
                     text-decoration: underline;
                   }
                 }
+              }
+
+              .feed-item + .feed-item {
+                margin-top: 20px;
               }
             }
           }
@@ -310,6 +303,5 @@
         max-width: 98%;
       }
     }
-
   }
 }

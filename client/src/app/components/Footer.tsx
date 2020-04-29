@@ -6,7 +6,7 @@ import { FooterProps } from "./FooterProps";
 import { FooterState } from "./FooterState";
 
 /**
- * Component which will will show the footer.
+ * Component which will show the footer.
  */
 class Footer extends Component<FooterProps, FooterState> {
     /**
@@ -31,7 +31,7 @@ class Footer extends Component<FooterProps, FooterState> {
      */
     public async componentDidMount(): Promise<void> {
         try {
-            const response = await fetch("https://iota-webassets.now.sh/data/foundation.json");
+            const response = await fetch("https://webassets.iota.org/data/foundation.json");
             const foundation = await response.json();
 
             this.setState({ foundation });
@@ -53,7 +53,7 @@ class Footer extends Component<FooterProps, FooterState> {
                         {[this.state.siteFooterSection].concat(this.state.foundation?.footerSections || [])
                             .map((section, sectionIdx) => (
                                 <section className="col fill" key={sectionIdx}>
-                                    <h1>{section.label}</h1>
+                                    <h3>{section.label}</h3>
                                     <ul>
                                         {section.items.map((info, infoIdx) => (
                                             <li key={infoIdx}>

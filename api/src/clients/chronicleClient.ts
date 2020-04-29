@@ -57,9 +57,22 @@ export class ChronicleClient {
         const ax = axios.create({ baseURL: this._endpoint });
 
         try {
+            const req: IFindTransactionsRequest = {};
+            if (request.addresses) {
+                req.addresses = request.addresses.map(a => a.substr(0, 81));
+            }
+            if (request.bundles) {
+                req.bundles = request.bundles;
+            }
+            if (request.approvees) {
+                req.approvees = request.approvees;
+            }
+            if (request.tags) {
+                req.tags = request.tags.map(t => t.padEnd(27, "9"));
+            }
             const axiosResponse = await ax.post<IFindTransactionsResponse>(
                 "",
-                { ...{ command: "findTransactions" }, ...request },
+                { ...{ command: "findTransactions" }, ...req },
                 {
                     headers: {
                         "X-IOTA-API-Version": "1"

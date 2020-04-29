@@ -257,9 +257,15 @@ export class CurrencyService {
      * Convert the iota to fiat.
      * @param valueIota The value in iota.
      * @param currencyData The currency data.
+     * @param includeSymbol Include the symbol in the formatting.
+     * @param numDigits The number of digits to display.
      * @returns The converted fiat.
      */
-    public convertIota(valueIota: number, currencyData: ICurrencySettings): string {
+    public convertIota(
+        valueIota: number,
+        currencyData: ICurrencySettings,
+        includeSymbol: boolean,
+        numDigits: number): string {
         let converted = "";
         if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
             const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
@@ -267,7 +273,12 @@ export class CurrencyService {
             if (selectedFiatToBase) {
                 const miota = valueIota / 1000000;
                 const fiat = miota * (selectedFiatToBase.rate * currencyData.baseCurrencyRate);
-                converted = fiat.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+                if (includeSymbol) {
+                    converted += `${this.getSymbol(currencyData.fiatCode)} `;
+                }
+
+                converted += fiat.toFixed(numDigits).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
         return converted;

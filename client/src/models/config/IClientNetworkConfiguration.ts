@@ -1,4 +1,3 @@
-import { Network } from "../network";
 import { INodeConfiguration } from "./INodeConfiguration";
 import { IPalette } from "./IPalette";
 
@@ -9,7 +8,7 @@ export interface IClientNetworkConfiguration {
     /**
      * The network.
      */
-    network: Network;
+    network: string;
 
     /**
      * The label.
