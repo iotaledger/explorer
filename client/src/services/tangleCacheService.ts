@@ -1,6 +1,7 @@
 import { composeAPI } from "@iota/core";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
+import { PowHelper } from "../helpers/powHelper";
 import { FindTransactionsMode } from "../models/api/findTransactionsMode";
 import { IClientNetworkConfiguration } from "../models/config/IClientNetworkConfiguration";
 import { IConfiguration } from "../models/config/IConfiguration";
@@ -243,11 +244,13 @@ export class TangleCacheService {
      * Get transactions from the cache or from tangle if missing.
      * @param networkConfig Which network are we getting the transactions for.
      * @param hashes The hashes of the transactions to get.
+     * @param skipCache Skip looking in the cache.
      * @returns The trytes for the hashes.
      */
     public async getTransactions(
         networkConfig: IClientNetworkConfiguration,
-        hashes: string[]
+        hashes: string[],
+        skipCache: boolean = false
     ):
         Promise<ICachedTransaction[]> {
         let cachedTransactions: ICachedTransaction[] | undefined;
@@ -256,7 +259,7 @@ export class TangleCacheService {
         if (tranCache) {
             const now = Date.now();
 
-            const unknownHashes = hashes.filter(h =>
+            const unknownHashes = skipCache ? hashes : hashes.filter(h =>
                 !tranCache[h] ||
                 tranCache[h].tx === undefined ||
                 tranCache[h].confirmationState === "unknown" ||
@@ -492,6 +495,90 @@ export class TangleCacheService {
             }
         }
         return thisGroup;
+    }
+
+    /**
+     * Can we promote the tranaction.
+     * @param networkConfig The network to use.
+     * @param tailHash The hash.
+     * @returns True if the transaction is promotable.
+     */
+    public async canPromoteTransaction(
+        networkConfig: IClientNetworkConfiguration,
+        tailHash: string): Promise<boolean> {
+        try {
+            const api = composeAPI({
+                provider: networkConfig.node.provider
+            });
+
+            return await api.isPromotable(
+                tailHash
+            );
+        } catch (err) {
+            return false;
+        }
+    }
+
+    /**
+     * Promote the tranaction.
+     * @param networkConfig The network to use.
+     * @param tailHash The hash.
+     * @returns True if the transaction was promoted.
+     */
+    public async promoteTransaction(
+        networkConfig: IClientNetworkConfiguration,
+        tailHash: string): Promise<boolean> {
+        try {
+            const api = composeAPI({
+                provider: networkConfig.node.provider,
+                attachToTangle: PowHelper.localPow as any
+            });
+
+            const transactions = await api.promoteTransaction(
+                tailHash,
+                networkConfig.node.depth,
+                networkConfig.node.mwm
+            );
+            // tslint:disable-next-line: no-console
+            console.log(transactions);
+
+            return true;
+        } catch (err) {
+            // tslint:disable-next-line: no-console
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+     * Replay the tranaction.
+     * @param networkConfig The network to use.
+     * @param tailHash The hash.
+     * @returns True if the transaction was promoted.
+     */
+    public async replayBundle(
+        networkConfig: IClientNetworkConfiguration,
+        tailHash: string): Promise<boolean> {
+        try {
+            const api = composeAPI({
+                provider: networkConfig.node.provider,
+                attachToTangle: PowHelper.localPow as any
+            });
+
+            const transactions = await api.replayBundle(
+                tailHash,
+                networkConfig.node.depth,
+                networkConfig.node.mwm
+            );
+            // tslint:disable-next-line: no-console
+            console.log(transactions);
+
+            return true;
+        } catch (err) {
+            // tslint:disable-next-line: no-console
+            console.log(err);
+            return false;
+        }
     }
 
     /**

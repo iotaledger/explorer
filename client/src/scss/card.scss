@@ -65,6 +65,35 @@
     padding: 20px 30px;
   }
 
+  .card--action {
+    @include font-size(12px);
+    padding: 11px;
+    border: 1px solid $gray-noon;
+    border-radius: 6px;
+    background: transparent;
+    color: $gray;
+    font-family: $inter;
+    font-weight: bold;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+  }
+
+  .card--action__busy {
+    @include font-size(12px);
+    margin-left: 20px;
+    color: $main-green;
+    font-family: $metropolis;
+    font-weight: bold;
+  }
+
+  .card--action + .card--action {
+    margin-left: 10px;
+  }
+
   .card--label {
     @include font-size(12px);
     display: flex;

@@ -182,5 +182,4 @@ export class TangleHelper {
             confirmationStates: allTrytes.map(t => t.confirmation || "unknown")
         };
     }
-
 }
