@@ -3,12 +3,9 @@ import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import chevronDownWhite from "../../assets/chevron-down-white.svg";
-import { ServiceFactory } from "../../factories/serviceFactory";
 import { UnitsHelper } from "../../helpers/unitsHelper";
 import { ValueFilter } from "../../models/services/valueFilter";
-import { MilestonesClient } from "../../services/milestonesClient";
-import { TransactionsClient } from "../../services/transactionsClient";
-import Currency from "../components/Currency";
+import Feeds from "../components/Feeds";
 import "./Landing.scss";
 import { LandingProps } from "./LandingProps";
 import { LandingState } from "./LandingState";
@@ -16,32 +13,7 @@ import { LandingState } from "./LandingState";
 /**
  * Component which will show the landing page.
  */
-class Landing extends Currency<LandingProps, LandingState> {
-    /**
-     * Transactions client.
-     */
-    private _transactionsClient?: TransactionsClient;
-
-    /**
-     * Milestones client.
-     */
-    private _milestonesClient?: MilestonesClient;
-
-    /**
-     * The transactions feed subscription.
-     */
-    private _txSubscriptionId?: string;
-
-    /**
-     * The milestones feed subscription.
-     */
-    private _miSubscriptionId?: string;
-
-    /**
-     * Timer id.
-     */
-    private _timerId?: NodeJS.Timer;
-
+class Landing extends Feeds<LandingProps, LandingState> {
     /**
      * Create a new instance of Landing.
      * @param props The props.
@@ -56,6 +28,7 @@ class Landing extends Currency<LandingProps, LandingState> {
             valueMaximumUnits: Unit.Ti,
             valueFilter: "both",
             transactionsPerSecond: "--",
+            transactionsPerSecondHistory: [],
             marketCapEur: 0,
             marketCapCurrency: "--",
             priceEur: 0,
@@ -86,31 +59,6 @@ class Landing extends Currency<LandingProps, LandingState> {
                 });
             }
         }
-
-        this.buildTransactions();
-        this.buildMilestones();
-    }
-
-    /**
-     * The component was updated.
-     * @param prevProps The previous properties.
-     */
-    public componentDidUpdate(prevProps: LandingProps): void {
-        if (this.props.networkConfig !== prevProps.networkConfig) {
-            this.closeTransactions();
-            this.buildTransactions();
-
-            this.closeMilestones();
-            this.buildMilestones();
-        }
-    }
-
-    /**
-     * The component will unmount from the dom.
-     */
-    public componentWillUnmount(): void {
-        this.closeTransactions();
-        this.closeMilestones();
     }
 
     /**
@@ -350,97 +298,45 @@ class Landing extends Currency<LandingProps, LandingState> {
     }
 
     /**
-     * Build the feeds for transactions.
+     * Filter the transactions and return them.
+     * @param transactions The transactions to filter.
+     * @returns The filtered transactions.
      */
-    private buildTransactions(): void {
-        this.setState(
-            {
-                transactions: [],
-                transactionsPerSecond: "--"
-            },
-            () => {
-                this._transactionsClient = ServiceFactory.get<TransactionsClient>(`transactions-${this.props.networkConfig.network}`);
-
-                this._txSubscriptionId = this._transactionsClient.subscribe(
-                    () => {
-                        if (this._isMounted) {
-                            this.updateTransactions();
-                            this.updateTps();
-                        }
-                    }
-                );
-
-                this.updateTransactions();
-                this.updateTps();
-                this._timerId = setInterval(() => this.updateTps(), 2000);
-            });
-    }
-
-    /**
-     * Close the feeds for transactions.
-     */
-    private closeTransactions(): void {
-        if (this._transactionsClient) {
-            if (this._txSubscriptionId) {
-                this._transactionsClient.unsubscribe(this._txSubscriptionId);
-                this._txSubscriptionId = undefined;
-            }
-            this._transactionsClient = undefined;
-        }
-
-        if (this._timerId) {
-            clearInterval(this._timerId);
-            this._timerId = undefined;
-        }
-    }
-
-    /**
-     * Update the transaction feeds.
-     */
-    private updateTransactions(): void {
+    protected filterTransactions(transactions: {
+        /**
+         * The tx hash.
+         */
+        hash: string;
+        /**
+         * The tx value.
+         */
+        value: number
+    }[]): {
+        /**
+         * The tx hash.
+         */
+        hash: string;
+        /**
+         * The tx value.
+         */
+        value: number
+    }[] {
         if (this._isMounted && this._transactionsClient) {
             const minLimit = convertUnits(this.state.valueMinimum, this.state.valueMinimumUnits, Unit.i);
             const maxLimit = convertUnits(this.state.valueMaximum, this.state.valueMaximumUnits, Unit.i);
 
             const currentTransactions = this.state.transactions || [];
 
-            const transactions = this._transactionsClient.getTransactions()
+            return this._transactionsClient.getTransactions()
                 .filter(t => currentTransactions.findIndex(t2 => t2.hash === t.hash) < 0)
                 .concat(currentTransactions)
                 .filter(t => Math.abs(t.value) >= minLimit && Math.abs(t.value) <= maxLimit)
                 .filter(t => this.state.valueFilter === "both" ? true :
                     this.state.valueFilter === "zeroOnly" ? t.value === 0 :
                         t.value !== 0);
-
-            this.setState({
-                transactions
-            });
         }
-    }
 
-    /**
-     * Update the transaction tps.
-     */
-    private updateTps(): void {
-        if (this._isMounted && this._transactionsClient) {
-
-            const tps = this._transactionsClient.getTps();
-
-            this.setState({
-                transactionsPerSecond: tps >= 0 ? tps.toFixed(2) : "--"
-            });
-        }
-    }
-
-    /**
-     * Update the milestone feeds.
-     */
-    private updateMilestones(): void {
-        if (this._isMounted && this._milestonesClient) {
-            this.setState({
-                milestones: this._milestonesClient.getMilestones()
-            });
-        }
+        return [];
     }
 
     /**
@@ -487,42 +383,6 @@ class Landing extends Currency<LandingProps, LandingState> {
 
                 this._settingsService.save();
             }
-        }
-    }
-
-    /**
-     * Build the milestones for the network.
-     */
-    private buildMilestones(): void {
-        this.setState(
-            {
-                milestones: []
-            },
-            () => {
-                this._milestonesClient = ServiceFactory.get<MilestonesClient>(`milestones-${this.props.networkConfig.network}`);
-
-                this._miSubscriptionId = this._milestonesClient.subscribe(
-                    () => {
-                        if (this._isMounted) {
-                            this.updateMilestones();
-                        }
-                    }
-                );
-
-                this.updateMilestones();
-            });
-    }
-
-    /**
-     * Close the feeds for milestones.
-     */
-    private closeMilestones(): void {
-        if (this._milestonesClient) {
-            if (this._miSubscriptionId) {
-                this._milestonesClient.unsubscribe(this._miSubscriptionId);
-                this._miSubscriptionId = undefined;
-            }
-            this._milestonesClient = undefined;
         }
     }
 }

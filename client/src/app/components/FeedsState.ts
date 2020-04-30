@@ -1,4 +1,6 @@
-export interface SidePanelState {
+import { CurrencyState } from "./CurrencyState";
+
+export interface FeedsState extends CurrencyState {
     /**
      * The transactions per second.
      */

@@ -39,8 +39,8 @@ class LineChart extends Component<LineChartProps> {
                 <svg width="0" height="0">
                     <defs>
                         <linearGradient id="gradient-a" gradientTransform="rotate(90)">
-                            <stop offset="0%" stopColor="#20F381" />
-                            <stop offset="100%" stopColor="#ffffff" />
+                            <stop offset="0%" stopColor="#20F381" stopOpacity="1" />
+                            <stop offset="100%" stopColor="#20F381" stopOpacity="0" />
                         </linearGradient>
                     </defs>
                 </svg>

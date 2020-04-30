@@ -10,6 +10,8 @@
   min-height: 400px;
 
   &.card {
+    padding-bottom: 30px;
+
     .card--header {
       margin-bottom: 0px;
       padding-bottom: 27px;
@@ -19,17 +21,68 @@
       padding-left: 23px;
       color: $gray-10;
 
-      &.card-label--highlight {
+      &.card--label__highlight {
         background: $panel-green;
+        color: $gray;
       }
+    }
 
-      &.card-label--large {
-        @include font-size(16px);
+    .card--sep {
+      margin: 0px 23px;
+      padding: 10px 10px;
+      border-bottom: 1px solid $gray-noon;
+    }
+
+    .card--value {
+      @include font-size(16px);
+
+      margin-bottom: 0px;
+      padding-left: 23px;
+
+      &.card--value__highlight {
+        background: $panel-green;
+        color: $gray-10;
       }
     }
 
     .line-container {
-      padding: 5px 0px;
+      border-bottom: 1px solid $gray-noon;
+    }
+
+    .feed-item {
+      padding-top: 10px;
+      padding-left: 23px;
+
+      .feed-item--value {
+        @include font-size(12px);
+
+        min-width: 60px;
+        color: $main-green;
+        font-family: $inter;
+
+        button {
+          border: 0;
+          background: transparent;
+          color: inherit;
+          text-align: left;
+          cursor: pointer;
+        }
+      }
+
+      .feed-item--hash {
+        @include font-size(12px);
+
+        width: 135px;
+        color: $gray-10;
+        font-family: $inter;
+        text-decoration: none;
+        text-overflow: ellipsis;
+        overflow: hidden;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
   }
 }

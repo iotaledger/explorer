@@ -25,8 +25,8 @@
             },
             "coordinatorAddress": "EQQFCZBIHRHWPXKMTOLMYUYPCN9XLMJPYZVFJSAY9FQHCCLWTOLLUGKKMXYFDBOOYFBLBI9WUEILGECYM",
             "palette": {
-                "primary": "#2E8698",
-                "secondary": "#10c0b7"
+                "primary": "#287484",
+                "secondary": "#0f8c85"
             }
         },
         {
@@ -41,20 +41,6 @@
             "palette": {
                 "primary": "#2E8698",
                 "secondary": "#77c6d6"
-            }
-        },
-        {
-            "network": "beenet",
-            "label": "BeeNet",
-            "node": {
-                "provider": "https://nodes.devnet.iota.org:443",
-                "depth": 3,
-                "mwm": 9
-            },
-            "coordinatorAddress": "EQQFCZBIHRHWPXKMTOLMYUYPCN9XLMJPYZVFJSAY9FQHCCLWTOLLUGKKMXYFDBOOYFBLBI9WUEILGECYM",
-            "palette": {
-                "primary": "#8493AD",
-                "secondary": "#b2c1dc"
             }
         }
     ],
