@@ -7,12 +7,39 @@ export class UnitsHelper {
     /**
      * Format the value in the best units.
      * @param value The value to format.
-     * @param includeI Include the long i version of the value.
      * @returns The formated value.
      */
     public static formatBest(value: number): string {
+        return UnitsHelper.formatUnits(value, UnitsHelper.calculateBest(value));
+    }
+
+    /**
+     * Format the value in the best units.
+     * @param value The value to format.
+     * @param unit The unit for format with.
+     * @returns The formated value.
+     */
+    public static formatUnits(value: number, unit: Unit): string {
+        let ret;
+
+        if (unit === "i") {
+            ret = `${value} i`;
+        } else {
+            ret = `${convertUnits(value, Unit.i, unit).toFixed(2)} ${unit}`;
+        }
+
+        return ret;
+    }
+
+    /**
+     * Format the value in the best units.
+     * @param value The value to format.
+     * @returns The best units for the value.
+     */
+    public static calculateBest(value: number): Unit {
         let bestUnits: Unit = Unit.i;
         const checkLength = Math.abs(value).toString().length;
+
         if (checkLength > 15) {
             bestUnits = Unit.Pi;
         } else if (checkLength > 12) {
@@ -25,14 +52,6 @@ export class UnitsHelper {
             bestUnits = Unit.Ki;
         }
 
-        let ret;
-
-        if (bestUnits === "i") {
-            ret = `${value} i`;
-        } else {
-            ret = `${convertUnits(value, Unit.i, bestUnits).toFixed(2)} ${bestUnits}`;
-        }
-
-        return ret;
+        return bestUnits;
     }
 }

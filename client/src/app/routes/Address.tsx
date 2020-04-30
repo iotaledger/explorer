@@ -2,15 +2,16 @@ import { addChecksum } from "@iota/checksum";
 import { isTrytes } from "@iota/validators";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import chevronRightGreen from "../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { DateHelper } from "../../helpers/dateHelper";
 import { UnitsHelper } from "../../helpers/unitsHelper";
 import { TangleCacheService } from "../../services/tangleCacheService";
+import AsyncComponent from "../components/AsyncComponent";
 import Confirmation from "../components/Confirmation";
-import Currency from "../components/Currency";
+import CurrencyButton from "../components/CurrencyButton";
 import SidePanel from "../components/SidePanel";
+import ValueButton from "../components/ValueButton";
 import { NetworkProps } from "../NetworkProps";
 import "./Address.scss";
 import { AddressRouteProps } from "./AddressRouteProps";
@@ -19,7 +20,7 @@ import { AddressState } from "./AddressState";
 /**
  * Component which will show the address page.
  */
-class Address extends Currency<RouteComponentProps<AddressRouteProps> & NetworkProps, AddressState> {
+class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & NetworkProps, AddressState> {
     /**
      * API Client for tangle requests.
      */
@@ -44,10 +45,6 @@ class Address extends Currency<RouteComponentProps<AddressRouteProps> & NetworkP
 
         this.state = {
             status: "Finding transactions...",
-            balanceIota: "--",
-            balanceCurrency: "--",
-            currency: "USD",
-            currencies: [],
             formatFull: false,
             address,
             checksum
@@ -70,12 +67,9 @@ class Address extends Currency<RouteComponentProps<AddressRouteProps> & NetworkP
 
             this.setState(
                 {
-                    balance,
-                    balanceIota: UnitsHelper.formatBest(balance)
+                    balance
                 },
                 async () => {
-                    this.updateCurrency();
-
                     const { hashes, totalCount, limitExceeded } = await this._tangleCacheService.findTransactionHashes(
                         this.props.networkConfig,
                         "addresses",
@@ -150,17 +144,6 @@ class Address extends Currency<RouteComponentProps<AddressRouteProps> & NetworkP
                                 <div className="card">
                                     <div className="card--header card--header__space-between">
                                         <h2>General</h2>
-                                        <div className="select-wrapper select-wrapper--small">
-                                            <select
-                                                value={this.state.currency}
-                                                onChange={e => this.setCurrency(e.target.value)}
-                                            >
-                                                {this.state.currencies.map(cur => (
-                                                    <option value={cur} key={cur}>{cur}</option>
-                                                ))}
-                                            </select>
-                                            <img src={chevronDownGray} alt="expand" />
-                                        </div>
                                     </div>
                                     <div className="card--content">
                                         <div className="card--label">
@@ -175,25 +158,13 @@ class Address extends Currency<RouteComponentProps<AddressRouteProps> & NetworkP
                                         <div className="card--label">
                                             Balance
                                         </div>
-                                        <div className="card--value">
-                                            {this.state.balance === undefined && "--"}
-                                            {this.state.balance !== undefined && (
-                                                <button
-                                                    onClick={() => this.setState({
-                                                        formatFull: !this.state.formatFull
-                                                    })}
-                                                >
-                                                    {this.state.formatFull
-                                                        ? `${this.state.balance} i`
-                                                        : UnitsHelper.formatBest(this.state.balance)}
-                                                </button>
-                                            )}
-                                        </div>
-                                        <div className="card--label">
-                                            Currency
-                                        </div>
-                                        <div className="card--value">
-                                            {this.state.balanceCurrency}
+                                        <div className="row fill space-between margin-t-s margin-b-s">
+                                            <div className="col fill">
+                                                <ValueButton value={this.state.balance || 0} />
+                                            </div>
+                                            <div className="col fill">
+                                                <CurrencyButton value={this.state.balance || 0} />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -270,24 +241,6 @@ class Address extends Currency<RouteComponentProps<AddressRouteProps> & NetworkP
                 </div>
             </div >
         );
-    }
-
-    /**
-     * Update formatted currencies.
-     */
-    protected updateCurrency(): void {
-        if (this._currencyData) {
-            this.setState({
-                balanceCurrency:
-                    this.state.balance !== undefined
-                        ? this._currencyService.convertIota(
-                            this.state.balance,
-                            this._currencyData,
-                            true,
-                            2)
-                        : "--"
-            });
-        }
     }
 }
 

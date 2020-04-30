@@ -23,9 +23,8 @@
       }
 
       .h1-sub {
-        @include font-size(12px);
+        @include font-size(14px);
 
-        margin-bottom: 24px;
         color: $main-green;
         font-family: $metropolis;
         font-weight: bold;

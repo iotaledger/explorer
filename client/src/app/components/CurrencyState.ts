@@ -8,9 +8,4 @@ export interface CurrencyState {
      * The selected currency.
      */
     currency: string;
-
-    /**
-     * Format the iota in full.
-     */
-    formatFull: boolean;
 }

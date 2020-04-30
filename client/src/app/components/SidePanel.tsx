@@ -24,8 +24,7 @@ class SidePanel extends Feeds<NetworkProps, FeedsState> {
             transactions: [],
             milestones: [],
             currency: "USD",
-            currencies: [],
-            formatFull: false
+            currencies: []
         };
     }
 

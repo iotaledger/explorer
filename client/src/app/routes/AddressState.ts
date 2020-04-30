@@ -1,7 +1,6 @@
 import { ICachedTransaction } from "../../models/ICachedTransaction";
-import { CurrencyState } from "../components/CurrencyState";
 
-export interface AddressState extends CurrencyState {
+export interface AddressState {
     /**
      * Transaction hashes for the address.
      */
@@ -48,12 +47,7 @@ export interface AddressState extends CurrencyState {
     balance?: number;
 
     /**
-     * The address balance.
+     * Format the iota in full.
      */
-    balanceIota: string;
-
-    /**
-     * The address balance.
-     */
-    balanceCurrency: string;
+    formatFull: boolean;
 }

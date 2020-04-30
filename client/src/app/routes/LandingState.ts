@@ -48,4 +48,9 @@ export interface LandingState extends CurrencyState, FeedsState {
      * Filter specific value types.
      */
     valueFilter: ValueFilter;
+
+    /**
+     * Format the iota in full.
+     */
+    formatFull: boolean;
 }

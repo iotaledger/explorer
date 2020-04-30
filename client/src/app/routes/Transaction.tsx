@@ -1,11 +1,10 @@
 import isBundle from "@iota/bundle-validator";
 import { trytesToTrits, value } from "@iota/converter";
 import { asTransactionTrytes } from "@iota/transaction-converter";
-import { isTrytes } from "@iota/validators";
+import { isEmpty, isTrytes } from "@iota/validators";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import chevronLeftGreen from "../../assets/chevron-left-green.svg";
 import chevronRightGreen from "../../assets/chevron-right-green.svg";
 import copyGray from "../../assets/copy-gray.svg";
@@ -13,13 +12,14 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DateHelper } from "../../helpers/dateHelper";
 import { TrytesHelper } from "../../helpers/trytesHelper";
-import { UnitsHelper } from "../../helpers/unitsHelper";
 import { ICachedTransaction } from "../../models/ICachedTransaction";
 import { TangleCacheService } from "../../services/tangleCacheService";
+import AsyncComponent from "../components/AsyncComponent";
 import Confirmation from "../components/Confirmation";
-import Currency from "../components/Currency";
+import CurrencyButton from "../components/CurrencyButton";
 import MessageButton from "../components/MessageButton";
 import SidePanel from "../components/SidePanel";
+import ValueButton from "../components/ValueButton";
 import { NetworkProps } from "../NetworkProps";
 import "./Transaction.scss";
 import { TransactionRouteProps } from "./TransactionRouteProps";
@@ -28,7 +28,7 @@ import { TransactionState } from "./TransactionState";
 /**
  * Component which will show the transaction page.
  */
-class Transaction extends Currency<RouteComponentProps<TransactionRouteProps> & NetworkProps, TransactionState> {
+class Transaction extends AsyncComponent<RouteComponentProps<TransactionRouteProps> & NetworkProps, TransactionState> {
     /**
      * API Client for tangle requests.
      */
@@ -51,9 +51,6 @@ class Transaction extends Currency<RouteComponentProps<TransactionRouteProps> & 
 
         this.state = {
             status: "Building transaction details...",
-            currency: "USD",
-            currencies: [],
-            formatFull: false,
             hash
         };
     }
@@ -73,9 +70,15 @@ class Transaction extends Currency<RouteComponentProps<TransactionRouteProps> & 
             let details: ICachedTransaction | undefined;
 
             if (transactions && transactions.length > 0) {
-                details = transactions[0];
+                if (isEmpty(asTransactionTrytes(transactions[0].tx))) {
+                    this.setState({
+                        status: "There is no data for this transaction."
+                    });
+                } else {
+                    details = transactions[0];
 
-                this.buildDetails(details);
+                    this.buildDetails(details);
+                }
             } else {
                 this.setState({
                     status: "Unable to load the details for this transaction."
@@ -95,16 +98,9 @@ class Transaction extends Currency<RouteComponentProps<TransactionRouteProps> & 
             <div className="transaction">
                 <div className="wrapper">
                     <div className="inner">
-                        <div className="row bottom">
-                            <h1>
-                                Transaction
-                            </h1>
-                            {this.state.details && (
-                                <div className="h1-sub margin-l-s">
-                                    {DateHelper.format(this.state.details?.tx.attachmentTimestamp)}
-                                </div>
-                            )}
-                        </div>
+                        <h1>
+                            Transaction
+                        </h1>
                         <div className="row top">
                             <div className="cards">
                                 <div className="card">
@@ -120,17 +116,11 @@ class Transaction extends Currency<RouteComponentProps<TransactionRouteProps> & 
                                                 </div>
                                             )}
                                         </h2>
-                                        <div className="select-wrapper select-wrapper--small">
-                                            <select
-                                                value={this.state.currency}
-                                                onChange={e => this.setCurrency(e.target.value)}
-                                            >
-                                                {this.state.currencies.map(cur => (
-                                                    <option value={cur} key={cur}>{cur}</option>
-                                                ))}
-                                            </select>
-                                            <img src={chevronDownGray} alt="expand" />
-                                        </div>
+                                        {this.state.details && (
+                                            <div className="h1-sub margin-l-s">
+                                                {DateHelper.format(this.state.details?.tx.attachmentTimestamp)}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="card--content">
                                         <div className="card--label">
@@ -148,28 +138,14 @@ class Transaction extends Currency<RouteComponentProps<TransactionRouteProps> & 
                                                     {DateHelper.format(
                                                         this.state.details.tx.timestamp * 1000)}
                                                 </div>
-                                                <div className="card--label">
-                                                    Value
-                                                 </div>
-                                                <div className="card--value">
-                                                    <button
-                                                        onClick={() => this.setState({
-                                                            formatFull: !this.state.formatFull
-                                                        })}
-                                                    >
-                                                        {this.state.formatFull
-                                                            ? `${this.state.details.tx.value} i`
-                                                            : UnitsHelper.formatBest(this.state.details.tx.value)}
-                                                    </button>
+                                                <div className="row fill space-between margin-t-s margin-b-s">
+                                                    <div className="col fill">
+                                                        <ValueButton value={this.state.details.tx.value} />
+                                                    </div>
+                                                    <div className="col fill">
+                                                        <CurrencyButton value={this.state.details.tx.value} />
+                                                    </div>
                                                 </div>
-                                                <React.Fragment>
-                                                    <div className="card--label">
-                                                        Currency
-                                                    </div>
-                                                    <div className="card--value">
-                                                        {this.state.valueCurrency}
-                                                    </div>
-                                                </React.Fragment>
                                                 <div className="card--label">
                                                     Address
                                                  </div>
@@ -400,7 +376,7 @@ class Transaction extends Currency<RouteComponentProps<TransactionRouteProps> & 
                                                                 </MessageButton>
                                                             )}
                                                         </div>
-                                                        <div className="card--value card--value-textarea">
+                                                        <div className="card--value card--value-textarea card--value-textarea__tall">
                                                             {this.state.raw}
                                                         </div>
                                                     </div>
@@ -419,21 +395,6 @@ class Transaction extends Currency<RouteComponentProps<TransactionRouteProps> & 
                 </div>
             </div>
         );
-    }
-
-    /**
-     * Update formatted currencies.
-     */
-    protected updateCurrency(): void {
-        if (this._currencyData && this.state.details) {
-            this.setState({
-                valueCurrency: this._currencyService.convertIota(
-                    this.state.details.tx.value,
-                    this._currencyData,
-                    true,
-                    2)
-            });
-        }
     }
 
     /**
@@ -456,7 +417,6 @@ class Transaction extends Currency<RouteComponentProps<TransactionRouteProps> & 
                         details.tx.trunkTransaction : undefined
                 },
                 async () => {
-                    this.updateCurrency();
                     if (this.state.details) {
                         const thisGroup =
                             await this._tangleCacheService.getTransactionBundleGroup(

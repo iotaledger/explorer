@@ -55,4 +55,9 @@ export interface BundleState extends CurrencyState {
      * The status.
      */
     status: string;
+
+    /**
+     * Format the iota in full.
+     */
+    formatFull: boolean;
 }

@@ -1,7 +1,6 @@
 import { ICachedTransaction } from "../../models/ICachedTransaction";
-import { CurrencyState } from "../components/CurrencyState";
 
-export interface TransactionState extends CurrencyState {
+export interface TransactionState {
     /**
      * The transaction hash.
      */
@@ -16,11 +15,6 @@ export interface TransactionState extends CurrencyState {
      * The transaction.
      */
     details?: ICachedTransaction;
-
-    /**
-     * The value converted.
-     */
-    valueCurrency?: string;
 
     /**
      * The status of the bundle.

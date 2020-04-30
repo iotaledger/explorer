@@ -45,6 +45,10 @@
         .card + .card {
           margin-top: 23px;
         }
+
+        .col + .col {
+          margin-left: 23px;
+        }
       }
     }
   }

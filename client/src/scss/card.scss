@@ -44,8 +44,9 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 30px 26px 16px 26px;
-    padding-bottom: 20px;
+    min-height: 50px;
+    margin: 20px 26px 0px 26px;
+    padding-bottom: 14px;
     border-bottom: 1px solid $gray-noon;
 
     &.card--header__space-between {
@@ -61,7 +62,7 @@
   }
 
   .card--content {
-    padding: 0px 30px 20px 30px;
+    padding: 20px 30px;
   }
 
   .card--label {
@@ -114,6 +115,10 @@
       padding: 10px;
       background: $gray-noon;
       overflow: auto;
+
+      &.card--value-textarea__tall {
+        max-height: 200px;
+      }
 
       &.card--value-textarea__ascii {
         max-height: 200px;

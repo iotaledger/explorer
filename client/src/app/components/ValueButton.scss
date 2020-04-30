@@ -1,0 +1,65 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/variables';
+
+.value-button {
+  display: flex;
+  flex-direction: column;
+  height: 180px;
+  padding: 24px 21px;
+  border-radius: 6px;
+  background: linear-gradient(207.65deg, $gray-10, $gray-midnight);
+
+  .value-button--label {
+    @include font-size(12px);
+
+    color: $main-green;
+    font-family: $metropolis;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .value-button--value {
+    @include font-size(32px);
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color: $white;
+    font-family: $metropolis;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .value-button--selector {
+    display: flex;
+    justify-content: center;
+    height: 40px;
+    padding: 10px;
+    border-radius: 6px;
+    background-color: rgba($gray-midnight, 0.3);
+
+    button {
+      @include font-size(12px);
+      width: 20px;
+      height: 20px;
+
+      border: 0;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      background: none;
+      color: $gray;
+      font-family: $inter;
+      cursor: pointer;
+
+      &.selected {
+        border-bottom: 2px solid $main-green-highlight;
+        color: $white;
+        font-weight: bold;
+      }
+    }
+
+    button + button {
+      margin-left: 15px;
+    }
+  }
+}
