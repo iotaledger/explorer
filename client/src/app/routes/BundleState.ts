@@ -52,6 +52,11 @@ export interface BundleState extends CurrencyState {
     }[];
 
     /**
+     * Is the component busy.
+     */
+    statusBusy: boolean;
+
+    /**
      * The status.
      */
     status: string;
@@ -59,5 +64,5 @@ export interface BundleState extends CurrencyState {
     /**
      * Format the iota in full.
      */
-    formatFull: boolean;
+    formatFull?: boolean;
 }

@@ -20,6 +20,7 @@ import Confirmation from "../components/Confirmation";
 import CurrencyButton from "../components/CurrencyButton";
 import MessageButton from "../components/MessageButton";
 import SidePanel from "../components/SidePanel";
+import Spinner from "../components/Spinner";
 import ValueButton from "../components/ValueButton";
 import { NetworkProps } from "../NetworkProps";
 import "./Transaction.scss";
@@ -56,6 +57,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
         }
 
         this.state = {
+            statusBusy: true,
             status: "Building transaction details...",
             hash,
             hasPow: false,
@@ -81,7 +83,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             if (transactions && transactions.length > 0) {
                 if (isEmpty(asTransactionTrytes(transactions[0].tx))) {
                     this.setState({
-                        status: "There is no data for this transaction."
+                        status: "There is no data for this transaction.",
+                        statusBusy: false
                     });
                 } else {
                     details = transactions[0];
@@ -90,7 +93,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                 }
             } else {
                 this.setState({
-                    status: "Unable to load the details for this transaction."
+                    status: "Unable to load the details for this transaction.",
+                    statusBusy: false
                 });
             }
         } else {
@@ -206,9 +210,14 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                     </div>
                                 </div>
                                 {this.state.status && (
-                                    <p className="status margin-t-s">
-                                        {this.state.status}
-                                    </p>
+                                    <div className="card margin-t-s">
+                                        <div className="card--content middle row">
+                                            {this.state.statusBusy && (<Spinner />)}
+                                            <p className="status">
+                                                {this.state.status}
+                                            </p>
+                                        </div>
+                                    </div>
                                 )}
                                 {this.state.details && (
                                     <React.Fragment>
@@ -452,6 +461,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             this.setState(
                 {
                     status: "",
+                    statusBusy: false,
                     details: details,
                     message: singleDecoded.message,
                     messageType: singleDecoded.messageType,

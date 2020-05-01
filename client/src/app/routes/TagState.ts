@@ -15,14 +15,14 @@ export interface TagState {
     hashes?: string[];
 
     /**
-     * The total number of hashes.
-     */
-    totalCount?: string;
-
-    /**
      * The items exceeded the limit.
      */
     limitExceeded?: boolean;
+
+    /**
+     * Is the component busy.
+     */
+    statusBusy: boolean;
 
     /**
      * The status.

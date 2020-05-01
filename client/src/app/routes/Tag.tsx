@@ -5,6 +5,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import SidePanel from "../components/SidePanel";
+import Spinner from "../components/Spinner";
 import { NetworkProps } from "../NetworkProps";
 import "./Tag.scss";
 import { TagRouteProps } from "./TagRouteProps";
@@ -37,6 +38,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
         }
 
         this.state = {
+            statusBusy: true,
             status: "Finding transactions...",
             tag,
             tagFill
@@ -52,7 +54,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
         if (this.state.tag) {
             window.scrollTo(0, 0);
 
-            const { hashes, totalCount, limitExceeded } = await this._tangleCacheService.findTransactionHashes(
+            const { hashes, limitExceeded } = await this._tangleCacheService.findTransactionHashes(
                 this.props.networkConfig,
                 "tags",
                 this.props.match.params.hash
@@ -68,9 +70,8 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
 
             this.setState({
                 hashes,
-                totalCount: limitExceeded ? undefined :
-                    hashes.length < totalCount ? `${hashes.length} of ${totalCount}` : `${hashes.length}`,
-                status
+                status,
+                statusBusy: false
             });
         } else {
             this.props.history.replace(`/${this.props.networkConfig.network}/search/${this.props.match.params.hash}`);
@@ -107,16 +108,21 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
                                     </div>
                                 </div>
                                 {this.state.status && (
-                                    <p className="status margin-t-s">
-                                        {this.state.status}
-                                    </p>
+                                    <div className="card margin-t-s">
+                                        <div className="card--content middle row">
+                                            {this.state.statusBusy && (<Spinner />)}
+                                            <p className="status">
+                                                {this.state.status}
+                                            </p>
+                                        </div>
+                                    </div>
                                 )}
                                 {!this.state.status && (
                                     <div className="card">
                                         <div className="card--header">
                                             <h2>Transactions</h2>
-                                            {this.state.totalCount !== undefined && (
-                                                <span className="card--header-count">{this.state.totalCount}</span>
+                                            {this.state.hashes !== undefined && (
+                                                <span className="card--header-count">{this.state.hashes.length}</span>
                                             )}
                                         </div>
                                         <div className="card--content">

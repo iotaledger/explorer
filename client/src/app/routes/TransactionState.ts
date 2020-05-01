@@ -7,6 +7,11 @@ export interface TransactionState {
     hash?: string;
 
     /**
+     * Is the component status busy.
+     */
+    statusBusy: boolean;
+
+    /**
      * Status message.
      */
     status: string;

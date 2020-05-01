@@ -46,7 +46,7 @@ class ValueButton extends Component<ValueButtonProps, ValueButtonState> {
         return (
             <div className="value-button">
                 <div className="value-button--label">
-                    Value
+                    {this.props.label || "Value"}
                 </div>
                 <div className="value-button--value">
                     {UnitsHelper.formatUnits(this.props.value, this.state.units)}

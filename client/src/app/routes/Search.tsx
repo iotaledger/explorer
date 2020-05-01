@@ -3,6 +3,7 @@ import React, { Component, ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { TangleCacheService } from "../../services/tangleCacheService";
+import Spinner from "../components/Spinner";
 import { NetworkProps } from "../NetworkProps";
 import "./Search.scss";
 import { SearchRouteProps } from "./SearchRouteProps";
@@ -27,9 +28,11 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
         this.state = {
+            statusBusy: true,
             status: "",
             completion: "",
-            redirect: ""
+            redirect: "",
+            invalidError: ""
         };
     }
 
@@ -63,52 +66,73 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
                 <div className="search">
                     <div className="wrapper">
                         <div className="inner">
-                            {!this.state.completion && (
-                                <p>{this.state.status}</p>
+                            <h1 className="margin-b-s">
+                                Search
+                            </h1>
+                            {!this.state.completion && this.state.status && (
+                                <div className="card">
+                                    <div className="card--header">
+                                        <h2>Searching</h2>
+                                    </div>
+                                    <div className="card--content middle row">
+                                        {this.state.statusBusy && (<Spinner />)}
+                                        <p className="status">
+                                            {this.state.status}
+                                        </p>
+                                    </div>
+                                </div>
                             )}
                             {this.state.completion === "notFound" && (
-                                <React.Fragment>
-                                    <h1>Not found</h1>
-                                    <p>
-                                        We could not find any transactions, bundles, addresses or tags
-                                        with the provided hash.
-                                    </p>
-                                </React.Fragment>
+                                <div className="card">
+                                    <div className="card--header">
+                                        <h2>Not found</h2>
+                                    </div>
+                                    <div className="card--content">
+                                        <p>
+                                            We could not find any transactions, bundles, addresses or tags
+                                            with the provided hash.
+                                        </p>
+                                    </div>
+                                </div>
                             )}
                             {this.state.completion === "invalid" && (
-                                <React.Fragment>
-                                    <h1>Incorrect hash format</h1>
-                                    <p className="danger">
-                                        The supplied hash does not appear to be valid, {this.state.status}.
-                                    </p>
-                                    <br />
-                                    <p>The following formats are supported:</p>
-                                    <br />
-                                    <ul>
-                                        <li>
-                                            <span>Tags</span>
-                                            <span>&lt;= 27 Trytes</span>
-                                        </li>
-                                        <li>
-                                            <span>Transactions</span>
-                                            <span>81 Trytes</span>
-                                        </li>
-                                        <li>
-                                            <span>Bundles</span>
-                                            <span>81 Trytes</span>
-                                        </li>
-                                        <li>
-                                            <span>Addresses</span>
-                                            <span>81 Trytes or 90 Trytes</span>
-                                        </li>
-                                    </ul>
-                                    <br />
-                                    <p>Please perform another search with a valid hash.</p>
-                                </React.Fragment>
+                                <div className="card">
+                                    <div className="card--header">
+                                        <h2>Incorrect hash format</h2>
+                                    </div>
+                                    <div className="card--content">
+                                        <p className="danger">
+                                            The supplied hash does not appear to be valid, {this.state.invalidError}.
+                                            </p>
+                                        <br />
+                                        <p>The following formats are supported:</p>
+                                        <br />
+                                        <ul>
+                                            <li>
+                                                <span>Tags</span>
+                                                <span>&lt;= 27 Trytes</span>
+                                            </li>
+                                            <li>
+                                                <span>Transactions</span>
+                                                <span>81 Trytes</span>
+                                            </li>
+                                            <li>
+                                                <span>Bundles</span>
+                                                <span>81 Trytes</span>
+                                            </li>
+                                            <li>
+                                                <span>Addresses</span>
+                                                <span>81 Trytes or 90 Trytes</span>
+                                            </li>
+                                        </ul>
+                                        <br />
+                                        <p>Please perform another search with a valid hash.</p>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </div>
-                </div>
+                </div >
             );
     }
 
@@ -121,14 +145,13 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
         let status = "";
         let completion = "";
         let redirect = "";
+        let invalidError = "";
 
         if (hash.length > 0) {
             if (isTrytes(hash)) {
                 if (hash.length <= 27) {
-                    status = "Tag detected, redirecting...";
                     redirect = `/${this.props.networkConfig.network}/tag/${hash}`;
                 } else if (hash.length === 90) {
-                    status = "Address detected, redirecting...";
                     redirect = `/${this.props.networkConfig.network}/address/${hash}`;
                 } else if (hash.length === 81) {
                     status = "Detecting hash type...";
@@ -150,33 +173,38 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
                                     ht = "transaction";
                                 }
                                 this.setState({
-                                    status: `Detected ${hashType}, redirecting...`,
+                                    status: ``,
+                                    statusBusy: false,
                                     redirect: `/${this.props.networkConfig.network}/${ht}/${hash}`
                                 });
                             } else {
                                 this.setState({
-                                    completion: "notFound"
+                                    completion: "notFound",
+                                    status: "",
+                                    statusBusy: false
                                 });
                             }
                         },
                         0);
                 } else {
-                    status = `the hash length ${hash.length} is not valid`;
+                    invalidError = `the hash length ${hash.length} is not valid`;
                     completion = "invalid";
                 }
             } else {
-                status = "the hash is not in trytes format";
+                invalidError = "the hash is not in trytes format";
                 completion = "invalid";
             }
         } else {
-            status = "the hash is empty";
+            invalidError = "the hash is empty";
             completion = "invalid";
         }
 
         this.setState({
+            statusBusy: false,
             status,
             completion,
-            redirect
+            redirect,
+            invalidError
         });
     }
 }

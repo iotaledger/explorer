@@ -18,12 +18,8 @@
       max-width: $desktop-width;
       margin: 40px 20px;
 
-      h1 {
-        @include font-size(32px);
-
+      h3 {
         margin-bottom: 20px;
-        font-family: $metropolis;
-        font-weight: bold;
       }
 
       p {

@@ -67,6 +67,7 @@
 
   .card--action {
     @include font-size(12px);
+
     padding: 11px;
     border: 1px solid $gray-noon;
     border-radius: 6px;
@@ -84,6 +85,7 @@
 
   .card--action__busy {
     @include font-size(12px);
+
     margin-left: 20px;
     color: $main-green;
     font-family: $metropolis;
@@ -96,10 +98,10 @@
 
   .card--label {
     @include font-size(12px);
+
     display: flex;
     align-items: center;
     height: 32px;
-
     color: $gray-header;
     font-family: $metropolis;
     font-weight: bold;
@@ -158,6 +160,28 @@
         max-height: 200px;
         font-family: 'Courier New', Courier, monospace;
         white-space: pre-wrap;
+      }
+    }
+
+    input {
+      &[type='checkbox'] {
+        @include font-size(24px);
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        font-weight: bold;
+        vertical-align: middle;
+        appearance: none;
+
+        &:checked {
+          &::after {
+            position: relative;
+            bottom: 4px;
+            left: 0px;
+            color: $main-green;
+            content: '\2713';
+          }
+        }
       }
     }
 

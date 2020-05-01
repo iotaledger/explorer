@@ -244,13 +244,7 @@ export class CurrencyService {
      * @param fiatCode The fiat code to save.
      */
     public saveFiatCode(fiatCode: string): void {
-        const settings = this._settingsService.get();
-
-        if (settings) {
-            settings.fiatCode = fiatCode;
-
-            this._settingsService.save();
-        }
+        this._settingsService.saveSingle("fiatCode", fiatCode);
     }
 
     /**

@@ -52,5 +52,5 @@ export interface LandingState extends CurrencyState, FeedsState {
     /**
      * Format the iota in full.
      */
-    formatFull: boolean;
+    formatFull?: boolean;
 }

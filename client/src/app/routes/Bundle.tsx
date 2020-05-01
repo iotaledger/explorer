@@ -12,7 +12,7 @@ import { ICachedTransaction } from "../../models/ICachedTransaction";
 import { TangleCacheService } from "../../services/tangleCacheService";
 import Confirmation from "../components/Confirmation";
 import Currency from "../components/Currency";
-import SidePanel from "../components/SidePanel";
+import Spinner from "../components/Spinner";
 import { NetworkProps } from "../NetworkProps";
 import "./Bundle.scss";
 import { BundleRouteProps } from "./BundleRouteProps";
@@ -43,6 +43,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
         }
 
         this.state = {
+            statusBusy: true,
             status: "Finding transactions...",
             bundle,
             groups: [],
@@ -139,6 +140,8 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
 
             this.setState({
                 groups: bundleGroups,
+                formatFull: this._settingsService.get().formatFull,
+                statusBusy: false,
                 status: ""
             });
 
@@ -185,9 +188,14 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                     </div>
                                 </div>
                                 {this.state.status && (
-                                    <p className="status margin-t-s">
-                                        {this.state.status}
-                                    </p>
+                                    <div className="card margin-t-s">
+                                        <div className="card--content middle row">
+                                            {this.state.statusBusy && (<Spinner />)}
+                                            <p className="status">
+                                                {this.state.status}
+                                            </p>
+                                        </div>
+                                    </div>
                                 )}
                                 {this.state.groups && this.state.groups.map((group, idx) => (
                                     <React.Fragment key={idx}>
@@ -209,9 +217,12 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                             <div className="row middle space-between card--value">
                                                                 <button
                                                                     className="card--value__large"
-                                                                    onClick={() => this.setState({
-                                                                        formatFull: !this.state.formatFull
-                                                                    })}
+                                                                    onClick={() => this.setState(
+                                                                        {
+                                                                            formatFull: !this.state.formatFull
+                                                                        },
+                                                                        () => this._settingsService.saveSingle("formatFull", this.state.formatFull)
+                                                                    )}
                                                                 >
                                                                     {this.state.formatFull
                                                                         ? `${item.details.tx.value} i`
@@ -254,9 +265,12 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                             <div className="row middle space-between card--value">
                                                                 <button
                                                                     className="card--value__large"
-                                                                    onClick={() => this.setState({
-                                                                        formatFull: !this.state.formatFull
-                                                                    })}
+                                                                    onClick={() => this.setState(
+                                                                        {
+                                                                            formatFull: !this.state.formatFull
+                                                                        },
+                                                                        () => this._settingsService.saveSingle("formatFull", this.state.formatFull)
+                                                                    )}
                                                                 >
                                                                     {this.state.formatFull
                                                                         ? `${item.details.tx.value} i`
@@ -291,9 +305,6 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                     </React.Fragment>
                                 ))}
                             </div>
-                            <SidePanel
-                                networkConfig={this.props.networkConfig}
-                            />
                         </div>
                     </div>
                 </div>

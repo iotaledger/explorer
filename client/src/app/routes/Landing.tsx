@@ -48,17 +48,14 @@ class Landing extends Feeds<LandingProps, LandingState> {
         super.componentDidMount();
 
         const settings = this._settingsService.get();
-        if (settings) {
-            if (this._isMounted) {
-                this.setState({
-                    valueMinimum: settings.valueMinimum || "0",
-                    valueMinimumUnits: settings.valueMinimumUnits || Unit.i,
-                    valueMaximum: settings.valueMaximum || "1",
-                    valueMaximumUnits: settings.valueMaximumUnits || Unit.Ti,
-                    valueFilter: settings.valueFilter || "both"
-                });
-            }
-        }
+        this.setState({
+            valueMinimum: settings.valueMinimum || "0",
+            valueMinimumUnits: settings.valueMinimumUnits || Unit.i,
+            valueMaximum: settings.valueMaximum || "1",
+            valueMaximumUnits: settings.valueMaximumUnits || Unit.Ti,
+            valueFilter: settings.valueFilter || "both",
+            formatFull: settings.formatFull
+        });
     }
 
     /**
@@ -223,9 +220,14 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                             <div className="row feed-item" key={tx.hash}>
                                                 <span className="feed-item--value">
                                                     <button
-                                                        onClick={() => this.setState({
-                                                            formatFull: !this.state.formatFull
-                                                        })}
+                                                        onClick={() => this.setState(
+                                                            {
+                                                                formatFull: !this.state.formatFull
+                                                            },
+                                                            () => this._settingsService.saveSingle(
+                                                                "formatFull",
+                                                                this.state.formatFull)
+                                                        )}
                                                     >
                                                         {this.state.formatFull
                                                             ? `${tx.value} i`
@@ -374,15 +376,13 @@ class Landing extends Feeds<LandingProps, LandingState> {
         if (this._isMounted) {
             const settings = this._settingsService.get();
 
-            if (settings) {
-                settings.valueFilter = this.state.valueFilter;
-                settings.valueMinimum = this.state.valueMinimum;
-                settings.valueMinimumUnits = this.state.valueMinimumUnits;
-                settings.valueMaximum = this.state.valueMaximum;
-                settings.valueMaximumUnits = this.state.valueMaximumUnits;
+            settings.valueFilter = this.state.valueFilter;
+            settings.valueMinimum = this.state.valueMinimum;
+            settings.valueMinimumUnits = this.state.valueMinimumUnits;
+            settings.valueMaximum = this.state.valueMaximum;
+            settings.valueMaximumUnits = this.state.valueMaximumUnits;
 
-                this._settingsService.save();
-            }
+            this._settingsService.save();
         }
     }
 }

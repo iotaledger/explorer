@@ -1,3 +1,4 @@
+import { isEmpty } from "@iota/validators";
 import { ConfirmationState } from "../../models/api/confirmationState";
 import { FindTransactionsMode } from "../../models/api/findTransactionsMode";
 import { IFindTransactionsRequest } from "../../models/api/IFindTransactionsRequest";
@@ -25,7 +26,6 @@ export async function findTransactions(config: IConfiguration, request: IFindTra
     let foundConfirmationState: ConfirmationState;
     let foundMode: FindTransactionsMode;
     let modes: FindTransactionsMode[];
-    let totalCount: number;
     let limitExceeded: boolean = false;
 
     if (request.mode) {
@@ -46,7 +46,6 @@ export async function findTransactions(config: IConfiguration, request: IFindTra
         if ((foundHashes && foundHashes.length > 0) || tooMany) {
             foundMode = mode;
             hashes = foundHashes;
-            totalCount = foundHashes && foundHashes.length;
             limitExceeded = tooMany;
             break;
         }
@@ -55,10 +54,9 @@ export async function findTransactions(config: IConfiguration, request: IFindTra
     if ((!hashes || hashes.length === 0) && request.hash.length === 81) {
         const { trytes, confirmationStates } = await TangleHelper.getTrytes(networkConfig, [request.hash]);
 
-        if (trytes && trytes.length > 0) {
+        if (trytes && trytes.length > 0 && !isEmpty(trytes[0])) {
             foundTrytes = trytes[0];
             foundConfirmationState = confirmationStates[0];
-            totalCount = 1;
             foundMode = "transaction";
         }
     }
@@ -69,8 +67,7 @@ export async function findTransactions(config: IConfiguration, request: IFindTra
         mode: foundMode,
         trytes: foundTrytes,
         confirmationState: foundConfirmationState,
-        hashes: hashes ? hashes.slice(0, 100) : undefined,
-        totalCount,
+        hashes,
         limitExceeded: limitExceeded === true ? true : undefined
     };
 }

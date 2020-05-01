@@ -17,14 +17,29 @@ export interface AddressState {
     }[];
 
     /**
-     * The total number of hashes.
+     * Transaction hashes for the address.
      */
-    totalCount?: string;
+    filteredItems?: {
+        /**
+         * The transaction hash.
+         */
+        hash: string;
+
+        /**
+         * The details details.
+         */
+        details?: ICachedTransaction;
+    }[];
 
     /**
      * The items exceeded the limit.
      */
     limitExceeded?: boolean;
+
+    /**
+     * Is the component status busy.
+     */
+    statusBusy: boolean;
 
     /**
      * The status.
@@ -49,5 +64,10 @@ export interface AddressState {
     /**
      * Format the iota in full.
      */
-    formatFull: boolean;
+    formatFull?: boolean;
+
+    /**
+     * Hide zero transactions.
+     */
+    showOnlyValueTransactions: boolean;
 }

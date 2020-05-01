@@ -19,11 +19,6 @@ export interface IFindTransactionsResponse extends IResponse {
     confirmationState?: ConfirmationState;
 
     /**
-     * Are there more than the transactions returned.
-     */
-    totalCount?: number;
-
-    /**
      * The mode to look for transactions.
      */
     mode?: FindTransactionsMode;

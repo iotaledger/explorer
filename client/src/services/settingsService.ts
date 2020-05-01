@@ -1,5 +1,5 @@
 import { ServiceFactory } from "../factories/serviceFactory";
-import { ISettings } from "../models/services/ISettings";
+import { ISettings, SettingsKeys } from "../models/services/ISettings";
 import { LocalStorageService } from "./localStorageService";
 
 /**
@@ -40,6 +40,17 @@ export class SettingsService {
      */
     public save(): void {
         this._localStorageService.save("settings", this._settings);
+    }
+
+    /**
+     * Save the single setting.
+     * @param propertyName The name of the setting to set.
+     * @param value The value to store.
+     */
+    public saveSingle(propertyName: SettingsKeys, value: unknown): void {
+        const settings = this.get();
+        (settings as any)[propertyName] = value;
+        this.save();
     }
 
     /**

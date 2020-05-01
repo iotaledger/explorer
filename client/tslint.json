@@ -347,6 +347,7 @@
         "react-a11y-anchors": false,
         "react-a11y-role-has-required-aria-props": false,
         "use-simple-attributes": false,
-        "react-a11y-no-onchange": false
+        "react-a11y-no-onchange": false,
+        "react-a11y-input-elements": false
      }
 }
