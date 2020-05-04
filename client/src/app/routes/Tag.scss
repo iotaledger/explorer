@@ -18,12 +18,24 @@
       max-width: $desktop-width;
       margin: 40px 20px;
 
+      @include desktop-down {
+        max-width: 100%;
+        padding-right: 20px;
+        padding-left: 20px;
+
+        > .row {
+          flex-direction: column;
+        }
+      }
+
+
       h1 {
         margin-bottom: 20px;
       }
 
       p {
         @include font-size(12px);
+
         color: $gray-10;
         font-family: $metropolis;
         font-weight: bold;
@@ -37,6 +49,12 @@
         flex: 1;
         margin-right: 24px;
         overflow: hidden;
+
+        @include desktop-down {
+          flex: unset;
+          width: 100%;
+          margin-right: 0px;
+        }
 
         .card + .card {
           margin-top: 23px;

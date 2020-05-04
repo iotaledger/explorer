@@ -1,3 +1,5 @@
+@import './media-queries';
+
 .row {
   display: flex;
   flex-direction: row;
@@ -26,6 +28,11 @@
     align-items: flex-end;
   }
 
+  @include tablet-down {
+    .row--tablet-responsive {
+      flex-direction: column;
+    }
+  }
 }
 
 .col {

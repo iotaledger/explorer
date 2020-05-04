@@ -7,17 +7,46 @@
   display: flex;
   flex-direction: row;
   width: 241px;
-  min-height: 400px;
+
+  @include desktop-down {
+    flex: 1;
+    @include desktop-down {
+      width: 100%;
+    }
+    margin-top: 20px;
+  }
+
 
   &.card {
     padding-bottom: 30px;
+
+    .card--sections {
+      display: flex;
+      flex-direction: column;
+
+      .card--section {
+        &.card--section__highlight {
+          background: $panel-green;
+        }
+      }
+
+      @include desktop-down {
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        .card--section {
+          flex: 1;
+          width: 100%;
+          border-right: 1px solid $gray-noon;
+        }
+      }
+    }
 
     .card--label {
       padding-left: 23px;
       color: $gray-10;
 
       &.card--label__highlight {
-        background: $panel-green;
         color: $gray;
       }
     }
@@ -26,6 +55,10 @@
       margin: 0px 23px;
       padding: 10px 10px;
       border-bottom: 1px solid $gray-noon;
+
+      @include desktop-down {
+        border-color: transparent;
+      }
     }
 
     .card--value {
@@ -35,7 +68,6 @@
       padding-left: 23px;
 
       &.card--value__highlight {
-        background: $panel-green;
         color: $gray-10;
       }
     }
@@ -44,38 +76,55 @@
       border-bottom: 1px solid $gray-noon;
     }
 
-    .feed-item {
-      padding-top: 10px;
-      padding-left: 23px;
+    .feed {
+      .card--label {
+        margin-top: 23px;
 
-      .feed-item--value {
-        @include font-size(12px);
-
-        min-width: 60px;
-        color: $main-green;
-        font-family: $inter;
-
-        button {
-          border: 0;
-          background: transparent;
-          color: inherit;
-          text-align: left;
-          cursor: pointer;
+        @include desktop-down {
+          margin-top: 10px;
         }
       }
 
-      .feed-item--hash {
-        @include font-size(12px);
+      .feed-item {
+        padding-top: 10px;
+        padding-right: 23px;
+        padding-left: 23px;
 
-        width: 135px;
-        color: $gray-10;
-        font-family: $inter;
-        text-decoration: none;
-        text-overflow: ellipsis;
-        overflow: hidden;
+        .feed-item--value {
+          @include font-size(12px);
 
-        &:hover {
-          text-decoration: underline;
+          min-width: 60px;
+          color: $main-green;
+          font-family: $inter;
+
+          button {
+            border: 0;
+            background: transparent;
+            color: inherit;
+            text-align: left;
+            cursor: pointer;
+          }
+        }
+
+        .feed-item--hash {
+          @include font-size(12px);
+
+          width: 135px;
+
+          @include desktop-down {
+            width: 100%;
+          }
+
+
+          color: $gray-10;
+          font-family: $inter;
+          text-decoration: none;
+          text-overflow: ellipsis;
+          overflow: hidden;
+
+          &:hover {
+            text-decoration: underline;
+          }
         }
       }
     }

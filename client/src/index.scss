@@ -40,6 +40,8 @@ body {
   #root {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    min-width: $phone-width;
     min-height: 100vh;
 
     .success {

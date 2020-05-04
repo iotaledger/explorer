@@ -76,7 +76,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
                             <div className="row fill">
                                 {this.props.search}
                             </div>
-                            <div className="row space-between">
+                            <div className="row space-between info-boxes">
                                 <div className="info-box">
                                     <span className="info-box--title">Transactions per Second</span>
                                     <span className="info-box--value">{this.state.transactionsPerSecond}</span>

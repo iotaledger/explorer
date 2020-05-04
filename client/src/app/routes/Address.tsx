@@ -175,11 +175,11 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                 {this.state.checksum}
                                             </span>
                                         </div>
-                                        <div className="row fill space-between margin-t-s margin-b-s">
-                                            <div className="col fill">
+                                        <div className="row fill margin-t-s margin-b-s value-buttons">
+                                            <div className="col">
                                                 <ValueButton value={this.state.balance || 0} label="Balance" />
                                             </div>
-                                            <div className="col fill">
+                                            <div className="col">
                                                 <CurrencyButton value={this.state.balance || 0} />
                                             </div>
                                         </div>

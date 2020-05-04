@@ -18,12 +18,23 @@
       max-width: $desktop-width;
       margin: 40px 20px;
 
+      @include desktop-down {
+        max-width: 100%;
+        padding-right: 20px;
+        padding-left: 20px;
+
+        > .row {
+          flex-direction: column;
+        }
+      }
+
       h1 {
         margin-bottom: 20px;
       }
 
       p {
         @include font-size(12px);
+
         color: $gray-10;
         font-family: $metropolis;
         font-weight: bold;
@@ -38,6 +49,29 @@
         margin-right: 24px;
         overflow: hidden;
 
+        @include desktop-down {
+          flex: unset;
+          width: 100%;
+          margin-right: 0px;
+        }
+
+
+        @include desktop-down {
+          .value-buttons {
+            flex-direction: column;
+
+            .col {
+              flex: unset;
+              width: 100%;
+            }
+
+            .col + .col {
+              margin-top: 23px;
+            }
+          }
+        }
+
+
         .item-details + .item-details {
           margin-top: 40px;
         }
@@ -48,6 +82,10 @@
 
         .col + .col {
           margin-left: 23px;
+
+          @include tablet-down {
+            margin-left: 0px;
+          }
         }
       }
     }

@@ -18,6 +18,17 @@
       max-width: $desktop-width;
       margin: 40px 20px;
 
+      @include desktop-down {
+        max-width: 100%;
+        padding-right: 20px;
+        padding-left: 20px;
+
+        > .row {
+          flex-direction: column;
+        }
+      }
+
+
       h1 {
         margin-bottom: 20px;
       }
@@ -25,8 +36,14 @@
       .h1-sub {
         @include font-size(14px);
 
+        margin-left: 23px;
         color: $main-green;
         font-family: $metropolis;
+
+        @include tablet-down {
+          margin-top: 23px;
+          margin-left: 0px;
+        }
       }
 
       p {
@@ -46,6 +63,46 @@
         margin-right: 24px;
         overflow: hidden;
 
+        @include desktop-down {
+          flex: unset;
+          width: 100%;
+          margin-right: 0px;
+        }
+
+        @include tablet-down {
+          .card--header__space-between {
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+          }
+        }
+
+
+        .value-buttons {
+          .col {
+            flex: 1;
+            width: auto;
+          }
+        }
+
+        @include tablet-down {
+          margin-right: 0px;
+
+          .value-buttons {
+            flex-direction: column;
+
+            .col {
+              flex: unset;
+              width: 100%;
+            }
+
+            .col + .col {
+              margin-top: 23px;
+            }
+          }
+        }
+
+
         .card + .card {
           margin-top: 23px;
         }
@@ -59,6 +116,18 @@
 
           .col + .col {
             margin-left: 23px;
+
+            @include tablet-down {
+              margin-left: 0px;
+            }
+          }
+        }
+
+        @include tablet-down {
+          .row--split {
+            .col + .col {
+              margin-top: 23px;
+            }
           }
         }
       }

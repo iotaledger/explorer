@@ -38,46 +38,54 @@ class SidePanel extends Feeds<NetworkProps, FeedsState> {
                 <div className="card--header">
                     <h2>Stats</h2>
                 </div>
-                <div className="card--label card--label__highlight padding-t-s">
-                    Transactions Per Second
-                </div>
-                <div className="card--value card--value__highlight padding-t-s padding-b-s">
-                    {this.state.transactionsPerSecond}
-                </div>
-                <LineChart
-                    values={this.state.transactionsPerSecondHistory}
-                />
-                <div className="card--label card--label__underline margin-t-s">
-                    Milestones
-                </div>
-                {this.state.milestones.slice(0, 5).map(tx => (
-                    <div className="row feed-item" key={tx.hash}>
-                        <span className="feed-item--value">{tx.milestoneIndex}</span>
-                        <Link
-                            className="feed-item--hash"
-                            to={`/${this.props.networkConfig.network}/transaction/${tx.hash}`}
-                        >
-                            {tx.hash}
-                        </Link>
+                <div className="card--sections">
+                    <div className="card--section card--section__highlight">
+                        <div className="card--label card--label__highlight padding-t-s">
+                            Transactions Per Second
                     </div>
-                ))}
-                <div className="card--sep" />
-                <div className="card--label card--label__underline margin-t-s">
-                    Transactions
-                </div>
-                {this.state.transactions.slice(0, 5).map(tx => (
-                    <div className="row feed-item" key={tx.hash}>
-                        <span className="feed-item--value">
-                            {UnitsHelper.formatBest(tx.value)}
-                        </span>
-                        <Link
-                            className="feed-item--hash"
-                            to={`/${this.props.networkConfig.network}/transaction/${tx.hash}`}
-                        >
-                            {tx.hash}
-                        </Link>
+                        <div className="card--value card--value__highlight padding-t-s">
+                            {this.state.transactionsPerSecond}
+                        </div>
+                        <LineChart
+                            values={this.state.transactionsPerSecondHistory}
+                        />
                     </div>
-                ))}
+                    <div className="card--section feed">
+                        <div className="card--label card--label__underline">
+                            Milestones
+                    </div>
+                        {this.state.milestones.slice(0, 5).map(tx => (
+                            <div className="row feed-item" key={tx.hash}>
+                                <span className="feed-item--value">{tx.milestoneIndex}</span>
+                                <Link
+                                    className="feed-item--hash"
+                                    to={`/${this.props.networkConfig.network}/transaction/${tx.hash}`}
+                                >
+                                    {tx.hash}
+                                </Link>
+                            </div>
+                        ))}
+                        <div className="card--sep" />
+                    </div>
+                    <div className="card--section feed">
+                        <div className="card--label card--label__underline">
+                            Transactions
+                        </div>
+                        {this.state.transactions.slice(0, 5).map(tx => (
+                            <div className="row feed-item" key={tx.hash}>
+                                <span className="feed-item--value">
+                                    {UnitsHelper.formatBest(tx.value)}
+                                </span>
+                                <Link
+                                    className="feed-item--hash"
+                                    to={`/${this.props.networkConfig.network}/transaction/${tx.hash}`}
+                                >
+                                    {tx.hash}
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }

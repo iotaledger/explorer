@@ -20,10 +20,9 @@
       .header {
         display: flex;
         flex-direction: column;
-        height: 360px;
         padding-top: 50px;
 
-        @include tablet-down {
+        @include desktop-down {
           padding-top: 20px;
         }
 
@@ -41,6 +40,10 @@
 
           margin: 0px 20px 20px 20px;
           color: $white;
+
+          @include phone-down {
+            @include font-size(32px, 36px);
+          }
         }
 
         .switcher {
@@ -83,71 +86,83 @@
           }
         }
 
-        .info-box {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          width: 270px;
-          margin: 0px 20px;
-          padding-top: 35px;
-          border-radius: 6px;
-          background: rgba(19, 31, 55, 0.5);
-          backdrop-filter: blur(2px);
-
-          @include tablet-down {
-            width: 33%;
-            padding: 2%;
+        .info-boxes {
+          @include phone-down {
+            flex-wrap: wrap;
           }
 
-
-          .info-box--title {
-            @include font-size(12px);
-
-            @include tablet-down {
-              @include font-size(10px);
-            }
-
-
-            color: $main-green-highlight;
-            font-family: $metropolis;
-            font-weight: bold;
-            text-align: center;
-            text-transform: uppercase;
-          }
-
-          .info-box--value {
-            @include font-size(20px);
-
-            @include tablet-down {
-              @include font-size(16px);
-            }
-
-
-            color: $white;
-            font-family: $metropolis;
-            font-weight: bold;
-            text-align: center;
-            text-transform: uppercase;
-            white-space: nowrap;
-          }
-
-          .info-box--action {
+          .info-box {
             display: flex;
-            align-items: flex-end;
-            justify-content: flex-end;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-            min-height: 40px;
-            text-align: right;
+            margin: 0px 20px 30px 20px;
+            border-radius: 6px;
+            background: rgba(19, 31, 55, 0.5);
+            backdrop-filter: blur(2px);
 
-            select {
-              border: 0;
-              background-color: rgba(0, 0, 0, 0.2);
-              color: $white;
+            @include phone-down {
+              width: 100%;
+              margin: 0px 20px 30px 20px;
+              padding: 10px 0px 0px 20px;
             }
 
-            svg {
+            .info-box--title {
+              @include font-size(12px);
+
+              padding: 28px 5px 0px 5px;
+
+              color: $main-green-highlight;
+              font-family: $metropolis;
+              font-weight: bold;
+              text-align: center;
+              text-transform: uppercase;
+
+              @include tablet-down {
+                @include font-size(10px);
+                padding: 15px 5px 0px 5px;
+              }
+            }
+
+            .info-box--value {
+              @include font-size(20px);
+
+              @include tablet-down {
+                @include font-size(16px);
+              }
+
+              padding: 0px 5px;
+
               color: $white;
+              font-family: $metropolis;
+              font-weight: bold;
+              text-align: center;
+              text-transform: uppercase;
+              white-space: nowrap;
+            }
+
+            .info-box--action {
+              display: flex;
+              align-items: flex-end;
+              justify-content: flex-end;
+              width: 100%;
+              min-height: 40px;
+              text-align: right;
+
+              @include tablet-down {
+                min-height: unset;
+              }
+
+              select {
+                border: 0;
+                background-color: rgba(0, 0, 0, 0.2);
+                color: $white;
+              }
+
+              svg {
+                color: $white;
+              }
             }
           }
         }
@@ -190,7 +205,7 @@
         }
 
         .feeds {
-          @include tablet-down {
+          @include desktop-down {
             flex-direction: column;
           }
 
@@ -208,7 +223,7 @@
               }
             }
 
-            @include tablet-down {
+            @include desktop-down {
               width: 100%;
               margin-top: 20px;
               margin-right: 0;
@@ -292,6 +307,10 @@
       background-image: url('../../assets/globe.svg');
       background-repeat: no-repeat;
       background-position: center bottom;
+
+      @include tablet-down {
+        background-size: cover;
+      }
     }
   }
 

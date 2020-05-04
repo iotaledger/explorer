@@ -143,7 +143,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                             )}
                                         </h2>
                                         {this.state.details && (
-                                            <div className="h1-sub margin-l-s">
+                                            <div className="h1-sub">
                                                 {DateHelper.format(this.state.details?.tx.attachmentTimestamp)}
                                             </div>
                                         )}
@@ -187,11 +187,11 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     {DateHelper.format(
                                                         this.state.details.tx.timestamp * 1000)}
                                                 </div>
-                                                <div className="row fill space-between margin-t-s margin-b-s">
-                                                    <div className="col fill">
+                                                <div className="row fill margin-t-s margin-b-s value-buttons">
+                                                    <div className="col">
                                                         <ValueButton value={this.state.details.tx.value} />
                                                     </div>
-                                                    <div className="col fill">
+                                                    <div className="col">
                                                         <CurrencyButton value={this.state.details.tx.value} />
                                                     </div>
                                                 </div>
@@ -290,7 +290,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 <h2>Content</h2>
                                             </div>
                                             <div className="card--content">
-                                                <div className="row">
+                                                <div className="row row--tablet-responsive">
                                                     <div className="col fill">
                                                         <div className="card--label">
                                                             Tag
@@ -348,7 +348,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="row margin-t-s">
+                                        <div className="row margin-t-s row--tablet-responsive row--split">
                                             <div className="col fill">
                                                 <div className="card">
                                                     <div className="card--header">

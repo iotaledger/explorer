@@ -22,6 +22,12 @@ footer {
 
     .row {
       flex-wrap: wrap;
+
+      @include tablet-down {
+        .col {
+          min-width: 250px;
+        }
+      }
     }
 
     section {
