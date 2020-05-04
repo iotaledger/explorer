@@ -144,7 +144,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                         </h2>
                                         {this.state.details && (
                                             <div className="h1-sub">
-                                                {DateHelper.format(this.state.details?.tx.attachmentTimestamp)}
+                                                {DateHelper.format(this.state.details.tx.timestamp === 0
+                                                    ? this.state.details.tx.attachmentTimestamp
+                                                    : this.state.details.tx.timestamp * 1000)}
                                             </div>
                                         )}
                                     </div>
@@ -180,13 +182,17 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             </span>
                                                         </div>
                                                     )}
-                                                <div className="card--label">
-                                                    Timestamp
-                                                </div>
-                                                <div className="card--value">
-                                                    {DateHelper.format(
-                                                        this.state.details.tx.timestamp * 1000)}
-                                                </div>
+                                                {this.state.details.tx.timestamp !== 0 && (
+                                                    <React.Fragment>
+                                                        <div className="card--label">
+                                                            Timestamp
+                                                        </div>
+                                                        <div className="card--value">
+                                                            {DateHelper.format(
+                                                                this.state.details.tx.timestamp * 1000)}
+                                                        </div>
+                                                    </React.Fragment>
+                                                )}
                                                 <div className="row fill margin-t-s margin-b-s value-buttons">
                                                     <div className="col">
                                                         <ValueButton value={this.state.details.tx.value} />
@@ -408,6 +414,17 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         <div className="card--value">
                                                             {this.state.details.tx.attachmentTimestampUpperBound}
                                                         </div>
+                                                        {this.state.details.tx.attachmentTimestamp !== 0 && (
+                                                            <React.Fragment>
+                                                                <div className="card--label">
+                                                                    Attachment Timestamp
+                                                                </div>
+                                                                <div className="card--value">
+                                                                    {DateHelper.format(
+                                                                        this.state.details.tx.attachmentTimestamp)}
+                                                                </div>
+                                                            </React.Fragment>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>

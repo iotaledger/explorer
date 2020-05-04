@@ -135,7 +135,14 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                 : txs[idx].confirmationState
                                     }
                                 })).sort((itemA, itemB) =>
-                                    itemB.details.tx.attachmentTimestamp - itemA.details.tx.attachmentTimestamp);
+                                    (itemB.details.tx.timestamp === 0
+                                        ? itemB.details.tx.attachmentTimestamp
+                                        : itemB.details.tx.timestamp * 1000)
+                                    -
+                                    (itemA.details.tx.timestamp === 0
+                                        ? itemA.details.tx.attachmentTimestamp
+                                        : itemA.details.tx.timestamp * 1000)
+                                );
 
                                 this.setState({
                                     items: fullItems,
@@ -262,7 +269,10 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                             </div>
                                                             <div className="card--value card--value__light">
                                                                 {DateHelper.format(
-                                                                    item.details.tx.attachmentTimestamp)}
+                                                                    item.details.tx.timestamp === 0
+                                                                        ? item.details.tx.attachmentTimestamp
+                                                                        : item.details.tx.timestamp * 1000
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}

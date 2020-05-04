@@ -20,7 +20,7 @@ export interface BundleState extends CurrencyState {
         /**
          * Timestamp for the group.
          */
-        attachmentTimestamp: number;
+        timestamp: number;
 
         /**
          * The transactions in the group.

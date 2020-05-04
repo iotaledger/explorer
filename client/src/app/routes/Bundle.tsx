@@ -86,7 +86,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                 /**
                  * Timestamp for the group.
                  */
-                attachmentTimestamp: number;
+                timestamp: number;
 
                 /**
                  * The transactions in the group.
@@ -130,7 +130,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                         valueCurrency: this._currencyData
                             ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
                     })),
-                    attachmentTimestamp: bundleGroupsPlain[i][0].tx.attachmentTimestamp,
+                    timestamp: bundleGroupsPlain[i][0].tx.timestamp === 0
+                        ? bundleGroupsPlain[i][0].tx.attachmentTimestamp
+                        : bundleGroupsPlain[i][0].tx.timestamp * 1000,
                     confirmationState: !isConsistent ? "consistency" :
                         confirmedIndex === i ? confirmationStates[i] :
                             confirmedIndex >= 0 && confirmationStates[i] !== "confirmed"
@@ -201,7 +203,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                     <React.Fragment key={idx}>
                                         <div className="row space-between margin-t-s">
                                             <p>
-                                                {DateHelper.format(group.attachmentTimestamp)}
+                                                {DateHelper.format(group.timestamp)}
                                             </p>
                                             <Confirmation state={group.confirmationState} />
                                         </div>
