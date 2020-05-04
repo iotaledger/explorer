@@ -19,6 +19,11 @@ header {
 
     a {
       margin-right: 30px;
+      outline: none;
+
+      &:focus {
+        box-shadow: 0 0 3px 0 $main-green-highlight;
+      }
     }
 
     .search-input {

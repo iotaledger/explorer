@@ -85,7 +85,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                     balance
                 },
                 async () => {
-                    const { hashes, limitExceeded } = await this._tangleCacheService.findTransactionHashes(
+                    const { hashes, totalItems, limitExceeded } = await this._tangleCacheService.findTransactionHashes(
                         this.props.networkConfig,
                         "addresses",
                         this.props.match.params.hash
@@ -107,6 +107,9 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                         {
                             items,
                             filteredItems: this.filterItems(items, settings.showOnlyValueTransactions),
+                            totalText: items && items.length < totalItems
+                                ? `Retrieved ${items.length} of ${totalItems}`
+                                : undefined,
                             status,
                             statusBusy: false
                         },
@@ -236,6 +239,11 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                         {this.state.items.length}
                                                     </span>
                                                 )}
+                                            {this.state.totalText && (
+                                                <span className="card--header-info">
+                                                    {this.state.totalText}
+                                                </span>
+                                            )}
                                         </div>
                                         <div className="card--content">
                                             {this.state.items &&

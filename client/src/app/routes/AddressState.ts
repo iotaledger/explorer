@@ -70,4 +70,9 @@ export interface AddressState {
      * Hide zero transactions.
      */
     showOnlyValueTransactions: boolean;
+
+    /**
+     * Total text.
+     */
+    totalText?: string;
 }

@@ -54,6 +54,10 @@ export class TangleCacheService {
                      */
                     transactionHashes: string[];
                     /**
+                     * The total items if we only have a subset.
+                     */
+                    totalItems: number;
+                    /**
                      * The number of items exceeds the limits.
                      */
                     limitExceeded: boolean;
@@ -133,6 +137,10 @@ export class TangleCacheService {
          */
         hashes: string[];
         /**
+         * The total number of items.
+         */
+        totalItems: number;
+        /**
          * Did the request exceed the limits.
          */
         limitExceeded: boolean;
@@ -142,6 +150,7 @@ export class TangleCacheService {
         hashType?: FindTransactionsMode
     }> {
         let transactionHashes: string[] | undefined = [];
+        let totalItems = 0;
         let limitExceeded = false;
         let doLookup = true;
 
@@ -193,14 +202,15 @@ export class TangleCacheService {
                     tranCache[hash] = {
                         tx: asTransactionObject(response.trytes),
                         confirmationState: response.confirmationState ? response.confirmationState : "unknown",
-                        cached: Date.now(),
-                        manual: false
+                        cached: Date.now()
                     };
                     transactionHashes = [hash];
+                    totalItems = 1;
                     limitExceeded = false;
                     hashType = "transaction";
                 } else if ((response.hashes && response.hashes.length > 0) || response.limitExceeded) {
                     transactionHashes = response.hashes || [];
+                    totalItems = response.totalItems || 0;
                     limitExceeded = response.limitExceeded || limitExceeded;
                     hashType = hashType || response.mode;
 
@@ -209,17 +219,26 @@ export class TangleCacheService {
                         if (cacheHashType) {
                             cacheHashType[hash] = {
                                 transactionHashes,
+                                totalItems,
                                 limitExceeded,
                                 cached: Date.now()
                             };
                         }
                     }
                 }
+            } else {
+                if (response.message === "Timeout") {
+                    transactionHashes = response.hashes || [];
+                    totalItems = response.totalItems || 0;
+                    limitExceeded = true;
+                    hashType = hashType || response.mode;
+                }
             }
         }
 
         return {
             hashes: transactionHashes || [],
+            totalItems,
             limitExceeded,
             hashType
         };
@@ -279,7 +298,6 @@ export class TangleCacheService {
             for (let i = 0; i < hashes.length; i++) {
                 if (tranCache[hashes[i]]) {
                     tranCache[hashes[i]].cached = now;
-                    tranCache[hashes[i]].manual = false;
                 }
             }
 
@@ -296,52 +314,11 @@ export class TangleCacheService {
             cachedTransactions = hashes.map(h => ({
                 tx: asTransactionObject("9".repeat(2673)),
                 confirmationState: "unknown",
-                cached: 0,
-                manual: false
+                cached: 0
             }));
         }
 
         return cachedTransactions;
-    }
-
-    /**
-     * Manually add transactions to the cache
-     * @param network Which network are we getting the transactions for.
-     * @param hashes The hashes of the transactions to cache.
-     * @param trytes The trytes of the transactions to cache.
-     */
-    public addTransactions(network: string, hashes: ReadonlyArray<string>, trytes: ReadonlyArray<string>): void {
-        const tranCache = this._transactionCache[network];
-
-        if (tranCache) {
-            const now = Date.now();
-
-            for (let i = 0; i < hashes.length; i++) {
-                tranCache[hashes[i]] = {
-                    tx: asTransactionObject(trytes[i], hashes[i]),
-                    cached: now,
-                    confirmationState: "unknown",
-                    manual: true
-                };
-            }
-        }
-    }
-
-    /**
-     * Manually remove transactions from the cache
-     * @param network Which network are we getting the transactions for.
-     * @param hashes The hashes of the transactions to cache.
-     */
-    public removeTransactions(network: string, hashes: ReadonlyArray<string>): void {
-        const tranCache = this._transactionCache[network];
-
-        if (tranCache) {
-            for (let i = 0; i < hashes.length; i++) {
-                if (tranCache[hashes[i]] && tranCache[hashes[i]].manual) {
-                    delete tranCache[hashes[i]];
-                }
-            }
-        }
     }
 
     /**

@@ -16,9 +16,4 @@ export interface ICachedTransaction {
      * The time of cache.
      */
     cached: number;
-
-    /**
-     * Did we manualy add this transaction.
-     */
-    manual: boolean;
 }

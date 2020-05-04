@@ -24,6 +24,11 @@ export interface IFindTransactionsResponse extends IResponse {
     mode?: FindTransactionsMode;
 
     /**
+     * The total number of items.
+     */
+    totalItems?: number;
+
+    /**
      * There were too many items to retrieve.
      */
     limitExceeded?: boolean;

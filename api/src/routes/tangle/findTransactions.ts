@@ -67,7 +67,8 @@ export async function findTransactions(config: IConfiguration, request: IFindTra
         mode: foundMode,
         trytes: foundTrytes,
         confirmationState: foundConfirmationState,
-        hashes,
+        hashes: hashes ? hashes.slice(0, 1000) : undefined,
+        totalItems: hashes ? hashes.length : undefined,
         limitExceeded: limitExceeded === true ? true : undefined
     };
 }

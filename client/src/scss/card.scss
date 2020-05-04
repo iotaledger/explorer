@@ -40,6 +40,12 @@
     }
   }
 
+  .card--header-info {
+    @include font-size(12px, 12px);
+    margin-left: 20px;
+    font-family: $metropolis;
+  }
+
   .card--header {
     display: flex;
     flex-direction: row;

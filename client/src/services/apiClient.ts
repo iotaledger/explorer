@@ -53,7 +53,10 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async findTransactions(request: IFindTransactionsRequest): Promise<IFindTransactionsResponse> {
-        const ax = axios.create({ baseURL: this._endpoint });
+        const ax = axios.create({
+            baseURL: this._endpoint,
+            timeout: 10000
+        });
         let response: IFindTransactionsResponse;
 
         try {
@@ -62,10 +65,17 @@ export class ApiClient {
 
             response = axiosResponse.data;
         } catch (err) {
-            response = {
-                success: false,
-                message: `There was a problem communicating with the API.\n${err}`
-            };
+            if (err.toString().toLowerCase().indexOf("timeout") >= 0) {
+                response = {
+                    success: false,
+                    message: `Timeout`
+                };
+            } else {
+                response = {
+                    success: false,
+                    message: `There was a problem communicating with the API.\n${err}`
+                };
+            }
         }
 
         return response;

@@ -53,10 +53,16 @@
     &:-moz-focusring {
       color: transparent;
       text-shadow: 0 0 0 $gray-10;
+
+      * {
+        color: $gray-10;
+        text-shadow: none;
+      }
     }
 
     &.select-plus {
       position: relative;
+      min-width: 100px;
       margin-right: -1px;
       border-radius: 6px 0px 0px 6px;
 

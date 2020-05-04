@@ -91,6 +91,7 @@
             flex-wrap: wrap;
           }
 
+
           .info-box {
             display: flex;
             flex-direction: column;
@@ -108,11 +109,11 @@
               padding: 10px 0px 0px 20px;
             }
 
+
             .info-box--title {
               @include font-size(12px);
 
               padding: 28px 5px 0px 5px;
-
               color: $main-green-highlight;
               font-family: $metropolis;
               font-weight: bold;
@@ -121,6 +122,7 @@
 
               @include tablet-down {
                 @include font-size(10px);
+
                 padding: 15px 5px 0px 5px;
               }
             }
@@ -132,8 +134,8 @@
                 @include font-size(16px);
               }
 
-              padding: 0px 5px;
 
+              padding: 0px 5px;
               color: $white;
               font-family: $metropolis;
               font-weight: bold;
@@ -154,10 +156,22 @@
                 min-height: unset;
               }
 
+
               select {
                 border: 0;
                 background-color: rgba(0, 0, 0, 0.2);
                 color: $white;
+
+                // sass-lint:disable no-vendor-prefixes
+                &:-moz-focusring {
+                  color: transparent;
+                  text-shadow: 0 0 0 $white;
+
+                  * {
+                    color: $gray-10;
+                    text-shadow: none;
+                  }
+                }
               }
 
               svg {
