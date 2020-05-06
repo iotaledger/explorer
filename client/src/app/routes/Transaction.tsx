@@ -62,7 +62,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             hash,
             hasPow: false,
             isBusy: false,
-            busyMessage: ""
+            busyMessage: "",
+            showRawMessageTrytes: false
         };
     }
 
@@ -326,11 +327,28 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     <React.Fragment>
                                                         <div className="card--label row middle margin-b-2">
                                                             <span className="margin-r-s">
-                                                                Message {this.state.messageType}
+                                                                {this.state.messageType !== "Trytes" && (
+                                                                    <button
+                                                                        onClick={() => this.setState(
+                                                                            {
+                                                                                showRawMessageTrytes:
+                                                                                    !this.state.showRawMessageTrytes
+                                                                            })}
+                                                                    >
+                                                                        Message {this.state.showRawMessageTrytes ?
+                                                                            "Trytes" : this.state.messageType}
+                                                                    </button>
+                                                                )}
+                                                                {this.state.messageType === "Trytes" && (
+                                                                    `Message ${this.state.messageType}`
+                                                                )}
                                                             </span>
                                                             <MessageButton
                                                                 message="Copied"
-                                                                onClick={() => ClipboardHelper.copy(this.state.message)}
+                                                                onClick={() => ClipboardHelper.copy(
+                                                                    this.state.showRawMessageTrytes
+                                                                        ? this.state.rawMessageTrytes
+                                                                        : this.state.message)}
                                                             >
                                                                 <img src={copyGray} alt="Copy" />
                                                             </MessageButton>
@@ -340,10 +358,15 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                 classNames(
                                                                     "card--value",
                                                                     "card--value-textarea",
-                                                                    `card--value-textarea__${this.state.messageType?.toLowerCase()}`
+                                                                    `card--value-textarea__${
+                                                                    this.state.showRawMessageTrytes
+                                                                        ? "trytes"
+                                                                        : this.state.messageType?.toLowerCase()}`
                                                                 )}
                                                         >
-                                                            {this.state.message}
+                                                            {this.state.showRawMessageTrytes
+                                                                ? this.state.rawMessageTrytes
+                                                                : this.state.message}
                                                         </div>
                                                         {this.state.messageSpan && (
                                                             <div className="card--value">
@@ -487,7 +510,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                     raw: asTransactionTrytes(details.tx),
                     nextTransaction: details.tx.currentIndex < details.tx.lastIndex ?
                         details.tx.trunkTransaction : undefined,
-                    hasPow: PowHelper.isAvailable()
+                    hasPow: PowHelper.isAvailable(),
+                    rawMessageTrytes: details?.tx.signatureMessageFragment
                 },
                 async () => {
                     if (this.state.details) {
@@ -507,12 +531,14 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                             let message = this.state.message;
                             let messageType = this.state.messageType;
                             let messageSpan = this.state.messageSpan;
+                            let rawMessageTrytes = this.state.rawMessageTrytes;
 
                             if ((spanMessage.messageType === "ASCII" ||
                                 spanMessage.messageType === "JSON") &&
                                 spanMessage.message !== this.state.message) {
                                 message = spanMessage.message;
                                 messageType = spanMessage.messageType;
+                                rawMessageTrytes = combinedMessages;
                                 messageSpan = true;
                             }
 
@@ -532,6 +558,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 message,
                                 messageType,
                                 messageSpan,
+                                rawMessageTrytes,
                                 bundleTailHash: thisGroup[0].tx.hash
                             });
                         } else {

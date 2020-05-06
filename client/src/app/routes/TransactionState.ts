@@ -42,6 +42,16 @@ export interface TransactionState {
     milestoneIndex?: number;
 
     /**
+     * Raw message trytes.
+     */
+    rawMessageTrytes?: string;
+
+    /**
+     * Show raw message trytes.
+     */
+    showRawMessageTrytes: boolean;
+
+    /**
      * The decoded message.
      */
     message?: string;

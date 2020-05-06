@@ -113,6 +113,29 @@
     font-weight: bold;
     text-transform: uppercase;
     white-space: nowrap;
+
+    button {
+      @include font-size(12px);
+
+      border: 0;
+      background: none;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      text-align: left;
+      text-transform: inherit;
+      cursor: pointer;
+
+      &:hover {
+        color: $main-green-highlight;
+        text-decoration: underline;
+      }
+
+      &:focus {
+        box-shadow: none;
+      }
+    }
   }
 
   .card--value {
@@ -147,23 +170,16 @@
     }
 
     &.card--value-textarea {
-      min-height: 50px;
-      max-height: 100px;
+      max-height: 150px;
       padding: 10px;
       background: $gray-noon;
       overflow: auto;
 
-      &.card--value-textarea__tall {
-        max-height: 200px;
-      }
-
       &.card--value-textarea__ascii {
-        max-height: 200px;
         white-space: pre-wrap;
       }
 
       &.card--value-textarea__json {
-        max-height: 200px;
         font-family: 'Courier New', Courier, monospace;
         white-space: pre-wrap;
       }
