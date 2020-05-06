@@ -204,6 +204,16 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                     </div>
                                                 )}
+                                                {this.state.details.tx.value === 0 && (
+                                                    <React.Fragment>
+                                                        <div className="card--label">
+                                                            Value
+                                                        </div>
+                                                        <div className="card--value">
+                                                            0
+                                                        </div>
+                                                    </React.Fragment>
+                                                )}
                                                 <div className="card--label">
                                                     Address
                                                  </div>
