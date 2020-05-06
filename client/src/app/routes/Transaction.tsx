@@ -194,14 +194,16 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                     </React.Fragment>
                                                 )}
-                                                <div className="row fill margin-t-s margin-b-s value-buttons">
-                                                    <div className="col">
-                                                        <ValueButton value={this.state.details.tx.value} />
+                                                {this.state.details.tx.value !== 0 && (
+                                                    <div className="row fill margin-t-s margin-b-s value-buttons">
+                                                        <div className="col">
+                                                            <ValueButton value={this.state.details.tx.value} />
+                                                        </div>
+                                                        <div className="col">
+                                                            <CurrencyButton value={this.state.details.tx.value} />
+                                                        </div>
                                                     </div>
-                                                    <div className="col">
-                                                        <CurrencyButton value={this.state.details.tx.value} />
-                                                    </div>
-                                                </div>
+                                                )}
                                                 <div className="card--label">
                                                     Address
                                                  </div>
