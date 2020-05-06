@@ -143,6 +143,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
         const hash = (this.props.match.params.hash || "").trim();
 
         let status = "";
+        let statusBusy = false;
         let completion = "";
         let redirect = "";
         let invalidError = "";
@@ -155,6 +156,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
                     redirect = `/${this.props.networkConfig.network}/address/${hash}`;
                 } else if (hash.length === 81) {
                     status = "Detecting hash type...";
+                    statusBusy = true;
                     setTimeout(
                         async () => {
                             const { hashType } = await this._tangleCacheService.findTransactionHashes(
@@ -200,7 +202,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
         }
 
         this.setState({
-            statusBusy: false,
+            statusBusy,
             status,
             completion,
             redirect,
