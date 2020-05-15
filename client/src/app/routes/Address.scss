@@ -28,6 +28,7 @@
         }
       }
 
+
       h1 {
         margin-bottom: 20px;
       }
@@ -85,6 +86,38 @@
 
           @include tablet-down {
             margin-left: 0px;
+          }
+        }
+
+        .value {
+          @include font-size(18px);
+          display: flex;
+          align-items: center;
+          height: 32px;
+          padding: 0px 8px;
+          border-radius: 6px;
+          font-family: $metropolis;
+          font-weight: bold;
+
+          &.value__positive {
+            background-color: #e7f4d9;
+            color: #5da06e;
+          }
+
+          &.value__negative {
+            background-color: #ffe5d9;
+            color: #eb5446;
+          }
+
+          &.value__zero {
+            background-color: #f2f5fb;
+            color: #8493ad;
+          }
+
+          &.value__inprogress {
+            border: 1px solid #c3d0e4;
+            background-color: #ffffff;
+            color: #c3d0e4;
           }
         }
       }

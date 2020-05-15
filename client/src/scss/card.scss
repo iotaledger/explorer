@@ -18,15 +18,17 @@
   }
 
   .card--header-count {
-    @include font-size(12px, 12px);
-
+    @include font-size(12px);
+    display: flex;
+    align-items: center;
+    height: 24px;
     margin-left: 20px;
-    padding: 4px 8px;
+    padding: 0px 8px;
     border-radius: 6px;
     background-color: $gray-light;
     color: $gray;
     font-family: $metropolis;
-    font-weight: normal;
+    font-weight: 500;
     white-space: nowrap;
 
     &.card--header-count__success {

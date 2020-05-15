@@ -1,5 +1,6 @@
 .history
 node_modules
+.vercel
 
 /api/dist
 /client/build

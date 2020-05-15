@@ -72,6 +72,11 @@ export interface AddressState {
     showOnlyValueTransactions: boolean;
 
     /**
+     * Hide unconfirmed transactions.
+     */
+    showOnlyConfirmedTransactions: boolean;
+
+    /**
      * Total text.
      */
     totalText?: string;

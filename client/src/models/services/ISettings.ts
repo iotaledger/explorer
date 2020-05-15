@@ -34,6 +34,11 @@ export interface ISettings extends ICurrencySettings {
     showOnlyValueTransactions?: boolean;
 
     /**
+     * Hide unconfirmed transactions.
+     */
+    showOnlyConfirmedTransactions?: boolean;
+
+    /**
      * Format values in full.
      */
     formatFull?: boolean;

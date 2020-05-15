@@ -1,5 +1,6 @@
 import { addChecksum } from "@iota/checksum";
 import { isTrytes } from "@iota/validators";
+import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import chevronRightGreen from "../../assets/chevron-right-green.svg";
@@ -58,7 +59,8 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
             formatFull: false,
             address,
             checksum,
-            showOnlyValueTransactions: false
+            showOnlyValueTransactions: false,
+            showOnlyConfirmedTransactions: false
         };
     }
 
@@ -81,6 +83,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
             this.setState(
                 {
                     showOnlyValueTransactions: settings.showOnlyValueTransactions || false,
+                    showOnlyConfirmedTransactions: settings.showOnlyConfirmedTransactions || false,
                     formatFull: settings.formatFull,
                     balance
                 },
@@ -106,7 +109,8 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                     this.setState(
                         {
                             items,
-                            filteredItems: this.filterItems(items, settings.showOnlyValueTransactions),
+                            filteredItems: this.filterItems(
+                                items, settings.showOnlyValueTransactions, settings.showOnlyConfirmedTransactions),
                             totalText: items && items.length < totalItems
                                 ? `Retrieved ${items.length} of ${totalItems}`
                                 : undefined,
@@ -149,7 +153,10 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
 
                                 this.setState({
                                     items: fullItems,
-                                    filteredItems: this.filterItems(fullItems, this.state.showOnlyValueTransactions)
+                                    filteredItems: this.filterItems(
+                                        fullItems,
+                                        this.state.showOnlyValueTransactions,
+                                        this.state.showOnlyConfirmedTransactions)
                                 });
                             }
                         });
@@ -206,11 +213,32 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                     {
                                                         showOnlyValueTransactions: e.target.checked,
                                                         filteredItems: this.filterItems(
-                                                            this.state.items, e.target.checked)
+                                                            this.state.items,
+                                                            e.target.checked,
+                                                            this.state.showOnlyConfirmedTransactions)
                                                     },
                                                     () => this._settingsService.saveSingle(
                                                         "showOnlyValueTransactions",
                                                         this.state.showOnlyValueTransactions))}
+                                            />
+                                        </div>
+                                        <div className="card--value">
+                                            Show Confirmed Only
+                                            <input
+                                                type="checkbox"
+                                                checked={this.state.showOnlyConfirmedTransactions}
+                                                className="margin-l-t"
+                                                onChange={e => this.setState(
+                                                    {
+                                                        showOnlyConfirmedTransactions: e.target.checked,
+                                                        filteredItems: this.filterItems(
+                                                            this.state.items,
+                                                            this.state.showOnlyValueTransactions,
+                                                            e.target.checked)
+                                                    },
+                                                    () => this._settingsService.saveSingle(
+                                                        "showOnlyConfirmedTransactions",
+                                                        this.state.showOnlyConfirmedTransactions))}
                                             />
                                         </div>
                                     </div>
@@ -260,6 +288,25 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                         <div className="row middle space-between">
                                                             <div className="row middle card--value card--value__large">
                                                                 <button
+                                                                    className={classNames(
+                                                                        "value",
+                                                                        {
+                                                                            value__zero: item.details.tx.value === 0
+                                                                                && item.details.confirmationState === "confirmed"
+                                                                        },
+                                                                        {
+                                                                            value__positive: item.details.tx.value > 0
+                                                                                && item.details.confirmationState === "confirmed"
+                                                                        },
+                                                                        {
+                                                                            value__negative: item.details.tx.value < 0
+                                                                                && item.details.confirmationState === "confirmed"
+                                                                        },
+                                                                        {
+                                                                            value__inprogress:
+                                                                                item.details.confirmationState !== "confirmed"
+                                                                        }
+                                                                    )}
                                                                     onClick={() => this.setState(
                                                                         {
                                                                             formatFull: !this.state.formatFull
@@ -326,6 +373,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
      * Filter the items based on the options.
      * @param items The items to filter.
      * @param showOnlyValueTransactions Show only transactions that have a value.
+     * @param showOnlyConfirmedTransactions Show only transactions that are confirmed.
      * @returns The filtered items.
      */
     private filterItems(
@@ -340,28 +388,36 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
              */
             details?: ICachedTransaction;
         }[],
-        showOnlyValueTransactions?: boolean): {
-            /**
-             * The transaction hash.
-             */
-            hash: string;
+        showOnlyValueTransactions?: boolean,
+        showOnlyConfirmedTransactions?: boolean
+    ): {
+        /**
+         * The transaction hash.
+         */
+        hash: string;
 
-            /**
-             * The details details.
-             */
-            details?: ICachedTransaction;
-        }[] | undefined {
+        /**
+         * The details details.
+         */
+        details?: ICachedTransaction;
+    }[] | undefined {
         if (!items) {
             return;
         }
         return items
             .filter(i =>
                 !i.details ||
-                (i.details && (
-                    (i.details.tx.value === 0 && !showOnlyValueTransactions)
-                    ||
-                    (i.details.tx.value !== 0)
-                ))
+                (i.details
+                    && (
+                        (i.details.tx.value === 0 && !showOnlyValueTransactions)
+                        ||
+                        (i.details.tx.value !== 0)
+                    )
+                    && (
+                        !showOnlyConfirmedTransactions ||
+                        (showOnlyConfirmedTransactions && i.details.confirmationState === "confirmed")
+                    )
+                )
             );
     }
 }

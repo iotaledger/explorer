@@ -3,30 +3,32 @@
 @import '../../scss/variables';
 
 .confirmation {
-  @include font-size(12px, 12px);
-
+  @include font-size(12px);
+  display: flex;
+  align-items: center;
+  height: 24px;
   margin-left: 20px;
-  padding: 5px 8px;
+  padding: 0px 8px;
   border-radius: 6px;
   background-color: $gray-light;
   color: $gray-midnight;
   font-family: $metropolis;
-  font-weight: normal;
+  font-weight: 500;
   white-space: nowrap;
 
   &.confirmation__confirmed {
-    background-color: $main-green;
+    background-color: #73b183;
     color: $white;
   }
 
   &.confirmation__pending {
     background-color: $gray-light;
-    color: $gray-midnight;
+    color: #8493ad;
   }
 
   &.confirmation__reattachment {
-    background-color: $gray;
-    color: $white;
+    background-color: #4140df;
+    color: #978df2;
   }
 
   &.confirmation__consistency {
