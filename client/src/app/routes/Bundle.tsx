@@ -214,6 +214,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                     <span className="card--header-count">{group.inputs.length}</span>
                                                 </div>
                                                 <div className="card--content">
+                                                    {group.inputs.length === 0 && (
+                                                        <p>There are no inputs.</p>
+                                                    )}
                                                     {group.inputs.map((item, idx2) => (
                                                         <div className="card--row" key={idx2}>
                                                             <div className="row middle space-between card--value">
@@ -262,6 +265,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                 </div>
 
                                                 <div className="card--content">
+                                                    {group.outputs.length === 0 && (
+                                                        <p>There are no outputs.</p>
+                                                    )}
                                                     {group.outputs.map((item, idx2) => (
                                                         <div className="card--row" key={idx2}>
                                                             <div className="row middle space-between card--value">

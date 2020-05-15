@@ -130,17 +130,15 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                         bundleConfirmations[tx.tx.bundle] = tx.tx.hash;
                                     }
                                 }
+                                for (const tx of txs) {
+                                    if (tx.confirmationState === "pending" && bundleConfirmations[tx.tx.bundle]) {
+                                        tx.confirmationState = "reattachment";
+                                    }
+                                }
 
                                 const fullItems = hashes.map((h, idx) => ({
                                     hash: h,
-                                    details: {
-                                        ...txs[idx],
-                                        confirmationState:
-                                            txs[idx].confirmationState === "pending" &&
-                                                bundleConfirmations[txs[idx].tx.bundle]
-                                                ? "reattachment"
-                                                : txs[idx].confirmationState
-                                    }
+                                    details: txs[idx]
                                 })).sort((itemA, itemB) =>
                                     (itemB.details.tx.timestamp === 0
                                         ? itemB.details.tx.attachmentTimestamp

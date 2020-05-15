@@ -28,11 +28,11 @@
     background-color: $gray-light;
     color: $gray;
     font-family: $metropolis;
-    font-weight: 500;
+    font-weight: bold;
     white-space: nowrap;
 
     &.card--header-count__success {
-      background-color: $main-green;
+      background-color: #73b183;
       color: $white;
     }
 

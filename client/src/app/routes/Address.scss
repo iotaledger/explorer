@@ -68,6 +68,7 @@
 
             .col + .col {
               margin-top: 23px;
+              margin-left: 0px;
             }
           }
         }
@@ -93,11 +94,9 @@
           @include font-size(18px);
           display: flex;
           align-items: center;
-          height: 32px;
-          padding: 0px 8px;
+          padding: 8px 8px 6px 8px;
           border-radius: 6px;
-          font-family: $metropolis;
-          font-weight: bold;
+          font-family: $metropolis-bold;
 
           &.value__positive {
             background-color: #e7f4d9;
