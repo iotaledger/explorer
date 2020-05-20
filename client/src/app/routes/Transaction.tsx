@@ -593,6 +593,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
 
         if (thisGroup.length >= 2) {
             if (thisGroup[0].tx.address === this.props.networkConfig.coordinatorAddress &&
+                thisGroup.length === this.props.networkConfig.coordinatorSecurityLevel + 1 &&
                 /^[9]+$/.test(thisGroup[thisGroup.length - 1].tx.address)) {
                 const mi = value(trytesToTrits(thisGroup[0].tx.tag));
                 if (!Number.isNaN(mi)) {

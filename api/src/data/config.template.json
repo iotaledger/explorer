@@ -11,7 +11,8 @@
             "zmqEndpoint": "tcp://zmq.iota.org:5556",
             "zmqTransactionMessage": "tx_trytes",
             "permaNodeEndpoint": "http://chronicle01.mainnet.iota.cafe:4000/api",
-            "coordinatorAddress": "EQSAUZXULTTYZCLNJNTXQTQHOMOFZERHTCGTXOLTVAHKSA9OGAZDEKECURBRIXIJWNPFCQIOVFVVXJVD9"
+            "coordinatorAddress": "EQSAUZXULTTYZCLNJNTXQTQHOMOFZERHTCGTXOLTVAHKSA9OGAZDEKECURBRIXIJWNPFCQIOVFVVXJVD9",
+            "coordinatorSecurityLevel": 2
         },
         {
             "network": "devnet",
@@ -23,7 +24,8 @@
             },
             "zmqEndpoint": "tcp://zmq.devnet.iota.org:5556",
             "zmqTransactionMessage": "trytes",
-            "coordinatorAddress": "EQQFCZBIHRHWPXKMTOLMYUYPCN9XLMJPYZVFJSAY9FQHCCLWTOLLUGKKMXYFDBOOYFBLBI9WUEILGECYM"
+            "coordinatorAddress": "EQQFCZBIHRHWPXKMTOLMYUYPCN9XLMJPYZVFJSAY9FQHCCLWTOLLUGKKMXYFDBOOYFBLBI9WUEILGECYM",
+            "coordinatorSecurityLevel": 1
         },
         {
             "network": "comnet",
@@ -35,7 +37,8 @@
             },
             "zmqEndpoint": "tcp://comnet.iota.works:5556",
             "zmqTransactionMessage": "trytes",
-            "coordinatorAddress": "ZNCCPOTBCDZXCBQYBWUYYFO9PLRHNAROWOS9KGMYWNVIXWGYGUSJBZUTUQBNQRADHPUEONZZTYGVMSRZD"
+            "coordinatorAddress": "ZNCCPOTBCDZXCBQYBWUYYFO9PLRHNAROWOS9KGMYWNVIXWGYGUSJBZUTUQBNQRADHPUEONZZTYGVMSRZD",
+            "coordinatorSecurityLevel": 2
         }
     ],
     "cmcApiKey": "CMC_API_KEY",

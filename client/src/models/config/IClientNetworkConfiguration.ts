@@ -26,6 +26,11 @@ export interface IClientNetworkConfiguration {
     coordinatorAddress: string;
 
     /**
+     * The level of the coordinator security.
+     */
+    coordinatorSecurityLevel: number;
+
+    /**
      * Pallete for the network.
      */
     palette: IPalette;
