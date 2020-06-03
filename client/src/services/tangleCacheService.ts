@@ -1,4 +1,5 @@
 import { composeAPI } from "@iota/core";
+import { mamFetch, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { PowHelper } from "../helpers/powHelper";
@@ -7,6 +8,7 @@ import { IClientNetworkConfiguration } from "../models/config/IClientNetworkConf
 import { IConfiguration } from "../models/config/IConfiguration";
 import { ICachedTransaction } from "../models/ICachedTransaction";
 import { ApiClient } from "./apiClient";
+import { ApiMamClient } from "./apiMamClient";
 
 /**
  * Cache tangle requests.
@@ -95,6 +97,38 @@ export class TangleCacheService {
     };
 
     /**
+     * Mam payload cache.
+     */
+    private readonly _mam: {
+        /**
+         * Network.
+         */
+        [network: string]: {
+            /**
+             * The root.
+             */
+            [id: string]: {
+                /**
+                 * The payload.
+                 */
+                payload: string;
+                /**
+                 * The next root.
+                 */
+                nextRoot: string;
+                /**
+                 * The tag.
+                 */
+                tag: string;
+                /**
+                 * The time of cache.
+                 */
+                cached: number;
+            }
+        }
+    };
+
+    /**
      * Create a new instance of TangleCacheService.
      * @param config The main configuration.
      */
@@ -102,6 +136,7 @@ export class TangleCacheService {
         this._transactionCache = {};
         this._findCache = {};
         this._addressBalances = {};
+        this._mam = {};
 
         for (const networkConfig of config.networks) {
             this._transactionCache[networkConfig.network] = {};
@@ -114,6 +149,7 @@ export class TangleCacheService {
             };
 
             this._addressBalances[networkConfig.network] = {};
+            this._mam[networkConfig.network] = {};
         }
 
         // Check for stale cache items every minute
@@ -540,6 +576,54 @@ export class TangleCacheService {
             // tslint:disable-next-line: no-console
             console.log(err);
             return false;
+        }
+    }
+
+    /**
+     * Get the payload at the given mam root.
+     * @param root The mam root.
+     * @param mode The mode for the mam fetch.
+     * @param key The key for the mam fetch if restricted mode.
+     * @param network Which network are we getting the transactions for.
+     * @returns The balance for the address.
+     */
+    public async getMamPacket(root: string, mode: MamMode, key: string, network: string): Promise<{
+        /**
+         * The payload at the given root.
+         */
+        payload: string;
+        /**
+         * The next root.
+         */
+        nextRoot: string;
+        /**
+         * The tag.
+         */
+        tag: string;
+    } | undefined> {
+        const mamCache = this._mam[network];
+
+        if (mamCache) {
+            if (!mamCache[root]) {
+                try {
+                    const api = new ApiMamClient(network);
+
+                    const result = await mamFetch(api as any, root, mode, key);
+
+                    if (result) {
+                        mamCache[root] = {
+                            payload: result.message,
+                            nextRoot: result.nextRoot,
+                            tag: result.tag,
+                            cached: Date.now()
+                        };
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+
+            return mamCache[root];
         }
     }
 

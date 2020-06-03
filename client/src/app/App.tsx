@@ -14,6 +14,8 @@ import { AddressRouteProps } from "./routes/AddressRouteProps";
 import Bundle from "./routes/Bundle";
 import { BundleRouteProps } from "./routes/BundleRouteProps";
 import Landing from "./routes/Landing";
+import Mam from "./routes/Mam";
+import { MamRouteProps } from "./routes/MamRouteProps";
 import Search from "./routes/Search";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import Tag from "./routes/Tag";
@@ -57,7 +59,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                     value: n.network
                 }))}
                 value={this.state.networkConfig.network}
-                onValueChanged={value => this.setNetwork(value, false)}
+                onChange={value => this.setNetwork(value, false)}
             />
         );
 
@@ -66,7 +68,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                 <Header
                     networkConfig={this.state.networkConfig}
                     switcher={this.props.match.params.hashType && switcher}
-                    search={this.props.match.params.hashType && (
+                    search={this.props.match.params.hashType && this.props.match.params.hashType !== "mam" && (
                         <SearchInput
                             query={this.state.query}
                             onSearch={query => this.setQuery(query)}
@@ -91,6 +93,15 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                                                 compact={false}
                                             />
                                         )}
+                                    />
+                                )}
+                        />
+                        <Route
+                            path="/:network/mam/:hash?/:mode?/:key?"
+                            component={(props: RouteComponentProps<MamRouteProps>) =>
+                                (
+                                    <Mam
+                                        {...props}
                                     />
                                 )}
                         />
@@ -179,6 +190,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                         }
                         if (this.props.match.params.hash) {
                             path += `/${this.props.match.params.hash}`;
+                        }
+                        if (this.props.match.params.mode) {
+                            path += `/${this.props.match.params.mode}`;
+                        }
+                        if (this.props.match.params.key) {
+                            path += `/${this.props.match.params.key}`;
                         }
                     }
                     this.props.history.push(path);

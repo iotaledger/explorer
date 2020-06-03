@@ -122,3 +122,54 @@ button {
     text-shadow: 0 0 0 $gray-10;
   }
 }
+
+.form-validation {
+  @include font-size(12px);
+  font-family: $metropolis;
+}
+
+.form-label-width {
+  min-width: 200px;
+}
+
+.form-input-long {
+  width: 100%;
+}
+
+.form-button {
+  @include font-size(12px);
+
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0px 21px;
+  border: 1px solid $input-border;
+  border-radius: 6px;
+  outline: none;
+  background-color: transparent;
+  color: $gray-midnight;
+  font-family: $metropolis;
+  cursor: pointer;
+
+  &.selected {
+    border-color: $main-green-highlight;
+    background-color: $main-green-highlight;
+    $color: $white;
+    font-weight: 600;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &:focus {
+    box-shadow: 0 0 3px 0 $main-green-highlight;
+  }
+
+  // sass-lint:disable no-vendor-prefixes
+  &:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 $white;
+  }
+}

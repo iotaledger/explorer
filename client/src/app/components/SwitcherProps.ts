@@ -22,7 +22,12 @@ export interface SwitcherProps {
     value: string;
 
     /**
+     * Is the component disabled.
+     */
+    disabled?: boolean;
+
+    /**
      * The value changed.
      */
-    onValueChanged(value: string): void;
+    onChange(value: string): void;
 }

@@ -14,4 +14,14 @@ export interface AppRouteProps {
      * The hash from the location.
      */
     hash?: string;
+
+    /**
+     * The mode from the location.
+     */
+    mode?: string;
+
+    /**
+     * The key from the location.
+     */
+    key?: string;
 }

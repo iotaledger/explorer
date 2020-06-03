@@ -31,7 +31,8 @@ class Switcher extends Component<SwitcherProps, any> {
                         className={classNames({
                             selected: item.value === this.props.value
                         })}
-                        onClick={() => this.props.onValueChanged(item.value)}
+                        onClick={() => this.props.onChange(item.value)}
+                        disabled={this.props.disabled}
                     >
                         {item.label}
                     </button>

@@ -28,11 +28,10 @@ ReactDOM.render(
         <BrowserRouter>
             <Route
                 exact={true}
-                path="/:network?/:hashType?/:hash?"
+                path="/:network?/:hashType?/:hash?/:mode?/:key?"
                 component={(props: RouteComponentProps<AppRouteProps>) => (
                     <App {...props} configuration={config} />)}
             />
-
         </BrowserRouter>
     ),
     document.getElementById("root")
@@ -47,6 +46,7 @@ function registerServices(): void {
     ServiceFactory.register("currency", () => new CurrencyService(config.apiEndpoint));
     ServiceFactory.register("api-client", () => new ApiClient(config.apiEndpoint));
     ServiceFactory.register("tangle-cache", () => new TangleCacheService(config));
+    ServiceFactory.register("configuration", () => config);
 
     for (const netConfig of config.networks) {
         ServiceFactory.register(
