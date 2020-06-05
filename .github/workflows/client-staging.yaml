@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Client Config
         run: |
-          cd client/public/data/
+          cd client/src/assets/config/
           mv config.template.json config.$CONFIG_ID.json
           sed -i "s/API-ENDPOINT/${{ env.CONFIG_API_ENDPOINT }}/g" config.$CONFIG_ID.json
           sed -i "s/NETWORKS/${{ env.CONFIG_NETWORKS }}/g" config.$CONFIG_ID.json
