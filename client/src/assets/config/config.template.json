@@ -1,51 +1,7 @@
 {
-    "apiEndpoint": "ENDPOINT",
+    "apiEndpoint": "API-ENDPOINT",
     "networks": [
-        {
-            "network": "mainnet",
-            "label": "MainNet",
-            "node": {
-                "provider": "https://nodes.iota.cafe:443",
-                "depth": 3,
-                "mwm": 14
-            },
-            "coordinatorAddress": "EQSAUZXULTTYZCLNJNTXQTQHOMOFZERHTCGTXOLTVAHKSA9OGAZDEKECURBRIXIJWNPFCQIOVFVVXJVD9",
-            "coordinatorSecurityLevel": 2,
-            "palette": {
-                "primary": "#131F37",
-                "secondary": "#485776"
-            }
-        },
-        {
-            "network": "devnet",
-            "label": "DevNet",
-            "node": {
-                "provider": "https://nodes.devnet.iota.org:443",
-                "depth": 3,
-                "mwm": 9
-            },
-            "coordinatorAddress": "EQQFCZBIHRHWPXKMTOLMYUYPCN9XLMJPYZVFJSAY9FQHCCLWTOLLUGKKMXYFDBOOYFBLBI9WUEILGECYM",
-            "coordinatorSecurityLevel": 1,
-            "palette": {
-                "primary": "#287484",
-                "secondary": "#0f8c85"
-            }
-        },
-        {
-            "network": "comnet",
-            "label": "ComNet",
-            "node": {
-                "provider": "https://comnet.iota.works:443",
-                "depth": 3,
-                "mwm": 10
-            },
-            "coordinatorAddress": "ZNCCPOTBCDZXCBQYBWUYYFO9PLRHNAROWOS9KGMYWNVIXWGYGUSJBZUTUQBNQRADHPUEONZZTYGVMSRZD",
-            "coordinatorSecurityLevel": 2,
-            "palette": {
-                "primary": "#2E8698",
-                "secondary": "#77c6d6"
-            }
-        }
+        NETWORKS
     ],
-    "googleAnalyticsId": ""
+    "googleAnalyticsId": "GOOGLE-ANALYTICS-ID"
 }

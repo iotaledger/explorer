@@ -1,0 +1,61 @@
+name: API Build and Deploy Staging
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - "api/**"
+      - ".github/workflows/api-staging.yaml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      # Build specific env vars
+      CONFIG_ID: staging
+      CONFIG_API_NETWORKS: ${{ secrets.STAGING_CONFIG_API_NETWORKS }}
+      CONFIG_CMC_API_KEY: ${{ secrets.STAGING_CONFIG_CMC_API_KEY }}
+      CONFIG_FIXER_API_KEY: ${{ secrets.STAGING_CONFIG_FIXER_API_KEY }}
+      CONFIG_DB_AWS_REGION: ${{ secrets.STAGING_CONFIG_DB_AWS_REGION }}
+      CONFIG_DB_AWS_ACCESS_KEY_ID: ${{ secrets.STAGING_CONFIG_DB_AWS_ACCESS_KEY_ID }}
+      CONFIG_DB_AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGING_CONFIG_DB_AWS_SECRET_ACCESS_KEY }}
+      CONFIG_DB_TABLE_PREFIX: ${{ secrets.STAGING_CONFIG_DB_TABLE_PREFIX }}
+      CONFIG_ALLOWED_DOMAIN: ${{ secrets.STAGING_CONFIG_ALLOWED_DOMAIN }}
+      GCP_SERVICE_ID: ${{ secrets.GCP_STAGING_SERVICE_ID }}
+      GCP_STAGING_SERVICE_ID: ${{ secrets.GCP_STAGING_SERVICE_ID }}
+      GCP_STAGING_DOMAIN: ${{ secrets.GCP_STAGING_DOMAIN }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: API Config
+        run: |
+          cd api/src/data/
+          mv config.template.json config.$CONFIG_ID.json
+          sed -i 's/API-NETWORKS/${{ env.CONFIG_API_NETWORKS }}/g' config.$CONFIG_ID.json
+          sed -i 's/CMC-API-KEY/${{ env.CONFIG_CMC_API_KEY }}/g' config.$CONFIG_ID.json
+          sed -i 's/FIXER-API-KEY/${{ env.CONFIG_FIXER_API_KEY }}/g' config.$CONFIG_ID.json
+          sed -i 's/DB-AWS-REGION/${{ env.CONFIG_DB_AWS_REGION }}/g' config.$CONFIG_ID.json
+          sed -i 's/DB-AWS-ACCESS-KEY-ID/${{ env.CONFIG_DB_AWS_ACCESS_KEY_ID }}/g' config.$CONFIG_ID.json
+          sed -i 's/DB-AWS-SECRET-ACCESS-KEY/${{ env.CONFIG_DB_AWS_SECRET_ACCESS_KEY }}/g' config.$CONFIG_ID.json
+          sed -i 's/DB-TABLE-PREFIX/${{ env.CONFIG_DB_TABLE_PREFIX }}/g' config.$CONFIG_ID.json
+          sed -i 's/ALLOWED-DOMAIN/${{ env.CONFIG_ALLOWED_DOMAIN }}/g' config.$CONFIG_ID.json
+      - name: GCP Config
+        run: |
+          cd api
+          mv app.template.yaml app.yaml
+          sed -i 's/%SERVICE-ID%/${{ env.GCP_SERVICE_ID }}/g' app.yaml
+          sed -i 's/%CONFIG-ID%/${{ env.CONFIG_ID }}/g' app.yaml
+          mv dispatch.template.yaml dispatch.yaml
+          sed -i 's/%GCP-STAGING-DOMAIN%/${{ env.GCP_STAGING_DOMAIN }}/g' dispatch.yaml
+          sed -i 's/%GCP-STAGING-SERVICE-ID%/${{ env.GCP_STAGING_SERVICE_ID }}/g' dispatch.yaml
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: latest
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - name: Deploy
+        run: |
+          cd api
+          gcloud app deploy app.yaml dispatch.yaml --quiet

@@ -1,0 +1,17 @@
+runtime: custom
+env: flex
+service: %SERVICE-ID%
+
+network:
+  session_affinity: true
+
+manual_scaling:
+   instances: 1
+
+handlers:
+  - url: /(.*)
+    static_files: dist/\1
+    upload: dist/(.*)
+
+env_variables:
+  CONFIG_ID: "%CONFIG-ID%"
