@@ -26,7 +26,7 @@ export class StateService extends AmazonDynamoDbService<IState> {
      */
     public async updateCurrencies(config: IConfiguration, force: boolean = false): Promise<string> {
         let currentState;
-        let log = "Currency Updating\n";
+        let log = `Currency Updating ${new Date().toUTCString()}\n`;
         try {
             const stateService = new StateService(config.dynamoDbConnection);
             const now = Date.now();

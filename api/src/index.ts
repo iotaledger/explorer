@@ -72,8 +72,8 @@ AppHelper.build(
 
         // Only perform currency lookups if api keys have been supplied
         if (config.dynamoDbConnection &&
-            (config.cmcApiKey || "CMC_API_KEY") !== "CMC_API_KEY" &&
-            (config.fixerApiKey || "FIXER_API_KEY") !== "FIXER_API_KEY") {
+            (config.cmcApiKey || "CMC-API-KEY") !== "CMC-API-KEY" &&
+            (config.fixerApiKey || "FIXER-API-KEY") !== "FIXER-API-KEY") {
 
             const schedules: ISchedule[] = [
                 {
@@ -82,7 +82,8 @@ AppHelper.build(
                     func: async () => {
                         const stateService = new StateService(config.dynamoDbConnection);
 
-                        await stateService.updateCurrencies(config);
+                        const log = await stateService.updateCurrencies(config);
+                        console.log(log);
                     }
                 }
             ];
