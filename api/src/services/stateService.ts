@@ -14,8 +14,14 @@ export class StateService extends AmazonDynamoDbService<IState> {
      */
     public static readonly TABLE_NAME: string = "state";
 
+    /**
+     * Is the service already updating.
+     */
+    private _isUpdating: boolean;
+
     constructor(config: IAWSDynamoDbConfiguration) {
         super(config, StateService.TABLE_NAME, "id");
+        this._isUpdating = false;
     }
 
     /**
@@ -28,51 +34,58 @@ export class StateService extends AmazonDynamoDbService<IState> {
         let currentState;
         let log = `Currency Updating ${new Date().toUTCString()}\n`;
         try {
-            const stateService = new StateService(config.dynamoDbConnection);
-            const now = Date.now();
-            currentState = (await stateService.get("default")) || { id: "default" };
-            if (!currentState ||
-                currentState.lastCurrencyUpdate === undefined ||
-                now - currentState.lastCurrencyUpdate > (3600000 * 4) ||
-                force) { // every 4 hours
-                let updated = false;
-
-                log += `Updating fixer\n`;
-
-                const fixerClient = new FixerClient(config.fixerApiKey);
-                const rates = await fixerClient.latest("EUR");
-
-                log += `Rates ${JSON.stringify(rates)}\n`;
-
-                if (rates) {
-                    currentState.exchangeRatesEUR = rates;
-                    updated = true;
-                }
-
-                log += `CMC\n`;
-
-                const coinMarketCapClient = new CoinMarketCapClient(config.cmcApiKey);
-
-                const currency = await coinMarketCapClient.quotesLatest("1720", "EUR");
-                log += `Currency ${JSON.stringify(currency)}\n`;
-
-                if (currency && currency.quote && currency.quote.EUR) {
-                    currentState.coinMarketCapRateEUR = currency.quote.EUR.price;
-                    currentState.marketCapEur = currency.quote.EUR.market_cap;
-                    currentState.volume24h = currency.quote.EUR.volume_24h;
-                    currentState.percentageChange24h = currency.quote.EUR.percent_change_24h;
-                    updated = true;
-                }
-
-                if (updated) {
-                    currentState.lastCurrencyUpdate = now;
-                    await this.set(currentState);
-                }
+            if (this._isUpdating) {
+                log += "Already updating\n";
             } else {
-                log += "No update required\n";
+                this._isUpdating = true;
+                const stateService = new StateService(config.dynamoDbConnection);
+                const now = Date.now();
+                currentState = (await stateService.get("default")) || { id: "default" };
+                if (!currentState ||
+                    currentState.lastCurrencyUpdate === undefined ||
+                    now - currentState.lastCurrencyUpdate > (3600000 * 4) ||
+                    force) { // every 4 hours
+                    let updated = false;
+
+                    log += `Updating fixer\n`;
+
+                    const fixerClient = new FixerClient(config.fixerApiKey);
+                    const rates = await fixerClient.latest("EUR");
+
+                    log += `Rates ${JSON.stringify(rates)}\n`;
+
+                    if (rates) {
+                        currentState.exchangeRatesEUR = rates;
+                        updated = true;
+                    }
+
+                    log += `CMC\n`;
+
+                    const coinMarketCapClient = new CoinMarketCapClient(config.cmcApiKey);
+
+                    const currency = await coinMarketCapClient.quotesLatest("1720", "EUR");
+                    log += `Currency ${JSON.stringify(currency)}\n`;
+
+                    if (currency && currency.quote && currency.quote.EUR) {
+                        currentState.coinMarketCapRateEUR = currency.quote.EUR.price;
+                        currentState.marketCapEur = currency.quote.EUR.market_cap;
+                        currentState.volume24h = currency.quote.EUR.volume_24h;
+                        currentState.percentageChange24h = currency.quote.EUR.percent_change_24h;
+                        updated = true;
+                    }
+
+                    if (updated) {
+                        currentState.lastCurrencyUpdate = now;
+                        await this.set(currentState);
+                    }
+                } else {
+                    log += "No update required\n";
+                }
+                this._isUpdating = false;
             }
         } catch (err) {
             log += `Error updating currencies ${err.toString()}\n`;
+            this._isUpdating = false;
         }
         return log;
     }
