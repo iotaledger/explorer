@@ -31,7 +31,7 @@ jobs:
       - name: API Config
         run: |
           cd api/src/data/
-          mv config.template.json config.$CONFIG_ID.json
+          mv config.json.template config.$CONFIG_ID.json
           sed -i 's/API-NETWORKS/${{ env.CONFIG_API_NETWORKS }}/g' config.$CONFIG_ID.json
           sed -i 's/CMC-API-KEY/${{ env.CONFIG_CMC_API_KEY }}/g' config.$CONFIG_ID.json
           sed -i 's/FIXER-API-KEY/${{ env.CONFIG_FIXER_API_KEY }}/g' config.$CONFIG_ID.json

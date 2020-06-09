@@ -2,7 +2,7 @@
 
 ## Configuration
 
-To configure the `api` you should copy `./src/data/config.template.json` to `./src/data/config.local.json` and modify the content.
+To configure the `api` you should copy `./src/data/config.json.template` to `./src/data/config.local.json` and modify the content.
 
 ```js
 {

@@ -591,10 +591,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     private getMilestoneIndex(thisGroup: ICachedTransaction[]): number | undefined {
         let milestoneIndex;
 
+        // This code needs propert signature validation etc
         if (thisGroup.length >= 2) {
             if (thisGroup[0].tx.address === this.props.networkConfig.coordinatorAddress &&
-                thisGroup.length === this.props.networkConfig.coordinatorSecurityLevel + 1 &&
-                /^[9]+$/.test(thisGroup[thisGroup.length - 1].tx.address)) {
+                thisGroup.length === this.props.networkConfig.coordinatorSecurityLevel + 1) {
                 const mi = value(trytesToTrits(thisGroup[0].tx.tag));
                 if (!Number.isNaN(mi)) {
                     milestoneIndex = mi;
