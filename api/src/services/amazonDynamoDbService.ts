@@ -105,15 +105,10 @@ export abstract class AmazonDynamoDbService<T> {
     public async set(item: T): Promise<void> {
         const docClient = AmazonDynamoDbHelper.createDocClient(this._config);
 
-        try {
-            await docClient.put({
-                TableName: this._fullTableName,
-                Item: item
-            }).promise();
-        } catch (err) {
-            console.log(err);
-            console.log(this._config);
-        }
+        await docClient.put({
+            TableName: this._fullTableName,
+            Item: item
+        }).promise();
     }
 
     /**

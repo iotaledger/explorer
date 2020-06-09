@@ -25,7 +25,6 @@ const routes: IRoute[] = [
 AppHelper.build(
     routes,
     async (app, config, port) => {
-        console.log(config);
         const networkByName: { [id: string]: INetworkConfiguration } = {};
 
         for (const networkConfig of config.networks) {
