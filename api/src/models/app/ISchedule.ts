@@ -1,3 +1,5 @@
+import { CronJob } from "cron";
+
 export interface ISchedule {
     /**
      * The name of the schedule.
@@ -12,7 +14,7 @@ export interface ISchedule {
     /**
      * Populated when scheduled to allow cancellation.
      */
-    cancelId?: any;
+    job?: CronJob;
 
     /**
      * Perform inline function.

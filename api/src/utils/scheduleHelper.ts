@@ -1,4 +1,4 @@
-import schedule from "node-schedule";
+import { CronJob } from "cron";
 import { ISchedule } from "../models/app/ISchedule";
 
 /**
@@ -20,7 +20,8 @@ export class ScheduleHelper {
                         console.error(schedules[i].name, err);
                     }
                 };
-                schedules[i].cancelId = schedule.scheduleJob(schedules[i].schedule, callFunc);
+                schedules[i].job = new CronJob(schedules[i].schedule, callFunc);
+                schedules[i].job.start();
                 await callFunc();
             }
         }
