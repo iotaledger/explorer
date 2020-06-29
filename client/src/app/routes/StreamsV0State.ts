@@ -1,6 +1,6 @@
 import { MamMode } from "@iota/mam.js";
 
-export interface MamState {
+export interface StreamsV0State {
     /**
      * The mam channel details to lookup.
      */

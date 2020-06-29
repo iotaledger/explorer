@@ -1,6 +1,6 @@
 import { MamMode } from "@iota/mam.js";
 
-export interface MamRouteProps {
+export interface StreamsV0RouteProps {
     /**
      * The network mam channel details to lookup.
      */

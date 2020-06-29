@@ -1,4 +1,4 @@
-import { IFoundation} from "../../models/webassets/IFoundation";
+import { IFoundationData} from "../../models/IFoundationData";
 
 /**
  * The state for the Footer component.
@@ -32,5 +32,5 @@ export interface FooterState {
     /**
      * The foundation info.
      */
-    foundation?: IFoundation;
+    foundationData?: IFoundationData;
 }

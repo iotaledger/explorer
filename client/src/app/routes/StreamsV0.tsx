@@ -9,14 +9,14 @@ import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import MessageButton from "../components/MessageButton";
 import Spinner from "../components/Spinner";
-import "./Mam.scss";
-import { MamRouteProps } from "./MamRouteProps";
-import { MamState } from "./MamState";
+import "./StreamsV0.scss";
+import { StreamsV0RouteProps } from "./StreamsV0RouteProps";
+import { StreamsV0State } from "./StreamsV0State";
 
 /**
- * Component which will show the mam page.
+ * Component which will show the streams v0 page.
  */
-class Mam extends AsyncComponent<RouteComponentProps<MamRouteProps>, MamState> {
+class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>, StreamsV0State> {
     /**
      * API Client for tangle requests.
      */
@@ -38,10 +38,10 @@ class Mam extends AsyncComponent<RouteComponentProps<MamRouteProps>, MamState> {
     private _timeout: number;
 
     /**
-     * Create a new instance of Mam.
+     * Create a new instance of StreamsV0.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<MamRouteProps>) {
+    constructor(props: RouteComponentProps<StreamsV0RouteProps>) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
@@ -84,10 +84,10 @@ class Mam extends AsyncComponent<RouteComponentProps<MamRouteProps>, MamState> {
      */
     public render(): ReactNode {
         return (
-            <div className="mam">
+            <div className="streams-v0">
                 <div className="wrapper">
                     <div className="inner">
-                        <h1>MAM Channel</h1>
+                        <h1>Streams v0 Channel</h1>
                         <div className="row top">
                             <div className="cards">
                                 <div className="card">
@@ -324,7 +324,7 @@ class Mam extends AsyncComponent<RouteComponentProps<MamRouteProps>, MamState> {
     }
 
     /**
-     * Find the data from the MAM channel.
+     * Find the data from the v0 channel.
      */
     private findData(): void {
         const isValid = this.validate();
@@ -333,7 +333,7 @@ class Mam extends AsyncComponent<RouteComponentProps<MamRouteProps>, MamState> {
             this.setState(
                 {
                     statusBusy: true,
-                    status: "Finding MAM channel data...",
+                    status: "Finding Streams V0 channel data...",
                     packets: []
                 },
                 async () => {
@@ -395,4 +395,4 @@ class Mam extends AsyncComponent<RouteComponentProps<MamRouteProps>, MamState> {
     }
 }
 
-export default Mam;
+export default StreamsV0;
