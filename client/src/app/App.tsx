@@ -14,10 +14,10 @@ import { AddressRouteProps } from "./routes/AddressRouteProps";
 import Bundle from "./routes/Bundle";
 import { BundleRouteProps } from "./routes/BundleRouteProps";
 import Landing from "./routes/Landing";
-import Mam from "./routes/Mam";
-import { MamRouteProps } from "./routes/MamRouteProps";
 import Search from "./routes/Search";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
+import StreamsV0 from "./routes/StreamsV0";
+import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import Tag from "./routes/Tag";
 import { TagRouteProps } from "./routes/TagRouteProps";
 import Transaction from "./routes/Transaction";
@@ -68,7 +68,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                 <Header
                     networkConfig={this.state.networkConfig}
                     switcher={this.props.match.params.hashType && switcher}
-                    search={this.props.match.params.hashType && this.props.match.params.hashType !== "mam" && (
+                    search={this.props.match.params.hashType && this.props.match.params.hashType !== "streams-v0" && (
                         <SearchInput
                             query={this.state.query}
                             onSearch={query => this.setQuery(query)}
@@ -97,10 +97,10 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                                 )}
                         />
                         <Route
-                            path="/:network/mam/:hash?/:mode?/:key?"
-                            component={(props: RouteComponentProps<MamRouteProps>) =>
+                            path="/:network/streams-v0/:hash?/:mode?/:key?"
+                            component={(props: RouteComponentProps<StreamsV0RouteProps>) =>
                                 (
-                                    <Mam
+                                    <StreamsV0
                                         {...props}
                                     />
                                 )}
