@@ -31,7 +31,7 @@ export class FixerClient {
      */
     public async latest(baseCurrency: string): Promise<{ [id: string]: number } | undefined> {
         const ax = axios.create({ baseURL: this._endpoint });
-        let response;
+        let response: { [id: string]: number } | undefined;
 
         try {
             const axiosResponse = await ax.get<ILatestResponse>(

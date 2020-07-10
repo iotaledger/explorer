@@ -36,7 +36,7 @@ export class TransactionsClient {
         /**
          * The tx value.
          */
-        value: number
+        value: number;
     }[];
 
     /**
@@ -162,7 +162,7 @@ export class TransactionsClient {
         /**
          * The tx value.
          */
-        value: number
+        value: number;
     }[] {
         return this._transactions;
     }

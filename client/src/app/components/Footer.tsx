@@ -18,7 +18,7 @@ class Footer extends Component<FooterProps, FooterState> {
         this.state = {
             siteFooterSection: {
                 label: "Explorer",
-                items: this.props.networks.map(n => ({
+                items: this.props.dynamic.map(n => ({
                     label: n.label,
                     url: `local://${n.url}`
                 }))
@@ -52,7 +52,7 @@ class Footer extends Component<FooterProps, FooterState> {
                                     <ul>
                                         {section.items.map((info, infoIdx) => (
                                             <li key={infoIdx}>
-                                                {FoundationDataHelper.createValue(info)}
+                                                {FoundationDataHelper.buildLink(info.url, info.label)}
                                             </li>
                                         ))}
                                     </ul>
@@ -71,7 +71,6 @@ class Footer extends Component<FooterProps, FooterState> {
                                         {FoundationDataHelper.createValue(info)}
                                     </li>
                                 ))}
-
                             </ul>
                         </section>
                     </div>

@@ -33,7 +33,7 @@ export class CoinMarketCapClient {
      */
     public async quotesLatest(id: string, convert: string): Promise<ICurrency | undefined> {
         const ax = axios.create({ baseURL: this._endpoint, headers: { "X-CMC_PRO_API_KEY": this._apiKey } });
-        let response;
+        let response: ICurrency | undefined;
 
         try {
             const axiosResponse = await ax.get<IQuotesLatestResponse>(

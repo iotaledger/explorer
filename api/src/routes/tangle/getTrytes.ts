@@ -10,8 +10,10 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function getTrytes(config: IConfiguration, request: IGetTrytesRequest)
-    : Promise<IGetTrytesResponse> {
+export async function getTrytes(
+    config: IConfiguration,
+    request: IGetTrytesRequest
+): Promise<IGetTrytesResponse> {
 
     ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
     const networkConfig = config.networks.find(n => n.network === request.network);

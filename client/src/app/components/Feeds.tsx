@@ -92,7 +92,7 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
         /**
          * The tx value.
          */
-        value: number
+        value: number;
     }[]): {
         /**
          * The tx hash.
@@ -101,7 +101,7 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
         /**
          * The tx value.
          */
-        value: number
+        value: number;
     }[] {
         return transactions;
     }
@@ -116,7 +116,8 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
                 transactionsPerSecond: "--"
             },
             () => {
-                this._transactionsClient = ServiceFactory.get<TransactionsClient>(`transactions-${this.props.networkConfig.network}`);
+                this._transactionsClient = ServiceFactory.get<TransactionsClient>(
+                    `transactions-${this.props.networkConfig.network}`);
 
                 this._txSubscriptionId = this._transactionsClient.subscribe(
                     () => {
@@ -190,7 +191,8 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
                 milestones: []
             },
             () => {
-                this._milestonesClient = ServiceFactory.get<MilestonesClient>(`milestones-${this.props.networkConfig.network}`);
+                this._milestonesClient = ServiceFactory.get<MilestonesClient>(
+                    `milestones-${this.props.networkConfig.network}`);
 
                 this._miSubscriptionId = this._milestonesClient.subscribe(
                     () => {

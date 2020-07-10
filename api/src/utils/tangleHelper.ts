@@ -25,7 +25,7 @@ export class TangleHelper {
             /**
              * The hashes retrieved.
              */
-            foundHashes?: string[]
+            foundHashes?: string[];
 
             /**
              * The request would return too many items.
@@ -78,8 +78,7 @@ export class TangleHelper {
      */
     public static async getTrytes(
         networkConfig: INetworkConfiguration,
-        hashes: string[])
-        : Promise<{
+        hashes: string[]): Promise<{
             /**
              * The trytes for the requested transactions.
              */
@@ -100,15 +99,15 @@ export class TangleHelper {
             /**
              * The hash.
              */
-            hash: string,
+            hash: string;
             /**
              * The trytes.
              */
-            trytes?: string,
+            trytes?: string;
             /**
              * The confirmations.
              */
-            confirmation?: ConfirmationState
+            confirmation?: ConfirmationState;
         }[] = hashes.map((h, idx) => ({ index: idx, hash: h }));
 
         const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);

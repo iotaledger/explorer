@@ -290,26 +290,31 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                                         "value",
                                                                         {
                                                                             value__zero: item.details.tx.value === 0
-                                                                                && item.details.confirmationState === "confirmed"
+                                                                                && item.details.confirmationState
+                                                                                === "confirmed"
                                                                         },
                                                                         {
                                                                             value__positive: item.details.tx.value > 0
-                                                                                && item.details.confirmationState === "confirmed"
+                                                                                && item.details.confirmationState
+                                                                                === "confirmed"
                                                                         },
                                                                         {
                                                                             value__negative: item.details.tx.value < 0
-                                                                                && item.details.confirmationState === "confirmed"
+                                                                                && item.details.confirmationState
+                                                                                === "confirmed"
                                                                         },
                                                                         {
                                                                             value__inprogress:
-                                                                                item.details.confirmationState !== "confirmed"
+                                                                                item.details.confirmationState
+                                                                                !== "confirmed"
                                                                         }
                                                                     )}
                                                                     onClick={() => this.setState(
                                                                         {
                                                                             formatFull: !this.state.formatFull
                                                                         },
-                                                                        () => this._settingsService.saveSingle("formatFull", this.state.formatFull))}
+                                                                        () => this._settingsService.saveSingle(
+                                                                            "formatFull", this.state.formatFull))}
                                                                 >
                                                                     {this.state.formatFull
                                                                         ? `${item.details.tx.value} i`
@@ -331,7 +336,9 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                     )}
                                                     <div className="card--value">
                                                         <button
-                                                            onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/transaction/${item.hash}`)}
+                                                            onClick={() => this.props.history.push(
+                                                                `/${this.props.networkConfig.network
+                                                                }/transaction/${item.hash}`)}
                                                         >
                                                             {item.hash}
                                                         </button>
@@ -345,7 +352,9 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                             />
                                                             <button
                                                                 className="card--value__tertiary"
-                                                                onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/bundle/${item.details?.tx.bundle}`)}
+                                                                onClick={() => this.props.history.push(
+                                                                    `/${this.props.networkConfig.network
+                                                                    }/bundle/${item.details?.tx.bundle}`)}
                                                             >
                                                                 {item.details.tx.bundle}
                                                             </button>

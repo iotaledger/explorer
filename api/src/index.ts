@@ -1,94 +1,58 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { Server } from "http";
 import SocketIO from "socket.io";
-import { ServiceFactory } from "./factories/serviceFactory";
-import { IRoute } from "./models/app/IRoute";
-import { ISchedule } from "./models/app/ISchedule";
-import { INetworkConfiguration } from "./models/configuration/INetworkConfiguration";
+import bodyParser from "body-parser";
+import express, { Application } from "express";
+import { IConfiguration } from "./models/configuration/IConfiguration";
+import { routes } from "./routes";
+import { cors, executeRoute } from "./utils/apiHelper";
 import { transactionsSubscribe } from "./routes/transactions/transactionsSubscribe";
 import { transactionsUnsubscribe } from "./routes/transactions/transactionsUnsubscribe";
-import { MilestonesService } from "./services/milestonesService";
-import { MilestoneStoreService } from "./services/milestoneStoreService";
-import { StateService } from "./services/stateService";
-import { TransactionsService } from "./services/transactionsService";
-import { ZmqService } from "./services/zmqService";
-import { AppHelper } from "./utils/appHelper";
-import { ScheduleHelper } from "./utils/scheduleHelper";
+import { initServices } from "./initServices";
 
-const routes: IRoute[] = [
-    { path: "/init", method: "get", func: "init" },
-    { path: "/currencies", method: "get", folder: "currency", func: "get" },
-    { path: "/find-transactions", method: "get", folder: "tangle", func: "findTransactions" },
-    { path: "/get-trytes", method: "post", folder: "tangle", func: "getTrytes" },
-    { path: "/get-milestones/:network", method: "get", folder: "tangle", func: "getMilestones" }
-];
+const configId = process.env.CONFIG_ID || "local";
+const config: IConfiguration = require(`./data/config.${configId}.json`);
 
-AppHelper.build(
-    routes,
-    async (app, config, port) => {
-        const networkByName: { [id: string]: INetworkConfiguration } = {};
+const app: Application = express();
 
-        for (const networkConfig of config.networks) {
-            networkByName[networkConfig.network] = networkConfig;
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
-            if (networkConfig.zmqEndpoint) {
-                ServiceFactory.register(
-                    `zmq-${networkConfig.network}`,
-                    serviceName => new ZmqService(networkByName[serviceName.substr(4)].zmqEndpoint)
-                );
-                ServiceFactory.register(
-                    `milestones-${networkConfig.network}`,
-                    serviceName => new MilestonesService(networkByName[serviceName.substr(11)]));
+app.use((req, res, next) => {
+    cors(
+        req,
+        res,
+        config.allowedDomains ? config.allowedDomains.join(",") : undefined,
+        "GET, POST, OPTIONS, PUT, PATCH, DELETE",
+        "Content-Type, Authorization");
+    next();
+});
 
-                ServiceFactory.register(
-                    `transactions-${networkConfig.network}`,
-                    serviceName => new TransactionsService(networkByName[serviceName.substr(13)]));
-            }
-        }
+for (const route of routes) {
+    app[route.method](route.path, async (req, res) => {
+        await executeRoute(
+            req,
+            res,
+            config,
+            route,
+            req.params,
+            true);
+    });
+}
 
-        if (config.dynamoDbConnection) {
-            ServiceFactory.register("milestone-store", () => new MilestoneStoreService(config.dynamoDbConnection));
-        }
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+const server = new Server(app);
+const socketServer = SocketIO(server);
+server.listen(port, async () => {
+    console.log("Listening listener");
+    console.log(`Started API Server on port ${port}`);
+    console.log(`Running Config '${configId}'`);
 
-        for (const networkConfig of config.networks) {
-            const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
-            zmqService.connect();
-        }
+    socketServer.on("connection", socket => {
+        socket.on("subscribe", data => socket.emit("subscribe", transactionsSubscribe(config, socket, data)));
+        socket.on("unsubscribe", data => socket.emit("unsubscribe", transactionsUnsubscribe(config, socket, data)));
+    });
 
-        const server = new Server(app);
-        const socketServer = SocketIO(server);
-        server.listen(port);
-        socketServer.on("connection", socket => {
-            socket.on("subscribe", data => socket.emit("subscribe", transactionsSubscribe(config, socket, data)));
-            socket.on("unsubscribe", data => socket.emit("unsubscribe", transactionsUnsubscribe(config, socket, data)));
-        });
-
-        for (const networkConfig of config.networks) {
-            const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
-            await milestonesService.init();
-
-            const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
-            await transactionService.init();
-        }
-
-        // Only perform currency lookups if api keys have been supplied
-        if (config.dynamoDbConnection &&
-            (config.cmcApiKey || "CMC-API-KEY") !== "CMC-API-KEY" &&
-            (config.fixerApiKey || "FIXER-API-KEY") !== "FIXER-API-KEY") {
-
-            const schedules: ISchedule[] = [
-                {
-                    name: "Update Currencies",
-                    schedule: "0 0 */4 * * *", // Every 4 hours on 0 minute 0 seconds
-                    func: async () => {
-                        const stateService = new StateService(config.dynamoDbConnection);
-
-                        const log = await stateService.updateCurrencies(config);
-                        console.log(log);
-                    }
-                }
-            ];
-
-            await ScheduleHelper.build(schedules);
-        }
-    },
-    true);
+    await initServices(config);
+});

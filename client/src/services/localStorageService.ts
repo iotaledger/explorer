@@ -21,7 +21,7 @@ export class LocalStorageService {
             }
         }
 
-        return obj;
+        return obj as T;
     }
 
     /**

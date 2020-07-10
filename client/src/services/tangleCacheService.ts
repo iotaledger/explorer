@@ -8,7 +8,7 @@ import { IClientNetworkConfiguration } from "../models/config/IClientNetworkConf
 import { IConfiguration } from "../models/config/IConfiguration";
 import { ICachedTransaction } from "../models/ICachedTransaction";
 import { ApiClient } from "./apiClient";
-import { ApiMamClient } from "./apiMamClient";
+import { ApiStreamsV0Client } from "./apiStreamsV0Client";
 
 /**
  * Cache tangle requests.
@@ -30,8 +30,8 @@ export class TangleCacheService {
             /**
              * Transaction hash.
              */
-            [id: string]: ICachedTransaction
-        }
+            [id: string]: ICachedTransaction;
+        };
     };
 
     /**
@@ -67,9 +67,9 @@ export class TangleCacheService {
                      * The time of cache.
                      */
                     cached: number;
-                }
+                };
             }
-        }
+        };
     };
 
     /**
@@ -92,14 +92,14 @@ export class TangleCacheService {
                  * The time of cache.
                  */
                 cached: number;
-            }
-        }
+            };
+        };
     };
 
     /**
-     * Mam payload cache.
+     * Streams V0 payload cache.
      */
-    private readonly _mam: {
+    private readonly _streamsV0: {
         /**
          * Network.
          */
@@ -124,8 +124,8 @@ export class TangleCacheService {
                  * The time of cache.
                  */
                 cached: number;
-            }
-        }
+            };
+        };
     };
 
     /**
@@ -136,7 +136,7 @@ export class TangleCacheService {
         this._transactionCache = {};
         this._findCache = {};
         this._addressBalances = {};
-        this._mam = {};
+        this._streamsV0 = {};
 
         for (const networkConfig of config.networks) {
             this._transactionCache[networkConfig.network] = {};
@@ -149,7 +149,7 @@ export class TangleCacheService {
             };
 
             this._addressBalances[networkConfig.network] = {};
-            this._mam[networkConfig.network] = {};
+            this._streamsV0[networkConfig.network] = {};
         }
 
         // Check for stale cache items every minute
@@ -183,7 +183,7 @@ export class TangleCacheService {
         /**
          * The detected hash type.
          */
-        hashType?: FindTransactionsMode
+        hashType?: FindTransactionsMode;
     }> {
         let transactionHashes: string[] | undefined = [];
         let totalItems = 0;
@@ -429,7 +429,7 @@ export class TangleCacheService {
                         provider: networkConfig.node.provider
                     });
 
-                    const response = await api.getBalances([addressHash], 100);
+                    const response = await api.getBalances([addressHash]);
                     if (response && response.balances) {
                         let balance = 0;
                         for (let i = 0; i < response.balances.length; i++) {
@@ -580,14 +580,14 @@ export class TangleCacheService {
     }
 
     /**
-     * Get the payload at the given mam root.
-     * @param root The mam root.
-     * @param mode The mode for the mam fetch.
-     * @param key The key for the mam fetch if restricted mode.
+     * Get the payload at the given streams v0 root.
+     * @param root The root.
+     * @param mode The mode for the fetch.
+     * @param key The key for the fetch if restricted mode.
      * @param network Which network are we getting the transactions for.
      * @returns The balance for the address.
      */
-    public async getMamPacket(root: string, mode: MamMode, key: string, network: string): Promise<{
+    public async getStreamsV0Packet(root: string, mode: MamMode, key: string, network: string): Promise<{
         /**
          * The payload at the given root.
          */
@@ -601,17 +601,17 @@ export class TangleCacheService {
          */
         tag: string;
     } | undefined> {
-        const mamCache = this._mam[network];
+        const streamsV0Cache = this._streamsV0[network];
 
-        if (mamCache) {
-            if (!mamCache[root]) {
+        if (streamsV0Cache) {
+            if (!streamsV0Cache[root]) {
                 try {
-                    const api = new ApiMamClient(network);
+                    const api = new ApiStreamsV0Client(network);
 
                     const result = await mamFetch(api as any, root, mode, key);
 
                     if (result) {
-                        mamCache[root] = {
+                        streamsV0Cache[root] = {
                             payload: result.message,
                             nextRoot: result.nextRoot,
                             tag: result.tag,
@@ -623,7 +623,7 @@ export class TangleCacheService {
                 }
             }
 
-            return mamCache[root];
+            return streamsV0Cache[root];
         }
     }
 

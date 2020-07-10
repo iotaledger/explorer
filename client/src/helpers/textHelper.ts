@@ -57,7 +57,7 @@ export class TextHelper {
         const ascii = trytesToAscii(trytes);
 
         if (!ascii) {
-            throw new Error(`Unable to decode the trytes to text`);
+            throw new Error("Unable to decode the trytes to text");
         }
 
         return TextHelper.decodeNonASCII(ascii) || "";

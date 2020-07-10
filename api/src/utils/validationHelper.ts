@@ -30,8 +30,8 @@ export class ValidationHelper {
      * @param options The possible options.
      * @param name The parameter name.
      */
-    public static oneOf(val: any, options: any[], name: string): void {
-        if (options.indexOf(val) < 0) {
+    public static oneOf(val: unknown, options: unknown[], name: string): void {
+        if (!options.includes(val)) {
             throw new Error(`The parameter '${name}' has an invalid value.`);
         }
     }

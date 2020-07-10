@@ -11,7 +11,7 @@ export class TrytesHelper {
      * @param obj The obj to encode.
      * @returns The encoded trytes value.
      */
-    public static toTrytes(obj: any): string {
+    public static toTrytes(obj: unknown): string {
         const json = JSON.stringify(obj);
         const encoded = TextHelper.encodeNonASCII(json);
         return encoded ? asciiToTrytes(encoded) : "";
@@ -22,7 +22,7 @@ export class TrytesHelper {
      * @param trytes The trytes to decode.
      * @returns The decoded object.
      */
-    public static fromTrytes<T>(trytes: string): T {
+    public static fromTrytes<T>(trytes: string): T | undefined {
         // Trim trailing 9s
         let trimmed = trytes.replace(/\9+$/, "");
 
@@ -34,7 +34,7 @@ export class TrytesHelper {
         const ascii = trytesToAscii(trimmed);
         const json = TextHelper.decodeNonASCII(ascii);
 
-        return json ? JSON.parse(json) : undefined;
+        return json ? JSON.parse(json) as T : undefined;
     }
 
     /**

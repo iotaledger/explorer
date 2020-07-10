@@ -34,7 +34,7 @@ export class ApiClient {
         let response: ICurrenciesResponse;
 
         try {
-            const axiosResponse = await ax.get<ICurrenciesResponse>(`currencies`);
+            const axiosResponse = await ax.get<ICurrenciesResponse>("currencies");
 
             response = axiosResponse.data;
         } catch (err) {
@@ -68,7 +68,7 @@ export class ApiClient {
             if (err.toString().toLowerCase().indexOf("timeout") >= 0) {
                 response = {
                     success: false,
-                    message: `Timeout`
+                    message: "Timeout"
                 };
             } else {
                 response = {
@@ -92,7 +92,7 @@ export class ApiClient {
 
         try {
             const axiosResponse = await ax.post<IGetTrytesResponse>(
-                `get-trytes`, request);
+                "get-trytes", request);
 
             response = axiosResponse.data;
         } catch (err) {

@@ -1,7 +1,8 @@
 /**
  * The differnt event that can be passed through zmq.
  */
-export type ZmqEvent = "antn" |
+export type ZmqEvent =
+    "antn" |
     "dnscc" |
     "dnscu" |
     "dnscv" |

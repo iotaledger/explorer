@@ -247,8 +247,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                         classNames(
                                                             "card--value",
                                                             "card--value-textarea",
-                                                            `card--value-textarea__${
-                                                            item.showRawMessageTrytes
+                                                            `card--value-textarea__${item.showRawMessageTrytes
                                                                 ? "trytes"
                                                                 : item.messageType?.toLowerCase()}`
                                                         )}
@@ -317,7 +316,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
         this.setState({
             rootValidation,
             sideKeyValidation,
-            isValid: rootValidation.length === 0 && sideKeyValidation.length === 0
+            isValid: root.length > 0 && rootValidation.length === 0 && sideKeyValidation.length === 0
         });
 
         return rootValidation.length === 0 && sideKeyValidation.length === 0;
@@ -333,7 +332,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
             this.setState(
                 {
                     statusBusy: true,
-                    status: "Finding Streams V0 channel data...",
+                    status: "Waiting for channel data...",
                     packets: []
                 },
                 async () => {
@@ -356,12 +355,12 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
     }
 
     /**
-     * Load the next packet from the mam channel.
+     * Load the next packet from the channel.
      * @param force Force the read to start.
      */
     private async loadNextPacket(force?: boolean): Promise<void> {
         if (this._nextRoot && (this._updateTimer || force) && this.state.statusBusy) {
-            const packet = await this._tangleCacheService.getMamPacket(
+            const packet = await this._tangleCacheService.getStreamsV0Packet(
                 this._nextRoot, this.state.mode, this.state.sideKey, this.props.match.params.network);
 
             if (packet) {

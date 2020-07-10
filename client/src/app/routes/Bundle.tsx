@@ -226,7 +226,8 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                                         {
                                                                             formatFull: !this.state.formatFull
                                                                         },
-                                                                        () => this._settingsService.saveSingle("formatFull", this.state.formatFull)
+                                                                        () => this._settingsService.saveSingle(
+                                                                            "formatFull", this.state.formatFull)
                                                                     )}
                                                                 >
                                                                     {this.state.formatFull
@@ -240,16 +241,24 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                             </div>
                                                             <div className="card--value">
                                                                 <button
-                                                                    onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/transaction/${item.details.tx.hash}`)}
+                                                                    onClick={() => this.props.history.push(
+                                                                        `/${this.props.networkConfig.network
+                                                                        }/transaction/${item.details.tx.hash}`)}
                                                                 >
                                                                     {item.details.tx.hash}
                                                                 </button>
                                                             </div>
                                                             <div className="row middle card--value">
-                                                                <img src={chevronLeftGreen} alt="address" className="margin-r-t" />
+                                                                <img
+                                                                    src={chevronLeftGreen}
+                                                                    alt="address"
+                                                                    className="margin-r-t"
+                                                                />
                                                                 <button
                                                                     className="card--value__tertiary"
-                                                                    onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/address/${item.details.tx.address}`)}
+                                                                    onClick={() => this.props.history.push(
+                                                                        `/${this.props.networkConfig.network
+                                                                        }/address/${item.details.tx.address}`)}
                                                                 >
                                                                     {item.details.tx.address}
                                                                 </button>
@@ -277,7 +286,8 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                                         {
                                                                             formatFull: !this.state.formatFull
                                                                         },
-                                                                        () => this._settingsService.saveSingle("formatFull", this.state.formatFull)
+                                                                        () => this._settingsService.saveSingle(
+                                                                            "formatFull", this.state.formatFull)
                                                                     )}
                                                                 >
                                                                     {this.state.formatFull
@@ -291,7 +301,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                             </div>
                                                             <div className="card--value">
                                                                 <button
-                                                                    onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/transaction/${item.details.tx.hash}`)}
+                                                                    onClick={() => this.props.history.push(
+                                                                        `/${this.props.networkConfig.network
+                                                                        }/transaction/${item.details.tx.hash}`)}
                                                                 >
                                                                     {item.details.tx.hash}
                                                                 </button>
@@ -299,11 +311,17 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                             <div className="row middle card--value">
                                                                 <button
                                                                     className="card--value__tertiary"
-                                                                    onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/address/${item.details.tx.address}`)}
+                                                                    onClick={() => this.props.history.push(
+                                                                        `/${this.props.networkConfig.network
+                                                                        }/address/${item.details.tx.address}`)}
                                                                 >
                                                                     {item.details.tx.address}
                                                                 </button>
-                                                                <img src={chevronRightGreen} alt="address" className="margin-l-t" />
+                                                                <img
+                                                                    src={chevronRightGreen}
+                                                                    alt="address"
+                                                                    className="margin-l-t"
+                                                                />
                                                             </div>
                                                         </div>
                                                     ))}

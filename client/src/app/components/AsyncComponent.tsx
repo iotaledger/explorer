@@ -3,7 +3,7 @@ import { Component } from "react";
 /**
  * Base component for component with async requests.
  */
-class AsyncComponent<P, S = {}> extends Component<P, S> {
+class AsyncComponent<P, S = unknown> extends Component<P, S> {
     /**
      * Is the component mounted.
      */

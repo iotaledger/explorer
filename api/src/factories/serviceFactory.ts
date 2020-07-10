@@ -37,6 +37,6 @@ export class ServiceFactory {
         if (!this._instances[name] && this._services[name]) {
             this._instances[name] = this._services[name](name);
         }
-        return this._instances[name];
+        return this._instances[name] as T;
     }
 }

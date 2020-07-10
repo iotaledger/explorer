@@ -22,7 +22,7 @@ export interface FeedsState extends CurrencyState {
         /**
          * The tx value.
          */
-        value: number
+        value: number;
     }[];
 
     /**

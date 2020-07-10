@@ -6,7 +6,7 @@ import { ApiClient } from "./apiClient";
 /**
  * Class to handle api communications to api for mam.
  */
-export class ApiMamClient {
+export class ApiStreamsV0Client {
     /**
      * The base api client.
      */
@@ -34,8 +34,8 @@ export class ApiMamClient {
      */
     public async prepareTransfers(
         seed: string | Int8Array,
-        transfers: ReadonlyArray<Transfer>,
-        options?: Partial<any>): Promise<ReadonlyArray<string>> {
+        transfers: readonly Transfer[],
+        options?: Partial<any>): Promise<readonly string[]> {
         throw new Error("This method is not supported by the API");
     }
 
@@ -48,10 +48,10 @@ export class ApiMamClient {
      * @returns The list of corresponding transaction objects.
      */
     public async sendTrytes(
-        trytes: ReadonlyArray<string>,
+        trytes: readonly string[],
         depth: number,
         minWeightMagnitude: number,
-        reference?: string | undefined): Promise<ReadonlyArray<Transaction>> {
+        reference?: string | undefined): Promise<readonly Transaction[]> {
         throw new Error("This method is not supported by the API");
     }
 
@@ -64,20 +64,20 @@ export class ApiMamClient {
         /**
          * List of address hashes.
          */
-        addresses?: ReadonlyArray<string>,
+        addresses?: readonly string[];
         /**
          * List of bundle hashes.
          */
-        approvees?: ReadonlyArray<string>,
+        approvees?: readonly string[];
         /**
          * List of bundle hashes.
          */
-        bundles?: ReadonlyArray<string>,
+        bundles?: readonly string[];
         /**
          * List of tags.
          */
-        tags?: ReadonlyArray<string>
-    }): Promise<ReadonlyArray<Transaction>> {
+        tags?: readonly string[];
+    }): Promise<readonly Transaction[]> {
 
         if (!request.addresses) {
             throw new Error("This method is not supported by the API");

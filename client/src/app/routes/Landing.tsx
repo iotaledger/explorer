@@ -135,7 +135,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                                     {
                                                         valueFilter: e.target.value as ValueFilter
                                                     },
-                                                    () => this.updateFilters())}
+                                                    async () => this.updateFilters())}
                                             >
                                                 <option value="both">Both</option>
                                                 <option value="zeroOnly">Zero Only</option>
@@ -154,7 +154,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                                 value={this.state.valueMinimumUnits}
                                                 onChange={e => this.setState(
                                                     { valueMinimumUnits: e.target.value as Unit },
-                                                    () => this.updateFilters())}
+                                                    async () => this.updateFilters())}
                                             >
                                                 <option value="i">i</option>
                                                 <option value="Ki">Ki</option>
@@ -186,7 +186,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                                 value={this.state.valueMaximumUnits}
                                                 onChange={e => this.setState(
                                                     { valueMaximumUnits: e.target.value as Unit },
-                                                    () => this.updateFilters())}
+                                                    async () => this.updateFilters())}
                                             >
                                                 <option value="i">i</option>
                                                 <option value="Ki">Ki</option>
@@ -312,7 +312,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
         /**
          * The tx value.
          */
-        value: number
+        value: number;
     }[]): {
         /**
          * The tx hash.
@@ -321,7 +321,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
         /**
          * The tx value.
          */
-        value: number
+        value: number;
     }[] {
         if (this._isMounted && this._transactionsClient) {
             const minLimit = convertUnits(this.state.valueMinimum, this.state.valueMinimumUnits, Unit.i);
@@ -349,7 +349,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
         const val = parseFloat(min);
 
         if (!Number.isNaN(val)) {
-            this.setState({ valueMinimum: val.toString() }, () => this.updateFilters());
+            this.setState({ valueMinimum: val.toString() }, async () => this.updateFilters());
         } else {
             this.setState({ valueMinimum: "" });
         }
@@ -363,7 +363,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
         const val = parseFloat(max);
 
         if (!Number.isNaN(val)) {
-            this.setState({ valueMaximum: val.toString() }, () => this.updateFilters());
+            this.setState({ valueMaximum: val.toString() }, async () => this.updateFilters());
         } else {
             this.setState({ valueMaximum: "" });
         }
