@@ -107,9 +107,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
      * The component will unmount so update flag.
      */
     public componentWillUnmount(): void {
-        if (super.componentWillUnmount) {
-            super.componentWillUnmount();
-        }
+        super.componentWillUnmount();
         if (this._timerId) {
             clearInterval(this._timerId);
             this._timerId = undefined;
@@ -219,7 +217,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                  </div>
                                                 <div className="card--value">
                                                     <button
-                                                        onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/address/${this.state.details?.tx.address}`)}
+                                                        onClick={() => this.props.history.push(
+                                                            `/${this.props.networkConfig.network
+                                                            }/address/${this.state.details?.tx.address}`)}
                                                     >
                                                         {this.state.details.tx.address}
                                                     </button>
@@ -247,7 +247,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     <div
                                                         className={classNames(
                                                             "card--header-count",
-                                                            { "card--header-count__error": this.state.isBundleValid !== "valid" },
+                                                            {
+                                                                "card--header-count__error":
+                                                                    this.state.isBundleValid !== "valid"
+                                                            },
                                                             {
                                                                 "card--header-count__success":
                                                                     this.state.isBundleValid === "valid"
@@ -268,7 +271,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 </div>
                                                 <div className="card--value">
                                                     <button
-                                                        onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/bundle/${this.state.details?.tx.bundle}`)}
+                                                        onClick={() => this.props.history.push(
+                                                            `/${this.props.networkConfig.network
+                                                            }/bundle/${this.state.details?.tx.bundle}`)}
                                                     >
                                                         {this.state.details?.tx.bundle}
                                                     </button>
@@ -279,7 +284,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 </div>
                                                 <div className="card--value">
                                                     <button
-                                                        onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/transaction/${this.state.previousTransaction}`)}
+                                                        onClick={() => this.props.history.push(
+                                                            `/${this.props.networkConfig.network
+                                                            }/transaction/${this.state.previousTransaction}`)}
                                                         disabled={this.state.previousTransaction === undefined}
                                                     >
                                                         <img
@@ -292,7 +299,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 &nbsp;/&nbsp;
                                                 {this.state.details.tx.lastIndex + 1}
                                                     <button
-                                                        onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/transaction/${this.state.nextTransaction}`)}
+                                                        onClick={() => this.props.history.push(
+                                                            `/${this.props.networkConfig.network
+                                                            }/transaction/${this.state.nextTransaction}`)}
                                                         disabled={this.state.nextTransaction === undefined}
                                                     >
                                                         <img
@@ -316,7 +325,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                         <div className="card--value">
                                                             <button
-                                                                onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/tag/${this.state.details?.tx.tag}`)}
+                                                                onClick={() => this.props.history.push(
+                                                                    `/${this.props.networkConfig.network
+                                                                    }/tag/${this.state.details?.tx.tag}`)}
                                                             >
                                                                 {this.state.details.tx.tag}
                                                             </button>
@@ -328,7 +339,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                         <div className="card--value">
                                                             <button
-                                                                onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/tag/${this.state.details?.tx.obsoleteTag}`)}
+                                                                onClick={() => this.props.history.push(
+                                                                    `/${this.props.networkConfig.network
+                                                                    }/tag/${this.state.details?.tx.obsoleteTag}`)}
                                                             >
                                                                 {this.state.details.tx.obsoleteTag}
                                                             </button>
@@ -401,7 +414,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                         <div className="card--value">
                                                             <button
-                                                                onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/transaction/${this.state.details?.tx.trunkTransaction}`)}
+                                                                onClick={() => this.props.history.push(
+                                                                    `/${this.props.networkConfig.network
+                                                                    }/transaction/${
+                                                                    this.state.details?.tx.trunkTransaction}`)}
                                                             >
                                                                 {this.state.details.tx.trunkTransaction}
                                                             </button>
@@ -411,7 +427,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                         <div className="card--value">
                                                             <button
-                                                                onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/transaction/${this.state.details?.tx.branchTransaction}`)}
+                                                                onClick={() => this.props.history.push(
+                                                                    `/${this.props.networkConfig.network
+                                                                    }/transaction/${
+                                                                    this.state.details?.tx.branchTransaction}`)}
                                                             >
                                                                 {this.state.details.tx.branchTransaction}
                                                             </button>
@@ -482,7 +501,13 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                 </MessageButton>
                                                             )}
                                                         </div>
-                                                        <div className="card--value card--value-textarea card--value-textarea__tall">
+                                                        <div
+                                                            className={classNames(
+                                                                "card--value",
+                                                                "card--value-textarea",
+                                                                "card--value-textarea__tall"
+                                                            )}
+                                                        >
                                                             {this.state.raw}
                                                         </div>
                                                     </div>
@@ -555,7 +580,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                             }
 
                             if (isBundleValid && isConsistent && this.state.details.confirmationState === "pending") {
-                                this._timerId = setInterval(() => this.checkConfirmation(), 10000);
+                                this._timerId = setInterval(async () => this.checkConfirmation(), 10000);
                             }
 
                             this.setState({

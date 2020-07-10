@@ -130,7 +130,8 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
                                                 <div className="card--value" key={h}>
                                                     <button
                                                         className="card--value"
-                                                        onClick={() => this.props.history.push(`/${this.props.networkConfig.network}/transaction/${h}`)}
+                                                        onClick={() => this.props.history.push(
+                                                            `/${this.props.networkConfig.network}/transaction/${h}`)}
                                                     >
                                                         {h}
                                                     </button>

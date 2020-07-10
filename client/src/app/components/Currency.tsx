@@ -45,11 +45,6 @@ abstract class CurrencyBase<P, S extends CurrencyState> extends AsyncComponent<P
     }
 
     /**
-     * Update formatted currencies.
-     */
-    protected abstract updateCurrency(): void;
-
-    /**
      * Set a new currency.
      * @param currency The currency to set.
      */
@@ -84,6 +79,11 @@ abstract class CurrencyBase<P, S extends CurrencyState> extends AsyncComponent<P
             }
         });
     }
+
+    /**
+     * Update formatted currencies.
+     */
+    protected abstract updateCurrency(): void;
 }
 
 export default CurrencyBase;

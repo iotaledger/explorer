@@ -17,7 +17,7 @@ export class PowHelper {
         trunkTransaction: string,
         branchTransaction: string,
         minWeightMagnitude: number,
-        trytes: ReadonlyArray<string>): Promise<ReadonlyArray<string>> {
+        trytes: readonly string[]): Promise<readonly string[]> {
         const finalTrytes: string[] = [];
 
         init();

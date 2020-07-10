@@ -26,7 +26,7 @@ export interface FooterState {
              * The url for the data.
              */
             url: string;
-        }[]
+        }[];
     };
 
     /**

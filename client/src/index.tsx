@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
@@ -16,7 +18,6 @@ import { TangleCacheService } from "./services/tangleCacheService";
 import { TransactionsClient } from "./services/transactionsClient";
 
 const configId = process.env.REACT_APP_CONFIG_ID || "local";
-// tslint:disable-next-line: non-literal-require no-var-requires
 const config: IConfiguration = require(`./assets/config/config.${configId}.json`);
 
 PaletteHelper.setPalette(config.networks[0].palette);

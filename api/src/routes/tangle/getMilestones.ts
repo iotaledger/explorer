@@ -11,9 +11,10 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function getMilestones(config: IConfiguration, request: IGetMilestonesRequest)
-    : Promise<IGetMilestonesResponse> {
-
+export async function getMilestones(
+    config: IConfiguration,
+    request: IGetMilestonesRequest
+): Promise<IGetMilestonesResponse> {
     ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
 
     const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${request.network}`);

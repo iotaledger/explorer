@@ -175,7 +175,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
                                     ht = "transaction";
                                 }
                                 this.setState({
-                                    status: ``,
+                                    status: "",
                                     statusBusy: false,
                                     redirect: `/${this.props.networkConfig.network}/${ht}/${hash}`
                                 });

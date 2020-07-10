@@ -8,7 +8,7 @@ import { StateService } from "../../services/stateService";
  * @param request the request.
  * @returns The response.
  */
-export async function get(config: IConfiguration, request: any): Promise<ICurrenciesResponse> {
+export async function get(config: IConfiguration): Promise<ICurrenciesResponse> {
     try {
         // Only perform currency lookups if api keys have been supplied
         if (config.dynamoDbConnection &&

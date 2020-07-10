@@ -28,7 +28,7 @@ export class MilestonesClient {
         /**
          * The tx value.
          */
-        milestoneIndex: number
+        milestoneIndex: number;
     }[];
 
     /**
@@ -104,7 +104,7 @@ export class MilestonesClient {
         /**
          * The milestone index.
          */
-        milestoneIndex: number
+        milestoneIndex: number;
     }[] {
         return this._milestones;
     }

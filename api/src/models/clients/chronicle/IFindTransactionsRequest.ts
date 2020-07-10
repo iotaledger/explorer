@@ -2,20 +2,20 @@ export interface IFindTransactionsRequest {
     /**
      * The addresses to search for transactions.
      */
-    addresses?: ReadonlyArray<string>;
+    addresses?: readonly string[];
 
     /**
      * The tags to search for transactions.
      */
-    tags?: ReadonlyArray<string>;
+    tags?: readonly string[];
 
     /**
      * The bundles to search for transactions.
      */
-    bundles?: ReadonlyArray<string>;
+    bundles?: readonly string[];
 
     /**
      * The approvees to search for transactions.
      */
-    approvees?: ReadonlyArray<string>;
+    approvees?: readonly string[];
 }

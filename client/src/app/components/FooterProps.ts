@@ -3,9 +3,9 @@
  */
 export interface FooterProps {
     /**
-     * The networks to link to.
+     * The dynamic sections to link to.
      */
-    networks: {
+    dynamic: {
         /**
          * The label for the network.
          */

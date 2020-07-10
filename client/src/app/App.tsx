@@ -48,6 +48,22 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
     }
 
     /**
+     * The component was updated.
+     * @param prevProps The previous properties.
+     */
+    public componentDidUpdate(prevProps: RouteComponentProps<AppRouteProps> & AppProps): void {
+        if (this.props.match.url !== prevProps.match.url) {
+            this.setNetwork(this.props.match.params.network, true);
+        }
+
+        window.scrollTo({
+            left: 0,
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+    /**
      * Render the component.
      * @returns The node to render.
      */
@@ -158,10 +174,15 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                     </Switch>
                 </div>
                 <Footer
-                    networks={this.props.configuration.networks.map(n => ({
-                        label: n.label,
-                        url: n.network
-                    }))}
+                    dynamic={
+                        this.props.configuration.networks.map(n => ({
+                            label: n.label,
+                            url: n.network
+                        })).concat(this.props.configuration.networks.map(n => ({
+                            label: `${n.label} Streams V0`,
+                            url: `${n.network}/streams-v0/`
+                        })))
+                    }
                 />
             </div>
         );
@@ -182,12 +203,14 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                 { networkConfig: config },
                 () => {
                     PaletteHelper.setPalette(config.palette);
-                    window.scrollTo(0, 0);
                     let path = `/${config.network}`;
-                    if (keepParams) {
+                    if (keepParams || this.props.match.params.hashType === "streams-v0") {
                         if (this.props.match.params.hashType) {
                             path += `/${this.props.match.params.hashType}`;
                         }
+                    }
+
+                    if (keepParams) {
                         if (this.props.match.params.hash) {
                             path += `/${this.props.match.params.hash}`;
                         }
@@ -199,6 +222,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                         }
                     }
                     this.props.history.push(path);
+
+                    window.scrollTo({
+                        left: 0,
+                        top: 0,
+                        behavior: "smooth"
+                    });
                 }
             );
         }

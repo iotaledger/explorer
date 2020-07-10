@@ -13,8 +13,10 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function findTransactions(config: IConfiguration, request: IFindTransactionsRequest)
-    : Promise<IFindTransactionsResponse> {
+export async function findTransactions(
+    config: IConfiguration,
+    request: IFindTransactionsRequest
+): Promise<IFindTransactionsResponse> {
 
     ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
     ValidationHelper.string(request.hash, "hash");
