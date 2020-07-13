@@ -48,7 +48,6 @@
       .cards {
         flex: 1;
         margin-right: 24px;
-        overflow: hidden;
 
         @include desktop-down {
           flex: unset;

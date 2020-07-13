@@ -30,6 +30,8 @@ export class ChronicleClient {
         const ax = axios.create({ baseURL: this._endpoint });
 
         try {
+            console.log("Chronicle getTrytes", request);
+
             const axiosResponse = await ax.post<IGetTrytesResponse>(
                 "",
                 { ...{ command: "getTrytes" }, ...request },
@@ -42,7 +44,7 @@ export class ChronicleClient {
 
             return axiosResponse.data;
         } catch (err) {
-            console.error("Chronicle Error", err);
+            console.error("Chronicle Error", (err.response && err.response.data && err.response.data.error) ?? err);
         }
 
         return undefined;
@@ -57,22 +59,16 @@ export class ChronicleClient {
         const ax = axios.create({ baseURL: this._endpoint });
 
         try {
-            const req: IFindTransactionsRequest = {};
             if (request.addresses) {
-                req.addresses = request.addresses.map(a => a.substr(0, 81));
-            }
-            if (request.bundles) {
-                req.bundles = request.bundles;
-            }
-            if (request.approvees) {
-                req.approvees = request.approvees;
+                request.addresses = request.addresses.map(a => a.substr(0, 81));
             }
             if (request.tags) {
-                req.tags = request.tags.map(t => t.padEnd(27, "9"));
+                request.tags = request.tags.map(t => t.padEnd(27, "9"));
             }
+            console.log("Chronicle findTransations", request);
             const axiosResponse = await ax.post<IFindTransactionsResponse>(
                 "",
-                { ...{ command: "findTransactions" }, ...req },
+                { ...{ command: "findTransactions" }, ...request },
                 {
                     headers: {
                         "X-IOTA-API-Version": "1"
@@ -82,7 +78,7 @@ export class ChronicleClient {
 
             return axiosResponse.data;
         } catch (err) {
-            console.error("Chronicle Error", err);
+            console.error("Chronicle Error", (err.response && err.response.data && err.response.data.error) ?? err);
         }
 
         return undefined;

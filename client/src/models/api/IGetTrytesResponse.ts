@@ -1,4 +1,3 @@
-import { ConfirmationState } from "./confirmationState";
 import { IResponse } from "./IResponse";
 
 export interface IGetTrytesResponse extends IResponse {
@@ -8,7 +7,7 @@ export interface IGetTrytesResponse extends IResponse {
     trytes?: string[];
 
     /**
-     * The confirmation state of the transactions.
+     * The milestones index of the transactions.
      */
-    confirmationStates?: ConfirmationState[];
+    milestoneIndexes?: number[];
 }

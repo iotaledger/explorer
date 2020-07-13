@@ -54,10 +54,12 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
         if (this.state.tag) {
             window.scrollTo(0, 0);
 
-            const { hashes, limitExceeded } = await this._tangleCacheService.findTransactionHashes(
+            const { hashes, limitExceeded, cursor } = await this._tangleCacheService.findTransactionHashes(
                 this.props.networkConfig,
                 "tags",
-                this.props.match.params.hash
+                this.props.match.params.hash,
+                this.state.cursor === undefined ? true : false,
+                this.state.cursor
             );
 
             let status = "";
@@ -71,7 +73,8 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
             this.setState({
                 hashes,
                 status,
-                statusBusy: false
+                statusBusy: false,
+                cursor
             });
         } else {
             this.props.history.replace(`/${this.props.networkConfig.network}/search/${this.props.match.params.hash}`);

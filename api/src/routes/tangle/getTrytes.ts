@@ -18,12 +18,12 @@ export async function getTrytes(
     ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
     const networkConfig = config.networks.find(n => n.network === request.network);
 
-    const { trytes, confirmationStates } = await TangleHelper.getTrytes(networkConfig, request.hashes);
+    const { trytes, milestoneIndexes } = await TangleHelper.getTrytes(networkConfig, request.hashes);
 
     return {
         success: true,
         message: "OK",
         trytes,
-        confirmationStates
+        milestoneIndexes
     };
 }

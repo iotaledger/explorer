@@ -88,7 +88,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                 <div className="wrapper">
                     <div className="inner">
                         <h1>Streams v0 Channel</h1>
-                        <div className="row top">
+                        <div className="row">
                             <div className="cards">
                                 <div className="card">
                                     <div className="card--header card--header__space-between">
@@ -116,48 +116,54 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                 {this.state.rootValidation}
                                             </div>
                                         )}
-                                        <div className="row margin-b-s">
+                                        <div className="row margin-b-t">
                                             <div className="card--label form-label-width">
                                                 Mode
                                             </div>
-                                            <button
-                                                className={classNames(
-                                                    "form-button",
-                                                    "margin-r-t",
-                                                    { selected: this.state.mode === "public" }
-                                                )}
-                                                onClick={() => this.setState(
-                                                    { mode: "public", sideKey: "" }, () => this.validate()
-                                                )}
-                                                disabled={this.state.statusBusy}
-                                            >
-                                                Public
+                                            <div className="row wrap">
+                                                <button
+                                                    className={classNames(
+                                                        "form-button",
+                                                        "margin-r-t",
+                                                        "margin-b-t",
+                                                        { selected: this.state.mode === "public" }
+                                                    )}
+                                                    onClick={() => this.setState(
+                                                        { mode: "public", sideKey: "" }, () => this.validate()
+                                                    )}
+                                                    disabled={this.state.statusBusy}
+                                                >
+                                                    Public
                                             </button>
-                                            <button
-                                                className={classNames(
-                                                    "form-button",
-                                                    "margin-r-t",
-                                                    { selected: this.state.mode === "private" }
-                                                )}
-                                                onClick={() => this.setState(
-                                                    { mode: "private", sideKey: "" }, () => this.validate()
-                                                )}
-                                                disabled={this.state.statusBusy}
-                                            >
-                                                Private
+                                                <button
+                                                    className={classNames(
+                                                        "form-button",
+                                                        "margin-r-t",
+                                                        "margin-b-t",
+                                                        { selected: this.state.mode === "private" }
+                                                    )}
+                                                    onClick={() => this.setState(
+                                                        { mode: "private", sideKey: "" }, () => this.validate()
+                                                    )}
+                                                    disabled={this.state.statusBusy}
+                                                >
+                                                    Private
                                             </button>
-                                            <button
-                                                className={classNames(
-                                                    "form-button",
-                                                    { selected: this.state.mode === "restricted" }
-                                                )}
-                                                onClick={() => this.setState(
-                                                    { mode: "restricted" }, () => this.validate()
-                                                )}
-                                                disabled={this.state.statusBusy}
-                                            >
-                                                Restricted
+                                                <button
+                                                    className={classNames(
+                                                        "form-button",
+                                                        "margin-r-t",
+                                                        "margin-b-t",
+                                                        { selected: this.state.mode === "restricted" }
+                                                    )}
+                                                    onClick={() => this.setState(
+                                                        { mode: "restricted" }, () => this.validate()
+                                                    )}
+                                                    disabled={this.state.statusBusy}
+                                                >
+                                                    Restricted
                                             </button>
+                                            </div>
                                         </div>
                                         <div className="row margin-b-s">
                                             <div className="card--label form-label-width">

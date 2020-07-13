@@ -200,7 +200,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
 
         if (config && config.network !== this.state.networkConfig.network) {
             this.setState(
-                { networkConfig: config },
+                {
+                    networkConfig: config
+                },
                 () => {
                     PaletteHelper.setPalette(config.palette);
                     let path = `/${config.network}`;

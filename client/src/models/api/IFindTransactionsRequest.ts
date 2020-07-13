@@ -12,7 +12,17 @@ export interface IFindTransactionsRequest {
     hash: string;
 
     /**
-     * The mode to look for transactions.
+     * The mode to look for transactions if known.
      */
     mode?: FindTransactionsMode;
+
+    /**
+     * Find value transactions only.
+     */
+    valuesOnly?: boolean;
+
+    /**
+     * Cursor to use for subsequent requests
+     */
+    cursor?: string;
 }

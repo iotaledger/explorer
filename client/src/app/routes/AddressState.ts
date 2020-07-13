@@ -77,7 +77,7 @@ export interface AddressState {
     showOnlyConfirmedTransactions: boolean;
 
     /**
-     * Total text.
+     * Cursor next request.
      */
-    totalText?: string;
+    cursor?: string;
 }
