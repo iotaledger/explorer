@@ -33,7 +33,7 @@ export class ServiceFactory {
      * @param name The name of the service to get.
      * @returns An instance of the service.
      */
-    public static get<T>(name: string): T {
+    public static get<T>(name: string): T | undefined {
         if (!this._instances[name] && this._services[name]) {
             this._instances[name] = this._services[name](name);
         }

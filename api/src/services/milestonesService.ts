@@ -1,8 +1,9 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { INetworkConfiguration } from "../models/configuration/INetworkConfiguration";
 import { IAddress } from "../models/zmq/IAddress";
-import { MilestoneStoreService } from "./milestoneStoreService";
 import { ZmqService } from "./zmqService";
+import { IMilestoneStore } from "../models/db/IMilestoneStore";
+import { IStorageService } from "../models/services/IStorageService";
 
 /**
  * Class to handle milestones service.
@@ -21,7 +22,7 @@ export class MilestonesService {
     /**
      * The milestone store service.
      */
-    private _milestoneStoreService: MilestoneStoreService;
+    private _milestoneStorageService: IStorageService<IMilestoneStore>;
 
     /**
      * Subscription ids.
@@ -72,10 +73,10 @@ export class MilestonesService {
         this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._config.network}`);
         this._milestones = [];
 
-        this._milestoneStoreService = ServiceFactory.get<MilestoneStoreService>("milestone-store");
+        this._milestoneStorageService = ServiceFactory.get<IStorageService<IMilestoneStore>>("milestone-storage");
 
-        if (this._milestoneStoreService) {
-            const store = await this._milestoneStoreService.get(this._config.network);
+        if (this._milestoneStorageService) {
+            const store = await this._milestoneStorageService.get(this._config.network);
             if (store && store.indexes) {
                 this._milestones = store.indexes;
             }
@@ -134,9 +135,9 @@ export class MilestonesService {
                         });
                         this._milestones = this._milestones.slice(0, 100);
 
-                        if (this._milestoneStoreService) {
+                        if (this._milestoneStorageService) {
                             try {
-                                await this._milestoneStoreService.set({
+                                await this._milestoneStorageService.set({
                                     network: this._config.network,
                                     indexes: this._milestones
                                 });

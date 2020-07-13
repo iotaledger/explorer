@@ -1,5 +1,6 @@
+import { ServiceFactory } from "../factories/serviceFactory";
 import { IConfiguration } from "../models/configuration/IConfiguration";
-import { MilestoneStoreService } from "../services/milestoneStoreService";
+import { IStorageService } from "../models/services/IStorageService";
 import { StateService } from "../services/stateService";
 
 /**
@@ -11,13 +12,21 @@ export async function init(config: IConfiguration): Promise<string[]> {
     let log = "Initializing\n";
 
     try {
-        const stateService = new StateService(config.dynamoDbConnection);
-        log += await stateService.createTable();
+        const stateStorageService = ServiceFactory.get<IStorageService<any>>("state-storage");
+        if (stateStorageService) {
+            log += await stateStorageService.create();
+        }
 
-        const milestoneStoreService = new MilestoneStoreService(config.dynamoDbConnection);
-        log += await milestoneStoreService.createTable();
+        const milestoneStorageService = ServiceFactory.get<IStorageService<any>>("milestone-storage");
+        if (milestoneStorageService) {
+            log += await milestoneStorageService.create();
+        }
 
-        log += await stateService.updateCurrencies(config, true);
+        const stateService = ServiceFactory.get<StateService>("state");
+
+        if (stateService) {
+            log += await stateService.updateCurrencies(true);
+        }
     } catch (err) {
         log += `Failed\n${err.toString()}\n`;
     }

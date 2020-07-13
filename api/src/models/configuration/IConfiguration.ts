@@ -23,7 +23,12 @@ export interface IConfiguration {
     /**
      * The dynamic db connection.
      */
-    dynamoDbConnection: IAWSDynamoDbConfiguration;
+    dynamoDbConnection?: IAWSDynamoDbConfiguration;
+
+    /**
+     * Optional local folder storage of dynamo DB connection not supplied.
+     */
+    rootStorageFolder?: string;
 
     /**
      * A list of domains allowed to access the api.
