@@ -56,10 +56,6 @@ export class TangleCacheService {
                      */
                     transactionHashes: string[];
                     /**
-                     * The total items if we only have a subset.
-                     */
-                    totalItems: number;
-                    /**
                      * The number of items exceeds the limits.
                      */
                     limitExceeded: boolean;
@@ -161,21 +157,21 @@ export class TangleCacheService {
      * @param networkConfig Which network are we getting the transactions for.
      * @param hashType The type of hash to look for.
      * @param hash The type of hash to look for.
+     * @param valuesOnly Get the value transactions.
+     * @param requestCursor Cursor for next batch of transactions.
      * @returns The transactions hashes returned from the looked up type.
      */
     public async findTransactionHashes(
         networkConfig: IClientNetworkConfiguration,
         hashType: FindTransactionsMode | undefined,
-        hash: string
+        hash: string,
+        valuesOnly?: boolean,
+        requestCursor?: string
     ): Promise<{
         /**
          * The lookup hashes.
          */
         hashes: string[];
-        /**
-         * The total number of items.
-         */
-        totalItems: number;
         /**
          * Did the request exceed the limits.
          */
@@ -184,11 +180,16 @@ export class TangleCacheService {
          * The detected hash type.
          */
         hashType?: FindTransactionsMode;
+
+        /**
+         * Cursor returned from the request.
+         */
+        cursor?: string;
     }> {
         let transactionHashes: string[] | undefined = [];
-        let totalItems = 0;
         let limitExceeded = false;
         let doLookup = true;
+        let cursor: string | undefined;
 
         const findCache = this._findCache[networkConfig.network];
         const tranCache = this._transactionCache[networkConfig.network];
@@ -206,11 +207,7 @@ export class TangleCacheService {
                 }
             }
 
-            if (hashType === "transaction") {
-                doLookup = false;
-                transactionHashes = [hash];
-                limitExceeded = false;
-            } else if (hashType !== undefined) {
+            if (hashType !== undefined) {
                 const cacheHashType = findCache[hashType];
                 if (cacheHashType &&
                     cacheHashType[hash]) {
@@ -230,23 +227,15 @@ export class TangleCacheService {
             const response = await apiClient.findTransactions({
                 network: networkConfig.network,
                 hash,
-                mode: hashType
+                mode: hashType,
+                valuesOnly,
+                cursor: requestCursor
             });
 
             if (response.success) {
-                if (response.trytes) {
-                    tranCache[hash] = {
-                        tx: asTransactionObject(response.trytes),
-                        confirmationState: response.confirmationState ? response.confirmationState : "unknown",
-                        cached: Date.now()
-                    };
-                    transactionHashes = [hash];
-                    totalItems = 1;
-                    limitExceeded = false;
-                    hashType = "transaction";
-                } else if ((response.hashes && response.hashes.length > 0) || response.limitExceeded) {
+                cursor = response.cursor;
+                if ((response.hashes && response.hashes.length > 0) || response.limitExceeded) {
                     transactionHashes = response.hashes || [];
-                    totalItems = response.totalItems || 0;
                     limitExceeded = response.limitExceeded || limitExceeded;
                     hashType = hashType || response.mode;
 
@@ -255,7 +244,6 @@ export class TangleCacheService {
                         if (cacheHashType) {
                             cacheHashType[hash] = {
                                 transactionHashes,
-                                totalItems,
                                 limitExceeded,
                                 cached: Date.now()
                             };
@@ -265,7 +253,6 @@ export class TangleCacheService {
             } else {
                 if (response.message === "Timeout") {
                     transactionHashes = response.hashes || [];
-                    totalItems = response.totalItems || 0;
                     limitExceeded = true;
                     hashType = hashType || response.mode;
                 }
@@ -274,9 +261,9 @@ export class TangleCacheService {
 
         return {
             hashes: transactionHashes || [],
-            totalItems,
             limitExceeded,
-            hashType
+            hashType,
+            cursor
         };
     }
 
@@ -317,14 +304,14 @@ export class TangleCacheService {
                     if (response &&
                         response.success &&
                         response.trytes &&
-                        response.confirmationStates) {
+                        response.milestoneIndexes) {
                         for (let i = 0; i < response.trytes.length; i++) {
                             tranCache[unknownHashes[i]] =
                                 tranCache[unknownHashes[i]] || {};
                             tranCache[unknownHashes[i]].tx =
                                 asTransactionObject(response.trytes[i], unknownHashes[i]);
                             tranCache[unknownHashes[i]].confirmationState =
-                                response.confirmationStates[i];
+                                response.milestoneIndexes[i] === -1 ? "pending" : "confirmed";
                         }
                     }
                 } catch (err) {
@@ -482,7 +469,7 @@ export class TangleCacheService {
         } else {
             // Otherwise we have to grab the whole bundle.
             // and find which group this transaction is in
-            const { hashes } = await this.findTransactionHashes(networkConfig, "bundles", transaction.tx.bundle);
+            const { hashes } = await this.findTransactionHashes(networkConfig, "bundles", transaction.tx.bundle, false);
             if (hashes.length > 0) {
                 const bundleGroups = await this.getBundleGroups(networkConfig, hashes);
 
@@ -537,12 +524,10 @@ export class TangleCacheService {
                 networkConfig.node.depth,
                 networkConfig.node.mwm
             );
-            // tslint:disable-next-line: no-console
             console.log(transactions);
 
             return true;
         } catch (err) {
-            // tslint:disable-next-line: no-console
             console.log(err);
             return false;
         }
@@ -568,12 +553,10 @@ export class TangleCacheService {
                 networkConfig.node.depth,
                 networkConfig.node.mwm
             );
-            // tslint:disable-next-line: no-console
             console.log(transactions);
 
             return true;
         } catch (err) {
-            // tslint:disable-next-line: no-console
             console.log(err);
             return false;
         }

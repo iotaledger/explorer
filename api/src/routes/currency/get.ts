@@ -1,6 +1,8 @@
+import { ServiceFactory } from "../../factories/serviceFactory";
 import { ICurrenciesResponse } from "../../models/api/ICurrenciesResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
-import { StateService } from "../../services/stateService";
+import { IState } from "../../models/db/IState";
+import { IStorageService } from "../../models/services/IStorageService";
 
 /**
  * Get the list of currencies and exchange rates.
@@ -10,12 +12,9 @@ import { StateService } from "../../services/stateService";
  */
 export async function get(config: IConfiguration): Promise<ICurrenciesResponse> {
     try {
-        // Only perform currency lookups if api keys have been supplied
-        if (config.dynamoDbConnection &&
-            (config.cmcApiKey || "CMC_API_KEY") !== "CMC_API_KEY" &&
-            (config.fixerApiKey || "FIXER_API_KEY") !== "FIXER_API_KEY") {
-            const stateService = new StateService(config.dynamoDbConnection);
+        const stateService = ServiceFactory.get<IStorageService<IState>>("state-storage");
 
+        if (stateService) {
             const state = await stateService.get("default");
 
             if (!state) {

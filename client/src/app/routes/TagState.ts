@@ -28,4 +28,9 @@ export interface TagState {
      * The status.
      */
     status: string;
+
+    /**
+     * Cursor next request.
+     */
+    cursor?: string;
 }

@@ -96,7 +96,7 @@ export async function executeRoute(
         filteredParams = logParams(params);
 
         console.log(`===> ${route.method.toUpperCase()} ${route.path}`);
-        console.log(inspect(filteredParams, false, null, false));
+        //console.log(inspect(filteredParams, false, null, false));
 
         if (route.func) {
             let modulePath;
@@ -148,7 +148,7 @@ export async function executeRoute(
     }
 
     console.log(`<=== duration: ${Date.now() - start}ms`);
-    console.log(inspect(response, false, null, false));
+    //console.log(inspect(response, false, null, false));
 
     if (route.dataResponse) {
         const dataResponse = response as IDataResponse;
@@ -181,7 +181,6 @@ export async function executeRoute(
  * @param obj The object to convert.
  * @returns The converted object.
  */
-// tslint:disable: no-any
 function logParams(obj: { [id: string]: any }): { [id: string]: string } {
     const newobj: { [id: string]: any } = {};
     for (const key in obj) {

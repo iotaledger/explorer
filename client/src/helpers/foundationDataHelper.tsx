@@ -67,7 +67,6 @@ export class FoundationDataHelper {
         },
         key?: Key): React.ReactNode {
 
-        // tslint:disable: react-no-dangerous-html
         return (
             <React.Fragment key={key}>
                 {info.label && (

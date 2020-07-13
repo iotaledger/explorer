@@ -14,13 +14,11 @@ export interface IHttpRequest {
     /**
      * The request body.
      */
-    // tslint:disable-next-line: no-any
     body: any;
 
     /**
      * The query parameters.
      */
-    // tslint:disable-next-line: no-any
     query: { [key: string]: any };
 
     /**

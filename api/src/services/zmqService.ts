@@ -263,7 +263,6 @@ export class ZmqService {
                 setTimeout(
                     async () => {
                         this._lastMessageTime = Date.now();
-                        // tslint:disable-next-line: await-promise
                         for await (const [msg] of this._socket) {
                             await this.handleMessage(msg);
                         }

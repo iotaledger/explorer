@@ -1,6 +1,7 @@
 .history
 node_modules
 .vercel
+.local-storage
 
 /api/dist
 /client/build

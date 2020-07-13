@@ -124,7 +124,6 @@ export class TransactionsService {
      * @returns The transaction trytes if found.
      */
     public findTrytes(hash: string): string | undefined {
-        // tslint:disable-next-line: possible-timing-attack
         const found = this._transactionTrytes.find(t => t.hash === hash);
         return found ? found.trytes : undefined;
     }

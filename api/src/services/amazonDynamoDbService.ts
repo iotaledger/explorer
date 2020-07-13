@@ -1,10 +1,11 @@
+import * as aws from "aws-sdk";
 import { IAWSDynamoDbConfiguration } from "../models/configuration/IAWSDynamoDbConfiguration";
-import { AmazonDynamoDbHelper } from "../utils/amazonDynamoDbHelper";
+import { IStorageService } from "../models/services/IStorageService";
 
 /**
  * Service to handle db requests.
  */
-export abstract class AmazonDynamoDbService<T> {
+export class AmazonDynamoDbService<T> implements IStorageService<T> {
     /**
      * The name of the database table.
      */
@@ -20,6 +21,12 @@ export abstract class AmazonDynamoDbService<T> {
      */
     protected readonly _idName: string;
 
+    /**
+     * Create a new instance of AmazonDynamoDbService
+     * @param config The config for the DB connection.
+     * @param tableName The name of the table.
+     * @param idName The item id field.
+     */
     constructor(config: IAWSDynamoDbConfiguration, tableName: string, idName: string) {
         this._config = config;
         this._fullTableName = `${this._config.dbTablePrefix}${tableName}`;
@@ -27,14 +34,14 @@ export abstract class AmazonDynamoDbService<T> {
     }
 
     /**
-     * Create the table for the items.
+     * Create the storage for the items.
      * @returns Log of the table creation.
      */
-    public async createTable(): Promise<string> {
+    public async create(): Promise<string> {
         let log = `Creating table '${this._fullTableName}'\n`;
 
         try {
-            const dbConnection = AmazonDynamoDbHelper.createConnection(this._config);
+            const dbConnection = this.createConnection();
 
             const tableParams = {
                 AttributeDefinitions: [
@@ -83,7 +90,7 @@ export abstract class AmazonDynamoDbService<T> {
      */
     public async get(id: string): Promise<T> {
         try {
-            const docClient = AmazonDynamoDbHelper.createDocClient(this._config);
+            const docClient = this.createDocClient();
 
             const key = {};
             key[this._idName] = id;
@@ -103,7 +110,7 @@ export abstract class AmazonDynamoDbService<T> {
      * @param item The item to set.
      */
     public async set(item: T): Promise<void> {
-        const docClient = AmazonDynamoDbHelper.createDocClient(this._config);
+        const docClient = this.createDocClient();
 
         await docClient.put({
             TableName: this._fullTableName,
@@ -116,7 +123,7 @@ export abstract class AmazonDynamoDbService<T> {
      * @param itemKey The key of the item to remove.
      */
     public async remove(itemKey: string): Promise<void> {
-        const docClient = AmazonDynamoDbHelper.createDocClient(this._config);
+        const docClient = this.createDocClient();
 
         const key = {};
         key[this._idName] = itemKey;
@@ -128,20 +135,41 @@ export abstract class AmazonDynamoDbService<T> {
     }
 
     /**
-     * Get all the items.
-     * @returns All the items for the table.
+     * Create and set the configuration for db.
+     * @param config The configuration to use for connection.
      */
-    public async getAll(): Promise<T[]> {
-        try {
-            const docClient = AmazonDynamoDbHelper.createDocClient(this._config);
+    private createAndSetConfig(): void {
+        const awsConfig = new aws.Config({
+            accessKeyId: this._config.accessKeyId,
+            secretAccessKey: this._config.secretAccessKey,
+            region: this._config.region
+        });
 
-            const response = await docClient.scan({
-                TableName: this._fullTableName
-            }).promise();
+        aws.config.update(awsConfig);
+    }
 
-            return <T[]>response.Items;
-        } catch (err) {
-            return [];
-        }
+    /**
+     * Create a new DB connection.
+     * @param config The configuration for the connection.
+     * @returns The dynamo db connection.
+     */
+    private createConnection(): aws.DynamoDB {
+        this.createAndSetConfig();
+
+        return new aws.DynamoDB({ apiVersion: "2012-10-08" });
+    }
+
+    /**
+     * Create a doc client connection.
+     * @param config The configuration to use for connection.
+     * @returns The dynamo db document client.
+     */
+    private createDocClient(): aws.DynamoDB.DocumentClient {
+        this.createAndSetConfig();
+
+        return new aws.DynamoDB.DocumentClient({
+            apiVersion: "2012-10-08",
+            convertEmptyValues: true
+        });
     }
 }

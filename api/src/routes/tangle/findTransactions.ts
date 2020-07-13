@@ -1,5 +1,4 @@
 import { isEmpty } from "@iota/validators";
-import { ConfirmationState } from "../../models/api/confirmationState";
 import { FindTransactionsMode } from "../../models/api/findTransactionsMode";
 import { IFindTransactionsRequest } from "../../models/api/IFindTransactionsRequest";
 import { IFindTransactionsResponse } from "../../models/api/IFindTransactionsResponse";
@@ -24,11 +23,10 @@ export async function findTransactions(
     const networkConfig = config.networks.find(n => n.network === request.network);
 
     let hashes: string[];
-    let foundTrytes: string;
-    let foundConfirmationState: ConfirmationState;
     let foundMode: FindTransactionsMode;
     let modes: FindTransactionsMode[];
     let limitExceeded: boolean = false;
+    let returnCursor: string | undefined;
 
     if (request.mode) {
         modes = [request.mode];
@@ -43,22 +41,22 @@ export async function findTransactions(
     }
 
     for (const mode of modes) {
-        const { foundHashes, tooMany } = await TangleHelper.findHashes(networkConfig, mode, request.hash);
+        const { foundHashes, tooMany, cursor } = await TangleHelper.findHashes(networkConfig, mode, request.hash);
 
         if ((foundHashes && foundHashes.length > 0) || tooMany) {
             foundMode = mode;
             hashes = foundHashes;
             limitExceeded = tooMany;
+            returnCursor = cursor;
             break;
         }
     }
 
     if ((!hashes || hashes.length === 0) && request.hash.length === 81) {
-        const { trytes, confirmationStates } = await TangleHelper.getTrytes(networkConfig, [request.hash]);
+        const { trytes } = await TangleHelper.getTrytes(networkConfig, [request.hash]);
 
         if (trytes && trytes.length > 0 && !isEmpty(trytes[0])) {
-            foundTrytes = trytes[0];
-            foundConfirmationState = confirmationStates[0];
+            hashes = [request.hash];
             foundMode = "transaction";
         }
     }
@@ -67,10 +65,8 @@ export async function findTransactions(
         success: true,
         message: "OK",
         mode: foundMode,
-        trytes: foundTrytes,
-        confirmationState: foundConfirmationState,
-        hashes: hashes ? hashes.slice(0, 1000) : undefined,
-        totalItems: hashes ? hashes.length : undefined,
-        limitExceeded: limitExceeded === true ? true : undefined
+        limitExceeded,
+        hashes,
+        cursor: returnCursor
     };
 }
