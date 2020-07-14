@@ -224,7 +224,6 @@ export class CurrencyService {
                     currencies: settings.currencies,
                     fiatCode: settings.fiatCode,
                     marketCap: settings.marketCap,
-                    percentageChange24h: settings.percentageChange24h,
                     volume24h: settings.volume24h
                 });
             hasData = true;
@@ -338,7 +337,6 @@ export class CurrencyService {
                     const ids = Object.keys(cur).sort();
                     settings.currencies = ids.map(i => ({ id: i, rate: cur[i] }));
                     settings.marketCap = currencyResponse.marketCap;
-                    settings.percentageChange24h = currencyResponse.percentageChange24h;
                     settings.volume24h = currencyResponse.volume24h;
 
                     this._settingsService.save();
@@ -350,7 +348,6 @@ export class CurrencyService {
                             currencies: settings.currencies,
                             fiatCode: settings.fiatCode,
                             marketCap: settings.marketCap,
-                            percentageChange24h: settings.percentageChange24h,
                             volume24h: settings.volume24h
                         });
                 }

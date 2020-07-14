@@ -27,7 +27,7 @@ export class FixerClient {
     /**
      * Get the latest api rates.
      * @param baseCurrency The base currency to use for the rates.
-     * @returns The exhcange rates.
+     * @returns The exchange rates.
      */
     public async latest(baseCurrency: string): Promise<{ [id: string]: number } | undefined> {
         const ax = axios.create({ baseURL: this._endpoint });

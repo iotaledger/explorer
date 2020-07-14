@@ -7,7 +7,7 @@ export interface LandingState extends CurrencyState, FeedsState {
     /**
      * The market cap in eur.
      */
-    marketCapEur: number;
+    marketCapEUR: number;
 
     /**
      * The market cap in selected currency.
@@ -17,7 +17,7 @@ export interface LandingState extends CurrencyState, FeedsState {
     /**
      * The price in EUR.
      */
-    priceEur: number;
+    priceEUR: number;
 
     /**
      * The price in selected currency.

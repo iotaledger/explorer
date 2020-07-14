@@ -3,15 +3,16 @@ import { ServiceFactory } from "./factories/serviceFactory";
 import { ISchedule } from "./models/app/ISchedule";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { INetworkConfiguration } from "./models/configuration/INetworkConfiguration";
+import { ICurrencyState } from "./models/db/ICurrencyState";
+import { IMarket } from "./models/db/IMarket";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
 import { AmazonDynamoDbService } from "./services/amazonDynamoDbService";
+import { CurrencyService } from "./services/currencyService";
 import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesService } from "./services/milestonesService";
-import { StateService } from "./services/stateService";
 import { TransactionsService } from "./services/transactionsService";
 import { ZmqService } from "./services/zmqService";
 import { ScheduleHelper } from "./utils/scheduleHelper";
-import { IState } from "./models/db/IState";
 
 /**
  * Initialise all the services.
@@ -42,14 +43,20 @@ export async function initServices(config: IConfiguration): Promise<void> {
         ServiceFactory.register("milestone-storage", () => new LocalStorageService<IMilestoneStore>(
             config.rootStorageFolder, "milestones", "network"));
 
-        ServiceFactory.register("state-storage", () => new LocalStorageService<IState>(
-            config.rootStorageFolder, "state", "id"));
+        ServiceFactory.register("currency-storage", () => new LocalStorageService<ICurrencyState>(
+            config.rootStorageFolder, "currency", "id"));
+
+        ServiceFactory.register("market-storage", () => new LocalStorageService<IMarket>(
+            config.rootStorageFolder, "market", "currency"));
     } else if (config.dynamoDbConnection) {
         ServiceFactory.register("milestone-storage", () => new AmazonDynamoDbService<IMilestoneStore>(
             config.dynamoDbConnection, "milestones", "network"));
 
-        ServiceFactory.register("state-storage", () => new AmazonDynamoDbService<IState>(
-            config.dynamoDbConnection, "state", "id"));
+        ServiceFactory.register("currency-storage", () => new AmazonDynamoDbService<ICurrencyState>(
+            config.dynamoDbConnection, "currency", "id"));
+
+        ServiceFactory.register("market-storage", () => new AmazonDynamoDbService<IMarket>(
+            config.dynamoDbConnection, "market", "currency"));
     }
 
     for (const networkConfig of config.networks) {
@@ -65,16 +72,16 @@ export async function initServices(config: IConfiguration): Promise<void> {
         await transactionService.init();
     }
 
-    ServiceFactory.register("state", () => new StateService(config));
+    ServiceFactory.register("currency", () => new CurrencyService(config));
 
     const schedules: ISchedule[] = [
         {
             name: "Update Currencies",
             schedule: "0 0 */4 * * *", // Every 4 hours on 0 minute 0 seconds
             func: async () => {
-                const stateService = ServiceFactory.get<StateService>("state");
+                const currencyService = ServiceFactory.get<CurrencyService>("currency");
 
-                const log = await stateService.updateCurrencies();
+                const log = await currencyService.update();
                 console.log(log);
             }
         }

@@ -6,7 +6,6 @@ To configure the `api` you should copy `./src/data/config.json.template` to `./s
 
 ```js
 {
-    "cmcApiKey": "CMC_API_KEY"                       /* API Key for using CoinMarketCap */
     "fixerApiKey": "FIXER_API_KEY"                   /* API Key for using fixer.io */
     "dynamoDbConnection": {
         "region": "AWS-REGION",                      /* AWS Region e.g. eu-central-1 */

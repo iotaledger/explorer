@@ -1,4 +1,4 @@
-export interface IState {
+export interface ICurrencyState {
     /**
      * The id for the state.
      */
@@ -12,22 +12,17 @@ export interface IState {
     /**
      * The coin market cap currency EUR rate.
      */
-    coinMarketCapRateEUR: number;
+    currentPriceEUR: number;
 
     /**
      * The market cap in EUR.
      */
-    marketCapEur: number;
+    marketCapEUR: number;
 
     /**
-     * The volume in the last 24H.
+     * The volume in the last 24H in EUR.
      */
-    volume24h: number;
-
-    /**
-     * The percentage change in the last 24H.
-     */
-    percentageChange24h: number;
+    volumeEUR: number;
 
     /**
      * Exchange rates based on EUR.

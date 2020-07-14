@@ -92,7 +92,7 @@ export class ApiClient {
 
         try {
             const axiosResponse = await ax.post<IGetTrytesResponse>(
-                "get-trytes", request);
+                "trytes", request);
 
             response = axiosResponse.data;
         } catch (err) {
@@ -116,7 +116,7 @@ export class ApiClient {
 
         try {
             const axiosResponse = await ax.get<IGetMilestonesResponse>(
-                `get-milestones/${request.network}`);
+                `milestones/${request.network}`);
 
             response = axiosResponse.data;
         } catch (err) {

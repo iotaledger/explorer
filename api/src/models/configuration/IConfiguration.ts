@@ -11,11 +11,6 @@ export interface IConfiguration {
     networks: INetworkConfiguration[];
 
     /**
-     * The coin market cap api key.
-     */
-    cmcApiKey: string;
-
-    /**
      * The fixer api key.
      */
     fixerApiKey: string;

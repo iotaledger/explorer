@@ -1,4 +1,5 @@
 import * as aws from "aws-sdk";
+import { BatchWriteItemRequestMap } from "aws-sdk/clients/dynamodb";
 import { IAWSDynamoDbConfiguration } from "../models/configuration/IAWSDynamoDbConfiguration";
 import { IStorageService } from "../models/services/IStorageService";
 
@@ -132,6 +133,62 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
             TableName: this._fullTableName,
             Key: key
         }).promise();
+    }
+
+    /**
+     * Get all the items.
+     * @returns All the items for the table.
+     */
+    public async getAll(): Promise<T[]> {
+        try {
+            const docClient = this.createDocClient();
+
+            let lastKey;
+            let allItems: T[] = [];
+
+            do {
+                const response = await docClient.scan({
+                    TableName: this._fullTableName,
+                    ExclusiveStartKey: lastKey
+                }).promise();
+
+                if (allItems) {
+                    allItems = allItems.concat(response.Items as T[]);
+                }
+
+                lastKey = response.LastEvaluatedKey;
+            }
+            while (lastKey);
+
+            return allItems;
+        } catch (err) {
+            return [];
+        }
+    }
+
+    /**
+     * Set the items in a batch.
+     * @param items The items to set.
+     */
+    public async setAll(items: T[]): Promise<void> {
+        const docClient = this.createDocClient();
+
+        for (let i = 0; i < Math.ceil(items.length / 25); i++) {
+            const params: BatchWriteItemRequestMap = {};
+
+            params[this._fullTableName] = items
+                .slice(i * 25, (i + 1) * 25)
+                .map(item => (
+                    {
+                        PutRequest: {
+                            Item: item as any
+                        }
+                    }));
+
+            await docClient.batchWrite({
+                RequestItems: params
+            }).promise();
+        }
     }
 
     /**

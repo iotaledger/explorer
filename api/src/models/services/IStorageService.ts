@@ -26,4 +26,16 @@ export interface IStorageService<T> {
      * @param itemKey The key of the item to remove.
      */
     remove(itemKey: string): Promise<void>;
+
+    /**
+     * Get all the items.
+     * @returns All the items for the storage.
+     */
+    getAll(): Promise<T[]>;
+
+    /**
+     * Set the items in a batch.
+     * @param items The items to set.
+     */
+    setAll(items: T[]): Promise<void>;
 }

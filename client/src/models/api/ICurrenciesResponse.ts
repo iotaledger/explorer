@@ -22,11 +22,6 @@ export interface ICurrenciesResponse extends IResponse {
     volume24h?: number;
 
     /**
-     * The percentage change in the last 24H.
-     */
-    percentageChange24h?: number;
-
-    /**
      * The currencies and their exchange rates from base rate.
      */
     currencies?: { [id: string]: number };

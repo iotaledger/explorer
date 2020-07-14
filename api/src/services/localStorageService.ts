@@ -38,7 +38,7 @@ export class LocalStorageService<T> implements IStorageService<T> {
      * @returns Log of the table creation.
      */
     public async create(): Promise<string> {
-        return "Success";
+        return `Success Creating Local Storage for ${this._fullFolderPath}\n`;
     }
 
     /**
@@ -82,6 +82,39 @@ export class LocalStorageService<T> implements IStorageService<T> {
 
             await promises.unlink(fullPath);
         } catch (err) {
+        }
+    }
+
+    /**
+     * Get all the items.
+     * @returns All the items for the storage.
+     */
+    public async getAll(): Promise<T[]> {
+        const items: T[] = [];
+
+        try {
+            const files = promises.readdir(this._fullFolderPath);
+
+            for (const file in files) {
+                const fullPath = join(this._fullFolderPath, file);
+
+                const buffer = await promises.readFile(fullPath);
+
+                items.push(JSON.parse(buffer.toString()) as T);
+            }
+        } catch (err) {
+        }
+
+        return items;
+    }
+
+    /**
+     * Set the items in a batch.
+     * @param items The items to set.
+     */
+    public async setAll(items: T[]): Promise<void> {
+        for (const item of items) {
+            await this.set(item);
         }
     }
 }
