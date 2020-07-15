@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IMarketRequest } from "../../models/api/IMarketRequest";
-import { IMarketResponse } from "../../models/api/IMarketResponse";
+import { IMarketGetRequest } from "../../models/api/IMarketGetRequest";
+import { IMarketGetResponse } from "../../models/api/IMarketGetResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { IMarket } from "../../models/db/IMarket";
 import { IStorageService } from "../../models/services/IStorageService";
@@ -12,7 +12,7 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request the request.
  * @returns The response.
  */
-export async function get(config: IConfiguration, request: IMarketRequest): Promise<IMarketResponse> {
+export async function get(config: IConfiguration, request: IMarketGetRequest): Promise<IMarketGetResponse> {
     ValidationHelper.string(request.currency, "currency");
 
     const marketStorageService = ServiceFactory.get<IStorageService<IMarket>>("market-storage");

@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IGetMilestonesRequest } from "../../models/api/IGetMilestonesRequest";
-import { IGetMilestonesResponse } from "../../models/api/IGetMilestonesResponse";
+import { IMilestonesGetRequest } from "../../models/api/IMilestonesGetRequest";
+import { IMilestonesGetResponse } from "../../models/api/IMilestonesGetResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { MilestonesService } from "../../services/milestonesService";
 import { ValidationHelper } from "../../utils/validationHelper";
@@ -11,10 +11,10 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function getMilestones(
+export async function get(
     config: IConfiguration,
-    request: IGetMilestonesRequest
-): Promise<IGetMilestonesResponse> {
+    request: IMilestonesGetRequest
+): Promise<IMilestonesGetResponse> {
     ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
 
     const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${request.network}`);

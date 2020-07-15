@@ -3,7 +3,7 @@ import { mamFetch, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { PowHelper } from "../helpers/powHelper";
-import { FindTransactionsMode } from "../models/api/findTransactionsMode";
+import { TransactionsGetMode } from "../models/api/transactionsGetMode";
 import { IClientNetworkConfiguration } from "../models/config/IClientNetworkConfiguration";
 import { IConfiguration } from "../models/config/IConfiguration";
 import { ICachedTransaction } from "../models/ICachedTransaction";
@@ -45,7 +45,7 @@ export class TangleCacheService {
             /**
              * The hash type.
              */
-            [hashKey in FindTransactionsMode]?: {
+            [hashKey in TransactionsGetMode]?: {
 
                 /**
                  * The hash.
@@ -163,7 +163,7 @@ export class TangleCacheService {
      */
     public async findTransactionHashes(
         networkConfig: IClientNetworkConfiguration,
-        hashType: FindTransactionsMode | undefined,
+        hashType: TransactionsGetMode | undefined,
         hash: string,
         valuesOnly?: boolean,
         requestCursor?: string
@@ -179,7 +179,7 @@ export class TangleCacheService {
         /**
          * The detected hash type.
          */
-        hashType?: FindTransactionsMode;
+        hashType?: TransactionsGetMode;
 
         /**
          * Cursor returned from the request.
@@ -224,7 +224,7 @@ export class TangleCacheService {
         if (doLookup) {
             const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-            const response = await apiClient.findTransactions({
+            const response = await apiClient.transactionsGet({
                 network: networkConfig.network,
                 hash,
                 mode: hashType,
@@ -296,7 +296,7 @@ export class TangleCacheService {
                 try {
                     const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-                    const response = await apiClient.getTrytes({
+                    const response = await apiClient.trytesRetrieve({
                         network: networkConfig.network,
                         hashes: unknownHashes
                     });
@@ -631,7 +631,7 @@ export class TangleCacheService {
             const findCache = this._findCache[net];
             if (findCache) {
                 for (const hashType in findCache) {
-                    const hashCache = findCache[hashType as FindTransactionsMode];
+                    const hashCache = findCache[hashType as TransactionsGetMode];
 
                     if (hashCache) {
                         for (const hash in hashCache) {

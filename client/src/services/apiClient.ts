@@ -1,11 +1,13 @@
 import axios from "axios";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
-import { IFindTransactionsRequest } from "../models/api/IFindTransactionsRequest";
-import { IFindTransactionsResponse } from "../models/api/IFindTransactionsResponse";
-import { IGetMilestonesRequest } from "../models/api/IGetMilestonesRequest";
-import { IGetMilestonesResponse } from "../models/api/IGetMilestonesResponse";
-import { IGetTrytesRequest } from "../models/api/IGetTrytesRequest";
-import { IGetTrytesResponse } from "../models/api/IGetTrytesResponse";
+import { ITransactionsGetRequest } from "../models/api/ITransactionsGetRequest";
+import { ITransactionsGetResponse } from "../models/api/ITransactionsGetResponse";
+import { IMilestonesGetRequest } from "../models/api/IMilestonesGetRequest";
+import { IMilestonesGetResponse } from "../models/api/IMilestonesGetResponse";
+import { IMarketGetRequest } from "../models/api/IMarketGetRequest";
+import { IMarketGetResponse } from "../models/api/IMarketGetResponse";
+import { ITrytesRetrieveRequest } from "../models/api/ITrytesRetrieveRequest";
+import { ITrytesRetrieveResponse } from "../models/api/ITrytesRetrieveResponse";
 
 /**
  * Class to handle api communications.
@@ -52,16 +54,18 @@ export class ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async findTransactions(request: IFindTransactionsRequest): Promise<IFindTransactionsResponse> {
+    public async transactionsGet(request: ITransactionsGetRequest): Promise<ITransactionsGetResponse> {
         const ax = axios.create({
             baseURL: this._endpoint,
             timeout: 10000
         });
-        let response: IFindTransactionsResponse;
+        let response: ITransactionsGetResponse;
 
         try {
-            const axiosResponse = await ax.get<IFindTransactionsResponse>(
-                `find-transactions${this.urlParams(request)}`);
+            const { network, ...rest } = request;
+
+            const axiosResponse = await ax.get<ITransactionsGetResponse>(
+                `transactions/${network}${this.urlParams(rest)}`);
 
             response = axiosResponse.data;
         } catch (err) {
@@ -86,13 +90,14 @@ export class ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async getTrytes(request: IGetTrytesRequest): Promise<IGetTrytesResponse> {
+    public async trytesRetrieve(request: ITrytesRetrieveRequest): Promise<ITrytesRetrieveResponse> {
         const ax = axios.create({ baseURL: this._endpoint });
-        let response: IGetTrytesResponse;
+        let response: ITrytesRetrieveResponse;
 
         try {
-            const axiosResponse = await ax.post<IGetTrytesResponse>(
-                "trytes", request);
+            const { network, ...rest } = request;
+            const axiosResponse = await ax.post<ITrytesRetrieveResponse>(
+                `trytes/${request.network}`, rest);
 
             response = axiosResponse.data;
         } catch (err) {
@@ -110,13 +115,36 @@ export class ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async getMilestones(request: IGetMilestonesRequest): Promise<IGetMilestonesResponse> {
+    public async milestonesGet(request: IMilestonesGetRequest): Promise<IMilestonesGetResponse> {
         const ax = axios.create({ baseURL: this._endpoint });
-        let response: IGetMilestonesResponse;
+        let response: IMilestonesGetResponse;
 
         try {
-            const axiosResponse = await ax.get<IGetMilestonesResponse>(
+            const axiosResponse = await ax.get<IMilestonesGetResponse>(
                 `milestones/${request.network}`);
+
+            response = axiosResponse.data;
+        } catch (err) {
+            response = {
+                success: false,
+                message: `There was a problem communicating with the API.\n${err}`
+            };
+        }
+
+        return response;
+    }
+
+    /**
+     * Perform a request to get the market data information.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async marketGet(request: IMarketGetRequest): Promise<IMarketGetResponse> {
+        const ax = axios.create({ baseURL: this._endpoint });
+        let response: IMarketGetResponse;
+
+        try {
+            const axiosResponse = await ax.get<IMarketGetResponse>(`market/${request.currency}`);
 
             response = axiosResponse.data;
         } catch (err) {

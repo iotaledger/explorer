@@ -12,7 +12,7 @@ import { TransactionsService } from "../../services/transactionsService";
  * @param request The request.
  * @returns The response.
  */
-export function transactionsUnsubscribe(
+export function unsubscribe(
     config: IConfiguration, socket: SocketIO.Socket, request: ITransactionsUnsubscribeRequest): IResponse {
     let response: IResponse;
 

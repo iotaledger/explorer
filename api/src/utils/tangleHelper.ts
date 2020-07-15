@@ -1,7 +1,7 @@
 import { composeAPI } from "@iota/core";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { FindTransactionsMode } from "../models/api/findTransactionsMode";
+import { TransactionsGetMode } from "../models/api/transactionsGetMode";
 import { INetworkConfiguration } from "../models/configuration/INetworkConfiguration";
 import { TransactionsService } from "../services/transactionsService";
 
@@ -18,7 +18,7 @@ export class TangleHelper {
      */
     public static async findHashes(
         networkConfig: INetworkConfiguration,
-        hashTypeName: FindTransactionsMode,
+        hashTypeName: TransactionsGetMode,
         hash: string): Promise<{
             /**
              * The hashes retrieved.

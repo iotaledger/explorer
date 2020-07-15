@@ -7,8 +7,8 @@ import express, { Application } from "express";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { routes } from "./routes";
 import { cors, executeRoute } from "./utils/apiHelper";
-import { transactionsSubscribe } from "./routes/transactions/transactionsSubscribe";
-import { transactionsUnsubscribe } from "./routes/transactions/transactionsUnsubscribe";
+import { subscribe } from "./routes/transactions/subscribe";
+import { unsubscribe } from "./routes/transactions/unsubscribe";
 import { initServices } from "./initServices";
 
 const configId = process.env.CONFIG_ID || "local";
@@ -50,8 +50,8 @@ server.listen(port, async () => {
     console.log(`Running Config '${configId}'`);
 
     socketServer.on("connection", socket => {
-        socket.on("subscribe", data => socket.emit("subscribe", transactionsSubscribe(config, socket, data)));
-        socket.on("unsubscribe", data => socket.emit("unsubscribe", transactionsUnsubscribe(config, socket, data)));
+        socket.on("subscribe", data => socket.emit("subscribe", subscribe(config, socket, data)));
+        socket.on("unsubscribe", data => socket.emit("unsubscribe", unsubscribe(config, socket, data)));
     });
 
     await initServices(config);

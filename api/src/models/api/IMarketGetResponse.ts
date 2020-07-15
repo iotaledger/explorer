@@ -1,13 +1,10 @@
-export interface IMarket {
-    /**
-     * The currency.
-     */
-    currency: string;
+import { IResponse } from "./IResponse";
 
+export interface IMarketGetResponse extends IResponse {
     /**
      * Market data by date.
      */
-    data: {
+    data?: {
         /**
          * The market date.
          */

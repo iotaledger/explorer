@@ -143,15 +143,22 @@ export class CurrencyService {
                 if (!market) {
                     market = {
                         currency: currency.toLowerCase(),
-                        data: {}
+                        data: []
                     };
                     markets.push(market);
                 }
-                market.data[fullDate] = {
+                const data = {
+                    d: fullDate,
                     p: priceEUR * currentState.exchangeRatesEUR[currency],
                     m: marketCapEUR * currentState.exchangeRatesEUR[currency],
                     v: volumeEUR * currentState.exchangeRatesEUR[currency]
                 };
+                const idx = market.data.findIndex(d => d.d === fullDate);
+                if (idx >= 0) {
+                    market.data[idx] = data;
+                } else {
+                    market.data.push(data);
+                }
             }
         }
 

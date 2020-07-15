@@ -1,5 +1,5 @@
-import { IGetTrytesRequest } from "../../models/api/IGetTrytesRequest";
-import { IGetTrytesResponse } from "../../models/api/IGetTrytesResponse";
+import { ITrytesRetrieveRequest } from "../../models/api/ITrytesRetrieveRequest";
+import { ITrytesRetrieveResponse } from "../../models/api/ITrytesRetrieveResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { TangleHelper } from "../../utils/tangleHelper";
 import { ValidationHelper } from "../../utils/validationHelper";
@@ -10,10 +10,10 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function getTrytes(
+export async function post(
     config: IConfiguration,
-    request: IGetTrytesRequest
-): Promise<IGetTrytesResponse> {
+    request: ITrytesRetrieveRequest
+): Promise<ITrytesRetrieveResponse> {
 
     ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
     const networkConfig = config.networks.find(n => n.network === request.network);

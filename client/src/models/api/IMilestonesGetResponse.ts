@@ -1,6 +1,6 @@
 import { IResponse } from "./IResponse";
 
-export interface IGetMilestonesResponse extends IResponse {
+export interface IMilestonesGetResponse extends IResponse {
     /**
      * The most recent milestones for the network.
      */

@@ -16,8 +16,8 @@ export const routes: IRoute[] = [
     },
     { path: "/init", method: "get", func: "init" },
     { path: "/currencies", method: "get", folder: "currency", func: "get" },
-    { path: "/find-transactions", method: "get", folder: "tangle", func: "findTransactions" },
-    { path: "/trytes", method: "post", folder: "tangle", func: "getTrytes" },
-    { path: "/milestones/:network", method: "get", folder: "tangle", func: "getMilestones" },
+    { path: "/transactions/:network", method: "get", folder: "transactions", func: "get" },
+    { path: "/trytes/:network", method: "post", folder: "trytes", func: "post" },
+    { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
     { path: "/market/:currency", method: "get", folder: "market", func: "get" }
 ];

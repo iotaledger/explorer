@@ -1,4 +1,4 @@
-export interface IGetTrytesRequest {
+export interface ITrytesRetrieveRequest {
     /**
      * The network to search on.
      */

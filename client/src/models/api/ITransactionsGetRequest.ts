@@ -1,6 +1,6 @@
-import { FindTransactionsMode } from "./findTransactionsMode";
+import { TransactionsGetMode } from "./transactionsGetMode";
 
-export interface IFindTransactionsRequest {
+export interface ITransactionsGetRequest {
     /**
      * The network to search on.
      */
@@ -14,7 +14,7 @@ export interface IFindTransactionsRequest {
     /**
      * The mode to look for transactions if known.
      */
-    mode?: FindTransactionsMode;
+    mode?: TransactionsGetMode;
 
     /**
      * Find value transactions only.

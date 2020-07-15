@@ -1,4 +1,4 @@
-export interface IGetMilestonesRequest {
+export interface IMilestonesGetRequest {
     /**
      * The network to search on.
      */

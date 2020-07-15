@@ -114,7 +114,7 @@ export class MilestonesClient {
      */
     private async updateMilestones(): Promise<void> {
         try {
-            const response = await this._apiClient.getMilestones({
+            const response = await this._apiClient.milestonesGet({
                 network: this._config.network
             });
 

@@ -1,7 +1,7 @@
 import { isEmpty } from "@iota/validators";
-import { FindTransactionsMode } from "../../models/api/findTransactionsMode";
-import { IFindTransactionsRequest } from "../../models/api/IFindTransactionsRequest";
-import { IFindTransactionsResponse } from "../../models/api/IFindTransactionsResponse";
+import { TransactionsGetMode } from "../../models/api/transactionsGetMode";
+import { ITransactionsGetRequest } from "../../models/api/ITransactionsGetRequest";
+import { ITransactionsGetResponse } from "../../models/api/ITransactionsGetResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { TangleHelper } from "../../utils/tangleHelper";
 import { ValidationHelper } from "../../utils/validationHelper";
@@ -12,10 +12,10 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function findTransactions(
+export async function get(
     config: IConfiguration,
-    request: IFindTransactionsRequest
-): Promise<IFindTransactionsResponse> {
+    request: ITransactionsGetRequest
+): Promise<ITransactionsGetResponse> {
 
     ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
     ValidationHelper.string(request.hash, "hash");
@@ -23,8 +23,8 @@ export async function findTransactions(
     const networkConfig = config.networks.find(n => n.network === request.network);
 
     let hashes: string[];
-    let foundMode: FindTransactionsMode;
-    let modes: FindTransactionsMode[];
+    let foundMode: TransactionsGetMode;
+    let modes: TransactionsGetMode[];
     let limitExceeded: boolean = false;
     let returnCursor: string | undefined;
 

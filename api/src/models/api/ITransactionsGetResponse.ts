@@ -1,7 +1,7 @@
-import { FindTransactionsMode } from "./findTransactionsMode";
+import { TransactionsGetMode } from "./transactionsGetMode";
 import { IResponse } from "./IResponse";
 
-export interface IFindTransactionsResponse extends IResponse {
+export interface ITransactionsGetResponse extends IResponse {
     /**
      * The items for the matching transaction.
      */
@@ -10,7 +10,7 @@ export interface IFindTransactionsResponse extends IResponse {
     /**
      * The mode to look for transactions.
      */
-    mode?: FindTransactionsMode;
+    mode?: TransactionsGetMode;
 
     /**
      * There were too many items to retrieve.

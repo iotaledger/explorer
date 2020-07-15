@@ -83,7 +83,7 @@ export class ApiStreamsV0Client {
             throw new Error("This method is not supported by the API");
         }
 
-        const response = await this._apiClient.findTransactions(
+        const response = await this._apiClient.transactionsGet(
             {
                 mode: "addresses",
                 network: this._network,
@@ -95,7 +95,7 @@ export class ApiStreamsV0Client {
         if (response && response.hashes) {
             const hashes = response.hashes;
 
-            const trytesResponse = await this._apiClient.getTrytes({
+            const trytesResponse = await this._apiClient.trytesRetrieve({
                 network: this._network,
                 hashes
             });

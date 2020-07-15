@@ -13,7 +13,7 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export function transactionsSubscribe(
+export function subscribe(
     config: IConfiguration,
     socket: SocketIO.Socket,
     request: ITransactionsSubscribeRequest): ITransactionsSubscribeResponse {

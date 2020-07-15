@@ -1,6 +1,6 @@
 import { IResponse } from "./IResponse";
 
-export interface IGetTrytesResponse extends IResponse {
+export interface ITrytesRetrieveResponse extends IResponse {
     /**
      * The trytes for the requested transactions.
      */
