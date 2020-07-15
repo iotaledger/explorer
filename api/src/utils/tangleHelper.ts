@@ -67,6 +67,9 @@ export class TangleHelper {
                 // Cant do anything with cursors here until nodes
                 // support some kind of paging requests
                 hashes = await api.findTransactions(findReq);
+
+                // But also make sure we don't overload the response
+                hashes = hashes.slice(0, 1000);
                 cursor = "";
             } catch (err) {
                 const errString = err.toString();
