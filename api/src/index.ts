@@ -37,8 +37,8 @@ for (const route of routes) {
             config,
             route,
             req.params,
-            true,
-            config.verboseLogging);
+            config.verboseLogging,
+            true);
     });
 }
 
