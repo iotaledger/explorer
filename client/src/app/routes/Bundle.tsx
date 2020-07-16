@@ -130,9 +130,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                         valueCurrency: this._currencyData
                             ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
                     })),
-                    timestamp: bundleGroupsPlain[i][0].tx.timestamp === 0
+                    timestamp: DateHelper.milliseconds(bundleGroupsPlain[i][0].tx.timestamp === 0
                         ? bundleGroupsPlain[i][0].tx.attachmentTimestamp
-                        : bundleGroupsPlain[i][0].tx.timestamp * 1000,
+                        : bundleGroupsPlain[i][0].tx.timestamp),
                     confirmationState: !isConsistent ? "consistency" :
                         confirmedIndex === i ? confirmationStates[i] :
                             confirmedIndex >= 0 && confirmationStates[i] !== "confirmed"

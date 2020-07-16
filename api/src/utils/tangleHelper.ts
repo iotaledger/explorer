@@ -143,8 +143,6 @@ export class TangleHelper {
 
             const missing = allTrytes.filter(a => !a.trytes);
 
-            console.log(missing);
-
             const response = await chronicleClient.getTrytes({ hashes: missing.map(mh => mh.hash) });
 
             if (response && response.trytes) {

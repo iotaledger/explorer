@@ -27,12 +27,7 @@ registerServices();
 ReactDOM.render(
     (
         <BrowserRouter>
-            <Route
-                exact={true}
-                path="/:network?/:hashType?/:hash?/:mode?/:key?"
-                component={(props: RouteComponentProps<AppRouteProps>) => (
-                    <App {...props} configuration={config} />)}
-            />
+            <App configuration={config} />
         </BrowserRouter>
     ),
     document.getElementById("root")

@@ -142,13 +142,13 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                     hash: h,
                                     details: txs[idx]
                                 })).sort((itemA, itemB) =>
-                                    (itemB.details.tx.timestamp === 0
+                                    (DateHelper.milliseconds(itemB.details.tx.timestamp === 0
                                         ? itemB.details.tx.attachmentTimestamp
-                                        : itemB.details.tx.timestamp * 1000)
+                                        : itemB.details.tx.timestamp))
                                     -
-                                    (itemA.details.tx.timestamp === 0
+                                    (DateHelper.milliseconds(itemA.details.tx.timestamp === 0
                                         ? itemA.details.tx.attachmentTimestamp
-                                        : itemA.details.tx.timestamp * 1000)
+                                        : itemA.details.tx.timestamp))
                                 );
 
                                 this.setState({
@@ -324,9 +324,10 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                             </div>
                                                             <div className="card--value card--value__light">
                                                                 {DateHelper.format(
-                                                                    item.details.tx.timestamp === 0
-                                                                        ? item.details.tx.attachmentTimestamp
-                                                                        : item.details.tx.timestamp * 1000
+                                                                    DateHelper.milliseconds(
+                                                                        item.details.tx.timestamp === 0
+                                                                            ? item.details.tx.attachmentTimestamp
+                                                                            : item.details.tx.timestamp)
                                                                 )}
                                                             </div>
                                                         </div>

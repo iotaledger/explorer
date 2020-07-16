@@ -74,8 +74,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
         super.componentDidMount();
 
         if (this.state.hash) {
-            window.scrollTo(0, 0);
-
             const transactions = await this._tangleCacheService.getTransactions(
                 this.props.networkConfig, [this.props.match.params.hash]);
 
@@ -143,9 +141,11 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                         </h2>
                                         {this.state.details && (
                                             <div className="h1-sub">
-                                                {DateHelper.format(this.state.details.tx.timestamp === 0
+                                                {DateHelper.format(
+                                                    DateHelper.milliseconds(
+                                                        this.state.details.tx.timestamp === 0
                                                     ? this.state.details.tx.attachmentTimestamp
-                                                    : this.state.details.tx.timestamp * 1000)}
+                                                    : this.state.details.tx.timestamp))}
                                             </div>
                                         )}
                                     </div>
@@ -188,7 +188,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                         <div className="card--value">
                                                             {DateHelper.format(
-                                                                this.state.details.tx.timestamp * 1000)}
+                                                                DateHelper.milliseconds(
+                                                                    this.state.details.tx.timestamp))}
                                                         </div>
                                                     </React.Fragment>
                                                 )}
@@ -535,6 +536,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     private buildDetails(details?: ICachedTransaction): void {
         if (details) {
             const singleDecoded = TrytesHelper.decodeMessage(details?.tx.signatureMessageFragment);
+            console.log(details?.tx.timestamp);
+            console.log(details?.tx.attachmentTimestamp);
             this.setState(
                 {
                     status: "",
