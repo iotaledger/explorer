@@ -66,6 +66,7 @@ export function findRoute(findRoutes: IRoute[], url: string, method: string): {
  * @param config The configuration.
  * @param route The route.
  * @param pathParams The params extracted from the url.
+ * @param verboseLogging Log full details of requests.
  * @param globalInitServices The services have already been initialised.
  * @param logHook Optional hook for logging errors.
  */
@@ -75,7 +76,9 @@ export async function executeRoute(
     config: IConfiguration,
     route: IRoute,
     pathParams: { [id: string]: string },
+    verboseLogging: boolean,
     globalInitServices: boolean = false,
+
     logHook?: (message: string, statusCode: number, params: unknown) => Promise<void>): Promise<void> {
 
     let response;
@@ -95,8 +98,10 @@ export async function executeRoute(
 
         filteredParams = logParams(params);
 
-        console.log(`===> ${route.method.toUpperCase()} ${route.path}`);
-        console.log(inspect(filteredParams, false, null, false));
+        if (verboseLogging) {
+            console.log(`===> ${route.method.toUpperCase()} ${route.path}`);
+            console.log(inspect(filteredParams, false, null, false));
+        }
 
         if (route.func) {
             let modulePath;
@@ -147,8 +152,10 @@ export async function executeRoute(
         }
     }
 
-    console.log(`<=== duration: ${Date.now() - start}ms`);
-    console.log(inspect(response, false, null, false));
+    if (verboseLogging || !response.success) {
+        console.log(`<=== duration: ${Date.now() - start}ms`);
+        console.log(inspect(response, false, null, false));
+    }
 
     if (route.dataResponse) {
         const dataResponse = response as IDataResponse;

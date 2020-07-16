@@ -11,5 +11,6 @@
     },
     "allowedDomains": [
         "ALLOWED-DOMAIN"
-    ]
+    ],
+    "verboseLogging": VERBOSE-LOGGING
 }

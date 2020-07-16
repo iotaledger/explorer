@@ -50,11 +50,18 @@ export class CurrencyService {
                 }
 
                 currentState = currentState || { id: "default" };
-                const now = Date.now();
+
+                // If now date, default to 2 days ago
+                const lastCurrencyUpdate = currentState.lastCurrencyUpdate ?
+                    new Date(currentState.lastCurrencyUpdate) : new Date(Date.now() - 2 * 86400000);
+                const now = new Date();
+                const nowMs = now.getTime();
+
+                // If we have no state, an update over an hour old, the day has changed, or force update
                 if (!currentState ||
-                    currentState.lastCurrencyUpdate === undefined ||
-                    now - currentState.lastCurrencyUpdate > (3600000 * 4) ||
-                    force) { // every 4 hours
+                    nowMs - lastCurrencyUpdate.getTime() > 3600000 ||
+                    (lastCurrencyUpdate.getDate() !== now.getDate()) ||
+                    force) {
 
                     if ((this._config.fixerApiKey || "FIXER-API-KEY") !== "FIXER-API-KEY") {
                         log += "Updating fixer\n";
@@ -88,8 +95,6 @@ export class CurrencyService {
                     if (currencyStorageService) {
                         await currencyStorageService.set(currentState);
                     }
-
-
                 } else {
                     log += "No update required\n";
                 }

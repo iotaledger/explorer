@@ -29,4 +29,9 @@ export interface IConfiguration {
      * A list of domains allowed to access the api.
      */
     allowedDomains: string[];
+
+    /**
+     * Enable verbose API logging.
+     */
+    verboseLogging: boolean;
 }
