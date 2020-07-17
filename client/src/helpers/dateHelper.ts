@@ -18,6 +18,19 @@ export class DateHelper {
     }
 
     /**
+     * Format the date.
+     * @param valueInMs The value to format in milliseconds.
+     * @returns The formated value.
+     */
+    public static formatNoTime(valueInMs: number): string {
+        const timeMoment = moment(valueInMs);
+
+        const postDate = valueInMs > Date.now() ? "in the future" : "ago";
+
+        return `${timeMoment.format("LL")} - ${moment.duration(moment().diff(timeMoment)).humanize()} ${postDate}`;
+    }
+
+    /**
      * Check the value is in ms if not scale accordingly.
      * @param valueInMs The value to format in milliseconds.
      * @returns The updated value.

@@ -7,6 +7,7 @@ import React, { ReactNode } from "react";
 import ChartistGraph from "react-chartist";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { DateHelper } from "../../helpers/dateHelper";
 import { ApiClient } from "../../services/apiClient";
 import Currency from "../components/Currency";
 import Spinner from "../components/Spinner";
@@ -341,13 +342,17 @@ class Markets extends Currency<unknown, MarketsState> {
 
                     if (markets.success && markets.data) {
                         let max = 0;
+                        let maxDate = 0;
                         let min = 1000000;
+                        let minDate = 0;
                         for (const data of markets.data) {
                             if (data.p > max) {
                                 max = data.p;
+                                maxDate = new Date(data.d).getTime();
                             }
                             if (data.p < min) {
                                 min = data.p;
+                                minDate = new Date(data.d).getTime();
                             }
                         }
                         this.setState({
@@ -361,8 +366,14 @@ class Markets extends Currency<unknown, MarketsState> {
                                     }
                                 }
                             )),
-                            allTimeHigh: this._currencyService.formatCurrency(this._currencyData, max, 2),
-                            allTimeLow: this._currencyService.formatCurrency(this._currencyData, min, 2)
+                            allTimeHigh:
+                                `${this._currencyService.formatCurrency(this._currencyData, max, 2)} on ${
+                                DateHelper.formatNoTime(maxDate)
+                                }`,
+                            allTimeLow:
+                                `${this._currencyService.formatCurrency(this._currencyData, min, 2)} on ${
+                                DateHelper.formatNoTime(minDate)
+                                }`
                         });
                     } else {
                         this.setState({ statusBusy: false });
