@@ -10,8 +10,8 @@ export class TextHelper {
      * @returns The encoded value.
      */
     public static encodeNonASCII(value: string): string | undefined {
-        return value ?
-            value.replace(/[\u007F-\uFFFF]/g, chr => `\\u${(`0000${chr.charCodeAt(0).toString(16)}`).substr(-4)}`)
+        return value
+            ? value.replace(/[\u007F-\uFFFF]/g, chr => `\\u${(`0000${chr.charCodeAt(0).toString(16)}`).slice(-4)}`)
             : undefined;
     }
 
@@ -21,8 +21,8 @@ export class TextHelper {
      * @returns The decoded value.
      */
     public static decodeNonASCII(value: string): string | undefined {
-        return value ?
-            value.replace(/\\u([\d\w]{4})/gi, (match, grp) => String.fromCharCode(parseInt(grp, 16)))
+        return value
+            ? value.replace(/\\u(\w{4})/gi, (match, grp) => String.fromCharCode(Number.parseInt(grp, 16)))
             : undefined;
     }
 
@@ -60,6 +60,6 @@ export class TextHelper {
             throw new Error("Unable to decode the trytes to text");
         }
 
-        return TextHelper.decodeNonASCII(ascii) || "";
+        return TextHelper.decodeNonASCII(ascii) ?? "";
     }
 }

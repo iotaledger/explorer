@@ -27,6 +27,7 @@ class MessageButton extends Component<MessageButtonProps, MessageButtonState> {
         return (
             <React.Fragment>
                 <button
+                    type="button"
                     className="message-button"
                     onClick={() => this.activate()}
                 >

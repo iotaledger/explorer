@@ -49,11 +49,11 @@ class Landing extends Feeds<LandingProps, LandingState> {
 
         const settings = this._settingsService.get();
         this.setState({
-            valueMinimum: settings.valueMinimum || "0",
-            valueMinimumUnits: settings.valueMinimumUnits || Unit.i,
-            valueMaximum: settings.valueMaximum || "1",
-            valueMaximumUnits: settings.valueMaximumUnits || Unit.Ti,
-            valueFilter: settings.valueFilter || "both",
+            valueMinimum: settings.valueMinimum ?? "0",
+            valueMinimumUnits: settings.valueMinimumUnits ?? Unit.i,
+            valueMaximum: settings.valueMaximum ?? "1",
+            valueMaximumUnits: settings.valueMaximumUnits ?? Unit.Ti,
+            valueFilter: settings.valueFilter ?? "both",
             formatFull: settings.formatFull
         });
     }
@@ -83,8 +83,12 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                     <span className="info-box--action">&nbsp;</span>
                                 </div>
                                 <div className="info-box">
-                                    <span className="info-box--title">IOTA Market Cap</span>
-                                    <span className="info-box--value">{this.state.marketCapCurrency}</span>
+                                    <Link to="/markets" className="info-box--title linked">
+                                        IOTA Market Cap
+                                    </Link>
+                                    <Link to="/markets" className="info-box--value linked">
+                                        {this.state.marketCapCurrency}
+                                    </Link>
                                     <span className="info-box--action">
                                         <div className="select-wrapper select-wrapper--small">
                                             <select
@@ -100,8 +104,12 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                     </span>
                                 </div>
                                 <div className="info-box">
-                                    <span className="info-box--title">Price / MI</span>
-                                    <span className="info-box--value">{this.state.priceCurrency}</span>
+                                    <Link to="/markets" className="info-box--title linked">
+                                        Price / MI
+                                    </Link>
+                                    <Link to="/markets" className="info-box--value linked">
+                                        {this.state.priceCurrency}
+                                    </Link>
                                     <span className="info-box--action">
                                         <div className="select-wrapper select-wrapper--small">
                                             <select
@@ -220,6 +228,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                             <div className="row feed-item" key={tx.hash}>
                                                 <span className="feed-item--value">
                                                     <button
+                                                        type="button"
                                                         onClick={() => this.setState(
                                                             {
                                                                 formatFull: !this.state.formatFull
@@ -333,9 +342,9 @@ class Landing extends Feeds<LandingProps, LandingState> {
                 .filter(t => currentTransactions.findIndex(t2 => t2.hash === t.hash) < 0)
                 .concat(currentTransactions)
                 .filter(t => Math.abs(t.value) >= minLimit && Math.abs(t.value) <= maxLimit)
-                .filter(t => this.state.valueFilter === "both" ? true :
-                    this.state.valueFilter === "zeroOnly" ? t.value === 0 :
-                        t.value !== 0);
+                .filter(t => (this.state.valueFilter === "both" ? true
+                    : (this.state.valueFilter === "zeroOnly" ? t.value === 0
+                        : t.value !== 0)));
         }
 
         return [];
@@ -346,7 +355,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
      * @param min The min value from the form.
      */
     private updateMinimum(min: string): void {
-        const val = parseFloat(min);
+        const val = Number.parseFloat(min);
 
         if (!Number.isNaN(val)) {
             this.setState({ valueMinimum: val.toString() }, async () => this.updateFilters());
@@ -360,7 +369,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
      * @param max The max value from the form.
      */
     private updateMaximum(max: string): void {
-        const val = parseFloat(max);
+        const val = Number.parseFloat(max);
 
         if (!Number.isNaN(val)) {
             this.setState({ valueMaximum: val.toString() }, async () => this.updateFilters());

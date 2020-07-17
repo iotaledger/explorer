@@ -45,7 +45,7 @@ class Footer extends Component<FooterProps, FooterState> {
                         <img src={logoFooter} alt="IOTA" />
                     </div>
                     <div className="row">
-                        {[this.state.siteFooterSection].concat(this.state.foundationData?.footerSections || [])
+                        {[this.state.siteFooterSection].concat(this.state.foundationData?.footerSections ?? [])
                             .map((section, sectionIdx) => (
                                 <section className="col fill" key={sectionIdx}>
                                     <h3>{section.label}</h3>

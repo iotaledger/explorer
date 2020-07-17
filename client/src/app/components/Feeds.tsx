@@ -173,7 +173,6 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
      */
     private updateTps(): void {
         if (this._isMounted && this._transactionsClient) {
-
             const tps = this._transactionsClient.getTps();
 
             this.setState({

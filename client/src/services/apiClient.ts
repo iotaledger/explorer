@@ -1,11 +1,11 @@
 import axios from "axios";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
-import { ITransactionsGetRequest } from "../models/api/ITransactionsGetRequest";
-import { ITransactionsGetResponse } from "../models/api/ITransactionsGetResponse";
-import { IMilestonesGetRequest } from "../models/api/IMilestonesGetRequest";
-import { IMilestonesGetResponse } from "../models/api/IMilestonesGetResponse";
 import { IMarketGetRequest } from "../models/api/IMarketGetRequest";
 import { IMarketGetResponse } from "../models/api/IMarketGetResponse";
+import { IMilestonesGetRequest } from "../models/api/IMilestonesGetRequest";
+import { IMilestonesGetResponse } from "../models/api/IMilestonesGetResponse";
+import { ITransactionsGetRequest } from "../models/api/ITransactionsGetRequest";
+import { ITransactionsGetResponse } from "../models/api/ITransactionsGetResponse";
 import { ITrytesRetrieveRequest } from "../models/api/ITrytesRetrieveRequest";
 import { ITrytesRetrieveResponse } from "../models/api/ITrytesRetrieveResponse";
 
@@ -28,7 +28,6 @@ export class ApiClient {
 
     /**
      * Perform a request to get the currency information.
-     * @param request The request to send.
      * @returns The response from the request.
      */
     public async currencies(): Promise<ICurrenciesResponse> {
@@ -69,7 +68,10 @@ export class ApiClient {
 
             response = axiosResponse.data;
         } catch (err) {
-            if (err.toString().toLowerCase().indexOf("timeout") >= 0) {
+            if (err
+                .toString()
+                .toLowerCase()
+                .includes("timeout")) {
                 response = {
                     success: false,
                     message: "Timeout"
@@ -97,7 +99,7 @@ export class ApiClient {
         try {
             const { network, ...rest } = request;
             const axiosResponse = await ax.post<ITrytesRetrieveResponse>(
-                `trytes/${request.network}`, rest);
+                `trytes/${network}`, rest);
 
             response = axiosResponse.data;
         } catch (err) {
@@ -162,6 +164,7 @@ export class ApiClient {
      * @param params The params to add.
      * @returns The joined parameters.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private urlParams(params: { [id: string]: any }): string {
         const urlParams = [];
         for (const key in params) {

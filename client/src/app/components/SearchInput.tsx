@@ -19,7 +19,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
         super(props);
 
         this.state = {
-            query: this.props.query || "",
+            query: this.props.query ?? "",
             isValid: this.isValid(this.props.query)
         };
     }

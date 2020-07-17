@@ -58,7 +58,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
                 this.props.networkConfig,
                 "tags",
                 this.props.match.params.hash,
-                this.state.cursor === undefined ? true : false,
+                this.state.cursor === undefined,
                 this.state.cursor
             );
 
@@ -129,9 +129,10 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
                                             )}
                                         </div>
                                         <div className="card--content">
-                                            {this.state.hashes && this.state.hashes.map(h => (
+                                            {this.state.hashes?.map(h => (
                                                 <div className="card--value" key={h}>
                                                     <button
+                                                        type="button"
                                                         className="card--value"
                                                         onClick={() => this.props.history.push(
                                                             `/${this.props.networkConfig.network}/transaction/${h}`)}

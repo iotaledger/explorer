@@ -46,7 +46,7 @@ class ValueButton extends Component<ValueButtonProps, ValueButtonState> {
         return (
             <div className="value-button">
                 <div className="value-button--label">
-                    {this.props.label || "Value"}
+                    {this.props.label ?? "Value"}
                 </div>
                 <div className="value-button--value">
                     {UnitsHelper.formatUnits(this.props.value, this.state.units)}
@@ -54,6 +54,7 @@ class ValueButton extends Component<ValueButtonProps, ValueButtonState> {
                 <div className="value-button--selector">
                     {[Unit.i, Unit.Ki, Unit.Mi, Unit.Gi, Unit.Ti, Unit.Pi].map(unit => (
                         <button
+                            type="button"
                             key={unit}
                             className={classNames({ selected: this.state.units === unit })}
                             onClick={() => this.setState({ units: unit })}

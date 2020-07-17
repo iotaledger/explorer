@@ -14,6 +14,7 @@ import { AddressRouteProps } from "./routes/AddressRouteProps";
 import Bundle from "./routes/Bundle";
 import { BundleRouteProps } from "./routes/BundleRouteProps";
 import Landing from "./routes/Landing";
+import Markets from "./routes/Markets";
 import Search from "./routes/Search";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StreamsV0 from "./routes/StreamsV0";
@@ -95,6 +96,13 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                 <div className="content">
                     <Switch>
                         <Route
+                            path="/markets"
+                            component={() =>
+                                (
+                                    <Markets />
+                                )}
+                        />
+                        <Route
                             exact={true}
                             path="/:network?"
                             component={() =>
@@ -175,13 +183,19 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                 </div>
                 <Footer
                     dynamic={
-                        this.props.configuration.networks.map(n => ({
-                            label: n.label,
-                            url: n.network
-                        })).concat(this.props.configuration.networks.map(n => ({
-                            label: `${n.label} Streams V0`,
-                            url: `${n.network}/streams-v0/`
-                        })))
+                        this.props.configuration.networks
+                            .map(n => ({
+                                label: n.label,
+                                url: n.network
+                            }))
+                            .concat(this.props.configuration.networks.map(n => ({
+                                label: `${n.label} Streams V0`,
+                                url: `${n.network}/streams-v0/`
+                            })))
+                            .concat({
+                                label: "Markets",
+                                url: "markets"
+                            })
                     }
                 />
             </div>
@@ -194,9 +208,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
      * @param keepParams Keep the other path params.
      */
     private setNetwork(network: string | undefined, keepParams: boolean): void {
-        const config = network ?
-            this.props.configuration.networks.find(n => n.network === network) :
-            this.props.configuration.networks[0];
+        const config = network
+            ? this.props.configuration.networks.find(n => n.network === network)
+            : this.props.configuration.networks[0];
 
         if (config && config.network !== this.state.networkConfig.network) {
             this.setState(

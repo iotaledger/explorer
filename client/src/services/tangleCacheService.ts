@@ -196,11 +196,11 @@ export class TangleCacheService {
 
         if (findCache) {
             if (hashType === undefined) {
-                if (findCache.addresses && findCache.addresses[hash]) {
+                if (findCache.addresses?.[hash]) {
                     hashType = "addresses";
-                } else if (findCache.bundles && findCache.bundles[hash]) {
+                } else if (findCache.bundles?.[hash]) {
                     hashType = "bundles";
-                } else if (findCache.tags && findCache.tags[hash]) {
+                } else if (findCache.tags?.[hash]) {
                     hashType = "tags";
                 } else if (tranCache[hash]) {
                     hashType = "transaction";
@@ -209,8 +209,7 @@ export class TangleCacheService {
 
             if (hashType !== undefined) {
                 const cacheHashType = findCache[hashType];
-                if (cacheHashType &&
-                    cacheHashType[hash]) {
+                if (cacheHashType?.[hash]) {
                     // If the cache item was added less than a minute ago then use it.
                     if (Date.now() - cacheHashType[hash].cached < 60000) {
                         doLookup = false;
@@ -235,9 +234,9 @@ export class TangleCacheService {
             if (response.success) {
                 cursor = response.cursor;
                 if ((response.hashes && response.hashes.length > 0) || response.limitExceeded) {
-                    transactionHashes = response.hashes || [];
-                    limitExceeded = response.limitExceeded || limitExceeded;
-                    hashType = hashType || response.mode;
+                    transactionHashes = response.hashes ?? [];
+                    limitExceeded = response.limitExceeded ?? limitExceeded;
+                    hashType = hashType ?? response.mode;
 
                     if (findCache && hashType) {
                         const cacheHashType = findCache[hashType];
@@ -250,12 +249,10 @@ export class TangleCacheService {
                         }
                     }
                 }
-            } else {
-                if (response.message === "Timeout") {
-                    transactionHashes = response.hashes || [];
-                    limitExceeded = true;
-                    hashType = hashType || response.mode;
-                }
+            } else if (response.message === "Timeout") {
+                transactionHashes = response.hashes ?? [];
+                limitExceeded = true;
+                hashType = hashType ?? response.mode;
             }
         }
 
@@ -301,26 +298,25 @@ export class TangleCacheService {
                         hashes: unknownHashes
                     });
 
-                    if (response &&
-                        response.success &&
+                    if (response?.success &&
                         response.trytes &&
                         response.milestoneIndexes) {
                         for (let i = 0; i < response.trytes.length; i++) {
-                            tranCache[unknownHashes[i]] =
-                                tranCache[unknownHashes[i]] || {};
-                            tranCache[unknownHashes[i]].tx =
-                                asTransactionObject(response.trytes[i], unknownHashes[i]);
-                            tranCache[unknownHashes[i]].confirmationState =
+                            const unknownHash = unknownHashes[i];
+                            tranCache[unknownHash] = tranCache[unknownHash] || {};
+                            tranCache[unknownHash].tx =
+                                asTransactionObject(response.trytes[i], unknownHash);
+                            tranCache[unknownHash].confirmationState =
                                 response.milestoneIndexes[i] === -1 ? "pending" : "confirmed";
                         }
                     }
-                } catch (err) {
+                } catch {
                 }
             }
 
-            for (let i = 0; i < hashes.length; i++) {
-                if (tranCache[hashes[i]]) {
-                    tranCache[hashes[i]].cached = now;
+            for (const hash of hashes) {
+                if (tranCache[hash]) {
+                    tranCache[hash].cached = now;
                 }
             }
 
@@ -354,26 +350,26 @@ export class TangleCacheService {
         networkConfig: IClientNetworkConfiguration,
         transactionHashes: string[]
     ): Promise<ICachedTransaction[][]> {
-        const cachedTransactions
-            = await this.getTransactions(networkConfig, transactionHashes);
+        const cachedTransactions =
+            await this.getTransactions(networkConfig, transactionHashes);
 
         const byHash: { [id: string]: ICachedTransaction } = {};
         const bundleGroups: ICachedTransaction[][] = [];
 
         const trunkTransactions = [];
 
-        for (let i = 0; i < cachedTransactions.length; i++) {
-            const tx = cachedTransactions[i].tx;
+        for (const cachedTransaction of cachedTransactions) {
+            const tx = cachedTransaction.tx;
             if (tx) {
-                byHash[tx.hash] = cachedTransactions[i];
+                byHash[tx.hash] = cachedTransaction;
                 if (tx.currentIndex === 0) {
-                    bundleGroups.push([cachedTransactions[i]]);
+                    bundleGroups.push([cachedTransaction]);
                 }
             }
         }
 
-        for (let i = 0; i < bundleGroups.length; i++) {
-            const txTrunk = bundleGroups[i][0].tx;
+        for (const bundleGroup of bundleGroups) {
+            const txTrunk = bundleGroup[0].tx;
             if (txTrunk) {
                 let trunk = txTrunk.trunkTransaction;
                 trunkTransactions.push(trunk);
@@ -386,7 +382,7 @@ export class TangleCacheService {
                     if (!nextTx) {
                         break;
                     }
-                    bundleGroups[i].push(byHash[trunk]);
+                    bundleGroup.push(byHash[trunk]);
                     trunk = nextTx.trunkTransaction;
                 }
             }
@@ -417,7 +413,7 @@ export class TangleCacheService {
                     });
 
                     const response = await api.getBalances([addressHash]);
-                    if (response && response.balances) {
+                    if (response?.balances) {
                         let balance = 0;
                         for (let i = 0; i < response.balances.length; i++) {
                             balance += response.balances[i];
@@ -456,8 +452,8 @@ export class TangleCacheService {
             let trunk = transaction.tx.trunkTransaction;
             thisGroup = [transaction];
             for (let i = 1; i <= transaction.tx.lastIndex; i++) {
-                const cachedTransactions
-                    = await this.getTransactions(networkConfig, [trunk]);
+                const cachedTransactions =
+                    await this.getTransactions(networkConfig, [trunk]);
                 if (cachedTransactions.length > 0) {
                     const txo = cachedTransactions[0];
                     if (txo) {
@@ -475,7 +471,7 @@ export class TangleCacheService {
 
                 const bg = bundleGroups.find(group => group.findIndex(t => t.tx.hash === transaction.tx.hash) >= 0);
                 if (bg) {
-                    thisGroup = Array.from(bg);
+                    thisGroup = [...bg];
                 }
             }
         }
@@ -499,7 +495,7 @@ export class TangleCacheService {
             return await api.isPromotable(
                 tailHash
             );
-        } catch (err) {
+        } catch {
             return false;
         }
     }
@@ -516,6 +512,7 @@ export class TangleCacheService {
         try {
             const api = composeAPI({
                 provider: networkConfig.node.provider,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/unbound-method
                 attachToTangle: PowHelper.localPow as any
             });
 
@@ -545,6 +542,7 @@ export class TangleCacheService {
         try {
             const api = composeAPI({
                 provider: networkConfig.node.provider,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/unbound-method
                 attachToTangle: PowHelper.localPow as any
             });
 
@@ -591,6 +589,7 @@ export class TangleCacheService {
                 try {
                     const api = new ApiStreamsV0Client(network);
 
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const result = await mamFetch(api as any, root, mode, key);
 
                     if (result) {

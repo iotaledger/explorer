@@ -212,7 +212,6 @@ export class TransactionsService {
 
         if (tranCount > 0 ||
             (now - this._lastSend > TransactionsService.TPS_INTERVAL * 1000)) {
-
             for (const subscriptionId in this._subscribers) {
                 const data: ITransactionsSubscriptionMessage = {
                     subscriptionId,

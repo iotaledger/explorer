@@ -9,21 +9,25 @@ export class ScheduleHelper {
      * Build schedules for the app.
      * @param schedules The schedules to build.
      */
-    public static async build(schedules: ISchedule[]): Promise<void> {
-        if (schedules) {
-            for (let i = 0; i < schedules.length; i++) {
-                console.log(`Created: ${schedules[i].name} with ${schedules[i].schedule}`);
-                const callFunc = async () => {
+    public static build(schedules: ISchedule[]): void {
+        for (const schedule of schedules) {
+            console.log(`Created: ${schedule.name} with ${schedule.schedule}`);
+
+            schedule.job = new CronJob(
+                schedule.schedule,
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                async () => {
                     try {
-                        await schedules[i].func();
+                        await schedule.func();
                     } catch (err) {
-                        console.error(schedules[i].name, err);
+                        console.error(schedule.name, err);
                     }
-                };
-                schedules[i].job = new CronJob(schedules[i].schedule, callFunc);
-                schedules[i].job.start();
-                await callFunc();
-            }
+                },
+                undefined,
+                true,
+                undefined,
+                undefined,
+                true);
         }
     }
 }

@@ -73,7 +73,7 @@ abstract class CurrencyBase<P, S extends CurrencyState> extends AsyncComponent<P
                 this.setState(
                     {
                         currency: this._currencyData.fiatCode,
-                        currencies: (this._currencyData.currencies || []).map(c => c.id)
+                        currencies: (this._currencyData.currencies ?? []).map(c => c.id)
                     },
                     () => this.updateCurrency());
             }

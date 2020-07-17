@@ -14,7 +14,6 @@ export async function post(
     config: IConfiguration,
     request: ITrytesRetrieveRequest
 ): Promise<ITrytesRetrieveResponse> {
-
     ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
     const networkConfig = config.networks.find(n => n.network === request.network);
 

@@ -144,8 +144,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 {DateHelper.format(
                                                     DateHelper.milliseconds(
                                                         this.state.details.tx.timestamp === 0
-                                                    ? this.state.details.tx.attachmentTimestamp
-                                                    : this.state.details.tx.timestamp))}
+                                                            ? this.state.details.tx.attachmentTimestamp
+                                                            : this.state.details.tx.timestamp))}
                                             </div>
                                         )}
                                     </div>
@@ -163,6 +163,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     this.state.hasPow && (
                                                         <div className="row middle">
                                                             <button
+                                                                type="button"
                                                                 className="card--action"
                                                                 disabled={this.state.isBusy}
                                                                 onClick={() => this.reattach()}
@@ -170,6 +171,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                 Reattach
                                                             </button>
                                                             <button
+                                                                type="button"
                                                                 className="card--action"
                                                                 disabled={this.state.isBusy}
                                                                 onClick={() => this.promote()}
@@ -215,9 +217,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 )}
                                                 <div className="card--label">
                                                     Address
-                                                 </div>
+                                                </div>
                                                 <div className="card--value">
                                                     <button
+                                                        type="button"
                                                         onClick={() => this.props.history.push(
                                                             `/${this.props.networkConfig.network
                                                             }/address/${this.state.details?.tx.address}`)}
@@ -260,9 +263,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     >
                                                         {this.state.isBundleValid === "valid"
                                                             ? "Valid"
-                                                            : this.state.isBundleValid === "consistency"
+                                                            : (this.state.isBundleValid === "consistency"
                                                                 ? "Invalid consistency - transaction will never confirm"
-                                                                : "Invalid - transaction will never confirm"}
+                                                                : "Invalid - transaction will never confirm")}
                                                     </div>
                                                 )}
                                             </div>
@@ -272,6 +275,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 </div>
                                                 <div className="card--value">
                                                     <button
+                                                        type="button"
                                                         onClick={() => this.props.history.push(
                                                             `/${this.props.networkConfig.network
                                                             }/bundle/${this.state.details?.tx.bundle}`)}
@@ -285,6 +289,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 </div>
                                                 <div className="card--value">
                                                     <button
+                                                        type="button"
                                                         onClick={() => this.props.history.push(
                                                             `/${this.props.networkConfig.network
                                                             }/transaction/${this.state.previousTransaction}`)}
@@ -297,9 +302,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         />
                                                     </button>
                                                     {this.state.details.tx.currentIndex + 1}
-                                                &nbsp;/&nbsp;
-                                                {this.state.details.tx.lastIndex + 1}
+                                                    &nbsp;/&nbsp;
+                                                    {this.state.details.tx.lastIndex + 1}
                                                     <button
+                                                        type="button"
                                                         onClick={() => this.props.history.push(
                                                             `/${this.props.networkConfig.network
                                                             }/transaction/${this.state.nextTransaction}`)}
@@ -326,6 +332,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                         <div className="card--value">
                                                             <button
+                                                                type="button"
                                                                 onClick={() => this.props.history.push(
                                                                     `/${this.props.networkConfig.network
                                                                     }/tag/${this.state.details?.tx.tag}`)}
@@ -340,6 +347,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                         <div className="card--value">
                                                             <button
+                                                                type="button"
                                                                 onClick={() => this.props.history.push(
                                                                     `/${this.props.networkConfig.network
                                                                     }/tag/${this.state.details?.tx.obsoleteTag}`)}
@@ -355,14 +363,15 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <span className="margin-r-s">
                                                                 {this.state.messageType !== "Trytes" && (
                                                                     <button
+                                                                        type="button"
                                                                         onClick={() => this.setState(
                                                                             {
                                                                                 showRawMessageTrytes:
                                                                                     !this.state.showRawMessageTrytes
                                                                             })}
                                                                     >
-                                                                        Message {this.state.showRawMessageTrytes ?
-                                                                            "Trytes" : this.state.messageType}
+                                                                        Message {this.state.showRawMessageTrytes
+                                                                            ? "Trytes" : this.state.messageType}
                                                                     </button>
                                                                 )}
                                                                 {this.state.messageType === "Trytes" && (
@@ -388,7 +397,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                     this.state.showRawMessageTrytes
                                                                         ? "trytes"
                                                                         : this.state.messageType?.toLowerCase()}`
-                                                                )}
+                                                                )
+                                                            }
                                                         >
                                                             {this.state.showRawMessageTrytes
                                                                 ? this.state.rawMessageTrytes
@@ -415,6 +425,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                         <div className="card--value">
                                                             <button
+                                                                type="button"
                                                                 onClick={() => this.props.history.push(
                                                                     `/${this.props.networkConfig.network
                                                                     }/transaction/${
@@ -428,6 +439,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                         <div className="card--value">
                                                             <button
+                                                                type="button"
                                                                 onClick={() => this.props.history.push(
                                                                     `/${this.props.networkConfig.network
                                                                     }/transaction/${
@@ -542,14 +554,14 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                 {
                     status: "",
                     statusBusy: false,
-                    details: details,
+                    details,
                     message: singleDecoded.message,
                     messageType: singleDecoded.messageType,
                     messageSpan: false,
                     mwm: TrytesHelper.calculateMwm(details.tx.hash),
                     raw: asTransactionTrytes(details.tx),
-                    nextTransaction: details.tx.currentIndex < details.tx.lastIndex ?
-                        details.tx.trunkTransaction : undefined,
+                    nextTransaction: details.tx.currentIndex < details.tx.lastIndex
+                        ? details.tx.trunkTransaction : undefined,
                     hasPow: PowHelper.isAvailable(),
                     rawMessageTrytes: details?.tx.signatureMessageFragment
                 },
@@ -589,11 +601,11 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                             this.setState({
                                 nextTransaction:
                                     isBundleValid &&
-                                        this.state.details.tx.currentIndex < this.state.details.tx.lastIndex ?
-                                        this.state.details.tx.trunkTransaction : undefined,
+                                        this.state.details.tx.currentIndex < this.state.details.tx.lastIndex
+                                        ? this.state.details.tx.trunkTransaction : undefined,
                                 previousTransaction:
                                     isBundleValid && thisIndex > 0 ? thisGroup[thisIndex - 1].tx.hash : undefined,
-                                isBundleValid: !isConsistent ? "consistency" : isBundleValid ? "valid" : "invalid",
+                                isBundleValid: !isConsistent ? "consistency" : (isBundleValid ? "valid" : "invalid"),
                                 milestoneIndex: this.getMilestoneIndex(thisGroup),
                                 message,
                                 messageType,
@@ -645,7 +657,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             async () => {
                 const wasReattached = await this._tangleCacheService.replayBundle(
                     this.props.networkConfig,
-                    this.state.bundleTailHash || "");
+                    this.state.bundleTailHash ?? "");
 
                 this.setState(
                     {
@@ -672,12 +684,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             async () => {
                 const isPromotable = await this._tangleCacheService.canPromoteTransaction(
                     this.props.networkConfig,
-                    this.state.bundleTailHash || "");
+                    this.state.bundleTailHash ?? "");
 
                 if (isPromotable) {
                     const wasPromoted = await this._tangleCacheService.promoteTransaction(
                         this.props.networkConfig,
-                        this.state.bundleTailHash || "");
+                        this.state.bundleTailHash ?? "");
 
                     this.setState(
                         {

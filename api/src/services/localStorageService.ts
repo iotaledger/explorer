@@ -1,6 +1,6 @@
-import { IStorageService } from "../models/services/IStorageService";
-import { join } from "path";
 import { promises } from "fs";
+import { join } from "path";
+import { IStorageService } from "../models/services/IStorageService";
 
 /**
  * Service to handle local storage requests.
@@ -46,14 +46,14 @@ export class LocalStorageService<T> implements IStorageService<T> {
      * @param id The id of the item to get.
      * @returns The object if it can be found or undefined.
      */
-    public async get(id: string): Promise<T> {
+    public async get(id: string): Promise<T | undefined> {
         try {
             const fullPath = join(this._fullFolderPath, `${id}.json`);
 
             const buffer = await promises.readFile(fullPath);
 
             return JSON.parse(buffer.toString()) as T;
-        } catch (err) {
+        } catch {
         }
     }
 
@@ -68,7 +68,7 @@ export class LocalStorageService<T> implements IStorageService<T> {
             await promises.mkdir(this._fullFolderPath, { recursive: true });
 
             await promises.writeFile(fullPath, Buffer.from(JSON.stringify(item, undefined, "\t")));
-        } catch (err) {
+        } catch {
         }
     }
 
@@ -81,7 +81,7 @@ export class LocalStorageService<T> implements IStorageService<T> {
             const fullPath = join(this._fullFolderPath, `${itemKey}.json`);
 
             await promises.unlink(fullPath);
-        } catch (err) {
+        } catch {
         }
     }
 
@@ -102,7 +102,7 @@ export class LocalStorageService<T> implements IStorageService<T> {
 
                 items.push(JSON.parse(buffer.toString()) as T);
             }
-        } catch (err) {
+        } catch {
         }
 
         return items;

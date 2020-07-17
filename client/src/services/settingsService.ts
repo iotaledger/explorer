@@ -49,6 +49,7 @@ export class SettingsService {
      */
     public saveSingle(propertyName: SettingsKeys, value: unknown): void {
         const settings = this.get();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (settings as any)[propertyName] = value;
         this.save();
     }

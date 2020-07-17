@@ -19,6 +19,7 @@
 
   .card--header-count {
     @include font-size(12px);
+
     display: flex;
     align-items: center;
     height: 24px;
@@ -44,6 +45,7 @@
 
   .card--header-info {
     @include font-size(12px, 12px);
+
     margin-left: 20px;
     font-family: $metropolis;
   }
@@ -119,6 +121,7 @@
     button {
       @include font-size(12px);
 
+      padding: 0;
       border: 0;
       background: none;
       color: inherit;
@@ -190,6 +193,7 @@
     input {
       &[type='checkbox'] {
         @include font-size(24px);
+
         width: 24px;
         height: 24px;
         padding: 0;
@@ -212,6 +216,7 @@
     button {
       @include font-size(12px);
 
+      padding: 0;
       border: 0;
       background: none;
       color: inherit;

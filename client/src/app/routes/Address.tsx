@@ -49,8 +49,8 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
         let checksum;
         if ((this.props.match.params.hash.length === 81 || this.props.match.params.hash.length === 90) &&
             isTrytes(this.props.match.params.hash)) {
-            address = props.match.params.hash.substr(0, 81);
-            checksum = addChecksum(this.props.match.params.hash.substr(0, 81)).substr(-9);
+            address = props.match.params.hash.slice(0, 81);
+            checksum = addChecksum(this.props.match.params.hash.slice(0, 81)).slice(-9);
         }
 
         this.state = {
@@ -82,8 +82,8 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
 
             this.setState(
                 {
-                    showOnlyValueTransactions: settings.showOnlyValueTransactions || false,
-                    showOnlyConfirmedTransactions: settings.showOnlyConfirmedTransactions || false,
+                    showOnlyValueTransactions: settings.showOnlyValueTransactions ?? false,
+                    showOnlyConfirmedTransactions: settings.showOnlyConfirmedTransactions ?? false,
                     formatFull: settings.formatFull,
                     balance
                 },
@@ -92,7 +92,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                         this.props.networkConfig,
                         "addresses",
                         this.props.match.params.hash,
-                        this.state.cursor === undefined ? true : false,
+                        this.state.cursor === undefined,
                         this.state.cursor
                     );
 
@@ -144,8 +144,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                 })).sort((itemA, itemB) =>
                                     (DateHelper.milliseconds(itemB.details.tx.timestamp === 0
                                         ? itemB.details.tx.attachmentTimestamp
-                                        : itemB.details.tx.timestamp))
-                                    -
+                                        : itemB.details.tx.timestamp)) -
                                     (DateHelper.milliseconds(itemA.details.tx.timestamp === 0
                                         ? itemA.details.tx.attachmentTimestamp
                                         : itemA.details.tx.timestamp))
@@ -194,17 +193,17 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                         </div>
                                         <div className="row fill margin-t-s margin-b-s value-buttons">
                                             <div className="col">
-                                                <ValueButton value={this.state.balance || 0} label="Balance" />
+                                                <ValueButton value={this.state.balance ?? 0} label="Balance" />
                                             </div>
                                             <div className="col">
-                                                <CurrencyButton value={this.state.balance || 0} />
+                                                <CurrencyButton value={this.state.balance ?? 0} />
                                             </div>
                                         </div>
                                         <div className="card--label">
                                             Transaction Filter
                                         </div>
                                         <div className="card--value">
-                                            Show Value Transactions Only
+                                            <span>Show Value Transactions Only</span>
                                             <input
                                                 type="checkbox"
                                                 checked={this.state.showOnlyValueTransactions}
@@ -223,7 +222,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                             />
                                         </div>
                                         <div className="card--value">
-                                            Show Confirmed Only
+                                            <span>Show Confirmed Only</span>
                                             <input
                                                 type="checkbox"
                                                 checked={this.state.showOnlyConfirmedTransactions}
@@ -260,8 +259,8 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                             {this.state.items !== undefined &&
                                                 this.state.filteredItems !== undefined && (
                                                     <span className="card--header-count">
-                                                        {this.state.filteredItems.length !== this.state.items.length
-                                                            && (
+                                                        {this.state.filteredItems.length !== this.state.items.length &&
+                                                            (
                                                                 `${this.state.filteredItems.length} of `
                                                             )}
                                                         {this.state.items.length}
@@ -277,33 +276,37 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                         There are no transactions visible with the current filter.
                                                     </div>
                                                 )}
-                                            {this.state.filteredItems && this.state.filteredItems.map(item => (
+                                            {this.state.filteredItems?.map(item => (
                                                 <div className="item-details" key={item.hash}>
                                                     {item.details && (
                                                         <div className="row middle space-between">
                                                             <div className="row middle card--value card--value__large">
                                                                 <button
+                                                                    type="button"
                                                                     className={classNames(
                                                                         "value",
                                                                         {
-                                                                            value__zero: item.details.tx.value === 0
-                                                                                && item.details.confirmationState
-                                                                                === "confirmed"
+                                                                            "value__zero":
+                                                                                item.details.tx.value === 0 &&
+                                                                                item.details.confirmationState ===
+                                                                                "confirmed"
                                                                         },
                                                                         {
-                                                                            value__positive: item.details.tx.value > 0
-                                                                                && item.details.confirmationState
-                                                                                === "confirmed"
+                                                                            "value__positive":
+                                                                                item.details.tx.value > 0 &&
+                                                                                item.details.confirmationState ===
+                                                                                "confirmed"
                                                                         },
                                                                         {
-                                                                            value__negative: item.details.tx.value < 0
-                                                                                && item.details.confirmationState
-                                                                                === "confirmed"
+                                                                            "value__negative":
+                                                                                item.details.tx.value < 0 &&
+                                                                                item.details.confirmationState ===
+                                                                                "confirmed"
                                                                         },
                                                                         {
-                                                                            value__inprogress:
-                                                                                item.details.confirmationState
-                                                                                !== "confirmed"
+                                                                            "value__inprogress":
+                                                                                item.details.confirmationState !==
+                                                                                "confirmed"
                                                                         }
                                                                     )}
                                                                     onClick={() => this.setState(
@@ -334,6 +337,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                     )}
                                                     <div className="card--value">
                                                         <button
+                                                            type="button"
                                                             onClick={() => this.props.history.push(
                                                                 `/${this.props.networkConfig.network
                                                                 }/transaction/${item.hash}`)}
@@ -349,6 +353,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                                 className="margin-r-t"
                                                             />
                                                             <button
+                                                                type="button"
                                                                 className="card--value__tertiary"
                                                                 onClick={() => this.props.history.push(
                                                                     `/${this.props.networkConfig.network
@@ -412,13 +417,12 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
         return items
             .filter(i =>
                 !i.details ||
-                (i.details
-                    && (
-                        (i.details.tx.value === 0 && !showOnlyValueTransactions)
-                        ||
+                (i.details &&
+                    (
+                        (i.details.tx.value === 0 && !showOnlyValueTransactions) ||
                         (i.details.tx.value !== 0)
-                    )
-                    && (
+                    ) &&
+                    (
                         !showOnlyConfirmedTransactions ||
                         (showOnlyConfirmedTransactions && i.details.confirmationState === "confirmed")
                     )

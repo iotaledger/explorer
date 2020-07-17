@@ -184,6 +184,7 @@ export class CurrencyService {
         ZAR: "R",
         ZWD: "Z$"
     };
+
     /**
      * The network to use for transaction requests.
      */
@@ -232,7 +233,7 @@ export class CurrencyService {
         // If the data is missing then load it inline which can return errors
         // if the data is out of date try and get some new info in the background
         // if it fails we don't care about the outcome as we already have data
-        const lastUpdate = settings ? (settings.lastCurrencyUpdate || 0) : 0;
+        const lastUpdate = settings ? (settings.lastCurrencyUpdate ?? 0) : 0;
         if (!hasData || Date.now() - lastUpdate > 3600000) {
             setTimeout(async () => this.loadData(callback), 0);
         }
@@ -271,7 +272,8 @@ export class CurrencyService {
                     converted += `${this.getSymbol(currencyData.fiatCode)} `;
                 }
 
-                converted += fiat.toFixed(numDigits).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                converted += fiat.toFixed(numDigits).toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
         return converted;
@@ -301,7 +303,10 @@ export class CurrencyService {
                     converted += `${this.getSymbol(currencyData.fiatCode)} `;
                 }
 
-                converted += fiat.toFixed(numDigits).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                converted += fiat
+                    .toFixed(numDigits)
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
         return converted;
@@ -325,7 +330,7 @@ export class CurrencyService {
         callback: (available: boolean, data?: ICurrencySettings, err?: Error) => void): Promise<void> {
         try {
             const currencyResponse = await this._apiClient.currencies();
-            if (currencyResponse && currencyResponse.success) {
+            if (currencyResponse?.success) {
                 if (!currencyResponse.baseRate || !currencyResponse.currencies) {
                     callback(false);
                 } else {

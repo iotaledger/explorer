@@ -1,7 +1,7 @@
 import { isEmpty } from "@iota/validators";
-import { TransactionsGetMode } from "../../models/api/transactionsGetMode";
 import { ITransactionsGetRequest } from "../../models/api/ITransactionsGetRequest";
 import { ITransactionsGetResponse } from "../../models/api/ITransactionsGetResponse";
+import { TransactionsGetMode } from "../../models/api/transactionsGetMode";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { TangleHelper } from "../../utils/tangleHelper";
 import { ValidationHelper } from "../../utils/validationHelper";
@@ -16,7 +16,6 @@ export async function get(
     config: IConfiguration,
     request: ITransactionsGetRequest
 ): Promise<ITransactionsGetResponse> {
-
     ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
     ValidationHelper.string(request.hash, "hash");
 
@@ -30,14 +29,12 @@ export async function get(
 
     if (request.mode) {
         modes = [request.mode];
+    } else if (request.hash.length <= 27) {
+        modes = ["tags"];
+    } else if (request.hash.length === 90) {
+        modes = ["addresses"];
     } else {
-        if (request.hash.length <= 27) {
-            modes = ["tags"];
-        } else if (request.hash.length === 90) {
-            modes = ["addresses"];
-        } else {
-            modes = ["addresses", "bundles"];
-        }
+        modes = ["addresses", "bundles"];
     }
 
     for (const mode of modes) {

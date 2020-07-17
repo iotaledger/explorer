@@ -1,0 +1,124 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+
+.markets {
+  display: flex;
+  flex-direction: column;
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+
+    .inner {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      align-items: stretch;
+      max-width: $desktop-width;
+      margin: 40px 20px;
+
+      .row {
+        flex: 1;
+      }
+
+      .cards {
+        flex: 1;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      p {
+        @include font-size(12px);
+
+        color: $gray-10;
+        font-family: $metropolis;
+        font-weight: bold;
+      }
+
+      .tooltip-container {
+        position: relative;
+        z-index: 10;
+
+        .tooltip {
+          position: absolute;
+          right: 20px;
+          min-width: 150px;
+          padding: 10px;
+          border: 2px solid $input-border;
+          border-radius: 5px;
+          background-color: $white;
+
+          @include font-size(12px);
+
+          font-family: $inter;
+          font-weight: bold;
+
+          &.hidden {
+            display: none;
+          }
+        }
+      }
+
+      .line-container {
+        .crosshair-h,
+        .crosshair-v {
+          position: absolute;
+          background-color: $dark-green;
+
+          &.hidden {
+            display: none;
+          }
+        }
+
+        .crosshair-h {
+          height: 1px;
+        }
+
+        .crosshair-v {
+          width: 1px;
+        }
+
+        .ct-chart {
+          width: 100%;
+          height: 300px;
+
+          svg {
+            .ct-label {
+              &.ct-horizontal,
+              &.ct-vertical {
+                @include font-size(10px);
+
+                font-family: $inter;
+                font-weight: bold;
+              }
+            }
+
+            .ct-series {
+              &.ct-series-a {
+                .ct-line {
+                  stroke: $main-green-highlight;
+                  stroke-width: 2px;
+                }
+
+                .ct-point {
+                  stroke: $main-green-highlight;
+                  stroke-width: 4px;
+                }
+
+                .ct-area {
+                  // sass-lint:disable url-quotes
+                  fill: url(#gradient-a);
+                  fill-opacity: 0.3;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

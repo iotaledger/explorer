@@ -29,8 +29,8 @@ export class CoinGeckoClient {
 
         try {
             const year = date.getFullYear().toString();
-            const month = `0${(date.getMonth() + 1).toString()}`.substr(-2);
-            const day = `0${date.getDate().toString()}`.substr(-2);
+            const month = `0${(date.getMonth() + 1).toString()}`.slice(-2);
+            const day = `0${date.getDate().toString()}`.slice(-2);
 
             const axiosResponse = await ax.get<ICoinsHistoryResponse>(
                 `coins/${coin}/history?date=${day}-${month}-${year}`);

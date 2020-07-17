@@ -62,7 +62,8 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
     public render(): ReactNode {
         return this.state.redirect ? (
             <Redirect to={this.state.redirect} />
-        ) : (
+        )
+            : (
                 <div className="search">
                     <div className="wrapper">
                         <div className="inner">
@@ -103,7 +104,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
                                     <div className="card--content">
                                         <p className="danger">
                                             The supplied hash does not appear to be valid, {this.state.invalidError}.
-                                            </p>
+                                        </p>
                                         <br />
                                         <p>The following formats are supported:</p>
                                         <br />
@@ -140,7 +141,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
      * Update the state of the component.
      */
     private updateState(): void {
-        const hash = (this.props.match.params.hash || "").trim();
+        const hash = (this.props.match.params.hash ?? "").trim();
 
         let status = "";
         let statusBusy = false;

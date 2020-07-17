@@ -5,18 +5,19 @@ export class ServiceFactory {
     /**
      * Store the service callbacks.
      */
-    private static readonly _services: { [name: string]: (serviceName: string) => any } = {};
+    private static readonly _services: { [name: string]: (serviceName: string) => unknown } = {};
+
     /**
      * Store the created instances.
      */
-    private static readonly _instances: { [name: string]: any } = {};
+    private static readonly _instances: { [name: string]: unknown } = {};
 
     /**
      * Register a new service.
      * @param name The name of the service.
      * @param instanceCallback The callback to create an instance.
      */
-    public static register(name: string, instanceCallback: (serviceName: string) => any): void {
+    public static register(name: string, instanceCallback: (serviceName: string) => unknown): void {
         this._services[name] = instanceCallback;
     }
 

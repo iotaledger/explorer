@@ -7,7 +7,6 @@ import { IStorageService } from "../../models/services/IStorageService";
 /**
  * Get the list of currencies and exchange rates.
  * @param config The configuration.
- * @param request the request.
  * @returns The response.
  */
 export async function get(config: IConfiguration): Promise<ICurrenciesResponse> {
@@ -29,10 +28,9 @@ export async function get(config: IConfiguration): Promise<ICurrenciesResponse> 
             marketCap: currency.marketCapEUR,
             volume24h: currency.volumeEUR
         };
-    } else {
-        return {
-            success: true,
-            message: "Currency conversion not configured"
-        };
     }
+    return {
+        success: true,
+        message: "Currency conversion not configured"
+    };
 }

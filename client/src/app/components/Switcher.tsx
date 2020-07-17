@@ -6,7 +6,7 @@ import { SwitcherProps } from "./SwitcherProps";
 /**
  * Component which will show the switcher.
  */
-class Switcher extends Component<SwitcherProps, any> {
+class Switcher extends Component<SwitcherProps> {
     /**
      * Create a new instance of Switcher.
      * @param props The props.
@@ -27,6 +27,7 @@ class Switcher extends Component<SwitcherProps, any> {
             <nav className="switcher">
                 {this.props.items.map(item => (
                     <button
+                        type="button"
                         key={item.value}
                         className={classNames({
                             selected: item.value === this.props.value
@@ -36,8 +37,7 @@ class Switcher extends Component<SwitcherProps, any> {
                     >
                         {item.label}
                     </button>
-                ))
-                }
+                ))}
             </nav>
         );
     }

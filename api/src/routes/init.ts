@@ -1,5 +1,7 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IConfiguration } from "../models/configuration/IConfiguration";
+import { ICurrencyState } from "../models/db/ICurrencyState";
+import { IMilestoneStore } from "../models/db/IMilestoneStore";
 import { IStorageService } from "../models/services/IStorageService";
 import { CurrencyService } from "../services/currencyService";
 
@@ -12,12 +14,12 @@ export async function init(config: IConfiguration): Promise<string[]> {
     let log = "Initializing\n";
 
     try {
-        const stateStorageService = ServiceFactory.get<IStorageService<any>>("currency-storage");
+        const stateStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
         if (stateStorageService) {
             log += await stateStorageService.create();
         }
 
-        const milestoneStorageService = ServiceFactory.get<IStorageService<any>>("milestone-storage");
+        const milestoneStorageService = ServiceFactory.get<IStorageService<IMilestoneStore>>("milestone-storage");
         if (milestoneStorageService) {
             log += await milestoneStorageService.create();
         }
@@ -31,7 +33,7 @@ export async function init(config: IConfiguration): Promise<string[]> {
         log += `Failed\n${err.toString()}\n`;
     }
 
-    if (log.indexOf("Failed") < 0) {
+    if (!log.includes("Failed")) {
         log += "Initialization Succeeded";
     } else {
         log += "Initialization Failed";

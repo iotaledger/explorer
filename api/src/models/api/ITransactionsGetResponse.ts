@@ -1,5 +1,5 @@
-import { TransactionsGetMode } from "./transactionsGetMode";
 import { IResponse } from "./IResponse";
+import { TransactionsGetMode } from "./transactionsGetMode";
 
 export interface ITransactionsGetResponse extends IResponse {
     /**

@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { Server } from "http";
-import SocketIO from "socket.io";
 import bodyParser from "body-parser";
 import express, { Application } from "express";
+import { Server } from "http";
+import SocketIO from "socket.io";
+import { initServices } from "./initServices";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { routes } from "./routes";
-import { cors, executeRoute } from "./utils/apiHelper";
 import { subscribe } from "./routes/transactions/subscribe";
 import { unsubscribe } from "./routes/transactions/unsubscribe";
-import { initServices } from "./initServices";
+import { cors, executeRoute } from "./utils/apiHelper";
 
 const configId = process.env.CONFIG_ID || "local";
 const config: IConfiguration = require(`./data/config.${configId}.json`);
@@ -42,9 +42,11 @@ for (const route of routes) {
     });
 }
 
-const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 4000;
 const server = new Server(app);
+// eslint-disable-next-line new-cap
 const socketServer = SocketIO(server);
+
 server.listen(port, async () => {
     console.log("Listening listener");
     console.log(`Started API Server on port ${port}`);

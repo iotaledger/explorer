@@ -81,7 +81,6 @@ export class MilestonesClient {
     /**
      * Perform a request to unsubscribe to milestone events.
      * @param subscriptionId The subscription id.
-     * @returns The response from the request.
      */
     public unsubscribe(subscriptionId: string): void {
         delete this._subscribers[subscriptionId];
@@ -119,7 +118,7 @@ export class MilestonesClient {
             });
 
             if (response.success) {
-                this._milestones = response.milestones || [];
+                this._milestones = response.milestones ?? [];
 
                 for (const sub in this._subscribers) {
                     this._subscribers[sub]();

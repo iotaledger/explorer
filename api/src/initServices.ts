@@ -27,15 +27,15 @@ export async function initServices(config: IConfiguration): Promise<void> {
         if (networkConfig.zmqEndpoint) {
             ServiceFactory.register(
                 `zmq-${networkConfig.network}`,
-                serviceName => new ZmqService(networkByName[serviceName.substr(4)].zmqEndpoint)
+                serviceName => new ZmqService(networkByName[serviceName.slice(4)].zmqEndpoint)
             );
             ServiceFactory.register(
                 `milestones-${networkConfig.network}`,
-                serviceName => new MilestonesService(networkByName[serviceName.substr(11)]));
+                serviceName => new MilestonesService(networkByName[serviceName.slice(11)]));
 
             ServiceFactory.register(
                 `transactions-${networkConfig.network}`,
-                serviceName => new TransactionsService(networkByName[serviceName.substr(13)]));
+                serviceName => new TransactionsService(networkByName[serviceName.slice(13)]));
         }
     }
 
@@ -87,5 +87,5 @@ export async function initServices(config: IConfiguration): Promise<void> {
         }
     ];
 
-    await ScheduleHelper.build(schedules);
+    ScheduleHelper.build(schedules);
 }

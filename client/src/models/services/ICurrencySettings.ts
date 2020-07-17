@@ -1,5 +1,5 @@
 
-export interface ICurrencySettings  {
+export interface ICurrencySettings {
     /**
      * The fiat code for currency conversion.
      */

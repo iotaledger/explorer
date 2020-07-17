@@ -28,14 +28,14 @@ export class ClipboardHelper {
                 textArea.setAttribute("readonly", "");
                 textArea.value = text;
 
-                document.body.appendChild(textArea);
+                document.body.append(textArea);
 
                 textArea.select();
                 document.execCommand("Copy");
                 textArea.remove();
 
                 return true;
-            } catch (err) {
+            } catch {
                 // Not much we can do
                 return false;
             }

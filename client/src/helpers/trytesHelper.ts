@@ -69,7 +69,7 @@ export class TrytesHelper {
                 const ascii = trytesToAscii(trimmed);
 
                 // Only display as ascii text if the characters are printable
-                if (/^[\n\r\t\x20-\x7F]*$/.test(ascii)) {
+                if (/^[\t\n\r\u0020-\u007F]*$/.test(ascii)) {
                     const decoded = TextHelper.decodeNonASCII(ascii);
 
                     if (decoded) {
@@ -79,14 +79,14 @@ export class TrytesHelper {
                                 message = JSON.stringify(obj, undefined, "   ");
                                 messageType = "JSON";
                             }
-                        } catch (err) {
+                        } catch {
                             message = decoded;
                             messageType = "ASCII";
                         }
                     }
                 }
             }
-        } catch (err) {
+        } catch {
         }
 
         return {

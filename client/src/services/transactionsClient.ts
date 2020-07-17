@@ -68,6 +68,7 @@ export class TransactionsClient {
         this._endpoint = endpoint;
         this._config = networkConfiguration;
 
+        // eslint-disable-next-line new-cap
         this._socket = SocketIOClient(this._endpoint);
         this._transactions = [];
         this._tps = [];
@@ -123,7 +124,6 @@ export class TransactionsClient {
                     }
                 });
             }
-
         } catch { }
 
         return subscriptionId;
@@ -132,7 +132,6 @@ export class TransactionsClient {
     /**
      * Perform a request to unsubscribe to transactions events.
      * @param subscriptionId The subscription id.
-     * @returns The response from the request.
      */
     public unsubscribe(subscriptionId: string): void {
         try {

@@ -37,10 +37,10 @@ export class FixerClient {
             const axiosResponse = await ax.get<ILatestResponse>(
                 `latest?access_key=${this._apiKey}&format=1&base=${baseCurrency}`);
 
-            if (axiosResponse.data && axiosResponse.data.success) {
+            if (axiosResponse.data?.success) {
                 response = axiosResponse.data.rates;
             }
-        } catch (err) {
+        } catch {
         }
 
         return response;

@@ -101,8 +101,8 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
                 Key: key
             }).promise();
 
-            return <T>response.Item;
-        } catch (err) {
+            return response.Item as T;
+        } catch {
         }
     }
 
@@ -161,7 +161,7 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
             while (lastKey);
 
             return allItems;
-        } catch (err) {
+        } catch {
             return [];
         }
     }
@@ -181,6 +181,7 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
                 .map(item => (
                     {
                         PutRequest: {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             Item: item as any
                         }
                     }));
@@ -193,7 +194,6 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
 
     /**
      * Create and set the configuration for db.
-     * @param config The configuration to use for connection.
      */
     private createAndSetConfig(): void {
         const awsConfig = new aws.Config({
@@ -207,7 +207,6 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
 
     /**
      * Create a new DB connection.
-     * @param config The configuration for the connection.
      * @returns The dynamo db connection.
      */
     private createConnection(): aws.DynamoDB {
@@ -218,7 +217,6 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
 
     /**
      * Create a doc client connection.
-     * @param config The configuration to use for connection.
      * @returns The dynamo db document client.
      */
     private createDocClient(): aws.DynamoDB.DocumentClient {
