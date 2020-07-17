@@ -318,7 +318,7 @@ class Markets extends Currency<unknown, MarketsState> {
                 },
                 async () => {
                     const markets = await this._apiClient.marketGet({
-                        currency: this.state.currency
+                        currency: this.state.currency.toLowerCase()
                     });
 
                     if (markets.success && markets.data) {
