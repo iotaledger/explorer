@@ -54,22 +54,22 @@ export interface MarketsState extends CurrencyState {
     }[];
 
     /**
-     * The market cap in eur.
-     */
-    marketCapEUR: number;
-
-    /**
      * The market cap in selected currency.
      */
     marketCapCurrency: string;
 
     /**
-     * The price in EUR.
-     */
-    priceEUR: number;
-
-    /**
      * The price in selected currency.
      */
     priceCurrency: string;
+
+    /**
+     * The price all time high.
+     */
+    allTimeHigh: string;
+
+    /**
+     * The price all time low.
+     */
+    allTimeLow: string;
 }

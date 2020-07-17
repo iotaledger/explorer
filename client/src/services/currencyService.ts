@@ -313,6 +313,28 @@ export class CurrencyService {
     }
 
     /**
+     * Format the amount with currency sumbol.
+     * @param currencyData The currency data.
+     * @param amount The amount to format.
+     * @param numDigits The number of digits to display.
+     * @returns The formatted amount.
+     */
+    public formatCurrency(currencyData: ICurrencySettings | undefined, amount: number, numDigits: number): string {
+        let formatted = "";
+
+        if (currencyData) {
+            formatted = `${this.getSymbol(currencyData.fiatCode)} `;
+        }
+
+        formatted += amount
+            .toFixed(numDigits)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+        return formatted;
+    }
+
+    /**
      * Get the symbol for the currency code.
      * @param currencyCode The currency code to get the symbol for.
      * @returns The symbol.

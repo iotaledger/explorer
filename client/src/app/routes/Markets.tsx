@@ -67,10 +67,10 @@ class Markets extends Currency<unknown, MarketsState> {
                     label: "Last 7 Days"
                 }
             ],
-            marketCapEUR: 0,
             marketCapCurrency: "--",
-            priceEUR: 0,
-            priceCurrency: "--"
+            priceCurrency: "--",
+            allTimeHigh: "--",
+            allTimeLow: "--"
         };
     }
 
@@ -220,6 +220,24 @@ class Markets extends Currency<unknown, MarketsState> {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="row">
+                                            <div className="col fill">
+                                                <div className="card--label">
+                                                    All Time High
+                                                </div>
+                                                <div className="card--value">
+                                                    {this.state.allTimeHigh}
+                                                </div>
+                                            </div>
+                                            <div className="col fill">
+                                                <div className="card--label">
+                                                    All Time Low
+                                                </div>
+                                                <div className="card--value">
+                                                    {this.state.allTimeLow}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="card">
@@ -322,6 +340,16 @@ class Markets extends Currency<unknown, MarketsState> {
                     });
 
                     if (markets.success && markets.data) {
+                        let max = 0;
+                        let min = 1000000;
+                        for (const data of markets.data) {
+                            if (data.p > max) {
+                                max = data.p;
+                            }
+                            if (data.p < min) {
+                                min = data.p;
+                            }
+                        }
                         this.setState({
                             statusBusy: false,
                             prices: markets.data.map(m => (
@@ -332,7 +360,9 @@ class Markets extends Currency<unknown, MarketsState> {
                                         x: moment(m.d).unix()
                                     }
                                 }
-                            ))
+                            )),
+                            allTimeHigh: this._currencyService.formatCurrency(this._currencyData, max, 2),
+                            allTimeLow: this._currencyService.formatCurrency(this._currencyData, min, 2)
                         });
                     } else {
                         this.setState({ statusBusy: false });
