@@ -23,7 +23,35 @@ export interface MarketsState extends CurrencyState {
     /**
      * The range value for the graph.
      */
-    range?: {
+    pricesRange?: {
+        /**
+         * Value to display.
+         */
+        x: number;
+        /**
+         * Value to display.
+         */
+        y: number;
+    }[];
+
+    /**
+     * The values for the graph.
+     */
+    volumes: {
+        /**
+         * Value to display.
+         */
+        x: number;
+        /**
+         * Value to display.
+         */
+        y: number;
+    }[];
+
+    /**
+     * The range value for the graph.
+     */
+    volumesRange?: {
         /**
          * Value to display.
          */
@@ -66,10 +94,20 @@ export interface MarketsState extends CurrencyState {
     /**
      * The price all time high.
      */
-    allTimeHigh: string;
+    priceAllTimeHigh: string;
 
     /**
      * The price all time low.
      */
-    allTimeLow: string;
+    priceAllTimeLow: string;
+
+    /**
+     * The volume all time high.
+     */
+    volumeAllTimeHigh: string;
+
+    /**
+     * The volume all time low.
+     */
+    volumeAllTimeLow: string;
 }

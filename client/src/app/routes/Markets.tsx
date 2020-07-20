@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
-import Chartist, { IChartistLineChart, ILineChartOptions } from "chartist";
+import Chartist, { IBarChartOptions, IChartistLineChart, ILineChartOptions, IChartistBarChart } from "chartist";
 import classNames from "classnames";
 import moment from "moment";
 import React, { ReactNode } from "react";
@@ -24,6 +24,18 @@ class Markets extends Currency<unknown, MarketsState> {
     private readonly _apiClient: ApiClient;
 
     /**
+     * Point data for the charts.
+     */
+    private readonly _points: {
+        x: number;
+        y: number;
+        value: {
+            x: number;
+            y: number;
+        };
+    }[][];
+
+    /**
      * Create a new instance of Transaction.
      * @param props The props.
      */
@@ -32,11 +44,14 @@ class Markets extends Currency<unknown, MarketsState> {
 
         this._apiClient = ServiceFactory.get<ApiClient>("api-client");
 
+        this._points = [];
+
         this.state = {
             statusBusy: true,
             currencies: [],
             currency: "USD",
             prices: [],
+            volumes: [],
             selectedRange: "all",
             ranges: [
                 {
@@ -62,94 +77,14 @@ class Markets extends Currency<unknown, MarketsState> {
                 {
                     value: "last14days",
                     label: "Last 14 Days"
-                },
-                {
-                    value: "last7days",
-                    label: "Last 7 Days"
                 }
             ],
             marketCapCurrency: "--",
             priceCurrency: "--",
-            allTimeHigh: "--",
-            allTimeLow: "--"
-        };
-    }
-
-    /**
-     * Display a hover tooltip.
-     * @param currency The current currency.
-     * @returns The plugin.
-     */
-    private static pointLabels(currency: string): (chart: IChartistLineChart) => void {
-        return (chart: IChartistLineChart) => {
-            const horiz = document.querySelectorAll(".crosshair-h")[0] as HTMLElement;
-            const vert = document.querySelectorAll(".crosshair-v")[0] as HTMLElement;
-            const tt = document.querySelectorAll(".tooltip")[0];
-
-            const points: {
-                type: string;
-                x: number;
-                y: number;
-                value: {
-                    x: number;
-                    y: number;
-                };
-            }[] = [];
-
-            chart.on("draw", (data: {
-                type: string;
-                x: number;
-                y: number;
-                value: {
-                    x: number;
-                    y: number;
-                };
-            }) => {
-                if (data.type === "point") {
-                    points.push(data);
-                }
-            });
-
-            chart.container.addEventListener("mousemove", (event: MouseEvent) => {
-                horiz.style.width = `${chart.container.clientWidth}px`;
-                horiz.style.top = `${event.pageY}px`;
-                vert.style.height = `${chart.container.clientHeight}px`;
-                vert.style.left = `${event.pageX}px`;
-
-                const startX = event.offsetX - 50;
-                const startY = event.offsetY;
-                const pixelLastX = points[points.length - 1].x;
-                const pixelFirstX = points[0].x;
-
-                let inside = false;
-                if (startX >= 0 && startX < pixelLastX - 45 && startY >= 15 && startY < 270) {
-                    inside = true;
-                    vert.style.display = "block";
-                    horiz.style.display = "block";
-                } else {
-                    vert.style.display = "none";
-                    horiz.style.display = "none";
-                }
-
-                let hit;
-                if (inside && startX >= 0 && startX < pixelLastX - 45) {
-                    for (let i = 0; i < points.length; i++) {
-                        if (startX > (points[i].x - pixelFirstX)) {
-                            hit = i;
-                        } else if (hit !== undefined) {
-                            break;
-                        }
-                    }
-                }
-
-                if (hit !== undefined) {
-                    tt.className = "tooltip";
-                    tt.innerHTML = `${moment(points[hit].value.x * 1000).format("LL")
-                        }<br/>${points[hit].value.y.toFixed(3)} ${currency}`;
-                } else {
-                    tt.className = "tooltip hidden";
-                }
-            });
+            priceAllTimeHigh: "--",
+            priceAllTimeLow: "--",
+            volumeAllTimeHigh: "--",
+            volumeAllTimeLow: "--"
         };
     }
 
@@ -158,7 +93,7 @@ class Markets extends Currency<unknown, MarketsState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const options: ILineChartOptions = {
+        const priceChartOptions: ILineChartOptions = {
             fullWidth: true,
             showArea: true,
             low: 0,
@@ -171,11 +106,21 @@ class Markets extends Currency<unknown, MarketsState> {
             axisY: {
                 type: Chartist.AutoScaleAxis
             },
-            plugins: [Markets.pointLabels(this.state.currency)]
+            plugins: [this.pointLabels(0, 2)]
         };
 
-        const data = {
-            series: [this.state.range ?? this.state.prices]
+        const volumeChartOptions: unknown = {
+            low: 0,
+            axisX: {
+                type: Chartist.FixedScaleAxis,
+                divisor: 10,
+                labelInterpolationFnc: (value: number) => moment(value * 1000).format("MMM DD YYYY")
+            },
+            axisY: {
+                type: Chartist.AutoScaleAxis,
+                labelInterpolationFnc: (value: number) => `${value / 1000000}M`
+            },
+            plugins: [this.pointLabels(1, 0)]
         };
 
         return (
@@ -224,18 +169,36 @@ class Markets extends Currency<unknown, MarketsState> {
                                         <div className="row">
                                             <div className="col fill">
                                                 <div className="card--label">
-                                                    All Time High
+                                                    Price All Time High
                                                 </div>
                                                 <div className="card--value">
-                                                    {this.state.allTimeHigh}
+                                                    {this.state.priceAllTimeHigh}
                                                 </div>
                                             </div>
                                             <div className="col fill">
                                                 <div className="card--label">
-                                                    All Time Low
+                                                    Price All Time Low
                                                 </div>
                                                 <div className="card--value">
-                                                    {this.state.allTimeLow}
+                                                    {this.state.priceAllTimeLow}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col fill">
+                                                <div className="card--label">
+                                                    Volume All Time High
+                                                </div>
+                                                <div className="card--value">
+                                                    {this.state.volumeAllTimeHigh}
+                                                </div>
+                                            </div>
+                                            <div className="col fill">
+                                                <div className="card--label">
+                                                    Volume All Time Low
+                                                </div>
+                                                <div className="card--value">
+                                                    {this.state.volumeAllTimeLow}
                                                 </div>
                                             </div>
                                         </div>
@@ -243,7 +206,7 @@ class Markets extends Currency<unknown, MarketsState> {
                                 </div>
                                 <div className="card">
                                     <div className="card--header card--header__space-between">
-                                        <h2>Price History</h2>
+                                        <h2>Price and Volume History</h2>
                                         <div className="select-wrapper select-wrapper--small">
                                             <select
                                                 value={this.state.currency}
@@ -293,9 +256,25 @@ class Markets extends Currency<unknown, MarketsState> {
                                                     <div className="crosshair-h hidden" />
                                                     <div className="crosshair-v hidden" />
                                                     <ChartistGraph
-                                                        data={data}
-                                                        options={options}
+                                                        data={{
+                                                            series: [this.state.pricesRange ?? this.state.prices]
+                                                        }}
+                                                        options={priceChartOptions}
                                                         type="Line"
+                                                    />
+                                                </div>
+                                                <div className="tooltip-container">
+                                                    <div className="tooltip hidden" />
+                                                </div>
+                                                <div className="bar-container">
+                                                    <div className="crosshair-h hidden" />
+                                                    <div className="crosshair-v hidden" />
+                                                    <ChartistGraph
+                                                        data={{
+                                                            series: [this.state.volumesRange ?? this.state.volumes]
+                                                        }}
+                                                        options={volumeChartOptions as IBarChartOptions}
+                                                        type="Bar"
                                                     />
                                                 </div>
                                             </React.Fragment>
@@ -341,18 +320,30 @@ class Markets extends Currency<unknown, MarketsState> {
                     });
 
                     if (markets.success && markets.data) {
-                        let max = 0;
-                        let maxDate = 0;
-                        let min = 1000000;
-                        let minDate = 0;
+                        let maxPrice = 0;
+                        let maxPriceDate = 0;
+                        let minPrice = Number.MAX_VALUE;
+                        let minPriceDate = 0;
+                        let maxVolume = 0;
+                        let maxVolumeDate = 0;
+                        let minVolume = Number.MAX_VALUE;
+                        let minVolumeDate = 0;
                         for (const data of markets.data) {
-                            if (data.p > max) {
-                                max = data.p;
-                                maxDate = new Date(data.d).getTime();
+                            if (data.p > maxPrice) {
+                                maxPrice = data.p;
+                                maxPriceDate = new Date(data.d).getTime();
                             }
-                            if (data.p < min) {
-                                min = data.p;
-                                minDate = new Date(data.d).getTime();
+                            if (data.p < minPrice) {
+                                minPrice = data.p;
+                                minPriceDate = new Date(data.d).getTime();
+                            }
+                            if (data.v > maxVolume) {
+                                maxVolume = data.v;
+                                maxVolumeDate = new Date(data.d).getTime();
+                            }
+                            if (data.v < minVolume) {
+                                minVolume = data.v;
+                                minVolumeDate = new Date(data.d).getTime();
                             }
                         }
                         this.setState({
@@ -360,19 +351,30 @@ class Markets extends Currency<unknown, MarketsState> {
                             prices: markets.data.map(m => (
                                 {
                                     x: moment(m.d).unix(),
-                                    y: m.p,
-                                    meta: {
-                                        x: moment(m.d).unix()
-                                    }
+                                    y: m.p
                                 }
                             )),
-                            allTimeHigh:
-                                `${this._currencyService.formatCurrency(this._currencyData, max, 2)} on ${
-                                DateHelper.formatNoTime(maxDate)
+                            volumes: markets.data.map(m => (
+                                {
+                                    x: moment(m.d).unix(),
+                                    y: m.v
+                                }
+                            )),
+                            priceAllTimeHigh:
+                                `${this._currencyService.formatCurrency(this._currencyData, maxPrice, 2)} on ${
+                                DateHelper.formatNoTime(maxPriceDate)
                                 }`,
-                            allTimeLow:
-                                `${this._currencyService.formatCurrency(this._currencyData, min, 2)} on ${
-                                DateHelper.formatNoTime(minDate)
+                            priceAllTimeLow:
+                                `${this._currencyService.formatCurrency(this._currencyData, minPrice, 2)} on ${
+                                DateHelper.formatNoTime(minPriceDate)
+                                }`,
+                            volumeAllTimeHigh:
+                                `${this._currencyService.formatCurrency(this._currencyData, maxVolume, 0)} on ${
+                                DateHelper.formatNoTime(maxVolumeDate)
+                                }`,
+                            volumeAllTimeLow:
+                                `${this._currencyService.formatCurrency(this._currencyData, minVolume, 0)} on ${
+                                DateHelper.formatNoTime(minVolumeDate)
                                 }`
                         });
                     } else {
@@ -388,21 +390,148 @@ class Markets extends Currency<unknown, MarketsState> {
      * @param range The range.
      */
     private setRange(range: string): void {
-        if (range === "last7days") {
-            this.setState({ range: this.state.prices.slice(-7), selectedRange: range });
-        } else if (range === "last14days") {
-            this.setState({ range: this.state.prices.slice(-14), selectedRange: range });
+        if (range === "last14days") {
+            this.setState({
+                selectedRange: range,
+                pricesRange: this.state.prices.slice(-14),
+                volumesRange: this.state.volumes.slice(-14)
+            });
         } else if (range === "last90days") {
-            this.setState({ range: this.state.prices.slice(-90), selectedRange: range });
+            this.setState({
+                selectedRange: range,
+                pricesRange: this.state.prices.slice(-90),
+                volumesRange: this.state.volumes.slice(-90)
+            });
         } else if (range === "last30days") {
-            this.setState({ range: this.state.prices.slice(-30), selectedRange: range });
+            this.setState({
+                selectedRange: range,
+                pricesRange: this.state.prices.slice(-30),
+                volumesRange: this.state.volumes.slice(-30)
+            });
         } else if (range === "last6months") {
-            this.setState({ range: this.state.prices.slice(-133), selectedRange: range });
+            this.setState({
+                selectedRange: range,
+                pricesRange: this.state.prices.slice(-133),
+                volumesRange: this.state.volumes.slice(-133)
+            });
         } else if (range === "lastyear") {
-            this.setState({ range: this.state.prices.slice(-365), selectedRange: range });
+            this.setState({
+                selectedRange: range,
+                pricesRange: this.state.prices.slice(-365),
+                volumesRange: this.state.volumes.slice(-365)
+            });
         } else {
-            this.setState({ range: undefined, selectedRange: "all" });
+            this.setState({
+                selectedRange: range,
+                pricesRange: undefined,
+                volumesRange: undefined
+            });
         }
+    }
+
+    /**
+     * Display a hover tooltip.
+     * @param chartIndex The tool tip index to populate.
+     * @param decimalPlaces The decimal places for the currency.
+     * @returns The plugin.
+     */
+    private pointLabels(chartIndex: number, decimalPlaces: number):
+        (chart: IChartistLineChart | IChartistBarChart) => void {
+        return (chart: IChartistLineChart | IChartistBarChart) => {
+            const horizs = document.querySelectorAll(".crosshair-h");
+            const verts = document.querySelectorAll(".crosshair-v");
+            const toolTips = document.querySelectorAll(".tooltip");
+
+            chart.on("draw", (data: {
+                type: string;
+                x: number;
+                y: number;
+                x1: number;
+                y1: number;
+                x2: number;
+                y2: number;
+                value: {
+                    x: number;
+                    y: number;
+                };
+                element: {
+                    _node: HTMLElement;
+                };
+            }) => {
+                if (data.type === "grid") {
+                    this._points[chartIndex] = [];
+                } else if (data.type === "point") {
+                    this._points[chartIndex].push({
+                        x: data.x,
+                        y: data.y,
+                        value: {
+                            x: data.value.x,
+                            y: data.value.y
+                        }
+                    });
+                } else if (data.type === "bar") {
+                    this._points[chartIndex].push({
+                        x: (data.x1 + data.x2) / 2,
+                        y: (data.y1 + data.y2) / 2,
+                        value: {
+                            x: data.value.x,
+                            y: data.value.y
+                        }
+                    });
+                }
+            });
+
+            chart.container.addEventListener("mousemove", (event: MouseEvent) => {
+                if (this._points[chartIndex].length > 0) {
+                    const currentHoriz = horizs[chartIndex] as HTMLElement;
+                    const currentVert = verts[chartIndex] as HTMLElement;
+                    currentHoriz.style.width = `${chart.container.clientWidth}px`;
+                    currentHoriz.style.top = `${event.pageY}px`;
+                    currentVert.style.height = `${chart.container.clientHeight}px`;
+                    currentVert.style.left = `${event.pageX}px`;
+
+                    const startX = event.offsetX - 50;
+                    const startY = event.offsetY;
+                    const pixelLastX = this._points[chartIndex][this._points[chartIndex].length - 1].x;
+                    const pixelFirstX = this._points[chartIndex][0].x;
+
+                    let inside = false;
+                    if (startX >= 0 && startX < pixelLastX - 45 && startY >= 15 && startY < 270) {
+                        inside = true;
+                        currentVert.style.display = "block";
+                        currentHoriz.style.display = "block";
+                    } else {
+                        currentVert.style.display = "none";
+                        currentHoriz.style.display = "none";
+                    }
+                    const otherChartIndex = chartIndex === 0 ? 1 : 0;
+                    (horizs[otherChartIndex] as HTMLElement).style.display = "none";
+                    (verts[otherChartIndex] as HTMLElement).style.display = "none";
+
+                    let hit;
+                    if (inside && startX >= 0 && startX < pixelLastX - 45) {
+                        for (let i = 0; i < this._points[chartIndex].length; i++) {
+                            if (startX > (this._points[chartIndex][i].x - pixelFirstX)) {
+                                hit = i;
+                            } else if (hit !== undefined) {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (hit !== undefined) {
+                        toolTips[chartIndex].className = "tooltip";
+                        toolTips[chartIndex].innerHTML = `${
+                            moment(this._points[chartIndex][hit].value.x * 1000).format("LL")
+                            }<br/>${this._currencyService.formatCurrency(
+                                this._currencyData, this._points[chartIndex][hit].value.y, decimalPlaces)}`;
+                    } else {
+                        toolTips[chartIndex].className = "tooltip hidden";
+                    }
+                    toolTips[otherChartIndex].className = "tooltip hidden";
+                }
+            });
+        };
     }
 }
 

@@ -63,7 +63,8 @@
         }
       }
 
-      .line-container {
+      .line-container,
+      .bar-container {
         .crosshair-h,
         .crosshair-v {
           position: absolute;
@@ -95,6 +96,10 @@
                 font-family: $inter;
                 font-weight: bold;
               }
+
+              &.ct-horizontal {
+                justify-content: flex-start;
+              }
             }
 
             .ct-series {
@@ -114,9 +119,20 @@
                   fill: url(#gradient-a);
                   fill-opacity: 0.3;
                 }
+
+                .ct-bar {
+                  stroke: $main-green;
+                  stroke-width: 6px;
+                }
               }
             }
           }
+        }
+      }
+
+      .bar-container {
+        .ct-chart {
+          height: 150px;
         }
       }
     }
