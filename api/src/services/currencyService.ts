@@ -82,17 +82,48 @@ export class CurrencyService {
 
                     const markets = await marketStorage.getAll();
 
-                    console.log("read", markets);
+                    const startDate = new Date(2017, 5, 14);
+                    const endDate = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
 
-                    // First make sure we got the final figures for yesterday
-                    log += await this.updateMarketsForDate(
-                        markets, new Date(Date.now() - 86400000), currentState, false);
+                    const dates: number[] = [];
 
-                    log += await this.updateMarketsForDate(
-                        markets, new Date(), currentState, true);
+                    // Look for gaps in the data
+                    const eur = markets.find(m => m.currency === "eur");
+                    if (eur) {
+                        const numDays = (endDate.getTime() - startDate.getTime()) / 86400000;
 
-                    console.log("write", markets);
-                    // await marketStorage.setAll(markets);
+                        const sortedByDate = eur.data.map(d => d.d).sort((a, b) => a.localeCompare(b));
+
+                        for (let i = 0; i < numDays; i++) {
+                            const iMs = startDate.getTime() + (i * 86400000);
+                            const iDate = this.indexDate(new Date(iMs));
+                            const idx = sortedByDate.findIndex(d => d === iDate);
+                            if (idx < 0) {
+                                dates.push(iMs);
+                            }
+                        }
+                    }
+
+                    // Make sure we have the final figures for yesterday
+                    if (!dates.includes(endDate.getTime() - 86400000)) {
+                        dates.push(endDate.getTime() - 86400000);
+                    }
+
+                    // Finally todays date
+                    if (!dates.includes(endDate.getTime())) {
+                        dates.push(endDate.getTime());
+                    }
+
+                    for (let i = 0; i < dates.length; i++) {
+                        log += await this.updateMarketsForDate(
+                            markets, new Date(dates[i]), currentState, i === dates.length - 1);
+                    }
+
+                    for (const market of markets) {
+                        market.data.sort((a, b) => a.d.localeCompare(b.d));
+                    }
+
+                    await marketStorage.setAll(markets);
 
                     currentState.lastCurrencyUpdate = now;
                     if (currencyStorageService) {
@@ -173,5 +204,18 @@ export class CurrencyService {
         }
 
         return log;
+    }
+
+    /**
+     * Return the date in the formatted form.
+     * @param date The date to format;
+     * @returns The formatted date.
+     */
+    private indexDate(date: Date): string {
+        const year = date.getFullYear().toString();
+        const month = `0${(date.getMonth() + 1).toString()}`.slice(-2);
+        const day = `0${date.getDate().toString()}`.slice(-2);
+
+        return `${year}-${month}-${day}`;
     }
 }

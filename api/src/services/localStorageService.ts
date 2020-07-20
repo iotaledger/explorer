@@ -93,9 +93,9 @@ export class LocalStorageService<T> implements IStorageService<T> {
         const items: T[] = [];
 
         try {
-            const files = promises.readdir(this._fullFolderPath);
+            const files = await promises.readdir(this._fullFolderPath);
 
-            for (const file in files) {
+            for (const file of files) {
                 const fullPath = join(this._fullFolderPath, file);
 
                 const buffer = await promises.readFile(fullPath);
