@@ -548,8 +548,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     private buildDetails(details?: ICachedTransaction): void {
         if (details) {
             const singleDecoded = TrytesHelper.decodeMessage(details?.tx.signatureMessageFragment);
-            console.log(details?.tx.timestamp);
-            console.log(details?.tx.attachmentTimestamp);
             this.setState(
                 {
                     status: "",

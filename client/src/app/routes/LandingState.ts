@@ -53,4 +53,18 @@ export interface LandingState extends CurrencyState, FeedsState {
      * Format the iota in full.
      */
     formatFull?: boolean;
+
+    /**
+     * Latest transactions.
+     */
+    filteredTransactions: {
+        /**
+         * The tx hash.
+         */
+        hash: string;
+        /**
+         * The tx value.
+         */
+        value: number;
+    }[];
 }

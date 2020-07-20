@@ -82,9 +82,8 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
     /**
      * Filter the transactions and return them.
      * @param transactions The transactions to filter.
-     * @returns The filtered transactions.
      */
-    protected filterTransactions(transactions: {
+    protected transactionsUpdated(transactions: {
         /**
          * The tx hash.
          */
@@ -93,17 +92,7 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
          * The tx value.
          */
         value: number;
-    }[]): {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The tx value.
-         */
-        value: number;
-    }[] {
-        return transactions;
+    }[]): void {
     }
 
     /**
@@ -161,10 +150,10 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
             const tpsHistory = this._transactionsClient.getTpsHistory();
 
             this.setState({
-                transactions: this.filterTransactions(transactions),
+                transactions,
                 // Increase values by +100 to add more area under the graph
                 transactionsPerSecondHistory: tpsHistory.reverse().map(v => v + 100)
-            });
+            }, () => this.transactionsUpdated(transactions));
         }
     }
 

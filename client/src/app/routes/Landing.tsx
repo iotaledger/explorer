@@ -34,6 +34,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
             priceEUR: 0,
             priceCurrency: "--",
             transactions: [],
+            filteredTransactions: [],
             milestones: [],
             currency: "USD",
             currencies: [],
@@ -224,7 +225,10 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                             <span className="card--label">Amount</span>
                                             <span className="card--label">Transaction</span>
                                         </div>
-                                        {this.state.transactions.slice(0, 10).map(tx => (
+                                        {this.state.filteredTransactions.length === 0 && (
+                                            <p>There are no transactions with the current filter.</p>
+                                        )}
+                                        {this.state.filteredTransactions.map(tx => (
                                             <div className="row feed-item" key={tx.hash}>
                                                 <span className="feed-item--value">
                                                     <button
@@ -311,9 +315,8 @@ class Landing extends Feeds<LandingProps, LandingState> {
     /**
      * Filter the transactions and return them.
      * @param transactions The transactions to filter.
-     * @returns The filtered transactions.
      */
-    protected filterTransactions(transactions: {
+    protected transactionsUpdated(transactions: {
         /**
          * The tx hash.
          */
@@ -322,32 +325,20 @@ class Landing extends Feeds<LandingProps, LandingState> {
          * The tx value.
          */
         value: number;
-    }[]): {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The tx value.
-         */
-        value: number;
-    }[] {
+    }[]): void {
         if (this._isMounted && this._transactionsClient) {
             const minLimit = convertUnits(this.state.valueMinimum, this.state.valueMinimumUnits, Unit.i);
             const maxLimit = convertUnits(this.state.valueMaximum, this.state.valueMaximumUnits, Unit.i);
 
-            const currentTransactions = this.state.transactions || [];
-
-            return this._transactionsClient.getTransactions()
-                .filter(t => currentTransactions.findIndex(t2 => t2.hash === t.hash) < 0)
-                .concat(currentTransactions)
-                .filter(t => Math.abs(t.value) >= minLimit && Math.abs(t.value) <= maxLimit)
-                .filter(t => (this.state.valueFilter === "both" ? true
-                    : (this.state.valueFilter === "zeroOnly" ? t.value === 0
-                        : t.value !== 0)));
+            this.setState({
+                filteredTransactions: transactions
+                    .filter(t => Math.abs(t.value) >= minLimit && Math.abs(t.value) <= maxLimit)
+                    .filter(t => (this.state.valueFilter === "both" ? true
+                        : (this.state.valueFilter === "zeroOnly" ? t.value === 0
+                            : t.value !== 0)))
+                    .slice(0, 10)
+            });
         }
-
-        return [];
     }
 
     /**
@@ -392,6 +383,8 @@ class Landing extends Feeds<LandingProps, LandingState> {
             settings.valueMaximumUnits = this.state.valueMaximumUnits;
 
             this._settingsService.save();
+
+            this.transactionsUpdated(this.state.transactions);
         }
     }
 }

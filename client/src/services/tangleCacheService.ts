@@ -516,12 +516,11 @@ export class TangleCacheService {
                 attachToTangle: PowHelper.localPow as any
             });
 
-            const transactions = await api.promoteTransaction(
+            await api.promoteTransaction(
                 tailHash,
                 networkConfig.node.depth,
                 networkConfig.node.mwm
             );
-            console.log(transactions);
 
             return true;
         } catch (err) {
@@ -546,12 +545,11 @@ export class TangleCacheService {
                 attachToTangle: PowHelper.localPow as any
             });
 
-            const transactions = await api.replayBundle(
+            await api.replayBundle(
                 tailHash,
                 networkConfig.node.depth,
                 networkConfig.node.mwm
             );
-            console.log(transactions);
 
             return true;
         } catch (err) {

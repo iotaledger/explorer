@@ -28,7 +28,7 @@ export class TransactionsClient {
     /**
      * The latest transactions.
      */
-    private readonly _transactions: {
+    private _transactions: {
         /**
          * The tx hash.
          */
@@ -113,9 +113,23 @@ export class TransactionsClient {
                                 }
                             }
 
-                            if (this._transactions.length > 200) {
-                                this._transactions.splice(2000, this._transactions.length - 2000);
+                            let removeItems: {
+                                hash: string;
+                                value: number;
+                            }[] = [];
+
+                            const zero = this._transactions.filter(t => t.value === 0);
+                            const zeroToRemoveCount = zero.length - 100;
+                            if (zeroToRemoveCount > 0) {
+                                removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
                             }
+                            const nonZero = this._transactions.filter(t => t.value !== 0);
+                            const nonZeroToRemoveCount = nonZero.length - 100;
+                            if (nonZeroToRemoveCount > 0) {
+                                removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
+                            }
+
+                            this._transactions = this._transactions.filter(t => !removeItems.includes(t));
                         }
 
                         for (const sub in this._subscribers) {
