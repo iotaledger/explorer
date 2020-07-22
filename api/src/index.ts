@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { Server } from "http";
-import SocketIO from "socket.io";
 import bodyParser from "body-parser";
 import express, { Application } from "express";
+import { Server } from "http";
+import SocketIO from "socket.io";
+import { initServices } from "./initServices";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { routes } from "./routes";
+import { subscribe } from "./routes/transactions/subscribe";
+import { unsubscribe } from "./routes/transactions/unsubscribe";
 import { cors, executeRoute } from "./utils/apiHelper";
-import { transactionsSubscribe } from "./routes/transactions/transactionsSubscribe";
-import { transactionsUnsubscribe } from "./routes/transactions/transactionsUnsubscribe";
-import { initServices } from "./initServices";
 
 const configId = process.env.CONFIG_ID || "local";
 const config: IConfiguration = require(`./data/config.${configId}.json`);
@@ -37,21 +37,24 @@ for (const route of routes) {
             config,
             route,
             req.params,
+            config.verboseLogging,
             true);
     });
 }
 
-const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 4000;
 const server = new Server(app);
+// eslint-disable-next-line new-cap
 const socketServer = SocketIO(server);
+
 server.listen(port, async () => {
     console.log("Listening listener");
     console.log(`Started API Server on port ${port}`);
     console.log(`Running Config '${configId}'`);
 
     socketServer.on("connection", socket => {
-        socket.on("subscribe", data => socket.emit("subscribe", transactionsSubscribe(config, socket, data)));
-        socket.on("unsubscribe", data => socket.emit("unsubscribe", transactionsUnsubscribe(config, socket, data)));
+        socket.on("subscribe", data => socket.emit("subscribe", subscribe(config, socket, data)));
+        socket.on("unsubscribe", data => socket.emit("unsubscribe", unsubscribe(config, socket, data)));
     });
 
     await initServices(config);

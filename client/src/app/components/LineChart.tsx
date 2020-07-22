@@ -1,3 +1,4 @@
+import { ILineChartOptions } from "chartist";
 import React, { Component, ReactNode } from "react";
 import ChartistGraph from "react-chartist";
 import "./LineChart.scss";
@@ -16,12 +17,12 @@ class LineChart extends Component<LineChartProps> {
             series: [this.props.values]
         };
 
-        const options = {
+        const options: ILineChartOptions = {
             fullWidth: true,
             showArea: true,
             low: 0,
             showPoint: false,
-            chartPadding: 0,
+            chartPadding: { top: 0, left: 0, right: 0, bottom: 0 },
             axisX: {
                 showGrid: false,
                 showLabel: false,

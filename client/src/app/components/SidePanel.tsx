@@ -42,7 +42,7 @@ class SidePanel extends Feeds<NetworkProps, FeedsState> {
                     <div className="card--section card--section__highlight">
                         <div className="card--label card--label__highlight padding-t-s">
                             Transactions Per Second
-                    </div>
+                        </div>
                         <div className="card--value card--value__highlight padding-t-s">
                             {this.state.transactionsPerSecond}
                         </div>
@@ -53,7 +53,7 @@ class SidePanel extends Feeds<NetworkProps, FeedsState> {
                     <div className="card--section feed">
                         <div className="card--label card--label__underline">
                             Milestones
-                    </div>
+                        </div>
                         {this.state.milestones.slice(0, 5).map(tx => (
                             <div className="row feed-item" key={tx.hash}>
                                 <span className="feed-item--value">{tx.milestoneIndex}</span>

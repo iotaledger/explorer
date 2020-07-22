@@ -89,7 +89,6 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
             });
         }
     }
-
 }
 
 export default CurrencyButton;

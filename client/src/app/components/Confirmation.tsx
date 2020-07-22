@@ -17,11 +17,12 @@ class Confirmation extends Component<ConfirmationProps> {
                 className={
                     classNames(
                         "confirmation",
-                        { confirmation__confirmed: this.props.state === "confirmed" },
-                        { confirmation__pending: this.props.state === "pending" },
-                        { confirmation__reattachment: this.props.state === "reattachment" },
-                        { confirmation__consistency: this.props.state === "consistency" }
-                    )}
+                        { "confirmation__confirmed": this.props.state === "confirmed" },
+                        { "confirmation__pending": this.props.state === "pending" },
+                        { "confirmation__reattachment": this.props.state === "reattachment" },
+                        { "confirmation__consistency": this.props.state === "consistency" }
+                    )
+                }
             >
                 {this.props.state === "unknown" && ("Unknown")}
                 {this.props.state === "confirmed" && ("Confirmed")}

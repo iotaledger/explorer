@@ -7,6 +7,7 @@ import { IHttpResponse } from "../models/app/IHttpResponse";
 import { IRoute } from "../models/app/IRoute";
 import { IConfiguration } from "../models/configuration/IConfiguration";
 
+
 /**
  * Find a route to match
  * @param findRoutes The routes to match against.
@@ -41,7 +42,7 @@ export function findRoute(findRoutes: IRoute[], url: string, method: string): {
                     // Its a param match in the url
                     // or an undefined parameter past the end of the match
                     if (i < urlParts.length) {
-                        params[routeParts[i].substr(1).replace("?", "")] = urlParts[i];
+                        params[routeParts[i].slice(1).replace("?", "")] = urlParts[i];
                     }
                 } else {
                     break;
@@ -56,7 +57,6 @@ export function findRoute(findRoutes: IRoute[], url: string, method: string): {
             }
         }
     }
-    return undefined;
 }
 
 /**
@@ -66,6 +66,7 @@ export function findRoute(findRoutes: IRoute[], url: string, method: string): {
  * @param config The configuration.
  * @param route The route.
  * @param pathParams The params extracted from the url.
+ * @param verboseLogging Log full details of requests.
  * @param globalInitServices The services have already been initialised.
  * @param logHook Optional hook for logging errors.
  */
@@ -75,9 +76,9 @@ export async function executeRoute(
     config: IConfiguration,
     route: IRoute,
     pathParams: { [id: string]: string },
+    verboseLogging: boolean,
     globalInitServices: boolean = false,
     logHook?: (message: string, statusCode: number, params: unknown) => Promise<void>): Promise<void> {
-
     let response;
     const start = Date.now();
     let filteredParams;
@@ -95,8 +96,10 @@ export async function executeRoute(
 
         filteredParams = logParams(params);
 
-        console.log(`===> ${route.method.toUpperCase()} ${route.path}`);
-        //console.log(inspect(filteredParams, false, null, false));
+        if (verboseLogging) {
+            console.log(`===> ${route.method.toUpperCase()} ${route.path}`);
+            console.log(inspect(filteredParams, false, undefined, false));
+        }
 
         if (route.func) {
             let modulePath;
@@ -131,7 +134,7 @@ export async function executeRoute(
                 status = 400;
                 response = { success: false, message: `Route '${route.path}' module '${modulePath}' failed to load` };
             }
-        } else if (route.inline !== undefined) {
+        } else if (route.inline) {
             await initServices(config);
             response = await route.inline(config, params, body, req.headers || {});
             status = 200;
@@ -147,8 +150,10 @@ export async function executeRoute(
         }
     }
 
-    console.log(`<=== duration: ${Date.now() - start}ms`);
-    //console.log(inspect(response, false, null, false));
+    if (verboseLogging || !response.success) {
+        console.log(`<=== duration: ${Date.now() - start}ms`);
+        console.log(inspect(response, false, undefined, false));
+    }
 
     if (route.dataResponse) {
         const dataResponse = response as IDataResponse;
@@ -181,25 +186,24 @@ export async function executeRoute(
  * @param obj The object to convert.
  * @returns The converted object.
  */
-function logParams(obj: { [id: string]: any }): { [id: string]: string } {
-    const newobj: { [id: string]: any } = {};
+function logParams(obj: { [id: string]: unknown }): { [id: string]: unknown } {
+    const newobj: { [id: string]: unknown } = {};
     for (const key in obj) {
-        if (key.indexOf("pass") >= 0) {
+        if (key.includes("pass")) {
             newobj[key] = "*************";
-        } else if (key.indexOf("base64") >= 0 || key.indexOf("binaryData") >= 0) {
+        } else if (key.includes("base64") || key.includes("binaryData")) {
             newobj[key] = "<base64>";
-        } else {
-            if (obj[key] !== undefined && obj[key] !== null) {
-                if (obj[key].constructor.name === "Object") {
-                    newobj[key] = logParams(obj[key]);
-                } else if (Array.isArray(obj[key])) {
-                    newobj[key] = obj[key].map(logParams);
-                } else {
-                    newobj[key] = obj[key];
-                }
+        } else if (obj[key] !== undefined && obj[key] !== null) {
+            const prop = obj[key];
+            if (prop.constructor.name === "Object") {
+                newobj[key] = logParams(prop as { [id: string]: unknown });
+            } else if (Array.isArray(prop)) {
+                newobj[key] = prop.map(item => logParams(item));
             } else {
-                newobj[key] = obj[key];
+                newobj[key] = prop;
             }
+        } else {
+            newobj[key] = obj[key];
         }
     }
     return newobj;
@@ -219,7 +223,6 @@ export function cors(
     allowOrigins: string | string[] | undefined,
     allowMethods: string | undefined,
     allowHeaders: string | undefined): void {
-
     if (!allowOrigins || allowOrigins === "*") {
         res.setHeader("Access-Control-Allow-Origin", "*");
     } else if (allowOrigins) {
@@ -251,7 +254,8 @@ export function cors(
                 "X-HTTP-Method-Override",
                 "Content-Type",
                 "Authorization",
-                "Accept"].join(",")
+                "Accept"
+            ].join(",")
         );
     }
 }

@@ -1,4 +1,5 @@
 import * as aws from "aws-sdk";
+import { BatchWriteItemRequestMap } from "aws-sdk/clients/dynamodb";
 import { IAWSDynamoDbConfiguration } from "../models/configuration/IAWSDynamoDbConfiguration";
 import { IStorageService } from "../models/services/IStorageService";
 
@@ -100,8 +101,8 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
                 Key: key
             }).promise();
 
-            return <T>response.Item;
-        } catch (err) {
+            return response.Item as T;
+        } catch {
         }
     }
 
@@ -135,8 +136,64 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
     }
 
     /**
+     * Get all the items.
+     * @returns All the items for the table.
+     */
+    public async getAll(): Promise<T[]> {
+        try {
+            const docClient = this.createDocClient();
+
+            let lastKey;
+            let allItems: T[] = [];
+
+            do {
+                const response = await docClient.scan({
+                    TableName: this._fullTableName,
+                    ExclusiveStartKey: lastKey
+                }).promise();
+
+                if (allItems) {
+                    allItems = allItems.concat(response.Items as T[]);
+                }
+
+                lastKey = response.LastEvaluatedKey;
+            }
+            while (lastKey);
+
+            return allItems;
+        } catch {
+            return [];
+        }
+    }
+
+    /**
+     * Set the items in a batch.
+     * @param items The items to set.
+     */
+    public async setAll(items: T[]): Promise<void> {
+        const docClient = this.createDocClient();
+
+        for (let i = 0; i < Math.ceil(items.length / 25); i++) {
+            const params: BatchWriteItemRequestMap = {};
+
+            params[this._fullTableName] = items
+                .slice(i * 25, (i + 1) * 25)
+                .map(item => (
+                    {
+                        PutRequest: {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            Item: item as any
+                        }
+                    }));
+
+            await docClient.batchWrite({
+                RequestItems: params
+            }).promise();
+        }
+    }
+
+    /**
      * Create and set the configuration for db.
-     * @param config The configuration to use for connection.
      */
     private createAndSetConfig(): void {
         const awsConfig = new aws.Config({
@@ -150,7 +207,6 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
 
     /**
      * Create a new DB connection.
-     * @param config The configuration for the connection.
      * @returns The dynamo db connection.
      */
     private createConnection(): aws.DynamoDB {
@@ -161,7 +217,6 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
 
     /**
      * Create a doc client connection.
-     * @param config The configuration to use for connection.
      * @returns The dynamo db document client.
      */
     private createDocClient(): aws.DynamoDB.DocumentClient {

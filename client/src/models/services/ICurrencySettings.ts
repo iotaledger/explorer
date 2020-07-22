@@ -1,5 +1,5 @@
 
-export interface ICurrencySettings  {
+export interface ICurrencySettings {
     /**
      * The fiat code for currency conversion.
      */
@@ -24,11 +24,6 @@ export interface ICurrencySettings  {
      * The volume in the last 24H.
      */
     volume24h?: number;
-
-    /**
-     * The percentage change in the last 24H.
-     */
-    percentageChange24h?: number;
 
     /**
      * The currencies used for conversion.

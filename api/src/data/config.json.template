@@ -2,7 +2,6 @@
     "networks": [
         API-NETWORKS
     ],
-    "cmcApiKey": "CMC-API-KEY",
     "fixerApiKey": "FIXER-API-KEY",
     "dynamoDbConnection": {
         "region": "DB-AWS-REGION",
@@ -12,5 +11,6 @@
     },
     "allowedDomains": [
         "ALLOWED-DOMAIN"
-    ]
+    ],
+    "verboseLogging": VERBOSE-LOGGING
 }

@@ -1,0 +1,49 @@
+@import './fonts';
+@import './mixins';
+@import './variables';
+
+button {
+  @include font-size(16px);
+
+  padding: 6px 10px;
+  border: 1px solid $dark-green;
+  border-radius: 6px;
+  outline: none;
+  background: $dark-green;
+  color: $white;
+  font-family: $metropolis;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &:focus {
+    box-shadow: 0 0 3px 0 $main-green-highlight;
+  }
+
+  // sass-lint:disable no-vendor-prefixes
+  &:-moz-focusring {
+    text-shadow: 0 0 0 $gray-10;
+  }
+
+  &.button--danger {
+    border-color: $danger;
+    background-color: $danger;
+    color: $white;
+  }
+
+  &.button--secondary {
+    border-color: $dark-green;
+    background-color: $white;
+    color: $dark-green;
+  }
+
+  &.button--small {
+    @include font-size(12px);
+
+    padding: 4px 8px;
+  }
+}

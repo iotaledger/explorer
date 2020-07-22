@@ -24,12 +24,12 @@ export class PowHelper {
 
         let previousTransactionHash: string | undefined;
 
-        for (let i = 0; i < trytes.length; i++) {
+        for (const tryte of trytes) {
             // Start with last index transaction
             // Assign it the trunk / branch which the user has supplied
             // If there is a bundle, chain the bundle transactions via
             // trunkTransaction together
-            const tx = { ...asTransactionObject(trytes[i]) };
+            const tx = { ...asTransactionObject(tryte) };
 
             tx.attachmentTimestamp = Date.now();
             tx.attachmentTimestampLowerBound = 0;
@@ -56,14 +56,13 @@ export class PowHelper {
             const newTrytes = asTransactionTrytes(tx);
 
             const nonce = await pow({ trytes: newTrytes, minWeight: minWeightMagnitude });
-            const returnedTrytes = newTrytes.substr(0, newTrytes.length - nonce.length).concat(nonce);
+            const returnedTrytes = newTrytes.slice(0, Math.max(0, newTrytes.length - nonce.length)).concat(nonce);
 
             // Calculate the hash of the new transaction with nonce and use that as the previous hash for next entry
             const returnTransaction = asTransactionObject(returnedTrytes);
             previousTransactionHash = returnTransaction.hash;
 
             finalTrytes.push(returnedTrytes);
-
         }
 
         return finalTrytes.reverse();
@@ -75,7 +74,7 @@ export class PowHelper {
      */
     public static isAvailable(): boolean {
         try {
-            if (window && window.document) {
+            if (window?.document) {
                 const canvas = document.createElement("canvas");
                 if (canvas) {
                     const gl = canvas.getContext("webgl2");
@@ -85,7 +84,7 @@ export class PowHelper {
                     }
                 }
             }
-        } catch (err) {
+        } catch {
             // any errors pow is not available
         }
         return false;

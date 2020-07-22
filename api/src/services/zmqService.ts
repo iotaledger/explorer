@@ -51,7 +51,7 @@ export class ZmqService {
              * @param event The event for the subscription.
              * @param data The data for the event.
              */
-            callback(event: string, data: any): Promise<void>;
+            callback(event: string, data: unknown): Promise<void>;
         }[];
     };
 
@@ -183,6 +183,7 @@ export class ZmqService {
      */
     public subscribe(
         event: ZmqEvent,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         callback: (event: string, data: any) => Promise<void>
     ): string {
         return this.internalAddEventCallback(event, callback);
@@ -196,7 +197,7 @@ export class ZmqService {
      */
     public subscribeEvent(
         event: ZmqEvent,
-        callback: (event: string, data: any) => Promise<void>
+        callback: (event: string, data: unknown) => Promise<void>
     ): string {
         return this.internalAddEventCallback(event, callback);
     }
@@ -211,7 +212,7 @@ export class ZmqService {
         address: string,
         callback: (event: string, data: IAddress) => Promise<void>
     ): string {
-        if (!/^[A-Z9]{81}$/.test(address)) {
+        if (!/^[9A-Z]{81}$/.test(address)) {
             throw new Error("The parameter 'address' must be 81 trytes.");
         }
 
@@ -269,7 +270,7 @@ export class ZmqService {
                     },
                     500);
             }
-        } catch (err) {
+        } catch {
             this.disconnect();
         }
     }
@@ -288,7 +289,7 @@ export class ZmqService {
                 }
 
                 localSocket.close();
-            } catch (err) {
+            } catch {
             }
         }
     }
@@ -311,7 +312,7 @@ export class ZmqService {
      */
     private internalAddEventCallback(
         event: string,
-        callback: (event: string, data: any) => Promise<void>
+        callback: (event: string, data: unknown) => Promise<void>
     ): string {
         if (!this._subscriptions[event]) {
             this._subscriptions[event] = [];
@@ -343,153 +344,153 @@ export class ZmqService {
 
             switch (event) {
                 case "antn": {
-                    data = <IAntn>{
+                    data = {
                         url: messageParams[1]
-                    };
+                    } as IAntn;
                     break;
                 }
 
                 case "dnscc": {
-                    data = <IDnscc>{
+                    data = {
                         neighborsHostname: messageParams[1]
-                    };
+                    } as IDnscc;
                     break;
                 }
 
                 case "dnscu": {
-                    data = <IDnscu>{
+                    data = {
                         neighborsHostname: messageParams[1]
-                    };
+                    } as IDnscu;
                     break;
                 }
 
                 case "dnscv": {
-                    data = <IDnscv>{
+                    data = {
                         neighborsHostname: messageParams[1],
                         neighborsIPAddress: messageParams[2]
-                    };
+                    } as IDnscv;
                     break;
                 }
 
                 case "hmr": {
                     const parts = messageParams[1].split("/");
-                    data = <IHmr>{
-                        hitCount: parseInt(parts[0], 10),
-                        missCount: parseInt(parts[1], 10)
-                    };
+                    data = {
+                        hitCount: Number.parseInt(parts[0], 10),
+                        missCount: Number.parseInt(parts[1], 10)
+                    } as IHmr;
                     break;
                 }
 
                 case "lmhs": {
-                    data = <ILmhs>{
+                    data = {
                         latestMilestoneHash: messageParams[1]
-                    };
+                    } as ILmhs;
                     break;
                 }
 
                 case "lmi": {
-                    data = <ILmi>{
-                        previousIndex: parseInt(messageParams[1], 10),
-                        latestIndex: parseInt(messageParams[2], 10)
-                    };
+                    data = {
+                        previousIndex: Number.parseInt(messageParams[1], 10),
+                        latestIndex: Number.parseInt(messageParams[2], 10)
+                    } as ILmi;
                     break;
                 }
 
                 case "lmsi": {
-                    data = <ILmsi>{
-                        prevSolidMilestoneIndex: parseInt(messageParams[1], 10),
-                        latestMilestoneIndex: parseInt(messageParams[2], 10)
-                    };
+                    data = {
+                        prevSolidMilestoneIndex: Number.parseInt(messageParams[1], 10),
+                        latestMilestoneIndex: Number.parseInt(messageParams[2], 10)
+                    } as ILmsi;
                     break;
                 }
 
                 case "mctn": {
-                    data = <IMctn>{
-                        totalTransactions: parseInt(messageParams[1], 10)
-                    };
+                    data = {
+                        totalTransactions: Number.parseInt(messageParams[1], 10)
+                    } as IMctn;
                     break;
                 }
 
                 case "rntn": {
-                    data = <IRntn>{
+                    data = {
                         url: messageParams[1],
-                        maxPeers: parseInt(messageParams[2], 10)
-                    };
+                        maxPeers: Number.parseInt(messageParams[2], 10)
+                    } as IRntn;
                     break;
                 }
 
                 case "rstat": {
-                    data = <IRstat>{
-                        received: parseInt(messageParams[1], 10),
-                        toBroadcast: parseInt(messageParams[2], 10),
-                        notRequested: parseInt(messageParams[3], 10),
-                        notSent: parseInt(messageParams[4], 10),
-                        stored: parseInt(messageParams[5], 10)
-                    };
+                    data = {
+                        received: Number.parseInt(messageParams[1], 10),
+                        toBroadcast: Number.parseInt(messageParams[2], 10),
+                        notRequested: Number.parseInt(messageParams[3], 10),
+                        notSent: Number.parseInt(messageParams[4], 10),
+                        stored: Number.parseInt(messageParams[5], 10)
+                    } as IRstat;
                     break;
                 }
 
                 case "rtl": {
-                    data = <IRtl>{
+                    data = {
                         hash: messageParams[1]
-                    };
+                    } as IRtl;
                     break;
                 }
 
                 case "sn": {
-                    data = <ISn>{
-                        index: parseInt(messageParams[1], 10),
+                    data = {
+                        index: Number.parseInt(messageParams[1], 10),
                         transaction: messageParams[2],
                         address: messageParams[3],
                         trunk: messageParams[4],
                         branch: messageParams[5],
                         bundle: messageParams[6]
-                    };
+                    } as ISn;
                     break;
                 }
 
                 case "tx": {
-                    data = <ITx>{
+                    data = {
                         hash: messageParams[1],
                         address: messageParams[2],
-                        value: parseInt(messageParams[3], 10),
+                        value: Number.parseInt(messageParams[3], 10),
                         obsoleteTag: messageParams[4],
-                        timestamp: parseInt(messageParams[5], 10),
-                        currentIndex: parseInt(messageParams[6], 10),
-                        lastIndex: parseInt(messageParams[7], 10),
+                        timestamp: Number.parseInt(messageParams[5], 10),
+                        currentIndex: Number.parseInt(messageParams[6], 10),
+                        lastIndex: Number.parseInt(messageParams[7], 10),
                         bundle: messageParams[8],
                         trunk: messageParams[9],
                         branch: messageParams[10],
-                        attachmentTimestamp: parseInt(messageParams[11], 10),
+                        attachmentTimestamp: Number.parseInt(messageParams[11], 10),
                         tag: messageParams[12]
-                    };
+                    } as ITx;
                     break;
                 }
 
                 case "tx_trytes":
                 case "trytes": {
-                    data = <ITxTrytes>{
+                    data = {
                         trytes: messageParams[1],
                         hash: messageParams[2]
-                    };
+                    } as ITxTrytes;
                     break;
                 }
 
                 default: {
                     // Is this an address event
-                    if (/^[A-Z9]{81}$/.test(event)) {
-                        let mi = parseInt(messageParams[2], 10);
+                    if (/^[9A-Z]{81}$/.test(event)) {
+                        let mi = Number.parseInt(messageParams[2], 10);
                         let txIndex = 1;
                         if (Number.isNaN(mi)) {
-                            mi = parseInt(messageParams[3], 10);
+                            mi = Number.parseInt(messageParams[3], 10);
                             txIndex++;
                         }
                         if (!Number.isNaN(mi)) {
-                            data = <IAddress>{
+                            data = {
                                 address: messageParams[0],
                                 transaction: messageParams[txIndex],
                                 milestoneIndex: mi
-                            };
+                            } as IAddress;
                         }
                     }
                 }

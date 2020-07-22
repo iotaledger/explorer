@@ -1,4 +1,4 @@
-import { IFindTransactionsRequestHint} from "./IFindTransactionsRequestHint";
+import { IFindTransactionsRequestHint } from "./IFindTransactionsRequestHint";
 
 export interface IFindTransactionsRequest {
     /**

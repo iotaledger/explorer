@@ -18,9 +18,8 @@ export class ConfigurationService<T> {
             if (response.ok) {
                 this._configuration = await response.json();
                 return this._configuration;
-            } else {
-                throw new Error("Could not find file");
             }
+            throw new Error("Could not find file");
         } catch (err) {
             throw new Error(`Error loading configuration file\n${err.message}`);
         }

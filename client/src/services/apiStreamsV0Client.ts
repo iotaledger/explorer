@@ -35,7 +35,7 @@ export class ApiStreamsV0Client {
     public async prepareTransfers(
         seed: string | Int8Array,
         transfers: readonly Transfer[],
-        options?: Partial<any>): Promise<readonly string[]> {
+        options?: Partial<unknown>): Promise<readonly string[]> {
         throw new Error("This method is not supported by the API");
     }
 
@@ -58,6 +58,10 @@ export class ApiStreamsV0Client {
     /**
      * Find the transaction objects for the given request hashes.
      * @param request The hashes to find the transaction hashes for.
+     * @param request.addresses Addresses to find.
+     * @param request.approvees Approvees to find.
+     * @param request.bundles Bundles to find.
+     * @param request.tags Tags to find.
      * @returns The list of found transaction hashes.
      */
     public async findTransactionObjects(request: {
@@ -78,12 +82,11 @@ export class ApiStreamsV0Client {
          */
         tags?: readonly string[];
     }): Promise<readonly Transaction[]> {
-
         if (!request.addresses) {
             throw new Error("This method is not supported by the API");
         }
 
-        const response = await this._apiClient.findTransactions(
+        const response = await this._apiClient.transactionsGet(
             {
                 mode: "addresses",
                 network: this._network,
@@ -92,15 +95,15 @@ export class ApiStreamsV0Client {
         );
         let txs: Transaction[] = [];
 
-        if (response && response.hashes) {
+        if (response?.hashes) {
             const hashes = response.hashes;
 
-            const trytesResponse = await this._apiClient.getTrytes({
+            const trytesResponse = await this._apiClient.trytesRetrieve({
                 network: this._network,
                 hashes
             });
 
-            if (trytesResponse && trytesResponse.trytes) {
+            if (trytesResponse?.trytes) {
                 txs = trytesResponse.trytes.map(
                     (t, idx) => asTransactionObject(t, hashes[idx]));
             }

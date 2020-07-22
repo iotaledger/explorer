@@ -1,9 +1,9 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { INetworkConfiguration } from "../models/configuration/INetworkConfiguration";
-import { IAddress } from "../models/zmq/IAddress";
-import { ZmqService } from "./zmqService";
 import { IMilestoneStore } from "../models/db/IMilestoneStore";
 import { IStorageService } from "../models/services/IStorageService";
+import { IAddress } from "../models/zmq/IAddress";
+import { ZmqService } from "./zmqService";
 
 /**
  * Class to handle milestones service.
@@ -77,7 +77,7 @@ export class MilestonesService {
 
         if (this._milestoneStorageService) {
             const store = await this._milestoneStorageService.get(this._config.network);
-            if (store && store.indexes) {
+            if (store?.indexes) {
                 this._milestones = store.indexes;
             }
         }
@@ -172,7 +172,6 @@ export class MilestonesService {
                     const now = Date.now();
 
                     try {
-
                         if (now - this._lastUpdate > 5 * 60 * 1000) {
                             this.closeNetwork();
                             this.initNetwork();

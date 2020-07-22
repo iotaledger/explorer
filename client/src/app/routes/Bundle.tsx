@@ -119,24 +119,35 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
 
             for (let i = 0; i < bundleGroupsPlain.length; i++) {
                 const isConsistent = bundleGroupsPlain[i].map(tx => tx.tx.value).reduce((a, b) => a + b, 0) === 0;
+
+                let confirmationState: ConfirmationState;
+                if (!isConsistent) {
+                    confirmationState = "consistency";
+                } else if (confirmedIndex === i) {
+                    confirmationState = confirmationStates[i];
+                } else if (confirmedIndex >= 0 && confirmationStates[i] !== "confirmed") {
+                    confirmationState = "reattachment";
+                } else {
+                    confirmationState = confirmationStates[i];
+                }
+
+                const inputAddresses = new Set(bundleGroupsPlain[i].filter(t => t.tx.value < 0).map(t => t.tx.address));
+
                 bundleGroups.push({
-                    inputs: bundleGroupsPlain[i].filter(t => t.tx.value < 0).map(t => ({
+                    inputs: bundleGroupsPlain[i].filter(t => inputAddresses.has(t.tx.address)).map(t => ({
                         details: t,
                         valueCurrency: this._currencyData
                             ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
                     })),
-                    outputs: bundleGroupsPlain[i].filter(t => t.tx.value >= 0).map(t => ({
+                    outputs: bundleGroupsPlain[i].filter(t => !inputAddresses.has(t.tx.address)).map(t => ({
                         details: t,
                         valueCurrency: this._currencyData
                             ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
                     })),
-                    timestamp: bundleGroupsPlain[i][0].tx.timestamp === 0
+                    timestamp: DateHelper.milliseconds(bundleGroupsPlain[i][0].tx.timestamp === 0
                         ? bundleGroupsPlain[i][0].tx.attachmentTimestamp
-                        : bundleGroupsPlain[i][0].tx.timestamp * 1000,
-                    confirmationState: !isConsistent ? "consistency" :
-                        confirmedIndex === i ? confirmationStates[i] :
-                            confirmedIndex >= 0 && confirmationStates[i] !== "confirmed"
-                                ? "reattachment" : confirmationStates[i]
+                        : bundleGroupsPlain[i][0].tx.timestamp),
+                    confirmationState
                 });
             }
 
@@ -146,7 +157,6 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                 statusBusy: false,
                 status: ""
             });
-
         } else {
             this.props.history.replace(`/${this.props.networkConfig.network}/search/${this.props.match.params.hash}`);
         }
@@ -199,7 +209,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                         </div>
                                     </div>
                                 )}
-                                {this.state.groups && this.state.groups.map((group, idx) => (
+                                {this.state.groups?.map((group, idx) => (
                                     <React.Fragment key={idx}>
                                         <div className="row space-between margin-t-s">
                                             <p>
@@ -221,6 +231,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                         <div className="card--row" key={idx2}>
                                                             <div className="row middle space-between card--value">
                                                                 <button
+                                                                    type="button"
                                                                     className="card--value__large"
                                                                     onClick={() => this.setState(
                                                                         {
@@ -232,8 +243,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                                 >
                                                                     {this.state.formatFull
                                                                         ? `${item.details.tx.value} i`
-                                                                        : UnitsHelper.formatBest(item.details.tx.value)
-                                                                    }
+                                                                        : UnitsHelper.formatBest(item.details.tx.value)}
                                                                 </button>
                                                                 <span className="card--value__secondary">
                                                                     {item.valueCurrency}
@@ -241,6 +251,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                             </div>
                                                             <div className="card--value">
                                                                 <button
+                                                                    type="button"
                                                                     onClick={() => this.props.history.push(
                                                                         `/${this.props.networkConfig.network
                                                                         }/transaction/${item.details.tx.hash}`)}
@@ -255,6 +266,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                                     className="margin-r-t"
                                                                 />
                                                                 <button
+                                                                    type="button"
                                                                     className="card--value__tertiary"
                                                                     onClick={() => this.props.history.push(
                                                                         `/${this.props.networkConfig.network
@@ -281,6 +293,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                         <div className="card--row" key={idx2}>
                                                             <div className="row middle space-between card--value">
                                                                 <button
+                                                                    type="button"
                                                                     className="card--value__large"
                                                                     onClick={() => this.setState(
                                                                         {
@@ -292,8 +305,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                                 >
                                                                     {this.state.formatFull
                                                                         ? `${item.details.tx.value} i`
-                                                                        : UnitsHelper.formatBest(item.details.tx.value)
-                                                                    }
+                                                                        : UnitsHelper.formatBest(item.details.tx.value)}
                                                                 </button>
                                                                 <span className="card--value__secondary">
                                                                     {item.valueCurrency}
@@ -301,6 +313,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                             </div>
                                                             <div className="card--value">
                                                                 <button
+                                                                    type="button"
                                                                     onClick={() => this.props.history.push(
                                                                         `/${this.props.networkConfig.network
                                                                         }/transaction/${item.details.tx.hash}`)}
@@ -310,6 +323,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                             </div>
                                                             <div className="row middle card--value">
                                                                 <button
+                                                                    type="button"
                                                                     className="card--value__tertiary"
                                                                     onClick={() => this.props.history.push(
                                                                         `/${this.props.networkConfig.network

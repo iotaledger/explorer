@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 export interface IFindTransactionsHint {
     /**
      * The month where the next transactions are available.

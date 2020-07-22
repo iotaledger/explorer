@@ -15,13 +15,13 @@ jobs:
       # Build specific env vars
       CONFIG_ID: staging
       CONFIG_API_NETWORKS: ${{ secrets.STAGING_CONFIG_API_NETWORKS }}
-      CONFIG_CMC_API_KEY: ${{ secrets.STAGING_CONFIG_CMC_API_KEY }}
       CONFIG_FIXER_API_KEY: ${{ secrets.STAGING_CONFIG_FIXER_API_KEY }}
       CONFIG_DB_AWS_REGION: ${{ secrets.STAGING_CONFIG_DB_AWS_REGION }}
       CONFIG_DB_AWS_ACCESS_KEY_ID: ${{ secrets.STAGING_CONFIG_DB_AWS_ACCESS_KEY_ID }}
       CONFIG_DB_AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGING_CONFIG_DB_AWS_SECRET_ACCESS_KEY }}
       CONFIG_DB_TABLE_PREFIX: ${{ secrets.STAGING_CONFIG_DB_TABLE_PREFIX }}
       CONFIG_ALLOWED_DOMAIN: ${{ secrets.STAGING_CONFIG_ALLOWED_DOMAIN }}
+      CONFIG_VERBOSE_LOGGING: ${{ secrets.STAGING_VERBOSE_LOGGING }}
       GCP_SERVICE_ID: ${{ secrets.GCP_STAGING_SERVICE_ID }}
       GCP_STAGING_SERVICE_ID: ${{ secrets.GCP_STAGING_SERVICE_ID }}
       GCP_STAGING_DOMAIN: ${{ secrets.GCP_STAGING_DOMAIN }}
@@ -33,13 +33,13 @@ jobs:
           cd api/src/data/
           mv config.json.template config.$CONFIG_ID.json
           sed -i 's/API-NETWORKS/${{ env.CONFIG_API_NETWORKS }}/g' config.$CONFIG_ID.json
-          sed -i 's/CMC-API-KEY/${{ env.CONFIG_CMC_API_KEY }}/g' config.$CONFIG_ID.json
           sed -i 's/FIXER-API-KEY/${{ env.CONFIG_FIXER_API_KEY }}/g' config.$CONFIG_ID.json
           sed -i 's/DB-AWS-REGION/${{ env.CONFIG_DB_AWS_REGION }}/g' config.$CONFIG_ID.json
           sed -i 's/DB-AWS-ACCESS-KEY-ID/${{ env.CONFIG_DB_AWS_ACCESS_KEY_ID }}/g' config.$CONFIG_ID.json
           sed -i 's/DB-AWS-SECRET-ACCESS-KEY/${{ env.CONFIG_DB_AWS_SECRET_ACCESS_KEY }}/g' config.$CONFIG_ID.json
           sed -i 's/DB-TABLE-PREFIX/${{ env.CONFIG_DB_TABLE_PREFIX }}/g' config.$CONFIG_ID.json
           sed -i 's/ALLOWED-DOMAIN/${{ env.CONFIG_ALLOWED_DOMAIN }}/g' config.$CONFIG_ID.json
+          sed -i 's/VERBOSE-LOGGING/${{ env.CONFIG_VERBOSE_LOGGING }}/g' config.$CONFIG_ID.json
       - name: GCP Config
         run: |
           cd api

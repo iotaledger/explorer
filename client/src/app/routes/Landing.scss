@@ -118,7 +118,14 @@
               font-family: $metropolis;
               font-weight: bold;
               text-align: center;
+              text-decoration: none;
               text-transform: uppercase;
+
+              &.linked {
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
 
               @include tablet-down {
                 @include font-size(10px);
@@ -140,8 +147,15 @@
               font-family: $metropolis;
               font-weight: bold;
               text-align: center;
+              text-decoration: none;
               text-transform: uppercase;
               white-space: nowrap;
+
+              &.linked {
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
             }
 
             .info-box--action {
@@ -151,6 +165,7 @@
               width: 100%;
               min-height: 40px;
               text-align: right;
+              pointer-events: none;
 
               @include tablet-down {
                 min-height: unset;
@@ -277,9 +292,13 @@
                   font-family: $inter;
 
                   button {
+                    @include font-size(12px);
+
+                    padding: 0;
                     border: 0;
                     background: transparent;
                     color: inherit;
+                    font-weight: 400;
                     text-align: left;
                     cursor: pointer;
                   }

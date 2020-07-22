@@ -50,10 +50,10 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
         this.state = {
             statusBusy: false,
             status: "",
-            root: props.match.params.hash || "",
+            root: props.match.params.hash ?? "",
             rootValidation: "",
-            mode: props.match.params.mode || "public",
-            sideKey: props.match.params.key || "",
+            mode: props.match.params.mode ?? "public",
+            sideKey: props.match.params.key ?? "",
             sideKeyValidation: "",
             isValid: false,
             packets: []
@@ -103,8 +103,8 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                 type="text"
                                                 value={this.state.root}
                                                 onChange={e => this.setState(
-                                                    { root: e.target.value.toUpperCase() }, () => this.validate())
-                                                }
+                                                    { root: e.target.value.toUpperCase() }, () => this.validate()
+                                                )}
                                                 disabled={this.state.statusBusy}
                                                 className="form-input-long"
                                                 maxLength={81}
@@ -122,6 +122,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                             </div>
                                             <div className="row wrap">
                                                 <button
+                                                    type="button"
                                                     className={classNames(
                                                         "form-button",
                                                         "margin-r-t",
@@ -134,8 +135,9 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                     disabled={this.state.statusBusy}
                                                 >
                                                     Public
-                                            </button>
+                                                </button>
                                                 <button
+                                                    type="button"
                                                     className={classNames(
                                                         "form-button",
                                                         "margin-r-t",
@@ -148,8 +150,9 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                     disabled={this.state.statusBusy}
                                                 >
                                                     Private
-                                            </button>
+                                                </button>
                                                 <button
+                                                    type="button"
                                                     className={classNames(
                                                         "form-button",
                                                         "margin-r-t",
@@ -162,7 +165,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                     disabled={this.state.statusBusy}
                                                 >
                                                     Restricted
-                                            </button>
+                                                </button>
                                             </div>
                                         </div>
                                         <div className="row margin-b-s">
@@ -173,8 +176,8 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                 type="text"
                                                 value={this.state.sideKey}
                                                 onChange={e => this.setState(
-                                                    { sideKey: e.target.value.toUpperCase() }, () => this.validate())
-                                                }
+                                                    { sideKey: e.target.value.toUpperCase() }, () => this.validate()
+                                                )}
                                                 disabled={this.state.mode !== "restricted" || this.state.statusBusy}
                                                 className="form-input-long"
                                                 maxLength={81}
@@ -185,6 +188,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                 &nbsp;
                                             </div>
                                             <button
+                                                type="button"
                                                 className="form-button selected margin-r-t"
                                                 onClick={() => this.findData()}
                                                 disabled={this.state.statusBusy || !this.state.isValid}
@@ -192,6 +196,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                 Find Data
                                             </button>
                                             <button
+                                                type="button"
                                                 className="form-button selected margin-r-t"
                                                 onClick={() => this.stopData()}
                                                 disabled={!this.state.statusBusy}
@@ -201,7 +206,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                         </div>
                                     </div>
                                 </div>
-                                {this.state.packets && this.state.packets.map((item, idx) => (
+                                {this.state.packets?.map((item, idx) => (
                                     <div className="card margin-t-s" key={item.root}>
                                         <div className="card--content">
                                             <div className="item-details">
@@ -221,6 +226,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                     <span className="margin-r-s">
                                                         {item.messageType !== "Trytes" && (
                                                             <button
+                                                                type="button"
                                                                 onClick={() => {
                                                                     const oldPackets = this.state.packets.slice();
                                                                     oldPackets[idx].showRawMessageTrytes =
@@ -230,8 +236,8 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                                     });
                                                                 }}
                                                             >
-                                                                Message {item.showRawMessageTrytes ?
-                                                                    "Trytes" : item.messageType}
+                                                                Message {item.showRawMessageTrytes
+                                                                    ? "Trytes" : item.messageType}
                                                             </button>
                                                         )}
                                                         {item.messageType === "Trytes" && (
@@ -256,7 +262,8 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                             `card--value-textarea__${item.showRawMessageTrytes
                                                                 ? "trytes"
                                                                 : item.messageType?.toLowerCase()}`
-                                                        )}
+                                                        )
+                                                    }
                                                 >
                                                     {item.showRawMessageTrytes
                                                         ? item.rawMessageTrytes
@@ -387,10 +394,8 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
 
                 this._nextRoot = packet.nextRoot;
                 this._timeout = 100;
-            } else {
-                if (this._timeout < 10000) {
-                    this._timeout += 500;
-                }
+            } else if (this._timeout < 10000) {
+                this._timeout += 500;
             }
             if (this._updateTimer) {
                 clearTimeout(this._updateTimer);

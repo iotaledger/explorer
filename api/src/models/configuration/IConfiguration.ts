@@ -11,11 +11,6 @@ export interface IConfiguration {
     networks: INetworkConfiguration[];
 
     /**
-     * The coin market cap api key.
-     */
-    cmcApiKey: string;
-
-    /**
      * The fixer api key.
      */
     fixerApiKey: string;
@@ -34,4 +29,9 @@ export interface IConfiguration {
      * A list of domains allowed to access the api.
      */
     allowedDomains: string[];
+
+    /**
+     * Enable verbose API logging.
+     */
+    verboseLogging: boolean;
 }

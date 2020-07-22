@@ -1,7 +1,7 @@
 import { composeAPI } from "@iota/core";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { FindTransactionsMode } from "../models/api/findTransactionsMode";
+import { TransactionsGetMode } from "../models/api/transactionsGetMode";
 import { INetworkConfiguration } from "../models/configuration/INetworkConfiguration";
 import { TransactionsService } from "../services/transactionsService";
 
@@ -18,7 +18,7 @@ export class TangleHelper {
      */
     public static async findHashes(
         networkConfig: INetworkConfiguration,
-        hashTypeName: FindTransactionsMode,
+        hashTypeName: TransactionsGetMode,
         hash: string): Promise<{
             /**
              * The hashes retrieved.
@@ -35,7 +35,6 @@ export class TangleHelper {
              */
             cursor?: string;
         }> {
-
         const findReq = {};
         findReq[hashTypeName] = [hash];
 
@@ -50,7 +49,7 @@ export class TangleHelper {
                 hints = [Buffer.from(cursor, "base64").toJSON().data];
             }
             const response = await chronicleClient.findTransactions({ ...findReq, hints });
-            if (response && response.hashes && response.hashes.length > 0) {
+            if (response?.hashes && response.hashes.length > 0) {
                 hashes = response.hashes;
                 if (response.hints && response.hints.length > 0) {
                     cursor = Buffer.from(JSON.stringify(response.hints[0])).toString("base64");
@@ -67,11 +66,14 @@ export class TangleHelper {
                 // Cant do anything with cursors here until nodes
                 // support some kind of paging requests
                 hashes = await api.findTransactions(findReq);
+
+                // But also make sure we don't overload the response
+                hashes = hashes.slice(0, 1000);
                 cursor = "";
             } catch (err) {
                 const errString = err.toString();
-                if (errString.indexOf("Could not complete request") >= 0 ||
-                    errString.indexOf("Invalid addresses input") >= 0) {
+                if (errString.includes("Could not complete request") ||
+                    errString.includes("Invalid addresses input")) {
                     tooMany = true;
                 }
                 console.error("API Error", err);
@@ -105,7 +107,6 @@ export class TangleHelper {
             milestoneIndexes?: number[];
         }
         > {
-
         const allTrytes: {
             /**
              * The original index.
@@ -127,10 +128,10 @@ export class TangleHelper {
 
         // First check to see if we have recently processed them and stored them in memory
         const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
-        for (let i = 0; i < allTrytes.length; i++) {
-            const trytes = transactionService.findTrytes(allTrytes[i].hash);
+        for (const allTryte of allTrytes) {
+            const trytes = transactionService.findTrytes(allTryte.hash);
             if (trytes) {
-                allTrytes[i].trytes = trytes;
+                allTryte.trytes = trytes;
             }
         }
 
@@ -140,11 +141,9 @@ export class TangleHelper {
 
             const missing = allTrytes.filter(a => !a.trytes);
 
-            console.log(missing);
-
             const response = await chronicleClient.getTrytes({ hashes: missing.map(mh => mh.hash) });
 
-            if (response && response.trytes) {
+            if (response?.trytes) {
                 for (let i = 0; i < missing.length; i++) {
                     missing[i].trytes = response.trytes[i];
 
@@ -154,10 +153,9 @@ export class TangleHelper {
         }
 
         try {
-            const missing2 = allTrytes.filter(a => !a.trytes || /^[9]+$/.test(a.trytes));
+            const missing2 = allTrytes.filter(a => !a.trytes || /^9+$/.test(a.trytes));
 
             if (missing2.length > 0) {
-
                 const api = composeAPI({
                     provider: networkConfig.node.provider
                 });

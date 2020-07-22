@@ -44,10 +44,8 @@ export class ChronicleClient {
 
             return axiosResponse.data;
         } catch (err) {
-            console.error("Chronicle Error", (err.response && err.response.data && err.response.data.error) ?? err);
+            console.error("Chronicle Error", (err.response?.data?.error) ?? err);
         }
-
-        return undefined;
     }
 
     /**
@@ -60,7 +58,7 @@ export class ChronicleClient {
 
         try {
             if (request.addresses) {
-                request.addresses = request.addresses.map(a => a.substr(0, 81));
+                request.addresses = request.addresses.map(a => a.slice(0, 81));
             }
             if (request.tags) {
                 request.tags = request.tags.map(t => t.padEnd(27, "9"));
@@ -78,10 +76,7 @@ export class ChronicleClient {
 
             return axiosResponse.data;
         } catch (err) {
-            console.error("Chronicle Error", (err.response && err.response.data && err.response.data.error) ?? err);
+            console.error("Chronicle Error", (err.response?.data?.error) ?? err);
         }
-
-        return undefined;
     }
-
 }

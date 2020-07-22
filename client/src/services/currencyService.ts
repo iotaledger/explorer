@@ -184,6 +184,7 @@ export class CurrencyService {
         ZAR: "R",
         ZWD: "Z$"
     };
+
     /**
      * The network to use for transaction requests.
      */
@@ -224,7 +225,6 @@ export class CurrencyService {
                     currencies: settings.currencies,
                     fiatCode: settings.fiatCode,
                     marketCap: settings.marketCap,
-                    percentageChange24h: settings.percentageChange24h,
                     volume24h: settings.volume24h
                 });
             hasData = true;
@@ -233,7 +233,7 @@ export class CurrencyService {
         // If the data is missing then load it inline which can return errors
         // if the data is out of date try and get some new info in the background
         // if it fails we don't care about the outcome as we already have data
-        const lastUpdate = settings ? (settings.lastCurrencyUpdate || 0) : 0;
+        const lastUpdate = settings ? (settings.lastCurrencyUpdate ?? 0) : 0;
         if (!hasData || Date.now() - lastUpdate > 3600000) {
             setTimeout(async () => this.loadData(callback), 0);
         }
@@ -272,7 +272,8 @@ export class CurrencyService {
                     converted += `${this.getSymbol(currencyData.fiatCode)} `;
                 }
 
-                converted += fiat.toFixed(numDigits).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                converted += fiat.toFixed(numDigits).toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
         return converted;
@@ -302,10 +303,35 @@ export class CurrencyService {
                     converted += `${this.getSymbol(currencyData.fiatCode)} `;
                 }
 
-                converted += fiat.toFixed(numDigits).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                converted += fiat
+                    .toFixed(numDigits)
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
         return converted;
+    }
+
+    /**
+     * Format the amount with currency sumbol.
+     * @param currencyData The currency data.
+     * @param amount The amount to format.
+     * @param numDigits The number of digits to display.
+     * @returns The formatted amount.
+     */
+    public formatCurrency(currencyData: ICurrencySettings | undefined, amount: number, numDigits: number): string {
+        let formatted = "";
+
+        if (currencyData) {
+            formatted = `${this.getSymbol(currencyData.fiatCode)} `;
+        }
+
+        formatted += amount
+            .toFixed(numDigits)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+        return formatted;
     }
 
     /**
@@ -326,7 +352,7 @@ export class CurrencyService {
         callback: (available: boolean, data?: ICurrencySettings, err?: Error) => void): Promise<void> {
         try {
             const currencyResponse = await this._apiClient.currencies();
-            if (currencyResponse && currencyResponse.success) {
+            if (currencyResponse?.success) {
                 if (!currencyResponse.baseRate || !currencyResponse.currencies) {
                     callback(false);
                 } else {
@@ -338,7 +364,6 @@ export class CurrencyService {
                     const ids = Object.keys(cur).sort();
                     settings.currencies = ids.map(i => ({ id: i, rate: cur[i] }));
                     settings.marketCap = currencyResponse.marketCap;
-                    settings.percentageChange24h = currencyResponse.percentageChange24h;
                     settings.volume24h = currencyResponse.volume24h;
 
                     this._settingsService.save();
@@ -350,7 +375,6 @@ export class CurrencyService {
                             currencies: settings.currencies,
                             fiatCode: settings.fiatCode,
                             marketCap: settings.marketCap,
-                            percentageChange24h: settings.percentageChange24h,
                             volume24h: settings.volume24h
                         });
                 }

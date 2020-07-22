@@ -1,4 +1,4 @@
-import { IncomingHttpHeaders} from "http";
+import { IncomingHttpHeaders } from "http";
 
 export interface IHttpRequest {
     /**
@@ -14,12 +14,13 @@ export interface IHttpRequest {
     /**
      * The request body.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     body: any;
 
     /**
      * The query parameters.
      */
-    query: { [key: string]: any };
+    query: { [key: string]: unknown };
 
     /**
      * Incoming Http Headers.

@@ -7,7 +7,7 @@ import { HeaderProps } from "./HeaderProps";
 /**
  * Component which will show the header.
  */
-class Header extends Component<HeaderProps, any> {
+class Header extends Component<HeaderProps> {
     /**
      * Create a new instance of Header.
      * @param props The props.
