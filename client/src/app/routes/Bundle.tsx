@@ -131,13 +131,15 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                     confirmationState = confirmationStates[i];
                 }
 
+                const inputAddresses = new Set(bundleGroupsPlain[i].filter(t => t.tx.value < 0).map(t => t.tx.address));
+
                 bundleGroups.push({
-                    inputs: bundleGroupsPlain[i].filter(t => t.tx.value < 0).map(t => ({
+                    inputs: bundleGroupsPlain[i].filter(t => inputAddresses.has(t.tx.address)).map(t => ({
                         details: t,
                         valueCurrency: this._currencyData
                             ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
                     })),
-                    outputs: bundleGroupsPlain[i].filter(t => t.tx.value >= 0).map(t => ({
+                    outputs: bundleGroupsPlain[i].filter(t => !inputAddresses.has(t.tx.address)).map(t => ({
                         details: t,
                         valueCurrency: this._currencyData
                             ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
