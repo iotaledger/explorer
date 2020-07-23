@@ -29,7 +29,7 @@ jobs:
       - name: Client Config
         run: |
           cd client/src/assets/config/
-          mv config.json.template config.$CONFIG_ID.json
+          mv config.template config.$CONFIG_ID.json
           sed -i "s/API-ENDPOINT/${{ env.CONFIG_API_ENDPOINT }}/g" config.$CONFIG_ID.json
           sed -i "s/NETWORKS/${{ env.CONFIG_NETWORKS }}/g" config.$CONFIG_ID.json
           sed -i "s/GOOGLE-ANALYTICS-ID/${{ env.CONFIG_GOOGLE_ANALYTICS_ID }}/g" config.$CONFIG_ID.json

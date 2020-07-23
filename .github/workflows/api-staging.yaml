@@ -33,7 +33,7 @@ jobs:
       - name: API Config
         run: |
           cd api/src/data/
-          mv config.json.template config.$CONFIG_ID.json
+          mv config.template config.$CONFIG_ID.json
           sed -i 's/API-NETWORKS/${{ env.CONFIG_API_NETWORKS }}/g' config.$CONFIG_ID.json
           sed -i 's/FIXER-API-KEY/${{ env.CONFIG_FIXER_API_KEY }}/g' config.$CONFIG_ID.json
           sed -i 's/DB-AWS-REGION/${{ env.CONFIG_DB_AWS_REGION }}/g' config.$CONFIG_ID.json
