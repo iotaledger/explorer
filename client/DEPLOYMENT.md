@@ -7,18 +7,17 @@ You should copy `./public/data/config.json.template` to `./public/data/config.lo
 ```js
 {
     "apiEndpoint": "ENDPOINT",                      /* The url of the api endpoint e.g. https://api.my-domain.com */
-    "nodesMainnet": [                               /* List of mainnet nodes to load balance across */  
+    "networks": [                                    /* List of networks to support */
         {
-            "provider": "MYNODE",                   /* A node to perform Tangle operations */
-            "depth": 3,                             /* Depth to use for attaches */
-            "mwm": 9                                /* MWM to use for attaches */
-        }
-    ],
-    "nodesDevnet": [                                /* List of devnet nodes to load balance across */  
-        {
-            "provider": "MYNODE",                   /* A node to perform Tangle operations */
-            "depth": 3,                             /* Depth to use for attaches */
-            "mwm": 9                                /* MWM to use for attaches */
+            "network": "mainnet",                    /* Network type */
+            "label": "Mainnet",                      /* Nework display label */
+            "node": {                                /* Node for requests */
+                "provider": "NODE_1",                /* Address for node */
+                "depth": 3,                          /* Depth for network */             
+                "mwm": 14                            /* MWM for network */
+            },
+            "permaNodeEndpoint": "PERMA_ENDPOINT",   /* Permanode endpoint for historical transactions */
+            "coordinatorAddress": "AAA...ZZZ"        /* Coordinator Address on network */
         }
     ],
     "googleMapsKey": "GOOGLE-MAPS-KEY",             /* Key for using with Google maps API */

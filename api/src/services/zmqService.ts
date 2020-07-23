@@ -166,13 +166,13 @@ export class ZmqService {
      */
     public subscribe(event: "tx", callback: (event: string, data: ITx) => Promise<void>): string;
     /**
-     * Subscribe to tx_trytes event.
+     * Subscribe to trytes event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
     public subscribe(
-        event: "tx_trytes" | "trytes",
+        event: "trytes",
         callback: (event: string, data: ITxTrytes) => Promise<void>
     ): string;
     /**
@@ -467,7 +467,6 @@ export class ZmqService {
                     break;
                 }
 
-                case "tx_trytes":
                 case "trytes": {
                     data = {
                         trytes: messageParams[1],

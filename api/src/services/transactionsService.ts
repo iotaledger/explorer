@@ -153,9 +153,8 @@ export class TransactionsService {
     private startZmq(): void {
         this.stopZmq();
 
-        const txMessage = this._config.zmqTransactionMessage || "tx_trytes";
         this._subscriptionId = this._zmqService.subscribe(
-            txMessage, async (evnt: string, message: ITxTrytes) => {
+            "trytes", async (evnt: string, message: ITxTrytes) => {
                 if (!this._transactionValues[message.hash]) {
                     this._total++;
                     const tx = asTransactionObject(message.trytes);
