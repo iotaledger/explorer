@@ -1,3 +1,5 @@
 dispatch:
+  - url: "%GCP-PROD-DOMAIN%/*"
+    service: %GCP-PROD-SERVICE-ID%
   - url: "%GCP-STAGING-DOMAIN%/*"
     service: %GCP-STAGING-SERVICE-ID%
