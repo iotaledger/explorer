@@ -1,0 +1,26 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/variables';
+
+.disclaimer {
+  @include font-size(12px);
+
+  display: flex;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-top: 1px solid $gray-daylight;
+  background: $gray-midnight;
+  color: $white;
+  font-family: $metropolis;
+  z-index: 1000;
+
+  a {
+    color: $main-green-highlight;
+  }
+}

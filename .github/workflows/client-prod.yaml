@@ -1,0 +1,44 @@
+name: Client Build and Deploy Production
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "client/**"
+      - ".github/workflows/client-prod.yaml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      # Build specific env vars
+      CONFIG_ID: prod
+      CONFIG_API_ENDPOINT: ${{ secrets.PROD_CONFIG_API_ENDPOINT }}
+      CONFIG_NETWORKS: ${{ secrets.PROD_CONFIG_NETWORKS }}
+      CONFIG_GOOGLE_ANALYTICS_ID: ${{ secrets.PROD_CONFIG_GOOGLE_ANALYTICS_ID }}
+      VERCEL_DOMAIN: ${{ secrets.VERCEL_CLIENT_PROD_DOMAIN }}
+
+      # Global Vercel env vars
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_CLIENT_PROJECT_ID }}
+      VERCEL_PROJECT_NAME: ${{ secrets.VERCEL_CLIENT_PROJECT_NAME }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Client Config
+        run: |
+          cd client/src/assets/config/
+          mv config.json.template config.$CONFIG_ID.json
+          sed -i "s/API-ENDPOINT/${{ env.CONFIG_API_ENDPOINT }}/g" config.$CONFIG_ID.json
+          sed -i "s/NETWORKS/${{ env.CONFIG_NETWORKS }}/g" config.$CONFIG_ID.json
+          sed -i "s/GOOGLE-ANALYTICS-ID/${{ env.CONFIG_GOOGLE_ANALYTICS_ID }}/g" config.$CONFIG_ID.json
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12"
+      - name: Client Deploy
+        run: |
+          npx vercel --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_SCOPE }} --force -m githubCommitSha=${{ github.sha }} --build-env REACT_APP_CONFIG_ID=$CONFIG_ID
+          VERCEL_DEPLOYMENT_URL=$(npx vercel ls --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_SCOPE }} -m githubCommitSha=${{ github.sha }} | grep $VERCEL_PROJECT_NAME | awk {'print $2'})
+        # npx vercel alias --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_SCOPE }} $VERCEL_DEPLOYMENT_URL $VERCEL_DOMAIN

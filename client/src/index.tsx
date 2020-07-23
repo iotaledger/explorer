@@ -2,8 +2,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
 import App from "./app/App";
+import { AppRouteProps } from "./app/AppRouteProps";
 import { ServiceFactory } from "./factories/serviceFactory";
 import { PaletteHelper } from "./helpers/paletteHelper";
 import "./index.scss";
@@ -26,7 +27,13 @@ registerServices();
 ReactDOM.render(
     (
         <BrowserRouter>
-            <App configuration={config} />
+            <Route
+                exact={true}
+                path="/:network?/:hashType?/:hash?/:mode?/:key?"
+                component={(props: RouteComponentProps<AppRouteProps>) => (
+                    <App {...props} configuration={config} />)}
+            />
+
         </BrowserRouter>
     ),
     document.querySelector("#root")
