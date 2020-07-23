@@ -16,14 +16,13 @@ To configure the `api` you should copy `./src/data/config.json.template` to `./s
     "networks": [                                    /* List of networks to support */
         {
             "network": "mainnet",                    /* Network type */
-            "label": "MainNet",                      /* Nework display label */
+            "label": "Mainnet",                      /* Nework display label */
             "node": {                                /* Node for requests */
                 "provider": "NODE_1",                /* Address for node */
                 "depth": 3,                          /* Depth for network */             
                 "mwm": 14                            /* MWM for network */
             },
             "zmqEndpoint": "ZMQ_ENDPOINT",           /* Endpoint for zmq subscriptions */
-            "zmqTransactionMessage": "tx_trytes",    /* ZMQ message for transaction data */
             "permaNodeEndpoint": "PERMA_ENDPOINT",   /* Permanode endpoint for historical transactions */
             "coordinatorAddress": "AAA...ZZZ"        /* Coordinator Address on network */
         }
