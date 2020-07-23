@@ -2,7 +2,7 @@
 
 ## Configuration
 
-You should copy `./public/data/config.json.template` to `./public/data/config.local.json` and modify it with your own settings.
+You should copy `./src/assets/config/config.template` to `./src/assets/config/config.local.json` and modify it with your own settings.
 
 ```js
 {
@@ -16,8 +16,8 @@ You should copy `./public/data/config.json.template` to `./public/data/config.lo
                 "depth": 3,                          /* Depth for network */             
                 "mwm": 14                            /* MWM for network */
             },
-            "permaNodeEndpoint": "PERMA_ENDPOINT",   /* Permanode endpoint for historical transactions */
-            "coordinatorAddress": "AAA...ZZZ"        /* Coordinator Address on network */
+            "coordinatorAddress": "AAA...ZZZ",       /* Coordinator Address on network */
+            "coordinatorSecurityLevel": 2            /* Coordinator security level */
         }
     ],
     "googleMapsKey": "GOOGLE-MAPS-KEY",             /* Key for using with Google maps API */

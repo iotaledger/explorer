@@ -2,7 +2,7 @@
 
 ## Configuration
 
-To configure the `api` you should copy `./src/data/config.json.template` to `./src/data/config.local.json` and modify the content.
+To configure the `api` you should copy `./src/data/config.template` to `./src/data/config.local.json` and modify the content.
 
 ```js
 {
@@ -23,8 +23,9 @@ To configure the `api` you should copy `./src/data/config.json.template` to `./s
                 "mwm": 14                            /* MWM for network */
             },
             "zmqEndpoint": "ZMQ_ENDPOINT",           /* Endpoint for zmq subscriptions */
-            "permaNodeEndpoint": "PERMA_ENDPOINT",   /* Permanode endpoint for historical transactions */
-            "coordinatorAddress": "AAA...ZZZ"        /* Coordinator Address on network */
+            "permaNodeEndpoint": "PERMA_ENDPOINT",   /* Permanode endpoint for historical transactions, optional */
+            "coordinatorAddress": "AAA...ZZZ",       /* Coordinator Address on network */
+            "coordinatorSecurityLevel": 2            /* Coordinator security level */
         }
     ],
     "allowedDomains": [                              /* A list of domains for the cors allow-origin */
