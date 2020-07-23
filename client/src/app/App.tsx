@@ -5,6 +5,7 @@ import "./App.scss";
 import { AppProps } from "./AppProps";
 import { AppRouteProps } from "./AppRouteProps";
 import { AppState } from "./AppState";
+import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import SearchInput from "./components/SearchInput";
@@ -198,6 +199,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                             })
                     }
                 />
+                <Disclaimer />
             </div>
         );
     }
