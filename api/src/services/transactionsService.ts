@@ -47,7 +47,16 @@ export class TransactionsService {
     /**
      * The tps history.
      */
-    private _tps: number[];
+    private _tps: {
+        /**
+         * Timestamp of count.
+         */
+        ts: number;
+        /**
+         * Transaction count.
+         */
+        count: number;
+    }[];
 
     /**
      * The current total since last timestamp.
@@ -215,8 +224,9 @@ export class TransactionsService {
                 const data: ITransactionsSubscriptionMessage = {
                     subscriptionId,
                     transactions: this._transactionValues,
-                    tps: this._tps,
-                    tpsInterval: TransactionsService.TPS_INTERVAL
+                    tps: this._tps.map(t => t.count),
+                    tpsStart: this._tps.length > 0 ? this._tps[this._tps.length - 1].ts : now,
+                    tpsEnd: this._tps.length > 0 ? this._tps[0].ts : now
                 };
 
                 await this._subscribers[subscriptionId](data);
@@ -233,7 +243,10 @@ export class TransactionsService {
     private handleTps(): void {
         const lastTotal = this._total;
         this._total = 0;
-        this._tps.unshift(lastTotal);
+        this._tps.unshift({
+            count: lastTotal,
+            ts: Date.now()
+        });
         this._tps = this._tps.slice(0, 100);
     }
 }

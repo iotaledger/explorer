@@ -45,9 +45,14 @@ export class TransactionsClient {
     private _tps: number[];
 
     /**
-     * The tps interval.
+     * The tps start.
      */
-    private _tspInterval: number;
+    private _tpsStart: number;
+
+    /**
+     * The tps start.
+     */
+    private _tpsEnd: number;
 
     /**
      * The subscription id.
@@ -72,7 +77,8 @@ export class TransactionsClient {
         this._socket = SocketIOClient(this._endpoint);
         this._transactions = [];
         this._tps = [];
-        this._tspInterval = 1;
+        this._tpsStart = 0;
+        this._tpsEnd = 0;
         this._subscribers = {};
     }
 
@@ -99,7 +105,8 @@ export class TransactionsClient {
                 this._socket.on("transactions", async (transactionsResponse: ITransactionsSubscriptionMessage) => {
                     if (transactionsResponse.subscriptionId === this._subscriptionId) {
                         this._tps = transactionsResponse.tps;
-                        this._tspInterval = transactionsResponse.tpsInterval;
+                        this._tpsStart = transactionsResponse.tpsStart;
+                        this._tpsEnd = transactionsResponse.tpsEnd;
 
                         const newHashes = transactionsResponse.transactions;
                         if (newHashes) {
@@ -195,9 +202,11 @@ export class TransactionsClient {
     public getTps(): number {
         const tps = this._tps;
         if (tps && tps.length > 0) {
-            const oneMinuteCount = Math.min(60 / this._tspInterval, tps.length);
-            const total = tps.slice(0, oneMinuteCount).reduce((a, b) => a + b, 0);
-            return total / oneMinuteCount / this._tspInterval;
+            const spanS = (this._tpsEnd - this._tpsStart) / 1000;
+            if (spanS > 0) {
+                const total = tps.reduce((a, b) => a + b, 0);
+                return total / spanS;
+            }
         }
         return -1;
     }
