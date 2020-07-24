@@ -1,3 +1,5 @@
+import { ICachedTransaction } from "../../models/ICachedTransaction";
+
 export interface TagState {
     /**
      * The tag to display.
@@ -10,9 +12,34 @@ export interface TagState {
     tagFill?: string;
 
     /**
-     * Transaction hashes for the tag.
+     * Transaction hashes for the address.
      */
-    hashes?: string[];
+    items?: {
+        /**
+         * The transaction hash.
+         */
+        hash: string;
+
+        /**
+         * The details details.
+         */
+        details?: ICachedTransaction;
+    }[];
+
+    /**
+     * Transaction hashes for the address.
+     */
+    filteredItems?: {
+        /**
+         * The transaction hash.
+         */
+        hash: string;
+
+        /**
+         * The details details.
+         */
+        details?: ICachedTransaction;
+    }[];
 
     /**
      * The items exceeded the limit.
@@ -20,14 +47,29 @@ export interface TagState {
     limitExceeded?: boolean;
 
     /**
-     * Is the component busy.
+     * Is the component status busy.
      */
-    statusBusy: boolean;
+    statusBusy: number;
 
     /**
      * The status.
      */
     status: string;
+
+    /**
+     * Format the iota in full.
+     */
+    formatFull?: boolean;
+
+    /**
+     * Hide zero transactions.
+     */
+    showOnlyValueTransactions: boolean;
+
+    /**
+     * Hide unconfirmed transactions.
+     */
+    showOnlyConfirmedTransactions: boolean;
 
     /**
      * Cursor next request.
