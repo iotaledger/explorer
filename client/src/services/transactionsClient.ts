@@ -103,6 +103,7 @@ export class TransactionsClient {
                 const subscribeRequest: ITransactionsSubscribeRequest = {
                     network: this._config.network
                 };
+
                 this._socket.emit("subscribe", subscribeRequest);
                 this._socket.on("subscribe", (subscribeResponse: ITransactionsSubscribeResponse) => {
                     if (subscribeResponse.success) {

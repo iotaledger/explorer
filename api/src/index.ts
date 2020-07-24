@@ -5,6 +5,7 @@ import express, { Application } from "express";
 import { Server } from "http";
 import SocketIO from "socket.io";
 import { initServices } from "./initServices";
+import { ITransactionsSubscribeRequest } from "./models/api/ITransactionsSubscribeRequest";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { routes } from "./routes";
 import { subscribe } from "./routes/transactions/subscribe";
@@ -52,9 +53,39 @@ server.listen(port, async () => {
     console.log(`Started API Server on port ${port}`);
     console.log(`Running Config '${configId}'`);
 
+    const sockets: {
+        [socketId: string]: {
+            network: string;
+            subscriptionId: string;
+        };
+    } = {};
+
     socketServer.on("connection", socket => {
-        socket.on("subscribe", data => socket.emit("subscribe", subscribe(config, socket, data)));
-        socket.on("unsubscribe", data => socket.emit("unsubscribe", unsubscribe(config, socket, data)));
+        socket.on("subscribe", (data: ITransactionsSubscribeRequest) => {
+            const response = subscribe(config, socket, data);
+            if (response.subscriptionId) {
+                sockets[socket.id] = {
+                    network: data.network,
+                    subscriptionId: response.subscriptionId
+                };
+            }
+            socket.emit("subscribe", response);
+        });
+
+        socket.on("unsubscribe", data => {
+            const response = unsubscribe(config, socket, data);
+            if (sockets[socket.id]) {
+                delete sockets[socket.id];
+            }
+            socket.emit("unsubscribe", response);
+        });
+
+        socket.on("disconnect", () => {
+            if (sockets[socket.id]) {
+                unsubscribe(config, socket, sockets[socket.id]);
+                delete sockets[socket.id];
+            }
+        });
     });
 
     await initServices(config);

@@ -4,6 +4,7 @@ import { IResponse } from "../../models/api/IResponse";
 import { ITransactionsUnsubscribeRequest } from "../../models/api/ITransactionsUnsubscribeRequest";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { TransactionsService } from "../../services/transactionsService";
+import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
  * Unsubscribe from transaction events.
@@ -17,7 +18,10 @@ export function unsubscribe(
     let response: IResponse;
 
     try {
-        const transactionsService = ServiceFactory.get<TransactionsService>("transactions");
+        ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
+
+        const transactionsService = ServiceFactory.get<TransactionsService>(`transactions-${request.network}`);
+
         transactionsService.unsubscribe(request.subscriptionId);
 
         response = {

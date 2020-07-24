@@ -145,6 +145,9 @@ export class TransactionsService {
     public subscribe(callback: (data: ITransactionsSubscriptionMessage) => Promise<void>): string {
         const id = TrytesHelper.generateHash(27);
         this._subscribers[id] = callback;
+        setTimeout(async () => {
+            await this.updateSubscriptions(id);
+        }, 0);
         return id;
     }
 
@@ -212,15 +215,22 @@ export class TransactionsService {
 
     /**
      * Update the subscriptions with newest trytes.
+     * @param singleSubscriberId Update an individual subscriber.
      */
-    private async updateSubscriptions(): Promise<void> {
+    private async updateSubscriptions(singleSubscriberId?: string): Promise<void> {
         const now = Date.now();
 
         const tranCount = Object.keys(this._transactionValues).length;
 
         if (tranCount > 0 ||
-            (now - this._lastSend > TransactionsService.TPS_INTERVAL * 1000)) {
-            for (const subscriptionId in this._subscribers) {
+            (now - this._lastSend > TransactionsService.TPS_INTERVAL * 1000) ||
+            singleSubscriberId
+        ) {
+            const subs = singleSubscriberId
+                ? { subscriberId: this._subscribers[singleSubscriberId] }
+                : this._subscribers;
+
+            for (const subscriptionId in subs) {
                 const data: ITransactionsSubscriptionMessage = {
                     subscriptionId,
                     transactions: this._transactionValues,
@@ -229,11 +239,13 @@ export class TransactionsService {
                     tpsEnd: this._tps.length > 0 ? this._tps[0].ts : now
                 };
 
-                await this._subscribers[subscriptionId](data);
+                await subs[subscriptionId](data);
             }
 
-            this._transactionValues = {};
-            this._lastSend = now;
+            if (!singleSubscriberId) {
+                this._transactionValues = {};
+                this._lastSend = now;
+            }
         }
     }
 
