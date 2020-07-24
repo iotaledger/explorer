@@ -10,12 +10,17 @@ export interface ITransactionsSubscriptionMessage {
     transactions: { [hash: string]: number };
 
     /**
+     * The start timestamp for the tps.
+     */
+    tpsStart: number;
+
+    /**
+     * The end timestamp for the tps.
+     */
+    tpsEnd: number;
+
+    /**
      * The tps counts.
      */
     tps: number[];
-
-    /**
-     * The interval for the tps data.
-     */
-    tpsInterval: number;
 }
