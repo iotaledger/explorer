@@ -73,8 +73,15 @@ export class TransactionsClient {
         this._endpoint = endpoint;
         this._config = networkConfiguration;
 
+        // Use websocket by default
         // eslint-disable-next-line new-cap
-        this._socket = SocketIOClient(this._endpoint);
+        this._socket = SocketIOClient(this._endpoint, { upgrade: false, transports: ["websocket"] });
+
+        // If reconnect fails then also try polling mode.
+        this._socket.on("reconnect_attempt", () => {
+            this._socket.io.opts.transports = ["polling", "websocket"];
+        });
+
         this._transactions = [];
         this._tps = [];
         this._tpsStart = 0;
