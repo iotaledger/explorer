@@ -165,7 +165,6 @@
               width: 100%;
               min-height: 40px;
               text-align: right;
-              pointer-events: none;
 
               @include tablet-down {
                 min-height: unset;
