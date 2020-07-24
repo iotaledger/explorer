@@ -56,6 +56,13 @@
         }
 
 
+        .value-buttons {
+          .col {
+            flex: 1;
+            width: auto;
+          }
+        }
+
         @include desktop-down {
           .value-buttons {
             flex-direction: column;
@@ -91,6 +98,7 @@
 
         .value {
           @include font-size(18px);
+
           display: flex;
           align-items: center;
           padding: 8px 8px 6px 8px;
