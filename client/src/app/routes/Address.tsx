@@ -54,7 +54,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
         }
 
         this.state = {
-            statusBusy: true,
+            statusBusy: 0,
             status: "Finding transactions...",
             formatFull: false,
             address,
@@ -116,7 +116,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                             items,
                             filteredItems,
                             status,
-                            statusBusy: false,
+                            statusBusy: status.length > 0 ? -1 : 1,
                             cursor
                         },
                         async () => {
@@ -152,6 +152,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
 
                                 this.setState({
                                     items: fullItems,
+                                    statusBusy: 2,
                                     filteredItems: this.filterItems(
                                         fullItems,
                                         this.state.showOnlyValueTransactions,
@@ -245,7 +246,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                 {this.state.status && (
                                     <div className="card margin-t-s">
                                         <div className="card--content middle row">
-                                            {this.state.statusBusy && (<Spinner />)}
+                                            {this.state.statusBusy === 0 && (<Spinner />)}
                                             <p className="status">
                                                 {this.state.status}
                                             </p>
@@ -254,18 +255,22 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                 )}
                                 {!this.state.status && (
                                     <div className="card">
-                                        <div className="card--header">
-                                            <h2>Transactions</h2>
-                                            {this.state.items !== undefined &&
-                                                this.state.filteredItems !== undefined && (
-                                                    <span className="card--header-count">
-                                                        {this.state.filteredItems.length !== this.state.items.length &&
-                                                            (
-                                                                `${this.state.filteredItems.length} of `
-                                                            )}
-                                                        {this.state.items.length}
-                                                    </span>
-                                                )}
+                                        <div className="card--header row space-between">
+                                            <div className="row">
+                                                <h2>Transactions</h2>
+                                                {this.state.items !== undefined &&
+                                                    this.state.filteredItems !== undefined && (
+                                                        <span className="card--header-count">
+                                                            {this.state.filteredItems.length !==
+                                                                this.state.items.length &&
+                                                                (
+                                                                    `${this.state.filteredItems.length} of `
+                                                                )}
+                                                            {this.state.items.length}
+                                                        </span>
+                                                    )}
+                                            </div>
+                                            {this.state.statusBusy === 1 && (<Spinner />)}
                                         </div>
                                         <div className="card--content">
                                             {this.state.items &&

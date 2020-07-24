@@ -2,6 +2,21 @@ import { ICachedTransaction } from "../../models/ICachedTransaction";
 
 export interface AddressState {
     /**
+     * The address.
+     */
+    address?: string;
+
+    /**
+     * The address checksum.
+     */
+    checksum?: string;
+
+    /**
+     * The address balance.
+     */
+    balance?: number;
+
+    /**
      * Transaction hashes for the address.
      */
     items?: {
@@ -39,27 +54,12 @@ export interface AddressState {
     /**
      * Is the component status busy.
      */
-    statusBusy: boolean;
+    statusBusy: number;
 
     /**
      * The status.
      */
     status: string;
-
-    /**
-     * The address.
-     */
-    address?: string;
-
-    /**
-     * The address checksum.
-     */
-    checksum?: string;
-
-    /**
-     * The address balance.
-     */
-    balance?: number;
 
     /**
      * Format the iota in full.
