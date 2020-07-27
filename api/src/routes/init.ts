@@ -2,6 +2,7 @@ import { ServiceFactory } from "../factories/serviceFactory";
 import { IConfiguration } from "../models/configuration/IConfiguration";
 import { ICurrencyState } from "../models/db/ICurrencyState";
 import { IMilestoneStore } from "../models/db/IMilestoneStore";
+import { INetwork } from "../models/db/INetwork";
 import { IStorageService } from "../models/services/IStorageService";
 import { CurrencyService } from "../services/currencyService";
 
@@ -14,6 +15,11 @@ export async function init(config: IConfiguration): Promise<string[]> {
     let log = "Initializing\n";
 
     try {
+        const networkStorageService = ServiceFactory.get<IStorageService<INetwork>>("network-storage");
+        if (networkStorageService) {
+            log += await networkStorageService.create();
+        }
+
         const stateStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
         if (stateStorageService) {
             log += await stateStorageService.create();
@@ -25,7 +31,6 @@ export async function init(config: IConfiguration): Promise<string[]> {
         }
 
         const currencyService = ServiceFactory.get<CurrencyService>("currency");
-
         if (currencyService) {
             log += await currencyService.update(true);
         }

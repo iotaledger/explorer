@@ -20,8 +20,6 @@ export async function get(config: IConfiguration): Promise<ICurrenciesResponse> 
         }
 
         return {
-            success: true,
-            message: "OK",
             lastUpdated: currency.lastCurrencyUpdate,
             baseRate: currency.currentPriceEUR,
             currencies: currency.exchangeRatesEUR,
@@ -29,8 +27,6 @@ export async function get(config: IConfiguration): Promise<ICurrenciesResponse> 
             volume24h: currency.volumeEUR
         };
     }
-    return {
-        success: true,
-        message: "Currency conversion not configured"
-    };
+
+    throw new Error("Currency conversion not configured");
 }

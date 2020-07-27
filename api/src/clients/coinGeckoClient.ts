@@ -1,5 +1,5 @@
-import axios from "axios";
 import { ICoinsHistoryResponse } from "../models/clients/coinGecko/ICoinsHistoryResponse";
+import { FetchHelper } from "../utils/fetchHelper";
 
 /**
  * Class to handle requests to coingecko api.
@@ -24,7 +24,6 @@ export class CoinGeckoClient {
      * @returns The exchange rates.
      */
     public async coinsHistory(coin: string, date: Date): Promise<ICoinsHistoryResponse | undefined> {
-        const ax = axios.create({ baseURL: this._endpoint });
         let response: ICoinsHistoryResponse | undefined;
 
         try {
@@ -32,12 +31,11 @@ export class CoinGeckoClient {
             const month = `0${(date.getMonth() + 1).toString()}`.slice(-2);
             const day = `0${date.getDate().toString()}`.slice(-2);
 
-            const axiosResponse = await ax.get<ICoinsHistoryResponse>(
-                `coins/${coin}/history?date=${day}-${month}-${year}`);
-
-            if (axiosResponse.data) {
-                response = axiosResponse.data;
-            }
+            response = await FetchHelper.json<unknown, ICoinsHistoryResponse>(
+                this._endpoint,
+                `coins/${coin}/history?date=${day}-${month}-${year}`,
+                "get"
+            );
         } catch (err) {
             console.error("Coin Gecko", err);
         }

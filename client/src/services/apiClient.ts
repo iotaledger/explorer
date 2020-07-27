@@ -1,9 +1,11 @@
-import axios from "axios";
+import { FetchHelper } from "../helpers/fetchHelper";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
 import { IMarketGetRequest } from "../models/api/IMarketGetRequest";
 import { IMarketGetResponse } from "../models/api/IMarketGetResponse";
 import { IMilestonesGetRequest } from "../models/api/IMilestonesGetRequest";
 import { IMilestonesGetResponse } from "../models/api/IMilestonesGetResponse";
+import { INetworkGetResponse } from "../models/api/INetworkGetResponse";
+import { IResponse } from "../models/api/IResponse";
 import { ITransactionsGetRequest } from "../models/api/ITransactionsGetRequest";
 import { ITransactionsGetResponse } from "../models/api/ITransactionsGetResponse";
 import { ITrytesRetrieveRequest } from "../models/api/ITrytesRetrieveRequest";
@@ -27,25 +29,25 @@ export class ApiClient {
     }
 
     /**
+     * Perform a request to get the networks.
+     * @returns The response from the request.
+     */
+    public async networks(): Promise<INetworkGetResponse> {
+        return this.callApi<unknown, INetworkGetResponse>(
+            "networks",
+            "get"
+        );
+    }
+
+    /**
      * Perform a request to get the currency information.
      * @returns The response from the request.
      */
     public async currencies(): Promise<ICurrenciesResponse> {
-        const ax = axios.create({ baseURL: this._endpoint });
-        let response: ICurrenciesResponse;
-
-        try {
-            const axiosResponse = await ax.get<ICurrenciesResponse>("currencies");
-
-            response = axiosResponse.data;
-        } catch (err) {
-            response = {
-                success: false,
-                message: `There was a problem communicating with the API.\n${err}`
-            };
-        }
-
-        return response;
+        return this.callApi<unknown, ICurrenciesResponse>(
+            "currencies",
+            "get"
+        );
     }
 
     /**
@@ -54,37 +56,14 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async transactionsGet(request: ITransactionsGetRequest): Promise<ITransactionsGetResponse> {
-        const ax = axios.create({
-            baseURL: this._endpoint,
-            timeout: 10000
-        });
-        let response: ITransactionsGetResponse;
+        const { network, ...rest } = request;
 
-        try {
-            const { network, ...rest } = request;
-
-            const axiosResponse = await ax.get<ITransactionsGetResponse>(
-                `transactions/${network}${this.urlParams(rest)}`);
-
-            response = axiosResponse.data;
-        } catch (err) {
-            if (err
-                .toString()
-                .toLowerCase()
-                .includes("timeout")) {
-                response = {
-                    success: false,
-                    message: "Timeout"
-                };
-            } else {
-                response = {
-                    success: false,
-                    message: `There was a problem communicating with the API.\n${err}`
-                };
-            }
-        }
-
-        return response;
+        return this.callApi<unknown, ITransactionsGetResponse>(
+            `transactions/${network}${FetchHelper.urlParams(rest)}`,
+            "get",
+            undefined,
+            10000
+        );
     }
 
     /**
@@ -93,23 +72,13 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async trytesRetrieve(request: ITrytesRetrieveRequest): Promise<ITrytesRetrieveResponse> {
-        const ax = axios.create({ baseURL: this._endpoint });
-        let response: ITrytesRetrieveResponse;
+        const { network, ...rest } = request;
 
-        try {
-            const { network, ...rest } = request;
-            const axiosResponse = await ax.post<ITrytesRetrieveResponse>(
-                `trytes/${network}`, rest);
-
-            response = axiosResponse.data;
-        } catch (err) {
-            response = {
-                success: false,
-                message: `There was a problem communicating with the API.\n${err}`
-            };
-        }
-
-        return response;
+        return this.callApi<unknown, ITransactionsGetResponse>(
+            `trytes/${network}`,
+            "post",
+            rest
+        );
     }
 
     /**
@@ -118,22 +87,10 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async milestonesGet(request: IMilestonesGetRequest): Promise<IMilestonesGetResponse> {
-        const ax = axios.create({ baseURL: this._endpoint });
-        let response: IMilestonesGetResponse;
-
-        try {
-            const axiosResponse = await ax.get<IMilestonesGetResponse>(
-                `milestones/${request.network}`);
-
-            response = axiosResponse.data;
-        } catch (err) {
-            response = {
-                success: false,
-                message: `There was a problem communicating with the API.\n${err}`
-            };
-        }
-
-        return response;
+        return this.callApi<unknown, IMilestonesGetResponse>(
+            `milestones/${request.network}`,
+            "get"
+        );
     }
 
     /**
@@ -142,36 +99,42 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async marketGet(request: IMarketGetRequest): Promise<IMarketGetResponse> {
-        const ax = axios.create({ baseURL: this._endpoint });
-        let response: IMarketGetResponse;
-
-        try {
-            const axiosResponse = await ax.get<IMarketGetResponse>(`market/${request.currency}`);
-
-            response = axiosResponse.data;
-        } catch (err) {
-            response = {
-                success: false,
-                message: `There was a problem communicating with the API.\n${err}`
-            };
-        }
-
-        return response;
+        return this.callApi<unknown, IMarketGetResponse>(
+            `market/${request.currency}`,
+            "get"
+        );
     }
 
     /**
-     * Join params onto command.
-     * @param params The params to add.
-     * @returns The joined parameters.
+     * Perform a request to get the networks.
+     * @param path The path to send the request.
+     * @param method The method for sending the request.
+     * @param request The request to send.
+     * @param timeout The timeout to use.
+     * @returns The response from the request.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private urlParams(params: { [id: string]: any }): string {
-        const urlParams = [];
-        for (const key in params) {
-            if (params[key] !== null && params[key] !== undefined) {
-                urlParams.push(`${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
-            }
+    private async callApi<U, T extends IResponse>(
+        path: string,
+        method: "get" | "post" | "put" | "delete",
+        request?: U,
+        timeout?: number): Promise<T> {
+        let response: T;
+
+        try {
+            response = await FetchHelper.json<U, T>(
+                this._endpoint,
+                path,
+                method,
+                request,
+                undefined,
+                timeout
+            );
+        } catch (err) {
+            response = {
+                error: `There was a problem communicating with the API.\n${err}`
+            } as T;
         }
-        return urlParams.length > 0 ? `?${urlParams.join("&")}` : "";
+
+        return response;
     }
 }

@@ -13,7 +13,6 @@
         "@iota/mam.js": "^1.0.0-beta.7",
         "@iota/unit-converter": "^1.0.0-beta.23",
         "@iota/validators": "^1.0.0-beta.23",
-        "axios": "^0.19.2",
         "bluebird": "^3.7.2",
         "chartist": "^0.11.4",
         "chartist-plugin-tooltips-updated": "^0.1.3",

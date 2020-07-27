@@ -5,6 +5,11 @@ import { FeedsState } from "../components/FeedsState";
 
 export interface LandingState extends CurrencyState, FeedsState {
     /**
+     * The name of the network.
+     */
+    networkLabel: string;
+
+    /**
      * The market cap in eur.
      */
     marketCapEUR: number;

@@ -1,11 +1,5 @@
-import { IClientNetworkConfiguration } from "./IClientNetworkConfiguration";
 
 export interface IConfiguration {
-    /**
-     * The networks.
-     */
-    networks: IClientNetworkConfiguration[];
-
     /**
      * The api endpoint for the client.
      */

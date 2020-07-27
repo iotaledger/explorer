@@ -1,5 +1,3 @@
-import fetch from "node-fetch";
-
 /**
  * Fetch from an endpoint.
  */
@@ -71,5 +69,21 @@ export class FetchHelper {
                 clearTimeout(timerId);
             }
         }
+    }
+
+    /**
+     * Join params onto command.
+     * @param params The params to add.
+     * @returns The joined parameters.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public static urlParams(params: { [id: string]: any }): string {
+        const urlParams = [];
+        for (const key in params) {
+            if (params[key] !== null && params[key] !== undefined) {
+                urlParams.push(`${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
+            }
+        }
+        return urlParams.length > 0 ? `?${urlParams.join("&")}` : "";
     }
 }

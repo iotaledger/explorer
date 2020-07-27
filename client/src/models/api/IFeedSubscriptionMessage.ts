@@ -1,4 +1,4 @@
-export interface ITransactionsSubscriptionMessage {
+export interface IFeedSubscriptionMessage {
     /**
      * The subscription id created.
      */

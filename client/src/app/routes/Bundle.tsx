@@ -13,7 +13,6 @@ import { TangleCacheService } from "../../services/tangleCacheService";
 import Confirmation from "../components/Confirmation";
 import Currency from "../components/Currency";
 import Spinner from "../components/Spinner";
-import { NetworkProps } from "../NetworkProps";
 import "./Bundle.scss";
 import { BundleRouteProps } from "./BundleRouteProps";
 import { BundleState } from "./BundleState";
@@ -21,7 +20,7 @@ import { BundleState } from "./BundleState";
 /**
  * Component which will show the bundle page.
  */
-class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkProps, BundleState> {
+class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState> {
     /**
      * API Client for tangle requests.
      */
@@ -31,7 +30,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
      * Create a new instance of Bundle.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<BundleRouteProps> & NetworkProps) {
+    constructor(props: RouteComponentProps<BundleRouteProps>) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
@@ -63,13 +62,13 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
             window.scrollTo(0, 0);
 
             const { hashes } = await this._tangleCacheService.findTransactionHashes(
-                this.props.networkConfig,
+                this.props.match.params.network,
                 "bundles",
                 this.props.match.params.hash
             );
 
             const bundleGroupsPlain = await this._tangleCacheService.getBundleGroups(
-                this.props.networkConfig,
+                this.props.match.params.network,
                 hashes
             );
 
@@ -131,7 +130,11 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                     confirmationState = confirmationStates[i];
                 }
 
-                const inputAddresses = new Set(bundleGroupsPlain[i].filter(t => t.tx.value < 0).map(t => t.tx.address));
+                let inputAddresses = new Set(bundleGroupsPlain[i].filter(t => t.tx.value < 0).map(t => t.tx.address));
+
+                if (inputAddresses.size === 0) {
+                    inputAddresses = new Set(bundleGroupsPlain[i].map(t => t.tx.address));
+                }
 
                 bundleGroups.push({
                     inputs: bundleGroupsPlain[i].filter(t => inputAddresses.has(t.tx.address)).map(t => ({
@@ -158,7 +161,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                 status: ""
             });
         } else {
-            this.props.history.replace(`/${this.props.networkConfig.network}/search/${this.props.match.params.hash}`);
+            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.hash}`);
         }
     }
 
@@ -253,7 +256,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => this.props.history.push(
-                                                                        `/${this.props.networkConfig.network
+                                                                        `/${this.props.match.params.network
                                                                         }/transaction/${item.details.tx.hash}`)}
                                                                 >
                                                                     {item.details.tx.hash}
@@ -269,7 +272,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                                     type="button"
                                                                     className="card--value__tertiary"
                                                                     onClick={() => this.props.history.push(
-                                                                        `/${this.props.networkConfig.network
+                                                                        `/${this.props.match.params.network
                                                                         }/address/${item.details.tx.address}`)}
                                                                 >
                                                                     {item.details.tx.address}
@@ -315,7 +318,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => this.props.history.push(
-                                                                        `/${this.props.networkConfig.network
+                                                                        `/${this.props.match.params.network
                                                                         }/transaction/${item.details.tx.hash}`)}
                                                                 >
                                                                     {item.details.tx.hash}
@@ -326,7 +329,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps> & NetworkPro
                                                                     type="button"
                                                                     className="card--value__tertiary"
                                                                     onClick={() => this.props.history.push(
-                                                                        `/${this.props.networkConfig.network
+                                                                        `/${this.props.match.params.network
                                                                         }/address/${item.details.tx.address}`)}
                                                                 >
                                                                     {item.details.tx.address}

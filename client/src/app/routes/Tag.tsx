@@ -13,7 +13,6 @@ import AsyncComponent from "../components/AsyncComponent";
 import Confirmation from "../components/Confirmation";
 import SidePanel from "../components/SidePanel";
 import Spinner from "../components/Spinner";
-import { NetworkProps } from "../NetworkProps";
 import "./Tag.scss";
 import { TagRouteProps } from "./TagRouteProps";
 import { TagState } from "./TagState";
@@ -21,7 +20,7 @@ import { TagState } from "./TagState";
 /**
  * Component which will show the tag page.
  */
-class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkProps, TagState> {
+class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
     /**
      * API Client for tangle requests.
      */
@@ -36,7 +35,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
      * Create a new instance of Tag.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<TagRouteProps> & NetworkProps) {
+    constructor(props: RouteComponentProps<TagRouteProps>) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
@@ -80,7 +79,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
                 },
                 async () => {
                     const { hashes, limitExceeded, cursor } = await this._tangleCacheService.findTransactionHashes(
-                        this.props.networkConfig,
+                        this.props.match.params.network,
                         "tags",
                         this.props.match.params.hash,
                         this.state.cursor === undefined,
@@ -113,7 +112,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
                         async () => {
                             if (hashes) {
                                 const txs = await this._tangleCacheService.getTransactions(
-                                    this.props.networkConfig,
+                                    this.props.match.params.network,
                                     hashes);
 
                                 const bundleConfirmations: { [id: string]: string } = {};
@@ -153,7 +152,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
                         });
                 });
         } else {
-            this.props.history.replace(`/${this.props.networkConfig.network}/search/${this.props.match.params.hash}`);
+            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.hash}`);
         }
     }
 
@@ -328,7 +327,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
                                                         <button
                                                             type="button"
                                                             onClick={() => this.props.history.push(
-                                                                `/${this.props.networkConfig.network
+                                                                `/${this.props.match.params.network
                                                                 }/transaction/${item.hash}`)}
                                                         >
                                                             {item.hash}
@@ -345,7 +344,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
                                                                 type="button"
                                                                 className="card--value__tertiary"
                                                                 onClick={() => this.props.history.push(
-                                                                    `/${this.props.networkConfig.network
+                                                                    `/${this.props.match.params.network
                                                                     }/bundle/${item.details?.tx.bundle}`)}
                                                             >
                                                                 {item.details.tx.bundle}
@@ -358,9 +357,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps> & NetworkPro
                                     </div>
                                 )}
                             </div>
-                            <SidePanel
-                                networkConfig={this.props.networkConfig}
-                            />
+                            <SidePanel {...this.props} />
                         </div>
                     </div>
                 </div>

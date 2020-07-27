@@ -16,7 +16,6 @@ import CurrencyButton from "../components/CurrencyButton";
 import SidePanel from "../components/SidePanel";
 import Spinner from "../components/Spinner";
 import ValueButton from "../components/ValueButton";
-import { NetworkProps } from "../NetworkProps";
 import "./Address.scss";
 import { AddressRouteProps } from "./AddressRouteProps";
 import { AddressState } from "./AddressState";
@@ -24,7 +23,7 @@ import { AddressState } from "./AddressState";
 /**
  * Component which will show the address page.
  */
-class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & NetworkProps, AddressState> {
+class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddressState> {
     /**
      * API Client for tangle requests.
      */
@@ -39,7 +38,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
      * Create a new instance of Address.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<AddressRouteProps> & NetworkProps) {
+    constructor(props: RouteComponentProps<AddressRouteProps>) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
@@ -76,7 +75,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
             const settings = this._settingsService.get();
 
             const balance = await this._tangleCacheService.getAddressBalance(
-                this.props.networkConfig,
+                this.props.match.params.network,
                 this.props.match.params.hash
             );
 
@@ -89,7 +88,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                 },
                 async () => {
                     const { hashes, limitExceeded, cursor } = await this._tangleCacheService.findTransactionHashes(
-                        this.props.networkConfig,
+                        this.props.match.params.network,
                         "addresses",
                         this.props.match.params.hash,
                         this.state.cursor === undefined,
@@ -122,7 +121,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                         async () => {
                             if (hashes) {
                                 const txs = await this._tangleCacheService.getTransactions(
-                                    this.props.networkConfig,
+                                    this.props.match.params.network,
                                     hashes);
 
                                 const bundleConfirmations: { [id: string]: string } = {};
@@ -162,7 +161,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                         });
                 });
         } else {
-            this.props.history.replace(`/${this.props.networkConfig.network}/search/${this.props.match.params.hash}`);
+            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.hash}`);
         }
     }
 
@@ -344,7 +343,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                         <button
                                                             type="button"
                                                             onClick={() => this.props.history.push(
-                                                                `/${this.props.networkConfig.network
+                                                                `/${this.props.match.params.network
                                                                 }/transaction/${item.hash}`)}
                                                         >
                                                             {item.hash}
@@ -361,7 +360,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                                                 type="button"
                                                                 className="card--value__tertiary"
                                                                 onClick={() => this.props.history.push(
-                                                                    `/${this.props.networkConfig.network
+                                                                    `/${this.props.match.params.network
                                                                     }/bundle/${item.details?.tx.bundle}`)}
                                                             >
                                                                 {item.details.tx.bundle}
@@ -374,9 +373,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps> & Ne
                                     </div>
                                 )}
                             </div>
-                            <SidePanel
-                                networkConfig={this.props.networkConfig}
-                            />
+                            <SidePanel {...this.props} />
                         </div>
                     </div>
                 </div>

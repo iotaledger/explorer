@@ -14,6 +14,7 @@ import { DateHelper } from "../../helpers/dateHelper";
 import { PowHelper } from "../../helpers/powHelper";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../models/ICachedTransaction";
+import { NetworkService } from "../../services/networkService";
 import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import Confirmation from "../components/Confirmation";
@@ -22,7 +23,6 @@ import MessageButton from "../components/MessageButton";
 import SidePanel from "../components/SidePanel";
 import Spinner from "../components/Spinner";
 import ValueButton from "../components/ValueButton";
-import { NetworkProps } from "../NetworkProps";
 import "./Transaction.scss";
 import { TransactionRouteProps } from "./TransactionRouteProps";
 import { TransactionState } from "./TransactionState";
@@ -30,7 +30,7 @@ import { TransactionState } from "./TransactionState";
 /**
  * Component which will show the transaction page.
  */
-class Transaction extends AsyncComponent<RouteComponentProps<TransactionRouteProps> & NetworkProps, TransactionState> {
+class Transaction extends AsyncComponent<RouteComponentProps<TransactionRouteProps>, TransactionState> {
     /**
      * API Client for tangle requests.
      */
@@ -45,7 +45,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
      * Create a new instance of Transaction.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<TransactionRouteProps> & NetworkProps) {
+    constructor(props: RouteComponentProps<TransactionRouteProps>) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
@@ -75,7 +75,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
 
         if (this.state.hash) {
             const transactions = await this._tangleCacheService.getTransactions(
-                this.props.networkConfig, [this.props.match.params.hash]);
+                this.props.match.params.network, [this.props.match.params.hash]);
 
             let details: ICachedTransaction | undefined;
 
@@ -97,7 +97,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                 });
             }
         } else {
-            this.props.history.replace(`/${this.props.networkConfig.network}/search/${this.props.match.params.hash}`);
+            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.hash}`);
         }
     }
 
@@ -222,7 +222,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     <button
                                                         type="button"
                                                         onClick={() => this.props.history.push(
-                                                            `/${this.props.networkConfig.network
+                                                            `/${this.props.match.params.network
                                                             }/address/${this.state.details?.tx.address}`)}
                                                     >
                                                         {this.state.details.tx.address}
@@ -277,7 +277,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     <button
                                                         type="button"
                                                         onClick={() => this.props.history.push(
-                                                            `/${this.props.networkConfig.network
+                                                            `/${this.props.match.params.network
                                                             }/bundle/${this.state.details?.tx.bundle}`)}
                                                     >
                                                         {this.state.details?.tx.bundle}
@@ -291,7 +291,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     <button
                                                         type="button"
                                                         onClick={() => this.props.history.push(
-                                                            `/${this.props.networkConfig.network
+                                                            `/${this.props.match.params.network
                                                             }/transaction/${this.state.previousTransaction}`)}
                                                         disabled={this.state.previousTransaction === undefined}
                                                     >
@@ -307,7 +307,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     <button
                                                         type="button"
                                                         onClick={() => this.props.history.push(
-                                                            `/${this.props.networkConfig.network
+                                                            `/${this.props.match.params.network
                                                             }/transaction/${this.state.nextTransaction}`)}
                                                         disabled={this.state.nextTransaction === undefined}
                                                     >
@@ -334,7 +334,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <button
                                                                 type="button"
                                                                 onClick={() => this.props.history.push(
-                                                                    `/${this.props.networkConfig.network
+                                                                    `/${this.props.match.params.network
                                                                     }/tag/${this.state.details?.tx.tag}`)}
                                                             >
                                                                 {this.state.details.tx.tag}
@@ -349,7 +349,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <button
                                                                 type="button"
                                                                 onClick={() => this.props.history.push(
-                                                                    `/${this.props.networkConfig.network
+                                                                    `/${this.props.match.params.network
                                                                     }/tag/${this.state.details?.tx.obsoleteTag}`)}
                                                             >
                                                                 {this.state.details.tx.obsoleteTag}
@@ -427,7 +427,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <button
                                                                 type="button"
                                                                 onClick={() => this.props.history.push(
-                                                                    `/${this.props.networkConfig.network
+                                                                    `/${this.props.match.params.network
                                                                     }/transaction/${
                                                                     this.state.details?.tx.trunkTransaction}`)}
                                                             >
@@ -441,7 +441,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <button
                                                                 type="button"
                                                                 onClick={() => this.props.history.push(
-                                                                    `/${this.props.networkConfig.network
+                                                                    `/${this.props.match.params.network
                                                                     }/transaction/${
                                                                     this.state.details?.tx.branchTransaction}`)}
                                                             >
@@ -531,9 +531,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
 
                                 )}
                             </div>
-                            <SidePanel
-                                networkConfig={this.props.networkConfig}
-                            />
+                            <SidePanel {...this.props} />
                         </div>
                     </div>
                 </div>
@@ -567,7 +565,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                     if (this.state.details) {
                         const thisGroup =
                             await this._tangleCacheService.getTransactionBundleGroup(
-                                this.props.networkConfig,
+                                this.props.match.params.network,
                                 this.state.details);
 
                         if (thisGroup.length > 0) {
@@ -631,8 +629,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
 
         // This code needs propert signature validation etc
         if (thisGroup.length >= 2) {
-            if (thisGroup[0].tx.address === this.props.networkConfig.coordinatorAddress &&
-                thisGroup.length === this.props.networkConfig.coordinatorSecurityLevel + 1) {
+            const networkService = ServiceFactory.get<NetworkService>("network");
+            const networkConfig = networkService.get(this.props.match.params.network);
+            if (networkConfig && thisGroup[0].tx.address === networkConfig.coordinatorAddress &&
+                thisGroup.length === networkConfig.coordinatorSecurityLevel + 1) {
                 const mi = value(trytesToTrits(thisGroup[0].tx.tag));
                 if (!Number.isNaN(mi)) {
                     milestoneIndex = mi;
@@ -654,7 +654,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             },
             async () => {
                 const wasReattached = await this._tangleCacheService.replayBundle(
-                    this.props.networkConfig,
+                    this.props.match.params.network,
                     this.state.bundleTailHash ?? "");
 
                 this.setState(
@@ -681,12 +681,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             },
             async () => {
                 const isPromotable = await this._tangleCacheService.canPromoteTransaction(
-                    this.props.networkConfig,
+                    this.props.match.params.network,
                     this.state.bundleTailHash ?? "");
 
                 if (isPromotable) {
                     const wasPromoted = await this._tangleCacheService.promoteTransaction(
-                        this.props.networkConfig,
+                        this.props.match.params.network,
                         this.state.bundleTailHash ?? "");
 
                     this.setState(
@@ -714,7 +714,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
      */
     private async checkConfirmation(): Promise<void> {
         const transactions = await this._tangleCacheService.getTransactions(
-            this.props.networkConfig, [this.props.match.params.hash], true);
+            this.props.match.params.network, [this.props.match.params.hash], true);
 
         if (transactions && transactions.length > 0) {
             if (transactions[0].confirmationState === "confirmed") {

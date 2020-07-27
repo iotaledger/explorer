@@ -5,11 +5,11 @@ import express, { Application } from "express";
 import { Server } from "http";
 import SocketIO from "socket.io";
 import { initServices } from "./initServices";
-import { ITransactionsSubscribeRequest } from "./models/api/ITransactionsSubscribeRequest";
+import { IFeedSubscribeRequest } from "./models/api/IFeedSubscribeRequest";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { routes } from "./routes";
-import { subscribe } from "./routes/transactions/subscribe";
-import { unsubscribe } from "./routes/transactions/unsubscribe";
+import { subscribe } from "./routes/feed/subscribe";
+import { unsubscribe } from "./routes/feed/unsubscribe";
 import { cors, executeRoute } from "./utils/apiHelper";
 
 const configId = process.env.CONFIG_ID || "local";
@@ -54,20 +54,14 @@ server.listen(port, async () => {
     console.log(`Running Config '${configId}'`);
 
     const sockets: {
-        [socketId: string]: {
-            network: string;
-            subscriptionId: string;
-        };
+        [socketId: string]: string;
     } = {};
 
     socketServer.on("connection", socket => {
-        socket.on("subscribe", (data: ITransactionsSubscribeRequest) => {
+        socket.on("subscribe", (data: IFeedSubscribeRequest) => {
             const response = subscribe(config, socket, data);
-            if (response.subscriptionId) {
-                sockets[socket.id] = {
-                    network: data.network,
-                    subscriptionId: response.subscriptionId
-                };
+            if (!response.error) {
+                sockets[socket.id] = data.network;
             }
             socket.emit("subscribe", response);
         });
@@ -82,7 +76,10 @@ server.listen(port, async () => {
 
         socket.on("disconnect", () => {
             if (sockets[socket.id]) {
-                unsubscribe(config, socket, sockets[socket.id]);
+                unsubscribe(config, socket, {
+                    subscriptionId: sockets[socket.id],
+                    network: sockets[socket.id]
+                });
                 delete sockets[socket.id];
             }
         });

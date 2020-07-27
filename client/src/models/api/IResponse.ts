@@ -1,11 +1,6 @@
 export interface IResponse {
     /**
-     * What the request successful.
+     * An error for the response.
      */
-    success: boolean;
-
-    /**
-     * A message for the response.
-     */
-    message: string;
+    error?: string;
 }

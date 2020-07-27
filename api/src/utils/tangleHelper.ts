@@ -2,7 +2,7 @@ import { composeAPI } from "@iota/core";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TransactionsGetMode } from "../models/api/transactionsGetMode";
-import { INetworkConfiguration } from "../models/configuration/INetworkConfiguration";
+import { INetwork } from "../models/db/INetwork";
 import { TransactionsService } from "../services/transactionsService";
 
 /**
@@ -11,13 +11,13 @@ import { TransactionsService } from "../services/transactionsService";
 export class TangleHelper {
     /**
      * Find hashes of the given type.
-     * @param networkConfig The network to use.
+     * @param network The network to use.
      * @param hashTypeName The type of the hash.
      * @param hash The hash.
      * @returns The list of transactions hashes.
      */
     public static async findHashes(
-        networkConfig: INetworkConfiguration,
+        network: INetwork,
         hashTypeName: TransactionsGetMode,
         hash: string): Promise<{
             /**
@@ -42,8 +42,8 @@ export class TangleHelper {
         let tooMany = false;
         let cursor;
 
-        if (networkConfig.permaNodeEndpoint) {
-            const chronicleClient = new ChronicleClient(networkConfig.permaNodeEndpoint);
+        if (network.permaNodeEndpoint) {
+            const chronicleClient = new ChronicleClient(network.permaNodeEndpoint);
             let hints;
             if (cursor) {
                 hints = [Buffer.from(cursor, "base64").toJSON().data];
@@ -60,7 +60,7 @@ export class TangleHelper {
         if (!hashes || hashes.length === 0) {
             try {
                 const api = composeAPI({
-                    provider: networkConfig.node.provider
+                    provider: network.provider
                 });
 
                 // Cant do anything with cursors here until nodes
@@ -89,12 +89,12 @@ export class TangleHelper {
 
     /**
      * Get transactions for the requested hashes.
-     * @param networkConfig The network configuration.
+     * @param network The network configuration.
      * @param hashes The hashes to get the transactions.
      * @returns The response.
      */
     public static async getTrytes(
-        networkConfig: INetworkConfiguration,
+        network: INetwork,
         hashes: string[]): Promise<{
             /**
              * The trytes for the requested transactions.
@@ -127,7 +127,7 @@ export class TangleHelper {
         }[] = hashes.map((h, idx) => ({ index: idx, hash: h }));
 
         // First check to see if we have recently processed them and stored them in memory
-        const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
+        const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${network.network}`);
         for (const allTryte of allTrytes) {
             const trytes = transactionService.findTrytes(allTryte.hash);
             if (trytes) {
@@ -136,8 +136,8 @@ export class TangleHelper {
         }
 
         // If we have a permanode connection try there first
-        if (networkConfig.permaNodeEndpoint) {
-            const chronicleClient = new ChronicleClient(networkConfig.permaNodeEndpoint);
+        if (network.permaNodeEndpoint) {
+            const chronicleClient = new ChronicleClient(network.permaNodeEndpoint);
 
             const missing = allTrytes.filter(a => !a.trytes);
 
@@ -157,7 +157,7 @@ export class TangleHelper {
 
             if (missing2.length > 0) {
                 const api = composeAPI({
-                    provider: networkConfig.node.provider
+                    provider: network.provider
                 });
 
                 const response = await api.getTrytes(missing2.map(a => a.hash));
@@ -183,7 +183,7 @@ export class TangleHelper {
                 }
             }
         } catch (err) {
-            console.error(`${networkConfig.network}`, err);
+            console.error(`${network.network}`, err);
         }
 
         return {

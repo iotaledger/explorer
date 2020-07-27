@@ -67,12 +67,12 @@ export class CurrencyService {
                         log += "Updating fixer\n";
 
                         const fixerClient = new FixerClient(this._config.fixerApiKey);
-                        const rates = await fixerClient.latest("EUR");
+                        const data = await fixerClient.latest("EUR");
 
-                        log += `Rates ${JSON.stringify(rates)}\n`;
+                        if (data?.rates) {
+                            log += `Rates ${JSON.stringify(data?.rates)}\n`;
 
-                        if (rates) {
-                            currentState.exchangeRatesEUR = rates;
+                            currentState.exchangeRatesEUR = data?.rates;
                         }
                     } else {
                         log += "Not updating fixer, no API Key\n";

@@ -1,6 +1,6 @@
 import { IResponse } from "./IResponse";
 
-export interface ITransactionsSubscribeResponse extends IResponse {
+export interface IFeedSubscribeResponse extends IResponse {
     /**
      * The network id.
      */

@@ -2,14 +2,15 @@
 import { ServiceFactory } from "./factories/serviceFactory";
 import { ISchedule } from "./models/app/ISchedule";
 import { IConfiguration } from "./models/configuration/IConfiguration";
-import { INetworkConfiguration } from "./models/configuration/INetworkConfiguration";
 import { ICurrencyState } from "./models/db/ICurrencyState";
 import { IMarket } from "./models/db/IMarket";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
+import { INetwork } from "./models/db/INetwork";
 import { AmazonDynamoDbService } from "./services/amazonDynamoDbService";
 import { CurrencyService } from "./services/currencyService";
 import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesService } from "./services/milestonesService";
+import { NetworkService } from "./services/networkService";
 import { TransactionsService } from "./services/transactionsService";
 import { ZmqService } from "./services/zmqService";
 import { ScheduleHelper } from "./utils/scheduleHelper";
@@ -19,27 +20,10 @@ import { ScheduleHelper } from "./utils/scheduleHelper";
  * @param config The configuration to initialisation the service with.
  */
 export async function initServices(config: IConfiguration): Promise<void> {
-    const networkByName: { [id: string]: INetworkConfiguration } = {};
-
-    for (const networkConfig of config.networks) {
-        networkByName[networkConfig.network] = networkConfig;
-
-        if (networkConfig.zmqEndpoint) {
-            ServiceFactory.register(
-                `zmq-${networkConfig.network}`,
-                serviceName => new ZmqService(networkByName[serviceName.slice(4)].zmqEndpoint)
-            );
-            ServiceFactory.register(
-                `milestones-${networkConfig.network}`,
-                serviceName => new MilestonesService(networkByName[serviceName.slice(11)]));
-
-            ServiceFactory.register(
-                `transactions-${networkConfig.network}`,
-                serviceName => new TransactionsService(networkByName[serviceName.slice(13)]));
-        }
-    }
-
     if (config.rootStorageFolder) {
+        ServiceFactory.register("network-storage", () => new LocalStorageService<INetwork>(
+            config.rootStorageFolder, "network", "network"));
+
         ServiceFactory.register("milestone-storage", () => new LocalStorageService<IMilestoneStore>(
             config.rootStorageFolder, "milestones", "network"));
 
@@ -49,6 +33,9 @@ export async function initServices(config: IConfiguration): Promise<void> {
         ServiceFactory.register("market-storage", () => new LocalStorageService<IMarket>(
             config.rootStorageFolder, "market", "currency"));
     } else if (config.dynamoDbConnection) {
+        ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<IMarket>(
+            config.dynamoDbConnection, "network", "network"));
+
         ServiceFactory.register("milestone-storage", () => new AmazonDynamoDbService<IMilestoneStore>(
             config.dynamoDbConnection, "milestones", "network"));
 
@@ -59,17 +46,47 @@ export async function initServices(config: IConfiguration): Promise<void> {
             config.dynamoDbConnection, "market", "currency"));
     }
 
-    for (const networkConfig of config.networks) {
-        const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
-        zmqService.connect();
+    const networkService = new NetworkService();
+    ServiceFactory.register("network", () => networkService);
+
+    await networkService.buildCache();
+
+    const networks = networkService.networks();
+
+    for (const networkConfig of networks) {
+        if (networkConfig.zmqEndpoint) {
+            ServiceFactory.register(
+                `zmq-${networkConfig.network}`,
+                () => new ZmqService(networkConfig.zmqEndpoint)
+            );
+
+            ServiceFactory.register(
+                `milestones-${networkConfig.network}`,
+                () => new MilestonesService(networkConfig.network));
+
+
+            ServiceFactory.register(
+                `transactions-${networkConfig.network}`,
+                () => new TransactionsService(networkConfig.network));
+        }
     }
 
-    for (const networkConfig of config.networks) {
+    for (const networkConfig of networks) {
+        const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
+        if (zmqService) {
+            zmqService.connect();
+        }
+
         const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
-        await milestonesService.init();
+        if (milestonesService) {
+            await milestonesService.init();
+        }
 
         const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
-        await transactionService.init();
+
+        if (transactionService) {
+            await transactionService.init();
+        }
     }
 
     ServiceFactory.register("currency", () => new CurrencyService(config));

@@ -1,9 +1,7 @@
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { ITransactionsSubscriptionMessage } from "../models/api/ITransactionsSubscriptionMessage";
-import { INetworkConfiguration } from "../models/configuration/INetworkConfiguration";
+import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
 import { ITxTrytes } from "../models/zmq/ITxTrytes";
-import { TrytesHelper } from "../utils/trytesHelper";
 import { ZmqService } from "./zmqService";
 
 /**
@@ -18,7 +16,7 @@ export class TransactionsService {
     /**
      * The network configuration.
      */
-    private readonly _config: INetworkConfiguration;
+    private readonly _networkId: string;
 
     /**
      * The zmq service.
@@ -87,15 +85,15 @@ export class TransactionsService {
      * The callback for different events.
      */
     private readonly _subscribers: {
-        [id: string]: (data: ITransactionsSubscriptionMessage) => Promise<void>;
+        [id: string]: (data: IFeedSubscriptionMessage) => Promise<void>;
     };
 
     /**
      * Create a new instance of TransactionsService.
-     * @param networkConfiguration The network configuration.
+     * @param networkId The network configuration.
      */
-    constructor(networkConfiguration: INetworkConfiguration) {
-        this._config = networkConfiguration;
+    constructor(networkId: string) {
+        this._networkId = networkId;
 
         this._subscribers = {};
         this._lastSend = 0;
@@ -106,7 +104,7 @@ export class TransactionsService {
      * Initialise the service.
      */
     public async init(): Promise<void> {
-        this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._config.network}`);
+        this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._networkId}`);
         this._transactionValues = {};
         this._transactionTrytes = [];
         this._tps = [];
@@ -139,16 +137,14 @@ export class TransactionsService {
 
     /**
      * Subscribe to transactions feed.
+     * @param id The id of the subscriber.
      * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
      */
-    public subscribe(callback: (data: ITransactionsSubscriptionMessage) => Promise<void>): string {
-        const id = TrytesHelper.generateHash(27);
+    public subscribe(id: string, callback: (data: IFeedSubscriptionMessage) => Promise<void>): void {
         this._subscribers[id] = callback;
         setTimeout(async () => {
             await this.updateSubscriptions(id);
         }, 0);
-        return id;
     }
 
     /**
@@ -231,7 +227,7 @@ export class TransactionsService {
                 : this._subscribers;
 
             for (const subscriptionId in subs) {
-                const data: ITransactionsSubscriptionMessage = {
+                const data: IFeedSubscriptionMessage = {
                     subscriptionId,
                     transactions: this._transactionValues,
                     tps: this._tps.map(t => t.count),

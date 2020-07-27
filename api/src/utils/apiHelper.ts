@@ -2,6 +2,7 @@ import { join } from "path";
 import { inspect } from "util";
 import { initServices } from "../initServices";
 import { IDataResponse } from "../models/api/IDataResponse";
+import { IResponse } from "../models/api/IResponse";
 import { IHttpRequest } from "../models/app/IHttpRequest";
 import { IHttpResponse } from "../models/app/IHttpResponse";
 import { IRoute } from "../models/app/IRoute";
@@ -79,7 +80,7 @@ export async function executeRoute(
     verboseLogging: boolean,
     globalInitServices: boolean = false,
     logHook?: (message: string, statusCode: number, params: unknown) => Promise<void>): Promise<void> {
-    let response;
+    let response: IResponse;
     const start = Date.now();
     let filteredParams;
     let status = 400;
@@ -125,14 +126,13 @@ export async function executeRoute(
                 } else {
                     status = 400;
                     response = {
-                        success: false,
-                        message: `Route '${route.path}' module '${
+                        error: `Route '${route.path}' module '${
                             modulePath}' does not contain a method '${route.func}'`
                     };
                 }
             } else {
                 status = 400;
-                response = { success: false, message: `Route '${route.path}' module '${modulePath}' failed to load` };
+                response = { error: `Route '${route.path}' module '${modulePath}' failed to load` };
             }
         } else if (route.inline) {
             await initServices(config);
@@ -140,17 +140,17 @@ export async function executeRoute(
             status = 200;
         } else {
             status = 400;
-            response = { success: false, message: `Route ${route.path} has no func or inline property set` };
+            response = { error: `Route ${route.path} has no func or inline property set` };
         }
     } catch (err) {
         status = err.httpCode || 400;
-        response = { success: false, message: err.message };
+        response = { error: err.message };
         if (logHook) {
             await logHook(err.message, status, filteredParams);
         }
     }
 
-    if (verboseLogging || !response.success) {
+    if (verboseLogging || response.error) {
         console.log(`<=== duration: ${Date.now() - start}ms`);
         console.log(inspect(response, false, undefined, false));
     }

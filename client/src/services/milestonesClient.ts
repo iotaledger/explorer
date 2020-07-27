@@ -1,6 +1,5 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
-import { IClientNetworkConfiguration } from "../models/config/IClientNetworkConfiguration";
 import { ApiClient } from "./apiClient";
 
 /**
@@ -15,7 +14,7 @@ export class MilestonesClient {
     /**
      * Network configuration.
      */
-    private readonly _config: IClientNetworkConfiguration;
+    private readonly _networkId: string;
 
     /**
      * The latest milestones.
@@ -43,11 +42,11 @@ export class MilestonesClient {
 
     /**
      * Create a new instance of MilestonesClient.
-     * @param networkConfiguration The network configurations.
+     * @param networkId The network configurations.
      */
-    constructor(networkConfiguration: IClientNetworkConfiguration) {
+    constructor(networkId: string) {
         this._apiClient = ServiceFactory.get<ApiClient>("api-client");
-        this._config = networkConfiguration;
+        this._networkId = networkId;
 
         this._milestones = [];
         this._subscribers = {};
@@ -114,10 +113,10 @@ export class MilestonesClient {
     private async updateMilestones(): Promise<void> {
         try {
             const response = await this._apiClient.milestonesGet({
-                network: this._config.network
+                network: this._networkId
             });
 
-            if (response.success) {
+            if (!response.error) {
                 this._milestones = response.milestones ?? [];
 
                 for (const sub in this._subscribers) {

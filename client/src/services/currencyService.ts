@@ -352,7 +352,7 @@ export class CurrencyService {
         callback: (available: boolean, data?: ICurrencySettings, err?: Error) => void): Promise<void> {
         try {
             const currencyResponse = await this._apiClient.currencies();
-            if (currencyResponse?.success) {
+            if (!currencyResponse.error) {
                 if (!currencyResponse.baseRate || !currencyResponse.currencies) {
                     callback(false);
                 } else {

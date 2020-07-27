@@ -3,6 +3,7 @@ import { IMilestonesGetRequest } from "../../models/api/IMilestonesGetRequest";
 import { IMilestonesGetResponse } from "../../models/api/IMilestonesGetResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { MilestonesService } from "../../services/milestonesService";
+import { NetworkService } from "../../services/networkService";
 import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
@@ -15,13 +16,12 @@ export async function get(
     config: IConfiguration,
     request: IMilestonesGetRequest
 ): Promise<IMilestonesGetResponse> {
-    ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    ValidationHelper.oneOf(request.network, networkService.networks().map(n => n.network), "network");
 
     const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${request.network}`);
 
     return {
-        success: true,
-        message: "OK",
         milestones: milestonesService.getMilestones()
     };
 }

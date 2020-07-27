@@ -319,7 +319,7 @@ class Markets extends Currency<unknown, MarketsState> {
                         currency: this.state.currency.toLowerCase()
                     });
 
-                    if (markets.success && markets.data) {
+                    if (markets.data) {
                         let maxPrice = 0;
                         let maxPriceDate = 0;
                         let minPrice = Number.MAX_VALUE;

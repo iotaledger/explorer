@@ -4,11 +4,10 @@ import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { PowHelper } from "../helpers/powHelper";
 import { TransactionsGetMode } from "../models/api/transactionsGetMode";
-import { IClientNetworkConfiguration } from "../models/config/IClientNetworkConfiguration";
-import { IConfiguration } from "../models/config/IConfiguration";
 import { ICachedTransaction } from "../models/ICachedTransaction";
 import { ApiClient } from "./apiClient";
 import { ApiStreamsV0Client } from "./apiStreamsV0Client";
+import { NetworkService } from "./networkService";
 
 /**
  * Cache tangle requests.
@@ -18,6 +17,11 @@ export class TangleCacheService {
      * Timeout for stale cached items (5 mins).
      */
     private readonly STALE_TIME: number = 300000;
+
+    /**
+     * The network service.
+     */
+    private readonly _networkService: NetworkService;
 
     /**
      * The cache for the transactions.
@@ -126,15 +130,17 @@ export class TangleCacheService {
 
     /**
      * Create a new instance of TangleCacheService.
-     * @param config The main configuration.
      */
-    constructor(config: IConfiguration) {
+    constructor() {
         this._transactionCache = {};
         this._findCache = {};
         this._addressBalances = {};
         this._streamsV0 = {};
 
-        for (const networkConfig of config.networks) {
+        this._networkService = ServiceFactory.get<NetworkService>("network");
+        const networks = this._networkService.networks();
+
+        for (const networkConfig of networks) {
             this._transactionCache[networkConfig.network] = {};
 
             this._findCache[networkConfig.network] = {
@@ -154,7 +160,7 @@ export class TangleCacheService {
 
     /**
      * Find transactions of the specified type.
-     * @param networkConfig Which network are we getting the transactions for.
+     * @param networkId Which network are we getting the transactions for.
      * @param hashType The type of hash to look for.
      * @param hash The type of hash to look for.
      * @param valuesOnly Get the value transactions.
@@ -162,7 +168,7 @@ export class TangleCacheService {
      * @returns The transactions hashes returned from the looked up type.
      */
     public async findTransactionHashes(
-        networkConfig: IClientNetworkConfiguration,
+        networkId: string,
         hashType: TransactionsGetMode | undefined,
         hash: string,
         valuesOnly?: boolean,
@@ -191,8 +197,8 @@ export class TangleCacheService {
         let doLookup = true;
         let cursor: string | undefined;
 
-        const findCache = this._findCache[networkConfig.network];
-        const tranCache = this._transactionCache[networkConfig.network];
+        const findCache = this._findCache[networkId];
+        const tranCache = this._transactionCache[networkId];
 
         if (findCache) {
             if (hashType === undefined) {
@@ -224,14 +230,14 @@ export class TangleCacheService {
             const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
             const response = await apiClient.transactionsGet({
-                network: networkConfig.network,
+                network: networkId,
                 hash,
                 mode: hashType,
                 valuesOnly,
                 cursor: requestCursor
             });
 
-            if (response.success) {
+            if (!response.error) {
                 cursor = response.cursor;
                 if ((response.hashes && response.hashes.length > 0) || response.limitExceeded) {
                     transactionHashes = response.hashes ?? [];
@@ -249,7 +255,7 @@ export class TangleCacheService {
                         }
                     }
                 }
-            } else if (response.message === "Timeout") {
+            } else if (response.error.includes("Timeout")) {
                 transactionHashes = response.hashes ?? [];
                 limitExceeded = true;
                 hashType = hashType ?? response.mode;
@@ -266,19 +272,19 @@ export class TangleCacheService {
 
     /**
      * Get transactions from the cache or from tangle if missing.
-     * @param networkConfig Which network are we getting the transactions for.
+     * @param networkId Which network are we getting the transactions for.
      * @param hashes The hashes of the transactions to get.
      * @param skipCache Skip looking in the cache.
      * @returns The trytes for the hashes.
      */
     public async getTransactions(
-        networkConfig: IClientNetworkConfiguration,
+        networkId: string,
         hashes: string[],
         skipCache: boolean = false
     ):
         Promise<ICachedTransaction[]> {
         let cachedTransactions: ICachedTransaction[] | undefined;
-        const tranCache = this._transactionCache[networkConfig.network];
+        const tranCache = this._transactionCache[networkId];
 
         if (tranCache) {
             const now = Date.now();
@@ -294,11 +300,11 @@ export class TangleCacheService {
                     const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
                     const response = await apiClient.trytesRetrieve({
-                        network: networkConfig.network,
+                        network: networkId,
                         hashes: unknownHashes
                     });
 
-                    if (response?.success &&
+                    if (!response.error &&
                         response.trytes &&
                         response.milestoneIndexes) {
                         for (let i = 0; i < response.trytes.length; i++) {
@@ -342,16 +348,16 @@ export class TangleCacheService {
 
     /**
      * Get the transaction groups in the bundle.
-     * @param networkConfig Which network are we getting the transactions for.
+     * @param networkId Which network are we getting the transactions for.
      * @param transactionHashes The transaction hashes in the bundle.
      * @returns The grouped transactions in the bundle.
      */
     public async getBundleGroups(
-        networkConfig: IClientNetworkConfiguration,
+        networkId: string,
         transactionHashes: string[]
     ): Promise<ICachedTransaction[][]> {
         const cachedTransactions =
-            await this.getTransactions(networkConfig, transactionHashes);
+            await this.getTransactions(networkId, transactionHashes);
 
         const byHash: { [id: string]: ICachedTransaction } = {};
         const bundleGroups: ICachedTransaction[][] = [];
@@ -393,14 +399,14 @@ export class TangleCacheService {
 
     /**
      * Get the balance for an address.
-     * @param networkConfig Which network are we getting the transactions for.
+     * @param networkId Which network are we getting the transactions for.
      * @param addressHash The addresss hash to get the balance.
      * @returns The balance for the address.
      */
     public async getAddressBalance(
-        networkConfig: IClientNetworkConfiguration,
+        networkId: string,
         addressHash: string): Promise<number> {
-        const addrBalance = this._addressBalances[networkConfig.network];
+        const addrBalance = this._addressBalances[networkId];
 
         if (addrBalance) {
             const now = Date.now();
@@ -408,20 +414,24 @@ export class TangleCacheService {
             if (!addrBalance[addressHash] ||
                 now - addrBalance[addressHash].balance > 30000) {
                 try {
-                    const api = composeAPI({
-                        provider: networkConfig.node.provider
-                    });
+                    const networkConfig = this._networkService.get(networkId);
 
-                    const response = await api.getBalances([addressHash]);
-                    if (response?.balances) {
-                        let balance = 0;
-                        for (let i = 0; i < response.balances.length; i++) {
-                            balance += response.balances[i];
+                    if (networkConfig) {
+                        const api = composeAPI({
+                            provider: networkConfig.provider
+                        });
+
+                        const response = await api.getBalances([addressHash]);
+                        if (response?.balances) {
+                            let balance = 0;
+                            for (let i = 0; i < response.balances.length; i++) {
+                                balance += response.balances[i];
+                            }
+                            addrBalance[addressHash] = {
+                                balance,
+                                cached: now
+                            };
                         }
-                        addrBalance[addressHash] = {
-                            balance,
-                            cached: now
-                        };
                     }
                 } catch (err) {
                     console.error(err);
@@ -436,12 +446,12 @@ export class TangleCacheService {
 
     /**
      * Get all the transaction within the transaction bundle group.
-     * @param networkConfig The network to communicate with.
+     * @param networkId The network to communicate with.
      * @param transaction The transaction to use as the starting point.
      * @returns The transactions bundle group.
      */
     public async getTransactionBundleGroup(
-        networkConfig: IClientNetworkConfiguration,
+        networkId: string,
         transaction: ICachedTransaction): Promise<ICachedTransaction[]> {
         let thisGroup: ICachedTransaction[] = [];
         if (transaction.tx.lastIndex === 0) {
@@ -453,7 +463,7 @@ export class TangleCacheService {
             thisGroup = [transaction];
             for (let i = 1; i <= transaction.tx.lastIndex; i++) {
                 const cachedTransactions =
-                    await this.getTransactions(networkConfig, [trunk]);
+                    await this.getTransactions(networkId, [trunk]);
                 if (cachedTransactions.length > 0) {
                     const txo = cachedTransactions[0];
                     if (txo) {
@@ -465,9 +475,9 @@ export class TangleCacheService {
         } else {
             // Otherwise we have to grab the whole bundle.
             // and find which group this transaction is in
-            const { hashes } = await this.findTransactionHashes(networkConfig, "bundles", transaction.tx.bundle, false);
+            const { hashes } = await this.findTransactionHashes(networkId, "bundles", transaction.tx.bundle, false);
             if (hashes.length > 0) {
-                const bundleGroups = await this.getBundleGroups(networkConfig, hashes);
+                const bundleGroups = await this.getBundleGroups(networkId, hashes);
 
                 const bg = bundleGroups.find(group => group.findIndex(t => t.tx.hash === transaction.tx.hash) >= 0);
                 if (bg) {
@@ -480,21 +490,27 @@ export class TangleCacheService {
 
     /**
      * Can we promote the tranaction.
-     * @param networkConfig The network to use.
+     * @param networkId The network to use.
      * @param tailHash The hash.
      * @returns True if the transaction is promotable.
      */
     public async canPromoteTransaction(
-        networkConfig: IClientNetworkConfiguration,
+        networkId: string,
         tailHash: string): Promise<boolean> {
         try {
-            const api = composeAPI({
-                provider: networkConfig.node.provider
-            });
+            const networkConfig = this._networkService.get(networkId);
 
-            return await api.isPromotable(
-                tailHash
-            );
+            if (networkConfig) {
+                const api = composeAPI({
+                    provider: networkConfig.provider
+                });
+
+                return await api.isPromotable(
+                    tailHash
+                );
+            }
+
+            return false;
         } catch {
             return false;
         }
@@ -502,27 +518,32 @@ export class TangleCacheService {
 
     /**
      * Promote the tranaction.
-     * @param networkConfig The network to use.
+     * @param networkId The network to use.
      * @param tailHash The hash.
      * @returns True if the transaction was promoted.
      */
     public async promoteTransaction(
-        networkConfig: IClientNetworkConfiguration,
+        networkId: string,
         tailHash: string): Promise<boolean> {
         try {
-            const api = composeAPI({
-                provider: networkConfig.node.provider,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/unbound-method
-                attachToTangle: PowHelper.localPow as any
-            });
+            const networkConfig = this._networkService.get(networkId);
 
-            await api.promoteTransaction(
-                tailHash,
-                networkConfig.node.depth,
-                networkConfig.node.mwm
-            );
+            if (networkConfig) {
+                const api = composeAPI({
+                    provider: networkConfig.provider,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/unbound-method
+                    attachToTangle: PowHelper.localPow as any
+                });
 
-            return true;
+                await api.promoteTransaction(
+                    tailHash,
+                    networkConfig.depth,
+                    networkConfig.mwm
+                );
+
+                return true;
+            }
+            return false;
         } catch (err) {
             console.log(err);
             return false;
@@ -531,27 +552,33 @@ export class TangleCacheService {
 
     /**
      * Replay the tranaction.
-     * @param networkConfig The network to use.
+     * @param networkId The network to use.
      * @param tailHash The hash.
      * @returns True if the transaction was promoted.
      */
     public async replayBundle(
-        networkConfig: IClientNetworkConfiguration,
+        networkId: string,
         tailHash: string): Promise<boolean> {
         try {
-            const api = composeAPI({
-                provider: networkConfig.node.provider,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/unbound-method
-                attachToTangle: PowHelper.localPow as any
-            });
+            const networkConfig = this._networkService.get(networkId);
 
-            await api.replayBundle(
-                tailHash,
-                networkConfig.node.depth,
-                networkConfig.node.mwm
-            );
+            if (networkConfig) {
+                const api = composeAPI({
+                    provider: networkConfig.provider,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/unbound-method
+                    attachToTangle: PowHelper.localPow as any
+                });
 
-            return true;
+                await api.replayBundle(
+                    tailHash,
+                    networkConfig.depth,
+                    networkConfig.mwm
+                );
+
+                return true;
+            }
+
+            return false;
         } catch (err) {
             console.log(err);
             return false;

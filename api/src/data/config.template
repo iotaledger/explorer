@@ -1,7 +1,4 @@
 {
-    "networks": [
-        API-NETWORKS
-    ],
     "fixerApiKey": "FIXER-API-KEY",
     "dynamoDbConnection": {
         "region": "DB-AWS-REGION",

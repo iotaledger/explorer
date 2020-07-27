@@ -1,11 +1,11 @@
-import axios from "axios";
 import { IFindTransactionsRequest } from "../models/clients/chronicle/IFindTransactionsRequest";
 import { IFindTransactionsResponse } from "../models/clients/chronicle/IFindTransactionsResponse";
 import { IGetTrytesRequest } from "../models/clients/chronicle/IGetTrytesRequest";
 import { IGetTrytesResponse } from "../models/clients/chronicle/IGetTrytesResponse";
+import { FetchHelper } from "../utils/fetchHelper";
 
 /**
- * Class to handle api communications.
+ * Class to handle api communications with Chronicle.
  */
 export class ChronicleClient {
     /**
@@ -27,22 +27,18 @@ export class ChronicleClient {
      * @returns The list of corresponding transaction objects.
      */
     public async getTrytes(request: IGetTrytesRequest): Promise<IGetTrytesResponse | undefined> {
-        const ax = axios.create({ baseURL: this._endpoint });
-
         try {
-            console.log("Chronicle getTrytes", request);
-
-            const axiosResponse = await ax.post<IGetTrytesResponse>(
+            const response = await FetchHelper.json<unknown, IGetTrytesResponse>(
+                this._endpoint,
                 "",
+                "post",
                 { ...{ command: "getTrytes" }, ...request },
                 {
-                    headers: {
-                        "X-IOTA-API-Version": "1"
-                    }
+                    "X-IOTA-API-Version": "1"
                 }
             );
 
-            return axiosResponse.data;
+            return response;
         } catch (err) {
             console.error("Chronicle Error", (err.response?.data?.error) ?? err);
         }
@@ -54,8 +50,6 @@ export class ChronicleClient {
      * @returns The list of found transaction hashes.
      */
     public async findTransactions(request: IFindTransactionsRequest): Promise<IFindTransactionsResponse | undefined> {
-        const ax = axios.create({ baseURL: this._endpoint });
-
         try {
             if (request.addresses) {
                 request.addresses = request.addresses.map(a => a.slice(0, 81));
@@ -63,18 +57,17 @@ export class ChronicleClient {
             if (request.tags) {
                 request.tags = request.tags.map(t => t.padEnd(27, "9"));
             }
-            console.log("Chronicle findTransations", request);
-            const axiosResponse = await ax.post<IFindTransactionsResponse>(
+            const response = await FetchHelper.json<unknown, IFindTransactionsResponse>(
+                this._endpoint,
                 "",
+                "post",
                 { ...{ command: "findTransactions" }, ...request },
                 {
-                    headers: {
-                        "X-IOTA-API-Version": "1"
-                    }
+                    "X-IOTA-API-Version": "1"
                 }
             );
 
-            return axiosResponse.data;
+            return response;
         } catch (err) {
             console.error("Chronicle Error", (err.response?.data?.error) ?? err);
         }

@@ -1,15 +1,14 @@
 import SocketIOClient from "socket.io-client";
 import { TrytesHelper } from "../helpers/trytesHelper";
-import { ITransactionsSubscribeRequest } from "../models/api/ITransactionsSubscribeRequest";
-import { ITransactionsSubscribeResponse } from "../models/api/ITransactionsSubscribeResponse";
-import { ITransactionsSubscriptionMessage } from "../models/api/ITransactionsSubscriptionMessage";
-import { ITransactionsUnsubscribeRequest } from "../models/api/ITransactionsUnsubscribeRequest";
-import { IClientNetworkConfiguration } from "../models/config/IClientNetworkConfiguration";
+import { IFeedSubscribeRequest } from "../models/api/IFeedSubscribeRequest";
+import { IFeedSubscribeResponse } from "../models/api/IFeedSubscribeResponse";
+import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
+import { IFeedUnsubscribeRequest } from "../models/api/IFeedUnsubscribeRequest";
 
 /**
  * Class to handle api communications.
  */
-export class TransactionsClient {
+export class FeedClient {
     /**
      * The endpoint for performing communications.
      */
@@ -18,7 +17,7 @@ export class TransactionsClient {
     /**
      * Network configuration.
      */
-    private readonly _config: IClientNetworkConfiguration;
+    private readonly _networkId: string;
 
     /**
      * The web socket to communicate on.
@@ -67,11 +66,11 @@ export class TransactionsClient {
     /**
      * Create a new instance of TransactionsClient.
      * @param endpoint The endpoint for the api.
-     * @param networkConfiguration The network configurations.
+     * @param networkId The network configurations.
      */
-    constructor(endpoint: string, networkConfiguration: IClientNetworkConfiguration) {
+    constructor(endpoint: string, networkId: string) {
         this._endpoint = endpoint;
-        this._config = networkConfiguration;
+        this._networkId = networkId;
 
         // Use websocket by default
         // eslint-disable-next-line new-cap
@@ -100,17 +99,17 @@ export class TransactionsClient {
 
         try {
             if (!this._subscriptionId) {
-                const subscribeRequest: ITransactionsSubscribeRequest = {
-                    network: this._config.network
+                const subscribeRequest: IFeedSubscribeRequest = {
+                    network: this._networkId
                 };
 
                 this._socket.emit("subscribe", subscribeRequest);
-                this._socket.on("subscribe", (subscribeResponse: ITransactionsSubscribeResponse) => {
-                    if (subscribeResponse.success) {
+                this._socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
+                    if (!subscribeResponse.error) {
                         this._subscriptionId = subscribeResponse.subscriptionId;
                     }
                 });
-                this._socket.on("transactions", async (transactionsResponse: ITransactionsSubscriptionMessage) => {
+                this._socket.on("transactions", async (transactionsResponse: IFeedSubscriptionMessage) => {
                     if (transactionsResponse.subscriptionId === this._subscriptionId) {
                         this._tps = transactionsResponse.tps;
                         this._tpsStart = transactionsResponse.tpsStart;
@@ -167,8 +166,8 @@ export class TransactionsClient {
             delete this._subscribers[subscriptionId];
 
             if (this._subscriptionId && Object.keys(this._subscribers).length === 0) {
-                const unsubscribeRequest: ITransactionsUnsubscribeRequest = {
-                    network: this._config.network,
+                const unsubscribeRequest: IFeedUnsubscribeRequest = {
+                    network: this._networkId,
                     subscriptionId: this._subscriptionId
                 };
                 this._socket.emit("unsubscribe", unsubscribeRequest);

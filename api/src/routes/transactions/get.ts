@@ -1,8 +1,10 @@
 import { isEmpty } from "@iota/validators";
+import { ServiceFactory } from "../../factories/serviceFactory";
 import { ITransactionsGetRequest } from "../../models/api/ITransactionsGetRequest";
 import { ITransactionsGetResponse } from "../../models/api/ITransactionsGetResponse";
 import { TransactionsGetMode } from "../../models/api/transactionsGetMode";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
+import { NetworkService } from "../../services/networkService";
 import { TangleHelper } from "../../utils/tangleHelper";
 import { ValidationHelper } from "../../utils/validationHelper";
 
@@ -16,10 +18,11 @@ export async function get(
     config: IConfiguration,
     request: ITransactionsGetRequest
 ): Promise<ITransactionsGetResponse> {
-    ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    ValidationHelper.oneOf(request.network, networkService.networks().map(n => n.network), "network");
     ValidationHelper.string(request.hash, "hash");
 
-    const networkConfig = config.networks.find(n => n.network === request.network);
+    const networkConfig = networkService.get(request.network);
 
     let hashes: string[];
     let foundMode: TransactionsGetMode;
@@ -59,8 +62,6 @@ export async function get(
     }
 
     return {
-        success: true,
-        message: "OK",
         mode: foundMode,
         limitExceeded,
         hashes,
