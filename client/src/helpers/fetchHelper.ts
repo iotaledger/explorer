@@ -20,15 +20,6 @@ export class FetchHelper {
         headers?: { [id: string]: string },
         timeout?: number
     ): Promise<U> {
-        let fullUrl = baseUrl;
-        if (fullUrl.startsWith("/")) {
-            fullUrl = fullUrl.slice(0, -1);
-        }
-        if (!path.startsWith("/")) {
-            fullUrl += "/";
-        }
-        fullUrl += path;
-
         headers = headers ?? {};
         headers["Content-Type"] = "application/json";
 
@@ -48,7 +39,7 @@ export class FetchHelper {
 
         try {
             const res = await fetch(
-                fullUrl,
+                `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`,
                 {
                     method,
                     headers,

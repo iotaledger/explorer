@@ -22,15 +22,6 @@ export class FetchHelper {
         headers?: { [id: string]: string },
         timeout?: number
     ): Promise<U> {
-        let fullUrl = baseUrl;
-        if (fullUrl.startsWith("/")) {
-            fullUrl = fullUrl.slice(0, -1);
-        }
-        if (!path.startsWith("/")) {
-            fullUrl += "/";
-        }
-        fullUrl += path;
-
         headers = headers ?? {};
         headers["Content-Type"] = "application/json";
 
@@ -50,7 +41,7 @@ export class FetchHelper {
 
         try {
             const res = await fetch(
-                fullUrl,
+                `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`,
                 {
                     method,
                     headers,
@@ -71,5 +62,21 @@ export class FetchHelper {
                 clearTimeout(timerId);
             }
         }
+    }
+
+    /**
+     * Join params onto command.
+     * @param params The params to add.
+     * @returns The joined parameters.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public static urlParams(params: { [id: string]: any }): string {
+        const urlParams = [];
+        for (const key in params) {
+            if (params[key] !== null && params[key] !== undefined) {
+                urlParams.push(`${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
+            }
+        }
+        return urlParams.length > 0 ? `?${urlParams.join("&")}` : "";
     }
 }
