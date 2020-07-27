@@ -14,7 +14,6 @@ jobs:
     env:
       # Build specific env vars
       CONFIG_ID: prod
-      CONFIG_API_NETWORKS: ${{ secrets.PROD_CONFIG_API_NETWORKS }}
       CONFIG_FIXER_API_KEY: ${{ secrets.PROD_CONFIG_FIXER_API_KEY }}
       CONFIG_DB_AWS_REGION: ${{ secrets.PROD_CONFIG_DB_AWS_REGION }}
       CONFIG_DB_AWS_ACCESS_KEY_ID: ${{ secrets.PROD_CONFIG_DB_AWS_ACCESS_KEY_ID }}
@@ -34,7 +33,6 @@ jobs:
         run: |
           cd api/src/data/
           mv config.template config.$CONFIG_ID.json
-          sed -i 's/API-NETWORKS/${{ env.CONFIG_API_NETWORKS }}/g' config.$CONFIG_ID.json
           sed -i 's/FIXER-API-KEY/${{ env.CONFIG_FIXER_API_KEY }}/g' config.$CONFIG_ID.json
           sed -i 's/DB-AWS-REGION/${{ env.CONFIG_DB_AWS_REGION }}/g' config.$CONFIG_ID.json
           sed -i 's/DB-AWS-ACCESS-KEY-ID/${{ env.CONFIG_DB_AWS_ACCESS_KEY_ID }}/g' config.$CONFIG_ID.json
