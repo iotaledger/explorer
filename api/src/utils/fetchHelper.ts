@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-named-as-default
+import AbortController from "abort-controller";
 import fetch from "node-fetch";
 
 /**
