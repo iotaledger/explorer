@@ -8,7 +8,6 @@ import { IHttpResponse } from "../models/app/IHttpResponse";
 import { IRoute } from "../models/app/IRoute";
 import { IConfiguration } from "../models/configuration/IConfiguration";
 
-
 /**
  * Find a route to match
  * @param findRoutes The routes to match against.
