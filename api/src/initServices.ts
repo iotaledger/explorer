@@ -50,7 +50,7 @@ export async function initServices(config: IConfiguration, runBackgroundProcesse
 
     await networkService.buildCache();
 
-    const networks = await networkService.networks();
+    const networks = networkService.networks();
 
     for (const networkConfig of networks) {
         if (networkConfig.zmqEndpoint) {

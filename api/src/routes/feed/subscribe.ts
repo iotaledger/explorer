@@ -23,7 +23,7 @@ export async function subscribe(
     try {
         const networkService = ServiceFactory.get<NetworkService>("network");
 
-        ValidationHelper.oneOf(request.network, (await networkService.networks()).map(n => n.network), "network");
+        ValidationHelper.oneOf(request.network, networkService.networks().map(n => n.network), "network");
 
         const transactionsService = ServiceFactory.get<TransactionsService>(`transactions-${request.network}`);
 

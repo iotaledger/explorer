@@ -17,7 +17,7 @@ export async function get(
     request: IMilestonesGetRequest
 ): Promise<IMilestonesGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
-    ValidationHelper.oneOf(request.network, (await networkService.networks()).map(n => n.network), "network");
+    ValidationHelper.oneOf(request.network, networkService.networks().map(n => n.network), "network");
 
     const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${request.network}`);
 
