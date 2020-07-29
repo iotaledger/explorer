@@ -11,7 +11,7 @@ import { NetworkService } from "../../services/networkService";
 export async function get(config: IConfiguration): Promise<INetworkGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
 
-    const all = networkService.networks();
+    const all = await networkService.networks();
 
     return {
         networks: all

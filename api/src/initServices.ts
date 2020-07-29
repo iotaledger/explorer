@@ -1,6 +1,5 @@
 
 import { ServiceFactory } from "./factories/serviceFactory";
-import { ISchedule } from "./models/app/ISchedule";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { ICurrencyState } from "./models/db/ICurrencyState";
 import { IMarket } from "./models/db/IMarket";
@@ -13,13 +12,13 @@ import { MilestonesService } from "./services/milestonesService";
 import { NetworkService } from "./services/networkService";
 import { TransactionsService } from "./services/transactionsService";
 import { ZmqService } from "./services/zmqService";
-import { ScheduleHelper } from "./utils/scheduleHelper";
 
 /**
  * Initialise all the services.
  * @param config The configuration to initialisation the service with.
+ * @param runBackgroundProcesses Should we run background services.
  */
-export async function initServices(config: IConfiguration): Promise<void> {
+export async function initServices(config: IConfiguration, runBackgroundProcesses: boolean): Promise<void> {
     if (config.rootStorageFolder) {
         ServiceFactory.register("network-storage", () => new LocalStorageService<INetwork>(
             config.rootStorageFolder, "network", "network"));
@@ -51,7 +50,7 @@ export async function initServices(config: IConfiguration): Promise<void> {
 
     await networkService.buildCache();
 
-    const networks = networkService.networks();
+    const networks = await networkService.networks();
 
     for (const networkConfig of networks) {
         if (networkConfig.zmqEndpoint) {
@@ -91,18 +90,19 @@ export async function initServices(config: IConfiguration): Promise<void> {
 
     ServiceFactory.register("currency", () => new CurrencyService(config));
 
-    const schedules: ISchedule[] = [
-        {
-            name: "Update Currencies",
-            schedule: "0 0 */4 * * *", // Every 4 hours on 0 minute 0 seconds
-            func: async () => {
-                const currencyService = ServiceFactory.get<CurrencyService>("currency");
+    if (runBackgroundProcesses) {
+        const UPDATE_INTERVAL_MINUTES = 240; // 4 hours
 
-                const log = await currencyService.update();
-                console.log(log);
-            }
-        }
-    ];
+        const update = async () => {
+            const currencyService = ServiceFactory.get<CurrencyService>("currency");
+            const log = await currencyService.update();
+            console.log(log);
+        };
 
-    ScheduleHelper.build(schedules);
+        setInterval(
+            update,
+            UPDATE_INTERVAL_MINUTES * 60000);
+
+        await update();
+    }
 }

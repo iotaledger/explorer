@@ -14,16 +14,16 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export function subscribe(
+export async function subscribe(
     config: IConfiguration,
     socket: SocketIO.Socket,
-    request: IFeedSubscribeRequest): IFeedSubscribeResponse {
+    request: IFeedSubscribeRequest): Promise<IFeedSubscribeResponse> {
     let response: IFeedSubscribeResponse;
 
     try {
         const networkService = ServiceFactory.get<NetworkService>("network");
 
-        ValidationHelper.oneOf(request.network, networkService.networks().map(n => n.network), "network");
+        ValidationHelper.oneOf(request.network, (await networkService.networks()).map(n => n.network), "network");
 
         const transactionsService = ServiceFactory.get<TransactionsService>(`transactions-${request.network}`);
 

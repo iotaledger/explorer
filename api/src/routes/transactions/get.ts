@@ -19,7 +19,7 @@ export async function get(
     request: ITransactionsGetRequest
 ): Promise<ITransactionsGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
-    ValidationHelper.oneOf(request.network, networkService.networks().map(n => n.network), "network");
+    ValidationHelper.oneOf(request.network, (await networkService.networks()).map(n => n.network), "network");
     ValidationHelper.string(request.hash, "hash");
 
     const networkConfig = networkService.get(request.network);

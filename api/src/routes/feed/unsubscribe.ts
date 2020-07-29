@@ -14,13 +14,13 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export function unsubscribe(
-    config: IConfiguration, socket: SocketIO.Socket, request: IFeedUnsubscribeRequest): IResponse {
+export async function unsubscribe(
+    config: IConfiguration, socket: SocketIO.Socket, request: IFeedUnsubscribeRequest): Promise<IResponse> {
     let response: IResponse;
 
     try {
         const networkService = ServiceFactory.get<NetworkService>("network");
-        ValidationHelper.oneOf(request.network, networkService.networks().map(n => n.network), "network");
+        ValidationHelper.oneOf(request.network, (await networkService.networks()).map(n => n.network), "network");
 
         const transactionsService = ServiceFactory.get<TransactionsService>(`transactions-${request.network}`);
 

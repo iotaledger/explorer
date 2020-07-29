@@ -118,7 +118,7 @@ export async function executeRoute(
             if (mod) {
                 if (mod[route.func]) {
                     if (!globalInitServices) {
-                        await initServices(config);
+                        await initServices(config, true);
                     }
                     response = await mod[route.func](config, params, body, req.headers || {});
                     status = 200;
@@ -134,7 +134,9 @@ export async function executeRoute(
                 response = { error: `Route '${route.path}' module '${modulePath}' failed to load` };
             }
         } else if (route.inline) {
-            await initServices(config);
+            if (!globalInitServices) {
+                await initServices(config, true);
+            }
             response = await route.inline(config, params, body, req.headers || {});
             status = 200;
         } else {
@@ -253,7 +255,8 @@ export function cors(
                 "X-HTTP-Method-Override",
                 "Content-Type",
                 "Authorization",
-                "Accept"
+                "Accept",
+                "Accept-Encoding"
             ].join(",")
         );
     }

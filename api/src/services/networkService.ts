@@ -14,14 +14,13 @@ export class NetworkService {
     /**
      * Cache of the networks.
      */
-    private _cache: { [network: string]: INetwork };
+    private _cache?: { [network: string]: INetwork };
 
     /**
      * Create a new instance of NetworkService.
      */
     constructor() {
         this._networkStorageService = ServiceFactory.get<IStorageService<INetwork>>("network-storage");
-        this._cache = {};
     }
 
     /**
@@ -42,14 +41,17 @@ export class NetworkService {
      * @returns The network if it exists.
      */
     public get(network: string): INetwork | undefined {
-        return this._cache[network];
+        return this._cache?.[network];
     }
 
     /**
      * Get the list of all networks.
      * @returns All of the networks.
      */
-    public networks(): INetwork[] {
+    public async networks(): Promise<INetwork[]> {
+        if (this._cache === undefined) {
+            await this.buildCache();
+        }
         return Object.values(this._cache);
     }
 }
