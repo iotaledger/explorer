@@ -10,7 +10,7 @@ manual_scaling:
 
 resources:
   cpu: 4
-  memory_gb: 1
+  memory_gb: 4
   disk_size_gb: 1
 
 handlers:
