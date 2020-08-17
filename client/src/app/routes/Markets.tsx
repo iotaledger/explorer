@@ -92,6 +92,8 @@ class Markets extends Currency<unknown, MarketsState> {
      * The component mounted.
      */
     public async componentDidMount(): Promise<void> {
+        super.componentDidMount();
+
         window.scrollTo({
             left: 0,
             top: 0,
