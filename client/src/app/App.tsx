@@ -91,7 +91,9 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
         return (
             <div className="app">
                 <Header
-                    rootPath={`/${this.state.networkId}`}
+                    rootPath={`/${this.props.match.params.network === "markets"
+                        ? ""
+                        : this.state.networkId}`}
                     switcher={this.props.match.params.action && switcher}
                     search={this.props.match.params.action &&
                         this.props.match.params.action !== "streams" && (
