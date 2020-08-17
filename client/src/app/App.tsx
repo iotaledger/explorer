@@ -63,7 +63,6 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
      * The component updated.
      */
     public componentDidUpdate(): void {
-        console.log("componentDidUpdate");
         this.setNetwork(this.props.match.params.network, false);
     }
 
@@ -204,13 +203,11 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
      * @param updateLocation Update the location as well.
      */
     private setNetwork(network: string | undefined, updateLocation: boolean): void {
-        console.log("trysetNetwork", network);
         if (!network) {
             network = this.state.networks[0].network;
         }
         const hasChanged = network !== this.state.networkId;
         if (hasChanged) {
-            console.log("actualsetNetwork", network, this.props.location.pathname);
             this.setState(
                 {
                     networkId: network ?? ""
