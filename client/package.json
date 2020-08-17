@@ -17,7 +17,6 @@
         "chartist": "^0.11.4",
         "chartist-plugin-tooltips-updated": "^0.1.3",
         "classnames": "^2.2.6",
-        "curl.lib.js": "^1.0.22",
         "moment": "^2.27.0",
         "react": "^16.13.1",
         "react-chartist": "^0.14.3",

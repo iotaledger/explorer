@@ -46,9 +46,9 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
         const networks = this._networkService.networks();
 
         this.state = {
-            networkId: networks.length > 0 ? networks[0].network : "",
+            networkId: "",
             networks,
-            query: this.props.match.params.hashType === "search" ? this.props.match.params.hash : undefined
+            query: props.match.params.action === "search" ? props.match.params.param1 : undefined
         };
     }
 
@@ -56,23 +56,15 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
      * The component mounted.
      */
     public componentDidMount(): void {
-        this.setNetwork(this.props.match.params.network ?? this.state.networks[0].network, true);
+        this.setNetwork(this.props.match.params.network, true);
     }
 
     /**
-     * The component was updated.
-     * @param prevProps The previous properties.
+     * The component updated.
      */
-    public componentDidUpdate(prevProps: RouteComponentProps<AppRouteProps>): void {
-        if (this.props.match.url !== prevProps.match.url) {
-            this.setNetwork(this.props.match.params.network, true);
-        }
-
-        window.scrollTo({
-            left: 0,
-            top: 0,
-            behavior: "smooth"
-        });
+    public componentDidUpdate(): void {
+        console.log("componentDidUpdate");
+        this.setNetwork(this.props.match.params.network, false);
     }
 
     /**
@@ -87,24 +79,29 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                     value: n.network
                 }))}
                 value={this.state.networkId}
-                onChange={value => this.setNetwork(value, false)}
+                onChange={value => {
+                    this.props.history.push(
+                        this.props.match.params.action === "streams"
+                            ? `/${value}/streams/0/`
+                            : `/${value}`
+                    );
+                }}
             />
         );
 
         return (
             <div className="app">
                 <Header
-                    networkId={this.state.networkId === "markets"
-                        ? this.state.networks[0].network
-                        : this.state.networkId}
-                    switcher={this.props.match.params.hashType && switcher}
-                    search={this.props.match.params.hashType && this.props.match.params.hashType !== "streams-v0" && (
-                        <SearchInput
-                            query={this.state.query}
-                            onSearch={query => this.setQuery(query)}
-                            compact={true}
-                        />
-                    )}
+                    rootPath={`/${this.state.networkId}`}
+                    switcher={this.props.match.params.action && switcher}
+                    search={this.props.match.params.action &&
+                        this.props.match.params.action !== "streams" && (
+                            <SearchInput
+                                query={this.state.query}
+                                onSearch={query => this.setQuery(query)}
+                                compact={true}
+                            />
+                        )}
                 />
                 <div className="content">
                     <Switch>
@@ -134,7 +131,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                 )}
                         />
                         <Route
-                            path="/:network/streams-v0/:hash?/:mode?/:key?"
+                            path="/:network/streams/0/:hash?/:mode?/:key?"
                             component={(props: RouteComponentProps<StreamsV0RouteProps>) =>
                                 (
                                     <StreamsV0 {...props} />
@@ -188,7 +185,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             }))
                             .concat(this.state.networks.map(n => ({
                                 label: `${n.label} Streams V0`,
-                                url: `${n.network}/streams-v0/`
+                                url: `${n.network}/streams/0/`
                             })))
                             .concat({
                                 label: "Markets",
@@ -204,45 +201,36 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
     /**
      * Set the active network
      * @param network The network to set.
-     * @param keepParams Keep the other path params.
+     * @param updateLocation Update the location as well.
      */
-    private setNetwork(network: string | undefined, keepParams: boolean): void {
-        this.setState(
-            {
-                networkId: network ?? ""
-            },
-            () => {
-                const config = this.state.networks.find(n => n.network === network);
-                if (config) {
-                    PaletteHelper.setPalette(config.primaryColor, config.secondaryColor);
+    private setNetwork(network: string | undefined, updateLocation: boolean): void {
+        console.log("trysetNetwork", network);
+        if (!network) {
+            network = this.state.networks[0].network;
+        }
+        const hasChanged = network !== this.state.networkId;
+        if (hasChanged) {
+            console.log("actualsetNetwork", network, this.props.location.pathname);
+            this.setState(
+                {
+                    networkId: network ?? ""
+                },
+                () => {
+                    const config = this.state.networks.find(n => n.network === network);
+                    if (config) {
+                        PaletteHelper.setPalette(config.primaryColor, config.secondaryColor);
+                    }
+                    if (!this.props.location.pathname.startsWith(`/${network}`) && updateLocation) {
+                        this.props.history.replace(`/${network}`);
+                    }
+                    window.scrollTo({
+                        left: 0,
+                        top: 0,
+                        behavior: "smooth"
+                    });
                 }
-                let path = `/${network}`;
-                if (keepParams || this.props.match.params.hashType === "streams-v0") {
-                    if (this.props.match.params.hashType) {
-                        path += `/${this.props.match.params.hashType}`;
-                    }
-                }
-
-                if (keepParams) {
-                    if (this.props.match.params.hash) {
-                        path += `/${this.props.match.params.hash}`;
-                    }
-                    if (this.props.match.params.mode) {
-                        path += `/${this.props.match.params.mode}`;
-                    }
-                    if (this.props.match.params.key) {
-                        path += `/${this.props.match.params.key}`;
-                    }
-                }
-                this.props.history.push(path);
-
-                window.scrollTo({
-                    left: 0,
-                    top: 0,
-                    behavior: "smooth"
-                });
-            }
-        );
+            );
+        }
     }
 
     /**

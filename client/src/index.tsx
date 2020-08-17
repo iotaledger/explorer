@@ -27,7 +27,7 @@ initialiseServices().then(() => {
             <BrowserRouter>
                 <Route
                     exact={true}
-                    path="/:network?/:hashType?/:hash?/:mode?/:key?"
+                    path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
                     component={(props: RouteComponentProps<AppRouteProps>) => (
                         <App {...props} />)}
                 />

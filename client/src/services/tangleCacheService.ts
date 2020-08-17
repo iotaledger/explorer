@@ -2,7 +2,6 @@ import { composeAPI } from "@iota/core";
 import { mamFetch, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { PowHelper } from "../helpers/powHelper";
 import { TransactionsGetMode } from "../models/api/transactionsGetMode";
 import { ICachedTransaction } from "../models/ICachedTransaction";
 import { ApiClient } from "./apiClient";
@@ -486,103 +485,6 @@ export class TangleCacheService {
             }
         }
         return thisGroup;
-    }
-
-    /**
-     * Can we promote the tranaction.
-     * @param networkId The network to use.
-     * @param tailHash The hash.
-     * @returns True if the transaction is promotable.
-     */
-    public async canPromoteTransaction(
-        networkId: string,
-        tailHash: string): Promise<boolean> {
-        try {
-            const networkConfig = this._networkService.get(networkId);
-
-            if (networkConfig) {
-                const api = composeAPI({
-                    provider: networkConfig.provider
-                });
-
-                return await api.isPromotable(
-                    tailHash
-                );
-            }
-
-            return false;
-        } catch {
-            return false;
-        }
-    }
-
-    /**
-     * Promote the tranaction.
-     * @param networkId The network to use.
-     * @param tailHash The hash.
-     * @returns True if the transaction was promoted.
-     */
-    public async promoteTransaction(
-        networkId: string,
-        tailHash: string): Promise<boolean> {
-        try {
-            const networkConfig = this._networkService.get(networkId);
-
-            if (networkConfig) {
-                const api = composeAPI({
-                    provider: networkConfig.provider,
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/unbound-method
-                    attachToTangle: PowHelper.localPow as any
-                });
-
-                await api.promoteTransaction(
-                    tailHash,
-                    networkConfig.depth,
-                    networkConfig.mwm
-                );
-
-                return true;
-            }
-            return false;
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
-    }
-
-    /**
-     * Replay the tranaction.
-     * @param networkId The network to use.
-     * @param tailHash The hash.
-     * @returns True if the transaction was promoted.
-     */
-    public async replayBundle(
-        networkId: string,
-        tailHash: string): Promise<boolean> {
-        try {
-            const networkConfig = this._networkService.get(networkId);
-
-            if (networkConfig) {
-                const api = composeAPI({
-                    provider: networkConfig.provider,
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/unbound-method
-                    attachToTangle: PowHelper.localPow as any
-                });
-
-                await api.replayBundle(
-                    tailHash,
-                    networkConfig.depth,
-                    networkConfig.mwm
-                );
-
-                return true;
-            }
-
-            return false;
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
     }
 
     /**

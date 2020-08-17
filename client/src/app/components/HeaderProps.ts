@@ -5,9 +5,9 @@ import { ReactNode } from "react";
  */
 export interface HeaderProps {
     /**
-     * The current network.
+     * The root path.
      */
-    networkId: string;
+    rootPath: string;
 
     /**
      * The switch elements to display as content.

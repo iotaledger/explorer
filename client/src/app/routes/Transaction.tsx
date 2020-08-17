@@ -11,7 +11,6 @@ import copyGray from "../../assets/copy-gray.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DateHelper } from "../../helpers/dateHelper";
-import { PowHelper } from "../../helpers/powHelper";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../models/ICachedTransaction";
 import { NetworkService } from "../../services/networkService";
@@ -60,9 +59,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             statusBusy: true,
             status: "Building transaction details...",
             hash,
-            hasPow: false,
-            isBusy: false,
-            busyMessage: "",
             showRawMessageTrytes: false
         };
     }
@@ -74,6 +70,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
         super.componentDidMount();
 
         if (this.state.hash) {
+            window.scrollTo({
+                left: 0,
+                top: 0,
+                behavior: "smooth"
+            });
+
             const transactions = await this._tangleCacheService.getTransactions(
                 this.props.match.params.network, [this.props.match.params.hash]);
 
@@ -158,31 +160,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                         </div>
                                         {this.state.details && (
                                             <React.Fragment>
-                                                {this.state.details.confirmationState === "pending" &&
-                                                    this.state.isBundleValid === "valid" &&
-                                                    this.state.hasPow && (
-                                                        <div className="row middle">
-                                                            <button
-                                                                type="button"
-                                                                className="card--action"
-                                                                disabled={this.state.isBusy}
-                                                                onClick={() => this.reattach()}
-                                                            >
-                                                                Reattach
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                className="card--action"
-                                                                disabled={this.state.isBusy}
-                                                                onClick={() => this.promote()}
-                                                            >
-                                                                Promote
-                                                            </button>
-                                                            <span className="card--action__busy">
-                                                                {this.state.busyMessage}
-                                                            </span>
-                                                        </div>
-                                                    )}
                                                 {this.state.details.tx.timestamp !== 0 && (
                                                     <React.Fragment>
                                                         <div className="card--label">
@@ -558,7 +535,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                     raw: asTransactionTrytes(details.tx),
                     nextTransaction: details.tx.currentIndex < details.tx.lastIndex
                         ? details.tx.trunkTransaction : undefined,
-                    hasPow: PowHelper.isAvailable(),
                     rawMessageTrytes: details?.tx.signatureMessageFragment
                 },
                 async () => {
@@ -606,8 +582,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 message,
                                 messageType,
                                 messageSpan,
-                                rawMessageTrytes,
-                                bundleTailHash: thisGroup[0].tx.hash
+                                rawMessageTrytes
                             });
                         } else {
                             this.setState({
@@ -641,72 +616,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
         }
 
         return milestoneIndex;
-    }
-
-    /**
-     * Reattach the transaction.
-     */
-    private reattach(): void {
-        this.setState(
-            {
-                isBusy: true,
-                busyMessage: "Reattaching bundle, please wait..."
-            },
-            async () => {
-                const wasReattached = await this._tangleCacheService.replayBundle(
-                    this.props.match.params.network,
-                    this.state.bundleTailHash ?? "");
-
-                this.setState(
-                    {
-                        isBusy: false,
-                        busyMessage: wasReattached ? "Bundle reattached." : "Unable to reattach bundle."
-                    },
-                    async () => {
-                        if (wasReattached) {
-                            await this.checkConfirmation();
-                        }
-                    });
-            });
-    }
-
-    /**
-     * Promote the transaction.
-     */
-    private promote(): void {
-        this.setState(
-            {
-                isBusy: true,
-                busyMessage: "Promoting transaction, please wait..."
-            },
-            async () => {
-                const isPromotable = await this._tangleCacheService.canPromoteTransaction(
-                    this.props.match.params.network,
-                    this.state.bundleTailHash ?? "");
-
-                if (isPromotable) {
-                    const wasPromoted = await this._tangleCacheService.promoteTransaction(
-                        this.props.match.params.network,
-                        this.state.bundleTailHash ?? "");
-
-                    this.setState(
-                        {
-                            isBusy: false,
-                            busyMessage: wasPromoted ? "Transaction promoted." : "Unable to promote transaction."
-                        },
-                        async () => {
-                            if (wasPromoted) {
-                                await this.checkConfirmation();
-                            }
-                        }
-                    );
-                } else {
-                    this.setState({
-                        isBusy: false,
-                        busyMessage: "This transaction is not promotable."
-                    });
-                }
-            });
     }
 
     /**

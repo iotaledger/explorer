@@ -80,24 +80,4 @@ export interface TransactionState {
      * The raw trytes.
      */
     raw?: string;
-
-    /**
-     * Does the browser support pow.
-     */
-    hasPow: boolean;
-
-    /**
-     * Is the transaction busy.
-     */
-    isBusy: boolean;
-
-    /**
-     * Is the transaction busy.
-     */
-    busyMessage: string;
-
-    /**
-     * The tail hash of the bundle.
-     */
-    bundleTailHash?: string;
 }
