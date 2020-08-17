@@ -2,7 +2,6 @@ import { ServiceFactory } from "../factories/serviceFactory";
 import { IMilestoneStore } from "../models/db/IMilestoneStore";
 import { IStorageService } from "../models/services/IStorageService";
 import { IAddress } from "../models/zmq/IAddress";
-import { ILmsi } from "../models/zmq/ILmsi";
 import { NetworkService } from "./networkService";
 import { ZmqService } from "./zmqService";
 
@@ -29,11 +28,6 @@ export class MilestonesService {
      * Subscription address id.
      */
     private _subscriptionAddressId: string;
-
-    /**
-     * Subscription lmsi id.
-     */
-    private _subscriptionLmsiId: string;
 
     /**
      * Last updates
@@ -65,26 +59,11 @@ export class MilestonesService {
     }[];
 
     /**
-     * Capture pending milestone until confirmed.
-     */
-    private readonly _pendingMilestones?: {
-        /**
-         * The transaction hash.
-         */
-        hash: string;
-        /**
-         * The milestone index.
-         */
-        milestoneIndex: number;
-    }[];
-
-    /**
      * Create a new instance of MilestoneService.
      * @param networkId The network configuration.
      */
     constructor(networkId: string) {
         this._networkId = networkId;
-        this._pendingMilestones = [];
     }
 
     /**
@@ -155,36 +134,22 @@ export class MilestonesService {
 
                         if ((this._milestones.length === 0 ||
                             message.milestoneIndex > this._milestones[0].milestoneIndex) &&
-                            this._pendingMilestones
+                            this._milestones
                                 .findIndex(p => p.milestoneIndex === message.milestoneIndex) === -1) {
-                            this._pendingMilestones.push({
+                            this._milestones.unshift({
                                 hash: message.transaction,
                                 milestoneIndex: message.milestoneIndex
                             });
-                        }
-                    }
-                });
 
-            this._subscriptionLmsiId = this._zmqService.subscribe("lmsi",
-                async (event: string, data: ILmsi) => {
-                    const idx = this._pendingMilestones.findIndex(p => p.milestoneIndex === data.latestMilestoneIndex);
-                    if (idx >= 0) {
-                        for (let i = 0; i < idx + 1; i++) {
-                            this._milestones.unshift(this._pendingMilestones[i]);
-                        }
+                            this._milestones = this._milestones.slice(0, 100);
 
-                        this._pendingMilestones.splice(0, idx + 1);
-
-                        this._milestones = this._milestones.slice(0, 100);
-
-                        if (this._milestoneStorageService) {
-                            try {
-                                await this._milestoneStorageService.set({
+                            if (this._milestoneStorageService) {
+                                this._milestoneStorageService.set({
                                     network: this._networkId,
                                     indexes: this._milestones
+                                }).catch(err => {
+                                    console.error(`Failed writing ${this._networkId} milestone store`, err);
                                 });
-                            } catch (err) {
-                                console.error(`Failed writing ${this._networkId} milestone store`, err);
                             }
                         }
                     }
@@ -199,10 +164,6 @@ export class MilestonesService {
         if (this._subscriptionAddressId) {
             this._zmqService.unsubscribe(this._subscriptionAddressId);
             this._subscriptionAddressId = undefined;
-        }
-        if (this._subscriptionLmsiId) {
-            this._zmqService.unsubscribe(this._subscriptionLmsiId);
-            this._subscriptionLmsiId = undefined;
         }
     }
 
