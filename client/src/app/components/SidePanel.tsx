@@ -43,7 +43,7 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
                         <div className="card--label card--label__highlight padding-t-s">
                             Transactions Per Second
                         </div>
-                        <div className="card--value card--value__highlight padding-t-s">
+                        <div className="card--value card--value__large padding-t-s">
                             {this.state.transactionsPerSecond}
                         </div>
                         <LineChart

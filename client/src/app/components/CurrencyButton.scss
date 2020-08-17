@@ -53,6 +53,11 @@
       color: $main-green-highlight;
       font-family: $inter;
       font-weight: normal;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
 
     .select-wrapper {

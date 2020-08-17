@@ -174,7 +174,7 @@ class Markets extends Currency<unknown, MarketsState> {
                                                 <div className="card--label">
                                                     Price
                                                 </div>
-                                                <div className="card--value">
+                                                <div className="card--value card--value__highlight">
                                                     {this.state.priceCurrency}
                                                 </div>
                                             </div>

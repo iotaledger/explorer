@@ -102,7 +102,7 @@ stickyCluster(
         console.log(`Started Worker Index: ${process.env.stickycluster_worker_index}`);
     },
     {
-        concurrency: Math.max(1, os.cpus().length),
+        concurrency: Math.max(1, configId === "local" ? 2 : os.cpus().length),
         port
     }
 );

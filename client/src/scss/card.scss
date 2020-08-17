@@ -151,6 +151,13 @@
     font-family: $inter;
     word-break: break-all;
 
+    &.card--value__highlight {
+      @include font-size(12px);
+
+      color: $main-green;
+      font-weight: bold;
+    }
+
     .card--value__secondary {
       @include font-size(12px);
 
