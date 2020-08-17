@@ -142,6 +142,7 @@ export class TransactionsService {
      */
     public subscribe(id: string, callback: (data: IFeedSubscriptionMessage) => Promise<void>): void {
         this._subscribers[id] = callback;
+
         setTimeout(async () => {
             await this.updateSubscriptions(id);
         }, 0);
@@ -222,9 +223,16 @@ export class TransactionsService {
             (now - this._lastSend > TransactionsService.TPS_INTERVAL * 1000) ||
             singleSubscriberId
         ) {
-            const subs = singleSubscriberId
-                ? { subscriberId: this._subscribers[singleSubscriberId] }
-                : this._subscribers;
+            let subs: {
+                [id: string]: (data: IFeedSubscriptionMessage) => Promise<void>;
+            };
+
+            if (singleSubscriberId) {
+                subs = {};
+                subs[singleSubscriberId] = this._subscribers[singleSubscriberId];
+            } else {
+                subs = this._subscribers;
+            }
 
             for (const subscriptionId in subs) {
                 const data: IFeedSubscriptionMessage = {

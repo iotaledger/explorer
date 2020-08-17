@@ -174,6 +174,8 @@ export class FeedClient {
                 this._socket.on("unsubscribe", () => { });
             }
         } catch {
+        } finally {
+            this._subscriptionId = undefined;
         }
     }
 
