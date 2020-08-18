@@ -47,8 +47,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
 
         this.state = {
             networkId: "",
-            networks,
-            query: props.match.params.action === "search" ? props.match.params.param1 : undefined
+            networks
         };
     }
 
@@ -98,7 +97,6 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                     search={this.props.match.params.action &&
                         this.props.match.params.action !== "streams" && (
                             <SearchInput
-                                query={this.state.query}
                                 onSearch={query => this.setQuery(query)}
                                 compact={true}
                             />
@@ -123,7 +121,6 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                         switcher={switcher}
                                         search={(
                                             <SearchInput
-                                                query={this.state.query}
                                                 onSearch={query => this.setQuery(query)}
                                                 compact={false}
                                             />
@@ -238,12 +235,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
      * @param query The search query to set.
      */
     private setQuery(query?: string): void {
-        this.setState(
-            { query },
-            () => {
-                this.props.history.push(`/${this.state.networkId}/search/${this.state.query}`);
-            }
-        );
+        this.props.history.push(`/${this.state.networkId}/search/${query}`);
     }
 }
 

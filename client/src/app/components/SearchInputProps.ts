@@ -1,10 +1,5 @@
 export interface SearchInputProps {
     /**
-     * Search component to display.
-     */
-    query?: string;
-
-    /**
      * Show in compact mode.
      */
     compact: boolean;

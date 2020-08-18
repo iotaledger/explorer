@@ -92,6 +92,10 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
                                             We could not find any transactions, bundles, addresses or tags
                                             with the provided hash.
                                         </p>
+                                        <br />
+                                        <p className="card--value">
+                                            {this.props.match.params.hash}
+                                        </p>
                                     </div>
                                 </div>
                             )}

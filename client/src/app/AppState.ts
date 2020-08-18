@@ -10,9 +10,4 @@ export interface AppState {
      * The networks.
      */
     networks: INetwork[];
-
-    /**
-     * The current search query.
-     */
-    query?: string;
 }

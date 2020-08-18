@@ -189,14 +189,16 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                 {this.state.checksum}
                                             </span>
                                         </div>
-                                        <div className="row fill margin-t-s margin-b-s value-buttons">
-                                            <div className="col">
-                                                <ValueButton value={this.state.balance ?? 0} label="Balance" />
+                                        {this.state.balance !== undefined && this.state.balance !== 0 && (
+                                            <div className="row fill margin-t-s margin-b-s value-buttons">
+                                                <div className="col">
+                                                    <ValueButton value={this.state.balance ?? 0} label="Balance" />
+                                                </div>
+                                                <div className="col">
+                                                    <CurrencyButton value={this.state.balance ?? 0} />
+                                                </div>
                                             </div>
-                                            <div className="col">
-                                                <CurrencyButton value={this.state.balance ?? 0} />
-                                            </div>
-                                        </div>
+                                        )}
                                         <div className="card--label">
                                             Transaction Filter
                                         </div>
