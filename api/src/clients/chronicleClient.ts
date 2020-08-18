@@ -67,6 +67,10 @@ export class ChronicleClient {
                 }
             );
 
+            if (response.error) {
+                console.error("Chronicle Error", response.error);
+            }
+
             return response;
         } catch (err) {
             console.error("Chronicle Error", (err.response?.data?.error) ?? err);

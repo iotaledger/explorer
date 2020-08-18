@@ -27,7 +27,6 @@ export async function get(
     let hashes: string[];
     let foundMode: TransactionsGetMode;
     let modes: TransactionsGetMode[];
-    let limitExceeded: boolean = false;
     let returnCursor: string | undefined;
 
     if (request.mode) {
@@ -41,12 +40,11 @@ export async function get(
     }
 
     for (const mode of modes) {
-        const { foundHashes, tooMany, cursor } = await TangleHelper.findHashes(networkConfig, mode, request.hash);
+        const { foundHashes, cursor } = await TangleHelper.findHashes(networkConfig, mode, request.hash);
 
-        if ((foundHashes && foundHashes.length > 0) || tooMany) {
+        if ((foundHashes && foundHashes.length > 0)) {
             foundMode = mode;
             hashes = foundHashes;
-            limitExceeded = tooMany;
             returnCursor = cursor;
             break;
         }
@@ -63,7 +61,6 @@ export async function get(
 
     return {
         mode: foundMode,
-        limitExceeded,
         hashes,
         cursor: returnCursor
     };

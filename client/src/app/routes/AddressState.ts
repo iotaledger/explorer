@@ -47,11 +47,6 @@ export interface AddressState {
     }[];
 
     /**
-     * The items exceeded the limit.
-     */
-    limitExceeded?: boolean;
-
-    /**
      * Is the component status busy.
      */
     statusBusy: number;

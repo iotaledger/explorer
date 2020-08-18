@@ -78,7 +78,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                     formatFull: settings.formatFull
                 },
                 async () => {
-                    const { hashes, limitExceeded, cursor } = await this._tangleCacheService.findTransactionHashes(
+                    const { hashes, cursor } = await this._tangleCacheService.findTransactionHashes(
                         this.props.match.params.network,
                         "tags",
                         this.props.match.params.hash,
@@ -88,9 +88,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
 
                     let status = "";
 
-                    if (limitExceeded) {
-                        status = "The requested tag exceeds the number of items it is possible to retrieve.";
-                    } else if (!hashes || hashes.length === 0) {
+                    if (!hashes || hashes.length === 0) {
                         status = "There are no transactions for the requested tag.";
                     }
 

@@ -26,11 +26,6 @@ export class TangleHelper {
             foundHashes?: string[];
 
             /**
-             * The request would return too many items.
-             */
-            tooMany: boolean;
-
-            /**
              * Cursor for next lookups.
              */
             cursor?: string;
@@ -38,8 +33,7 @@ export class TangleHelper {
         const findReq = {};
         findReq[hashTypeName] = [hash];
 
-        let hashes;
-        let tooMany = false;
+        let hashes = [];
         let cursor;
 
         if (network.permaNodeEndpoint) {
@@ -57,32 +51,22 @@ export class TangleHelper {
             }
         }
 
-        if (!hashes || hashes.length === 0) {
-            try {
-                const api = composeAPI({
-                    provider: network.provider
-                });
+        try {
+            const api = composeAPI({
+                provider: network.provider
+            });
 
-                // Cant do anything with cursors here until nodes
-                // support some kind of paging requests
-                hashes = await api.findTransactions(findReq);
+            const nodeHashes = await api.findTransactions(findReq);
 
-                // But also make sure we don't overload the response
-                hashes = hashes.slice(0, 1000);
-                cursor = "";
-            } catch (err) {
-                const errString = err.toString();
-                if (errString.includes("Could not complete request") ||
-                    errString.includes("Invalid addresses input")) {
-                    tooMany = true;
-                }
-                console.error("API Error", err);
+            if (nodeHashes) {
+                hashes = hashes.concat(nodeHashes.filter(h => !hashes.includes(h)));
             }
+        } catch (err) {
+            console.error("API Error", err);
         }
 
         return {
             foundHashes: hashes,
-            tooMany,
             cursor
         };
     }
@@ -160,7 +144,9 @@ export class TangleHelper {
                     provider: network.provider
                 });
 
-                const response = await api.getTrytes(missing2.map(a => a.hash));
+                const missingHashes = missing2.map(a => a.hash);
+
+                const response = await api.getTrytes(missingHashes);
 
                 if (response) {
                     for (let i = 0; i < response.length; i++) {
@@ -168,17 +154,11 @@ export class TangleHelper {
                     }
                 }
 
-                const nodeInfo = await api.getNodeInfo();
-                const tips = [];
-                if (nodeInfo) {
-                    tips.push(nodeInfo.latestSolidSubtangleMilestone);
-                }
+                const statesResponse = await api.getInclusionStates(missingHashes, []);
 
-                const statesResponse = await api.getInclusionStates(hashes, tips);
-
-                if (statesResponse) {
+                 if (statesResponse) {
                     for (let i = 0; i < statesResponse.length; i++) {
-                        allTrytes[i].milestoneIndex = statesResponse[i] ? 0 : -1;
+                        missing2[i].milestoneIndex = statesResponse[i] ? 0 : -1;
                     }
                 }
             }

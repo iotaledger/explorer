@@ -43,7 +43,7 @@ export class FetchHelper {
 
         try {
             const res = await fetch(
-                `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`,
+                `${baseUrl.replace(/\/$/, "")}${path.length > 0 ? `/${path.replace(/^\//, "")}` : ""}`,
                 {
                     method,
                     headers,

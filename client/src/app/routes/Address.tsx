@@ -87,7 +87,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                     balance
                 },
                 async () => {
-                    const { hashes, limitExceeded, cursor } = await this._tangleCacheService.findTransactionHashes(
+                    const { hashes, cursor } = await this._tangleCacheService.findTransactionHashes(
                         this.props.match.params.network,
                         "addresses",
                         this.props.match.params.hash,
@@ -97,9 +97,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
 
                     let status = "";
 
-                    if (limitExceeded) {
-                        status = "The requested address exceeds the number of items it is possible to retrieve.";
-                    } else if (!hashes || hashes.length === 0) {
+                    if (!hashes || hashes.length === 0) {
                         status = "There are no transactions for the requested address.";
                     }
 

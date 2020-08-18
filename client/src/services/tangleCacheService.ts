@@ -59,10 +59,6 @@ export class TangleCacheService {
                      */
                     transactionHashes: string[];
                     /**
-                     * The number of items exceeds the limits.
-                     */
-                    limitExceeded: boolean;
-                    /**
                      * The time of cache.
                      */
                     cached: number;
@@ -178,10 +174,6 @@ export class TangleCacheService {
          */
         hashes: string[];
         /**
-         * Did the request exceed the limits.
-         */
-        limitExceeded: boolean;
-        /**
          * The detected hash type.
          */
         hashType?: TransactionsGetMode;
@@ -192,7 +184,6 @@ export class TangleCacheService {
         cursor?: string;
     }> {
         let transactionHashes: string[] | undefined = [];
-        let limitExceeded = false;
         let doLookup = true;
         let cursor: string | undefined;
 
@@ -219,7 +210,6 @@ export class TangleCacheService {
                     if (Date.now() - cacheHashType[hash].cached < 60000) {
                         doLookup = false;
                         transactionHashes = cacheHashType[hash].transactionHashes.slice();
-                        limitExceeded = cacheHashType[hash].limitExceeded;
                     }
                 }
             }
@@ -238,9 +228,8 @@ export class TangleCacheService {
 
             if (!response.error) {
                 cursor = response.cursor;
-                if ((response.hashes && response.hashes.length > 0) || response.limitExceeded) {
+                if ((response.hashes && response.hashes.length > 0)) {
                     transactionHashes = response.hashes ?? [];
-                    limitExceeded = response.limitExceeded ?? limitExceeded;
                     hashType = hashType ?? response.mode;
 
                     if (findCache && hashType) {
@@ -248,7 +237,6 @@ export class TangleCacheService {
                         if (cacheHashType) {
                             cacheHashType[hash] = {
                                 transactionHashes,
-                                limitExceeded,
                                 cached: Date.now()
                             };
                         }
@@ -256,14 +244,12 @@ export class TangleCacheService {
                 }
             } else if (response.error.includes("Timeout")) {
                 transactionHashes = response.hashes ?? [];
-                limitExceeded = true;
                 hashType = hashType ?? response.mode;
             }
         }
 
         return {
             hashes: transactionHashes || [],
-            limitExceeded,
             hashType,
             cursor
         };
