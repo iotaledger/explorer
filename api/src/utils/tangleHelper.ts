@@ -108,7 +108,7 @@ export class TangleHelper {
              * The milestone index.
              */
             milestoneIndex?: number;
-        }[] = hashes.map((h, idx) => ({ index: idx, hash: h }));
+        }[] = hashes.map((h, idx) => ({ index: idx, hash: h, milestoneIndex: -1 }));
 
         // First check to see if we have recently processed them and stored them in memory
         const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${network.network}`);
@@ -123,42 +123,48 @@ export class TangleHelper {
         if (network.permaNodeEndpoint) {
             const chronicleClient = new ChronicleClient(network.permaNodeEndpoint);
 
-            const missing = allTrytes.filter(a => !a.trytes);
-
-            const response = await chronicleClient.getTrytes({ hashes: missing.map(mh => mh.hash) });
+            const response = await chronicleClient.getTrytes({ hashes });
 
             if (response?.trytes) {
-                for (let i = 0; i < missing.length; i++) {
-                    missing[i].trytes = response.trytes[i];
+                for (let i = 0; i < hashes.length; i++) {
+                    allTrytes[i].trytes = response.trytes[i];
 
-                    missing[i].milestoneIndex = response.milestones[i] ?? -1;
+                    allTrytes[i].milestoneIndex = response.milestones[i] ?? -1;
                 }
             }
         }
 
         try {
-            const missing2 = allTrytes.filter(a => !a.trytes || /^9+$/.test(a.trytes));
+            const missingTrytes = allTrytes.filter(a => !a.trytes);
 
-            if (missing2.length > 0) {
+            if (missingTrytes.length > 0) {
                 const api = composeAPI({
                     provider: network.provider
                 });
 
-                const missingHashes = missing2.map(a => a.hash);
-
-                const response = await api.getTrytes(missingHashes);
-
+                const response = await api.getTrytes(missingTrytes.map(a => a.hash));
                 if (response) {
                     for (let i = 0; i < response.length; i++) {
-                        missing2[i].trytes = response[i];
+                        missingTrytes[i].trytes = response[i];
                     }
                 }
+            }
+        } catch (err) {
+            console.error(`${network.network}`, err);
+        }
 
-                const statesResponse = await api.getInclusionStates(missingHashes, []);
+        try {
+            const missingState = allTrytes.filter(a => a.milestoneIndex === -1);
 
-                 if (statesResponse) {
+            if (missingState.length > 0) {
+                const api = composeAPI({
+                    provider: network.provider
+                });
+
+                const statesResponse = await api.getInclusionStates(missingState.map(a => a.hash), []);
+                if (statesResponse) {
                     for (let i = 0; i < statesResponse.length; i++) {
-                        missing2[i].milestoneIndex = statesResponse[i] ? 0 : -1;
+                        missingState[i].milestoneIndex = statesResponse[i] ? 0 : -1;
                     }
                 }
             }
