@@ -26,7 +26,13 @@ export class TransactionsService {
     /**
      * The most recent transactions.
      */
-    private _transactionValues: { [hash: string]: number };
+    private _transactionValues: {
+        [hash: string]: {
+            trunk: string;
+            branch: string;
+            value: number;
+        };
+    };
 
     /**
      * The most recent transactions.
@@ -85,7 +91,7 @@ export class TransactionsService {
      * The callback for different events.
      */
     private readonly _subscribers: {
-        [id: string]: (data: IFeedSubscriptionMessage) => Promise<void>;
+        [id: string]: (data: IFeedSubscriptionMessage) => void;
     };
 
     /**
@@ -140,12 +146,10 @@ export class TransactionsService {
      * @param id The id of the subscriber.
      * @param callback The callback to call with data for the event.
      */
-    public subscribe(id: string, callback: (data: IFeedSubscriptionMessage) => Promise<void>): void {
+    public subscribe(id: string, callback: (data: IFeedSubscriptionMessage) => void): void {
         this._subscribers[id] = callback;
 
-        setTimeout(async () => {
-            await this.updateSubscriptions(id);
-        }, 0);
+        this.updateSubscriptions(id);
     }
 
     /**
@@ -167,7 +171,11 @@ export class TransactionsService {
                 if (!this._transactionValues[message.hash]) {
                     this._total++;
                     const tx = asTransactionObject(message.trytes);
-                    this._transactionValues[message.hash] = tx.value;
+                    this._transactionValues[message.hash] = {
+                        value: tx.value,
+                        branch: tx.branchTransaction,
+                        trunk: tx.trunkTransaction
+                    };
                     this._transactionTrytes.unshift({ hash: message.hash, trytes: message.trytes });
                     this._transactionTrytes = this._transactionTrytes.slice(0, 1000);
                 }
@@ -191,11 +199,11 @@ export class TransactionsService {
     private startTimer(): void {
         this.stopTimer();
         this._timerId = setInterval(
-            async () => {
+            () => {
                 if (this._timerCounter++ % TransactionsService.TPS_INTERVAL === 0) {
                     this.handleTps();
                 }
-                await this.updateSubscriptions();
+                this.updateSubscriptions();
             },
             1000);
     }
@@ -214,7 +222,7 @@ export class TransactionsService {
      * Update the subscriptions with newest trytes.
      * @param singleSubscriberId Update an individual subscriber.
      */
-    private async updateSubscriptions(singleSubscriberId?: string): Promise<void> {
+    private updateSubscriptions(singleSubscriberId?: string): void {
         const now = Date.now();
 
         const tranCount = Object.keys(this._transactionValues).length;
@@ -224,7 +232,7 @@ export class TransactionsService {
             singleSubscriberId
         ) {
             let subs: {
-                [id: string]: (data: IFeedSubscriptionMessage) => Promise<void>;
+                [id: string]: (data: IFeedSubscriptionMessage) => void;
             };
 
             if (singleSubscriberId) {
@@ -243,7 +251,7 @@ export class TransactionsService {
                     tpsEnd: this._tps.length > 0 ? this._tps[0].ts : now
                 };
 
-                await subs[subscriptionId](data);
+                subs[subscriptionId](data);
             }
 
             if (!singleSubscriberId) {

@@ -26,6 +26,8 @@ import Tag from "./routes/Tag";
 import { TagRouteProps } from "./routes/TagRouteProps";
 import Transaction from "./routes/Transaction";
 import { TransactionRouteProps } from "./routes/TransactionRouteProps";
+import Visualizer from "./routes/Visualizer";
+import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
 
 /**
  * Main application class.
@@ -81,7 +83,9 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                     this.props.history.push(
                         this.props.match.params.action === "streams"
                             ? `/${value}/streams/0/`
-                            : `/${value}`
+                            : (this.props.match.params.action === "visualizer"
+                                ? `/${value}/visualizer/`
+                                : `/${value}`)
                     );
                 }}
             />
@@ -95,7 +99,8 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                         : this.state.networkId}`}
                     switcher={this.props.match.params.action && switcher}
                     search={this.props.match.params.action &&
-                        this.props.match.params.action !== "streams" && (
+                        this.props.match.params.action !== "streams" &&
+                        this.props.match.params.action !== "visualizer" && (
                             <SearchInput
                                 onSearch={query => this.setQuery(query)}
                                 compact={true}
@@ -133,6 +138,13 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             component={(props: RouteComponentProps<StreamsV0RouteProps>) =>
                                 (
                                     <StreamsV0 {...props} />
+                                )}
+                        />
+                        <Route
+                            path="/:network/visualizer/"
+                            component={(props: RouteComponentProps<VisualizerRouteProps>) =>
+                                (
+                                    <Visualizer {...props} />
                                 )}
                         />
                         <Route
@@ -181,10 +193,14 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                 label: n.label,
                                 url: n.network
                             }))
-                            .concat(this.state.networks.map(n => ({
-                                label: `${n.label} Streams V0`,
-                                url: `${n.network}/streams/0/`
-                            })))
+                            .concat({
+                                label: "Streams V0",
+                                url: `${this.state.networks[0].network}/streams/0/`
+                            })
+                            .concat({
+                                label: "Visualizer",
+                                url: `${this.state.networks[0].network}/visualizer/`
+                            })
                             .concat({
                                 label: "Markets",
                                 url: "markets"

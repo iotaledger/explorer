@@ -329,7 +329,15 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
          */
         hash: string;
         /**
-         * The tx value.
+         * The trunk.
+         */
+        trunk: string;
+        /**
+         * The branch.
+         */
+        branch: string;
+        /**
+         * The transaction value.
          */
         value: number;
     }[]): void {

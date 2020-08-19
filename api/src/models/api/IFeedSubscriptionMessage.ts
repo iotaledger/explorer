@@ -7,7 +7,22 @@ export interface IFeedSubscriptionMessage {
     /**
      * The latest transactions.
      */
-    transactions: { [hash: string]: number };
+    transactions: {
+        [hash: string]: {
+            /**
+             * The trunk.
+             */
+            trunk: string;
+            /**
+             * The branch.
+             */
+            branch: string;
+            /**
+             * The transaction value.
+             */
+            value: number;
+        };
+    };
 
     /**
      * The start timestamp for the tps.

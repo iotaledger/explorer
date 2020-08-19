@@ -80,8 +80,8 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     }
 
     /**
-     * Filter the transactions and return them.
-     * @param transactions The transactions to filter.
+     * The transactions have been updated.
+     * @param transactions The updated transactions.
      */
     protected transactionsUpdated(transactions: {
         /**
@@ -89,7 +89,15 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
          */
         hash: string;
         /**
-         * The tx value.
+         * The trunk.
+         */
+        trunk: string;
+        /**
+         * The branch.
+         */
+        branch: string;
+        /**
+         * The transaction value.
          */
         value: number;
     }[]): void {

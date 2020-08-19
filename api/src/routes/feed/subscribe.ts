@@ -27,7 +27,7 @@ export async function subscribe(
 
         const transactionsService = ServiceFactory.get<TransactionsService>(`transactions-${request.network}`);
 
-        transactionsService.subscribe(socket.id, async transactionData => {
+        transactionsService.subscribe(socket.id, transactionData => {
             socket.emit("transactions", transactionData);
         });
 

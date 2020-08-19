@@ -36,6 +36,14 @@ export class FeedClient {
          * The tx value.
          */
         value: number;
+        /**
+         * The connected trunk.
+         */
+        trunk: string;
+        /**
+         * The connected branch.
+         */
+        branch: string;
     }[];
 
     /**
@@ -122,7 +130,9 @@ export class FeedClient {
                                 if (this._transactions.findIndex(t => t.hash === newHashKey) === -1) {
                                     this._transactions.unshift({
                                         hash: newHashKey,
-                                        value: newHashes[newHashKey]
+                                        value: newHashes[newHashKey].value,
+                                        trunk: newHashes[newHashKey].trunk,
+                                        branch: newHashes[newHashKey].branch
                                     });
                                 }
                             }
@@ -189,7 +199,15 @@ export class FeedClient {
          */
         hash: string;
         /**
-         * The tx value.
+         * The trunk.
+         */
+        trunk: string;
+        /**
+         * The branch.
+         */
+        branch: string;
+        /**
+         * The transaction value.
          */
         value: number;
     }[] {

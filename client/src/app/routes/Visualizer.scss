@@ -1,0 +1,40 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+
+.visualizer {
+  margin: 40px;
+
+  .graph-border {
+    border: 1px solid $gray;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .scene-nav-info {
+    @include font-size(12px);
+
+    margin-bottom: 10px;
+
+    color: $main-green;
+    font-family: $metropolis;
+    font-weight: bold;
+  }
+
+  .visualizer-label {
+    @include font-size(16px);
+
+    color: $gray-10;
+    font-family: $metropolis;
+    font-weight: bold;
+  }
+
+  .visualizer-value {
+    @include font-size(16px);
+
+    color: $main-green-highlight;
+    font-family: $metropolis;
+    font-weight: bold;
+  }
+}

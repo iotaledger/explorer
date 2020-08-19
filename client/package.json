@@ -21,9 +21,11 @@
         "react": "^16.13.1",
         "react-chartist": "^0.14.3",
         "react-dom": "^16.13.1",
+        "react-force-graph": "^1.36.7",
         "react-icons": "^3.10.0",
         "react-router-dom": "^5.2.0",
         "react-scripts": "^3.4.1",
+        "react-sizeme": "^2.6.12",
         "socket.io-client": "^2.3.0",
         "universal-cookie": "^4.0.3"
     },
