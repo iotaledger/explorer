@@ -35,20 +35,6 @@ export class TransactionsService {
     };
 
     /**
-     * The most recent transactions.
-     */
-    private _transactionTrytes: {
-        /**
-         * The transaction hash.
-         */
-        hash: string;
-        /**
-         * The transaction trytes.
-         */
-        trytes: string;
-    }[];
-
-    /**
      * The tps history.
      */
     private _tps: {
@@ -91,7 +77,7 @@ export class TransactionsService {
      * The callback for different events.
      */
     private readonly _subscribers: {
-        [id: string]: (data: IFeedSubscriptionMessage) => void;
+        [id: string]: (data: IFeedSubscriptionMessage) => Promise<void>;
     };
 
     /**
@@ -112,7 +98,6 @@ export class TransactionsService {
     public async init(): Promise<void> {
         this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._networkId}`);
         this._transactionValues = {};
-        this._transactionTrytes = [];
         this._tps = [];
         this._total = 0;
 
@@ -132,24 +117,16 @@ export class TransactionsService {
     }
 
     /**
-     * Find the transaction trytes for the hash.
-     * @param hash The transaction hash to look for
-     * @returns The transaction trytes if found.
-     */
-    public findTrytes(hash: string): string | undefined {
-        const found = this._transactionTrytes.find(t => t.hash === hash);
-        return found ? found.trytes : undefined;
-    }
-
-    /**
      * Subscribe to transactions feed.
      * @param id The id of the subscriber.
      * @param callback The callback to call with data for the event.
      */
-    public subscribe(id: string, callback: (data: IFeedSubscriptionMessage) => void): void {
+    public async subscribe(id: string, callback: (data: IFeedSubscriptionMessage) => Promise<void>): Promise<void> {
         this._subscribers[id] = callback;
 
-        this.updateSubscriptions(id);
+        setTimeout(async () => {
+            await this.updateSubscriptions(id);
+        }, 0);
     }
 
     /**
@@ -167,7 +144,7 @@ export class TransactionsService {
         this.stopZmq();
 
         this._subscriptionId = this._zmqService.subscribe(
-            "trytes", (evnt: string, message: ITxTrytes) => {
+            "trytes", async (evnt: string, message: ITxTrytes) => {
                 if (!this._transactionValues[message.hash]) {
                     this._total++;
                     const tx = asTransactionObject(message.trytes);
@@ -176,8 +153,6 @@ export class TransactionsService {
                         branch: tx.branchTransaction,
                         trunk: tx.trunkTransaction
                     };
-                    this._transactionTrytes.unshift({ hash: message.hash, trytes: message.trytes });
-                    this._transactionTrytes = this._transactionTrytes.slice(0, 1000);
                 }
             });
     }
@@ -199,11 +174,11 @@ export class TransactionsService {
     private startTimer(): void {
         this.stopTimer();
         this._timerId = setInterval(
-            () => {
+            async () => {
                 if (this._timerCounter++ % TransactionsService.TPS_INTERVAL === 0) {
                     this.handleTps();
                 }
-                this.updateSubscriptions();
+                await this.updateSubscriptions();
             },
             1000);
     }
@@ -222,7 +197,7 @@ export class TransactionsService {
      * Update the subscriptions with newest trytes.
      * @param singleSubscriberId Update an individual subscriber.
      */
-    private updateSubscriptions(singleSubscriberId?: string): void {
+    private async updateSubscriptions(singleSubscriberId?: string): Promise<void> {
         const now = Date.now();
 
         const tranCount = Object.keys(this._transactionValues).length;
@@ -232,7 +207,7 @@ export class TransactionsService {
             singleSubscriberId
         ) {
             let subs: {
-                [id: string]: (data: IFeedSubscriptionMessage) => void;
+                [id: string]: (data: IFeedSubscriptionMessage) => Promise<void>;
             };
 
             if (singleSubscriberId) {
@@ -251,7 +226,7 @@ export class TransactionsService {
                     tpsEnd: this._tps.length > 0 ? this._tps[0].ts : now
                 };
 
-                subs[subscriptionId](data);
+                await subs[subscriptionId](data);
             }
 
             if (!singleSubscriberId) {

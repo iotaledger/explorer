@@ -1,9 +1,7 @@
 import { composeAPI } from "@iota/core";
 import { ChronicleClient } from "../clients/chronicleClient";
-import { ServiceFactory } from "../factories/serviceFactory";
 import { TransactionsGetMode } from "../models/api/transactionsGetMode";
 import { INetwork } from "../models/db/INetwork";
-import { TransactionsService } from "../services/transactionsService";
 
 /**
  * Helper functions for use with tangle.
@@ -110,14 +108,6 @@ export class TangleHelper {
             milestoneIndex?: number;
         }[] = hashes.map((h, idx) => ({ index: idx, hash: h, milestoneIndex: -1 }));
 
-        // First check to see if we have recently processed them and stored them in memory
-        const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${network.network}`);
-        for (const allTryte of allTrytes) {
-            const trytes = transactionService.findTrytes(allTryte.hash);
-            if (trytes) {
-                allTryte.trytes = trytes;
-            }
-        }
 
         // If we have a permanode connection try there first
         if (network.permaNodeEndpoint) {

@@ -195,11 +195,13 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             }))
                             .concat({
                                 label: "Streams V0",
-                                url: `${this.state.networks[0].network}/streams/0/`
+                                url: `${this.state.networks.length > 0
+                                    ? this.state.networks[0].network : "mainnet"}/streams/0/`
                             })
                             .concat({
                                 label: "Visualizer",
-                                url: `${this.state.networks[0].network}/visualizer/`
+                                url: `${this.state.networks.length > 0
+                                    ? this.state.networks[0].network : "mainnet"}/visualizer/`
                             })
                             .concat({
                                 label: "Markets",

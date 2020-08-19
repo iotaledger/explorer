@@ -94,6 +94,8 @@ stickyCluster(
             });
         });
 
+        console.log("init service");
+
         initServices(config, cluster.isMaster || Number(process.env.stickycluster_worker_index) === 0)
             .catch(err => console.error(err));
 

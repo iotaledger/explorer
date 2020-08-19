@@ -51,7 +51,7 @@ export class ZmqService {
              * @param event The event for the subscription.
              * @param data The data for the event.
              */
-            callback(event: string, data: unknown): void;
+            callback(event: string, data: unknown): Promise<void>;
         }[];
     };
 
@@ -73,98 +73,98 @@ export class ZmqService {
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "antn", callback: (event: string, data: IAntn) => void): string;
+    public subscribe(event: "antn", callback: (event: string, data: IAntn) => Promise<void>): string;
     /**
      * Subscribe to dnscc event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "dnscc", callback: (event: string, data: IDnscc) => void): string;
+    public subscribe(event: "dnscc", callback: (event: string, data: IDnscc) => Promise<void>): string;
     /**
      * Subscribe to dnscu event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "dnscu", callback: (event: string, data: IDnscu) => void): string;
+    public subscribe(event: "dnscu", callback: (event: string, data: IDnscu) => Promise<void>): string;
     /**
      * Subscribe to dnscv event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "dnscv", callback: (event: string, data: IDnscv) => void): string;
+    public subscribe(event: "dnscv", callback: (event: string, data: IDnscv) => Promise<void>): string;
     /**
      * Subscribe to hmr event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "hmr", callback: (event: string, data: IHmr) => void): string;
+    public subscribe(event: "hmr", callback: (event: string, data: IHmr) => Promise<void>): string;
     /**
      * Subscribe to lmhs event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "lmhs", callback: (event: string, data: ILmhs) => void): string;
+    public subscribe(event: "lmhs", callback: (event: string, data: ILmhs) => Promise<void>): string;
     /**
      * Subscribe to lmi event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "lmi", callback: (event: string, data: ILmi) => void): string;
+    public subscribe(event: "lmi", callback: (event: string, data: ILmi) => Promise<void>): string;
     /**
      * Subscribe to lmsi event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "lmsi", callback: (event: string, data: ILmsi) => void): string;
+    public subscribe(event: "lmsi", callback: (event: string, data: ILmsi) => Promise<void>): string;
     /**
      * Subscribe to mctn event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "mctn", callback: (event: string, data: IMctn) => void): string;
+    public subscribe(event: "mctn", callback: (event: string, data: IMctn) => Promise<void>): string;
     /**
      * Subscribe to rntn event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "rntn", callback: (event: string, data: IRntn) => void): string;
+    public subscribe(event: "rntn", callback: (event: string, data: IRntn) => Promise<void>): string;
     /**
      * Subscribe to rstat event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "rstat", callback: (event: string, data: IRstat) => void): string;
+    public subscribe(event: "rstat", callback: (event: string, data: IRstat) => Promise<void>): string;
     /**
      * Subscribe to rtl event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "rtl", callback: (event: string, data: IRtl) => void): string;
+    public subscribe(event: "rtl", callback: (event: string, data: IRtl) => Promise<void>): string;
     /**
      * Subscribe to sn event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "sn", callback: (event: string, data: ISn) => void): string;
+    public subscribe(event: "sn", callback: (event: string, data: ISn) => Promise<void>): string;
     /**
      * Subscribe to tx event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "tx", callback: (event: string, data: ITx) => void): string;
+    public subscribe(event: "tx", callback: (event: string, data: ITx) => Promise<void>): string;
     /**
      * Subscribe to trytes event.
      * @param event The event to subscribe to.
@@ -173,7 +173,7 @@ export class ZmqService {
      */
     public subscribe(
         event: "trytes",
-        callback: (event: string, data: ITxTrytes) => void
+        callback: (event: string, data: ITxTrytes) => Promise<void>
     ): string;
     /**
      * Subscribe to named event.
@@ -184,7 +184,7 @@ export class ZmqService {
     public subscribe(
         event: ZmqEvent,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        callback: (event: string, data: any) => void
+        callback: (event: string, data: any) => Promise<void>
     ): string {
         return this.internalAddEventCallback(event, callback);
     }
@@ -197,7 +197,7 @@ export class ZmqService {
      */
     public subscribeEvent(
         event: ZmqEvent,
-        callback: (event: string, data: unknown) => void
+        callback: (event: string, data: unknown) => Promise<void>
     ): string {
         return this.internalAddEventCallback(event, callback);
     }
@@ -210,7 +210,7 @@ export class ZmqService {
      */
     public subscribeAddress(
         address: string,
-        callback: (event: string, data: IAddress) => void
+        callback: (event: string, data: IAddress) => Promise<void>
     ): string {
         if (!/^[9A-Z]{81}$/.test(address)) {
             throw new Error("The parameter 'address' must be 81 trytes.");
@@ -265,7 +265,7 @@ export class ZmqService {
                     async () => {
                         this._lastMessageTime = Date.now();
                         for await (const [msg] of this._socket) {
-                            this.handleMessage(msg);
+                            await this.handleMessage(msg);
                         }
                     },
                     500);
@@ -312,7 +312,7 @@ export class ZmqService {
      */
     private internalAddEventCallback(
         event: string,
-        callback: (event: string, data: unknown) => void
+        callback: (event: string, data: unknown) => Promise<void>
     ): string {
         if (!this._subscriptions[event]) {
             this._subscriptions[event] = [];
@@ -331,7 +331,7 @@ export class ZmqService {
      * Handle a message and send to any callbacks.
      * @param message The message to handle.
      */
-    private handleMessage(message: Buffer): void {
+    private async handleMessage(message: Buffer): Promise<void> {
         const messageContent = message.toString();
         const messageParams = messageContent.split(" ");
 
@@ -498,7 +498,7 @@ export class ZmqService {
             if (data) {
                 for (let i = 0; i < this._subscriptions[event].length; i++) {
                     try {
-                        this._subscriptions[event][i].callback(event, data);
+                        await this._subscriptions[event][i].callback(event, data);
                     } catch (err) {
                         console.error("Exception in ZMQ callback", event, data, err);
                     }
