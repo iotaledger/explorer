@@ -130,23 +130,30 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                     confirmationState = confirmationStates[i];
                 }
 
-                let inputAddresses = new Set(bundleGroupsPlain[i].filter(t => t.tx.value < 0).map(t => t.tx.address));
+                let inputAddresses = new Set(bundleGroupsPlain[i]
+                    .filter(t => t.tx.value < 0).map(t => t.tx.address));
+                const outputAddresses = new Set(bundleGroupsPlain[i]
+                    .filter(t => t.tx.value > 0).map(t => t.tx.address));
 
-                if (inputAddresses.size === 0) {
+                if (inputAddresses.size === 0 && inputAddresses.size === 0) {
                     inputAddresses = new Set(bundleGroupsPlain[i].map(t => t.tx.address));
                 }
 
                 bundleGroups.push({
-                    inputs: bundleGroupsPlain[i].filter(t => inputAddresses.has(t.tx.address)).map(t => ({
-                        details: t,
-                        valueCurrency: this._currencyData
-                            ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
-                    })),
-                    outputs: bundleGroupsPlain[i].filter(t => !inputAddresses.has(t.tx.address)).map(t => ({
-                        details: t,
-                        valueCurrency: this._currencyData
-                            ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
-                    })),
+                    inputs: bundleGroupsPlain[i]
+                        .filter(t => inputAddresses.has(t.tx.address) && t.tx.value <= 0)
+                        .map(t => ({
+                            details: t,
+                            valueCurrency: this._currencyData
+                                ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
+                        })),
+                    outputs: bundleGroupsPlain[i]
+                        .filter(t => outputAddresses.has(t.tx.address) && t.tx.value >= 0)
+                        .map(t => ({
+                            details: t,
+                            valueCurrency: this._currencyData
+                                ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
+                        })),
                     timestamp: DateHelper.milliseconds(bundleGroupsPlain[i][0].tx.timestamp === 0
                         ? bundleGroupsPlain[i][0].tx.attachmentTimestamp
                         : bundleGroupsPlain[i][0].tx.timestamp),
