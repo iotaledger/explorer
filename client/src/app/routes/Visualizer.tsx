@@ -1,40 +1,92 @@
 import React, { ReactNode } from "react";
-import { ForceGraph3D } from "react-force-graph";
 import { RouteComponentProps } from "react-router-dom";
-import { SizeMe } from "react-sizeme";
+import Viva from "vivagraphjs";
+import { buildCircleNodeShader } from "../../helpers/circleNodeShader";
 import Feeds from "../components/Feeds";
 import "./Visualizer.scss";
 import { VisualizerRouteProps } from "./VisualizerRouteProps";
 import { VisualizerState } from "./VisualizerState";
-
 
 /**
  * Component which will show the visualizer page.
  */
 class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, VisualizerState> {
     /**
+     * Maximum number of transactions.
+     */
+    private static readonly MAX_TRANSACTIONS: number = 5000;
+
+    /**
+     * Vertex colour R,G,B.
+     */
+    private static readonly EDGE_COLOR_DEFAULT: number = 0xEE;
+
+    /**
+     * Vertex size.
+     */
+    private static readonly VERTEX_SIZE: number = 20;
+
+    /**
+     * Vertex colour R.
+     */
+    private static readonly VERTEX_COLOR_DEFAULT_R: number = 0x0F;
+
+    /**
+     * Vertex colour G.
+     */
+    private static readonly VERTEX_COLOR_DEFAULT_G: number = 0xC1;
+
+    /**
+     * Vertex Colour B.
+     */
+    private static readonly VERTEX_COLOR_DEFAULT_B: number = 0xB7;
+
+    /**
+     * The graph instance.
+     */
+    private _graph?: Viva.Graph.IGraph;
+
+    /**
+     * The renderer instance.
+     */
+    private _renderer?: Viva.Graph.View.IRenderer;
+
+    /**
+     * The graphics instance.
+     */
+    private _graphics?: Viva.Graph.View.IWebGLGraphics;
+
+    /**
      * All the transactions to vizualise.
      */
-    private readonly _allTransactions: {
-        [hash: string]: {
-            /**
-             * The tx hash.
-             */
-            hash: string;
-            /**
-             * The trunk.
-             */
-            trunk?: string;
-            /**
-             * The branch.
-             */
-            branch?: string;
-            /**
-             * The transaction value.
-             */
-            value?: number;
-        };
-    };
+    private readonly _transactionHashes: string[];
+
+    /**
+     * New transactions to process.
+     */
+    private _newTransactions: {
+        /**
+         * The tx hash.
+         */
+        hash: string;
+        /**
+         * The trunk.
+         */
+        trunk: string;
+        /**
+         * The branch.
+         */
+        branch: string;
+        /**
+         * The transaction value.
+         */
+        value: number;
+    }[];
+
+    /**
+     * Timer for display updates.
+     */
+    private _drawTimer?: number;
 
     /**
      * Create a new instance of Visualizer.
@@ -43,13 +95,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     constructor(props: RouteComponentProps<VisualizerRouteProps>) {
         super(props);
 
-        this._allTransactions = {};
+        this._transactionHashes = [];
+        this._newTransactions = [];
 
         this.state = {
-            graphData: {
-                nodes: [],
-                links: []
-            },
             transactionsPerSecond: "--",
             transactionsPerSecondHistory: [],
             transactions: [],
@@ -65,11 +114,28 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
+        window.addEventListener("resize", () => {
+            if (this._graphics) {
+                this._graphics.updateSize();
+            }
+        });
+
         window.scrollTo({
             left: 0,
             top: 0,
             behavior: "smooth"
         });
+    }
+
+    /**
+     * The component will unmount so update flag.
+     */
+    public componentWillUnmount(): void {
+        super.componentWillUnmount();
+        if (this._drawTimer) {
+            cancelAnimationFrame(this._drawTimer);
+            this._drawTimer = undefined;
+        }
     }
 
     /**
@@ -87,22 +153,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     </div>
                 </div>
                 <div className="graph-border margin-t-t">
-                    <SizeMe>
-                        {params =>
-                            (
-                                <ForceGraph3D
-                                    backgroundColor="#ffffff"
-                                    graphData={this.state.graphData}
-                                    width={params.size.width ?? 1}
-                                    height={document.body.clientHeight * 0.8}
-                                    nodeAutoColorBy="timestamp"
-                                    linkOpacity={0.5}
-                                    linkWidth={1}
-                                    linkColor="#000000"
-                                    nodeVal={20}
-                                />
-                            )}
-                    </SizeMe>
+                    <div
+                        className="viva"
+                        ref={r => this.setupGraph(r)}
+                    />
                 </div>
             </div>
         );
@@ -130,52 +184,131 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
          */
         value: number;
     }[]): void {
-        const newTxs = [];
-        for (const tx of transactions) {
-            if (!this._allTransactions[tx.hash]) {
-                this._allTransactions[tx.hash] = tx;
-                newTxs.push(tx);
+        this._newTransactions = this._newTransactions.concat(transactions);
+    }
+
+    /**
+     * Setup the graph.
+     * @param graphElem The element to use.
+     */
+    private setupGraph(graphElem: HTMLElement | null): void {
+        if (graphElem && !this._graph) {
+            this._graph = Viva.Graph.graph();
+
+            this._graphics = Viva.Graph.View.webglGraphics();
+
+            const layout = Viva.Graph.Layout.forceDirected(this._graph, {
+                springLength: 10,
+                springCoeff: 0.0001,
+                stableThreshold: 0.15,
+                gravity: -2,
+                dragCoeff: 0.02,
+                timeStep: 20,
+                theta: 0.8
+            });
+
+            this._graphics.setNodeProgram(buildCircleNodeShader());
+
+            this._graphics.node(() => ({
+                size: Visualizer.VERTEX_SIZE,
+                color: `0x${Visualizer.VERTEX_COLOR_DEFAULT_R.toString(16)
+                    }${Visualizer.VERTEX_COLOR_DEFAULT_G.toString(16)
+                    }${Visualizer.VERTEX_COLOR_DEFAULT_B.toString(16)}`
+            }));
+            this._graphics.link(() => Viva.Graph.View.webglLine(`#${Visualizer.EDGE_COLOR_DEFAULT.toString(16)
+                }${Visualizer.EDGE_COLOR_DEFAULT.toString(16)
+                }${Visualizer.EDGE_COLOR_DEFAULT.toString(16)}`));
+
+            this._renderer = Viva.Graph.View.renderer(this._graph, {
+                container: graphElem,
+                graphics: this._graphics,
+                layout,
+                renderLinks: true
+            });
+
+            this._renderer.run();
+
+            for (let i = 0; i < 12; i++) {
+                this._renderer.zoomOut();
             }
+
+            this._drawTimer = requestAnimationFrame(() => this.drawUpdates());
+        }
+    }
+
+    /**
+     * Draw any updates.
+     */
+    private drawUpdates(): void {
+        if (this._graph && this._renderer && this._newTransactions.length > 0) {
+            const added: string[] = [];
+            this._graph.beginUpdate();
+
+            const txs = this._newTransactions.slice();
+            this._newTransactions = [];
+
+            const now = Date.now();
+
+            for (const tx of txs) {
+                if (!this._graph.getNode(tx.hash)) {
+                    this._graph.addNode(tx.hash, now);
+                    added.push(tx.hash);
+
+                    if (!this._graph.getNode(tx.trunk)) {
+                        this._graph.addNode(tx.trunk, now);
+                        added.push(tx.trunk);
+                    }
+
+                    this._graph.addLink(tx.trunk, tx.hash, now);
+
+                    if (tx.trunk !== tx.branch) {
+                        if (!this._graph.getNode(tx.branch)) {
+                            this._graph.addNode(tx.branch, now);
+                            added.push(tx.branch);
+                        }
+
+                        this._graph.addLink(tx.branch, tx.hash, now);
+                    }
+                }
+            }
+
+            this._transactionHashes.push(...added);
+
+            while (this._transactionHashes.length > Visualizer.MAX_TRANSACTIONS) {
+                const nodeToRemove = this._transactionHashes.shift();
+                if (nodeToRemove && !added.includes(nodeToRemove)) {
+                    this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
+                        if (this._graph) {
+                            this._graph.removeLink(link);
+
+                            if (linkedNode.links.length === 0) {
+                                this._graph.removeNode(linkedNode.id);
+                            }
+                        }
+                    });
+                    this._graph.removeNode(nodeToRemove);
+                }
+            }
+
+            this._graph.forEachNode(node => {
+                if (this._graphics) {
+                    const nodeUI = this._graphics.getNodeUI(node.id);
+                    if (nodeUI) {
+                        const timeSince = Math.min(Math.round((now - node.data) / 10000), 20);
+                        nodeUI.color = `0x${
+                            (Visualizer.VERTEX_COLOR_DEFAULT_R + timeSince).toString(16)
+                            }${(Visualizer.VERTEX_COLOR_DEFAULT_G + timeSince).toString(16)
+                            }${(Visualizer.VERTEX_COLOR_DEFAULT_B + timeSince).toString(16)}`;
+                    }
+                }
+            });
+
+            this._graph.endUpdate();
         }
 
-        const graphData = this.state.graphData;
-        const newNodes: {
-            id: string;
-            timestamp: number;
-        }[] = [];
-        const newLinks: {
-            source: string;
-            target: string;
-        }[] = [];
-
-        const now = Math.floor(Date.now() / 10000);
-
-        for (const tx of newTxs) {
-            newNodes.push({ id: tx.hash, timestamp: now });
-
-            if (!this._allTransactions[tx.branch]) {
-                newNodes.push({ id: tx.branch, timestamp: now });
-                this._allTransactions[tx.branch] = {
-                    hash: tx.branch
-                };
-            }
-            newLinks.push({ source: tx.hash, target: tx.branch });
-
-            if (!this._allTransactions[tx.trunk]) {
-                newNodes.push({ id: tx.trunk, timestamp: now });
-                this._allTransactions[tx.trunk] = {
-                    hash: tx.trunk
-                };
-            }
-            newLinks.push({ source: tx.hash, target: tx.trunk });
+        if (this._drawTimer) {
+            this._drawTimer = requestAnimationFrame(() => this.drawUpdates());
         }
-
-        this.setState({
-            graphData: {
-                nodes: graphData.nodes.concat(newNodes),
-                links: graphData.links.concat(newLinks)
-            }
-        });
     }
 }
 

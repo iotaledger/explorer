@@ -9,11 +9,6 @@ import { ZmqService } from "./zmqService";
  */
 export class TransactionsService {
     /**
-     * The transaction per second interval.
-     */
-    private static readonly TPS_INTERVAL: number = 10;
-
-    /**
      * The network configuration.
      */
     private readonly _networkId: string;
@@ -54,11 +49,6 @@ export class TransactionsService {
     private _total: number;
 
     /**
-     * The last time we sent any data.
-     */
-    private _lastSend: number;
-
-    /**
      * Subscription ids.
      */
     private _subscriptionId: string;
@@ -88,7 +78,6 @@ export class TransactionsService {
         this._networkId = networkId;
 
         this._subscribers = {};
-        this._lastSend = 0;
         this._timerCounter = 0;
     }
 
@@ -175,12 +164,12 @@ export class TransactionsService {
         this.stopTimer();
         this._timerId = setInterval(
             async () => {
-                if (this._timerCounter++ % TransactionsService.TPS_INTERVAL === 0) {
+                if (this._timerCounter++ % 10000 === 0) {
                     this.handleTps();
                 }
                 await this.updateSubscriptions();
             },
-            1000);
+            100);
     }
 
     /**
@@ -202,10 +191,7 @@ export class TransactionsService {
 
         const tranCount = Object.keys(this._transactionValues).length;
 
-        if (tranCount > 0 ||
-            (now - this._lastSend > TransactionsService.TPS_INTERVAL * 1000) ||
-            singleSubscriberId
-        ) {
+        if (tranCount > 0 || singleSubscriberId) {
             let subs: {
                 [id: string]: (data: IFeedSubscriptionMessage) => Promise<void>;
             };
@@ -231,7 +217,6 @@ export class TransactionsService {
 
             if (!singleSubscriberId) {
                 this._transactionValues = {};
-                this._lastSend = now;
             }
         }
     }
