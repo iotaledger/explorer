@@ -241,9 +241,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     private drawUpdates(): void {
         if (this._graph && this._renderer && this._newTransactions.length > 0) {
-            const added: string[] = [];
-            this._graph.beginUpdate();
-
             const txs = this._newTransactions.slice();
             this._newTransactions = [];
 
@@ -251,6 +248,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             for (const tx of txs) {
                 if (!this._graph.getNode(tx.hash)) {
+                    this._graph.beginUpdate();
+
+                    const added: string[] = [];
+
                     this._graph.addNode(tx.hash, now);
                     added.push(tx.hash);
 
@@ -269,24 +270,26 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                         this._graph.addLink(tx.branch, tx.hash, now);
                     }
-                }
-            }
 
-            this._transactionHashes.push(...added);
+                    this._transactionHashes.push(...added);
 
-            while (this._transactionHashes.length > Visualizer.MAX_TRANSACTIONS) {
-                const nodeToRemove = this._transactionHashes.shift();
-                if (nodeToRemove && !added.includes(nodeToRemove)) {
-                    this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
-                        if (this._graph) {
-                            this._graph.removeLink(link);
+                    while (this._transactionHashes.length > Visualizer.MAX_TRANSACTIONS) {
+                        const nodeToRemove = this._transactionHashes.shift();
+                        if (nodeToRemove && !added.includes(nodeToRemove)) {
+                            this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
+                                if (this._graph) {
+                                    this._graph.removeLink(link);
 
-                            if (linkedNode.links.length === 0) {
-                                this._graph.removeNode(linkedNode.id);
-                            }
+                                    if (linkedNode.links.length === 0) {
+                                        this._graph.removeNode(linkedNode.id);
+                                    }
+                                }
+                            });
+                            this._graph.removeNode(nodeToRemove);
                         }
-                    });
-                    this._graph.removeNode(nodeToRemove);
+                    }
+
+                    this._graph.endUpdate();
                 }
             }
 
@@ -302,8 +305,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     }
                 }
             });
-
-            this._graph.endUpdate();
         }
 
         if (this._drawTimer) {
