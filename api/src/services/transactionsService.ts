@@ -164,7 +164,7 @@ export class TransactionsService {
         this.stopTimer();
         this._timerId = setInterval(
             async () => {
-                if (this._timerCounter++ % 10000 === 0) {
+                if (this._timerCounter++ % 50 === 0) {
                     this.handleTps();
                 }
                 await this.updateSubscriptions();
