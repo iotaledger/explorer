@@ -103,10 +103,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                     </span>
                                 </div>
                                 <div className="info-box">
-                                    <Link to="/markets" className="info-box--title linked">
+                                    <Link
+                                        to={`/${this.props.match.params.network}/markets`}
+                                        className="info-box--title linked"
+                                    >
                                         IOTA Market Cap
                                     </Link>
-                                    <Link to="/markets" className="info-box--value linked">
+                                    <Link
+                                        to={`/${this.props.match.params.network}/markets`}
+                                        className="info-box--value linked"
+                                    >
                                         {this.state.marketCapCurrency}
                                     </Link>
                                     <span className="info-box--action">
@@ -124,10 +130,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                     </span>
                                 </div>
                                 <div className="info-box">
-                                    <Link to="/markets" className="info-box--title linked">
+                                    <Link
+                                        to={`/${this.props.match.params.network}/markets`}
+                                        className="info-box--title linked"
+                                    >
                                         Price / MI
                                     </Link>
-                                    <Link to="/markets" className="info-box--value linked">
+                                    <Link
+                                        to={`/${this.props.match.params.network}/markets`}
+                                        className="info-box--value linked"
+                                    >
                                         {this.state.priceCurrency}
                                     </Link>
                                     <span className="info-box--action">

@@ -16,13 +16,7 @@ class Footer extends Component<FooterProps, FooterState> {
     constructor(props: FooterProps) {
         super(props);
         this.state = {
-            siteFooterSection: {
-                label: "Explorer",
-                items: this.props.dynamic.map(n => ({
-                    label: n.label,
-                    url: `local://${n.url}`
-                }))
-            }
+            siteFooterSection: this.buildSiteFooter()
         };
     }
 
@@ -31,6 +25,18 @@ class Footer extends Component<FooterProps, FooterState> {
      */
     public async componentDidMount(): Promise<void> {
         this.setState({ foundationData: await FoundationDataHelper.loadData() });
+    }
+
+    /**
+     * The component updated.
+     * @param prevProps The previous properties.
+     */
+    public componentDidUpdate(prevProps: FooterProps): void {
+        if (this.props.dynamic !== prevProps.dynamic) {
+            this.setState({
+                siteFooterSection: this.buildSiteFooter()
+            });
+        }
     }
 
     /**
@@ -77,6 +83,40 @@ class Footer extends Component<FooterProps, FooterState> {
                 </div>
             </footer>
         );
+    }
+
+    /**
+     * Build the footer.
+     * @returns The footer data.
+     */
+    private buildSiteFooter(): {
+        /**
+         * The label for the section.
+         */
+        label: string;
+
+        /**
+         * The items to display in the section.
+         */
+        items: {
+            /**
+             * The label for the data.
+             */
+            label: string;
+
+            /**
+             * The url for the data.
+             */
+            url: string;
+        }[];
+    } {
+        return {
+            label: "Explorer",
+            items: this.props.dynamic.map(n => ({
+                label: n.label,
+                url: `local://${n.url}`
+            }))
+        };
     }
 }
 

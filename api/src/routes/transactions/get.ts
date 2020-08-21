@@ -29,24 +29,26 @@ export async function get(
     let modes: TransactionsGetMode[];
     let returnCursor: string | undefined;
 
-    if (request.mode) {
-        modes = [request.mode];
-    } else if (request.hash.length <= 27) {
-        modes = ["tags"];
-    } else if (request.hash.length === 90) {
-        modes = ["addresses"];
-    } else {
-        modes = ["addresses", "bundles"];
-    }
+    if (request.mode !== "transaction") {
+        if (request.mode) {
+            modes = [request.mode];
+        } else if (request.hash.length <= 27) {
+            modes = ["tags"];
+        } else if (request.hash.length === 90) {
+            modes = ["addresses"];
+        } else {
+            modes = ["addresses", "bundles"];
+        }
 
-    for (const mode of modes) {
-        const { foundHashes, cursor } = await TangleHelper.findHashes(networkConfig, mode, request.hash);
+        for (const mode of modes) {
+            const { foundHashes, cursor } = await TangleHelper.findHashes(networkConfig, mode, request.hash);
 
-        if ((foundHashes && foundHashes.length > 0)) {
-            foundMode = mode;
-            hashes = foundHashes;
-            returnCursor = cursor;
-            break;
+            if ((foundHashes && foundHashes.length > 0)) {
+                foundMode = mode;
+                hashes = foundHashes;
+                returnCursor = cursor;
+                break;
+            }
         }
     }
 

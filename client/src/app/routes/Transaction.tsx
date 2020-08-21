@@ -178,7 +178,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <ValueButton value={this.state.details.tx.value} />
                                                         </div>
                                                         <div className="col">
-                                                            <CurrencyButton value={this.state.details.tx.value} />
+                                                            <CurrencyButton
+                                                                marketsRoute={
+                                                                    `/${this.props.match.params.network}/markets`
+                                                                }
+                                                                value={this.state.details.tx.value}
+                                                            />
                                                         </div>
                                                     </div>
                                                 )}

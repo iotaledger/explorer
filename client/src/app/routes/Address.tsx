@@ -196,7 +196,10 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                     <ValueButton value={this.state.balance ?? 0} label="Balance" />
                                                 </div>
                                                 <div className="col">
-                                                    <CurrencyButton value={this.state.balance ?? 0} />
+                                                    <CurrencyButton
+                                                        marketsRoute={`/${this.props.match.params.network}/markets`}
+                                                        value={this.state.balance ?? 0}
+                                                    />
                                                 </div>
                                             </div>
                                         )}

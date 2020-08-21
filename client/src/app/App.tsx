@@ -94,13 +94,14 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
         return (
             <div className="app">
                 <Header
-                    rootPath={`/${this.props.match.params.network === "markets"
-                        ? ""
-                        : this.state.networkId}`}
-                    switcher={this.props.match.params.action && switcher}
+                    rootPath={`/${this.state.networkId}`}
+                    switcher={this.props.match.params.action &&
+                        this.props.match.params.action !== "markets" &&
+                        switcher}
                     search={this.props.match.params.action &&
                         this.props.match.params.action !== "streams" &&
-                        this.props.match.params.action !== "visualizer" && (
+                        this.props.match.params.action !== "visualizer" &&
+                        this.props.match.params.action !== "markets" && (
                             <SearchInput
                                 onSearch={query => this.setQuery(query)}
                                 compact={true}
@@ -110,7 +111,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                 <div className="content">
                     <Switch>
                         <Route
-                            path="/markets"
+                            path="/:network/markets"
                             component={() =>
                                 (
                                     <Markets />
@@ -195,17 +196,15 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             }))
                             .concat({
                                 label: "Streams V0",
-                                url: `${this.state.networks.length > 0
-                                    ? this.state.networks[0].network : "mainnet"}/streams/0/`
+                                url: `${this.state.networkId}/streams/0/`
                             })
                             .concat({
                                 label: "Visualizer",
-                                url: `${this.state.networks.length > 0
-                                    ? this.state.networks[0].network : "mainnet"}/visualizer/`
+                                url: `${this.state.networkId}/visualizer/`
                             })
                             .concat({
                                 label: "Markets",
-                                url: "markets"
+                                url: `${this.state.networkId}/markets/`
                             })
                     }
                 />

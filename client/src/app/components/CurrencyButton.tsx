@@ -52,7 +52,7 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
                     <div className="rate--label">
                         Rate
                         <Link
-                            to="/markets"
+                            to={this.props.marketsRoute}
                             className="rate--value"
                         >
                             {this.state.priceCurrency}
