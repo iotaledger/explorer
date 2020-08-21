@@ -67,6 +67,12 @@ export async function initServices(config: IConfiguration): Promise<void> {
                             networkConfig.coordinatorAddress
                         ],
                         async (network: string, msg: string) => {
+                            // Always handle on the master thread.
+                            const zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${network}`);
+                            await zmqService.handleMessage(msg);
+
+                            // Additionally process with the workers
+                            // Otherwise send them all to the worker threads
                             for (const workerId in cluster.workers) {
                                 cluster.workers[workerId].send({ action: "zmq", network, msg });
                             }
@@ -78,6 +84,7 @@ export async function initServices(config: IConfiguration): Promise<void> {
                 `zmq-${networkConfig.network}`, () => new ZmqHandlerService()
             );
 
+            // Master receives messages on the process object, workers on the cluster.worker
             (cluster.isMaster ? process : cluster.worker)
                 .on("message", async (message: { action: string; network: string; msg: string }) => {
                     if (message?.action === "zmq") {
@@ -88,7 +95,7 @@ export async function initServices(config: IConfiguration): Promise<void> {
 
             ServiceFactory.register(
                 `milestones-${networkConfig.network}`,
-                () => new MilestonesService(networkConfig.network));
+                () => new MilestonesService(networkConfig.network, cluster.isMaster));
 
 
             ServiceFactory.register(
@@ -117,13 +124,11 @@ export async function initServices(config: IConfiguration): Promise<void> {
         }
     }
 
-    ServiceFactory.register("currency", () => new CurrencyService(config));
-
     if (cluster.isMaster) {
         const UPDATE_INTERVAL_MINUTES = 240; // 4 hours
 
         const update = async () => {
-            const currencyService = ServiceFactory.get<CurrencyService>("currency");
+            const currencyService = new CurrencyService(config);
             const log = await currencyService.update();
             console.log(log);
         };

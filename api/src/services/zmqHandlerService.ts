@@ -225,7 +225,7 @@ export class ZmqHandlerService {
     public async handleMessage(message: string): Promise<void> {
         const messageParams = message.split(" ");
 
-       const event = messageParams[0];
+        const event = messageParams[0];
 
         if (this._subscriptions[event]) {
             let data;

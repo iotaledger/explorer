@@ -29,7 +29,7 @@ if (cluster.isMaster) {
 }
 
 stickyCluster(
-    callback => {
+     callback => {
         const app: Application = express();
 
         app.use(bodyParser.json({ limit: "10mb" }));

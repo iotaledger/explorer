@@ -30,7 +30,7 @@ export async function init(config: IConfiguration): Promise<string[]> {
             log += await milestoneStorageService.create();
         }
 
-        const currencyService = ServiceFactory.get<CurrencyService>("currency");
+        const currencyService = new CurrencyService(config);
         if (currencyService) {
             log += await currencyService.update(true);
         }
