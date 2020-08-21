@@ -20,8 +20,11 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
 
         this.state = {
             transactionsPerSecond: "--",
+            confirmedTransactionsPerSecond: "--",
+            confirmedTransactionsPerSecondPercent: "--",
             transactionsPerSecondHistory: [],
             transactions: [],
+            confirmed: [],
             milestones: [],
             currency: "USD",
             currencies: []
@@ -44,7 +47,7 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
                             Transactions Per Second
                         </div>
                         <div className="card--value card--value__large padding-t-s">
-                            {this.state.transactionsPerSecond}
+                            {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
                         </div>
                         <LineChart
                             values={this.state.transactionsPerSecondHistory}

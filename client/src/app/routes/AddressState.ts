@@ -72,6 +72,11 @@ export interface AddressState {
     showOnlyConfirmedTransactions: boolean;
 
     /**
+     * Total number of items.
+     */
+    totalCount?: number;
+
+    /**
      * Cursor next request.
      */
     cursor?: string;

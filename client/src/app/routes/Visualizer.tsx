@@ -19,7 +19,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Vertex colour R,G,B.
      */
-    private static readonly EDGE_COLOR_DEFAULT: number = 0xEE;
+    private static readonly EDGE_COLOR_DEFAULT: string = "#EEEEEE";
 
     /**
      * Vertex size.
@@ -29,17 +29,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Vertex colour R.
      */
-    private static readonly VERTEX_COLOR_DEFAULT_R: number = 0x0F;
+    private static readonly VERTEX_COLOR_PENDING: string = "0x8493ad";
 
     /**
-     * Vertex colour G.
+     * Vertex confirmed colour R.
      */
-    private static readonly VERTEX_COLOR_DEFAULT_G: number = 0xC1;
-
-    /**
-     * Vertex Colour B.
-     */
-    private static readonly VERTEX_COLOR_DEFAULT_B: number = 0xB7;
+    private static readonly VERTEX_COLOR_CONFIRMED: string = "0x0FC1B7";
 
     /**
      * The graph instance.
@@ -59,7 +54,16 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * All the transactions to vizualise.
      */
-    private readonly _transactionHashes: string[];
+    private readonly _transactionHashes: {
+        /**
+         * The hash of the transactions.
+         */
+        hash: string;
+        /**
+         * Is it confirmed.
+         */
+        confirmed: boolean;
+    }[];
 
     /**
      * New transactions to process.
@@ -84,6 +88,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     }[];
 
     /**
+     * New confirmed transactions.
+     */
+    private _newConfirmed: string[];
+
+    /**
      * Timer for display updates.
      */
     private _drawTimer?: number;
@@ -97,11 +106,15 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
         this._transactionHashes = [];
         this._newTransactions = [];
+        this._newConfirmed = [];
 
         this.state = {
             transactionsPerSecond: "--",
+            confirmedTransactionsPerSecond: "--",
+            confirmedTransactionsPerSecondPercent: "--",
             transactionsPerSecondHistory: [],
             transactions: [],
+            confirmed: [],
             milestones: [],
             currency: "USD",
             currencies: []
@@ -148,8 +161,16 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 <div className="row middle space-between">
                     <h1>Visualizer</h1>
                     <div className="row middle">
-                        <span className="visualizer-value margin-r-t">{this.state.transactionsPerSecond}</span>
-                        <span className="visualizer-label">TPS</span>
+                        <span className="visualizer-label margin-r-t">TPS</span>
+                        <span className="visualizer-value">
+                            {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
+                        </span>
+                    </div>
+                    <div className="row middle">
+                        <span className="visualizer-label margin-r-t">Confirmation Rate</span>
+                        <span className="visualizer-value">
+                            {this.state.confirmedTransactionsPerSecondPercent}
+                        </span>
                     </div>
                 </div>
                 <div className="graph-border margin-t-t">
@@ -188,6 +209,14 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     }
 
     /**
+     * The confirmed transactions have been updated.
+     * @param confirmed The updated confirmed transactions.
+     */
+    protected confirmedUpdated(confirmed: string[]): void {
+        this._newConfirmed = this._newConfirmed.concat(confirmed);
+    }
+
+    /**
      * Setup the graph.
      * @param graphElem The element to use.
      */
@@ -211,13 +240,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             this._graphics.node(() => ({
                 size: Visualizer.VERTEX_SIZE,
-                color: `0x${Visualizer.VERTEX_COLOR_DEFAULT_R.toString(16)
-                    }${Visualizer.VERTEX_COLOR_DEFAULT_G.toString(16)
-                    }${Visualizer.VERTEX_COLOR_DEFAULT_B.toString(16)}`
+                color: Visualizer.VERTEX_COLOR_PENDING
             }));
-            this._graphics.link(() => Viva.Graph.View.webglLine(`#${Visualizer.EDGE_COLOR_DEFAULT.toString(16)
-                }${Visualizer.EDGE_COLOR_DEFAULT.toString(16)
-                }${Visualizer.EDGE_COLOR_DEFAULT.toString(16)}`));
+            this._graphics.link(() => Viva.Graph.View.webglLine(Visualizer.EDGE_COLOR_DEFAULT));
 
             this._renderer = Viva.Graph.View.renderer(this._graph, {
                 container: graphElem,
@@ -244,7 +269,15 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             const txs = this._newTransactions.slice();
             this._newTransactions = [];
 
-            const now = Date.now();
+            const confirmed = this._newConfirmed.slice();
+            this._newConfirmed = [];
+
+            for (const sn of confirmed) {
+                const node = this._graph.getNode(sn);
+                if (node) {
+                    node.data = true;
+                }
+            }
 
             for (const tx of txs) {
                 if (!this._graph.getNode(tx.hash)) {
@@ -252,31 +285,31 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                     const added: string[] = [];
 
-                    this._graph.addNode(tx.hash, now);
+                    this._graph.addNode(tx.hash, false);
                     added.push(tx.hash);
 
                     if (!this._graph.getNode(tx.trunk)) {
-                        this._graph.addNode(tx.trunk, now);
+                        this._graph.addNode(tx.trunk, false);
                         added.push(tx.trunk);
                     }
 
-                    this._graph.addLink(tx.trunk, tx.hash, now);
+                    this._graph.addLink(tx.trunk, tx.hash, false);
 
                     if (tx.trunk !== tx.branch) {
                         if (!this._graph.getNode(tx.branch)) {
-                            this._graph.addNode(tx.branch, now);
+                            this._graph.addNode(tx.branch, false);
                             added.push(tx.branch);
                         }
 
-                        this._graph.addLink(tx.branch, tx.hash, now);
+                        this._graph.addLink(tx.branch, tx.hash, false);
                     }
 
-                    this._transactionHashes.push(...added);
+                    this._transactionHashes.push(...added.map(a => ({ hash: a, confirmed: false })));
 
                     while (this._transactionHashes.length > Visualizer.MAX_TRANSACTIONS) {
                         const nodeToRemove = this._transactionHashes.shift();
-                        if (nodeToRemove && !added.includes(nodeToRemove)) {
-                            this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
+                        if (nodeToRemove && !added.includes(nodeToRemove.hash)) {
+                            this._graph.forEachLinkedNode(nodeToRemove.hash, (linkedNode, link) => {
                                 if (this._graph) {
                                     this._graph.removeLink(link);
 
@@ -285,7 +318,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     }
                                 }
                             });
-                            this._graph.removeNode(nodeToRemove);
+                            this._graph.removeNode(nodeToRemove.hash);
                         }
                     }
 
@@ -297,11 +330,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 if (this._graphics) {
                     const nodeUI = this._graphics.getNodeUI(node.id);
                     if (nodeUI) {
-                        const timeSince = Math.min(Math.round((now - node.data) / 10000), 20);
-                        nodeUI.color = `0x${
-                            (Visualizer.VERTEX_COLOR_DEFAULT_R + timeSince).toString(16)
-                            }${(Visualizer.VERTEX_COLOR_DEFAULT_G + timeSince).toString(16)
-                            }${(Visualizer.VERTEX_COLOR_DEFAULT_B + timeSince).toString(16)}`;
+                        nodeUI.color = node.data
+                            ? Visualizer.VERTEX_COLOR_CONFIRMED
+                            : Visualizer.VERTEX_COLOR_PENDING;
                     }
                 }
             });

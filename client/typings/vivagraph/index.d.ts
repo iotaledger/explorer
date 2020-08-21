@@ -18,7 +18,7 @@ declare module "vivagraphjs" {
             getLink: (nodeA: string, nodeB: string) => ILink | undefined;
             addLink: (nodeA: string, nodeB: string, data?: any) => void;
             removeLink: (link: ILink) => void;
-            getNode: (node: string) => string | undefined;
+            getNode: (node: string) => INode | undefined;
             addNode: (node: string, data?: any) => void;
             removeNode: (node: string) => void;
 

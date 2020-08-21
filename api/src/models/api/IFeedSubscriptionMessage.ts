@@ -25,17 +25,32 @@ export interface IFeedSubscriptionMessage {
     };
 
     /**
-     * The start timestamp for the tps.
+     * The confirmed transactions.
      */
-    tpsStart: number;
+    confirmed: string[];
 
     /**
-     * The end timestamp for the tps.
+     * The tps data.
      */
-    tpsEnd: number;
+    tps: {
+        /**
+         * The start timestamp for the tps.
+         */
+        start: number;
 
-    /**
-     * The tps counts.
-     */
-    tps: number[];
+        /**
+         * The end timestamp for the tps.
+         */
+        end: number;
+
+        /**
+         * The tps counts.
+         */
+        tx: number[];
+
+        /**
+         * The confirmed tps counts.
+         */
+        sn: number[];
+    };
 }

@@ -35,12 +35,15 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             valueMaximumUnits: Unit.Ti,
             valueFilter: "both",
             transactionsPerSecond: "--",
+            confirmedTransactionsPerSecond: "--",
+            confirmedTransactionsPerSecondPercent: "--",
             transactionsPerSecondHistory: [],
             marketCapEUR: 0,
             marketCapCurrency: "--",
             priceEUR: 0,
             priceCurrency: "--",
             transactions: [],
+            confirmed: [],
             filteredTransactions: [],
             milestones: [],
             currency: "USD",
@@ -87,8 +90,17 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                             <div className="row space-between info-boxes">
                                 <div className="info-box">
                                     <span className="info-box--title">Transactions per Second</span>
-                                    <span className="info-box--value">{this.state.transactionsPerSecond}</span>
-                                    <span className="info-box--action">&nbsp;</span>
+                                    <span className="info-box--value">
+                                        {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
+                                    </span>
+                                    <span className="info-box--action info-box--action__labelvalue">
+                                        <span className="info-box--action__label margin-r-t">
+                                            Confirmation Rate:
+                                        </span>
+                                        <span className="info-box--action__value">
+                                            {this.state.confirmedTransactionsPerSecondPercent}
+                                        </span>
+                                    </span>
                                 </div>
                                 <div className="info-box">
                                     <Link to="/markets" className="info-box--title linked">

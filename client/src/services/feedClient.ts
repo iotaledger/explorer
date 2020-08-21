@@ -47,19 +47,34 @@ export class FeedClient {
     }[];
 
     /**
+     * The confirmed transactions.
+     */
+    private _confirmed: string[];
+
+    /**
      * The tps.
      */
-    private _tps: number[];
+    private _tps: {
+        /**
+         * The start timestamp for the tps.
+         */
+        start: number;
 
-    /**
-     * The tps start.
-     */
-    private _tpsStart: number;
+        /**
+         * The end timestamp for the tps.
+         */
+        end: number;
 
-    /**
-     * The tps start.
-     */
-    private _tpsEnd: number;
+        /**
+         * The tps counts.
+         */
+        tx: number[];
+
+        /**
+         * The confirmed tps counts.
+         */
+        sn: number[];
+    };
 
     /**
      * The subscription id.
@@ -90,9 +105,14 @@ export class FeedClient {
         });
 
         this._transactions = [];
-        this._tps = [];
-        this._tpsStart = 0;
-        this._tpsEnd = 0;
+        this._confirmed = [];
+        this._tps = {
+            start: 0,
+            end: 0,
+            tx: [],
+            sn: []
+        };
+
         this._subscribers = {};
     }
 
@@ -120,8 +140,7 @@ export class FeedClient {
                 this._socket.on("transactions", async (transactionsResponse: IFeedSubscriptionMessage) => {
                     if (transactionsResponse.subscriptionId === this._subscriptionId) {
                         this._tps = transactionsResponse.tps;
-                        this._tpsStart = transactionsResponse.tpsStart;
-                        this._tpsEnd = transactionsResponse.tpsEnd;
+                        this._confirmed = transactionsResponse.confirmed;
 
                         const newHashes = transactionsResponse.transactions;
                         if (newHashes) {
@@ -215,26 +234,55 @@ export class FeedClient {
     }
 
     /**
+     * Get the confirmed transactions as hashes.
+     * @returns The hahes.
+     */
+    public getConfirmedTransactions(): string[] {
+        return this._confirmed;
+    }
+
+    /**
      * Get the tps history array.
      * @returns The tps.
      */
-    public getTpsHistory(): number[] {
-        return this._tps;
+    public getTxTpsHistory(): number[] {
+        return this._tps.tx;
     }
 
     /**
      * Calculate the tps.
      * @returns The tps.
      */
-    public getTps(): number {
+    public getTps(): {
+        /**
+         * Transactions count per second.
+         */
+        tx: number;
+        /**
+         * Confirmed count per second.
+         */
+        sn: number;
+    } {
+        let txTps = -1;
+        let snTps = -1;
+
         const tps = this._tps;
-        if (tps && tps.length > 0) {
-            const spanS = (this._tpsEnd - this._tpsStart) / 1000;
+        if (tps) {
+            const spanS = (this._tps.end - this._tps.start) / 1000;
             if (spanS > 0) {
-                const total = tps.reduce((a, b) => a + b, 0);
-                return total / spanS;
+                if (tps.tx.length > 0) {
+                    const txTotal = tps.tx.reduce((a, b) => a + b, 0);
+                    txTps = txTotal / spanS;
+                }
+                if (tps.sn.length > 0) {
+                    const snTotal = tps.sn.reduce((a, b) => a + b, 0);
+                    snTps = snTotal / spanS;
+                }
             }
         }
-        return -1;
+        return {
+            tx: txTps,
+            sn: snTps
+        };
     }
 }

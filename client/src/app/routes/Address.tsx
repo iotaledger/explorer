@@ -87,7 +87,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                     balance
                 },
                 async () => {
-                    const { hashes, cursor } = await this._tangleCacheService.findTransactionHashes(
+                    const { hashes, cursor, totalCount } = await this._tangleCacheService.findTransactionHashes(
                         this.props.match.params.network,
                         "addresses",
                         this.props.match.params.hash,
@@ -114,7 +114,8 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                             filteredItems,
                             status,
                             statusBusy: status.length > 0 ? -1 : 1,
-                            cursor
+                            cursor,
+                            totalCount
                         },
                         async () => {
                             if (hashes) {
@@ -265,6 +266,9 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                                 (
                                                                     `${this.state.filteredItems.length} of `
                                                                 )}
+                                                            {this.state.totalCount &&
+                                                                this.state.totalCount > this.state.items.length
+                                                                ? "> " : ""}
                                                             {this.state.items.length}
                                                         </span>
                                                     )}

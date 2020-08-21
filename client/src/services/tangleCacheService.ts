@@ -59,6 +59,10 @@ export class TangleCacheService {
                      */
                     transactionHashes: string[];
                     /**
+                     * The total count.
+                     */
+                    totalCount: number;
+                    /**
                      * The time of cache.
                      */
                     cached: number;
@@ -174,10 +178,13 @@ export class TangleCacheService {
          */
         hashes: string[];
         /**
+         * The total number of transactions.
+         */
+        totalCount: number;
+        /**
          * The detected hash type.
          */
         hashType?: TransactionsGetMode;
-
         /**
          * Cursor returned from the request.
          */
@@ -186,6 +193,7 @@ export class TangleCacheService {
         let transactionHashes: string[] | undefined = [];
         let doLookup = true;
         let cursor: string | undefined;
+        let totalCount: number = 0;
 
         const findCache = this._findCache[networkId];
         const tranCache = this._transactionCache[networkId];
@@ -210,6 +218,7 @@ export class TangleCacheService {
                     if (Date.now() - cacheHashType[hash].cached < 60000) {
                         doLookup = false;
                         transactionHashes = cacheHashType[hash].transactionHashes.slice();
+                        totalCount = cacheHashType[hash].totalCount;
                     }
                 }
             }
@@ -231,13 +240,15 @@ export class TangleCacheService {
                 if ((response.hashes && response.hashes.length > 0)) {
                     transactionHashes = response.hashes ?? [];
                     hashType = hashType ?? response.mode;
+                    totalCount = response.total ?? 0;
 
                     if (findCache && hashType) {
                         const cacheHashType = findCache[hashType];
                         if (cacheHashType) {
                             cacheHashType[hash] = {
                                 transactionHashes,
-                                cached: Date.now()
+                                cached: Date.now(),
+                                totalCount
                             };
                         }
                     }
@@ -250,6 +261,7 @@ export class TangleCacheService {
 
         return {
             hashes: transactionHashes || [],
+            totalCount,
             hashType,
             cursor
         };

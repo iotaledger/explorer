@@ -104,6 +104,13 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     }
 
     /**
+     * The confirmed transactions have been updated.
+     * @param confirmed The updated confirmed transactions.
+     */
+    protected confirmedUpdated(confirmed: string[]): void {
+    }
+
+    /**
      * Build the feeds for transactions.
      */
     private buildTransactions(): void {
@@ -157,13 +164,18 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     private updateTransactions(): void {
         if (this._isMounted && this._feedClient) {
             const transactions = this._feedClient.getTransactions();
-            const tpsHistory = this._feedClient.getTpsHistory();
+            const confirmed = this._feedClient.getConfirmedTransactions();
+            const tpsHistory = this._feedClient.getTxTpsHistory();
 
             this.setState({
                 transactions,
+                confirmed,
                 // Increase values by +100 to add more area under the graph
                 transactionsPerSecondHistory: tpsHistory.reverse().map(v => v + 100)
-            }, () => this.transactionsUpdated(transactions));
+            }, () => {
+                this.transactionsUpdated(transactions);
+                this.confirmedUpdated(confirmed);
+            });
         }
     }
 
@@ -175,7 +187,10 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             const tps = this._feedClient.getTps();
 
             this.setState({
-                transactionsPerSecond: tps >= 0 ? tps.toFixed(2) : "--"
+                transactionsPerSecond: tps.tx >= 0 ? tps.tx.toFixed(2) : "--",
+                confirmedTransactionsPerSecond: tps.sn >= 0 ? tps.sn.toFixed(2) : "--",
+                confirmedTransactionsPerSecondPercent: tps.tx > 0
+                    ? `${(tps.sn / tps.tx * 100).toFixed(2)}%` : "--"
             });
         }
     }

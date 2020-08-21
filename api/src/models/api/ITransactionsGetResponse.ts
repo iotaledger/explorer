@@ -13,6 +13,11 @@ export interface ITransactionsGetResponse extends IResponse {
     mode?: TransactionsGetMode;
 
     /**
+     * The total number of transactions.
+     */
+    total?: number;
+
+    /**
      * Cursor to use for subsequent requests.
      */
     cursor?: string;
