@@ -67,14 +67,18 @@ export async function initServices(config: IConfiguration): Promise<void> {
                             networkConfig.coordinatorAddress
                         ],
                         async (network: string, msg: string) => {
-                            // Always handle on the master thread.
-                            const zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${network}`);
-                            await zmqService.handleMessage(msg);
+                            try {
+                                // Always handle on the master thread.
+                                const zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${network}`);
+                                await zmqService.handleMessage(msg);
 
-                            // Additionally process with the workers
-                            // Otherwise send them all to the worker threads
-                            for (const workerId in cluster.workers) {
-                                cluster.workers[workerId].send({ action: "zmq", network, msg });
+                                // Additionally process with the workers
+                                // Otherwise send them all to the worker threads
+                                for (const workerId in cluster.workers) {
+                                    cluster.workers[workerId].send({ action: "zmq", network, msg });
+                                }
+                            } catch (err) {
+                                console.error("ZMQ Master callback", err);
                             }
                         })
                 );

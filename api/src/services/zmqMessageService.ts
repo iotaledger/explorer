@@ -73,20 +73,25 @@ export class ZmqMessageService {
                 // it will block this method
                 setTimeout(
                     async () => {
-                        this._lastMessageTime = Date.now();
-                        for await (const [msg] of this._socket) {
-                            await this._masterCallback(this._network, msg.toString());
+                        try {
+                            this._lastMessageTime = Date.now();
+                            for await (const [msg] of this._socket) {
+                                await this._masterCallback(this._network, msg.toString());
+                            }
+                        } catch (err) {
+                            console.error("ZMQ Listening", err);
                         }
                     },
                     500);
             }
-        } catch {
+        } catch (err) {
+            console.error("ZMQ Connecting", err);
             this.disconnect();
         }
     }
 
     /**
-     * Disconnect the ZQM service.
+     * Disconnect the ZMQ service.
      */
     public disconnect(): void {
         const localSocket = this._socket;
