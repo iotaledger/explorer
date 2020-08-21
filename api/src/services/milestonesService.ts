@@ -3,7 +3,7 @@ import { IMilestoneStore } from "../models/db/IMilestoneStore";
 import { IStorageService } from "../models/services/IStorageService";
 import { IAddress } from "../models/zmq/IAddress";
 import { NetworkService } from "./networkService";
-import { ZmqService } from "./zmqService";
+import { ZmqHandlerService } from "./zmqHandlerService";
 
 /**
  * Class to handle milestones service.
@@ -17,7 +17,7 @@ export class MilestonesService {
     /**
      * The zmq service.
      */
-    private _zmqService: ZmqService;
+    private _zmqService: ZmqHandlerService;
 
     /**
      * The milestone store service.
@@ -70,7 +70,7 @@ export class MilestonesService {
      * Initialise the milestones.
      */
     public async init(): Promise<void> {
-        this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._networkId}`);
+        this._zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${this._networkId}`);
         this._milestones = [];
 
         this._milestoneStorageService = ServiceFactory.get<IStorageService<IMilestoneStore>>("milestone-storage");

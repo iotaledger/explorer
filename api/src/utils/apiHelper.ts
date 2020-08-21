@@ -1,6 +1,5 @@
 import { join } from "path";
 import { inspect } from "util";
-import { initServices } from "../initServices";
 import { IDataResponse } from "../models/api/IDataResponse";
 import { IResponse } from "../models/api/IResponse";
 import { IHttpRequest } from "../models/app/IHttpRequest";
@@ -67,8 +66,6 @@ export function findRoute(findRoutes: IRoute[], url: string, method: string): {
  * @param route The route.
  * @param pathParams The params extracted from the url.
  * @param verboseLogging Log full details of requests.
- * @param globalInitServices The services have already been initialised.
- * @param logHook Optional hook for logging errors.
  */
 export async function executeRoute(
     req: IHttpRequest,
@@ -76,9 +73,7 @@ export async function executeRoute(
     config: IConfiguration,
     route: IRoute,
     pathParams: { [id: string]: string },
-    verboseLogging: boolean,
-    globalInitServices: boolean = false,
-    logHook?: (message: string, statusCode: number, params: unknown) => Promise<void>): Promise<void> {
+    verboseLogging: boolean): Promise<void> {
     let response: IResponse;
     const start = Date.now();
     let filteredParams;
@@ -117,9 +112,6 @@ export async function executeRoute(
             }
             if (mod) {
                 if (mod[route.func]) {
-                    if (!globalInitServices) {
-                        await initServices(config, true);
-                    }
                     response = await mod[route.func](config, params, body, req.headers || {});
                     status = 200;
                 } else {
@@ -134,9 +126,6 @@ export async function executeRoute(
                 response = { error: `Route '${route.path}' module '${modulePath}' failed to load` };
             }
         } else if (route.inline) {
-            if (!globalInitServices) {
-                await initServices(config, true);
-            }
             response = await route.inline(config, params, body, req.headers || {});
             status = 200;
         } else {
@@ -146,9 +135,6 @@ export async function executeRoute(
     } catch (err) {
         status = err.httpCode || 400;
         response = { error: err.message };
-        if (logHook) {
-            await logHook(err.message, status, filteredParams);
-        }
     }
 
     if (verboseLogging || response.error) {

@@ -3,7 +3,7 @@ import { ServiceFactory } from "../factories/serviceFactory";
 import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
 import { ISn } from "../models/zmq/ISn";
 import { ITxTrytes } from "../models/zmq/ITxTrytes";
-import { ZmqService } from "./zmqService";
+import { ZmqHandlerService } from "./zmqHandlerService";
 
 /**
  * Class to handle transactions service.
@@ -17,7 +17,7 @@ export class TransactionsService {
     /**
      * The zmq service.
      */
-    private _zmqService: ZmqService;
+    private _zmqService: ZmqHandlerService;
 
     /**
      * The most recent transactions.
@@ -105,7 +105,7 @@ export class TransactionsService {
      * Initialise the service.
      */
     public async init(): Promise<void> {
-        this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._networkId}`);
+        this._zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${this._networkId}`);
         this._txValues = {};
         this._tps = [];
         this._totalTxs = 0;

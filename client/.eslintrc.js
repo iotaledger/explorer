@@ -776,7 +776,7 @@ module.exports = {
             "error"
         ],
         "no-loop-func": [
-            "error"
+            "off"
         ],
         "no-loss-of-precision": [
             "off"

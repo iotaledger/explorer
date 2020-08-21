@@ -1,4 +1,3 @@
-import { Subscriber } from "zeromq";
 import { IAddress } from "../models/zmq/IAddress";
 import { IAntn } from "../models/zmq/IAntn";
 import { IDnscc } from "../models/zmq/IDnscc";
@@ -19,28 +18,13 @@ import { ZmqEvent } from "../models/zmq/zmqEvents";
 import { TrytesHelper } from "../utils/trytesHelper";
 
 /**
- * Class to handle ZMQ service.
+ * Class to handle ZMQ messages.
  */
-export class ZmqService {
-    /**
-     * The configuration for the service.
-     */
-    private readonly _endpoint: string;
-
-    /**
-     * The connected socket.
-     */
-    private _socket?: Subscriber;
-
-    /**
-     * Last time a message was received.
-     */
-    private _lastMessageTime: number;
-
+export class ZmqHandlerService {
     /**
      * The callback for different events.
      */
-    private readonly _subscriptions: {
+    protected readonly _subscriptions: {
         [event: string]: {
             /**
              * The id of the subscription.
@@ -56,15 +40,10 @@ export class ZmqService {
     };
 
     /**
-     * Create a new instance of ZmqService.
-     * @param endpoint The gateway for the zmq service.
+     * Create a new instance of ZmqSubscriberService.
      */
-    constructor(endpoint: string) {
-        this._endpoint = endpoint;
+    constructor() {
         this._subscriptions = {};
-        this._lastMessageTime = 0;
-
-        setInterval(() => this.keepAlive(), 15000);
     }
 
     /**
@@ -231,10 +210,6 @@ export class ZmqService {
                 if (this._subscriptions[eventKey][j].id === subscriptionId) {
                     this._subscriptions[eventKey].splice(j, 1);
                     if (this._subscriptions[eventKey].length === 0) {
-                        if (this._socket) {
-                            this._socket.unsubscribe(eventKey);
-                        }
-
                         delete this._subscriptions[eventKey];
                     }
                     return;
@@ -244,100 +219,13 @@ export class ZmqService {
     }
 
     /**
-     * Connect the ZMQ service.
-     */
-    public connect(): void {
-        try {
-            if (!this._socket) {
-                this._socket = new Subscriber();
-                this._socket.connect(this._endpoint);
-
-                const keys = Object.keys(this._subscriptions);
-                for (let i = 0; i < keys.length; i++) {
-                    this._socket.subscribe(keys[i]);
-                }
-
-                this._lastMessageTime = Date.now();
-
-                // Run this as a background task otherwise
-                // it will block this method
-                setTimeout(
-                    async () => {
-                        this._lastMessageTime = Date.now();
-                        for await (const [msg] of this._socket) {
-                            await this.handleMessage(msg);
-                        }
-                    },
-                    500);
-            }
-        } catch {
-            this.disconnect();
-        }
-    }
-
-    /**
-     * Disconnect the ZQM service.
-     */
-    public disconnect(): void {
-        const localSocket = this._socket;
-        this._socket = undefined;
-        if (localSocket) {
-            try {
-                const keys = Object.keys(this._subscriptions);
-                for (let i = 0; i < keys.length; i++) {
-                    localSocket.unsubscribe(keys[i]);
-                }
-
-                localSocket.close();
-            } catch {
-            }
-        }
-    }
-
-    /**
-     * Keep the connection alive.
-     */
-    private keepAlive(): void {
-        if (Date.now() - this._lastMessageTime > 15000) {
-            this.disconnect();
-            this.connect();
-        }
-    }
-
-    /**
-     * Add a callback for the event.
-     * @param event The event to add the callback for.
-     * @param callback The callback to store for the event.
-     * @returns The id of the subscription.
-     */
-    private internalAddEventCallback(
-        event: string,
-        callback: (event: string, data: unknown) => Promise<void>
-    ): string {
-        if (!this._subscriptions[event]) {
-            this._subscriptions[event] = [];
-            if (this._socket) {
-                this._socket.subscribe(event);
-            }
-        }
-        const id = TrytesHelper.generateHash(27);
-
-        this._subscriptions[event].push({ id, callback });
-
-        return id;
-    }
-
-    /**
      * Handle a message and send to any callbacks.
      * @param message The message to handle.
      */
-    private async handleMessage(message: Buffer): Promise<void> {
-        const messageContent = message.toString();
-        const messageParams = messageContent.split(" ");
+    public async handleMessage(message: string): Promise<void> {
+        const messageParams = message.split(" ");
 
-        this._lastMessageTime = Date.now();
-
-        const event = messageParams[0];
+       const event = messageParams[0];
 
         if (this._subscriptions[event]) {
             let data;
@@ -505,5 +393,26 @@ export class ZmqService {
                 }
             }
         }
+    }
+
+    /**
+     * Add a callback for the event.
+     * @param event The event to add the callback for.
+     * @param callback The callback to store for the event.
+     * @returns The id of the subscription.
+     */
+    protected internalAddEventCallback(
+        event: string,
+        callback: (event: string, data: unknown) => Promise<void>
+    ): string {
+        if (!this._subscriptions[event]) {
+            this._subscriptions[event] = [];
+        }
+
+        const id = TrytesHelper.generateHash(27);
+
+        this._subscriptions[event].push({ id, callback });
+
+        return id;
     }
 }

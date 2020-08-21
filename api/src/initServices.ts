@@ -1,4 +1,5 @@
 
+import cluster from "cluster";
 import { ServiceFactory } from "./factories/serviceFactory";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { ICurrencyState } from "./models/db/ICurrencyState";
@@ -11,14 +12,14 @@ import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesService } from "./services/milestonesService";
 import { NetworkService } from "./services/networkService";
 import { TransactionsService } from "./services/transactionsService";
-import { ZmqService } from "./services/zmqService";
+import { ZmqHandlerService } from "./services/zmqHandlerService";
+import { ZmqMessageService } from "./services/zmqMessageService";
 
 /**
  * Initialise all the services.
  * @param config The configuration to initialisation the service with.
- * @param runBackgroundProcesses Should we run background services.
  */
-export async function initServices(config: IConfiguration, runBackgroundProcesses: boolean): Promise<void> {
+export async function initServices(config: IConfiguration): Promise<void> {
     if (config.rootStorageFolder) {
         ServiceFactory.register("network-storage", () => new LocalStorageService<INetwork>(
             config.rootStorageFolder, "network", "network"));
@@ -54,10 +55,36 @@ export async function initServices(config: IConfiguration, runBackgroundProcesse
 
     for (const networkConfig of networks) {
         if (networkConfig.zmqEndpoint) {
+            if (cluster.isMaster) {
+                ServiceFactory.register(
+                    `zmq-message-${networkConfig.network}`,
+                    () => new ZmqMessageService(
+                        networkConfig.zmqEndpoint,
+                        networkConfig.network,
+                        [
+                            "sn",
+                            "trytes",
+                            networkConfig.coordinatorAddress
+                        ],
+                        async (network: string, msg: string) => {
+                            for (const workerId in cluster.workers) {
+                                cluster.workers[workerId].send({ action: "zmq", network, msg });
+                            }
+                        })
+                );
+            }
+
             ServiceFactory.register(
-                `zmq-${networkConfig.network}`,
-                () => new ZmqService(networkConfig.zmqEndpoint)
+                `zmq-${networkConfig.network}`, () => new ZmqHandlerService()
             );
+
+            (cluster.isMaster ? process : cluster.worker)
+                .on("message", async (message: { action: string; network: string; msg: string }) => {
+                    if (message?.action === "zmq") {
+                        const zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${message.network}`);
+                        await zmqService.handleMessage(message.msg);
+                    }
+                });
 
             ServiceFactory.register(
                 `milestones-${networkConfig.network}`,
@@ -71,9 +98,11 @@ export async function initServices(config: IConfiguration, runBackgroundProcesse
     }
 
     for (const networkConfig of networks) {
-        const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
-        if (zmqService) {
-            zmqService.connect();
+        if (cluster.isMaster) {
+            const zmqService = ServiceFactory.get<ZmqMessageService>(`zmq-message-${networkConfig.network}`);
+            if (zmqService) {
+                zmqService.connect();
+            }
         }
 
         const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
@@ -90,7 +119,7 @@ export async function initServices(config: IConfiguration, runBackgroundProcesse
 
     ServiceFactory.register("currency", () => new CurrencyService(config));
 
-    if (runBackgroundProcesses) {
+    if (cluster.isMaster) {
         const UPDATE_INTERVAL_MINUTES = 240; // 4 hours
 
         const update = async () => {

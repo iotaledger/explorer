@@ -24,6 +24,8 @@ const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 4000;
 if (cluster.isMaster) {
     console.log(`Running Config '${configId}'`);
     console.log(`API port ${port}`);
+
+    initServices(config).catch(err => console.log(err));
 }
 
 stickyCluster(
@@ -53,8 +55,7 @@ stickyCluster(
                     config,
                     route,
                     req.params,
-                    config.verboseLogging,
-                    true);
+                    config.verboseLogging);
             });
         }
 
@@ -94,9 +95,7 @@ stickyCluster(
             });
         });
 
-        console.log("init service");
-
-        initServices(config, cluster.isMaster || Number(process.env.stickycluster_worker_index) === 0)
+        initServices(config)
             .catch(err => console.error(err));
 
         callback(server);
