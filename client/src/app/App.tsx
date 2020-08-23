@@ -220,7 +220,8 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
      */
     private setNetwork(network: string | undefined, updateLocation: boolean): void {
         if (!network) {
-            network = this.state.networks[0].network;
+            network = this.state.networks && this.state.networks.length > 0
+                ? this.state.networks[0].network : "mainnet";
             updateLocation = true;
         }
         const hasChanged = network !== this.state.networkId;

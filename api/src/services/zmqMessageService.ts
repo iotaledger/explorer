@@ -112,7 +112,7 @@ export class ZmqMessageService {
      * Keep the connection alive.
      */
     private keepAlive(): void {
-        if (Date.now() - this._lastMessageTime > 15000) {
+        if (Date.now() - this._lastMessageTime > 30000) {
             this.disconnect();
             this.connect();
         }
