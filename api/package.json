@@ -35,7 +35,6 @@
         "express": "^4.17.1",
         "node-fetch": "^2.6.0",
         "socket.io": "^2.3.0",
-        "sticky-cluster": "^0.3.5",
         "zeromq": "^6.0.0-beta.6"
     },
     "devDependencies": {

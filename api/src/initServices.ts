@@ -55,51 +55,42 @@ export async function initServices(config: IConfiguration): Promise<void> {
 
     for (const networkConfig of networks) {
         if (networkConfig.zmqEndpoint) {
-            if (cluster.isMaster) {
-                ServiceFactory.register(
-                    `zmq-message-${networkConfig.network}`,
-                    () => new ZmqMessageService(
-                        networkConfig.zmqEndpoint,
-                        networkConfig.network,
-                        [
-                            "sn",
-                            "trytes",
-                            networkConfig.coordinatorAddress
-                        ],
-                        async (network: string, msg: string) => {
-                            try {
-                                // Always handle on the master thread.
-                                const zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${network}`);
-                                await zmqService.handleMessage(msg);
+            ServiceFactory.register(
+                `zmq-message-${networkConfig.network}`,
+                () => new ZmqMessageService(
+                    networkConfig.zmqEndpoint,
+                    networkConfig.network,
+                    [
+                        "sn",
+                        "trytes",
+                        networkConfig.coordinatorAddress
+                    ],
+                    async (network: string, msg: string) => {
+                        try {
+                            // Always handle on the master thread.
+                            const zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${network}`);
+                            await zmqService.handleMessage(msg);
 
-                                // Additionally process with the workers
-                                // Otherwise send them all to the worker threads
-                                for (const workerId in cluster.workers) {
-                                    cluster.workers[workerId].send({ action: "zmq", network, msg });
-                                }
-                            } catch (err) {
-                                console.error("ZMQ Master callback", err);
+                            // Additionally process with the workers
+                            // Otherwise send them all to the worker threads
+                            for (const workerId in cluster.workers) {
+                                cluster.workers[workerId].send({ action: "zmq", network, msg });
                             }
-                        })
-                );
-            }
+                        } catch (err) {
+                            console.error("ZMQ Master callback", err);
+                        }
+                    })
+            );
+
 
             ServiceFactory.register(
                 `zmq-${networkConfig.network}`, () => new ZmqHandlerService()
             );
 
-            // Master receives messages on the process object, workers on the cluster.worker
-            (cluster.isMaster ? process : cluster.worker)
-                .on("message", async (message: { action: string; network: string; msg: string }) => {
-                    if (message?.action === "zmq") {
-                        const zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${message.network}`);
-                        await zmqService.handleMessage(message.msg);
-                    }
-                });
 
             ServiceFactory.register(
                 `milestones-${networkConfig.network}`,
-                () => new MilestonesService(networkConfig.network, cluster.isMaster));
+                () => new MilestonesService(networkConfig.network, true));
 
 
             ServiceFactory.register(
@@ -109,11 +100,9 @@ export async function initServices(config: IConfiguration): Promise<void> {
     }
 
     for (const networkConfig of networks) {
-        if (cluster.isMaster) {
-            const zmqService = ServiceFactory.get<ZmqMessageService>(`zmq-message-${networkConfig.network}`);
-            if (zmqService) {
-                zmqService.connect();
-            }
+        const zmqService = ServiceFactory.get<ZmqMessageService>(`zmq-message-${networkConfig.network}`);
+        if (zmqService) {
+            zmqService.connect();
         }
 
         const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
@@ -128,19 +117,17 @@ export async function initServices(config: IConfiguration): Promise<void> {
         }
     }
 
-    if (cluster.isMaster) {
-        const UPDATE_INTERVAL_MINUTES = 240; // 4 hours
+    const UPDATE_INTERVAL_MINUTES = 240; // 4 hours
 
-        const update = async () => {
-            const currencyService = new CurrencyService(config);
-            const log = await currencyService.update();
-            console.log(log);
-        };
+    const update = async () => {
+        const currencyService = new CurrencyService(config);
+        const log = await currencyService.update();
+        console.log(log);
+    };
 
-        setInterval(
-            update,
-            UPDATE_INTERVAL_MINUTES * 60000);
+    setInterval(
+        update,
+        UPDATE_INTERVAL_MINUTES * 60000);
 
-        await update();
-    }
+    await update();
 }
