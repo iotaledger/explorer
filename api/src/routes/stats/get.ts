@@ -2,8 +2,8 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IStatsGetRequest } from "../../models/api/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/IStatsGetResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
-import { TransactionsService } from "../../services/TransactionsService";
 import { NetworkService } from "../../services/networkService";
+import { TransactionsService } from "../../services/transactionsService";
 import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
