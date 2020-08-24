@@ -15,9 +15,9 @@ export class MilestonesService {
     private readonly _networkId: string;
 
     /**
-     * Is this the master thread.
+     * Should this service do the store as well.
      */
-    private readonly _isMaster: boolean;
+    private readonly _performStore: boolean;
 
     /**
      * The zmq service.
@@ -66,11 +66,11 @@ export class MilestonesService {
     /**
      * Create a new instance of MilestoneService.
      * @param networkId The network configuration.
-     * @param isMaster Is this the master thread.
+     * @param performStore Should this instance save in store.
      */
-    constructor(networkId: string, isMaster: boolean) {
+    constructor(networkId: string, performStore: boolean) {
         this._networkId = networkId;
-        this._isMaster = isMaster;
+        this._performStore = performStore;
     }
 
     /**
@@ -151,7 +151,7 @@ export class MilestonesService {
                             this._milestones = this._milestones.slice(0, 100);
 
                             // Only save to storage on the master thread
-                            if (this._milestoneStorageService && this._isMaster) {
+                            if (this._milestoneStorageService && this._performStore) {
                                 this._milestoneStorageService.set({
                                     network: this._networkId,
                                     indexes: this._milestones

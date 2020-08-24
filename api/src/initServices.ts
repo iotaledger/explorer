@@ -16,10 +16,113 @@ import { ZmqHandlerService } from "./services/zmqHandlerService";
 import { ZmqMessageService } from "./services/zmqMessageService";
 
 /**
- * Initialise all the services.
+ * Initialise the services for master.
  * @param config The configuration to initialisation the service with.
  */
-export async function initServices(config: IConfiguration): Promise<void> {
+export async function initMasterServices(config: IConfiguration) {
+    registerStorageServices(config);
+
+    const networkService = new NetworkService();
+    await networkService.buildCache();
+    const networks = networkService.networks();
+
+    for (const networkConfig of networks) {
+        if (networkConfig.zmqEndpoint) {
+            const zmqService = new ZmqMessageService(
+                networkConfig.zmqEndpoint,
+                networkConfig.network,
+                [
+                    "sn",
+                    "trytes",
+                    networkConfig.coordinatorAddress
+                ],
+                async (network: string, msg: string) => {
+                    // Send the message to all the worker threads.
+                    for (const workerId in cluster.workers) {
+                        cluster.workers[workerId].send({ action: "zmq", network, msg });
+                    }
+                });
+
+            zmqService.connect();
+        }
+    }
+
+    const UPDATE_INTERVAL_MINUTES = 240; // 4 hours
+
+    const update = async () => {
+        const currencyService = new CurrencyService(config);
+        const log = await currencyService.update();
+        console.log(log);
+    };
+
+    setInterval(
+        update,
+        UPDATE_INTERVAL_MINUTES * 60000);
+
+    await update();
+}
+
+/**
+ * Initialise all the services for the workers.
+ * @param config The configuration to initialisation the service with.
+ * @param singleInstanceOp Run the primary services.
+ */
+export async function initWorkerServices(config: IConfiguration,
+    singleInstanceOp: boolean) {
+    registerStorageServices(config);
+
+    const networkService = new NetworkService();
+    ServiceFactory.register("network", () => networkService);
+
+    await networkService.buildCache();
+
+    const networks = networkService.networks();
+
+    for (const networkConfig of networks) {
+        if (networkConfig.zmqEndpoint) {
+            ServiceFactory.register(
+                `zmq-${networkConfig.network}`, () => new ZmqHandlerService()
+            );
+
+            ServiceFactory.register(
+                `milestones-${networkConfig.network}`,
+                () => new MilestonesService(networkConfig.network, singleInstanceOp));
+
+
+            ServiceFactory.register(
+                `transactions-${networkConfig.network}`,
+                () => new TransactionsService(networkConfig.network));
+        }
+    }
+
+    for (const networkConfig of networks) {
+        const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
+        if (milestonesService) {
+            await milestonesService.init();
+        }
+
+        const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
+
+        if (transactionService) {
+            await transactionService.init();
+        }
+    }
+
+    // Master receives messages on the process object, workers on the cluster.worker
+    (cluster.isMaster ? process : cluster.worker)
+        .on("message", async (message: { action: string; network: string; msg: string }) => {
+            if (message?.action === "zmq") {
+                const zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${message.network}`);
+                await zmqService.handleMessage(message.msg);
+            }
+        });
+}
+
+/**
+ * Register the storage services.
+ * @param config The config.
+ */
+function registerStorageServices(config: IConfiguration): void {
     if (config.rootStorageFolder) {
         ServiceFactory.register("network-storage", () => new LocalStorageService<INetwork>(
             config.rootStorageFolder, "network", "network"));
@@ -45,89 +148,4 @@ export async function initServices(config: IConfiguration): Promise<void> {
         ServiceFactory.register("market-storage", () => new AmazonDynamoDbService<IMarket>(
             config.dynamoDbConnection, "market", "currency"));
     }
-
-    const networkService = new NetworkService();
-    ServiceFactory.register("network", () => networkService);
-
-    await networkService.buildCache();
-
-    const networks = networkService.networks();
-
-    for (const networkConfig of networks) {
-        if (networkConfig.zmqEndpoint) {
-            ServiceFactory.register(
-                `zmq-message-${networkConfig.network}`,
-                () => new ZmqMessageService(
-                    networkConfig.zmqEndpoint,
-                    networkConfig.network,
-                    [
-                        "sn",
-                        "trytes",
-                        networkConfig.coordinatorAddress
-                    ],
-                    async (network: string, msg: string) => {
-                        try {
-                            // Always handle on the master thread.
-                            const zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${network}`);
-                            await zmqService.handleMessage(msg);
-
-                            // Additionally process with the workers
-                            // Otherwise send them all to the worker threads
-                            for (const workerId in cluster.workers) {
-                                cluster.workers[workerId].send({ action: "zmq", network, msg });
-                            }
-                        } catch (err) {
-                            console.error("ZMQ Master callback", err);
-                        }
-                    })
-            );
-
-
-            ServiceFactory.register(
-                `zmq-${networkConfig.network}`, () => new ZmqHandlerService()
-            );
-
-
-            ServiceFactory.register(
-                `milestones-${networkConfig.network}`,
-                () => new MilestonesService(networkConfig.network, true));
-
-
-            ServiceFactory.register(
-                `transactions-${networkConfig.network}`,
-                () => new TransactionsService(networkConfig.network));
-        }
-    }
-
-    for (const networkConfig of networks) {
-        const zmqService = ServiceFactory.get<ZmqMessageService>(`zmq-message-${networkConfig.network}`);
-        if (zmqService) {
-            zmqService.connect();
-        }
-
-        const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
-        if (milestonesService) {
-            await milestonesService.init();
-        }
-
-        const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
-
-        if (transactionService) {
-            await transactionService.init();
-        }
-    }
-
-    const UPDATE_INTERVAL_MINUTES = 240; // 4 hours
-
-    const update = async () => {
-        const currencyService = new CurrencyService(config);
-        const log = await currencyService.update();
-        console.log(log);
-    };
-
-    setInterval(
-        update,
-        UPDATE_INTERVAL_MINUTES * 60000);
-
-    await update();
 }
