@@ -69,6 +69,7 @@ declare module "vivagraphjs" {
                 } | undefined;
                 setNodeProgram: (program: WebGLProgram) => void;
                 updateSize: () => void;
+                scale: (scale: number, offset: { x: number; y: number }) => void;
             }
 
             export interface IRenderer {
@@ -77,6 +78,10 @@ declare module "vivagraphjs" {
                 getLayout: () => Layout.ILayout;
                 rerender: () => void;
                 zoomOut: () => void;
+                reset: () => void;
+                getTransform: () => { scale?: number; offset?: { x: number; y: number } };
+
+                on: (event: "scale", callback: (scale: number) => void) => void;
             }
             function webglGraphics(): IWebGLGraphics;
             function webglLine(color: string): IItem;

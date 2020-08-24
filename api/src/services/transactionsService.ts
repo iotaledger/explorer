@@ -150,6 +150,52 @@ export class TransactionsService {
     }
 
     /**
+     * Get the current stats.
+     * @returns The statistics for the network.
+     */
+    public getStats(): {
+        /**
+         * The transations per second.
+         */
+        tps: number;
+        /**
+         * The confirmed transations per second.
+         */
+        ctps: number;
+        /**
+         * The confirmed rate.
+         */
+        confirmationRate: number;
+    } {
+        let txTps = 0;
+        let snTps = 0;
+
+        const now = Date.now();
+
+        const start = this._tps.length > 0 ? this._tps[this._tps.length - 1].ts : now;
+        const end = this._tps.length > 0 ? this._tps[0].ts : now;
+
+        const tps = this._tps;
+        if (tps) {
+            const spanS = (end - start) / 1000;
+            if (spanS > 0) {
+                if (this._tps.length > 0) {
+                    const txTotal = tps.map(t => t.tx).reduce((a, b) => a + b, 0);
+                    txTps = txTotal / spanS;
+
+                    const snTotal = tps.map(t => t.sn).reduce((a, b) => a + b, 0);
+                    snTps = snTotal / spanS;
+                }
+            }
+        }
+        return {
+            tps: Number.parseFloat(txTps.toFixed(2)),
+            ctps: Number.parseFloat(snTps.toFixed(2)),
+            confirmationRate: Number.parseFloat((txTps > 0 ? snTps / txTps * 100 : 0).toFixed(2))
+        };
+    }
+
+    /**
      * Start the zmq services.
      */
     private startZmq(): void {

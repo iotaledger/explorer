@@ -98,6 +98,16 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private _drawTimer?: number;
 
     /**
+     * The resize method
+     */
+    private readonly _resize: () => void;
+
+    /**
+     * The graph element.
+     */
+    private _graphElement: HTMLElement | null;
+
+    /**
      * Create a new instance of Visualizer.
      * @param props The props.
      */
@@ -108,6 +118,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         this._newTransactions = [];
         this._newConfirmed = [];
 
+        this._graphElement = null;
+        this._resize = () => this.resize();
+
         this.state = {
             transactionsPerSecond: "--",
             confirmedTransactionsPerSecond: "--",
@@ -117,7 +130,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             confirmed: [],
             milestones: [],
             currency: "USD",
-            currencies: []
+            currencies: [],
+            transactionCount: 0
         };
     }
 
@@ -127,11 +141,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
-        window.addEventListener("resize", () => {
-            if (this._graphics) {
-                this._graphics.updateSize();
-            }
-        });
+        window.addEventListener("resize", this._resize);
 
         window.scrollTo({
             left: 0,
@@ -149,6 +159,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             cancelAnimationFrame(this._drawTimer);
             this._drawTimer = undefined;
         }
+        this._graphElement = null;
+        window.removeEventListener("resize", this._resize);
     }
 
     /**
@@ -158,26 +170,39 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     public render(): ReactNode {
         return (
             <div className="visualizer">
-                <div className="row middle space-between">
-                    <h1>Visualizer</h1>
-                    <div className="row middle">
+                <div className="row middle space-between row--tablet-responsive">
+                    <h1 className="margin-r-t margin-b-t">Visualizer</h1>
+                    <div className="row middle margin-b-t">
                         <span className="visualizer-label margin-r-t">TPS</span>
                         <span className="visualizer-value">
                             {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
                         </span>
                     </div>
-                    <div className="row middle">
+                    <div className="row middle margin-b-t">
                         <span className="visualizer-label margin-r-t">Confirmation Rate</span>
                         <span className="visualizer-value">
                             {this.state.confirmedTransactionsPerSecondPercent}
                         </span>
                     </div>
                 </div>
-                <div className="graph-border margin-t-t">
+                <div className="graph-border">
                     <div
                         className="viva"
                         ref={r => this.setupGraph(r)}
                     />
+                </div>
+                <div className="row row--tablet-responsive middle space-between">
+                    <div className="row middle margin-t-s">
+                        <div className="visualizer--key visualizer--key__label">Key</div>
+                        <div className="visualizer--key visualizer--key__value pending">Pending</div>
+                        <div className="visualizer--key visualizer--key__value confirmed">Confirmed</div>
+                    </div>
+                    <div className="row middle margin-t-s">
+                        <span className="visualizer-value margin-r-t">
+                            {this.state.transactionCount}
+                        </span>
+                        <span className="visualizer-label">Transactions</span>
+                    </div>
                 </div>
             </div>
         );
@@ -221,6 +246,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @param graphElem The element to use.
      */
     private setupGraph(graphElem: HTMLElement | null): void {
+        this._graphElement = graphElem;
+
         if (graphElem && !this._graph) {
             this._graph = Viva.Graph.graph();
 
@@ -253,6 +280,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             this._renderer.run();
 
+            this._graphics.scale(1, { x: graphElem.clientWidth / 2, y: graphElem.clientHeight / 2 });
+
             for (let i = 0; i < 12; i++) {
                 this._renderer.zoomOut();
             }
@@ -266,7 +295,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     private drawUpdates(): void {
         if (this._graph && this._renderer && this._newTransactions.length > 0) {
-            const txs = this._newTransactions.slice();
+            const txs = this._newTransactions.slice(0, 100);
             this._newTransactions = [];
 
             const confirmed = this._newConfirmed.slice();
@@ -323,6 +352,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     }
 
                     this._graph.endUpdate();
+
+                    this.setState({ transactionCount: this._transactionHashes.length });
                 }
             }
 
@@ -340,6 +371,19 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
         if (this._drawTimer) {
             this._drawTimer = requestAnimationFrame(() => this.drawUpdates());
+        }
+    }
+
+    /**
+     * The window was resized.
+     */
+    private resize(): void {
+        if (this._graphElement) {
+            if (this._graphics) {
+                this._graphics.updateSize();
+                this._graphics.scale(1,
+                    { x: this._graphElement.clientWidth / 2, y: this._graphElement.clientHeight / 2 });
+            }
         }
     }
 }

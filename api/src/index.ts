@@ -106,7 +106,7 @@ stickyCluster(
     },
     {
         // We keep 1 cpu for master processing
-        concurrency: Math.max(1, configId === "local" ? 4 : os.cpus().length - 1),
+        concurrency: Math.max(1, configId === "local" ? 1 : os.cpus().length - 1),
         port
     }
 );

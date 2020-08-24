@@ -40,4 +40,26 @@
     font-family: $metropolis;
     font-weight: bold;
   }
+
+  .visualizer--key {
+    @include font-size(16px);
+
+    margin-right: 10px;
+    padding: 6px;
+    font-family: $metropolis;
+    font-weight: bold;
+
+    &.visualizer--key__value {
+      border-radius: 6px;
+      color: $white;
+
+      &.pending {
+        background-color: $gray;
+      }
+
+      &.confirmed {
+        background-color: $main-green;
+      }
+    }
+  }
 }
