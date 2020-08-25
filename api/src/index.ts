@@ -56,15 +56,18 @@ const sockets: {
 } = {};
 
 socketServer.on("connection", socket => {
+    console.log("Socket::Connection", socket.id);
     socket.on("subscribe", async (data: IFeedSubscribeRequest) => {
         const response = await subscribe(config, socket, data);
         if (!response.error) {
             sockets[socket.id] = data.network;
         }
+        console.log("Socket::Subscribe", socket.id, response.subscriptionId);
         socket.emit("subscribe", response);
     });
 
     socket.on("unsubscribe", data => {
+        console.log("Socket::Subscribe", socket.id, data.subscriptionId);
         const response = unsubscribe(config, socket, data);
         if (sockets[socket.id]) {
             delete sockets[socket.id];
@@ -73,6 +76,7 @@ socketServer.on("connection", socket => {
     });
 
     socket.on("disconnect", async () => {
+        console.log("Socket::Disconnect", socket.id);
         if (sockets[socket.id]) {
             await unsubscribe(config, socket, {
                 subscriptionId: sockets[socket.id],

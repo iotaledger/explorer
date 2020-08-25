@@ -6,10 +6,10 @@ network:
   session_affinity: true
 
 manual_scaling:
-  instances: 2
+  instances: 1
 
 resources:
-  cpu: 2
+  cpu: 4
   memory_gb: 4
   disk_size_gb: 10
 
