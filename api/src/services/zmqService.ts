@@ -81,6 +81,7 @@ export class ZmqService {
     public connect(): void {
         try {
             if (!this._socket) {
+                console.log("ZMQ::Connect", this._endpoint);
                 this._socket = new Subscriber();
                 this._socket.connect(this._endpoint);
 
@@ -100,13 +101,13 @@ export class ZmqService {
                                 await this.handleMessage(msg.toString());
                             }
                         } catch (err) {
-                            console.error("ZMQ Listening", err);
+                            console.error("ZMQ::Listening", err);
                         }
                     },
                     500);
             }
         } catch (err) {
-            console.error("ZMQ Connecting", err);
+            console.error("ZMQ::Connect Error", err);
             this.disconnect();
         }
     }
@@ -119,6 +120,8 @@ export class ZmqService {
         this._socket = undefined;
         if (localSocket) {
             try {
+                console.log("ZMQ::Disconnect", this._endpoint);
+
                 for (const event of this._events) {
                     localSocket.unsubscribe(event);
                 }
@@ -308,6 +311,8 @@ export class ZmqService {
     public async handleMessage(message: string): Promise<void> {
         const messageParams = message.split(" ");
 
+        this._lastMessageTime = Date.now();
+
         const event = messageParams[0];
 
         if (this._subscriptions[event]) {
@@ -471,7 +476,7 @@ export class ZmqService {
                     try {
                         await this._subscriptions[event][i].callback(event, data);
                     } catch (err) {
-                        console.error("Exception in ZMQ callback", event, data, err);
+                        console.error("ZMQ::Callback Error", event, data, err);
                     }
                 }
             }
@@ -504,6 +509,7 @@ export class ZmqService {
      */
     private keepAlive(): void {
         if (Date.now() - this._lastMessageTime > 30000) {
+            console.log("ZMQ::KeepAlive");
             this.disconnect();
             this.connect();
         }
