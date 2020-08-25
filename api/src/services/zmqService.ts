@@ -1,3 +1,4 @@
+import { Subscriber } from "zeromq";
 import { IAddress } from "../models/zmq/IAddress";
 import { IAntn } from "../models/zmq/IAntn";
 import { IDnscc } from "../models/zmq/IDnscc";
@@ -18,13 +19,23 @@ import { ZmqEvent } from "../models/zmq/zmqEvents";
 import { TrytesHelper } from "../utils/trytesHelper";
 
 /**
- * Class to handle ZMQ messages.
+ * Class to handle ZMQ service.
  */
-export class ZmqHandlerService {
+export class ZmqService {
+    /**
+     * The configuration for the service.
+     */
+    private readonly _endpoint: string;
+
+    /**
+     * The events to subscribe to.
+     */
+    private readonly _events: string[];
+
     /**
      * The callback for different events.
      */
-    protected readonly _subscriptions: {
+    private readonly _subscriptions: {
         [event: string]: {
             /**
              * The id of the subscription.
@@ -40,10 +51,82 @@ export class ZmqHandlerService {
     };
 
     /**
-     * Create a new instance of ZmqSubscriberService.
+     * The connected socket.
      */
-    constructor() {
+    private _socket?: Subscriber;
+
+    /**
+     * Last time a message was received.
+     */
+    private _lastMessageTime: number;
+
+    /**
+     * Create a new instance of ZmqService.
+     * @param endpoint The gateway for the zmq service.
+     * @param events The events to subscribe to.
+     */
+    constructor(endpoint: string, events: string[]) {
+        this._endpoint = endpoint;
+        this._events = events;
+        this._lastMessageTime = 0;
+
         this._subscriptions = {};
+
+        setInterval(() => this.keepAlive(), 15000);
+    }
+
+    /**
+     * Connect the ZMQ service.
+     */
+    public connect(): void {
+        try {
+            if (!this._socket) {
+                this._socket = new Subscriber();
+                this._socket.connect(this._endpoint);
+
+                for (const event of this._events) {
+                    this._socket.subscribe(event);
+                }
+
+                this._lastMessageTime = Date.now();
+
+                // Run this as a background task otherwise
+                // it will block this method
+                setTimeout(
+                    async () => {
+                        try {
+                            this._lastMessageTime = Date.now();
+                            for await (const [msg] of this._socket) {
+                                await this.handleMessage(msg.toString());
+                            }
+                        } catch (err) {
+                            console.error("ZMQ Listening", err);
+                        }
+                    },
+                    500);
+            }
+        } catch (err) {
+            console.error("ZMQ Connecting", err);
+            this.disconnect();
+        }
+    }
+
+    /**
+     * Disconnect the ZMQ service.
+     */
+    public disconnect(): void {
+        const localSocket = this._socket;
+        this._socket = undefined;
+        if (localSocket) {
+            try {
+                for (const event of this._events) {
+                    localSocket.unsubscribe(event);
+                }
+
+                localSocket.close();
+            } catch {
+            }
+        }
     }
 
     /**
@@ -414,5 +497,15 @@ export class ZmqHandlerService {
         this._subscriptions[event].push({ id, callback });
 
         return id;
+    }
+
+    /**
+     * Keep the connection alive.
+     */
+    private keepAlive(): void {
+        if (Date.now() - this._lastMessageTime > 30000) {
+            this.disconnect();
+            this.connect();
+        }
     }
 }

@@ -11,8 +11,7 @@ import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesService } from "./services/milestonesService";
 import { NetworkService } from "./services/networkService";
 import { TransactionsService } from "./services/transactionsService";
-import { ZmqHandlerService } from "./services/zmqHandlerService";
-import { ZmqMessageService } from "./services/zmqMessageService";
+import { ZmqService } from "./services/zmqService";
 
 /**
  * Initialise all the services for the workers.
@@ -31,7 +30,12 @@ export async function initServices(config: IConfiguration) {
     for (const networkConfig of networks) {
         if (networkConfig.zmqEndpoint) {
             ServiceFactory.register(
-                `zmq-${networkConfig.network}`, () => new ZmqHandlerService()
+                `zmq-${networkConfig.network}`, () => new ZmqService(
+                    networkConfig.zmqEndpoint, [
+                    "sn",
+                    "trytes",
+                    networkConfig.coordinatorAddress
+                ])
             );
 
             ServiceFactory.register(
@@ -57,23 +61,9 @@ export async function initServices(config: IConfiguration) {
             await transactionService.init();
         }
 
-        if (networkConfig.zmqEndpoint) {
-            const zmqMessageService = new ZmqMessageService(
-                networkConfig.zmqEndpoint,
-                networkConfig.network,
-                [
-                    "sn",
-                    "trytes",
-                    networkConfig.coordinatorAddress
-                ],
-                async (network: string, msg: string) => {
-                    const zmqService = ServiceFactory.get<ZmqHandlerService>(`zmq-${network}`);
-                    await zmqService.handleMessage(msg);
-                });
-
-            ServiceFactory.register(`zmq-message-${networkConfig.network}`, () => zmqMessageService);
-
-            zmqMessageService.connect();
+        const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
+        if (zmqService) {
+            zmqService.connect();
         }
     }
 

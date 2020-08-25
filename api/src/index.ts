@@ -90,6 +90,7 @@ server.listen(port, async () => {
     try {
         console.log("Initializing Services");
         await initServices(config);
+        console.log("Services Initialized");
     } catch (err) {
         console.error(err);
     }
