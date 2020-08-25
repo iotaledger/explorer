@@ -295,8 +295,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     private drawUpdates(): void {
         if (this._graph && this._renderer && this._newTransactions.length > 0) {
-            const txs = this._newTransactions.slice(0, 100);
-            this._newTransactions = [];
+            const consumeLength = Math.floor(this._newTransactions.length / 50);
+            const txs = this._newTransactions.slice(0, consumeLength);
+            this._newTransactions = this._newTransactions.slice(consumeLength);
 
             const confirmed = this._newConfirmed.slice();
             this._newConfirmed = [];
