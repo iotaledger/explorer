@@ -1,4 +1,5 @@
-import { asTransactionObject } from "@iota/transaction-converter";
+import { trytesToTrits, value } from "@iota/converter";
+import { VALUE_LENGTH, VALUE_OFFSET } from "@iota/transaction";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
 import { ISn } from "../models/zmq/ISn";
@@ -23,12 +24,11 @@ export class TransactionsService {
      * The most recent transactions.
      */
     private _txValues: {
-        [hash: string]: {
-            trunk: string;
-            branch: string;
-            value: number;
-        };
-    };
+        hash: string;
+        trunk: string;
+        branch: string;
+        value: number;
+    }[];
 
     /**
      * The transaction tps history.
@@ -106,7 +106,7 @@ export class TransactionsService {
      */
     public async init(): Promise<void> {
         this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._networkId}`);
-        this._txValues = {};
+        this._txValues = [];
         this._tps = [];
         this._totalTxs = 0;
 
@@ -203,15 +203,17 @@ export class TransactionsService {
 
         this._trytesSubId = this._zmqService.subscribe(
             "trytes", async (evnt: string, message: ITxTrytes) => {
-                if (!this._txValues[message.hash]) {
-                    this._totalTxs++;
-                    const tx = asTransactionObject(message.trytes);
-                    this._txValues[message.hash] = {
-                        value: tx.value,
-                        branch: tx.branchTransaction,
-                        trunk: tx.trunkTransaction
-                    };
-                }
+                this._totalTxs++;
+                const val = value(trytesToTrits(message.trytes.slice(VALUE_OFFSET, VALUE_OFFSET + VALUE_LENGTH)));
+                const trunk = message.trytes.slice(2430, 2511);
+                const branch = message.trytes.slice(2511, 2592);
+
+                this._txValues.push({
+                    hash: message.hash,
+                    value: val,
+                    branch,
+                    trunk
+                });
             });
 
         this._confirmedSubId = this._zmqService.subscribe(
@@ -304,7 +306,7 @@ export class TransactionsService {
             }
 
             if (!singleSubscriberId) {
-                this._txValues = {};
+                this._txValues = [];
                 this._confirmedHashes = [];
             }
         }

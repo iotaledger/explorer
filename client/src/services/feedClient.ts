@@ -47,6 +47,11 @@ export class FeedClient {
     }[];
 
     /**
+     * Existing hashes.
+     */
+    private _existingHashes: string[];
+
+    /**
      * The confirmed transactions.
      */
     private _confirmed: string[];
@@ -106,6 +111,7 @@ export class FeedClient {
 
         this._transactions = [];
         this._confirmed = [];
+        this._existingHashes = [];
         this._tps = {
             start: 0,
             end: 0,
@@ -144,17 +150,9 @@ export class FeedClient {
 
                         const newHashes = transactionsResponse.transactions;
                         if (newHashes) {
-                            const newHashKeys = Object.keys(newHashes);
-                            for (const newHashKey of newHashKeys) {
-                                if (this._transactions.findIndex(t => t.hash === newHashKey) === -1) {
-                                    this._transactions.unshift({
-                                        hash: newHashKey,
-                                        value: newHashes[newHashKey].value,
-                                        trunk: newHashes[newHashKey].trunk,
-                                        branch: newHashes[newHashKey].branch
-                                    });
-                                }
-                            }
+                            this._transactions = newHashes
+                                .filter(nh => !this._existingHashes.includes(nh.hash))
+                                .concat(this._transactions);
 
                             let removeItems: {
                                 hash: string;
@@ -173,6 +171,7 @@ export class FeedClient {
                             }
 
                             this._transactions = this._transactions.filter(t => !removeItems.includes(t));
+                            this._existingHashes = this._transactions.map(t => t.hash);
                         }
 
                         for (const sub in this._subscribers) {
