@@ -63,8 +63,8 @@ export async function get(
 
     return {
         mode: foundMode,
-        hashes: hashes.slice(0, 250),
-        total: hashes.length,
+        hashes: hashes ? hashes.slice(0, 250) : [],
+        total: hashes ? hashes.length : 0,
         cursor: returnCursor
     };
 }

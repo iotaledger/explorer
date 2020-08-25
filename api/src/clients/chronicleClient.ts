@@ -32,11 +32,18 @@ export class ChronicleClient {
                 this._endpoint,
                 "",
                 "post",
-                { ...{ command: "getTrytes" }, ...request },
+                {
+                    command: "getTrytes",
+                    hashes: request.hashes
+                },
                 {
                     "X-IOTA-API-Version": "1"
                 }
             );
+
+            if (response.error) {
+                console.error(response.error);
+            }
 
             return response;
         } catch (err) {

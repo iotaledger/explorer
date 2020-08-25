@@ -7,5 +7,10 @@ export interface IGetTrytesResponse {
     /**
      * The transaction milestones for the requested hashes.
      */
-    milestones: number[];
+    milestones: (number | null)[];
+
+    /**
+     * Error.
+     */
+    error?: string;
 }
