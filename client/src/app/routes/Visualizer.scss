@@ -9,10 +9,10 @@
   .graph-border {
     display: flex;
     position: relative;
+    flex: 1;
     align-items: stretch;
     justify-content: stretch;
-    height: 80vh;
-    border: 1px solid $gray;
+    height: 70vh;
     border-radius: 6px;
     overflow: hidden;
 
@@ -38,54 +38,40 @@
     }
   }
 
-  .visualizer-container {
-    min-width: 200px;
-  }
+  .sidepanel-border {
+    width: 220px;
+    border-radius: 6px;
+    background: #ffffff;
 
-  .visualizer-label {
-    @include font-size(16px);
+    @media (max-width: 1000px) {
+      &.tablet-hidden {
+        display: none;
+      }
+    }
 
-    color: $gray-10;
-    font-family: $metropolis;
-    font-weight: bold;
-  }
-
-  .visualizer-value {
-    @include font-size(16px);
-
-    color: $main-green-highlight;
-    font-family: $metropolis;
-    font-weight: bold;
-
-    &.visualizer-value__small {
+    .visualizer--key {
       @include font-size(12px);
 
-      word-break: break-all;
-    }
-  }
+      margin-right: 10px;
+      font-family: $metropolis;
 
-  .visualizer--key {
-    @include font-size(16px);
+      &.visualizer--key__value {
+        padding: 6px;
+        border-radius: 6px;
+        color: $white;
+        text-align: center;
 
-    margin-right: 10px;
-    font-family: $metropolis;
-    font-weight: bold;
+        &.pending {
+          background-color: $gray;
+        }
 
-    &.visualizer--key__value {
-      padding: 6px;
-      border-radius: 6px;
-      color: $white;
+        &.confirmed-value {
+          background-color: #e79c18;
+        }
 
-      &.pending {
-        background-color: $gray;
-      }
-
-      &.confirmed-value {
-        background-color: #e79c18;
-      }
-
-      &.confirmed-zero {
-        background-color: $main-green;
+        &.confirmed-zero {
+          background-color: $main-green;
+        }
       }
     }
   }

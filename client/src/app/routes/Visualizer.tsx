@@ -183,59 +183,66 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         return (
             <div className="visualizer">
                 <h1 className="margin-r-t margin-b-t">Visualizer</h1>
-                <div className="row middle space-between row--tablet-responsive">
-                    <div className="row middle visualizer-container margin-b-t">
-                        <span className="visualizer-label margin-r-t">Transactions</span>
-                        <span className="visualizer-value">
-                            {this.state.transactionCount}
-                        </span>
-                    </div>
-                    <div className="row middle visualizer-container margin-b-t">
-                        <span className="visualizer-label margin-r-t">TPS</span>
-                        <span className="visualizer-value">
-                            {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
-                        </span>
-                    </div>
-                    <div className="row middle visualizer-container margin-b-t">
-                        <span className="visualizer-label margin-r-t">Confirmation Rate</span>
-                        <span className="visualizer-value">
-                            {this.state.confirmedTransactionsPerSecondPercent}
-                        </span>
-                    </div>
-                </div>
-                <div className="graph-border">
-                    <div
-                        className="viva"
-                        ref={r => this.setupGraph(r)}
-                    />
-                </div>
-                <div className="row row--tablet-responsive middle space-between">
-                    <div className="row middle margin-t-s">
-                        <span className="visualizer-label margin-r-t">Selected</span>
-                        <span className="visualizer-value visualizer-value__small">
-                            {this.state.selectedNode}
-                        </span>
-                    </div>
-                    <div className="row middle margin-t-s">
-                        <span className="visualizer-label margin-r-t">Value</span>
-                        <span className="visualizer-value">
-                            {this.state.selectedNodeValue}
-                        </span>
-                    </div>
-                </div>
-                <div className="row row--tablet-responsive middle space-between">
-                    <div className="row middle wrap">
-                        <div className="visualizer--key visualizer--key__label margin-t-t">Key</div>
-                        <div className="visualizer--key visualizer--key__value pending margin-t-t">
-                            Pending
+                <div className="row stretch">
+                    <div className="sidepanel-border card margin-r-s">
+                        <div className="card--header">
+                            <h2>Statistics</h2>
                         </div>
-                        <div className="visualizer--key visualizer--key__value confirmed-value margin-t-t">
-                            Value Confirmed
+                        <div className="card--content">
+                            <div className="card--label">
+                                Transactions
+                            </div>
+                            <div className="card--value">
+                                {this.state.transactionCount}
+                            </div>
+                            <div className="card--label">
+                                TPS / CTPS
+                            </div>
+                            <div className="card--value">
+                                {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
+                            </div>
+                            <div className="card--label">
+                                Confirmation Rate
+                            </div>
+                            <div className="card--value">
+                                {this.state.confirmedTransactionsPerSecondPercent}
+                            </div>
+                            <div className="card--label">
+                                Selected Transaction
+                            </div>
+                            <div className="card--value">
+                                {this.state.selectedNode}
+                            </div>
+                            <div className="card--label">
+                                Value
+                            </div>
+                            <div className="card--value">
+                                {this.state.selectedNodeValue}
+                            </div>
                         </div>
-                        <div className="visualizer--key visualizer--key__value confirmed-zero margin-t-t">
-                            Zero Confirmed
+                    </div>
+                    <div className="graph-border">
+                        <div
+                            className="viva"
+                            ref={r => this.setupGraph(r)}
+                        />
+                    </div>
+                    <div className="sidepanel-border card tablet-hidden margin-l-s">
+                        <div className="card--header">
+                            <h2>Key</h2>
                         </div>
-                        <div className="visualizer--key margin-t-t">Value transactions are shown larger.</div>
+                        <div className="card--content">
+                            <div className="visualizer--key visualizer--key__value pending margin-t-t">
+                                Pending
+                            </div>
+                            <div className="visualizer--key visualizer--key__value confirmed-value margin-t-t">
+                                Value Confirmed
+                            </div>
+                            <div className="visualizer--key visualizer--key__value confirmed-zero margin-t-t">
+                                Zero Confirmed
+                            </div>
+                            <div className="visualizer--key margin-t-t">Value transactions are larger.</div>
+                        </div>
                     </div>
                 </div>
             </div>
