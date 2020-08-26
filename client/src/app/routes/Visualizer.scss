@@ -8,6 +8,7 @@
 
   .graph-border {
     display: flex;
+    position: relative;
     align-items: stretch;
     justify-content: stretch;
     height: 80vh;
@@ -23,6 +24,21 @@
       height: 100%;
       background: #ffffff;
     }
+
+    .selected-node {
+      @include font-size(12px);
+      position: absolute;
+      margin: 5px;
+      background-color: $white;
+      color: $main-green-highlight;
+      font-family: $metropolis;
+      z-index: 1;
+      word-break: break-all;
+    }
+  }
+
+  .visualizer-container {
+    min-width: 200px;
   }
 
   .visualizer-label {
@@ -39,26 +55,43 @@
     color: $main-green-highlight;
     font-family: $metropolis;
     font-weight: bold;
+
+    &.visualizer-value__small {
+      @include font-size(12px);
+      word-break: break-all;
+    }
   }
 
   .visualizer--key {
     @include font-size(16px);
 
     margin-right: 10px;
-    padding: 6px;
     font-family: $metropolis;
     font-weight: bold;
 
     &.visualizer--key__value {
+      padding: 6px;
       border-radius: 6px;
       color: $white;
 
-      &.pending {
-        background-color: $gray;
+      &.value {
+        &.pending {
+          background-color: #c0c7d5;
+        }
+
+        &.confirmed {
+          background-color: #e79c18;
+        }
       }
 
-      &.confirmed {
-        background-color: $main-green;
+      &.zero {
+        &.pending {
+          background-color: $gray;
+        }
+
+        &.confirmed {
+          background-color: $main-green;
+        }
       }
     }
   }

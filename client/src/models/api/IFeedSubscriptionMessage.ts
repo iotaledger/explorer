@@ -23,7 +23,7 @@ export interface IFeedSubscriptionMessage {
         /**
          * The transaction value.
          */
-        value: number;
+        value: string;
     }[];
 
     /**

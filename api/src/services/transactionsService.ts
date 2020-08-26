@@ -1,5 +1,3 @@
-import { trytesToTrits, value } from "@iota/converter";
-import { VALUE_LENGTH, VALUE_OFFSET } from "@iota/transaction";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
 import { ISn } from "../models/zmq/ISn";
@@ -27,7 +25,7 @@ export class TransactionsService {
         hash: string;
         trunk: string;
         branch: string;
-        value: number;
+        value: string;
     }[];
 
     /**
@@ -204,7 +202,7 @@ export class TransactionsService {
         this._trytesSubId = this._zmqService.subscribe(
             "trytes", async (evnt: string, message: ITxTrytes) => {
                 this._totalTxs++;
-                const val = value(trytesToTrits(message.trytes.slice(VALUE_OFFSET, VALUE_OFFSET + VALUE_LENGTH)));
+                const val = message.trytes.slice(6804, 6885);
                 const trunk = message.trytes.slice(2430, 2511);
                 const branch = message.trytes.slice(2511, 2592);
 
@@ -249,12 +247,12 @@ export class TransactionsService {
         this.stopTimer();
         this._timerId = setInterval(
             async () => {
-                if (this._timerCounter++ % 3 === 0) {
+                if (this._timerCounter++ % 10 === 0) {
                     this.handleTps();
                 }
                 await this.updateSubscriptions();
             },
-            1000);
+            500);
     }
 
     /**

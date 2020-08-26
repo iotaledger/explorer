@@ -27,14 +27,24 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private static readonly VERTEX_SIZE: number = 20;
 
     /**
-     * Vertex colour R.
+     * Vertex pending value colour.
      */
-    private static readonly VERTEX_COLOR_PENDING: string = "0x8493ad";
+    private static readonly COLOR_VALUE_PENDING: string = "0xc0c7d5";
 
     /**
-     * Vertex confirmed colour R.
+     * Vertex confirmed value colour.
      */
-    private static readonly VERTEX_COLOR_CONFIRMED: string = "0x0FC1B7";
+    private static readonly COLOR_VALUE_CONFIRMED: string = "0xe79c18";
+
+    /**
+     * Vertex pending zero colour.
+     */
+    private static readonly COLOR_ZERO_PENDING: string = "0x8493ad";
+
+    /**
+     * Vertex confirmed zero colour.
+     */
+    private static readonly COLOR_ZERO_CONFIRMED: string = "0x0fc1b7";
 
     /**
      * The graph instance.
@@ -131,7 +141,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             milestones: [],
             currency: "USD",
             currencies: [],
-            transactionCount: 0
+            transactionCount: 0,
+            selectedNode: ""
         };
     }
 
@@ -170,15 +181,21 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     public render(): ReactNode {
         return (
             <div className="visualizer">
+                <h1 className="margin-r-t margin-b-t">Visualizer</h1>
                 <div className="row middle space-between row--tablet-responsive">
-                    <h1 className="margin-r-t margin-b-t">Visualizer</h1>
-                    <div className="row middle margin-b-t">
+                    <div className="row middle visualizer-container margin-b-t">
+                        <span className="visualizer-label margin-r-t">Transactions</span>
+                        <span className="visualizer-value">
+                            {this.state.transactionCount}
+                        </span>
+                    </div>
+                    <div className="row middle visualizer-container margin-b-t">
                         <span className="visualizer-label margin-r-t">TPS</span>
                         <span className="visualizer-value">
                             {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
                         </span>
                     </div>
-                    <div className="row middle margin-b-t">
+                    <div className="row middle visualizer-container margin-b-t">
                         <span className="visualizer-label margin-r-t">Confirmation Rate</span>
                         <span className="visualizer-value">
                             {this.state.confirmedTransactionsPerSecondPercent}
@@ -193,15 +210,27 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 </div>
                 <div className="row row--tablet-responsive middle space-between">
                     <div className="row middle margin-t-s">
-                        <div className="visualizer--key visualizer--key__label">Key</div>
-                        <div className="visualizer--key visualizer--key__value pending">Pending</div>
-                        <div className="visualizer--key visualizer--key__value confirmed">Confirmed</div>
-                    </div>
-                    <div className="row middle margin-t-s">
-                        <span className="visualizer-value margin-r-t">
-                            {this.state.transactionCount}
+                        <span className="visualizer-label margin-r-t">Selected</span>
+                        <span className="visualizer-value visualizer-value__small">
+                            {this.state.selectedNode || "None"}
                         </span>
-                        <span className="visualizer-label">Transactions</span>
+                    </div>
+                </div>
+                <div className="row row--tablet-responsive middle space-between">
+                    <div className="row middle wrap">
+                        <div className="visualizer--key visualizer--key__label margin-t-t">Key</div>
+                        <div className="visualizer--key visualizer--key__value value pending margin-t-t">
+                            Value Pending
+                        </div>
+                        <div className="visualizer--key visualizer--key__value value confirmed margin-t-t">
+                            Value Confirmed
+                        </div>
+                        <div className="visualizer--key visualizer--key__value zero pending margin-t-t">
+                            Zero Pending
+                        </div>
+                        <div className="visualizer--key visualizer--key__value zero confirmed margin-t-t">
+                            Zero Confirmed
+                        </div>
                     </div>
                 </div>
             </div>
@@ -265,11 +294,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             this._graphics.setNodeProgram(buildCircleNodeShader());
 
-            this._graphics.node(() => ({
+            this._graphics.node(node => ({
                 size: Visualizer.VERTEX_SIZE,
-                color: Visualizer.VERTEX_COLOR_PENDING
+                color: node.data.value === 0 ? Visualizer.COLOR_ZERO_PENDING : Visualizer.COLOR_VALUE_PENDING
             }));
             this._graphics.link(() => Viva.Graph.View.webglLine(Visualizer.EDGE_COLOR_DEFAULT));
+
+            const events = Viva.Graph.webglInputEvents(this._graphics, this._graph);
+            events.click(node => {
+                this.setState({
+                    selectedNode: this.state.selectedNode === node.id ? "" : node.id
+                });
+            });
 
             this._renderer = Viva.Graph.View.renderer(this._graph, {
                 container: graphElem,
@@ -305,7 +341,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             for (const sn of confirmed) {
                 const node = this._graph.getNode(sn);
                 if (node) {
-                    node.data = true;
+                    node.data.confirmed = true;
                 }
             }
 
@@ -315,23 +351,23 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                     const added: string[] = [];
 
-                    this._graph.addNode(tx.hash, false);
+                    this._graph.addNode(tx.hash, { confirmed: false, value: tx.value });
                     added.push(tx.hash);
 
                     if (!this._graph.getNode(tx.trunk)) {
-                        this._graph.addNode(tx.trunk, false);
+                        this._graph.addNode(tx.trunk, { confirmed: false, value: 0 });
                         added.push(tx.trunk);
                     }
 
-                    this._graph.addLink(tx.trunk, tx.hash, false);
+                    this._graph.addLink(tx.trunk, tx.hash);
 
                     if (tx.trunk !== tx.branch) {
                         if (!this._graph.getNode(tx.branch)) {
-                            this._graph.addNode(tx.branch, false);
+                            this._graph.addNode(tx.branch, { confirmed: false, value: 0 });
                             added.push(tx.branch);
                         }
 
-                        this._graph.addLink(tx.branch, tx.hash, false);
+                        this._graph.addLink(tx.branch, tx.hash);
                     }
 
                     this._transactionHashes.push(...added.map(a => ({ hash: a, confirmed: false })));
@@ -362,9 +398,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 if (this._graphics) {
                     const nodeUI = this._graphics.getNodeUI(node.id);
                     if (nodeUI) {
-                        nodeUI.color = node.data
-                            ? Visualizer.VERTEX_COLOR_CONFIRMED
-                            : Visualizer.VERTEX_COLOR_PENDING;
+                        nodeUI.color = node.data.confirmed
+                            ? (node.data.value === 0
+                                ? Visualizer.COLOR_ZERO_CONFIRMED : Visualizer.COLOR_VALUE_CONFIRMED)
+                            : (node.data.value === 0
+                                ? Visualizer.COLOR_ZERO_PENDING : Visualizer.COLOR_VALUE_PENDING);
                     }
                 }
             });
