@@ -33,7 +33,7 @@ export async function initServices(config: IConfiguration) {
                 `zmq-${networkConfig.network}`, () => new ZmqService(
                     networkConfig.zmqEndpoint, [
                     "sn",
-                    "trytes",
+                    "tx",
                     networkConfig.coordinatorAddress
                 ])
             );

@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
 import { ISn } from "../models/zmq/ISn";
-import { ITxTrytes } from "../models/zmq/ITxTrytes";
+import { ITx } from "../models/zmq/ITx";
 import { ZmqService } from "./zmqService";
 
 /**
@@ -25,7 +25,7 @@ export class TransactionsService {
         hash: string;
         trunk: string;
         branch: string;
-        value: string;
+        value: number;
     }[];
 
     /**
@@ -200,17 +200,14 @@ export class TransactionsService {
         this.stopZmq();
 
         this._trytesSubId = this._zmqService.subscribe(
-            "trytes", async (evnt: string, message: ITxTrytes) => {
+            "tx", async (evnt: string, message: ITx) => {
                 this._totalTxs++;
-                const val = message.trytes.slice(6804, 6885);
-                const trunk = message.trytes.slice(2430, 2511);
-                const branch = message.trytes.slice(2511, 2592);
 
                 this._txValues.push({
                     hash: message.hash,
-                    value: val,
-                    branch,
-                    trunk
+                    value: message.value,
+                    branch: message.branch,
+                    trunk: message.trunk
                 });
             });
 

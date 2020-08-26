@@ -27,6 +27,7 @@
 
     .selected-node {
       @include font-size(12px);
+
       position: absolute;
       margin: 5px;
       background-color: $white;
@@ -58,6 +59,7 @@
 
     &.visualizer-value__small {
       @include font-size(12px);
+
       word-break: break-all;
     }
   }
@@ -74,24 +76,16 @@
       border-radius: 6px;
       color: $white;
 
-      &.value {
-        &.pending {
-          background-color: #c0c7d5;
-        }
-
-        &.confirmed {
-          background-color: #e79c18;
-        }
+      &.pending {
+        background-color: $gray;
       }
 
-      &.zero {
-        &.pending {
-          background-color: $gray;
-        }
+      &.confirmed-value {
+        background-color: #e79c18;
+      }
 
-        &.confirmed {
-          background-color: $main-green;
-        }
+      &.confirmed-zero {
+        background-color: $main-green;
       }
     }
   }

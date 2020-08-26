@@ -1,4 +1,3 @@
-import { trits, value } from "@iota/converter";
 import SocketIOClient from "socket.io-client";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { IFeedSubscribeRequest } from "../models/api/IFeedSubscribeRequest";
@@ -153,12 +152,6 @@ export class FeedClient {
                         if (newTxs) {
                             this._transactions = newTxs
                                 .filter(nh => !this._existingHashes.includes(nh.hash))
-                                .map(nh => ({
-                                    hash: nh.hash,
-                                    trunk: nh.trunk,
-                                    branch: nh.branch,
-                                    value: value(trits(nh.value))
-                                }))
                                 .concat(this._transactions);
 
                             let removeItems: {

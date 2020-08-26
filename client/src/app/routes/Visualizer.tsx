@@ -24,12 +24,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Vertex size.
      */
-    private static readonly VERTEX_SIZE: number = 20;
+    private static readonly VERTEX_SIZE_ZERO: number = 20;
 
     /**
-     * Vertex pending value colour.
+     * Vertex size.
      */
-    private static readonly COLOR_VALUE_PENDING: string = "0xc0c7d5";
+    private static readonly VERTEX_SIZE_VALUE: number = 30;
 
     /**
      * Vertex confirmed value colour.
@@ -39,7 +39,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Vertex pending zero colour.
      */
-    private static readonly COLOR_ZERO_PENDING: string = "0x8493ad";
+    private static readonly COLOR_PENDING: string = "0x8493ad";
 
     /**
      * Vertex confirmed zero colour.
@@ -142,7 +142,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             currency: "USD",
             currencies: [],
             transactionCount: 0,
-            selectedNode: ""
+            selectedNode: "-",
+            selectedNodeValue: "-"
         };
     }
 
@@ -212,25 +213,29 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     <div className="row middle margin-t-s">
                         <span className="visualizer-label margin-r-t">Selected</span>
                         <span className="visualizer-value visualizer-value__small">
-                            {this.state.selectedNode || "None"}
+                            {this.state.selectedNode}
+                        </span>
+                    </div>
+                    <div className="row middle margin-t-s">
+                        <span className="visualizer-label margin-r-t">Value</span>
+                        <span className="visualizer-value">
+                            {this.state.selectedNodeValue}
                         </span>
                     </div>
                 </div>
                 <div className="row row--tablet-responsive middle space-between">
                     <div className="row middle wrap">
                         <div className="visualizer--key visualizer--key__label margin-t-t">Key</div>
-                        <div className="visualizer--key visualizer--key__value value pending margin-t-t">
-                            Value Pending
+                        <div className="visualizer--key visualizer--key__value pending margin-t-t">
+                            Pending
                         </div>
-                        <div className="visualizer--key visualizer--key__value value confirmed margin-t-t">
+                        <div className="visualizer--key visualizer--key__value confirmed-value margin-t-t">
                             Value Confirmed
                         </div>
-                        <div className="visualizer--key visualizer--key__value zero pending margin-t-t">
-                            Zero Pending
-                        </div>
-                        <div className="visualizer--key visualizer--key__value zero confirmed margin-t-t">
+                        <div className="visualizer--key visualizer--key__value confirmed-zero margin-t-t">
                             Zero Confirmed
                         </div>
+                        <div className="visualizer--key margin-t-t">Value transactions are shown larger.</div>
                     </div>
                 </div>
             </div>
@@ -295,15 +300,16 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graphics.setNodeProgram(buildCircleNodeShader());
 
             this._graphics.node(node => ({
-                size: Visualizer.VERTEX_SIZE,
-                color: node.data.value === 0 ? Visualizer.COLOR_ZERO_PENDING : Visualizer.COLOR_VALUE_PENDING
+                size: node.data.value === 0 ? Visualizer.VERTEX_SIZE_ZERO : Visualizer.VERTEX_SIZE_VALUE,
+                color: Visualizer.COLOR_PENDING
             }));
             this._graphics.link(() => Viva.Graph.View.webglLine(Visualizer.EDGE_COLOR_DEFAULT));
 
             const events = Viva.Graph.webglInputEvents(this._graphics, this._graph);
             events.click(node => {
                 this.setState({
-                    selectedNode: this.state.selectedNode === node.id ? "" : node.id
+                    selectedNode: this.state.selectedNode === node.id ? "-" : node.id,
+                    selectedNodeValue: this.state.selectedNode === node.id ? "-" : node.data.value
                 });
             });
 
@@ -401,8 +407,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                         nodeUI.color = node.data.confirmed
                             ? (node.data.value === 0
                                 ? Visualizer.COLOR_ZERO_CONFIRMED : Visualizer.COLOR_VALUE_CONFIRMED)
-                            : (node.data.value === 0
-                                ? Visualizer.COLOR_ZERO_PENDING : Visualizer.COLOR_VALUE_PENDING);
+                            : Visualizer.COLOR_PENDING;
                     }
                 }
             });
