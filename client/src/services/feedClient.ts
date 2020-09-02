@@ -229,7 +229,7 @@ export class FeedClient {
          */
         value: number;
     }[] {
-        return this._transactions;
+        return this._transactions.slice();
     }
 
     /**
@@ -245,7 +245,7 @@ export class FeedClient {
      * @returns The tps.
      */
     public getTxTpsHistory(): number[] {
-        return this._tps.tx;
+        return this._tps.tx.slice();
     }
 
     /**
