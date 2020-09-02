@@ -28,21 +28,44 @@ export class ChronicleClient {
      */
     public async getTrytes(request: IGetTrytesRequest): Promise<IGetTrytesResponse | undefined> {
         try {
-            const response = await FetchHelper.json<unknown, IGetTrytesResponse>(
-                this._endpoint,
-                "",
-                "post",
-                {
-                    command: "getTrytes",
-                    hashes: request.hashes
-                },
-                {
-                    "X-IOTA-API-Version": "1"
-                }
-            );
+            const headers = {
+                "X-IOTA-API-Version": "1"
+            };
 
-            if (response.error) {
-                console.error(response.error);
+            const CHUNK_SIZE = 10;
+            const numChunks = Math.ceil(request.hashes.length / CHUNK_SIZE);
+
+            const response: IGetTrytesResponse = {
+                trytes: [],
+                milestones: []
+            };
+
+            for (let i = 0; i < numChunks; i++) {
+                const hashes = request.hashes.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+                const req = {
+                    command: "getTrytes",
+                    hashes
+                };
+
+                const resp = await FetchHelper.json<unknown, IGetTrytesResponse>(
+                    this._endpoint,
+                    "",
+                    "post",
+                    req,
+                    headers
+                );
+
+                if (resp.error) {
+                    for (let j = 0; j < hashes.length; j++) {
+                        response.trytes.push("9".repeat(2673));
+                        response.milestones.push(-1);
+                    }
+                    console.error("Chronicle Error", resp.error);
+                    console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
+                } else {
+                    response.trytes = response.trytes.concat(resp.trytes);
+                    response.milestones = response.milestones.concat(resp.milestones);
+                }
             }
 
             return response;
@@ -64,18 +87,24 @@ export class ChronicleClient {
             if (request.tags) {
                 request.tags = request.tags.map(t => t.padEnd(27, "9"));
             }
+            const req = {
+                command: "findTransactions",
+                ...request
+            };
+            const headers = {
+                "X-IOTA-API-Version": "1"
+            };
             const response = await FetchHelper.json<unknown, IFindTransactionsResponse>(
                 this._endpoint,
                 "",
                 "post",
-                { ...{ command: "findTransactions" }, ...request },
-                {
-                    "X-IOTA-API-Version": "1"
-                }
+                req,
+                headers
             );
 
             if (response.error) {
                 console.error("Chronicle Error", response.error);
+                console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
             }
 
             return response;
