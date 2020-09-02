@@ -67,7 +67,7 @@ socketServer.on("connection", socket => {
     });
 
     socket.on("unsubscribe", data => {
-        console.log("Socket::Subscribe", socket.id, data.subscriptionId);
+        console.log("Socket::Unsubscribe", socket.id, data.subscriptionId);
         const response = unsubscribe(config, socket, data);
         if (sockets[socket.id]) {
             delete sockets[socket.id];
