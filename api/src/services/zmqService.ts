@@ -454,16 +454,11 @@ export class ZmqService {
                 default: {
                     // Is this an address event
                     if (/^[9A-Z]{81}$/.test(event)) {
-                        let mi = Number.parseInt(messageParams[2], 10);
-                        let txIndex = 1;
-                        if (Number.isNaN(mi)) {
-                            mi = Number.parseInt(messageParams[3], 10);
-                            txIndex++;
-                        }
+                        const mi = Number.parseInt(messageParams[2], 10);
                         if (!Number.isNaN(mi)) {
                             data = {
                                 address: messageParams[0],
-                                transaction: messageParams[txIndex],
+                                transaction: messageParams[1],
                                 milestoneIndex: mi
                             } as IAddress;
                         }
