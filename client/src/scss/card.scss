@@ -37,6 +37,11 @@
       color: $white;
     }
 
+    &.card--header-count__warning {
+      background-color: $warning;
+      color: $white;
+    }
+
     &.card--header-count__error {
       background-color: $danger;
       color: $white;

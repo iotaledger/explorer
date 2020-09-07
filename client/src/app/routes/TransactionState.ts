@@ -34,7 +34,12 @@ export interface TransactionState {
     /**
      * Is the bundle valid.
      */
-    isBundleValid?: string;
+    isBundleValid?: "valid" | "invalid" | "warning" | "consistency";
+
+    /**
+     * Is the bundle valid message.
+     */
+    isBundleValidMessage?: string;
 
     /**
      * Milestone index.

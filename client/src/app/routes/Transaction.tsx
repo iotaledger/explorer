@@ -235,7 +235,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             "card--header-count",
                                                             {
                                                                 "card--header-count__error":
-                                                                    this.state.isBundleValid !== "valid"
+                                                                    this.state.isBundleValid === "invalid" ||
+                                                                    this.state.isBundleValid === "consistency"
+                                                            },
+                                                            {
+                                                                "card--header-count__warning":
+                                                                    this.state.isBundleValid === "warning"
                                                             },
                                                             {
                                                                 "card--header-count__success":
@@ -243,11 +248,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             }
                                                         )}
                                                     >
-                                                        {this.state.isBundleValid === "valid"
-                                                            ? "Valid"
-                                                            : (this.state.isBundleValid === "consistency"
-                                                                ? "Invalid consistency - transaction will never confirm"
-                                                                : "Invalid - transaction will never confirm")}
+                                                        {this.state.isBundleValidMessage}
                                                     </div>
                                                 )}
                                             </div>
@@ -575,14 +576,25 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 this._timerId = setInterval(async () => this.checkConfirmation(), 10000);
                             }
 
+                            const isBundleValidState = !isConsistent
+                                ? "consistency"
+                                : (isBundleValid ? "valid" : "invalid");
+
+                            let isBundleValidMessage = "Valid";
+                            if (!isBundleValidState) {
+                                isBundleValidMessage = this.state.isBundleValid === "consistency"
+                                    ? "Invalid consistency - transaction will never confirm"
+                                    : "Invalid - transaction will never confirm";
+                            }
+
                             this.setState({
                                 nextTransaction:
-                                    isBundleValid &&
-                                        this.state.details.tx.currentIndex < this.state.details.tx.lastIndex
+                                    this.state.details.tx.currentIndex < this.state.details.tx.lastIndex
                                         ? this.state.details.tx.trunkTransaction : undefined,
                                 previousTransaction:
-                                    isBundleValid && thisIndex > 0 ? thisGroup[thisIndex - 1].tx.hash : undefined,
-                                isBundleValid: !isConsistent ? "consistency" : (isBundleValid ? "valid" : "invalid"),
+                                    thisIndex > 0 ? thisGroup[thisIndex - 1].tx.hash : undefined,
+                                isBundleValid: isBundleValidState,
+                                isBundleValidMessage,
                                 milestoneIndex: this.getMilestoneIndex(thisGroup),
                                 message,
                                 messageType,
@@ -591,7 +603,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                             });
                         } else {
                             this.setState({
-                                isBundleValid: "Invalid"
+                                isBundleValid: "warning",
+                                isBundleValidMessage: "Invalid - transactions from the bundle are unavailable"
                             });
                         }
                     }
