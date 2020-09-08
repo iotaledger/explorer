@@ -43,13 +43,20 @@ export class CurrencyService {
                 this._isUpdating = true;
 
                 const currencyStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
-                let currentState;
+                let currentState: ICurrencyState;
 
                 if (currencyStorageService) {
                     currentState = await currencyStorageService.get("default");
                 }
 
-                currentState = currentState || { id: "default" };
+                currentState = currentState || {
+                    id: "default",
+                    lastCurrencyUpdate: 0,
+                    currentPriceEUR: 0,
+                    marketCapEUR: 0,
+                    volumeEUR: 0,
+                    exchangeRatesEUR: {}
+                };
 
                 // If now date, default to 2 days ago
                 const lastCurrencyUpdate = currentState.lastCurrencyUpdate
@@ -125,7 +132,7 @@ export class CurrencyService {
 
                     await marketStorage.setAll(markets);
 
-                    currentState.lastCurrencyUpdate = now;
+                    currentState.lastCurrencyUpdate = now.getTime();
                     if (currencyStorageService) {
                         await currencyStorageService.set(currentState);
                     }
