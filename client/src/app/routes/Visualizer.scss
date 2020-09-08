@@ -1,0 +1,78 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+
+.visualizer {
+  margin: 40px;
+
+  .graph-border {
+    display: flex;
+    position: relative;
+    flex: 1;
+    align-items: stretch;
+    justify-content: stretch;
+    height: 70vh;
+    border-radius: 6px;
+    overflow: hidden;
+
+    .viva {
+      position: relative;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+    }
+
+    .selected-node {
+      @include font-size(12px);
+
+      position: absolute;
+      margin: 5px;
+      background-color: $white;
+      color: $main-green-highlight;
+      font-family: $metropolis;
+      z-index: 1;
+      word-break: break-all;
+    }
+  }
+
+  .sidepanel-border {
+    width: 220px;
+    border-radius: 6px;
+    background: #ffffff;
+
+    @media (max-width: 1000px) {
+      &.tablet-hidden {
+        display: none;
+      }
+    }
+
+    .visualizer--key {
+      @include font-size(12px);
+
+      margin-right: 10px;
+      font-family: $metropolis;
+
+      &.visualizer--key__value {
+        padding: 6px;
+        border-radius: 6px;
+        color: $white;
+        text-align: center;
+
+        &.pending {
+          background-color: $gray;
+        }
+
+        &.confirmed-value {
+          background-color: #e79c18;
+        }
+
+        &.confirmed-zero {
+          background-color: $main-green;
+        }
+      }
+    }
+  }
+}

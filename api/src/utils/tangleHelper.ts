@@ -1,9 +1,7 @@
 import { composeAPI } from "@iota/core";
 import { ChronicleClient } from "../clients/chronicleClient";
-import { ServiceFactory } from "../factories/serviceFactory";
 import { TransactionsGetMode } from "../models/api/transactionsGetMode";
-import { INetworkConfiguration } from "../models/configuration/INetworkConfiguration";
-import { TransactionsService } from "../services/transactionsService";
+import { INetwork } from "../models/db/INetwork";
 
 /**
  * Helper functions for use with tangle.
@@ -11,24 +9,19 @@ import { TransactionsService } from "../services/transactionsService";
 export class TangleHelper {
     /**
      * Find hashes of the given type.
-     * @param networkConfig The network to use.
+     * @param network The network to use.
      * @param hashTypeName The type of the hash.
      * @param hash The hash.
      * @returns The list of transactions hashes.
      */
     public static async findHashes(
-        networkConfig: INetworkConfiguration,
+        network: INetwork,
         hashTypeName: TransactionsGetMode,
         hash: string): Promise<{
             /**
              * The hashes retrieved.
              */
             foundHashes?: string[];
-
-            /**
-             * The request would return too many items.
-             */
-            tooMany: boolean;
 
             /**
              * Cursor for next lookups.
@@ -38,12 +31,11 @@ export class TangleHelper {
         const findReq = {};
         findReq[hashTypeName] = [hash];
 
-        let hashes;
-        let tooMany = false;
+        let hashes = [];
         let cursor;
 
-        if (networkConfig.permaNodeEndpoint) {
-            const chronicleClient = new ChronicleClient(networkConfig.permaNodeEndpoint);
+        if (network.permaNodeEndpoint) {
+            const chronicleClient = new ChronicleClient(network.permaNodeEndpoint);
             let hints;
             if (cursor) {
                 hints = [Buffer.from(cursor, "base64").toJSON().data];
@@ -57,44 +49,34 @@ export class TangleHelper {
             }
         }
 
-        if (!hashes || hashes.length === 0) {
-            try {
-                const api = composeAPI({
-                    provider: networkConfig.node.provider
-                });
+        try {
+            const api = composeAPI({
+                provider: network.provider
+            });
 
-                // Cant do anything with cursors here until nodes
-                // support some kind of paging requests
-                hashes = await api.findTransactions(findReq);
+            const nodeHashes = await api.findTransactions(findReq);
 
-                // But also make sure we don't overload the response
-                hashes = hashes.slice(0, 1000);
-                cursor = "";
-            } catch (err) {
-                const errString = err.toString();
-                if (errString.includes("Could not complete request") ||
-                    errString.includes("Invalid addresses input")) {
-                    tooMany = true;
-                }
-                console.error("API Error", err);
+            if (nodeHashes) {
+                hashes = hashes.concat(nodeHashes.filter(h => !hashes.includes(h)));
             }
+        } catch (err) {
+            console.error("API Error", err);
         }
 
         return {
             foundHashes: hashes,
-            tooMany,
             cursor
         };
     }
 
     /**
      * Get transactions for the requested hashes.
-     * @param networkConfig The network configuration.
+     * @param network The network configuration.
      * @param hashes The hashes to get the transactions.
      * @returns The response.
      */
     public static async getTrytes(
-        networkConfig: INetworkConfiguration,
+        network: INetwork,
         hashes: string[]): Promise<{
             /**
              * The trytes for the requested transactions.
@@ -124,66 +106,60 @@ export class TangleHelper {
              * The milestone index.
              */
             milestoneIndex?: number;
-        }[] = hashes.map((h, idx) => ({ index: idx, hash: h }));
+        }[] = hashes.map((h, idx) => ({ index: idx, hash: h, milestoneIndex: -1 }));
 
-        // First check to see if we have recently processed them and stored them in memory
-        const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
-        for (const allTryte of allTrytes) {
-            const trytes = transactionService.findTrytes(allTryte.hash);
-            if (trytes) {
-                allTryte.trytes = trytes;
-            }
-        }
 
         // If we have a permanode connection try there first
-        if (networkConfig.permaNodeEndpoint) {
-            const chronicleClient = new ChronicleClient(networkConfig.permaNodeEndpoint);
+        if (network.permaNodeEndpoint) {
+            const chronicleClient = new ChronicleClient(network.permaNodeEndpoint);
 
-            const missing = allTrytes.filter(a => !a.trytes);
-
-            const response = await chronicleClient.getTrytes({ hashes: missing.map(mh => mh.hash) });
+            const response = await chronicleClient.getTrytes({ hashes });
 
             if (response?.trytes) {
-                for (let i = 0; i < missing.length; i++) {
-                    missing[i].trytes = response.trytes[i];
+                for (let i = 0; i < hashes.length; i++) {
+                    allTrytes[i].trytes = response.trytes[i];
 
-                    missing[i].milestoneIndex = response.milestones[i] ?? -1;
+                    allTrytes[i].milestoneIndex = response.milestones[i] ?? -1;
                 }
             }
         }
 
         try {
-            const missing2 = allTrytes.filter(a => !a.trytes || /^9+$/.test(a.trytes));
+            const missingTrytes = allTrytes.filter(a => !a.trytes);
 
-            if (missing2.length > 0) {
+            if (missingTrytes.length > 0) {
                 const api = composeAPI({
-                    provider: networkConfig.node.provider
+                    provider: network.provider
                 });
 
-                const response = await api.getTrytes(missing2.map(a => a.hash));
-
+                const response = await api.getTrytes(missingTrytes.map(a => a.hash));
                 if (response) {
                     for (let i = 0; i < response.length; i++) {
-                        missing2[i].trytes = response[i];
-                    }
-                }
-
-                const nodeInfo = await api.getNodeInfo();
-                const tips = [];
-                if (nodeInfo) {
-                    tips.push(nodeInfo.latestSolidSubtangleMilestone);
-                }
-
-                const statesResponse = await api.getInclusionStates(hashes, tips);
-
-                if (statesResponse) {
-                    for (let i = 0; i < statesResponse.length; i++) {
-                        allTrytes[i].milestoneIndex = statesResponse[i] ? 0 : -1;
+                        missingTrytes[i].trytes = response[i];
                     }
                 }
             }
         } catch (err) {
-            console.error(`${networkConfig.network}`, err);
+            console.error(`${network.network}`, err);
+        }
+
+        try {
+            const missingState = allTrytes.filter(a => a.milestoneIndex === -1);
+
+            if (missingState.length > 0) {
+                const api = composeAPI({
+                    provider: network.provider
+                });
+
+                const statesResponse = await api.getInclusionStates(missingState.map(a => a.hash), []);
+                if (statesResponse) {
+                    for (let i = 0; i < statesResponse.length; i++) {
+                        missingState[i].milestoneIndex = statesResponse[i] ? 0 : -1;
+                    }
+                }
+            }
+        } catch (err) {
+            console.error(`${network.network}`, err);
         }
 
         return {

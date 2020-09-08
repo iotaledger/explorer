@@ -27,7 +27,7 @@ class Header extends Component<HeaderProps> {
         return (
             <header>
                 <nav className="inner">
-                    <Link to={`/${this.props.networkConfig.network}`}>
+                    <Link to={this.props.rootPath}>
                         <img src={logoHeader} alt="Explorer" />
                     </Link>
                     {this.props.search}

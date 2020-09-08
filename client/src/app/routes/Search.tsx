@@ -4,7 +4,6 @@ import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { TangleCacheService } from "../../services/tangleCacheService";
 import Spinner from "../components/Spinner";
-import { NetworkProps } from "../NetworkProps";
 import "./Search.scss";
 import { SearchRouteProps } from "./SearchRouteProps";
 import { SearchState } from "./SearchState";
@@ -12,7 +11,7 @@ import { SearchState } from "./SearchState";
 /**
  * Component which will show the search page.
  */
-class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkProps, SearchState> {
+class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchState> {
     /**
      * API Client for tangle requests.
      */
@@ -22,7 +21,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
      * Create a new instance of Search.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<SearchRouteProps> & NetworkProps) {
+    constructor(props: RouteComponentProps<SearchRouteProps>) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
@@ -49,7 +48,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
      * The component was updated.
      * @param prevProps The previous properties.
      */
-    public componentDidUpdate(prevProps: RouteComponentProps<SearchRouteProps> & NetworkProps): void {
+    public componentDidUpdate(prevProps: RouteComponentProps<SearchRouteProps>): void {
         if (this.props.location.pathname !== prevProps.location.pathname) {
             this.updateState();
         }
@@ -92,6 +91,10 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
                                         <p>
                                             We could not find any transactions, bundles, addresses or tags
                                             with the provided hash.
+                                        </p>
+                                        <br />
+                                        <p className="card--value">
+                                            {this.props.match.params.hash}
                                         </p>
                                     </div>
                                 </div>
@@ -152,16 +155,16 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
         if (hash.length > 0) {
             if (isTrytes(hash)) {
                 if (hash.length <= 27) {
-                    redirect = `/${this.props.networkConfig.network}/tag/${hash}`;
+                    redirect = `/${this.props.match.params.network}/tag/${hash}`;
                 } else if (hash.length === 90) {
-                    redirect = `/${this.props.networkConfig.network}/address/${hash}`;
+                    redirect = `/${this.props.match.params.network}/address/${hash}`;
                 } else if (hash.length === 81) {
                     status = "Detecting hash type...";
                     statusBusy = true;
                     setTimeout(
                         async () => {
                             const { hashType } = await this._tangleCacheService.findTransactionHashes(
-                                this.props.networkConfig,
+                                this.props.match.params.network,
                                 undefined,
                                 hash
                             );
@@ -178,7 +181,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps> & NetworkPr
                                 this.setState({
                                     status: "",
                                     statusBusy: false,
-                                    redirect: `/${this.props.networkConfig.network}/${ht}/${hash}`
+                                    redirect: `/${this.props.match.params.network}/${ht}/${hash}`
                                 });
                             } else {
                                 this.setState({

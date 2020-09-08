@@ -89,6 +89,19 @@ class Markets extends Currency<unknown, MarketsState> {
     }
 
     /**
+     * The component mounted.
+     */
+    public async componentDidMount(): Promise<void> {
+        super.componentDidMount();
+
+        window.scrollTo({
+            left: 0,
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+    /**
      * Render the component.
      * @returns The node to render.
      */
@@ -161,7 +174,7 @@ class Markets extends Currency<unknown, MarketsState> {
                                                 <div className="card--label">
                                                     Price
                                                 </div>
-                                                <div className="card--value">
+                                                <div className="card--value card--value__highlight">
                                                     {this.state.priceCurrency}
                                                 </div>
                                             </div>
@@ -319,7 +332,7 @@ class Markets extends Currency<unknown, MarketsState> {
                         currency: this.state.currency.toLowerCase()
                     });
 
-                    if (markets.success && markets.data) {
+                    if (markets.data) {
                         let maxPrice = 0;
                         let maxPriceDate = 0;
                         let minPrice = Number.MAX_VALUE;

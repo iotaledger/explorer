@@ -1,4 +1,4 @@
-export interface ITransactionsUnsubscribeRequest {
+export interface IFeedUnsubscribeRequest {
     /**
      * The network to search on.
      */

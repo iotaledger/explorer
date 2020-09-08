@@ -1,12 +1,11 @@
 import { join } from "path";
 import { inspect } from "util";
-import { initServices } from "../initServices";
 import { IDataResponse } from "../models/api/IDataResponse";
+import { IResponse } from "../models/api/IResponse";
 import { IHttpRequest } from "../models/app/IHttpRequest";
 import { IHttpResponse } from "../models/app/IHttpResponse";
 import { IRoute } from "../models/app/IRoute";
 import { IConfiguration } from "../models/configuration/IConfiguration";
-
 
 /**
  * Find a route to match
@@ -67,8 +66,6 @@ export function findRoute(findRoutes: IRoute[], url: string, method: string): {
  * @param route The route.
  * @param pathParams The params extracted from the url.
  * @param verboseLogging Log full details of requests.
- * @param globalInitServices The services have already been initialised.
- * @param logHook Optional hook for logging errors.
  */
 export async function executeRoute(
     req: IHttpRequest,
@@ -76,10 +73,8 @@ export async function executeRoute(
     config: IConfiguration,
     route: IRoute,
     pathParams: { [id: string]: string },
-    verboseLogging: boolean,
-    globalInitServices: boolean = false,
-    logHook?: (message: string, statusCode: number, params: unknown) => Promise<void>): Promise<void> {
-    let response;
+    verboseLogging: boolean): Promise<void> {
+    let response: IResponse;
     const start = Date.now();
     let filteredParams;
     let status = 400;
@@ -117,40 +112,32 @@ export async function executeRoute(
             }
             if (mod) {
                 if (mod[route.func]) {
-                    if (!globalInitServices) {
-                        await initServices(config);
-                    }
                     response = await mod[route.func](config, params, body, req.headers || {});
                     status = 200;
                 } else {
                     status = 400;
                     response = {
-                        success: false,
-                        message: `Route '${route.path}' module '${
+                        error: `Route '${route.path}' module '${
                             modulePath}' does not contain a method '${route.func}'`
                     };
                 }
             } else {
                 status = 400;
-                response = { success: false, message: `Route '${route.path}' module '${modulePath}' failed to load` };
+                response = { error: `Route '${route.path}' module '${modulePath}' failed to load` };
             }
         } else if (route.inline) {
-            await initServices(config);
             response = await route.inline(config, params, body, req.headers || {});
             status = 200;
         } else {
             status = 400;
-            response = { success: false, message: `Route ${route.path} has no func or inline property set` };
+            response = { error: `Route ${route.path} has no func or inline property set` };
         }
     } catch (err) {
         status = err.httpCode || 400;
-        response = { success: false, message: err.message };
-        if (logHook) {
-            await logHook(err.message, status, filteredParams);
-        }
+        response = { error: err.message };
     }
 
-    if (verboseLogging || !response.success) {
+    if (verboseLogging || response.error) {
         console.log(`<=== duration: ${Date.now() - start}ms`);
         console.log(inspect(response, false, undefined, false));
     }
@@ -254,7 +241,8 @@ export function cors(
                 "X-HTTP-Method-Override",
                 "Content-Type",
                 "Authorization",
-                "Accept"
+                "Accept",
+                "Accept-Encoding"
             ].join(",")
         );
     }

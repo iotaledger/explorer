@@ -69,6 +69,12 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
         if (this.state.root.length > 0) {
             this.findData();
         }
+
+        window.scrollTo({
+            left: 0,
+            top: 0,
+            behavior: "smooth"
+        });
     }
 
     /**
@@ -342,6 +348,13 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
         const isValid = this.validate();
 
         if (isValid) {
+            let url = `/${this.props.match.params.network}/streams/0/${this.state.root}/${this.state.mode}`;
+            if (this.state.mode === "restricted") {
+                url += `/${this.state.mode}`;
+            }
+            if (this.props.location.pathname !== url) {
+                this.props.history.replace(url);
+            }
             this.setState(
                 {
                     statusBusy: true,

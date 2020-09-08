@@ -1,15 +1,14 @@
 import SocketIOClient from "socket.io-client";
 import { TrytesHelper } from "../helpers/trytesHelper";
-import { ITransactionsSubscribeRequest } from "../models/api/ITransactionsSubscribeRequest";
-import { ITransactionsSubscribeResponse } from "../models/api/ITransactionsSubscribeResponse";
-import { ITransactionsSubscriptionMessage } from "../models/api/ITransactionsSubscriptionMessage";
-import { ITransactionsUnsubscribeRequest } from "../models/api/ITransactionsUnsubscribeRequest";
-import { IClientNetworkConfiguration } from "../models/config/IClientNetworkConfiguration";
+import { IFeedSubscribeRequest } from "../models/api/IFeedSubscribeRequest";
+import { IFeedSubscribeResponse } from "../models/api/IFeedSubscribeResponse";
+import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
+import { IFeedUnsubscribeRequest } from "../models/api/IFeedUnsubscribeRequest";
 
 /**
  * Class to handle api communications.
  */
-export class TransactionsClient {
+export class FeedClient {
     /**
      * The endpoint for performing communications.
      */
@@ -18,7 +17,7 @@ export class TransactionsClient {
     /**
      * Network configuration.
      */
-    private readonly _config: IClientNetworkConfiguration;
+    private readonly _networkId: string;
 
     /**
      * The web socket to communicate on.
@@ -37,22 +36,50 @@ export class TransactionsClient {
          * The tx value.
          */
         value: number;
+        /**
+         * The connected trunk.
+         */
+        trunk: string;
+        /**
+         * The connected branch.
+         */
+        branch: string;
     }[];
+
+    /**
+     * Existing hashes.
+     */
+    private _existingHashes: string[];
+
+    /**
+     * The confirmed transactions.
+     */
+    private _confirmed: string[];
 
     /**
      * The tps.
      */
-    private _tps: number[];
+    private _tps: {
+        /**
+         * The start timestamp for the tps.
+         */
+        start: number;
 
-    /**
-     * The tps start.
-     */
-    private _tpsStart: number;
+        /**
+         * The end timestamp for the tps.
+         */
+        end: number;
 
-    /**
-     * The tps start.
-     */
-    private _tpsEnd: number;
+        /**
+         * The tps counts.
+         */
+        tx: number[];
+
+        /**
+         * The confirmed tps counts.
+         */
+        sn: number[];
+    };
 
     /**
      * The subscription id.
@@ -67,15 +94,15 @@ export class TransactionsClient {
     /**
      * Create a new instance of TransactionsClient.
      * @param endpoint The endpoint for the api.
-     * @param networkConfiguration The network configurations.
+     * @param networkId The network configurations.
      */
-    constructor(endpoint: string, networkConfiguration: IClientNetworkConfiguration) {
+    constructor(endpoint: string, networkId: string) {
         this._endpoint = endpoint;
-        this._config = networkConfiguration;
+        this._networkId = networkId;
 
         // Use websocket by default
         // eslint-disable-next-line new-cap
-        this._socket = SocketIOClient(this._endpoint, { upgrade: false, transports: ["websocket"] });
+        this._socket = SocketIOClient(this._endpoint, { upgrade: true, transports: ["websocket"] });
 
         // If reconnect fails then also try polling mode.
         this._socket.on("reconnect_attempt", () => {
@@ -83,9 +110,15 @@ export class TransactionsClient {
         });
 
         this._transactions = [];
-        this._tps = [];
-        this._tpsStart = 0;
-        this._tpsEnd = 0;
+        this._confirmed = [];
+        this._existingHashes = [];
+        this._tps = {
+            start: 0,
+            end: 0,
+            tx: [],
+            sn: []
+        };
+
         this._subscribers = {};
     }
 
@@ -100,33 +133,26 @@ export class TransactionsClient {
 
         try {
             if (!this._subscriptionId) {
-                const subscribeRequest: ITransactionsSubscribeRequest = {
-                    network: this._config.network
+                const subscribeRequest: IFeedSubscribeRequest = {
+                    network: this._networkId
                 };
 
                 this._socket.emit("subscribe", subscribeRequest);
-                this._socket.on("subscribe", (subscribeResponse: ITransactionsSubscribeResponse) => {
-                    if (subscribeResponse.success) {
+                this._socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
+                    if (!subscribeResponse.error) {
                         this._subscriptionId = subscribeResponse.subscriptionId;
                     }
                 });
-                this._socket.on("transactions", async (transactionsResponse: ITransactionsSubscriptionMessage) => {
+                this._socket.on("transactions", async (transactionsResponse: IFeedSubscriptionMessage) => {
                     if (transactionsResponse.subscriptionId === this._subscriptionId) {
                         this._tps = transactionsResponse.tps;
-                        this._tpsStart = transactionsResponse.tpsStart;
-                        this._tpsEnd = transactionsResponse.tpsEnd;
+                        this._confirmed = transactionsResponse.confirmed;
 
-                        const newHashes = transactionsResponse.transactions;
-                        if (newHashes) {
-                            const newHashKeys = Object.keys(newHashes);
-                            for (const newHashKey of newHashKeys) {
-                                if (this._transactions.findIndex(t => t.hash === newHashKey) === -1) {
-                                    this._transactions.unshift({
-                                        hash: newHashKey,
-                                        value: newHashes[newHashKey]
-                                    });
-                                }
-                            }
+                        const newTxs = transactionsResponse.transactions;
+                        if (newTxs) {
+                            this._transactions = newTxs
+                                .filter(nh => !this._existingHashes.includes(nh.hash))
+                                .concat(this._transactions);
 
                             let removeItems: {
                                 hash: string;
@@ -145,6 +171,7 @@ export class TransactionsClient {
                             }
 
                             this._transactions = this._transactions.filter(t => !removeItems.includes(t));
+                            this._existingHashes = this._transactions.map(t => t.hash);
                         }
 
                         for (const sub in this._subscribers) {
@@ -167,14 +194,16 @@ export class TransactionsClient {
             delete this._subscribers[subscriptionId];
 
             if (this._subscriptionId && Object.keys(this._subscribers).length === 0) {
-                const unsubscribeRequest: ITransactionsUnsubscribeRequest = {
-                    network: this._config.network,
+                const unsubscribeRequest: IFeedUnsubscribeRequest = {
+                    network: this._networkId,
                     subscriptionId: this._subscriptionId
                 };
                 this._socket.emit("unsubscribe", unsubscribeRequest);
                 this._socket.on("unsubscribe", () => { });
             }
         } catch {
+        } finally {
+            this._subscriptionId = undefined;
         }
     }
 
@@ -188,34 +217,71 @@ export class TransactionsClient {
          */
         hash: string;
         /**
-         * The tx value.
+         * The trunk.
+         */
+        trunk: string;
+        /**
+         * The branch.
+         */
+        branch: string;
+        /**
+         * The transaction value.
          */
         value: number;
     }[] {
-        return this._transactions;
+        return this._transactions.slice();
+    }
+
+    /**
+     * Get the confirmed transactions as hashes.
+     * @returns The hahes.
+     */
+    public getConfirmedTransactions(): string[] {
+        return this._confirmed;
     }
 
     /**
      * Get the tps history array.
      * @returns The tps.
      */
-    public getTpsHistory(): number[] {
-        return this._tps;
+    public getTxTpsHistory(): number[] {
+        return this._tps.tx.slice();
     }
 
     /**
      * Calculate the tps.
      * @returns The tps.
      */
-    public getTps(): number {
+    public getTps(): {
+        /**
+         * Transactions count per second.
+         */
+        tx: number;
+        /**
+         * Confirmed count per second.
+         */
+        sn: number;
+    } {
+        let txTps = -1;
+        let snTps = -1;
+
         const tps = this._tps;
-        if (tps && tps.length > 0) {
-            const spanS = (this._tpsEnd - this._tpsStart) / 1000;
+        if (tps) {
+            const spanS = (this._tps.end - this._tps.start) / 1000;
             if (spanS > 0) {
-                const total = tps.reduce((a, b) => a + b, 0);
-                return total / spanS;
+                if (tps.tx.length > 0) {
+                    const txTotal = tps.tx.reduce((a, b) => a + b, 0);
+                    txTps = txTotal / spanS;
+                }
+                if (tps.sn.length > 0) {
+                    const snTotal = tps.sn.reduce((a, b) => a + b, 0);
+                    snTps = snTotal / spanS;
+                }
             }
         }
-        return -1;
+        return {
+            tx: txTps,
+            sn: snTps
+        };
     }
 }

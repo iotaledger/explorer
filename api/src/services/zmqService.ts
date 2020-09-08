@@ -28,14 +28,9 @@ export class ZmqService {
     private readonly _endpoint: string;
 
     /**
-     * The connected socket.
+     * The events to subscribe to.
      */
-    private _socket?: Subscriber;
-
-    /**
-     * Last time a message was received.
-     */
-    private _lastMessageTime: number;
+    private readonly _events: string[];
 
     /**
      * The callback for different events.
@@ -56,15 +51,85 @@ export class ZmqService {
     };
 
     /**
+     * The connected socket.
+     */
+    private _socket?: Subscriber;
+
+    /**
+     * Last time a message was received.
+     */
+    private _lastMessageTime: number;
+
+    /**
      * Create a new instance of ZmqService.
      * @param endpoint The gateway for the zmq service.
+     * @param events The events to subscribe to.
      */
-    constructor(endpoint: string) {
+    constructor(endpoint: string, events: string[]) {
         this._endpoint = endpoint;
-        this._subscriptions = {};
+        this._events = events;
         this._lastMessageTime = 0;
 
+        this._subscriptions = {};
+
         setInterval(() => this.keepAlive(), 15000);
+    }
+
+    /**
+     * Connect the ZMQ service.
+     */
+    public connect(): void {
+        try {
+            if (!this._socket) {
+                console.log("ZMQ::Connect", this._endpoint);
+                this._socket = new Subscriber();
+                this._socket.connect(this._endpoint);
+
+                for (const event of this._events) {
+                    this._socket.subscribe(event);
+                }
+
+                this._lastMessageTime = Date.now();
+
+                // Run this as a background task otherwise
+                // it will block this method
+                setTimeout(
+                    async () => {
+                        try {
+                            this._lastMessageTime = Date.now();
+                            for await (const [msg] of this._socket) {
+                                await this.handleMessage(msg.toString());
+                            }
+                        } catch (err) {
+                            console.error("ZMQ::Listening", err);
+                        }
+                    },
+                    500);
+            }
+        } catch (err) {
+            console.error("ZMQ::Connect Error", err);
+            this.disconnect();
+        }
+    }
+
+    /**
+     * Disconnect the ZMQ service.
+     */
+    public disconnect(): void {
+        const localSocket = this._socket;
+        this._socket = undefined;
+        if (localSocket) {
+            try {
+                console.log("ZMQ::Disconnect", this._endpoint);
+
+                for (const event of this._events) {
+                    localSocket.unsubscribe(event);
+                }
+
+                localSocket.close();
+            } catch {
+            }
+        }
     }
 
     /**
@@ -231,10 +296,6 @@ export class ZmqService {
                 if (this._subscriptions[eventKey][j].id === subscriptionId) {
                     this._subscriptions[eventKey].splice(j, 1);
                     if (this._subscriptions[eventKey].length === 0) {
-                        if (this._socket) {
-                            this._socket.unsubscribe(eventKey);
-                        }
-
                         delete this._subscriptions[eventKey];
                     }
                     return;
@@ -244,96 +305,11 @@ export class ZmqService {
     }
 
     /**
-     * Connect the ZMQ service.
-     */
-    public connect(): void {
-        try {
-            if (!this._socket) {
-                this._socket = new Subscriber();
-                this._socket.connect(this._endpoint);
-
-                const keys = Object.keys(this._subscriptions);
-                for (let i = 0; i < keys.length; i++) {
-                    this._socket.subscribe(keys[i]);
-                }
-
-                this._lastMessageTime = Date.now();
-
-                // Run this as a background task otherwise
-                // it will block this method
-                setTimeout(
-                    async () => {
-                        this._lastMessageTime = Date.now();
-                        for await (const [msg] of this._socket) {
-                            await this.handleMessage(msg);
-                        }
-                    },
-                    500);
-            }
-        } catch {
-            this.disconnect();
-        }
-    }
-
-    /**
-     * Disconnect the ZQM service.
-     */
-    public disconnect(): void {
-        const localSocket = this._socket;
-        this._socket = undefined;
-        if (localSocket) {
-            try {
-                const keys = Object.keys(this._subscriptions);
-                for (let i = 0; i < keys.length; i++) {
-                    localSocket.unsubscribe(keys[i]);
-                }
-
-                localSocket.close();
-            } catch {
-            }
-        }
-    }
-
-    /**
-     * Keep the connection alive.
-     */
-    private keepAlive(): void {
-        if (Date.now() - this._lastMessageTime > 15000) {
-            this.disconnect();
-            this.connect();
-        }
-    }
-
-    /**
-     * Add a callback for the event.
-     * @param event The event to add the callback for.
-     * @param callback The callback to store for the event.
-     * @returns The id of the subscription.
-     */
-    private internalAddEventCallback(
-        event: string,
-        callback: (event: string, data: unknown) => Promise<void>
-    ): string {
-        if (!this._subscriptions[event]) {
-            this._subscriptions[event] = [];
-            if (this._socket) {
-                this._socket.subscribe(event);
-            }
-        }
-        const id = TrytesHelper.generateHash(27);
-
-        this._subscriptions[event].push({ id, callback });
-
-        return id;
-    }
-
-    /**
      * Handle a message and send to any callbacks.
      * @param message The message to handle.
      */
-    private async handleMessage(message: Buffer): Promise<void> {
-        const messageContent = message.toString();
-        const messageParams = messageContent.split(" ");
+    public async handleMessage(message: string): Promise<void> {
+        const messageParams = message.split(" ");
 
         this._lastMessageTime = Date.now();
 
@@ -478,16 +454,11 @@ export class ZmqService {
                 default: {
                     // Is this an address event
                     if (/^[9A-Z]{81}$/.test(event)) {
-                        let mi = Number.parseInt(messageParams[2], 10);
-                        let txIndex = 1;
-                        if (Number.isNaN(mi)) {
-                            mi = Number.parseInt(messageParams[3], 10);
-                            txIndex++;
-                        }
+                        const mi = Number.parseInt(messageParams[2], 10);
                         if (!Number.isNaN(mi)) {
                             data = {
                                 address: messageParams[0],
-                                transaction: messageParams[txIndex],
+                                transaction: messageParams[1],
                                 milestoneIndex: mi
                             } as IAddress;
                         }
@@ -500,10 +471,42 @@ export class ZmqService {
                     try {
                         await this._subscriptions[event][i].callback(event, data);
                     } catch (err) {
-                        console.error("Exception in ZMQ callback", event, data, err);
+                        console.error("ZMQ::Callback Error", event, data, err);
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Add a callback for the event.
+     * @param event The event to add the callback for.
+     * @param callback The callback to store for the event.
+     * @returns The id of the subscription.
+     */
+    protected internalAddEventCallback(
+        event: string,
+        callback: (event: string, data: unknown) => Promise<void>
+    ): string {
+        if (!this._subscriptions[event]) {
+            this._subscriptions[event] = [];
+        }
+
+        const id = TrytesHelper.generateHash(27);
+
+        this._subscriptions[event].push({ id, callback });
+
+        return id;
+    }
+
+    /**
+     * Keep the connection alive.
+     */
+    private keepAlive(): void {
+        if (Date.now() - this._lastMessageTime > 30000) {
+            console.log("ZMQ::KeepAlive");
+            this.disconnect();
+            this.connect();
         }
     }
 }

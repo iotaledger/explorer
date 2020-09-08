@@ -29,7 +29,7 @@
   }
 
   @include tablet-down {
-    .row--tablet-responsive {
+    &.row--tablet-responsive {
       flex-direction: column;
     }
   }

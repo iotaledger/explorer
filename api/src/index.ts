@@ -1,24 +1,29 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import bodyParser from "body-parser";
+import compression from "compression";
 import express, { Application } from "express";
 import { Server } from "http";
 import SocketIO from "socket.io";
 import { initServices } from "./initServices";
-import { ITransactionsSubscribeRequest } from "./models/api/ITransactionsSubscribeRequest";
+import { IFeedSubscribeRequest } from "./models/api/IFeedSubscribeRequest";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { routes } from "./routes";
-import { subscribe } from "./routes/transactions/subscribe";
-import { unsubscribe } from "./routes/transactions/unsubscribe";
+import { subscribe } from "./routes/feed/subscribe";
+import { unsubscribe } from "./routes/feed/unsubscribe";
 import { cors, executeRoute } from "./utils/apiHelper";
 
 const configId = process.env.CONFIG_ID || "local";
 const config: IConfiguration = require(`./data/config.${configId}.json`);
 
+const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 4000;
+
 const app: Application = express();
 
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+
+app.use(compression());
 
 app.use((req, res, next) => {
     cors(
@@ -38,55 +43,60 @@ for (const route of routes) {
             config,
             route,
             req.params,
-            config.verboseLogging,
-            true);
+            config.verboseLogging);
     });
 }
 
-const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 4000;
 const server = new Server(app);
 // eslint-disable-next-line new-cap
 const socketServer = SocketIO(server);
 
-server.listen(port, async () => {
-    console.log("Listening listener");
-    console.log(`Started API Server on port ${port}`);
-    console.log(`Running Config '${configId}'`);
+const sockets: {
+    [socketId: string]: string;
+} = {};
 
-    const sockets: {
-        [socketId: string]: {
-            network: string;
-            subscriptionId: string;
-        };
-    } = {};
-
-    socketServer.on("connection", socket => {
-        socket.on("subscribe", (data: ITransactionsSubscribeRequest) => {
-            const response = subscribe(config, socket, data);
-            if (response.subscriptionId) {
-                sockets[socket.id] = {
-                    network: data.network,
-                    subscriptionId: response.subscriptionId
-                };
-            }
-            socket.emit("subscribe", response);
-        });
-
-        socket.on("unsubscribe", data => {
-            const response = unsubscribe(config, socket, data);
-            if (sockets[socket.id]) {
-                delete sockets[socket.id];
-            }
-            socket.emit("unsubscribe", response);
-        });
-
-        socket.on("disconnect", () => {
-            if (sockets[socket.id]) {
-                unsubscribe(config, socket, sockets[socket.id]);
-                delete sockets[socket.id];
-            }
-        });
+socketServer.on("connection", socket => {
+    console.log("Socket::Connection", socket.id);
+    socket.on("subscribe", async (data: IFeedSubscribeRequest) => {
+        const response = await subscribe(config, socket, data);
+        if (!response.error) {
+            sockets[socket.id] = data.network;
+        }
+        console.log("Socket::Subscribe", socket.id, response.subscriptionId);
+        socket.emit("subscribe", response);
     });
 
-    await initServices(config);
+    socket.on("unsubscribe", data => {
+        console.log("Socket::Unsubscribe", socket.id, data.subscriptionId);
+        const response = unsubscribe(config, socket, data);
+        if (sockets[socket.id]) {
+            delete sockets[socket.id];
+        }
+        socket.emit("unsubscribe", response);
+    });
+
+    socket.on("disconnect", async () => {
+        console.log("Socket::Disconnect", socket.id);
+        if (sockets[socket.id]) {
+            await unsubscribe(config, socket, {
+                subscriptionId: sockets[socket.id],
+                network: sockets[socket.id]
+            });
+            delete sockets[socket.id];
+        }
+    });
 });
+
+server.listen(port, async () => {
+    console.log(`Running Config '${configId}'`);
+    console.log(`API port ${port}`);
+
+    try {
+        console.log("Initializing Services");
+        await initServices(config);
+        console.log("Services Initialized");
+    } catch (err) {
+        console.error(err);
+    }
+});
+

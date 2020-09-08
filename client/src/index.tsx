@@ -11,68 +11,65 @@ import "./index.scss";
 import { IConfiguration } from "./models/config/IConfiguration";
 import { ApiClient } from "./services/apiClient";
 import { CurrencyService } from "./services/currencyService";
+import { FeedClient } from "./services/feedClient";
 import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesClient } from "./services/milestonesClient";
+import { NetworkService } from "./services/networkService";
 import { SettingsService } from "./services/settingsService";
 import { TangleCacheService } from "./services/tangleCacheService";
-import { TransactionsClient } from "./services/transactionsClient";
 
 const configId = process.env.REACT_APP_CONFIG_ID ?? "local";
 const config: IConfiguration = require(`./assets/config/config.${configId}.json`);
 
-PaletteHelper.setPalette(config.networks[0].palette);
+initialiseServices().then(() => {
+    ReactDOM.render(
+        (
+            <BrowserRouter>
+                <Route
+                    exact={true}
+                    path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
+                    component={(props: RouteComponentProps<AppRouteProps>) => (
+                        <App {...props} />)}
+                />
 
-registerServices();
-
-ReactDOM.render(
-    (
-        <BrowserRouter>
-            <Route
-                exact={true}
-                path="/:network?/:hashType?/:hash?/:mode?/:key?"
-                component={(props: RouteComponentProps<AppRouteProps>) => (
-                    <App {...props} configuration={config} />)}
-            />
-
-        </BrowserRouter>
-    ),
-    document.querySelector("#root")
-);
+            </BrowserRouter>
+        ),
+        document.querySelector("#root")
+    );
+})
+    .catch(err => console.error(err));
 
 /**
  * Register all the services.
  */
-function registerServices(): void {
-    ServiceFactory.register("local-storage", () => new LocalStorageService());
-    ServiceFactory.register("settings", () => new SettingsService());
-    ServiceFactory.register("currency", () => new CurrencyService(config.apiEndpoint));
+async function initialiseServices(): Promise<void> {
     ServiceFactory.register("api-client", () => new ApiClient(config.apiEndpoint));
-    ServiceFactory.register("tangle-cache", () => new TangleCacheService(config));
-    ServiceFactory.register("configuration", () => config);
+    ServiceFactory.register("settings", () => new SettingsService());
+    ServiceFactory.register("local-storage", () => new LocalStorageService());
 
-    for (const netConfig of config.networks) {
-        ServiceFactory.register(
-            `transactions-${netConfig.network}`,
-            serviceName => {
-                const networkConfig = config.networks
-                    .find(n => n.network === serviceName.slice(13));
+    const networkService = new NetworkService();
+    ServiceFactory.register("network", () => networkService);
 
-                if (networkConfig) {
-                    return new TransactionsClient(config.apiEndpoint, networkConfig);
-                }
-            }
-        );
+    await networkService.buildCache();
 
-        ServiceFactory.register(
-            `milestones-${netConfig.network}`,
-            serviceName => {
-                const networkConfig = config.networks
-                    .find(n => n.network === serviceName.slice(11));
+    ServiceFactory.register("currency", () => new CurrencyService(config.apiEndpoint));
+    ServiceFactory.register("tangle-cache", () => new TangleCacheService());
 
-                if (networkConfig) {
-                    return new MilestonesClient(networkConfig);
-                }
-            }
-        );
+    const networks = networkService.networks();
+
+    if (networks.length > 0) {
+        PaletteHelper.setPalette(networks[0].primaryColor, networks[0].secondaryColor);
+
+        for (const netConfig of networks) {
+            ServiceFactory.register(
+                `feed-${netConfig.network}`,
+                serviceName => new FeedClient(config.apiEndpoint, serviceName.slice(5))
+            );
+
+            ServiceFactory.register(
+                `milestones-${netConfig.network}`,
+                serviceName => new MilestonesClient(serviceName.slice(11))
+            );
+        }
     }
 }

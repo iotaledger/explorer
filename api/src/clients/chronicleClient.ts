@@ -1,11 +1,11 @@
-import axios from "axios";
 import { IFindTransactionsRequest } from "../models/clients/chronicle/IFindTransactionsRequest";
 import { IFindTransactionsResponse } from "../models/clients/chronicle/IFindTransactionsResponse";
 import { IGetTrytesRequest } from "../models/clients/chronicle/IGetTrytesRequest";
 import { IGetTrytesResponse } from "../models/clients/chronicle/IGetTrytesResponse";
+import { FetchHelper } from "../utils/fetchHelper";
 
 /**
- * Class to handle api communications.
+ * Class to handle api communications with Chronicle.
  */
 export class ChronicleClient {
     /**
@@ -27,22 +27,48 @@ export class ChronicleClient {
      * @returns The list of corresponding transaction objects.
      */
     public async getTrytes(request: IGetTrytesRequest): Promise<IGetTrytesResponse | undefined> {
-        const ax = axios.create({ baseURL: this._endpoint });
-
         try {
-            console.log("Chronicle getTrytes", request);
+            const headers = {
+                "X-IOTA-API-Version": "1"
+            };
 
-            const axiosResponse = await ax.post<IGetTrytesResponse>(
-                "",
-                { ...{ command: "getTrytes" }, ...request },
-                {
-                    headers: {
-                        "X-IOTA-API-Version": "1"
+            const CHUNK_SIZE = 10;
+            const numChunks = Math.ceil(request.hashes.length / CHUNK_SIZE);
+
+            const response: IGetTrytesResponse = {
+                trytes: [],
+                milestones: []
+            };
+
+            for (let i = 0; i < numChunks; i++) {
+                const hashes = request.hashes.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+                const req = {
+                    command: "getTrytes",
+                    hashes
+                };
+
+                const resp = await FetchHelper.json<unknown, IGetTrytesResponse>(
+                    this._endpoint,
+                    "",
+                    "post",
+                    req,
+                    headers
+                );
+
+                if (resp.error) {
+                    for (let j = 0; j < hashes.length; j++) {
+                        response.trytes.push("9".repeat(2673));
+                        response.milestones.push(-1);
                     }
+                    console.error("Chronicle Error", resp.error);
+                    console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
+                } else {
+                    response.trytes = response.trytes.concat(resp.trytes);
+                    response.milestones = response.milestones.concat(resp.milestones);
                 }
-            );
+            }
 
-            return axiosResponse.data;
+            return response;
         } catch (err) {
             console.error("Chronicle Error", (err.response?.data?.error) ?? err);
         }
@@ -54,8 +80,6 @@ export class ChronicleClient {
      * @returns The list of found transaction hashes.
      */
     public async findTransactions(request: IFindTransactionsRequest): Promise<IFindTransactionsResponse | undefined> {
-        const ax = axios.create({ baseURL: this._endpoint });
-
         try {
             if (request.addresses) {
                 request.addresses = request.addresses.map(a => a.slice(0, 81));
@@ -63,18 +87,27 @@ export class ChronicleClient {
             if (request.tags) {
                 request.tags = request.tags.map(t => t.padEnd(27, "9"));
             }
-            console.log("Chronicle findTransations", request);
-            const axiosResponse = await ax.post<IFindTransactionsResponse>(
+            const req = {
+                command: "findTransactions",
+                ...request
+            };
+            const headers = {
+                "X-IOTA-API-Version": "1"
+            };
+            const response = await FetchHelper.json<unknown, IFindTransactionsResponse>(
+                this._endpoint,
                 "",
-                { ...{ command: "findTransactions" }, ...request },
-                {
-                    headers: {
-                        "X-IOTA-API-Version": "1"
-                    }
-                }
+                "post",
+                req,
+                headers
             );
 
-            return axiosResponse.data;
+            if (response.error) {
+                console.error("Chronicle Error", response.error);
+                console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
+            }
+
+            return response;
         } catch (err) {
             console.error("Chronicle Error", (err.response?.data?.error) ?? err);
         }

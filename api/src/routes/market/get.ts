@@ -25,13 +25,8 @@ export async function get(config: IConfiguration, request: IMarketGetRequest): P
         }
 
         return {
-            success: true,
-            message: "OK",
             data: market.data
         };
     }
-    return {
-        success: true,
-        message: "Market data not configured"
-    };
+    throw new Error("Market data not configured");
 }

@@ -1,8 +1,9 @@
 import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
+import { ServiceFactory } from "../factories/serviceFactory";
 import { PaletteHelper } from "../helpers/paletteHelper";
+import { NetworkService } from "../services/networkService";
 import "./App.scss";
-import { AppProps } from "./AppProps";
 import { AppRouteProps } from "./AppRouteProps";
 import { AppState } from "./AppState";
 import Disclaimer from "./components/Disclaimer";
@@ -15,6 +16,7 @@ import { AddressRouteProps } from "./routes/AddressRouteProps";
 import Bundle from "./routes/Bundle";
 import { BundleRouteProps } from "./routes/BundleRouteProps";
 import Landing from "./routes/Landing";
+import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
 import Search from "./routes/Search";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
@@ -24,21 +26,30 @@ import Tag from "./routes/Tag";
 import { TagRouteProps } from "./routes/TagRouteProps";
 import Transaction from "./routes/Transaction";
 import { TransactionRouteProps } from "./routes/TransactionRouteProps";
+import Visualizer from "./routes/Visualizer";
+import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
 
 /**
  * Main application class.
  */
-class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppState> {
+class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
+    /**
+     * The network service.
+     */
+    private readonly _networkService: NetworkService;
+
     /**
      * Create a new instance of App.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<AppRouteProps> & AppProps) {
+    constructor(props: RouteComponentProps<AppRouteProps>) {
         super(props);
+        this._networkService = ServiceFactory.get<NetworkService>("network");
+        const networks = this._networkService.networks();
 
         this.state = {
-            networkConfig: this.props.configuration.networks[0],
-            query: this.props.match.params.hashType === "search" ? this.props.match.params.hash : undefined
+            networkId: "",
+            networks
         };
     }
 
@@ -50,19 +61,10 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
     }
 
     /**
-     * The component was updated.
-     * @param prevProps The previous properties.
+     * The component updated.
      */
-    public componentDidUpdate(prevProps: RouteComponentProps<AppRouteProps> & AppProps): void {
-        if (this.props.match.url !== prevProps.match.url) {
-            this.setNetwork(this.props.match.params.network, true);
-        }
-
-        window.scrollTo({
-            left: 0,
-            top: 0,
-            behavior: "smooth"
-        });
+    public componentDidUpdate(): void {
+        this.setNetwork(this.props.match.params.network, false);
     }
 
     /**
@@ -72,32 +74,44 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
     public render(): ReactNode {
         const switcher = (
             <Switcher
-                items={this.props.configuration.networks.map(n => ({
+                items={this.state.networks.map(n => ({
                     label: n.label,
                     value: n.network
                 }))}
-                value={this.state.networkConfig.network}
-                onChange={value => this.setNetwork(value, false)}
+                value={this.state.networkId}
+                onChange={value => {
+                    this.props.history.push(
+                        this.props.match.params.action === "streams"
+                            ? `/${value}/streams/0/`
+                            : (this.props.match.params.action === "visualizer"
+                                ? `/${value}/visualizer/`
+                                : `/${value}`)
+                    );
+                }}
             />
         );
 
         return (
             <div className="app">
                 <Header
-                    networkConfig={this.state.networkConfig}
-                    switcher={this.props.match.params.hashType && switcher}
-                    search={this.props.match.params.hashType && this.props.match.params.hashType !== "streams-v0" && (
-                        <SearchInput
-                            query={this.state.query}
-                            onSearch={query => this.setQuery(query)}
-                            compact={true}
-                        />
-                    )}
+                    rootPath={`/${this.state.networkId}`}
+                    switcher={this.props.match.params.action &&
+                        this.props.match.params.action !== "markets" &&
+                        switcher}
+                    search={this.props.match.params.action &&
+                        this.props.match.params.action !== "streams" &&
+                        this.props.match.params.action !== "visualizer" &&
+                        this.props.match.params.action !== "markets" && (
+                            <SearchInput
+                                onSearch={query => this.setQuery(query)}
+                                compact={true}
+                            />
+                        )}
                 />
                 <div className="content">
                     <Switch>
                         <Route
-                            path="/markets"
+                            path="/:network/markets"
                             component={() =>
                                 (
                                     <Markets />
@@ -106,14 +120,13 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                         <Route
                             exact={true}
                             path="/:network?"
-                            component={() =>
+                            component={(props: RouteComponentProps<LandingRouteProps>) =>
                                 (
                                     <Landing
-                                        networkConfig={this.state.networkConfig}
+                                        {...props}
                                         switcher={switcher}
                                         search={(
                                             <SearchInput
-                                                query={this.state.query}
                                                 onSearch={query => this.setQuery(query)}
                                                 compact={false}
                                             />
@@ -122,32 +135,31 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                                 )}
                         />
                         <Route
-                            path="/:network/streams-v0/:hash?/:mode?/:key?"
+                            path="/:network/streams/0/:hash?/:mode?/:key?"
                             component={(props: RouteComponentProps<StreamsV0RouteProps>) =>
                                 (
-                                    <StreamsV0
-                                        {...props}
-                                    />
+                                    <StreamsV0 {...props} />
+                                )}
+                        />
+                        <Route
+                            path="/:network/visualizer/"
+                            component={(props: RouteComponentProps<VisualizerRouteProps>) =>
+                                (
+                                    <Visualizer {...props} />
                                 )}
                         />
                         <Route
                             path="/:network/transaction/:hash"
                             component={(props: RouteComponentProps<TransactionRouteProps>) =>
                                 (
-                                    <Transaction
-                                        {...props}
-                                        networkConfig={this.state.networkConfig}
-                                    />
+                                    <Transaction {...props} />
                                 )}
                         />
                         <Route
                             path="/:network/tag/:hash"
                             component={(props: RouteComponentProps<TagRouteProps>) =>
                                 (
-                                    <Tag
-                                        {...props}
-                                        networkConfig={this.state.networkConfig}
-                                    />
+                                    <Tag {...props} />
                                 )}
                         />
                         <Route
@@ -156,7 +168,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                                 (
                                     <Address
                                         {...props}
-                                        networkConfig={this.state.networkConfig}
                                     />
                                 )}
                         />
@@ -164,38 +175,36 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
                             path="/:network/bundle/:hash"
                             component={(props: RouteComponentProps<BundleRouteProps>) =>
                                 (
-                                    <Bundle
-                                        {...props}
-                                        networkConfig={this.state.networkConfig}
-                                    />
+                                    <Bundle {...props} />
                                 )}
                         />
                         <Route
                             path="/:network/search/:hash?"
                             component={(props: RouteComponentProps<SearchRouteProps>) =>
                                 (
-                                    <Search
-                                        {...props}
-                                        networkConfig={this.state.networkConfig}
-                                    />
+                                    <Search {...props} />
                                 )}
                         />
                     </Switch>
                 </div>
                 <Footer
                     dynamic={
-                        this.props.configuration.networks
+                        this.state.networks
                             .map(n => ({
                                 label: n.label,
                                 url: n.network
                             }))
-                            .concat(this.props.configuration.networks.map(n => ({
-                                label: `${n.label} Streams V0`,
-                                url: `${n.network}/streams-v0/`
-                            })))
+                            .concat({
+                                label: "Streams V0",
+                                url: `${this.state.networkId}/streams/0/`
+                            })
+                            .concat({
+                                label: "Visualizer",
+                                url: `${this.state.networkId}/visualizer/`
+                            })
                             .concat({
                                 label: "Markets",
-                                url: "markets"
+                                url: `${this.state.networkId}/markets/`
                             })
                     }
                 />
@@ -207,40 +216,28 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
     /**
      * Set the active network
      * @param network The network to set.
-     * @param keepParams Keep the other path params.
+     * @param updateLocation Update the location as well.
      */
-    private setNetwork(network: string | undefined, keepParams: boolean): void {
-        const config = network
-            ? this.props.configuration.networks.find(n => n.network === network)
-            : this.props.configuration.networks[0];
-
-        if (config && config.network !== this.state.networkConfig.network) {
+    private setNetwork(network: string | undefined, updateLocation: boolean): void {
+        if (!network) {
+            network = this.state.networks && this.state.networks.length > 0
+                ? this.state.networks[0].network : "mainnet";
+            updateLocation = true;
+        }
+        const hasChanged = network !== this.state.networkId;
+        if (hasChanged) {
             this.setState(
                 {
-                    networkConfig: config
+                    networkId: network ?? ""
                 },
                 () => {
-                    PaletteHelper.setPalette(config.palette);
-                    let path = `/${config.network}`;
-                    if (keepParams || this.props.match.params.hashType === "streams-v0") {
-                        if (this.props.match.params.hashType) {
-                            path += `/${this.props.match.params.hashType}`;
-                        }
+                    const config = this.state.networks.find(n => n.network === network);
+                    if (config) {
+                        PaletteHelper.setPalette(config.primaryColor, config.secondaryColor);
                     }
-
-                    if (keepParams) {
-                        if (this.props.match.params.hash) {
-                            path += `/${this.props.match.params.hash}`;
-                        }
-                        if (this.props.match.params.mode) {
-                            path += `/${this.props.match.params.mode}`;
-                        }
-                        if (this.props.match.params.key) {
-                            path += `/${this.props.match.params.key}`;
-                        }
+                    if (!this.props.location.pathname.startsWith(`/${network}`) && updateLocation) {
+                        this.props.history.replace(`/${network}`);
                     }
-                    this.props.history.push(path);
-
                     window.scrollTo({
                         left: 0,
                         top: 0,
@@ -256,12 +253,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & AppProps, AppSt
      * @param query The search query to set.
      */
     private setQuery(query?: string): void {
-        this.setState(
-            { query },
-            () => {
-                this.props.history.push(`/${this.state.networkConfig.network}/search/${this.state.query}`);
-            }
-        );
+        this.props.history.push(`/${this.state.networkId}/search/${query}`);
     }
 }
 

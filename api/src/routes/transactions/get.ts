@@ -1,8 +1,10 @@
 import { isEmpty } from "@iota/validators";
+import { ServiceFactory } from "../../factories/serviceFactory";
 import { ITransactionsGetRequest } from "../../models/api/ITransactionsGetRequest";
 import { ITransactionsGetResponse } from "../../models/api/ITransactionsGetResponse";
 import { TransactionsGetMode } from "../../models/api/transactionsGetMode";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
+import { NetworkService } from "../../services/networkService";
 import { TangleHelper } from "../../utils/tangleHelper";
 import { ValidationHelper } from "../../utils/validationHelper";
 
@@ -16,36 +18,37 @@ export async function get(
     config: IConfiguration,
     request: ITransactionsGetRequest
 ): Promise<ITransactionsGetResponse> {
-    ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    ValidationHelper.oneOf(request.network, networkService.networks().map(n => n.network), "network");
     ValidationHelper.string(request.hash, "hash");
 
-    const networkConfig = config.networks.find(n => n.network === request.network);
+    const networkConfig = networkService.get(request.network);
 
     let hashes: string[];
     let foundMode: TransactionsGetMode;
     let modes: TransactionsGetMode[];
-    let limitExceeded: boolean = false;
     let returnCursor: string | undefined;
 
-    if (request.mode) {
-        modes = [request.mode];
-    } else if (request.hash.length <= 27) {
-        modes = ["tags"];
-    } else if (request.hash.length === 90) {
-        modes = ["addresses"];
-    } else {
-        modes = ["addresses", "bundles"];
-    }
+    if (request.mode !== "transaction") {
+        if (request.mode) {
+            modes = [request.mode];
+        } else if (request.hash.length <= 27) {
+            modes = ["tags"];
+        } else if (request.hash.length === 90) {
+            modes = ["addresses"];
+        } else {
+            modes = ["addresses", "bundles"];
+        }
 
-    for (const mode of modes) {
-        const { foundHashes, tooMany, cursor } = await TangleHelper.findHashes(networkConfig, mode, request.hash);
+        for (const mode of modes) {
+            const { foundHashes, cursor } = await TangleHelper.findHashes(networkConfig, mode, request.hash);
 
-        if ((foundHashes && foundHashes.length > 0) || tooMany) {
-            foundMode = mode;
-            hashes = foundHashes;
-            limitExceeded = tooMany;
-            returnCursor = cursor;
-            break;
+            if ((foundHashes && foundHashes.length > 0)) {
+                foundMode = mode;
+                hashes = foundHashes;
+                returnCursor = cursor;
+                break;
+            }
         }
     }
 
@@ -59,11 +62,9 @@ export async function get(
     }
 
     return {
-        success: true,
-        message: "OK",
         mode: foundMode,
-        limitExceeded,
-        hashes,
+        hashes: hashes ? hashes.slice(0, 250) : [],
+        total: hashes ? hashes.length : 0,
         cursor: returnCursor
     };
 }

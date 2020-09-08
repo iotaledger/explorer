@@ -55,6 +55,10 @@
           margin-right: 0px;
         }
 
+        .item-details + .item-details {
+          margin-top: 40px;
+        }
+
         .card + .card {
           margin-top: 23px;
         }

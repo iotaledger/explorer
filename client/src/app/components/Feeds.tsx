@@ -1,18 +1,18 @@
+import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { FeedClient } from "../../services/feedClient";
 import { MilestonesClient } from "../../services/milestonesClient";
-import { TransactionsClient } from "../../services/transactionsClient";
-import { NetworkProps } from "../NetworkProps";
 import Currency from "./Currency";
 import { FeedsState } from "./FeedsState";
 
 /**
  * Component which will be the base for feeds components.
  */
-abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Currency<P, S> {
+abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S extends FeedsState> extends Currency<P, S> {
     /**
-     * Transactions client.
+     * Feed client.
      */
-    protected _transactionsClient?: TransactionsClient;
+    protected _feedClient?: FeedClient;
 
     /**
      * Milestones client.
@@ -54,7 +54,7 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
             super.componentDidUpdate(prevProps, prevState);
         }
 
-        if (this.props.networkConfig !== prevProps.networkConfig) {
+        if (this.props.match.params.network !== prevProps.match.params.network) {
             this.closeTransactions();
             this.buildTransactions();
 
@@ -80,8 +80,8 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
     }
 
     /**
-     * Filter the transactions and return them.
-     * @param transactions The transactions to filter.
+     * The transactions have been updated.
+     * @param transactions The updated transactions.
      */
     protected transactionsUpdated(transactions: {
         /**
@@ -89,10 +89,25 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
          */
         hash: string;
         /**
-         * The tx value.
+         * The trunk.
+         */
+        trunk: string;
+        /**
+         * The branch.
+         */
+        branch: string;
+        /**
+         * The transaction value.
          */
         value: number;
     }[]): void {
+    }
+
+    /**
+     * The confirmed transactions have been updated.
+     * @param confirmed The updated confirmed transactions.
+     */
+    protected confirmedUpdated(confirmed: string[]): void {
     }
 
     /**
@@ -105,21 +120,23 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
                 transactionsPerSecond: "--"
             },
             () => {
-                this._transactionsClient = ServiceFactory.get<TransactionsClient>(
-                    `transactions-${this.props.networkConfig.network}`);
+                this._feedClient = ServiceFactory.get<FeedClient>(
+                    `feed-${this.props.match.params.network}`);
 
-                this._txSubscriptionId = this._transactionsClient.subscribe(
-                    () => {
-                        if (this._isMounted) {
-                            this.updateTransactions();
-                            this.updateTps();
+                if (this._feedClient) {
+                    this._txSubscriptionId = this._feedClient.subscribe(
+                        () => {
+                            if (this._isMounted) {
+                                this.updateTransactions();
+                                this.updateTps();
+                            }
                         }
-                    }
-                );
+                    );
 
-                this.updateTransactions();
-                this.updateTps();
-                this._timerId = setInterval(() => this.updateTps(), 2000);
+                    this.updateTransactions();
+                    this.updateTps();
+                    this._timerId = setInterval(() => this.updateTps(), 2000);
+                }
             });
     }
 
@@ -127,12 +144,12 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
      * Close the feeds for transactions.
      */
     private closeTransactions(): void {
-        if (this._transactionsClient) {
+        if (this._feedClient) {
             if (this._txSubscriptionId) {
-                this._transactionsClient.unsubscribe(this._txSubscriptionId);
+                this._feedClient.unsubscribe(this._txSubscriptionId);
                 this._txSubscriptionId = undefined;
             }
-            this._transactionsClient = undefined;
+            this._feedClient = undefined;
         }
 
         if (this._timerId) {
@@ -145,15 +162,20 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
      * Update the transaction feeds.
      */
     private updateTransactions(): void {
-        if (this._isMounted && this._transactionsClient) {
-            const transactions = this._transactionsClient.getTransactions();
-            const tpsHistory = this._transactionsClient.getTpsHistory();
+        if (this._isMounted && this._feedClient) {
+            const transactions = this._feedClient.getTransactions();
+            const confirmed = this._feedClient.getConfirmedTransactions();
+            const tpsHistory = this._feedClient.getTxTpsHistory();
 
             this.setState({
                 transactions,
+                confirmed,
                 // Increase values by +100 to add more area under the graph
                 transactionsPerSecondHistory: tpsHistory.reverse().map(v => v + 100)
-            }, () => this.transactionsUpdated(transactions));
+            }, () => {
+                this.transactionsUpdated(transactions);
+                this.confirmedUpdated(confirmed);
+            });
         }
     }
 
@@ -161,11 +183,14 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
      * Update the transaction tps.
      */
     private updateTps(): void {
-        if (this._isMounted && this._transactionsClient) {
-            const tps = this._transactionsClient.getTps();
+        if (this._isMounted && this._feedClient) {
+            const tps = this._feedClient.getTps();
 
             this.setState({
-                transactionsPerSecond: tps >= 0 ? tps.toFixed(2) : "--"
+                transactionsPerSecond: tps.tx >= 0 ? tps.tx.toFixed(2) : "--",
+                confirmedTransactionsPerSecond: tps.sn >= 0 ? tps.sn.toFixed(2) : "--",
+                confirmedTransactionsPerSecondPercent: tps.tx > 0
+                    ? `${(tps.sn / tps.tx * 100).toFixed(2)}%` : "--"
             });
         }
     }
@@ -180,17 +205,19 @@ abstract class Feeds<P extends NetworkProps, S extends FeedsState> extends Curre
             },
             () => {
                 this._milestonesClient = ServiceFactory.get<MilestonesClient>(
-                    `milestones-${this.props.networkConfig.network}`);
+                    `milestones-${this.props.match.params.network}`);
 
-                this._miSubscriptionId = this._milestonesClient.subscribe(
-                    () => {
-                        if (this._isMounted) {
-                            this.updateMilestones();
+                if (this._milestonesClient) {
+                    this._miSubscriptionId = this._milestonesClient.subscribe(
+                        () => {
+                            if (this._isMounted) {
+                                this.updateMilestones();
+                            }
                         }
-                    }
-                );
+                    );
 
-                this.updateMilestones();
+                    this.updateMilestones();
+                }
             });
     }
 

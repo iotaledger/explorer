@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
-import { NetworkProps } from "../NetworkProps";
 
-export interface LandingProps extends NetworkProps {
+export interface LandingProps {
     /**
      * Switcher component to display.
      */

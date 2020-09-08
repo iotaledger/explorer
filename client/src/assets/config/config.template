@@ -1,7 +1,4 @@
 {
     "apiEndpoint": "API-ENDPOINT",
-    "networks": [
-        NETWORKS
-    ],
     "googleAnalyticsId": "GOOGLE-ANALYTICS-ID"
 }

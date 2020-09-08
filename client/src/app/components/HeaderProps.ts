@@ -1,14 +1,13 @@
 import { ReactNode } from "react";
-import { IClientNetworkConfiguration } from "../../models/config/IClientNetworkConfiguration";
 
 /**
  * The props for the Header component.
  */
 export interface HeaderProps {
     /**
-     * The current network.
+     * The root path.
      */
-    networkConfig: IClientNetworkConfiguration;
+    rootPath: string;
 
     /**
      * The switch elements to display as content.

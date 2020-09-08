@@ -1,5 +1,5 @@
-import axios from "axios";
 import { ILatestResponse } from "../models/clients/fixer/ILatestResponse";
+import { FetchHelper } from "../utils/fetchHelper";
 
 /**
  * Class to handle requests to fixer.io api.
@@ -29,17 +29,15 @@ export class FixerClient {
      * @param baseCurrency The base currency to use for the rates.
      * @returns The exchange rates.
      */
-    public async latest(baseCurrency: string): Promise<{ [id: string]: number } | undefined> {
-        const ax = axios.create({ baseURL: this._endpoint });
-        let response: { [id: string]: number } | undefined;
+    public async latest(baseCurrency: string): Promise<ILatestResponse> {
+        let response: ILatestResponse;
 
         try {
-            const axiosResponse = await ax.get<ILatestResponse>(
-                `latest?access_key=${this._apiKey}&format=1&base=${baseCurrency}`);
-
-            if (axiosResponse.data?.success) {
-                response = axiosResponse.data.rates;
-            }
+            response = await FetchHelper.json<unknown, ILatestResponse>(
+                this._endpoint,
+                `latest?access_key=${this._apiKey}&format=1&base=${baseCurrency}`,
+                "get"
+            );
         } catch {
         }
 

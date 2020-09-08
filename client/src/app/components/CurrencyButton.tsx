@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import Currency from "./Currency";
 import "./CurrencyButton.scss";
@@ -49,7 +50,13 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
                 </div>
                 <div className="currency-button--selector">
                     <div className="rate--label">
-                        Rate <span className="rate--value">{this.state.priceCurrency}</span>
+                        Rate
+                        <Link
+                            to={this.props.marketsRoute}
+                            className="rate--value"
+                        >
+                            {this.state.priceCurrency}
+                        </Link>
                     </div>
                     <div className="select-wrapper select-wrapper--small">
                         <select

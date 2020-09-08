@@ -7,6 +7,16 @@ export interface FeedsState extends CurrencyState {
     transactionsPerSecond: string;
 
     /**
+     * The confirmed transactions per second.
+     */
+    confirmedTransactionsPerSecond: string;
+
+    /**
+     * The confirmed transactions per second.
+     */
+    confirmedTransactionsPerSecondPercent: string;
+
+    /**
      * The transactions per second.
      */
     transactionsPerSecondHistory: number[];
@@ -20,10 +30,23 @@ export interface FeedsState extends CurrencyState {
          */
         hash: string;
         /**
-         * The tx value.
+         * The trunk.
+         */
+        trunk: string;
+        /**
+         * The branch.
+         */
+        branch: string;
+        /**
+         * The transaction value.
          */
         value: number;
     }[];
+
+    /**
+     * Confirmed transactions.
+     */
+    confirmed: string[];
 
     /**
      * Latest milestones.

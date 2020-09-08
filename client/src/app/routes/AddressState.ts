@@ -47,11 +47,6 @@ export interface AddressState {
     }[];
 
     /**
-     * The items exceeded the limit.
-     */
-    limitExceeded?: boolean;
-
-    /**
      * Is the component status busy.
      */
     statusBusy: number;
@@ -75,6 +70,11 @@ export interface AddressState {
      * Hide unconfirmed transactions.
      */
     showOnlyConfirmedTransactions: boolean;
+
+    /**
+     * Total number of items.
+     */
+    totalCount?: number;
 
     /**
      * Cursor next request.

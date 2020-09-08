@@ -13,9 +13,9 @@ export interface ITransactionsGetResponse extends IResponse {
     mode?: TransactionsGetMode;
 
     /**
-     * There were too many items to retrieve.
+     * The total number of transactions.
      */
-    limitExceeded?: boolean;
+    total?: number;
 
     /**
      * Cursor to use for subsequent requests.

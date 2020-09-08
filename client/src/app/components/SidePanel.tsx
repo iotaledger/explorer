@@ -1,27 +1,30 @@
 import React, { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import { UnitsHelper } from "../../helpers/unitsHelper";
-import { NetworkProps } from "../NetworkProps";
 import Feeds from "./Feeds";
 import { FeedsState } from "./FeedsState";
 import LineChart from "./LineChart";
 import "./SidePanel.scss";
+import { SidePanelRouteProps } from "./SidePanelRouteProps";
 
 /**
  * Component which will show the side panel component.
  */
-class SidePanel extends Feeds<NetworkProps, FeedsState> {
+class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsState> {
     /**
      * Create a new instance of SidePanel.
      * @param props The props.
      */
-    constructor(props: NetworkProps) {
+    constructor(props: RouteComponentProps<SidePanelRouteProps>) {
         super(props);
 
         this.state = {
             transactionsPerSecond: "--",
+            confirmedTransactionsPerSecond: "--",
+            confirmedTransactionsPerSecondPercent: "--",
             transactionsPerSecondHistory: [],
             transactions: [],
+            confirmed: [],
             milestones: [],
             currency: "USD",
             currencies: []
@@ -43,8 +46,8 @@ class SidePanel extends Feeds<NetworkProps, FeedsState> {
                         <div className="card--label card--label__highlight padding-t-s">
                             Transactions Per Second
                         </div>
-                        <div className="card--value card--value__highlight padding-t-s">
-                            {this.state.transactionsPerSecond}
+                        <div className="card--value card--value__large padding-t-s">
+                            {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
                         </div>
                         <LineChart
                             values={this.state.transactionsPerSecondHistory}
@@ -59,7 +62,7 @@ class SidePanel extends Feeds<NetworkProps, FeedsState> {
                                 <span className="feed-item--value">{tx.milestoneIndex}</span>
                                 <Link
                                     className="feed-item--hash"
-                                    to={`/${this.props.networkConfig.network}/transaction/${tx.hash}`}
+                                    to={`/${this.props.match.params.network}/transaction/${tx.hash}`}
                                 >
                                     {tx.hash}
                                 </Link>
@@ -78,7 +81,7 @@ class SidePanel extends Feeds<NetworkProps, FeedsState> {
                                 </span>
                                 <Link
                                     className="feed-item--hash"
-                                    to={`/${this.props.networkConfig.network}/transaction/${tx.hash}`}
+                                    to={`/${this.props.match.params.network}/transaction/${tx.hash}`}
                                 >
                                     {tx.hash}
                                 </Link>

@@ -10,4 +10,9 @@ export interface IFindTransactionsResponse {
      * Hints to use in next lookups.
      */
     hints?: IFindTransactionsHint[];
+
+    /**
+     * Error.
+     */
+    error?: string;
 }

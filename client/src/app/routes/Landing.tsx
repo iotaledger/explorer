@@ -1,39 +1,49 @@
 import { convertUnits, Unit } from "@iota/unit-converter";
 import React, { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import chevronDownWhite from "../../assets/chevron-down-white.svg";
+import { ServiceFactory } from "../../factories/serviceFactory";
 import { UnitsHelper } from "../../helpers/unitsHelper";
 import { ValueFilter } from "../../models/services/valueFilter";
+import { NetworkService } from "../../services/networkService";
 import Feeds from "../components/Feeds";
 import "./Landing.scss";
 import { LandingProps } from "./LandingProps";
+import { LandingRouteProps } from "./LandingRouteProps";
 import { LandingState } from "./LandingState";
 
 /**
  * Component which will show the landing page.
  */
-class Landing extends Feeds<LandingProps, LandingState> {
+class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProps, LandingState> {
     /**
      * Create a new instance of Landing.
      * @param props The props.
      */
-    constructor(props: LandingProps) {
+    constructor(props: RouteComponentProps<LandingRouteProps> & LandingProps) {
         super(props);
 
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        const network = props.match.params.network ? networkService.get(props.match.params.network) : "";
+
         this.state = {
+            networkLabel: network ? network.label : "Unknown network",
             valueMinimum: "0",
             valueMinimumUnits: Unit.i,
             valueMaximum: "1",
             valueMaximumUnits: Unit.Ti,
             valueFilter: "both",
             transactionsPerSecond: "--",
+            confirmedTransactionsPerSecond: "--",
+            confirmedTransactionsPerSecondPercent: "--",
             transactionsPerSecondHistory: [],
             marketCapEUR: 0,
             marketCapCurrency: "--",
             priceEUR: 0,
             priceCurrency: "--",
             transactions: [],
+            confirmed: [],
             filteredTransactions: [],
             milestones: [],
             currency: "USD",
@@ -71,7 +81,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
                         <div className="header">
                             <h2>Searching</h2>
                             <div className="row space-between wrap">
-                                <h1>{this.props.networkConfig.label}</h1>
+                                <h1>{this.state.networkLabel}</h1>
                                 {this.props.switcher}
                             </div>
                             <div className="row fill">
@@ -80,14 +90,29 @@ class Landing extends Feeds<LandingProps, LandingState> {
                             <div className="row space-between info-boxes">
                                 <div className="info-box">
                                     <span className="info-box--title">Transactions per Second</span>
-                                    <span className="info-box--value">{this.state.transactionsPerSecond}</span>
-                                    <span className="info-box--action">&nbsp;</span>
+                                    <span className="info-box--value">
+                                        {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
+                                    </span>
+                                    <span className="info-box--action info-box--action__labelvalue">
+                                        <span className="info-box--action__label margin-r-t">
+                                            Confirmation Rate:
+                                        </span>
+                                        <span className="info-box--action__value">
+                                            {this.state.confirmedTransactionsPerSecondPercent}
+                                        </span>
+                                    </span>
                                 </div>
                                 <div className="info-box">
-                                    <Link to="/markets" className="info-box--title linked">
+                                    <Link
+                                        to={`/${this.props.match.params.network}/markets`}
+                                        className="info-box--title linked"
+                                    >
                                         IOTA Market Cap
                                     </Link>
-                                    <Link to="/markets" className="info-box--value linked">
+                                    <Link
+                                        to={`/${this.props.match.params.network}/markets`}
+                                        className="info-box--value linked"
+                                    >
                                         {this.state.marketCapCurrency}
                                     </Link>
                                     <span className="info-box--action">
@@ -105,10 +130,16 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                     </span>
                                 </div>
                                 <div className="info-box">
-                                    <Link to="/markets" className="info-box--title linked">
+                                    <Link
+                                        to={`/${this.props.match.params.network}/markets`}
+                                        className="info-box--title linked"
+                                    >
                                         Price / MI
                                     </Link>
-                                    <Link to="/markets" className="info-box--value linked">
+                                    <Link
+                                        to={`/${this.props.match.params.network}/markets`}
+                                        className="info-box--value linked"
+                                    >
                                         {this.state.priceCurrency}
                                     </Link>
                                     <span className="info-box--action">
@@ -184,7 +215,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                 </div>
                                 <div className="col">
                                     <span className="card--label">&nbsp;</span>
-                                    <span className="card--label">To</span>
+                                    <span className="card--label margin-b-t">To</span>
                                 </div>
                                 <div className="col">
                                     <span className="card--label">Maximum</span>
@@ -218,7 +249,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
                             <div className="row wrap feeds">
                                 <div className="feed card">
                                     <div className="card--header">
-                                        <h2>{this.props.networkConfig.label} Feed</h2>
+                                        <h2>{this.state.networkLabel} Feed</h2>
                                     </div>
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
@@ -249,7 +280,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                                 </span>
                                                 <Link
                                                     className="feed-item--hash"
-                                                    to={`/${this.props.networkConfig.network}/transaction/${tx.hash}`}
+                                                    to={`/${this.props.match.params.network}/transaction/${tx.hash}`}
                                                 >
                                                     {tx.hash}
                                                 </Link>
@@ -259,7 +290,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                 </div>
                                 <div className="feed card">
                                     <div className="card--header">
-                                        <h2>{this.props.networkConfig.label} Milestones</h2>
+                                        <h2>{this.state.networkLabel} Milestones</h2>
                                     </div>
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
@@ -271,7 +302,7 @@ class Landing extends Feeds<LandingProps, LandingState> {
                                                 <span className="feed-item--value">{tx.milestoneIndex}</span>
                                                 <Link
                                                     className="feed-item--hash"
-                                                    to={`/${this.props.networkConfig.network}/transaction/${tx.hash}`}
+                                                    to={`/${this.props.match.params.network}/transaction/${tx.hash}`}
                                                 >
                                                     {tx.hash}
                                                 </Link>
@@ -322,11 +353,19 @@ class Landing extends Feeds<LandingProps, LandingState> {
          */
         hash: string;
         /**
-         * The tx value.
+         * The trunk.
+         */
+        trunk: string;
+        /**
+         * The branch.
+         */
+        branch: string;
+        /**
+         * The transaction value.
          */
         value: number;
     }[]): void {
-        if (this._isMounted && this._transactionsClient) {
+        if (this._isMounted && this._feedClient) {
             const minLimit = convertUnits(this.state.valueMinimum, this.state.valueMinimumUnits, Unit.i);
             const maxLimit = convertUnits(this.state.valueMaximum, this.state.valueMaximumUnits, Unit.i);
 

@@ -20,7 +20,7 @@
   }
 
   .currency-button--value {
-    @include font-size(32px);
+    @include font-size(28px);
 
     margin: 30px 0px;
     color: $white;
@@ -53,6 +53,11 @@
       color: $main-green-highlight;
       font-family: $inter;
       font-weight: normal;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
 
     .select-wrapper {

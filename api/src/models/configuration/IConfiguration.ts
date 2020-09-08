@@ -1,15 +1,9 @@
 import { IAWSDynamoDbConfiguration } from "./IAWSDynamoDbConfiguration";
-import { INetworkConfiguration } from "./INetworkConfiguration";
 
 /**
  * Definition of configuration file.
  */
 export interface IConfiguration {
-    /**
-     * The networks.
-     */
-    networks: INetworkConfiguration[];
-
     /**
      * The fixer api key.
      */

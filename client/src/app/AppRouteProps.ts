@@ -6,22 +6,32 @@ export interface AppRouteProps {
     network?: string;
 
     /**
-     * The hash type from the location.
+     * The action from the location.
      */
-    hashType?: string;
+    action?: string;
 
     /**
-     * The hash from the location.
+     * The additional params.
      */
-    hash?: string;
+    param1?: string;
 
     /**
-     * The mode from the location.
+     * The additional params.
      */
-    mode?: string;
+    param2?: string;
 
     /**
-     * The key from the location.
+     * The additional params.
      */
-    key?: string;
+    param3?: string;
+
+    /**
+     * The additional params.
+     */
+    param4?: string;
+
+    /**
+     * The additional params.
+     */
+    param5?: string;
 }

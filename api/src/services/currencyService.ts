@@ -43,13 +43,20 @@ export class CurrencyService {
                 this._isUpdating = true;
 
                 const currencyStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
-                let currentState;
+                let currentState: ICurrencyState;
 
                 if (currencyStorageService) {
                     currentState = await currencyStorageService.get("default");
                 }
 
-                currentState = currentState || { id: "default" };
+                currentState = currentState || {
+                    id: "default",
+                    lastCurrencyUpdate: 0,
+                    currentPriceEUR: 0,
+                    marketCapEUR: 0,
+                    volumeEUR: 0,
+                    exchangeRatesEUR: {}
+                };
 
                 // If now date, default to 2 days ago
                 const lastCurrencyUpdate = currentState.lastCurrencyUpdate
@@ -67,12 +74,12 @@ export class CurrencyService {
                         log += "Updating fixer\n";
 
                         const fixerClient = new FixerClient(this._config.fixerApiKey);
-                        const rates = await fixerClient.latest("EUR");
+                        const data = await fixerClient.latest("EUR");
 
-                        log += `Rates ${JSON.stringify(rates)}\n`;
+                        if (data?.rates) {
+                            log += `Rates ${JSON.stringify(data?.rates)}\n`;
 
-                        if (rates) {
-                            currentState.exchangeRatesEUR = rates;
+                            currentState.exchangeRatesEUR = data?.rates;
                         }
                     } else {
                         log += "Not updating fixer, no API Key\n";
@@ -125,7 +132,7 @@ export class CurrencyService {
 
                     await marketStorage.setAll(markets);
 
-                    currentState.lastCurrencyUpdate = now;
+                    currentState.lastCurrencyUpdate = now.getTime();
                     if (currencyStorageService) {
                         await currencyStorageService.set(currentState);
                     }

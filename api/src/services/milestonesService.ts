@@ -1,8 +1,8 @@
 import { ServiceFactory } from "../factories/serviceFactory";
-import { INetworkConfiguration } from "../models/configuration/INetworkConfiguration";
 import { IMilestoneStore } from "../models/db/IMilestoneStore";
 import { IStorageService } from "../models/services/IStorageService";
 import { IAddress } from "../models/zmq/IAddress";
+import { NetworkService } from "./networkService";
 import { ZmqService } from "./zmqService";
 
 /**
@@ -10,9 +10,9 @@ import { ZmqService } from "./zmqService";
  */
 export class MilestonesService {
     /**
-     * The network configuration.
+     * The network name.
      */
-    private readonly _config: INetworkConfiguration;
+    private readonly _networkId: string;
 
     /**
      * The zmq service.
@@ -25,9 +25,9 @@ export class MilestonesService {
     private _milestoneStorageService: IStorageService<IMilestoneStore>;
 
     /**
-     * Subscription ids.
+     * Subscription address id.
      */
-    private _subscriptionId: string;
+    private _subscriptionAddressId: string;
 
     /**
      * Last updates
@@ -60,23 +60,23 @@ export class MilestonesService {
 
     /**
      * Create a new instance of MilestoneService.
-     * @param networkConfiguration The network configuration.
+     * @param networkId The network configuration.
      */
-    constructor(networkConfiguration: INetworkConfiguration) {
-        this._config = networkConfiguration;
+    constructor(networkId: string) {
+        this._networkId = networkId;
     }
 
     /**
      * Initialise the milestones.
      */
     public async init(): Promise<void> {
-        this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._config.network}`);
+        this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._networkId}`);
         this._milestones = [];
 
         this._milestoneStorageService = ServiceFactory.get<IStorageService<IMilestoneStore>>("milestone-storage");
 
         if (this._milestoneStorageService) {
-            const store = await this._milestoneStorageService.get(this._config.network);
+            const store = await this._milestoneStorageService.get(this._networkId);
             if (store?.indexes) {
                 this._milestones = store.indexes;
             }
@@ -121,42 +121,49 @@ export class MilestonesService {
      * Initialise network.
      */
     private initNetwork(): void {
-        this._subscriptionId = this._zmqService.subscribeAddress(
-            this._config.coordinatorAddress,
-            async (evnt: string, message: IAddress) => {
-                if (message.address === this._config.coordinatorAddress) {
-                    this._lastUpdate = Date.now();
+        const networkService = ServiceFactory.get<NetworkService>("network");
 
-                    if (this._milestones.length === 0 ||
-                        message.milestoneIndex > this._milestones[0].milestoneIndex) {
-                        this._milestones.unshift({
-                            hash: message.transaction,
-                            milestoneIndex: message.milestoneIndex
-                        });
-                        this._milestones = this._milestones.slice(0, 100);
+        if (networkService) {
+            const networkConfig = networkService.get(this._networkId);
 
-                        if (this._milestoneStorageService) {
-                            try {
-                                await this._milestoneStorageService.set({
-                                    network: this._config.network,
+            this._subscriptionAddressId = this._zmqService.subscribeAddress(
+                networkConfig.coordinatorAddress,
+                async (evnt: string, message: IAddress) => {
+                    if (message.address === networkConfig.coordinatorAddress) {
+                        this._lastUpdate = Date.now();
+
+                        if ((this._milestones.length === 0 ||
+                            message.milestoneIndex > this._milestones[0].milestoneIndex) &&
+                            this._milestones
+                                .findIndex(p => p.milestoneIndex === message.milestoneIndex) === -1) {
+                            this._milestones.unshift({
+                                hash: message.transaction,
+                                milestoneIndex: message.milestoneIndex
+                            });
+
+                            this._milestones = this._milestones.slice(0, 100);
+
+                            if (this._milestoneStorageService) {
+                                this._milestoneStorageService.set({
+                                    network: this._networkId,
                                     indexes: this._milestones
+                                }).catch(err => {
+                                    console.error(`Failed writing ${this._networkId} milestone store`, err);
                                 });
-                            } catch (err) {
-                                console.error(`Failed writing ${this._config.network} milestone store`, err);
                             }
                         }
                     }
-                }
-            });
+                });
+        }
     }
 
     /**
      * Closedown network.
      */
     private closeNetwork(): void {
-        if (this._subscriptionId) {
-            this._zmqService.unsubscribe(this._subscriptionId);
-            this._subscriptionId = undefined;
+        if (this._subscriptionAddressId) {
+            this._zmqService.unsubscribe(this._subscriptionAddressId);
+            this._subscriptionAddressId = undefined;
         }
     }
 
@@ -177,7 +184,7 @@ export class MilestonesService {
                             this.initNetwork();
                         }
                     } catch (err) {
-                        console.error(`Failed processing ${this._config.network} idle timeout`, err);
+                        console.error(`Failed processing ${this._networkId} idle timeout`, err);
                     }
 
                     this._updating = false;

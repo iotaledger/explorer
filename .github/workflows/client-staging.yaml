@@ -15,7 +15,6 @@ jobs:
       # Build specific env vars
       CONFIG_ID: staging
       CONFIG_API_ENDPOINT: ${{ secrets.STAGING_CONFIG_API_ENDPOINT }}
-      CONFIG_NETWORKS: ${{ secrets.STAGING_CONFIG_NETWORKS }}
       CONFIG_GOOGLE_ANALYTICS_ID: ${{ secrets.STAGING_CONFIG_GOOGLE_ANALYTICS_ID }}
       VERCEL_DOMAIN: ${{ secrets.VERCEL_CLIENT_STAGING_DOMAIN }}
 
@@ -31,7 +30,6 @@ jobs:
           cd client/src/assets/config/
           mv config.template config.$CONFIG_ID.json
           sed -i "s/API-ENDPOINT/${{ env.CONFIG_API_ENDPOINT }}/g" config.$CONFIG_ID.json
-          sed -i "s/NETWORKS/${{ env.CONFIG_NETWORKS }}/g" config.$CONFIG_ID.json
           sed -i "s/GOOGLE-ANALYTICS-ID/${{ env.CONFIG_GOOGLE_ANALYTICS_ID }}/g" config.$CONFIG_ID.json
       - name: Use Node.js 12.x
         uses: actions/setup-node@v1

@@ -1,8 +1,9 @@
 import SocketIO from "socket.io";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { ITransactionsSubscribeRequest } from "../../models/api/ITransactionsSubscribeRequest";
-import { ITransactionsSubscribeResponse } from "../../models/api/ITransactionsSubscribeResponse";
+import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
+import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
+import { NetworkService } from "../../services/networkService";
 import { TransactionsService } from "../../services/transactionsService";
 import { ValidationHelper } from "../../utils/validationHelper";
 
@@ -13,31 +14,30 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export function subscribe(
+export async function subscribe(
     config: IConfiguration,
     socket: SocketIO.Socket,
-    request: ITransactionsSubscribeRequest): ITransactionsSubscribeResponse {
-    let response: ITransactionsSubscribeResponse;
+    request: IFeedSubscribeRequest): Promise<IFeedSubscribeResponse> {
+    let response: IFeedSubscribeResponse;
 
     try {
-        ValidationHelper.oneOf(request.network, config.networks.map(n => n.network), "network");
+        const networkService = ServiceFactory.get<NetworkService>("network");
+
+        ValidationHelper.oneOf(request.network, networkService.networks().map(n => n.network), "network");
 
         const transactionsService = ServiceFactory.get<TransactionsService>(`transactions-${request.network}`);
 
-        const subscriptionId = transactionsService.subscribe(async transactionData => {
+        await transactionsService.subscribe(socket.id, async transactionData => {
             socket.emit("transactions", transactionData);
         });
 
         response = {
-            success: true,
-            message: "OK",
-            subscriptionId,
+            subscriptionId: socket.id,
             network: request.network
         };
     } catch (err) {
         response = {
-            success: false,
-            message: err.toString()
+            error: err.toString()
         };
     }
 

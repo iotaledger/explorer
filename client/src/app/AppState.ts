@@ -1,13 +1,13 @@
-import { IClientNetworkConfiguration } from "../models/config/IClientNetworkConfiguration";
+import { INetwork } from "../models/db/INetwork";
 
 export interface AppState {
     /**
      * The current active network.
      */
-    networkConfig: IClientNetworkConfiguration;
+    networkId: string;
 
     /**
-     * The current search query.
+     * The networks.
      */
-    query?: string;
+    networks: INetwork[];
 }
