@@ -133,7 +133,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                         <h2>
                                             General
                                             {this.state.details && this.state.milestoneIndex === undefined && (
-                                                <Confirmation state={this.state.details.confirmationState} />
+                                                <Confirmation
+                                                    state={this.state.details.confirmationState}
+                                                    milestoneIndex={this.state.details.milestoneIndex}
+                                                />
                                             )}
                                             {this.state.milestoneIndex !== undefined && (
                                                 <div className="card--header-count card--header-count__success">
@@ -377,7 +380,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                     "card--value",
                                                                     "card--value-textarea",
                                                                     `card--value-textarea__${
-                                                                    this.state.showRawMessageTrytes
+                                                                        this.state.showRawMessageTrytes
                                                                         ? "trytes"
                                                                         : this.state.messageType?.toLowerCase()}`
                                                                 )
@@ -412,7 +415,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                 onClick={() => this.props.history.push(
                                                                     `/${this.props.match.params.network
                                                                     }/transaction/${
-                                                                    this.state.details?.tx.trunkTransaction}`)}
+                                                                        this.state.details?.tx.trunkTransaction}`)}
                                                             >
                                                                 {this.state.details.tx.trunkTransaction}
                                                             </button>
@@ -426,7 +429,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                 onClick={() => this.props.history.push(
                                                                     `/${this.props.match.params.network
                                                                     }/transaction/${
-                                                                    this.state.details?.tx.branchTransaction}`)}
+                                                                        this.state.details?.tx.branchTransaction}`)}
                                                             >
                                                                 {this.state.details.tx.branchTransaction}
                                                             </button>

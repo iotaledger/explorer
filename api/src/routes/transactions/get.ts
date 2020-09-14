@@ -27,7 +27,6 @@ export async function get(
     let hashes: string[];
     let foundMode: TransactionsGetMode;
     let modes: TransactionsGetMode[];
-    let returnCursor: string | undefined;
 
     if (request.mode !== "transaction") {
         if (request.mode) {
@@ -41,12 +40,11 @@ export async function get(
         }
 
         for (const mode of modes) {
-            const { foundHashes, cursor } = await TangleHelper.findHashes(networkConfig, mode, request.hash);
+            const foundHashes = await TangleHelper.findHashes(networkConfig, mode, request.hash);
 
-            if ((foundHashes && foundHashes.length > 0)) {
+            if (foundHashes && foundHashes.length > 0) {
                 foundMode = mode;
                 hashes = foundHashes;
-                returnCursor = cursor;
                 break;
             }
         }
@@ -64,7 +62,6 @@ export async function get(
     return {
         mode: foundMode,
         hashes: hashes ? hashes.slice(0, 250) : [],
-        total: hashes ? hashes.length : 0,
-        cursor: returnCursor
+        total: hashes ? hashes.length : 0
     };
 }

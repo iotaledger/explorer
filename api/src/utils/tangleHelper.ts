@@ -17,35 +17,18 @@ export class TangleHelper {
     public static async findHashes(
         network: INetwork,
         hashTypeName: TransactionsGetMode,
-        hash: string): Promise<{
-            /**
-             * The hashes retrieved.
-             */
-            foundHashes?: string[];
-
-            /**
-             * Cursor for next lookups.
-             */
-            cursor?: string;
-        }> {
+        hash: string): Promise<string[]> {
         const findReq = {};
         findReq[hashTypeName] = [hash];
 
-        let hashes = [];
-        let cursor;
+        let hashes: string[] = [];
 
         if (network.permaNodeEndpoint) {
             const chronicleClient = new ChronicleClient(network.permaNodeEndpoint);
-            let hints;
-            if (cursor) {
-                hints = [Buffer.from(cursor, "base64").toJSON().data];
-            }
-            const response = await chronicleClient.findTransactions({ ...findReq, hints });
+
+            const response = await chronicleClient.findTransactions({ ...findReq });
             if (response?.hashes && response.hashes.length > 0) {
                 hashes = response.hashes;
-                if (response.hints && response.hints.length > 0) {
-                    cursor = Buffer.from(JSON.stringify(response.hints[0])).toString("base64");
-                }
             }
         }
 
@@ -63,10 +46,7 @@ export class TangleHelper {
             console.error("API Error", err);
         }
 
-        return {
-            foundHashes: hashes,
-            cursor
-        };
+        return hashes;
     }
 
     /**

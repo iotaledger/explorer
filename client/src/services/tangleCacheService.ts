@@ -163,15 +163,13 @@ export class TangleCacheService {
      * @param hashType The type of hash to look for.
      * @param hash The type of hash to look for.
      * @param valuesOnly Get the value transactions.
-     * @param requestCursor Cursor for next batch of transactions.
      * @returns The transactions hashes returned from the looked up type.
      */
     public async findTransactionHashes(
         networkId: string,
         hashType: TransactionsGetMode | undefined,
         hash: string,
-        valuesOnly?: boolean,
-        requestCursor?: string
+        valuesOnly?: boolean
     ): Promise<{
         /**
          * The lookup hashes.
@@ -185,14 +183,9 @@ export class TangleCacheService {
          * The detected hash type.
          */
         hashType?: TransactionsGetMode;
-        /**
-         * Cursor returned from the request.
-         */
-        cursor?: string;
     }> {
         let transactionHashes: string[] | undefined = [];
         let doLookup = true;
-        let cursor: string | undefined;
         let totalCount: number = 0;
 
         const findCache = this._findCache[networkId];
@@ -231,12 +224,10 @@ export class TangleCacheService {
                 network: networkId,
                 hash,
                 mode: hashType,
-                valuesOnly,
-                cursor: requestCursor
+                valuesOnly
             });
 
             if (!response.error) {
-                cursor = response.cursor;
                 if ((response.hashes && response.hashes.length > 0)) {
                     transactionHashes = response.hashes ?? [];
                     hashType = hashType ?? response.mode;
@@ -262,8 +253,7 @@ export class TangleCacheService {
         return {
             hashes: transactionHashes || [],
             totalCount,
-            hashType,
-            cursor
+            hashType
         };
     }
 
@@ -311,6 +301,7 @@ export class TangleCacheService {
                                 asTransactionObject(response.trytes[i], unknownHash);
                             tranCache[unknownHash].confirmationState =
                                 response.milestoneIndexes[i] === -1 ? "pending" : "confirmed";
+                            tranCache[unknownHash].milestoneIndex = response.milestoneIndexes[i];
                         }
                     }
                 } catch {
@@ -336,6 +327,7 @@ export class TangleCacheService {
             cachedTransactions = hashes.map(h => ({
                 tx: asTransactionObject("9".repeat(2673)),
                 confirmationState: "unknown",
+                milestoneIndex: -1,
                 cached: 0
             }));
         }

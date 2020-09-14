@@ -78,12 +78,10 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                     formatFull: settings.formatFull
                 },
                 async () => {
-                    const { hashes, cursor } = await this._tangleCacheService.findTransactionHashes(
+                    const { hashes } = await this._tangleCacheService.findTransactionHashes(
                         this.props.match.params.network,
                         "tags",
-                        this.props.match.params.hash,
-                        this.state.cursor === undefined,
-                        this.state.cursor
+                        this.props.match.params.hash
                     );
 
                     let status = "";
@@ -104,8 +102,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                             items,
                             filteredItems,
                             status,
-                            statusBusy: status.length > 0 ? -1 : 1,
-                            cursor
+                            statusBusy: status.length > 0 ? -1 : 1
                         },
                         async () => {
                             if (hashes) {

@@ -20,9 +20,4 @@ export interface ITransactionsGetRequest {
      * Find value transactions only.
      */
     valuesOnly?: boolean;
-
-    /**
-     * Cursor to use for subsequent requests.
-     */
-    cursor?: string;
 }

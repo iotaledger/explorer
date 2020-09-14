@@ -16,9 +16,4 @@ export interface ITransactionsGetResponse extends IResponse {
      * The total number of transactions.
      */
     total?: number;
-
-    /**
-     * Cursor to use for subsequent requests.
-     */
-    cursor?: string;
 }
