@@ -8,6 +8,11 @@ export interface ICachedTransaction {
     tx: Transaction;
 
     /**
+     * The milestone index it was confirmed by.
+     */
+    milestoneIndex: number;
+
+    /**
      * The confirmation state.
      */
     confirmationState: ConfirmationState;
