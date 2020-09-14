@@ -32,40 +32,30 @@ export class ChronicleClient {
                 "X-IOTA-API-Version": "1"
             };
 
-            const CHUNK_SIZE = 10;
-            const numChunks = Math.ceil(request.hashes.length / CHUNK_SIZE);
-
             const response: IGetTrytesResponse = {
                 trytes: [],
                 milestones: []
             };
 
-            for (let i = 0; i < numChunks; i++) {
-                const hashes = request.hashes.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-                const req = {
-                    command: "getTrytes",
-                    hashes
-                };
+            const req = {
+                command: "getTrytes",
+                hashes: request.hashes
+            };
 
-                const resp = await FetchHelper.json<unknown, IGetTrytesResponse>(
-                    this._endpoint,
-                    "",
-                    "post",
-                    req,
-                    headers
-                );
+            const resp = await FetchHelper.json<unknown, IGetTrytesResponse>(
+                this._endpoint,
+                "",
+                "post",
+                req,
+                headers
+            );
 
-                if (resp.error) {
-                    for (let j = 0; j < hashes.length; j++) {
-                        response.trytes.push("9".repeat(2673));
-                        response.milestones.push(-1);
-                    }
-                    console.error("Chronicle Error", resp.error);
-                    console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
-                } else {
-                    response.trytes = response.trytes.concat(resp.trytes);
-                    response.milestones = response.milestones.concat(resp.milestones);
-                }
+            if (resp.error) {
+                console.error("Chronicle Error", resp.error);
+                console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
+            } else {
+                response.trytes = response.trytes.concat(resp.trytes);
+                response.milestones = response.milestones.concat(resp.milestones);
             }
 
             return response;
