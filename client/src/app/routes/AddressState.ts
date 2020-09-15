@@ -75,9 +75,4 @@ export interface AddressState {
      * Total number of items.
      */
     totalCount?: number;
-
-    /**
-     * Cursor next request.
-     */
-    cursor?: string;
 }

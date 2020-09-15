@@ -67,7 +67,7 @@ export interface TagState {
     showOnlyConfirmedTransactions: boolean;
 
     /**
-     * Cursor next request.
+     * Total number of items.
      */
-    cursor?: string;
+    totalCount?: number;
 }
