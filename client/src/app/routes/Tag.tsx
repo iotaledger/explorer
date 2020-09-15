@@ -78,7 +78,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                     formatFull: settings.formatFull
                 },
                 async () => {
-                    const { hashes } = await this._tangleCacheService.findTransactionHashes(
+                    const { totalCount, hashes } = await this._tangleCacheService.findTransactionHashes(
                         this.props.match.params.network,
                         "tags",
                         this.props.match.params.hash
@@ -102,7 +102,8 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                             items,
                             filteredItems,
                             status,
-                            statusBusy: status.length > 0 ? -1 : 1
+                            statusBusy: status.length > 0 ? -1 : 1,
+                            totalCount
                         },
                         async () => {
                             if (hashes) {
@@ -244,6 +245,9 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                                                 (
                                                                     `${this.state.filteredItems.length} of `
                                                                 )}
+                                                            {this.state.totalCount &&
+                                                                this.state.totalCount > this.state.items.length
+                                                                ? "> " : ""}
                                                             {this.state.items.length}
                                                         </span>
                                                     )}

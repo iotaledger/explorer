@@ -556,7 +556,11 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                         if (thisGroup.length > 0) {
                             const thisIndex = thisGroup.findIndex(t => t.tx.hash === this.state.details?.tx.hash);
 
-                            const isBundleValid = isBundle(thisGroup.map(t => t.tx));
+                            // Some really old bundle formats dont pass the isBundle test, so if they are already
+                            // confirmed use that knowledge instead.
+                            const isBundleValid = this.state.details.confirmationState === "confirmed"
+                                ? true
+                                : isBundle(thisGroup.map(t => t.tx));
                             const isConsistent = thisGroup.map(tx => tx.tx.value).reduce((a, b) => a + b, 0) === 0;
                             const combinedMessages = thisGroup.map(t => t.tx.signatureMessageFragment).join("");
                             const spanMessage = TrytesHelper.decodeMessage(combinedMessages);
@@ -584,7 +588,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 : (isBundleValid ? "valid" : "invalid");
 
                             let isBundleValidMessage = "Valid";
-                            if (!isBundleValidState) {
+                            if (isBundleValidState !== "valid") {
                                 isBundleValidMessage = this.state.isBundleValid === "consistency"
                                     ? "Invalid consistency - transaction will never confirm"
                                     : "Invalid - transaction will never confirm";
