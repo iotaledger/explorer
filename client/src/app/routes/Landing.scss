@@ -167,7 +167,7 @@
               text-align: right;
 
               @include tablet-down {
-                min-height: unset;
+                min-height: 32px;
               }
 
               &.info-box--action__labelvalue {
@@ -282,6 +282,10 @@
               min-height: 440px;
               padding: 30px;
               background-color: #fbfcfe;
+
+              @include phone-down {
+                padding: 20px;
+              }
 
               .feed-item--header {
                 margin-bottom: 10px;

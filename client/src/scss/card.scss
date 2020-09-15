@@ -64,6 +64,11 @@
     padding-bottom: 14px;
     border-bottom: 1px solid $gray-noon;
 
+    @include phone-down {
+      min-height: unset;
+      margin: 20px 20px 0 20px;
+    }
+
     &.card--header__space-between {
       justify-content: space-between;
     }
@@ -78,6 +83,10 @@
 
   .card--content {
     padding: 20px 30px;
+
+    @include phone-down {
+      padding: 15px 20px;
+    }
   }
 
   .card--action {

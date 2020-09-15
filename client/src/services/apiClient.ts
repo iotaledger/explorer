@@ -62,7 +62,7 @@ export class ApiClient {
             `transactions/${network}${FetchHelper.urlParams(rest)}`,
             "get",
             undefined,
-            10000
+            30000
         );
     }
 

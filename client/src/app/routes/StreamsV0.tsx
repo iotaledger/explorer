@@ -101,7 +101,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                         <h2>General</h2>
                                     </div>
                                     <div className="card--content">
-                                        <div className="row middle margin-b-s">
+                                        <div className="row middle margin-b-s row--tablet-responsive">
                                             <div className="card--label form-label-width">
                                                 Root
                                             </div>
@@ -117,12 +117,12 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                             />
                                         </div>
                                         {this.state.rootValidation && (
-                                            <div className="row danger form-validation">
+                                            <div className="row danger form-validation row--tablet-responsive">
                                                 <div className="card--label form-label-width">&nbsp;</div>
                                                 {this.state.rootValidation}
                                             </div>
                                         )}
-                                        <div className="row margin-b-t">
+                                        <div className="row margin-b-t row--tablet-responsive">
                                             <div className="card--label form-label-width">
                                                 Mode
                                             </div>
@@ -174,7 +174,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                 </button>
                                             </div>
                                         </div>
-                                        <div className="row margin-b-s">
+                                        <div className="row margin-b-s row--tablet-responsive">
                                             <div className="card--label form-label-width">
                                                 Side Key
                                             </div>
@@ -189,13 +189,13 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                 maxLength={81}
                                             />
                                         </div>
-                                        <div className="row margin-b-s">
+                                        <div className="row margin-b-s row--tablet-responsive">
                                             <div className="card--label form-label-width">
                                                 &nbsp;
                                             </div>
                                             <button
                                                 type="button"
-                                                className="form-button selected margin-r-t"
+                                                className="form-button selected margin-r-t margin-b-t"
                                                 onClick={() => this.findData()}
                                                 disabled={this.state.statusBusy || !this.state.isValid}
                                             >
@@ -203,7 +203,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                             </button>
                                             <button
                                                 type="button"
-                                                className="form-button selected margin-r-t"
+                                                className="form-button selected margin-r-t margin-b-t"
                                                 onClick={() => this.stopData()}
                                                 disabled={!this.state.statusBusy}
                                             >

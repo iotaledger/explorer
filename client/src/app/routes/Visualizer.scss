@@ -6,6 +6,10 @@
 .visualizer {
   margin: 40px;
 
+  @include phone-down {
+    margin: 20px;
+  }
+
   .graph-border {
     display: flex;
     position: relative;
@@ -45,6 +49,12 @@
 
     @media (max-width: 1000px) {
       &.tablet-hidden {
+        display: none;
+      }
+    }
+
+    @media (max-width: $tablet-width) {
+      &.phone-hidden {
         display: none;
       }
     }

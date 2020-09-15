@@ -114,7 +114,7 @@ class Markets extends Currency<unknown, MarketsState> {
             axisX: {
                 type: Chartist.FixedScaleAxis,
                 divisor: 10,
-                labelInterpolationFnc: (value: number) => moment(value * 1000).format("MMM DD YYYY")
+                labelInterpolationFnc: (value: number) => moment(value * 1000).format("DD MMM YY")
             },
             axisY: {
                 type: Chartist.AutoScaleAxis
@@ -127,7 +127,7 @@ class Markets extends Currency<unknown, MarketsState> {
             axisX: {
                 type: Chartist.FixedScaleAxis,
                 divisor: 10,
-                labelInterpolationFnc: (value: number) => moment(value * 1000).format("MMM DD YYYY")
+                labelInterpolationFnc: (value: number) => moment(value * 1000).format("DD MMM YY")
             },
             axisY: {
                 type: Chartist.AutoScaleAxis,
@@ -236,13 +236,13 @@ class Markets extends Currency<unknown, MarketsState> {
                                         {this.state.statusBusy && (<Spinner />)}
                                         {!this.state.statusBusy && (
                                             <React.Fragment>
-                                                <div className="row">
+                                                <div className="row wrap">
                                                     {this.state.ranges.map(range => (
                                                         <button
                                                             key={range.value}
                                                             type="button"
                                                             className={classNames(
-                                                                "button button--small margin-r-t",
+                                                                "button button--small margin-r-t margin-b-t",
                                                                 {
                                                                     "button--secondary":
                                                                         this.state.selectedRange !== range.value

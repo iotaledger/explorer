@@ -95,7 +95,7 @@ export class ApiStreamsV0Client {
         );
         let txs: Transaction[] = [];
 
-        if (response?.hashes) {
+        if (response?.hashes && response?.hashes.length > 0) {
             const hashes = response.hashes;
 
             const trytesResponse = await this._apiClient.trytesRetrieve({
