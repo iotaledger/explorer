@@ -28,7 +28,11 @@ header {
 
     .search-input {
       margin: 10px 30px 10px 5px;
+
+      @include phone-down {
+        margin: 10px 30px 15px 0px;
       }
+    }
 
     img {
       width: 210px;

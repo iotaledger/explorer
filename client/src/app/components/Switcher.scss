@@ -10,6 +10,10 @@
   border-radius: 6px;
   background-color: rgba(72, 87, 118, 0.1);
 
+  @include phone-down {
+    padding: 0;
+  }
+
   button {
     @include font-size(12px);
 

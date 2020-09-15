@@ -28,6 +28,11 @@
         }
       }
 
+      @include phone-down {
+        padding-right: 0;
+        padding-left: 0;
+      }
+
 
       h1 {
         margin-bottom: 20px;
@@ -48,6 +53,10 @@
       .cards {
         flex: 1;
         margin-right: 24px;
+
+        @include phone-down {
+          margin-right: unset;
+        }
 
         .item-details {
           @include font-size(14px);

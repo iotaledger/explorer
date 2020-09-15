@@ -184,7 +184,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             <div className="visualizer">
                 <h1 className="margin-r-t margin-b-t">Visualizer</h1>
                 <div className="row stretch">
-                    <div className="sidepanel-border card margin-r-s">
+                    <div className="sidepanel-border card phone-hidden margin-r-s">
                         <div className="card--header">
                             <h2>Statistics</h2>
                         </div>
