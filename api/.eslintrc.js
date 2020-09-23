@@ -1199,7 +1199,7 @@ module.exports = {
             "error"
         ],
         "unicorn/no-null": [
-            "error"
+            "off"
         ],
         "unicorn/no-process-exit": [
             "error"
