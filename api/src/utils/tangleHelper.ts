@@ -85,8 +85,8 @@ export class TangleHelper {
             /**
              * The milestone index.
              */
-            milestoneIndex?: number;
-        }[] = hashes.map((h, idx) => ({ index: idx, hash: h, milestoneIndex: -1 }));
+            milestoneIndex: number | null;
+        }[] = hashes.map((h, idx) => ({ index: idx, hash: h, milestoneIndex: null }));
 
 
         // If we have a permanode connection try there first
@@ -99,7 +99,7 @@ export class TangleHelper {
                 for (let i = 0; i < hashes.length; i++) {
                     allTrytes[i].trytes = response.trytes[i];
 
-                    allTrytes[i].milestoneIndex = response.milestones[i] ?? -1;
+                    allTrytes[i].milestoneIndex = response.milestones[i];
                 }
             }
         }
@@ -124,7 +124,7 @@ export class TangleHelper {
         }
 
         try {
-            const missingState = allTrytes.filter(a => a.milestoneIndex === -1);
+            const missingState = allTrytes.filter(a => a.milestoneIndex === null);
 
             if (missingState.length > 0) {
                 const api = composeAPI({
@@ -134,7 +134,7 @@ export class TangleHelper {
                 const statesResponse = await api.getInclusionStates(missingState.map(a => a.hash), []);
                 if (statesResponse) {
                     for (let i = 0; i < statesResponse.length; i++) {
-                        missingState[i].milestoneIndex = statesResponse[i] ? 0 : -1;
+                        missingState[i].milestoneIndex = statesResponse[i] ? 1 : 0;
                     }
                 }
             }

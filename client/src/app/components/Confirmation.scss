@@ -35,4 +35,9 @@
     background-color: $danger;
     color: $white;
   }
+
+  &.confirmation__conflicting {
+    background-color: $danger;
+    color: $white;
+  }
 }

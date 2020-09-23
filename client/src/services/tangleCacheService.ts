@@ -299,8 +299,13 @@ export class TangleCacheService {
                             tranCache[unknownHash] = tranCache[unknownHash] || {};
                             tranCache[unknownHash].tx =
                                 asTransactionObject(response.trytes[i], unknownHash);
-                            tranCache[unknownHash].confirmationState =
-                                response.milestoneIndexes[i] === -1 ? "pending" : "confirmed";
+                            if (response.milestoneIndexes[i] === 0) {
+                                tranCache[unknownHash].confirmationState = "pending";
+                            } else if (response.milestoneIndexes[i] < 0) {
+                                tranCache[unknownHash].confirmationState = "conflicting";
+                            } else {
+                                tranCache[unknownHash].confirmationState = "confirmed";
+                            }
                             tranCache[unknownHash].milestoneIndex = response.milestoneIndexes[i];
                         }
                     }
@@ -327,7 +332,7 @@ export class TangleCacheService {
             cachedTransactions = hashes.map(h => ({
                 tx: asTransactionObject("9".repeat(2673)),
                 confirmationState: "unknown",
-                milestoneIndex: -1,
+                milestoneIndex: 0,
                 cached: 0
             }));
         }
