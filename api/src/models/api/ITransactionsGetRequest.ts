@@ -20,4 +20,9 @@ export interface ITransactionsGetRequest {
      * Find value transactions only.
      */
     valuesOnly?: boolean;
+
+    /**
+     * Disable limit
+     */
+    disableLimit?: boolean;
 }

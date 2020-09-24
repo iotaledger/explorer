@@ -59,7 +59,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             statusBusy: true,
             status: "Building transaction details...",
             hash,
-            showRawMessageTrytes: false
+            showRawMessageTrytes: false,
+            childrenBusy: true
         };
     }
 
@@ -413,7 +414,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <button
                                                                 type="button"
                                                                 onClick={() => this.props.history.push(
-                                                                    `/${this.props.match.params.network
+                                                                    `/${
+                                                                        this.props.match.params.network
                                                                     }/transaction/${
                                                                         this.state.details?.tx.trunkTransaction}`)}
                                                             >
@@ -513,6 +515,32 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="card margin-t-s">
+                                            <div className="card--header">
+                                                <h2>Children</h2>
+                                                {this.state.children !== undefined && (
+                                                    <span className="card--header-count">
+                                                        {this.state.children.length}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="card--content children-container">
+                                                {this.state.childrenBusy && (<Spinner />)}
+                                                {this.state.children?.map(child => (
+                                                    <div className="card--value" key={child}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => this.props.history.push(
+                                                                `/${this.props.match.params.network
+                                                                }/transaction/${child}`)}
+                                                        >
+                                                            {child}
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
                                     </React.Fragment>
 
                                 )}
@@ -607,6 +635,14 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 messageType,
                                 messageSpan,
                                 rawMessageTrytes
+                            }, async () => {
+                                const children = await this._tangleCacheService.getTransactionChildren(
+                                    this.props.match.params.network, this.props.match.params.hash);
+
+                                this.setState({
+                                    children,
+                                    childrenBusy: false
+                                });
                             });
                         } else {
                             this.setState({

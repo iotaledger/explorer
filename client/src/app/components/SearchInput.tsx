@@ -43,7 +43,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                     value={this.state.query}
                     onChange={e => this.setState({
                         query: e.target.value.toUpperCase(),
-                        isValid: this.isValid(e.target.value.toUpperCase())
+                        isValid: this.isValid(e.target.value.trim().toUpperCase())
                     })}
                     placeholder={this.props.compact ? "Search..." : "Search transactions, bundles, addresses, tags"}
                     onKeyDown={e => {
@@ -55,7 +55,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                 <button
                     className="search--button"
                     type="submit"
-                    onClick={() => this.props.onSearch(this.state.query)}
+                    onClick={() => this.props.onSearch(this.state.query.trim().toUpperCase())}
                     disabled={!this.state.isValid}
                 >
                     {this.props.compact ? (<FaSearch />) : "Search"}

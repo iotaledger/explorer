@@ -21,4 +21,9 @@ export interface ICachedTransaction {
      * The time of cache.
      */
     cached: number;
+
+    /**
+     * List of child hashes.
+     */
+    children?: string[];
 }
