@@ -144,7 +144,7 @@ export class TangleHelper {
 
         return {
             trytes: allTrytes.map(t => t.trytes || "9".repeat(2673)),
-            milestoneIndexes: allTrytes.map(t => t.milestoneIndex)
+            milestoneIndexes: allTrytes.map(t => t.milestoneIndex ?? 0)
         };
     }
 }

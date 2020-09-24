@@ -28,7 +28,7 @@ class Confirmation extends Component<ConfirmationProps> {
             >
                 {this.props.state === "unknown" && ("Unknown")}
                 {this.props.state === "confirmed" &&
-                    (`Confirmed${this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 0
+                    (`Confirmed${this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
                         ? ` by MI ${this.props.milestoneIndex}` : ""}`)}
                 {this.props.state === "pending" && ("Pending")}
                 {this.props.state === "subtangle" && ("Subtangle not updated")}
