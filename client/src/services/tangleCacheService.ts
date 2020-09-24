@@ -341,6 +341,40 @@ export class TangleCacheService {
     }
 
     /**
+     * Get the child hashes for the transaction.
+     * @param networkId Which network are we getting the transactions for.
+     * @param hash The hashes of the transactions to get.
+     * @returns The trytes for the children.
+     */
+    public async getTransactionChildren(
+        networkId: string,
+        hash: string
+    ):
+        Promise<string[]> {
+        if (!this._transactionCache[networkId]?.[hash]?.children) {
+            try {
+                const apiClient = ServiceFactory.get<ApiClient>("api-client");
+
+                const response = await apiClient.transactionsGet({
+                    network: networkId,
+                    hash,
+                    mode: "approvees",
+                    disableLimit: true
+                });
+
+                if (!response.error) {
+                    this._transactionCache[networkId] = this._transactionCache[networkId] || {};
+                    this._transactionCache[networkId][hash] = this._transactionCache[networkId][hash] || {};
+                    this._transactionCache[networkId][hash].children = response.hashes;
+                }
+            } catch {
+            }
+        }
+
+        return this._transactionCache[networkId]?.[hash]?.children ?? [];
+    }
+
+    /**
      * Get the transaction groups in the bundle.
      * @param networkId Which network are we getting the transactions for.
      * @param transactionHashes The transaction hashes in the bundle.

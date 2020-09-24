@@ -61,7 +61,7 @@ export async function get(
 
     return {
         mode: foundMode,
-        hashes: hashes ? hashes.slice(0, 250) : [],
+        hashes: hashes ? hashes.slice(0, request.disableLimit ? hashes.length : 250) : [],
         total: hashes ? hashes.length : 0
     };
 }

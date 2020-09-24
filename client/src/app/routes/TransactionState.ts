@@ -85,4 +85,14 @@ export interface TransactionState {
      * The raw trytes.
      */
     raw?: string;
+
+    /**
+     * Is the children loader busy.
+     */
+    childrenBusy: boolean;
+
+    /**
+     * Child hashes.
+     */
+    children?: string[];
 }
