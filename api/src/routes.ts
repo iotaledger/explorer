@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
+import { IResponse } from "./models/api/IResponse";
 import { IRoute } from "./models/app/IRoute";
 
 export const routes: IRoute[] = [
@@ -8,10 +9,10 @@ export const routes: IRoute[] = [
         method: "get",
         inline: async () => {
             const packageJson = require("../package.json");
-            return Promise.resolve({
+            return {
                 name: packageJson.name,
                 version: packageJson.version
-            });
+            } as IResponse;
         }
     },
     { path: "/init", method: "get", func: "init" },

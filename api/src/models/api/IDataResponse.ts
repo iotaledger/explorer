@@ -1,8 +1,6 @@
-export interface IDataResponse {
-    /**
-     * Success
-     */
-    success: boolean;
+import { IResponse } from "./IResponse";
+
+export interface IDataResponse extends IResponse {
     /**
      * The content type of the data response.
      */

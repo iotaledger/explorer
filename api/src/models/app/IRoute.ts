@@ -1,3 +1,4 @@
+import { IResponse } from "../api/IResponse";
 import { IConfiguration } from "../configuration/IConfiguration";
 
 export interface IRoute {
@@ -36,5 +37,5 @@ export interface IRoute {
         config: IConfiguration,
         params: unknown,
         body?: unknown,
-        headers?: { [id: string]: unknown }): Promise<unknown>;
+        headers?: { [id: string]: unknown }): Promise<IResponse>;
 }
