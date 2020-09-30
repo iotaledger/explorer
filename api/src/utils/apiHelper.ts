@@ -113,27 +113,27 @@ export async function executeRoute(
             if (mod) {
                 if (mod[route.func]) {
                     response = await mod[route.func](config, params, body, req.headers || {});
-                    status = 200;
+                    if (!response.error) {
+                        status = 200;
+                    }
                 } else {
-                    status = 400;
                     response = {
-                        error: `Route '${route.path}' module '${
-                            modulePath}' does not contain a method '${route.func}'`
+                        error: `Route '${route.path}' module '${modulePath}' does not contain a method '${route.func}'`
                     };
                 }
             } else {
-                status = 400;
                 response = { error: `Route '${route.path}' module '${modulePath}' failed to load` };
             }
         } else if (route.inline) {
             response = await route.inline(config, params, body, req.headers || {});
-            status = 200;
+            if (!response.error) {
+                status = 200;
+            }
         } else {
-            status = 400;
             response = { error: `Route ${route.path} has no func or inline property set` };
         }
     } catch (err) {
-        status = err.httpCode || 400;
+        status = err.httpCode || status;
         response = { error: err.message };
     }
 
@@ -144,9 +144,8 @@ export async function executeRoute(
 
     if (route.dataResponse) {
         const dataResponse = response as IDataResponse;
-        if (!dataResponse.success) {
-            status = 400;
-        }
+
+        res.status(status);
         if (dataResponse.contentType) {
             res.setHeader("Content-Type", dataResponse.contentType);
         }
@@ -157,10 +156,12 @@ export async function executeRoute(
         res.setHeader(
             "Content-Disposition", `${dataResponse.inline ? "inline" : "attachment"}${filename}`);
 
-        res.setHeader(
-            "Content-Length", dataResponse.data.length);
+        if (dataResponse.data) {
+            res.setHeader(
+                "Content-Length", dataResponse.data.length);
 
-        res.status(status).send(dataResponse.data);
+            res.send(dataResponse.data);
+        }
     } else {
         res.setHeader("Content-Type", "application/json");
         res.status(status).send(JSON.stringify(response));

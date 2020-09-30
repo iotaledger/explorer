@@ -308,6 +308,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                 <span className="card--label">Milestone</span>
                                                 <span className="card--label">Transaction</span>
                                             </div>
+                                            {this.state.milestones.length === 0 && (
+                                                <p>There are no milestones to display.</p>
+                                            )}
                                             {this.state.milestones.slice(0, 10).map(tx => (
                                                 <div className="row feed-item" key={tx.hash}>
                                                     <span className="feed-item--value">{tx.milestoneIndex}</span>
