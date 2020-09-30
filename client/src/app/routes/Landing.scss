@@ -342,17 +342,17 @@
             }
           }
         }
+      }
 
-        .description {
-          display: flex;
-          justify-content: center;
-          padding: 20px;
+      .description {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
 
-          @include font-size(14px);
+        @include font-size(14px);
 
-          color: $gray;
-          font-family: $metropolis;
-        }
+        color: $gray;
+        font-family: $metropolis;
       }
     }
   }

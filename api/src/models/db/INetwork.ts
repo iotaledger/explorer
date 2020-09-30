@@ -74,6 +74,11 @@ export interface INetwork {
     isEnabled: boolean;
 
     /**
+     * Is the network hidden.
+     */
+    isHidden: boolean;
+
+    /**
      * The ordering for the networks.
      */
     order: number;

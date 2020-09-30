@@ -20,7 +20,8 @@ export async function unsubscribe(
 
     try {
         const networkService = ServiceFactory.get<NetworkService>("network");
-        ValidationHelper.oneOf(request.network, networkService.networks().map(n => n.network), "network");
+        const networks = (await networkService.networks()).map(n => n.network);
+        ValidationHelper.oneOf(request.network, networks, "network");
 
         const transactionsService = ServiceFactory.get<TransactionsService>(`transactions-${request.network}`);
 

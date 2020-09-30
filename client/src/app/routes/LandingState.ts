@@ -15,6 +15,11 @@ export interface LandingState extends CurrencyState, FeedsState {
     networkDescription: string;
 
     /**
+     * The network is enabled.
+     */
+    networkIsEnabled?: boolean;
+
+    /**
      * The market cap in eur.
      */
     marketCapEUR: number;

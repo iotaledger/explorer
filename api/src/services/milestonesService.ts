@@ -82,7 +82,7 @@ export class MilestonesService {
             }
         }
 
-        this.initNetwork();
+        await this.initNetwork();
 
         this.startTimer();
     }
@@ -95,7 +95,7 @@ export class MilestonesService {
 
         this.closeNetwork();
 
-        this.initNetwork();
+        await this.initNetwork();
 
         this.startTimer();
     }
@@ -120,11 +120,11 @@ export class MilestonesService {
     /**
      * Initialise network.
      */
-    private initNetwork(): void {
+    private async initNetwork(): Promise<void> {
         const networkService = ServiceFactory.get<NetworkService>("network");
 
         if (networkService) {
-            const networkConfig = networkService.get(this._networkId);
+            const networkConfig = await networkService.get(this._networkId);
 
             this._subscriptionAddressId = this._zmqService.subscribeAddress(
                 networkConfig.coordinatorAddress,
@@ -181,7 +181,7 @@ export class MilestonesService {
                     try {
                         if (now - this._lastUpdate > 5 * 60 * 1000) {
                             this.closeNetwork();
-                            this.initNetwork();
+                            await this.initNetwork();
                         }
                     } catch (err) {
                         console.error(`Failed processing ${this._networkId} idle timeout`, err);

@@ -30,6 +30,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
         this.state = {
             networkLabel: network ? network.label : "Unknown network",
             networkDescription: network ? network.description : "",
+            networkIsEnabled: network ? network.isEnabled : undefined,
             valueMinimum: "0",
             valueMinimumUnits: Unit.i,
             valueMaximum: "1",
@@ -80,244 +81,265 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                 <div className="wrapper header-wrapper">
                     <div className="inner">
                         <div className="header">
-                            <h2>Searching</h2>
+                            <h2>{this.state.networkIsEnabled ? "Searching" : ""}</h2>
                             <div className="row space-between wrap">
                                 <h1>{this.state.networkLabel}</h1>
-                                {this.props.switcher}
+                                {this.state.networkIsEnabled && this.props.switcher}
                             </div>
-                            <div className="row fill">
-                                {this.props.search}
-                            </div>
-                            <div className="row space-between info-boxes">
-                                <div className="info-box">
-                                    <span className="info-box--title">Transactions per Second</span>
-                                    <span className="info-box--value">
-                                        {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
-                                    </span>
-                                    <span className="info-box--action info-box--action__labelvalue">
-                                        <span className="info-box--action__label margin-r-t">
-                                            Confirmation Rate:
-                                        </span>
-                                        <span className="info-box--action__value">
-                                            {this.state.confirmedTransactionsPerSecondPercent}
-                                        </span>
-                                    </span>
-                                </div>
-                                <div className="info-box">
-                                    <Link
-                                        to={`/${this.props.match.params.network}/markets`}
-                                        className="info-box--title linked"
-                                    >
-                                        IOTA Market Cap
-                                    </Link>
-                                    <Link
-                                        to={`/${this.props.match.params.network}/markets`}
-                                        className="info-box--value linked"
-                                    >
-                                        {this.state.marketCapCurrency}
-                                    </Link>
-                                    <span className="info-box--action">
-                                        <div className="select-wrapper select-wrapper--small">
-                                            <select
-                                                value={this.state.currency}
-                                                onChange={e => this.setCurrency(e.target.value)}
-                                            >
-                                                {this.state.currencies.map(cur => (
-                                                    <option value={cur} key={cur}>{cur}</option>
-                                                ))}
-                                            </select>
-                                            <img src={chevronDownWhite} alt="expand" />
+                            {this.state.networkIsEnabled && (
+                                <React.Fragment>
+                                    <div className="row fill">
+                                        {this.props.search}
+                                    </div>
+                                    <div className="row space-between info-boxes">
+                                        <div className="info-box">
+                                            <span className="info-box--title">Transactions per Second</span>
+                                            <span className="info-box--value">
+                                                {this.state.transactionsPerSecond} / {
+                                                    this.state.confirmedTransactionsPerSecond
+                                                }
+                                            </span>
+                                            <span className="info-box--action info-box--action__labelvalue">
+                                                <span className="info-box--action__label margin-r-t">
+                                                    Confirmation Rate:
+                                                </span>
+                                                <span className="info-box--action__value">
+                                                    {this.state.confirmedTransactionsPerSecondPercent}
+                                                </span>
+                                            </span>
                                         </div>
-                                    </span>
-                                </div>
-                                <div className="info-box">
-                                    <Link
-                                        to={`/${this.props.match.params.network}/markets`}
-                                        className="info-box--title linked"
-                                    >
-                                        Price / MI
-                                    </Link>
-                                    <Link
-                                        to={`/${this.props.match.params.network}/markets`}
-                                        className="info-box--value linked"
-                                    >
-                                        {this.state.priceCurrency}
-                                    </Link>
-                                    <span className="info-box--action">
-                                        <div className="select-wrapper select-wrapper--small">
-                                            <select
-                                                value={this.state.currency}
-                                                onChange={e => this.setCurrency(e.target.value)}
+                                        <div className="info-box">
+                                            <Link
+                                                to={`/${this.props.match.params.network}/markets`}
+                                                className="info-box--title linked"
                                             >
-                                                {this.state.currencies.map(cur => (
-                                                    <option value={cur} key={cur}>{cur}</option>
-                                                ))}
-                                            </select>
-                                            <img src={chevronDownWhite} alt="expand" />
+                                                IOTA Market Cap
+                                            </Link>
+                                            <Link
+                                                to={`/${this.props.match.params.network}/markets`}
+                                                className="info-box--value linked"
+                                            >
+                                                {this.state.marketCapCurrency}
+                                            </Link>
+                                            <span className="info-box--action">
+                                                <div className="select-wrapper select-wrapper--small">
+                                                    <select
+                                                        value={this.state.currency}
+                                                        onChange={e => this.setCurrency(e.target.value)}
+                                                    >
+                                                        {this.state.currencies.map(cur => (
+                                                            <option value={cur} key={cur}>{cur}</option>
+                                                        ))}
+                                                    </select>
+                                                    <img src={chevronDownWhite} alt="expand" />
+                                                </div>
+                                            </span>
                                         </div>
-                                    </span>
-                                </div>
-                            </div>
+                                        <div className="info-box">
+                                            <Link
+                                                to={`/${this.props.match.params.network}/markets`}
+                                                className="info-box--title linked"
+                                            >
+                                                Price / MI
+                                            </Link>
+                                            <Link
+                                                to={`/${this.props.match.params.network}/markets`}
+                                                className="info-box--value linked"
+                                            >
+                                                {this.state.priceCurrency}
+                                            </Link>
+                                            <span className="info-box--action">
+                                                <div className="select-wrapper select-wrapper--small">
+                                                    <select
+                                                        value={this.state.currency}
+                                                        onChange={e => this.setCurrency(e.target.value)}
+                                                    >
+                                                        {this.state.currencies.map(cur => (
+                                                            <option value={cur} key={cur}>{cur}</option>
+                                                        ))}
+                                                    </select>
+                                                    <img src={chevronDownWhite} alt="expand" />
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </React.Fragment>
+                            )}
                         </div>
                     </div>
                 </div>
                 <div className="wrapper feeds-wrapper">
                     <div className="inner">
-                        <div className="feeds-section">
-                            <h1>Feeds</h1>
-                            <div className="row filters wrap card">
-                                <div className="col">
-                                    <span className="card--label">Value Filter</span>
-                                    <span className="filter--value">
-                                        <div className="select-wrapper">
-                                            <select
-                                                value={this.state.valueFilter}
-                                                onChange={e => this.setState(
-                                                    {
-                                                        valueFilter: e.target.value as ValueFilter
-                                                    },
-                                                    async () => this.updateFilters())}
-                                            >
-                                                <option value="both">Both</option>
-                                                <option value="zeroOnly">Zero Only</option>
-                                                <option value="nonZeroOnly">Non Zero Only</option>
-                                            </select>
-                                            <img src={chevronDownGray} alt="expand" />
-                                        </div>
-                                    </span>
-                                </div>
-                                <div className="col">
-                                    <span className="card--label">Minimum</span>
-                                    <span className="filter--value">
-                                        <div className="select-wrapper">
-                                            <select
-                                                className="select-plus"
-                                                value={this.state.valueMinimumUnits}
-                                                onChange={e => this.setState(
-                                                    { valueMinimumUnits: e.target.value as Unit },
-                                                    async () => this.updateFilters())}
-                                            >
-                                                <option value="i">i</option>
-                                                <option value="Ki">Ki</option>
-                                                <option value="Mi">Mi</option>
-                                                <option value="Gi">Gi</option>
-                                                <option value="Ti">Ti</option>
-                                                <option value="Pi">Pi</option>
-                                            </select>
-                                            <img src={chevronDownGray} alt="expand" />
-                                        </div>
-                                        <input
-                                            className="input-plus"
-                                            type="text"
-                                            value={this.state.valueMinimum}
-                                            onChange={e => this.updateMinimum(e.target.value)}
-                                        />
-                                    </span>
-                                </div>
-                                <div className="col">
-                                    <span className="card--label">&nbsp;</span>
-                                    <span className="card--label margin-b-t">To</span>
-                                </div>
-                                <div className="col">
-                                    <span className="card--label">Maximum</span>
-                                    <span className="filter--value">
-                                        <div className="select-wrapper">
-                                            <select
-                                                className="select-plus"
-                                                value={this.state.valueMaximumUnits}
-                                                onChange={e => this.setState(
-                                                    { valueMaximumUnits: e.target.value as Unit },
-                                                    async () => this.updateFilters())}
-                                            >
-                                                <option value="i">i</option>
-                                                <option value="Ki">Ki</option>
-                                                <option value="Mi">Mi</option>
-                                                <option value="Gi">Gi</option>
-                                                <option value="Ti">Ti</option>
-                                                <option value="Pi">Pi</option>
-                                            </select>
-                                            <img src={chevronDownGray} alt="expand" />
-                                        </div>
-                                        <input
-                                            className="input-plus"
-                                            type="text"
-                                            value={this.state.valueMaximum}
-                                            onChange={e => this.updateMaximum(e.target.value)}
-                                        />
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="row wrap feeds">
-                                <div className="feed card">
-                                    <div className="card--header">
-                                        <h2>{this.state.networkLabel} Feed</h2>
+                        {this.state.networkIsEnabled && (
+                            <div className="feeds-section">
+                                <h1>Feeds</h1>
+                                <div className="row filters wrap card">
+                                    <div className="col">
+                                        <span className="card--label">Value Filter</span>
+                                        <span className="filter--value">
+                                            <div className="select-wrapper">
+                                                <select
+                                                    value={this.state.valueFilter}
+                                                    onChange={e => this.setState(
+                                                        {
+                                                            valueFilter: e.target.value as ValueFilter
+                                                        },
+                                                        async () => this.updateFilters())}
+                                                >
+                                                    <option value="both">Both</option>
+                                                    <option value="zeroOnly">Zero Only</option>
+                                                    <option value="nonZeroOnly">Non Zero Only</option>
+                                                </select>
+                                                <img src={chevronDownGray} alt="expand" />
+                                            </div>
+                                        </span>
                                     </div>
-                                    <div className="feed-items">
-                                        <div className="row feed-item--header">
-                                            <span className="card--label">Amount</span>
-                                            <span className="card--label">Transaction</span>
+                                    <div className="col">
+                                        <span className="card--label">Minimum</span>
+                                        <span className="filter--value">
+                                            <div className="select-wrapper">
+                                                <select
+                                                    className="select-plus"
+                                                    value={this.state.valueMinimumUnits}
+                                                    onChange={e => this.setState(
+                                                        { valueMinimumUnits: e.target.value as Unit },
+                                                        async () => this.updateFilters())}
+                                                >
+                                                    <option value="i">i</option>
+                                                    <option value="Ki">Ki</option>
+                                                    <option value="Mi">Mi</option>
+                                                    <option value="Gi">Gi</option>
+                                                    <option value="Ti">Ti</option>
+                                                    <option value="Pi">Pi</option>
+                                                </select>
+                                                <img src={chevronDownGray} alt="expand" />
+                                            </div>
+                                            <input
+                                                className="input-plus"
+                                                type="text"
+                                                value={this.state.valueMinimum}
+                                                onChange={e => this.updateMinimum(e.target.value)}
+                                            />
+                                        </span>
+                                    </div>
+                                    <div className="col">
+                                        <span className="card--label">&nbsp;</span>
+                                        <span className="card--label margin-b-t">To</span>
+                                    </div>
+                                    <div className="col">
+                                        <span className="card--label">Maximum</span>
+                                        <span className="filter--value">
+                                            <div className="select-wrapper">
+                                                <select
+                                                    className="select-plus"
+                                                    value={this.state.valueMaximumUnits}
+                                                    onChange={e => this.setState(
+                                                        { valueMaximumUnits: e.target.value as Unit },
+                                                        async () => this.updateFilters())}
+                                                >
+                                                    <option value="i">i</option>
+                                                    <option value="Ki">Ki</option>
+                                                    <option value="Mi">Mi</option>
+                                                    <option value="Gi">Gi</option>
+                                                    <option value="Ti">Ti</option>
+                                                    <option value="Pi">Pi</option>
+                                                </select>
+                                                <img src={chevronDownGray} alt="expand" />
+                                            </div>
+                                            <input
+                                                className="input-plus"
+                                                type="text"
+                                                value={this.state.valueMaximum}
+                                                onChange={e => this.updateMaximum(e.target.value)}
+                                            />
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="row wrap feeds">
+                                    <div className="feed card">
+                                        <div className="card--header">
+                                            <h2>{this.state.networkLabel} Feed</h2>
                                         </div>
-                                        {this.state.filteredTransactions.length === 0 && (
-                                            <p>There are no transactions with the current filter.</p>
-                                        )}
-                                        {this.state.filteredTransactions.map(tx => (
-                                            <div className="row feed-item" key={tx.hash}>
-                                                <span className="feed-item--value">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => this.setState(
-                                                            {
-                                                                formatFull: !this.state.formatFull
-                                                            },
-                                                            () => this._settingsService.saveSingle(
-                                                                "formatFull",
-                                                                this.state.formatFull)
-                                                        )}
+                                        <div className="feed-items">
+                                            <div className="row feed-item--header">
+                                                <span className="card--label">Amount</span>
+                                                <span className="card--label">Transaction</span>
+                                            </div>
+                                            {this.state.filteredTransactions.length === 0 && (
+                                                <p>There are no transactions with the current filter.</p>
+                                            )}
+                                            {this.state.filteredTransactions.map(tx => (
+                                                <div className="row feed-item" key={tx.hash}>
+                                                    <span className="feed-item--value">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => this.setState(
+                                                                {
+                                                                    formatFull: !this.state.formatFull
+                                                                },
+                                                                () => this._settingsService.saveSingle(
+                                                                    "formatFull",
+                                                                    this.state.formatFull)
+                                                            )}
+                                                        >
+                                                            {this.state.formatFull
+                                                                ? `${tx.value} i`
+                                                                : UnitsHelper.formatBest(tx.value)}
+                                                        </button>
+                                                    </span>
+                                                    <Link
+                                                        className="feed-item--hash"
+                                                        to={
+                                                            `/${this.props.match.params.network}/transaction/${tx.hash}`
+                                                        }
                                                     >
-                                                        {this.state.formatFull
-                                                            ? `${tx.value} i`
-                                                            : UnitsHelper.formatBest(tx.value)}
-                                                    </button>
-                                                </span>
-                                                <Link
-                                                    className="feed-item--hash"
-                                                    to={`/${this.props.match.params.network}/transaction/${tx.hash}`}
-                                                >
-                                                    {tx.hash}
-                                                </Link>
+                                                        {tx.hash}
+                                                    </Link>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="feed card">
+                                        <div className="card--header">
+                                            <h2>{this.state.networkLabel} Milestones</h2>
+                                        </div>
+                                        <div className="feed-items">
+                                            <div className="row feed-item--header">
+                                                <span className="card--label">Milestone</span>
+                                                <span className="card--label">Transaction</span>
                                             </div>
-                                        ))}
+                                            {this.state.milestones.slice(0, 10).map(tx => (
+                                                <div className="row feed-item" key={tx.hash}>
+                                                    <span className="feed-item--value">{tx.milestoneIndex}</span>
+                                                    <Link
+                                                        className="feed-item--hash"
+                                                        to={
+                                                            `/${this.props.match.params.network}/transaction/${tx.hash}`
+                                                        }
+                                                    >
+                                                        {tx.hash}
+                                                    </Link>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="feed card">
-                                    <div className="card--header">
-                                        <h2>{this.state.networkLabel} Milestones</h2>
-                                    </div>
-                                    <div className="feed-items">
-                                        <div className="row feed-item--header">
-                                            <span className="card--label">Milestone</span>
-                                            <span className="card--label">Transaction</span>
-                                        </div>
-                                        {this.state.milestones.slice(0, 10).map(tx => (
-                                            <div className="row feed-item" key={tx.hash}>
-                                                <span className="feed-item--value">{tx.milestoneIndex}</span>
-                                                <Link
-                                                    className="feed-item--hash"
-                                                    to={`/${this.props.match.params.network}/transaction/${tx.hash}`}
-                                                >
-                                                    {tx.hash}
-                                                </Link>
-                                            </div>
-                                        ))}
+                                <div className="card margin-t-m">
+                                    <div className="card--content description">
+                                        {this.state.networkDescription}
                                     </div>
                                 </div>
                             </div>
+                        )}
+                        {!this.state.networkIsEnabled && (
                             <div className="card margin-t-m">
                                 <div className="card--content description">
-                                    {this.state.networkDescription}
+                                    {this.state.networkIsEnabled === undefined
+                                        ? "This network is not recognised."
+                                        : "This network is currently disabled in explorer."}
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>

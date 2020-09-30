@@ -17,9 +17,10 @@ export async function post(
     request: ITrytesRetrieveRequest
 ): Promise<ITrytesRetrieveResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
-    ValidationHelper.oneOf(request.network, networkService.networks().map(n => n.network), "network");
+    const networks = (await networkService.networks()).map(n => n.network);
+    ValidationHelper.oneOf(request.network, networks, "network");
 
-    const networkConfig = networkService.get(request.network);
+    const networkConfig = await networkService.get(request.network);
 
     const { trytes, milestoneIndexes } = await TangleHelper.getTrytes(networkConfig, request.hashes);
 
