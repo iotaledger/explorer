@@ -29,6 +29,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
 
         this.state = {
             networkLabel: network ? network.label : "Unknown network",
+            networkDescription: network ? network.description : "",
             valueMinimum: "0",
             valueMinimumUnits: Unit.i,
             valueMaximum: "1",
@@ -309,6 +310,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                             </div>
                                         ))}
                                     </div>
+                                </div>
+                            </div>
+                            <div className="card margin-t-m">
+                                <div className="card--content description">
+                                    {this.state.networkDescription}
                                 </div>
                             </div>
                         </div>

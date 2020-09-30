@@ -10,6 +10,11 @@ export interface LandingState extends CurrencyState, FeedsState {
     networkLabel: string;
 
     /**
+     * The description of the network.
+     */
+    networkDescription: string;
+
+    /**
      * The market cap in eur.
      */
     marketCapEUR: number;

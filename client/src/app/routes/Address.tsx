@@ -261,15 +261,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                 {this.state.items !== undefined &&
                                                     this.state.filteredItems !== undefined && (
                                                         <span className="card--header-count">
-                                                            {this.state.filteredItems.length !==
-                                                                this.state.items.length &&
-                                                                (
-                                                                    `${this.state.filteredItems.length} of `
-                                                                )}
-                                                            {this.state.totalCount &&
-                                                                this.state.totalCount > this.state.items.length
-                                                                ? "> " : ""}
-                                                            {this.state.items.length}
+                                                            {this.state.filteredItems.length} of {this.state.totalCount}
                                                         </span>
                                                     )}
                                             </div>
