@@ -74,7 +74,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
     public render(): ReactNode {
         const switcher = (
             <Switcher
-                items={this.state.networks.map(n => ({
+                items={this.state.networks.filter(network => network.isEnabled).map(n => ({
                     label: n.label,
                     value: n.network
                 }))}
@@ -94,7 +94,9 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
         return (
             <div className="app">
                 <Header
-                    rootPath={`/${this.state.networkId}`}
+                    rootPath={`/${this.state.networks.find(n => n.network === this.state.networkId)?.isEnabled
+                            ? this.state.networkId
+                            : ""}`}
                     switcher={this.props.match.params.action &&
                         this.props.match.params.action !== "markets" &&
                         switcher}
@@ -190,6 +192,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                 <Footer
                     dynamic={
                         this.state.networks
+                            .filter(network => network.isEnabled)
                             .map(n => ({
                                 label: n.label,
                                 url: n.network

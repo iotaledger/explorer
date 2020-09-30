@@ -11,11 +11,12 @@ import { NetworkService } from "../../services/networkService";
 export async function get(config: IConfiguration): Promise<INetworkGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
 
-    const all = networkService.networks();
+    const all = await networkService.networks();
 
     return {
         networks: all
-            .filter(n => n.isEnabled).map(n => {
+            // Only return networks that are not hidden
+            .filter(n => !n.isHidden).map(n => {
                 const copy = { ...n };
                 // We don't want to make these public
                 delete copy.permaNodeEndpoint;
