@@ -14,6 +14,11 @@ export interface INetwork {
     label: string;
 
     /**
+     * The description for the network.
+     */
+    description: string;
+
+    /**
      * The provider to use for IOTA communication.
      */
     provider: string;

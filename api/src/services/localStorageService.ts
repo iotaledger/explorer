@@ -38,7 +38,12 @@ export class LocalStorageService<T> implements IStorageService<T> {
      * @returns Log of the table creation.
      */
     public async create(): Promise<string> {
-        return `Success Creating Local Storage for ${this._fullFolderPath}\n`;
+        try {
+            await promises.mkdir(this._fullFolderPath, { recursive: true });
+            return `Success Creating Local Storage for ${this._fullFolderPath}\n`;
+        } catch (err) {
+            return `Failed Creating Local Storage for ${this._fullFolderPath}\n${err.message}\n`;
+        }
     }
 
     /**
