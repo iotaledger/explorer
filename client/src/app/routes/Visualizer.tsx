@@ -211,7 +211,20 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 Selected Transaction
                             </div>
                             <div className="card--value">
-                                {this.state.selectedNode}
+                                {this.state.selectedNode.length > 1 && (
+                                    <a
+                                        className="button"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        href={
+                                            `${window.location.origin}/${
+                                                this.props.match.params.network}/transaction/${this.state.selectedNode}`
+                                        }
+                                    >
+                                        {this.state.selectedNode}
+                                    </a>
+                                )}
+                                {this.state.selectedNode.length === 1 && this.state.selectedNode}
                             </div>
                             <div className="card--label">
                                 Value
