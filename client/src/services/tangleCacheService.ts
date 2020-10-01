@@ -297,8 +297,33 @@ export class TangleCacheService {
                         for (let i = 0; i < response.trytes.length; i++) {
                             const unknownHash = unknownHashes[i];
                             tranCache[unknownHash] = tranCache[unknownHash] || {};
-                            tranCache[unknownHash].tx =
-                                asTransactionObject(response.trytes[i], unknownHash);
+
+                            const tx = asTransactionObject(response.trytes[i], unknownHash);
+
+                            let timestamp = tx.timestamp;
+                            let attachmentTimestamp = tx.attachmentTimestamp;
+
+                            if (networkId === "mainnet") {
+                                // Early transactions had 81 trytes nonce and no attachment
+                                // timestamp so use the other timestamp in its place
+                                if (response.milestoneIndexes[i] <= 337541) {
+                                    attachmentTimestamp = tx.timestamp;
+                                }
+                            }
+                            // Some transactions have 0 timestamp to use attachment timestamp instead
+                            if (tx.timestamp === 0) {
+                                timestamp = tx.attachmentTimestamp;
+                            }
+                            // Some transactions have 0 attachment timestamp to use timestamp instead
+                            if (tx.attachmentTimestamp === 0) {
+                                attachmentTimestamp = tx.timestamp;
+                            }
+                            tranCache[unknownHash].tx = {
+                                ...tx,
+                                timestamp,
+                                attachmentTimestamp
+                            };
+
                             if (response.milestoneIndexes[i] === 0) {
                                 tranCache[unknownHash].confirmationState = "pending";
                             } else if (response.milestoneIndexes[i] < 0) {
