@@ -215,7 +215,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     <a
                                         className="button"
                                         target="_blank"
-                                        rel="noreferrer"
+                                        rel="noopener noreferrer"
                                         href={
                                             `${window.location.origin}/${
                                                 this.props.match.params.network}/transaction/${this.state.selectedNode}`

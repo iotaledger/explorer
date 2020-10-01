@@ -149,9 +149,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                             <div className="h1-sub">
                                                 {DateHelper.format(
                                                     DateHelper.milliseconds(
-                                                        this.state.details.tx.timestamp === 0
-                                                            ? this.state.details.tx.attachmentTimestamp
-                                                            : this.state.details.tx.timestamp))}
+                                                        this.state.details.tx.timestamp
+                                                    )
+                                                )}
                                             </div>
                                         )}
                                     </div>
@@ -164,18 +164,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                         </div>
                                         {this.state.details && (
                                             <React.Fragment>
-                                                {this.state.details.tx.timestamp !== 0 && (
-                                                    <React.Fragment>
-                                                        <div className="card--label">
-                                                            Timestamp
-                                                        </div>
-                                                        <div className="card--value">
-                                                            {DateHelper.format(
-                                                                DateHelper.milliseconds(
-                                                                    this.state.details.tx.timestamp))}
-                                                        </div>
-                                                    </React.Fragment>
-                                                )}
                                                 {this.state.details.tx.value !== 0 && (
                                                     <div className="row fill margin-t-s margin-b-s value-buttons">
                                                         <div className="col">
@@ -429,7 +417,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <button
                                                                 type="button"
                                                                 onClick={() => this.props.history.push(
-                                                                    `/${this.props.match.params.network
+                                                                    `/${
+                                                                        this.props.match.params.network
                                                                     }/transaction/${
                                                                         this.state.details?.tx.branchTransaction}`)}
                                                             >
@@ -476,7 +465,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                 </div>
                                                                 <div className="card--value">
                                                                     {DateHelper.format(
-                                                                        this.state.details.tx.attachmentTimestamp)}
+                                                                        DateHelper.milliseconds(
+                                                                            this.state.details.tx.attachmentTimestamp
+                                                                        )
+                                                                    )}
                                                                 </div>
                                                             </React.Fragment>
                                                         )}
@@ -647,7 +639,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                         } else {
                             this.setState({
                                 isBundleValid: "warning",
-                                isBundleValidMessage: "Invalid - transactions from the bundle are unavailable"
+                                isBundleValidMessage: "Unknown - transactions from the bundle are unavailable"
                             });
                         }
                     }

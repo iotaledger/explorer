@@ -60,9 +60,7 @@ export class ApiClient {
 
         return this.callApi<unknown, ITransactionsGetResponse>(
             `transactions/${network}${FetchHelper.urlParams(rest)}`,
-            "get",
-            undefined,
-            30000
+            "get"
         );
     }
 
