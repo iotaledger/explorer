@@ -258,7 +258,9 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                             {this.state.filteredItems?.map(item => (
                                                 <div className="item-details" key={item.hash}>
                                                     {item.details && (
-                                                        <div className="row middle space-between">
+                                                        <div
+                                                            className="row row--tablet-responsive middle space-between"
+                                                        >
                                                             <div className="row middle card--value card--value__large">
                                                                 <button
                                                                     type="button"

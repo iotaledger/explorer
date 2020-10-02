@@ -200,6 +200,16 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                 </div>
                                             </div>
                                         )}
+                                        {this.state.balance !== undefined && this.state.balance === 0 && (
+                                            <div>
+                                                <div className="card--label">
+                                                    Balance
+                                                </div>
+                                                <div className="card--value">
+                                                    0
+                                                </div>
+                                            </div>
+                                        )}
                                         <div className="card--label">
                                             Transaction Filter
                                         </div>
@@ -279,7 +289,9 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                             {this.state.filteredItems?.map(item => (
                                                 <div className="item-details" key={item.hash}>
                                                     {item.details && (
-                                                        <div className="row middle space-between">
+                                                        <div
+                                                            className="row row--tablet-responsive middle space-between"
+                                                        >
                                                             <div className="row middle card--value card--value__large">
                                                                 <button
                                                                     type="button"
