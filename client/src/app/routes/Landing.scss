@@ -174,10 +174,15 @@
               &.info-box--action__labelvalue {
                 @include font-size(12px);
 
+                @include tablet-down {
+                  @include font-size(10px);
+                }
+
                 align-items: center;
                 justify-content: center;
                 color: $main-green;
                 font-family: $metropolis;
+                white-space: nowrap;
 
                 .info-box--action__value {
                   color: $white;

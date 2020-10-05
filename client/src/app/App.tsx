@@ -198,7 +198,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                 url: n.network
                             }))
                             .concat({
-                                label: "Streams V0",
+                                label: "Streams v0",
                                 url: `${this.state.networkId}/streams/0/`
                             })
                             .concat({

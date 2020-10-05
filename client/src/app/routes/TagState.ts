@@ -1,3 +1,4 @@
+import { ITransactionsCursor } from "../../models/api/ITransactionsCursor";
 import { ICachedTransaction } from "../../models/ICachedTransaction";
 
 export interface TagState {
@@ -67,7 +68,7 @@ export interface TagState {
     showOnlyConfirmedTransactions: boolean;
 
     /**
-     * Total number of items.
+     * Cursor for more items.
      */
-    totalCount?: number;
+    cursor?: ITransactionsCursor;
 }

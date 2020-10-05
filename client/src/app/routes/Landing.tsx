@@ -100,10 +100,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                 }
                                             </span>
                                             <span className="info-box--action info-box--action__labelvalue">
-                                                <span className="info-box--action__label margin-r-t">
+                                                <span className="info-box--action__label margin-l-t margin-r-t">
                                                     Confirmation Rate:
                                                 </span>
-                                                <span className="info-box--action__value">
+                                                <span className="info-box--action__value margin-r-t">
                                                     {this.state.confirmedTransactionsPerSecondPercent}
                                                 </span>
                                             </span>

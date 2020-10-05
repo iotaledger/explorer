@@ -1,3 +1,4 @@
+import { ITransactionsCursor } from "./ITransactionsCursor";
 import { TransactionsGetMode } from "./transactionsGetMode";
 
 export interface ITransactionsGetRequest {
@@ -17,12 +18,12 @@ export interface ITransactionsGetRequest {
     mode?: TransactionsGetMode;
 
     /**
-     * Find value transactions only.
+     * Limit the number of items returned.
      */
-    valuesOnly?: boolean;
+    limit?: number;
 
     /**
-     * Disable limit
+     * Cursor for getting more items.
      */
-    disableLimit?: boolean;
+    cursor?: ITransactionsCursor;
 }

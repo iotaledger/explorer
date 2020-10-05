@@ -1,4 +1,5 @@
 import { IResponse } from "./IResponse";
+import { ITransactionsCursor } from "./ITransactionsCursor";
 import { TransactionsGetMode } from "./transactionsGetMode";
 
 export interface ITransactionsGetResponse extends IResponse {
@@ -13,7 +14,7 @@ export interface ITransactionsGetResponse extends IResponse {
     mode?: TransactionsGetMode;
 
     /**
-     * The total number of transactions.
+     * Cursor for getting more items.
      */
-    total?: number;
+    cursor?: ITransactionsCursor;
 }

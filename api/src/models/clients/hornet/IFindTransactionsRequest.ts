@@ -19,4 +19,9 @@ export interface IFindTransactionsRequest {
      * The approvees to search for transactions.
      */
     approvees?: string[];
+
+    /**
+     * Max results to return.
+     */
+    maxresults: number;
 }
