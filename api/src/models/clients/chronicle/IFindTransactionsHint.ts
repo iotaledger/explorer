@@ -1,22 +1,33 @@
 /* eslint-disable camelcase */
 export interface IFindTransactionsHint {
     /**
-     * The month where the next transactions are available.
+     * Address hint.
      */
-    month?: number;
+    address?: string;
 
     /**
-     * The year where the next transactions are available.
+     * Timeline for additional hints.
      */
-    year?: number;
+    timeline: {
+        /**
+         * The year of the additional data.
+         */
+        year: number;
+        /**
+         * The month of the additional data.
+         */
+        month: number;
+    }[];
 
     /**
-     * The page size of the response.
+     * Paging state for subsequent requests.
      */
-    page_size?: number;
+    // eslint-disable-next-line camelcase
+    paging_state: number[];
 
     /**
-     * The paging state cursor.
+     * The page size of the items.
      */
-    paging_state?: number[];
+    // eslint-disable-next-line camelcase
+    page_size: number | null;
 }

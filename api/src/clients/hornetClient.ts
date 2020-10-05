@@ -1,20 +1,20 @@
-import { IFindTransactionsRequest } from "../models/clients/chronicle/IFindTransactionsRequest";
-import { IFindTransactionsResponse } from "../models/clients/chronicle/IFindTransactionsResponse";
-import { IGetTrytesRequest } from "../models/clients/chronicle/IGetTrytesRequest";
-import { IGetTrytesResponse } from "../models/clients/chronicle/IGetTrytesResponse";
+import { IFindTransactionsRequest } from "../models/clients/hornet/IFindTransactionsRequest";
+import { IFindTransactionsResponse } from "../models/clients/hornet/IFindTransactionsResponse";
+import { IGetTrytesRequest } from "../models/clients/hornet/IGetTrytesRequest";
+import { IGetTrytesResponse } from "../models/clients/hornet/IGetTrytesResponse";
 import { FetchHelper } from "../utils/fetchHelper";
 
 /**
- * Class to handle api communications with Chronicle.
+ * Class to handle api communications with Hornet.
  */
-export class ChronicleClient {
+export class HornetClient {
     /**
      * The endpoint for performing communications.
      */
     private readonly _endpoint: string;
 
     /**
-     * Create a new instance of ChronicleClient.
+     * Create a new instance of HornetClient.
      * @param endpoint The endpoint for the api.
      */
     constructor(endpoint: string) {
@@ -41,7 +41,7 @@ export class ChronicleClient {
             const headers = {
                 "X-IOTA-API-Version": "1"
             };
-            const response = await FetchHelper.json<unknown, IFindTransactionsResponse>(
+            const response = await FetchHelper.json<IFindTransactionsRequest, IFindTransactionsResponse>(
                 this._endpoint,
                 "",
                 "post",
@@ -50,13 +50,13 @@ export class ChronicleClient {
             );
 
             if (response.error) {
-                console.error("Chronicle Error", response.error);
+                console.error("Hornet Error", response.error);
                 console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
             }
 
             return response;
         } catch (err) {
-            console.error("Chronicle Error", (err.response?.data?.error) ?? err);
+            console.error("Hornet Error", (err.response?.data?.error) ?? err);
         }
     }
 
@@ -71,17 +71,12 @@ export class ChronicleClient {
                 "X-IOTA-API-Version": "1"
             };
 
-            const response: IGetTrytesResponse = {
-                trytes: [],
-                milestones: []
-            };
-
             const req = {
                 command: "getTrytes",
                 hashes: request.hashes
             };
 
-            const resp = await FetchHelper.json<unknown, IGetTrytesResponse>(
+            const response = await FetchHelper.json<IGetTrytesRequest, IGetTrytesResponse>(
                 this._endpoint,
                 "",
                 "post",
@@ -89,17 +84,14 @@ export class ChronicleClient {
                 headers
             );
 
-            if (resp.error) {
-                console.error("Chronicle Error", resp.error);
+            if (response.error) {
+                console.error("Hornet Error", response.error);
                 console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
-            } else {
-                response.trytes = response.trytes.concat(resp.trytes);
-                response.milestones = response.milestones.concat(resp.milestones);
             }
 
             return response;
         } catch (err) {
-            console.error("Chronicle Error", (err.response?.data?.error) ?? err);
+            console.error("Hornet Error", (err.response?.data?.error) ?? err);
         }
     }
 }

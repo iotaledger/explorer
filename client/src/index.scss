@@ -61,3 +61,18 @@ body {
     }
   }
 }
+
+::-webkit-scrollbar-track {
+	border-radius: 0px;
+	background-color: $gray-daylight;
+}
+
+::-webkit-scrollbar {
+	width: 12px;
+	background-color: $gray-daylight;
+}
+
+::-webkit-scrollbar-thumb {
+	border-radius: 0px;
+	background-color: $gray-header;
+}

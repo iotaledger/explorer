@@ -78,10 +78,11 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                     formatFull: settings.formatFull
                 },
                 async () => {
-                    const { totalCount, hashes } = await this._tangleCacheService.findTransactionHashes(
+                    const { hashes, cursor } = await this._tangleCacheService.findTransactionHashes(
                         this.props.match.params.network,
                         "tags",
-                        this.props.match.params.hash
+                        this.props.match.params.hash,
+                        250
                     );
 
                     let status = "";
@@ -103,7 +104,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                             filteredItems,
                             status,
                             statusBusy: status.length > 0 ? -1 : 1,
-                            totalCount
+                            cursor
                         },
                         async () => {
                             if (hashes) {
@@ -240,7 +241,9 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                                 {this.state.items !== undefined &&
                                                     this.state.filteredItems !== undefined && (
                                                         <span className="card--header-count">
-                                                            {this.state.filteredItems.length} of {this.state.totalCount}
+                                                            {this.state.filteredItems.length}{
+                                                                this.state.cursor?.hasMore && ("+")
+                                                            }
                                                         </span>
                                                     )}
                                             </div>

@@ -1,3 +1,4 @@
+import { ITransactionsCursor } from "../../models/api/ITransactionsCursor";
 import { ICachedTransaction } from "../../models/ICachedTransaction";
 
 export interface AddressState {
@@ -72,7 +73,7 @@ export interface AddressState {
     showOnlyConfirmedTransactions: boolean;
 
     /**
-     * Total number of items.
+     * Cursor for more items.
      */
-    totalCount?: number;
+    cursor?: ITransactionsCursor;
 }

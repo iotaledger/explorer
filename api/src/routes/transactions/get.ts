@@ -1,5 +1,6 @@
 import { isEmpty } from "@iota/validators";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { ITransactionsCursor } from "../../models/api/ITransactionsCursor";
 import { ITransactionsGetRequest } from "../../models/api/ITransactionsGetRequest";
 import { ITransactionsGetResponse } from "../../models/api/ITransactionsGetResponse";
 import { TransactionsGetMode } from "../../models/api/transactionsGetMode";
@@ -25,9 +26,14 @@ export async function get(
 
     const networkConfig = await networkService.get(request.network);
 
-    let hashes: string[];
+    if (request.limit !== undefined) {
+        request.limit = Number(request.limit);
+    }
+
+    let txHashes: string[];
     let foundMode: TransactionsGetMode;
     let modes: TransactionsGetMode[];
+    let txCursor: ITransactionsCursor | undefined;
 
     if (request.mode !== "transaction") {
         if (request.mode) {
@@ -41,28 +47,30 @@ export async function get(
         }
 
         for (const mode of modes) {
-            const foundHashes = await TangleHelper.findHashes(networkConfig, mode, request.hash);
+            const { hashes, cursor } =
+                await TangleHelper.findHashes(networkConfig, mode, request.hash, request.limit);
 
-            if (foundHashes && foundHashes.length > 0) {
+            if (hashes && hashes.length > 0) {
                 foundMode = mode;
-                hashes = foundHashes;
+                txHashes = hashes;
+                txCursor = cursor;
                 break;
             }
         }
     }
 
-    if ((!hashes || hashes.length === 0) && request.hash.length === 81) {
+    if ((!txHashes || txHashes.length === 0) && request.hash.length === 81) {
         const { trytes } = await TangleHelper.getTrytes(networkConfig, [request.hash]);
 
         if (trytes && trytes.length > 0 && !isEmpty(trytes[0])) {
-            hashes = [request.hash];
+            txHashes = [request.hash];
             foundMode = "transaction";
         }
     }
 
     return {
         mode: foundMode,
-        hashes: hashes ? hashes.slice(0, request.disableLimit ? hashes.length : 250) : [],
-        total: hashes ? hashes.length : 0
+        hashes: txHashes,
+        cursor: txCursor
     };
 }

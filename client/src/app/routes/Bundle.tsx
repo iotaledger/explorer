@@ -64,7 +64,8 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
             const { hashes } = await this._tangleCacheService.findTransactionHashes(
                 this.props.match.params.network,
                 "bundles",
-                this.props.match.params.hash
+                this.props.match.params.hash,
+                250
             );
 
             const bundleGroupsPlain = await this._tangleCacheService.getBundleGroups(

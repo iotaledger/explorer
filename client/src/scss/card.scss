@@ -209,6 +209,10 @@
         font-family: 'Courier New', Courier, monospace;
         white-space: pre-wrap;
       }
+
+      &.card--value-textarea__tall {
+        max-height: 280px;
+      }
     }
 
     input {

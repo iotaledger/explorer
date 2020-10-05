@@ -1,5 +1,7 @@
 import { composeAPI } from "@iota/core";
 import { ChronicleClient } from "../clients/chronicleClient";
+import { HornetClient } from "../clients/hornetClient";
+import { ITransactionsCursor } from "../models/api/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/transactionsGetMode";
 import { INetwork } from "../models/db/INetwork";
 
@@ -12,41 +14,91 @@ export class TangleHelper {
      * @param network The network to use.
      * @param hashTypeName The type of the hash.
      * @param hash The hash.
+     * @param limit Limit the number of hashes to return.
      * @returns The list of transactions hashes.
      */
     public static async findHashes(
         network: INetwork,
         hashTypeName: TransactionsGetMode,
-        hash: string): Promise<string[]> {
+        hash: string,
+        limit?: number): Promise<{
+            /**
+             * The hashes we found in the lookup
+             */
+            hashes: string[];
+            /**
+             * Cursor for getting more items.
+             */
+            cursor?: ITransactionsCursor;
+        }> {
         const findReq = {};
         findReq[hashTypeName] = [hash];
 
         let hashes: string[] = [];
 
-        if (network.permaNodeEndpoint) {
-            const chronicleClient = new ChronicleClient(network.permaNodeEndpoint);
-
-            const response = await chronicleClient.findTransactions({ ...findReq });
-            if (response?.hashes && response.hashes.length > 0) {
-                hashes = response.hashes;
-            }
-        }
+        const cursor: ITransactionsCursor = {
+        };
 
         try {
-            const api = composeAPI({
-                provider: network.provider
+            const hornetClient = new HornetClient(network.provider);
+
+            const response = await hornetClient.findTransactions({
+                ...findReq,
+                maxresults: 5000
             });
 
-            const nodeHashes = await api.findTransactions(findReq);
+            if (response?.hashes && response.hashes.length > 0) {
+                hashes = response.hashes;
+                cursor.node = hashes.length;
 
-            if (nodeHashes) {
-                hashes = hashes.concat(nodeHashes.filter(h => !hashes.includes(h)));
+                if (limit !== undefined) {
+                    cursor.hasMore = hashes.length > limit;
+                    if (hashes.length > limit) {
+                        // If there is a limit then remove any additional
+                        hashes = hashes.slice(0, limit);
+                    }
+                } else {
+                    cursor.hasMore = hashes.length === 5000;
+                }
             }
         } catch (err) {
             console.error("API Error", err);
         }
 
-        return hashes;
+        // Also request more from chronicle if permanode is configured
+        if (network.permaNodeEndpoint) {
+            const chronicleClient = new ChronicleClient(network.permaNodeEndpoint);
+
+            const response = await chronicleClient.findTransactions(findReq);
+
+            if (response?.hashes && response.hashes.length > 0) {
+                cursor.perma = response.hashes.length;
+
+                if (response.hints && response.hints.length > 0) {
+                    cursor.permaPaging = Buffer.from(JSON.stringify(response.hints[0])).toString("base64");
+                }
+
+                // Add any that we didn't already get from hornet
+                hashes = hashes.concat(response.hashes.filter(h => !hashes.includes(h)));
+
+                if (limit !== undefined) {
+                    cursor.hasMore = hashes.length > limit;
+                    if (hashes.length > limit) {
+                        // If there is a limit then remove any additional
+                        hashes = hashes.slice(0, limit);
+                    }
+                } else {
+                    cursor.hasMore = hashes.length === 5000;
+                }
+            }
+        }
+
+        cursor.nextIndex = hashes.length;
+
+        return {
+            hashes,
+            cursor
+        };
     }
 
     /**

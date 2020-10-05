@@ -2,6 +2,7 @@ import { composeAPI } from "@iota/core";
 import { mamFetch, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
+import { ITransactionsCursor } from "../models/api/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/transactionsGetMode";
 import { ICachedTransaction } from "../models/ICachedTransaction";
 import { ApiClient } from "./apiClient";
@@ -59,9 +60,9 @@ export class TangleCacheService {
                      */
                     transactionHashes: string[];
                     /**
-                     * The total count.
+                     * There are more transactions.
                      */
-                    totalCount: number;
+                    cursor: ITransactionsCursor;
                     /**
                      * The time of cache.
                      */
@@ -96,7 +97,7 @@ export class TangleCacheService {
     };
 
     /**
-     * Streams V0 payload cache.
+     * Streams v0 payload cache.
      */
     private readonly _streamsV0: {
         /**
@@ -162,23 +163,25 @@ export class TangleCacheService {
      * @param networkId Which network are we getting the transactions for.
      * @param hashType The type of hash to look for.
      * @param hash The type of hash to look for.
-     * @param valuesOnly Get the value transactions.
+     * @param limit Limit the number of items returned.
+     * @param nextCursor Cursor for more items.
      * @returns The transactions hashes returned from the looked up type.
      */
     public async findTransactionHashes(
         networkId: string,
         hashType: TransactionsGetMode | undefined,
         hash: string,
-        valuesOnly?: boolean
+        limit?: number,
+        nextCursor?: ITransactionsCursor
     ): Promise<{
         /**
          * The lookup hashes.
          */
         hashes: string[];
         /**
-         * The total number of transactions.
+         * Cursor for more transactions.
          */
-        totalCount: number;
+        cursor: ITransactionsCursor;
         /**
          * The detected hash type.
          */
@@ -186,12 +189,12 @@ export class TangleCacheService {
     }> {
         let transactionHashes: string[] | undefined = [];
         let doLookup = true;
-        let totalCount: number = 0;
+        let cursor: ITransactionsCursor = {};
 
         const findCache = this._findCache[networkId];
         const tranCache = this._transactionCache[networkId];
 
-        if (findCache) {
+        if (findCache && nextCursor === undefined) {
             if (hashType === undefined) {
                 if (findCache.addresses?.[hash]) {
                     hashType = "addresses";
@@ -211,7 +214,7 @@ export class TangleCacheService {
                     if (Date.now() - cacheHashType[hash].cached < 60000) {
                         doLookup = false;
                         transactionHashes = cacheHashType[hash].transactionHashes.slice();
-                        totalCount = cacheHashType[hash].totalCount;
+                        cursor = cacheHashType[hash].cursor;
                     }
                 }
             }
@@ -224,14 +227,15 @@ export class TangleCacheService {
                 network: networkId,
                 hash,
                 mode: hashType,
-                valuesOnly
+                limit,
+                cursor: nextCursor
             });
 
             if (!response.error) {
                 if ((response.hashes && response.hashes.length > 0)) {
                     transactionHashes = response.hashes ?? [];
                     hashType = hashType ?? response.mode;
-                    totalCount = response.total ?? 0;
+                    cursor = response.cursor ?? {};
 
                     if (findCache && hashType) {
                         const cacheHashType = findCache[hashType];
@@ -239,7 +243,7 @@ export class TangleCacheService {
                             cacheHashType[hash] = {
                                 transactionHashes,
                                 cached: Date.now(),
-                                totalCount
+                                cursor
                             };
                         }
                     }
@@ -252,7 +256,7 @@ export class TangleCacheService {
 
         return {
             hashes: transactionHashes || [],
-            totalCount,
+            cursor,
             hashType
         };
     }
@@ -383,8 +387,7 @@ export class TangleCacheService {
                 const response = await apiClient.transactionsGet({
                     network: networkId,
                     hash,
-                    mode: "approvees",
-                    disableLimit: true
+                    mode: "approvees"
                 });
 
                 if (!response.error) {
@@ -528,7 +531,7 @@ export class TangleCacheService {
         } else {
             // Otherwise we have to grab the whole bundle.
             // and find which group this transaction is in
-            const { hashes } = await this.findTransactionHashes(networkId, "bundles", transaction.tx.bundle, false);
+            const { hashes } = await this.findTransactionHashes(networkId, "bundles", transaction.tx.bundle);
             if (hashes.length > 0) {
                 const bundleGroups = await this.getBundleGroups(networkId, hashes);
 
