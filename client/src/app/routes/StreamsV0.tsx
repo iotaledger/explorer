@@ -350,7 +350,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
         if (isValid) {
             let url = `/${this.props.match.params.network}/streams/0/${this.state.root}/${this.state.mode}`;
             if (this.state.mode === "restricted") {
-                url += `/${this.state.mode}`;
+                url += `/${this.state.sideKey}`;
             }
             if (this.props.location.pathname !== url) {
                 this.props.history.replace(url);
