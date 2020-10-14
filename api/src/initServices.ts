@@ -27,7 +27,9 @@ export async function initServices(config: IConfiguration) {
 
     const networks = await networkService.networks();
 
-    for (const networkConfig of networks) {
+    const enabledNetworks = networks.filter(v => v.isEnabled);
+
+    for (const networkConfig of enabledNetworks) {
         if (networkConfig.zmqEndpoint) {
             ServiceFactory.register(
                 `zmq-${networkConfig.network}`, () => new ZmqService(
@@ -49,7 +51,7 @@ export async function initServices(config: IConfiguration) {
         }
     }
 
-    for (const networkConfig of networks) {
+    for (const networkConfig of enabledNetworks) {
         const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
         if (milestonesService) {
             await milestonesService.init();
