@@ -66,15 +66,9 @@
         "eslint-plugin-jsdoc": "^30.2.4",
         "eslint-plugin-react": "^7.20.6",
         "eslint-plugin-unicorn": "^21.0.0",
-        "husky": "^4.2.5",
         "node-sass": "^4.14.1",
         "npm-run-all": "^4.1.5",
         "sass-lint": "^1.13.1",
         "typescript": "^4.0.2"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "npm run lint"
-        }
     }
 }
