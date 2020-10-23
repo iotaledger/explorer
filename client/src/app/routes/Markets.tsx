@@ -293,7 +293,7 @@ class Markets extends Currency<unknown, MarketsState> {
                                             </React.Fragment>
                                         )}
                                         <p className="data-source">
-                                            All data is sourced from&nbsp;
+                                            <span className="margin-r-t">All data is sourced from</span>
                                             <a
                                                 href="https://www.coingecko.com/en/coins/iota"
                                                 target="_blank"
@@ -383,16 +383,20 @@ class Markets extends Currency<unknown, MarketsState> {
                                 }
                             )),
                             priceAllTimeHigh:
-                                `${this._currencyService.formatCurrency(this._currencyData, maxPrice, 2)} on ${DateHelper.formatNoTime(maxPriceDate)
+                                `${this._currencyService.formatCurrency(this._currencyData, maxPrice, 2)
+                                } on ${DateHelper.formatNoTime(maxPriceDate)
                                 }`,
                             priceAllTimeLow:
-                                `${this._currencyService.formatCurrency(this._currencyData, minPrice, 2)} on ${DateHelper.formatNoTime(minPriceDate)
+                                `${this._currencyService.formatCurrency(this._currencyData, minPrice, 2)
+                                } on ${DateHelper.formatNoTime(minPriceDate)
                                 }`,
                             volumeAllTimeHigh:
-                                `${this._currencyService.formatCurrency(this._currencyData, maxVolume, 0)} on ${DateHelper.formatNoTime(maxVolumeDate)
+                                `${this._currencyService.formatCurrency(this._currencyData, maxVolume, 0)
+                                } on ${DateHelper.formatNoTime(maxVolumeDate)
                                 }`,
                             volumeAllTimeLow:
-                                `${this._currencyService.formatCurrency(this._currencyData, minVolume, 0)} on ${DateHelper.formatNoTime(minVolumeDate)
+                                `${this._currencyService.formatCurrency(this._currencyData, minVolume, 0)
+                                } on ${DateHelper.formatNoTime(minVolumeDate)
                                 }`
                         });
                     } else {
@@ -539,7 +543,8 @@ class Markets extends Currency<unknown, MarketsState> {
 
                     if (hit !== undefined) {
                         toolTips[chartIndex].className = "tooltip";
-                        toolTips[chartIndex].innerHTML = `${moment(this._points[chartIndex][hit].value.x * 1000).format("LL")
+                        toolTips[chartIndex].innerHTML = `${moment(this._points[chartIndex][hit].value.x * 1000)
+                            .format("LL")
                             }<br/>${this._currencyService.formatCurrency(
                                 this._currencyData, this._points[chartIndex][hit].value.y, decimalPlaces)}`;
                     } else {
