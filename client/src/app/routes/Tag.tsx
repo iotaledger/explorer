@@ -49,6 +49,11 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
             isTrytes(this.props.match.params.hash)) {
             tag = props.match.params.hash.replace(/9*$/, "");
             tagFill = "9".repeat(27 - tag.length);
+
+            if (tag.length === 0) {
+                tag = "9";
+                tagFill = "9".repeat(26);
+            }
         }
 
         this.state = {
