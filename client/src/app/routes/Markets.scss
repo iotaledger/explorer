@@ -135,6 +135,14 @@
           height: 150px;
         }
       }
+
+      .data-source {
+        margin-top: 30px;
+
+        a {
+          color: $main-green;
+        }
+      }
     }
   }
 }
