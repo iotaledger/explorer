@@ -1,5 +1,9 @@
 import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
+import exploreIcon from "../assets/explore.svg";
+import marketsIcon from "../assets/markets.svg";
+import streamsIcon from "../assets/streams.svg";
+import visualizationIcon from "../assets/visualization.svg";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { PaletteHelper } from "../helpers/paletteHelper";
 import { NetworkService } from "../services/networkService";
@@ -95,8 +99,8 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
             <div className="app">
                 <Header
                     rootPath={`/${this.state.networks.find(n => n.network === this.state.networkId)?.isEnabled
-                            ? this.state.networkId
-                            : ""}`}
+                        ? this.state.networkId
+                        : ""}`}
                     switcher={this.props.match.params.action &&
                         this.props.match.params.action !== "markets" &&
                         switcher}
@@ -109,6 +113,28 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                 compact={true}
                             />
                         )}
+                    tools={[
+                        {
+                            label: "Explorer",
+                            url: `/${this.state.networkId}/`,
+                            icon: exploreIcon
+                        },
+                        {
+                            label: "Streams v0",
+                            url: `/${this.state.networkId}/streams/0/`,
+                            icon: streamsIcon
+                        },
+                        {
+                            label: "Visualizer",
+                            url: `/${this.state.networkId}/visualizer/`,
+                            icon: visualizationIcon
+                        },
+                        {
+                            label: "Markets",
+                            url: `/${this.state.networkId}/markets/`,
+                            icon: marketsIcon
+                        }
+                    ]}
                 />
                 <div className="content">
                     <Switch>
