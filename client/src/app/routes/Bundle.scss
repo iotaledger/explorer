@@ -30,6 +30,11 @@
         font-weight: bold;
       }
 
+      .svg-navigation {
+        width: 16px;
+        height: 16px;
+      }
+
       .status {
         @include font-size(14px);
       }

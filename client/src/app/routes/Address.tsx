@@ -5,6 +5,7 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import chevronRightGreen from "../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DateHelper } from "../../helpers/dateHelper";
 import { UnitsHelper } from "../../helpers/unitsHelper";
 import { ICachedTransaction } from "../../models/ICachedTransaction";
@@ -13,6 +14,7 @@ import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import Confirmation from "../components/Confirmation";
 import CurrencyButton from "../components/CurrencyButton";
+import MessageButton from "../components/MessageButton";
 import SidePanel from "../components/SidePanel";
 import Spinner from "../components/Spinner";
 import ValueButton from "../components/ValueButton";
@@ -182,11 +184,18 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                         <div className="card--label">
                                             Address
                                         </div>
-                                        <div className="card--value">
-                                            {this.state.address}
-                                            <span className="card--value__light">
-                                                {this.state.checksum}
+                                        <div className="card--value row middle">
+                                            <span className="margin-r-s">
+                                                {this.state.address}
+                                                <span className="card--value__light">
+                                                    {this.state.checksum}
+                                                </span>
                                             </span>
+                                            <MessageButton
+                                                onClick={() => ClipboardHelper.copy(
+                                                    this.state.address)}
+                                                buttonType="copy"
+                                            />
                                         </div>
                                         {this.state.balance !== undefined && this.state.balance !== 0 && (
                                             <div className="row fill margin-t-s margin-b-s value-buttons">

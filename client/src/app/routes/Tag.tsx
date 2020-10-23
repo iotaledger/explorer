@@ -4,6 +4,7 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import chevronRightGreen from "../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DateHelper } from "../../helpers/dateHelper";
 import { UnitsHelper } from "../../helpers/unitsHelper";
 import { ICachedTransaction } from "../../models/ICachedTransaction";
@@ -11,6 +12,7 @@ import { SettingsService } from "../../services/settingsService";
 import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import Confirmation from "../components/Confirmation";
+import MessageButton from "../components/MessageButton";
 import SidePanel from "../components/SidePanel";
 import Spinner from "../components/Spinner";
 import "./Tag.scss";
@@ -45,7 +47,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
         let tagFill;
         if (this.props.match.params.hash.length <= 27 &&
             isTrytes(this.props.match.params.hash)) {
-            tag = props.match.params.hash;
+            tag = props.match.params.hash.replace(/9*$/, "");
             tagFill = "9".repeat(27 - tag.length);
         }
 
@@ -173,12 +175,18 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                         <div className="card--label">
                                             Tag
                                         </div>
-                                        <div className="card--value">
-                                            {this.state.tag}
-                                            <span className="card--value__light">
-                                                {this.state.tagFill}
+                                        <div className="card--value row middle">
+                                            <span className="margin-r-t">
+                                                {this.state.tag}
+                                                <span className="card--value__light">
+                                                    {this.state.tagFill}
+                                                </span>
                                             </span>
-
+                                            <MessageButton
+                                                onClick={() => ClipboardHelper.copy(
+                                                    this.state.tag)}
+                                                buttonType="copy"
+                                            />
                                         </div>
                                         <div className="card--label">
                                             Transaction Filter

@@ -12,8 +12,14 @@
   background: none;
   cursor: pointer;
 
+  svg {
+    color: $gray-10;
+  }
+
   &:hover {
-    background: $gray-light;
+    svg {
+      color: $main-green-highlight;
+    }
   }
 }
 
