@@ -5,6 +5,7 @@ import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import chevronLeftGreen from "../../assets/chevron-left-green.svg";
 import chevronRightGreen from "../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DateHelper } from "../../helpers/dateHelper";
 import { UnitsHelper } from "../../helpers/unitsHelper";
 import { ConfirmationState } from "../../models/confirmationState";
@@ -12,6 +13,7 @@ import { ICachedTransaction } from "../../models/ICachedTransaction";
 import { TangleCacheService } from "../../services/tangleCacheService";
 import Confirmation from "../components/Confirmation";
 import Currency from "../components/Currency";
+import MessageButton from "../components/MessageButton";
 import Spinner from "../components/Spinner";
 import "./Bundle.scss";
 import { BundleRouteProps } from "./BundleRouteProps";
@@ -204,10 +206,14 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                         <div className="card--label">
                                             Bundle
                                         </div>
-                                        <div className="card--value">
-                                            {this.state.bundle}
+                                        <div className="card--value row middle">
+                                            <span className="margin-r-t">{this.state.bundle}</span>
+                                            <MessageButton
+                                                onClick={() => ClipboardHelper.copy(
+                                                    this.state.bundle)}
+                                                buttonType="copy"
+                                            />
                                         </div>
-
                                     </div>
                                 </div>
                                 {this.state.status && (
@@ -271,11 +277,19 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                                 </button>
                                                             </div>
                                                             <div className="row middle card--value">
-                                                                <img
-                                                                    src={chevronLeftGreen}
-                                                                    alt="address"
-                                                                    className="margin-r-t"
-                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    className="card--value__tertiary"
+                                                                    onClick={() => this.props.history.push(
+                                                                        `/${this.props.match.params.network
+                                                                        }/address/${item.details.tx.address}`)}
+                                                                >
+                                                                    <img
+                                                                        src={chevronLeftGreen}
+                                                                        alt="address"
+                                                                        className="svg-navigation margin-r-t"
+                                                                    />
+                                                                </button>
                                                                 <button
                                                                     type="button"
                                                                     className="card--value__tertiary"
@@ -342,11 +356,19 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                                 >
                                                                     {item.details.tx.address}
                                                                 </button>
-                                                                <img
-                                                                    src={chevronRightGreen}
-                                                                    alt="address"
-                                                                    className="margin-l-t"
-                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    className="card--value__tertiary"
+                                                                    onClick={() => this.props.history.push(
+                                                                        `/${this.props.match.params.network
+                                                                        }/address/${item.details.tx.address}`)}
+                                                                >
+                                                                    <img
+                                                                        src={chevronRightGreen}
+                                                                        alt="address"
+                                                                        className="svg-navigation margin-l-t"
+                                                                    />
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     ))}

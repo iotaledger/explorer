@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import copyGray from "../../assets/copy-gray.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { TrytesHelper } from "../../helpers/trytesHelper";
@@ -256,9 +255,8 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                             item.showRawMessageTrytes
                                                                 ? item.rawMessageTrytes
                                                                 : item.message)}
-                                                    >
-                                                        <img src={copyGray} alt="Copy" />
-                                                    </MessageButton>
+                                                        buttonType="copy"
+                                                    />
                                                 </div>
                                                 <div
                                                     className={

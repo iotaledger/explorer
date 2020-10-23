@@ -54,6 +54,15 @@
         font-weight: bold;
       }
 
+      .btn-navigation {
+        height: 16px;
+      }
+
+      .svg-navigation {
+        width: 16px;
+        height: 16px;
+      }
+
       .status {
         @include font-size(14px);
       }

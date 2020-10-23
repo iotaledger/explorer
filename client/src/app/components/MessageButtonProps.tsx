@@ -1,15 +1,13 @@
-import { ReactNode } from "react";
-
 export interface MessageButtonProps {
     /**
      * The message to display.
      */
-    message: string;
+    message?: string;
 
     /**
-     * The switch elements to display as content.
+     * The type of button to show.
      */
-    children: ReactNode | ReactNode[];
+    buttonType: "copy";
 
     /**
      * The button click.

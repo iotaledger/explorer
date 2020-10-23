@@ -7,7 +7,6 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import chevronLeftGreen from "../../assets/chevron-left-green.svg";
 import chevronRightGreen from "../../assets/chevron-right-green.svg";
-import copyGray from "../../assets/copy-gray.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DateHelper } from "../../helpers/dateHelper";
@@ -159,8 +158,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                         <div className="card--label">
                                             Hash
                                         </div>
-                                        <div className="card--value">
-                                            {this.state.hash}
+                                        <div className="card--value row middle">
+                                            <span className="margin-r-t">{this.state.hash}</span>
+                                            <MessageButton
+                                                onClick={() => ClipboardHelper.copy(this.state.hash)}
+                                                buttonType="copy"
+                                            />
                                         </div>
                                         {this.state.details && (
                                             <React.Fragment>
@@ -192,15 +195,22 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 <div className="card--label">
                                                     Address
                                                 </div>
-                                                <div className="card--value">
+                                                <div className="card--value row middle">
                                                     <button
                                                         type="button"
                                                         onClick={() => this.props.history.push(
                                                             `/${this.props.match.params.network
                                                             }/address/${this.state.details?.tx.address}`)}
+                                                        className="margin-r-t"
                                                     >
                                                         {this.state.details.tx.address}
                                                     </button>
+                                                    <MessageButton
+                                                        onClick={() => ClipboardHelper.copy(
+                                                            this.state.details?.tx.address
+                                                        )}
+                                                        buttonType="copy"
+                                                    />
                                                 </div>
                                             </React.Fragment>
                                         )}
@@ -248,48 +258,58 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 <div className="card--label">
                                                     Bundle Hash
                                                 </div>
-                                                <div className="card--value">
+                                                <div className="card--value row middle">
                                                     <button
                                                         type="button"
                                                         onClick={() => this.props.history.push(
                                                             `/${this.props.match.params.network
                                                             }/bundle/${this.state.details?.tx.bundle}`)}
+                                                        className="margin-r-t"
                                                     >
                                                         {this.state.details?.tx.bundle}
                                                     </button>
+                                                    <MessageButton
+                                                        onClick={() => ClipboardHelper.copy(
+                                                            this.state.details?.tx.bundle)}
+                                                        buttonType="copy"
+                                                    />
                                                 </div>
 
                                                 <div className="card--label">
                                                     Index
                                                 </div>
-                                                <div className="card--value">
+                                                <div className="card--value row middle">
                                                     <button
                                                         type="button"
                                                         onClick={() => this.props.history.push(
                                                             `/${this.props.match.params.network
                                                             }/transaction/${this.state.previousTransaction}`)}
                                                         disabled={this.state.previousTransaction === undefined}
+                                                        className="btn-navigation"
                                                     >
                                                         <img
                                                             src={chevronLeftGreen}
                                                             alt="Previous"
-                                                            className="margin-r-t"
+                                                            className="svg-navigation margin-r-t"
                                                         />
                                                     </button>
-                                                    {this.state.details.tx.currentIndex + 1}
-                                                    &nbsp;/&nbsp;
-                                                    {this.state.details.tx.lastIndex + 1}
+                                                    <span>
+                                                        {this.state.details.tx.currentIndex + 1}
+                                                        &nbsp;/&nbsp;
+                                                        {this.state.details.tx.lastIndex + 1}
+                                                    </span>
                                                     <button
                                                         type="button"
                                                         onClick={() => this.props.history.push(
                                                             `/${this.props.match.params.network
                                                             }/transaction/${this.state.nextTransaction}`)}
                                                         disabled={this.state.nextTransaction === undefined}
+                                                        className="btn-navigation"
                                                     >
                                                         <img
                                                             src={chevronRightGreen}
                                                             alt="Next"
-                                                            className="margin-l-t"
+                                                            className="svg-navigation margin-l-t"
                                                         />
                                                     </button>
                                                 </div>
@@ -305,30 +325,42 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         <div className="card--label">
                                                             Tag
                                                         </div>
-                                                        <div className="card--value">
+                                                        <div className="card--value row middle">
                                                             <button
                                                                 type="button"
                                                                 onClick={() => this.props.history.push(
                                                                     `/${this.props.match.params.network
                                                                     }/tag/${this.state.details?.tx.tag}`)}
+                                                                className="margin-r-t"
                                                             >
                                                                 {this.state.details.tx.tag}
                                                             </button>
+                                                            <MessageButton
+                                                                onClick={() => ClipboardHelper.copy(
+                                                                    this.state.details?.tx.tag)}
+                                                                buttonType="copy"
+                                                            />
                                                         </div>
                                                     </div>
                                                     <div className="col fill">
                                                         <div className="card--label">
                                                             Obsolete Tag
                                                         </div>
-                                                        <div className="card--value">
+                                                        <div className="card--value row middle">
                                                             <button
                                                                 type="button"
                                                                 onClick={() => this.props.history.push(
                                                                     `/${this.props.match.params.network
                                                                     }/tag/${this.state.details?.tx.obsoleteTag}`)}
+                                                                className="margin-r-t"
                                                             >
                                                                 {this.state.details.tx.obsoleteTag}
                                                             </button>
+                                                            <MessageButton
+                                                                onClick={() => ClipboardHelper.copy(
+                                                                    this.state.details?.tx.obsoleteTag)}
+                                                                buttonType="copy"
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -359,9 +391,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                     this.state.showRawMessageTrytes
                                                                         ? this.state.rawMessageTrytes
                                                                         : this.state.message)}
-                                                            >
-                                                                <img src={copyGray} alt="Copy" />
-                                                            </MessageButton>
+                                                                buttonType="copy"
+                                                            />
                                                         </div>
                                                         <div
                                                             className={
@@ -371,7 +402,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                     `card--value-textarea__${
                                                                         this.state.showRawMessageTrytes
                                                                         ? "trytes"
-                                                                        : this.state.messageType?.toLowerCase()}`
+                                                                        : this.state.messageType?.toLowerCase()
+                                                                    }`
                                                                 )
                                                             }
                                                         >
@@ -402,10 +434,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <button
                                                                 type="button"
                                                                 onClick={() => this.props.history.push(
-                                                                    `/${
-                                                                        this.props.match.params.network
+                                                                    `/${this.props.match.params.network
                                                                     }/transaction/${
-                                                                        this.state.details?.tx.trunkTransaction}`)}
+                                                                        this.state.details?.tx.trunkTransaction
+                                                                    }`)}
                                                             >
                                                                 {this.state.details.tx.trunkTransaction}
                                                             </button>
@@ -417,10 +449,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <button
                                                                 type="button"
                                                                 onClick={() => this.props.history.push(
-                                                                    `/${
-                                                                        this.props.match.params.network
+                                                                    `/${this.props.match.params.network
                                                                     }/transaction/${
-                                                                        this.state.details?.tx.branchTransaction}`)}
+                                                                        this.state.details?.tx.branchTransaction
+                                                                    }`)}
                                                             >
                                                                 {this.state.details.tx.branchTransaction}
                                                             </button>
@@ -489,9 +521,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                 <MessageButton
                                                                     message="Copied"
                                                                     onClick={() => ClipboardHelper.copy(this.state.raw)}
-                                                                >
-                                                                    <img src={copyGray} alt="Copy" />
-                                                                </MessageButton>
+                                                                    buttonType="copy"
+                                                                />
                                                             )}
                                                         </div>
                                                         <div
