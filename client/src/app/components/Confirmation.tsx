@@ -29,14 +29,14 @@ class Confirmation extends Component<ConfirmationProps> {
                 {this.props.state === "unknown" && ("Unknown")}
                 {this.props.state === "confirmed" &&
                     (`Confirmed${this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
-                        ? ` by MI ${this.props.milestoneIndex}` : ""}`)}
+                        ? ` by MS ${this.props.milestoneIndex}` : ""}`)}
                 {this.props.state === "pending" && ("Pending")}
                 {this.props.state === "subtangle" && ("Subtangle not updated")}
                 {this.props.state === "reattachment" && ("Reattachment Confirmed")}
                 {this.props.state === "consistency" && ("Invalid Consistency")}
                 {this.props.state === "conflicting" &&
                     (`Conflicting${this.props.milestoneIndex !== undefined && this.props.milestoneIndex < 0
-                        ? ` at MI ${this.props.milestoneIndex}` : ""}`)}
+                        ? ` at MS ${this.props.milestoneIndex}` : ""}`)}
             </span>
         );
     }
