@@ -250,12 +250,12 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                         )}
                                                     </span>
                                                     <MessageButton
-                                                        message="Copied"
                                                         onClick={() => ClipboardHelper.copy(
                                                             item.showRawMessageTrytes
                                                                 ? item.rawMessageTrytes
                                                                 : item.message)}
                                                         buttonType="copy"
+                                                        labelPosition="right"
                                                     />
                                                 </div>
                                                 <div

@@ -3,41 +3,60 @@
 @import '../../scss/variables';
 
 .message-button {
-  min-width: 32px;
-  min-height: 32px;
-  padding: 6px !important;
-  border: 0;
-  border-radius: 6px;
-  outline: none;
-  background: none;
-  cursor: pointer;
+  position: relative;
 
-  svg {
-    color: $gray-10;
-  }
+  .message-button-btn {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 6px !important;
+    border: 0;
+    border-radius: 6px;
+    outline: none;
+    background: none;
+    cursor: pointer;
 
-  &:hover {
     svg {
-      color: $main-green-highlight;
+      color: $gray-10;
+    }
+
+    &:hover {
+      svg {
+        color: $main-green-highlight;
+      }
     }
   }
-}
 
-.message-button--message {
-  margin-left: 20px;
-  color: $main-green;
-  opacity: 1;
-  animation: fade 2s linear;
-  animation-fill-mode: forwards;
-}
+  .message-button--message {
+    @include font-size(12px);
 
-@keyframes fade {
-  0%,
-  100% {
-    opacity: 0;
+    position: absolute;
+    min-width: 200px;
+    color: $main-green;
+    font-family: $metropolis;
+    font-weight: bold;
+    opacity: 1;
+    animation: fade 2s linear;
+    animation-fill-mode: forwards;
+
+    &.message-button--message--right {
+      top: 10px;
+      margin-left: 10px;
+    }
+
+    &.message-button--message--top {
+      top: -15px;
+      left: -3px;
+    }
   }
 
-  50% {
-    opacity: 1;
+  @keyframes fade {
+    0%,
+    100% {
+      opacity: 0;
+    }
+
+    50% {
+      opacity: 1;
+    }
   }
 }
