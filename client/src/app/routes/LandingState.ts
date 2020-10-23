@@ -82,4 +82,9 @@ export interface LandingState extends CurrencyState, FeedsState {
          */
         value: number;
     }[];
+
+    /**
+     * Show the market data.
+     */
+    showMarket: boolean;
 }

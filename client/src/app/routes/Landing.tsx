@@ -50,7 +50,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             milestones: [],
             currency: "USD",
             currencies: [],
-            formatFull: false
+            formatFull: false,
+            showMarket: network ? network.showMarket : false
         };
     }
 
@@ -108,60 +109,64 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                 </span>
                                             </span>
                                         </div>
-                                        <div className="info-box">
-                                            <Link
-                                                to={`/${this.props.match.params.network}/markets`}
-                                                className="info-box--title linked"
-                                            >
-                                                IOTA Market Cap
-                                            </Link>
-                                            <Link
-                                                to={`/${this.props.match.params.network}/markets`}
-                                                className="info-box--value linked"
-                                            >
-                                                {this.state.marketCapCurrency}
-                                            </Link>
-                                            <span className="info-box--action">
-                                                <div className="select-wrapper select-wrapper--small">
-                                                    <select
-                                                        value={this.state.currency}
-                                                        onChange={e => this.setCurrency(e.target.value)}
-                                                    >
-                                                        {this.state.currencies.map(cur => (
-                                                            <option value={cur} key={cur}>{cur}</option>
-                                                        ))}
-                                                    </select>
-                                                    <img src={chevronDownWhite} alt="expand" />
-                                                </div>
-                                            </span>
-                                        </div>
-                                        <div className="info-box">
-                                            <Link
-                                                to={`/${this.props.match.params.network}/markets`}
-                                                className="info-box--title linked"
-                                            >
-                                                Price / MI
-                                            </Link>
-                                            <Link
-                                                to={`/${this.props.match.params.network}/markets`}
-                                                className="info-box--value linked"
-                                            >
-                                                {this.state.priceCurrency}
-                                            </Link>
-                                            <span className="info-box--action">
-                                                <div className="select-wrapper select-wrapper--small">
-                                                    <select
-                                                        value={this.state.currency}
-                                                        onChange={e => this.setCurrency(e.target.value)}
-                                                    >
-                                                        {this.state.currencies.map(cur => (
-                                                            <option value={cur} key={cur}>{cur}</option>
-                                                        ))}
-                                                    </select>
-                                                    <img src={chevronDownWhite} alt="expand" />
-                                                </div>
-                                            </span>
-                                        </div>
+                                        {this.state.showMarket && (
+                                            <div className="info-box">
+                                                <Link
+                                                    to={`/${this.props.match.params.network}/markets`}
+                                                    className="info-box--title linked"
+                                                >
+                                                    IOTA Market Cap
+                                                </Link>
+                                                <Link
+                                                    to={`/${this.props.match.params.network}/markets`}
+                                                    className="info-box--value linked"
+                                                >
+                                                    {this.state.marketCapCurrency}
+                                                </Link>
+                                                <span className="info-box--action">
+                                                    <div className="select-wrapper select-wrapper--small">
+                                                        <select
+                                                            value={this.state.currency}
+                                                            onChange={e => this.setCurrency(e.target.value)}
+                                                        >
+                                                            {this.state.currencies.map(cur => (
+                                                                <option value={cur} key={cur}>{cur}</option>
+                                                            ))}
+                                                        </select>
+                                                        <img src={chevronDownWhite} alt="expand" />
+                                                    </div>
+                                                </span>
+                                            </div>
+                                        )}
+                                        {this.state.showMarket && (
+                                            <div className="info-box">
+                                                <Link
+                                                    to={`/${this.props.match.params.network}/markets`}
+                                                    className="info-box--title linked"
+                                                >
+                                                    Price / MI
+                                                </Link>
+                                                <Link
+                                                    to={`/${this.props.match.params.network}/markets`}
+                                                    className="info-box--value linked"
+                                                >
+                                                    {this.state.priceCurrency}
+                                                </Link>
+                                                <span className="info-box--action">
+                                                    <div className="select-wrapper select-wrapper--small">
+                                                        <select
+                                                            value={this.state.currency}
+                                                            onChange={e => this.setCurrency(e.target.value)}
+                                                        >
+                                                            {this.state.currencies.map(cur => (
+                                                                <option value={cur} key={cur}>{cur}</option>
+                                                            ))}
+                                                        </select>
+                                                        <img src={chevronDownWhite} alt="expand" />
+                                                    </div>
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
                                 </React.Fragment>
                             )}
@@ -194,66 +199,70 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                             </div>
                                         </span>
                                     </div>
-                                    <div className="col">
-                                        <span className="card--label">Minimum</span>
-                                        <span className="filter--value">
-                                            <div className="select-wrapper">
-                                                <select
-                                                    className="select-plus"
-                                                    value={this.state.valueMinimumUnits}
-                                                    onChange={e => this.setState(
-                                                        { valueMinimumUnits: e.target.value as Unit },
-                                                        async () => this.updateFilters())}
-                                                >
-                                                    <option value="i">i</option>
-                                                    <option value="Ki">Ki</option>
-                                                    <option value="Mi">Mi</option>
-                                                    <option value="Gi">Gi</option>
-                                                    <option value="Ti">Ti</option>
-                                                    <option value="Pi">Pi</option>
-                                                </select>
-                                                <img src={chevronDownGray} alt="expand" />
+                                    {this.state.valueFilter !== "zeroOnly" && (
+                                        <React.Fragment>
+                                            <div className="col">
+                                                <span className="card--label">Minimum</span>
+                                                <span className="filter--value">
+                                                    <div className="select-wrapper">
+                                                        <select
+                                                            className="select-plus"
+                                                            value={this.state.valueMinimumUnits}
+                                                            onChange={e => this.setState(
+                                                                { valueMinimumUnits: e.target.value as Unit },
+                                                                async () => this.updateFilters())}
+                                                        >
+                                                            <option value="i">i</option>
+                                                            <option value="Ki">Ki</option>
+                                                            <option value="Mi">Mi</option>
+                                                            <option value="Gi">Gi</option>
+                                                            <option value="Ti">Ti</option>
+                                                            <option value="Pi">Pi</option>
+                                                        </select>
+                                                        <img src={chevronDownGray} alt="expand" />
+                                                    </div>
+                                                    <input
+                                                        className="input-plus"
+                                                        type="text"
+                                                        value={this.state.valueMinimum}
+                                                        onChange={e => this.updateMinimum(e.target.value)}
+                                                    />
+                                                </span>
                                             </div>
-                                            <input
-                                                className="input-plus"
-                                                type="text"
-                                                value={this.state.valueMinimum}
-                                                onChange={e => this.updateMinimum(e.target.value)}
-                                            />
-                                        </span>
-                                    </div>
-                                    <div className="col">
-                                        <span className="card--label">&nbsp;</span>
-                                        <span className="card--label margin-b-t">To</span>
-                                    </div>
-                                    <div className="col">
-                                        <span className="card--label">Maximum</span>
-                                        <span className="filter--value">
-                                            <div className="select-wrapper">
-                                                <select
-                                                    className="select-plus"
-                                                    value={this.state.valueMaximumUnits}
-                                                    onChange={e => this.setState(
-                                                        { valueMaximumUnits: e.target.value as Unit },
-                                                        async () => this.updateFilters())}
-                                                >
-                                                    <option value="i">i</option>
-                                                    <option value="Ki">Ki</option>
-                                                    <option value="Mi">Mi</option>
-                                                    <option value="Gi">Gi</option>
-                                                    <option value="Ti">Ti</option>
-                                                    <option value="Pi">Pi</option>
-                                                </select>
-                                                <img src={chevronDownGray} alt="expand" />
+                                            <div className="col">
+                                                <span className="card--label">&nbsp;</span>
+                                                <span className="card--label margin-b-t">To</span>
                                             </div>
-                                            <input
-                                                className="input-plus"
-                                                type="text"
-                                                value={this.state.valueMaximum}
-                                                onChange={e => this.updateMaximum(e.target.value)}
-                                            />
-                                        </span>
-                                    </div>
+                                            <div className="col">
+                                                <span className="card--label">Maximum</span>
+                                                <span className="filter--value">
+                                                    <div className="select-wrapper">
+                                                        <select
+                                                            className="select-plus"
+                                                            value={this.state.valueMaximumUnits}
+                                                            onChange={e => this.setState(
+                                                                { valueMaximumUnits: e.target.value as Unit },
+                                                                async () => this.updateFilters())}
+                                                        >
+                                                            <option value="i">i</option>
+                                                            <option value="Ki">Ki</option>
+                                                            <option value="Mi">Mi</option>
+                                                            <option value="Gi">Gi</option>
+                                                            <option value="Ti">Ti</option>
+                                                            <option value="Pi">Pi</option>
+                                                        </select>
+                                                        <img src={chevronDownGray} alt="expand" />
+                                                    </div>
+                                                    <input
+                                                        className="input-plus"
+                                                        type="text"
+                                                        value={this.state.valueMaximum}
+                                                        onChange={e => this.updateMaximum(e.target.value)}
+                                                    />
+                                                </span>
+                                            </div>
+                                        </React.Fragment>
+                                    )}
                                 </div>
                                 <div className="row wrap feeds">
                                     <div className="feed card">
@@ -402,7 +411,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
 
             this.setState({
                 filteredTransactions: transactions
-                    .filter(t => Math.abs(t.value) >= minLimit && Math.abs(t.value) <= maxLimit)
+                    .filter(t => (
+                        this.state.valueFilter === "zeroOnly"
+                            ? true
+                            : Math.abs(t.value) >= minLimit && Math.abs(t.value) <= maxLimit)
+                    )
                     .filter(t => (this.state.valueFilter === "both" ? true
                         : (this.state.valueFilter === "zeroOnly" ? t.value === 0
                             : t.value !== 0)))
