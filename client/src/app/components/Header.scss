@@ -5,8 +5,8 @@
 
 header {
   display: flex;
+  position: relative;
   justify-content: center;
-  height: 82px;
   padding: 15px 20px;
   background-color: var(--context-primary);
 
@@ -17,6 +17,10 @@ header {
     align-items: center;
     justify-content: space-between;
     max-width: $desktop-width;
+
+    @include tablet-down {
+      margin-right: 40px;
+    }
 
     a {
       margin-right: 30px;
@@ -52,7 +56,7 @@ header {
       align-items: center;
       justify-content: center;
       width: 150px;
-      height: 82px;
+      height: 100%;
       background: rgba(72, 87, 118, 0.1);
       color: $white;
       font-family: $metropolis;
@@ -69,6 +73,12 @@ header {
 
       @media (min-width: 1361px) {
         display: none;
+      }
+
+      @include tablet-down {
+        position: absolute;
+        top: 24px;
+        right: 24px;
       }
     }
 
