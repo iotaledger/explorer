@@ -374,7 +374,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                             <img
                                                                 src={chevronRightGreen}
                                                                 alt="bundle"
-                                                                className="margin-r-t"
+                                                                className="svg-navigation margin-r-t"
                                                             />
                                                             <button
                                                                 type="button"
