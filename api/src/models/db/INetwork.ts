@@ -74,9 +74,14 @@ export interface INetwork {
     isEnabled: boolean;
 
     /**
-     * Is the network hidden.
+     * Is the network enabled.
      */
     isHidden: boolean;
+
+    /**
+     * Show the market figures.
+     */
+    showMarket: boolean;
 
     /**
      * The ordering for the networks.

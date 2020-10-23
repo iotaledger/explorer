@@ -79,6 +79,11 @@ export interface INetwork {
     isHidden: boolean;
 
     /**
+     * Show the market figures.
+     */
+    showMarket: boolean;
+
+    /**
      * The ordering for the networks.
      */
     order: number;
