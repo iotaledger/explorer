@@ -672,7 +672,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                     streamsV0Root
                 },
                 async () => {
-                    if (this.state.details && this.state.details.tx.lastIndex > 0) {
+                    if (this.state.details) {
                         const thisGroup =
                             await this._tangleCacheService.getTransactionBundleGroup(
                                 this.props.match.params.network,
