@@ -11,6 +11,13 @@
   border-radius: 100%;
   background-color: #c3d0e4;
   animation: pulse 1s ease-in-out infinite;
+
+  &.spinner--compact {
+    top: 10px;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+  }
 }
 
 @keyframes pulse {
