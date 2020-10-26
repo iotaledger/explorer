@@ -594,6 +594,99 @@ export class TangleCacheService {
     }
 
     /**
+     * Can we promote the tranaction.
+     * @param networkId The network to use.
+     * @param tailHash The hash.
+     * @returns True if the transaction is promotable.
+     */
+    public async canPromoteTransaction(
+        networkId: string,
+        tailHash: string): Promise<boolean> {
+        try {
+            const networkConfig = this._networkService.get(networkId);
+
+            if (networkConfig) {
+                const api = composeAPI({
+                    provider: networkConfig.provider
+                });
+
+                return await api.isPromotable(
+                    tailHash
+                );
+            }
+
+            return false;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * Promote the tranaction.
+     * @param networkId The network to use.
+     * @param tailHash The hash.
+     * @returns True if the transaction was promoted.
+     */
+    public async promoteTransaction(
+        networkId: string,
+        tailHash: string): Promise<boolean> {
+        try {
+            const networkConfig = this._networkService.get(networkId);
+
+            if (networkConfig) {
+                const api = composeAPI({
+                    provider: networkConfig.provider
+                });
+
+                await api.promoteTransaction(
+                    tailHash,
+                    networkConfig.depth,
+                    networkConfig.mwm
+                );
+
+                return true;
+            }
+            return false;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
+     * Replay the tranaction.
+     * @param networkId The network to use.
+     * @param tailHash The hash.
+     * @returns True if the transaction was promoted.
+     */
+    public async replayBundle(
+        networkId: string,
+        tailHash: string): Promise<boolean> {
+        try {
+            const networkConfig = this._networkService.get(networkId);
+
+            if (networkConfig) {
+                const api = composeAPI({
+                    provider: networkConfig.provider
+                });
+
+                await api.replayBundle(
+                    tailHash,
+                    networkConfig.depth,
+                    networkConfig.mwm
+                );
+
+                return true;
+            }
+
+            return false;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
+
+    /**
      * Check all the cached items and remove any stale items.
      */
     private staleCheck(): void {

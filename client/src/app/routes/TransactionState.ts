@@ -95,4 +95,19 @@ export interface TransactionState {
      * Child hashes.
      */
     children?: string[];
+
+    /**
+     * The transaction is busy with an action.
+     */
+    actionBusy: boolean;
+
+    /**
+     * The message for the action.
+     */
+    actionBusyMessage: string;
+
+    /**
+     * The tail hash for reattaching.
+     */
+    bundleTailHash?: string;
 }

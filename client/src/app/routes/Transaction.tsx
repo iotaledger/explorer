@@ -59,7 +59,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             status: "Building transaction details...",
             hash,
             showRawMessageTrytes: false,
-            childrenBusy: true
+            childrenBusy: true,
+            actionBusy: false,
+            actionBusyMessage: ""
         };
     }
 
@@ -214,6 +216,39 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         labelPosition="top"
                                                     />
                                                 </div>
+                                                {this.state.details.confirmationState === "pending" &&
+                                                    this.state.isBundleValid === "valid" && (
+                                                        <React.Fragment>
+                                                            <div className="card--label">
+                                                                Actions
+                                                            </div>
+                                                            <div className="row middle">
+                                                                <button
+                                                                    type="button"
+                                                                    className="card--action"
+                                                                    disabled={this.state.actionBusy}
+                                                                    onClick={() => this.reattach()}
+                                                                >
+                                                                    Reattach
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="card--action"
+                                                                    disabled={this.state.actionBusy}
+                                                                    onClick={() => this.promote()}
+                                                                >
+                                                                    Promote
+                                                                </button>
+                                                                <span className="card--action__busy row middle">
+                                                                    {this.state.actionBusy && (
+                                                                        <Spinner compact={true} />)}
+                                                                    <p className="margin-l-t">
+                                                                        {this.state.actionBusyMessage}
+                                                                    </p>
+                                                                </span>
+                                                            </div>
+                                                        </React.Fragment>
+                                                    )}
                                             </React.Fragment>
                                         )}
                                     </div>
@@ -600,7 +635,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                     raw: asTransactionTrytes(details.tx),
                     nextTransaction: details.tx.currentIndex < details.tx.lastIndex
                         ? details.tx.trunkTransaction : undefined,
-                    rawMessageTrytes: details?.tx.signatureMessageFragment
+                    rawMessageTrytes: details?.tx.signatureMessageFragment,
+                    bundleTailHash: details?.tx.currentIndex === 0 ? details.tx.hash : undefined
                 },
                 async () => {
                     if (this.state.details) {
@@ -662,7 +698,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 message,
                                 messageType,
                                 messageSpan,
-                                rawMessageTrytes
+                                rawMessageTrytes,
+                                bundleTailHash: thisGroup[0].tx.hash
                             }, async () => {
                                 const children = await this._tangleCacheService.getTransactionChildren(
                                     this.props.match.params.network, this.props.match.params.hash);
@@ -728,6 +765,72 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                 });
             }
         }
+    }
+
+    /**
+     * Reattach the transaction.
+     */
+    private reattach(): void {
+        this.setState(
+            {
+                actionBusy: true,
+                actionBusyMessage: "Reattaching bundle, please wait..."
+            },
+            async () => {
+                const wasReattached = await this._tangleCacheService.replayBundle(
+                    this.props.match.params.network,
+                    this.state.bundleTailHash ?? "");
+
+                this.setState(
+                    {
+                        actionBusy: false,
+                        actionBusyMessage: wasReattached ? "Bundle reattached." : "Unable to reattach bundle."
+                    },
+                    async () => {
+                        if (wasReattached) {
+                            await this.checkConfirmation();
+                        }
+                    });
+            });
+    }
+
+    /**
+     * Promote the transaction.
+     */
+    private promote(): void {
+        this.setState(
+            {
+                actionBusy: true,
+                actionBusyMessage: "Promoting transaction, please wait..."
+            },
+            async () => {
+                const isPromotable = await this._tangleCacheService.canPromoteTransaction(
+                    this.props.match.params.network,
+                    this.state.bundleTailHash ?? "");
+
+                if (isPromotable) {
+                    const wasPromoted = await this._tangleCacheService.promoteTransaction(
+                        this.props.match.params.network,
+                        this.state.bundleTailHash ?? "");
+
+                    this.setState(
+                        {
+                            actionBusy: false,
+                            actionBusyMessage: wasPromoted ? "Transaction promoted." : "Unable to promote transaction."
+                        },
+                        async () => {
+                            if (wasPromoted) {
+                                await this.checkConfirmation();
+                            }
+                        }
+                    );
+                } else {
+                    this.setState({
+                        actionBusy: false,
+                        actionBusyMessage: "This transaction is not promotable."
+                    });
+                }
+            });
     }
 }
 
