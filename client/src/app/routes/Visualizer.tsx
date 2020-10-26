@@ -18,9 +18,19 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private static readonly MAX_TRANSACTIONS: number = 5000;
 
     /**
-     * Vertex colour R,G,B.
+     * Edge colour default.
      */
-    private static readonly EDGE_COLOR_DEFAULT: string = "#EEEEEE";
+    private static readonly EDGE_COLOR_DEFAULT: number = 0xEEEEEEFF;
+
+    /**
+     * Edge color confirming.
+     */
+    private static readonly EDGE_COLOR_CONFIRMING: number = 0x00FF00FF;
+
+    /**
+     * Edge color confirmed by.
+     */
+    private static readonly EDGE_COLOR_CONFIRMED_BY: number = 0xFFA500FF;
 
     /**
      * Vertex size.
@@ -51,6 +61,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Vertex milestone colour.
      */
     private static readonly COLOR_MILESTONE: string = "0xb8172d";
+
+    /**
+     * Vertex highlighted colour.
+     */
+    private static readonly COLOR_HIGHLIGHTED: string = "0x0000ff";
 
     /**
      * The graph instance.
@@ -112,6 +127,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private _graphElement: HTMLElement | null;
 
     /**
+     * Last time a node was clicked.
+     */
+    private _lastClick: number;
+
+    /**
      * Create a new instance of Visualizer.
      * @param props The props.
      */
@@ -122,6 +142,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         this._newTransactions = [];
         this._newConfirmed = [];
         this._newMilestones = [];
+        this._lastClick = 0;
 
         this._graphElement = null;
         this._resize = () => this.resize();
@@ -139,7 +160,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             transactionCount: 0,
             selectedNode: "-",
             selectedNodeValue: "-",
-            selectedMilestoneValue: "-"
+            selectedNodeTag: "-",
+            selectedMilestoneValue: "-",
+            tagFilter: ""
         };
     }
 
@@ -178,7 +201,25 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     public render(): ReactNode {
         return (
             <div className="visualizer">
-                <h1 className="margin-r-t margin-b-t">Visualizer</h1>
+                <div className="row middle">
+                    <h1 className="margin-r-t margin-b-t">Visualizer</h1>
+                    <div className="card margin-b-s filter fill">
+                        <div className="card--content row middle">
+                            <div className="card--label margin-r-s">
+                                Tag Filter
+                            </div>
+                            <input
+                                className="input"
+                                type="text"
+                                value={this.state.tagFilter}
+                                onChange={e => this.setState(
+                                    { tagFilter: e.target.value.toUpperCase() },
+                                    () => this.highlightNodes())}
+                                maxLength={27}
+                            />
+                        </div>
+                    </div>
+                </div>
                 <div className="row stretch">
                     <div className="sidepanel-border card phone-hidden margin-r-s">
                         <div className="card--header">
@@ -204,17 +245,17 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 {this.state.confirmedTransactionsPerSecondPercent}
                             </div>
                             <div className="card--label">
-                                Selected Transaction
+                                Hash
                             </div>
-                            <div className="card--value">
+                            <div className="card--value overflow-ellipsis">
                                 {this.state.selectedNode.length > 1 && (
                                     <a
                                         className="button"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         href={
-                                            `${window.location.origin}/${
-                                                this.props.match.params.network}/transaction/${this.state.selectedNode}`
+                                            `${window.location.origin}/${this.props.match.params.network
+                                            }/transaction/${this.state.selectedNode}`
                                         }
                                     >
                                         {this.state.selectedNode}
@@ -222,28 +263,38 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 )}
                                 {this.state.selectedNode.length === 1 && this.state.selectedNode}
                             </div>
-                            <div className="card--label">
-                                Value
-                            </div>
-                            <div className="card--value">
-                                {this.state.selectedNodeValue}
-                            </div>
-                            <div className="card--label">
-                                Milestone
-                            </div>
-                            <div className="card--value">
-                                {this.state.selectedMilestoneValue}
-                            </div>
+                            {this.state.selectedMilestoneValue === "-" && (
+                                <React.Fragment>
+                                    <div className="card--label">
+                                        Value
+                                    </div>
+                                    <div className="card--value">
+                                        {this.state.selectedNodeValue}
+                                    </div>
+                                </React.Fragment>
+                            )}
+                            {this.state.selectedMilestoneValue === "-" && (
+                                <React.Fragment>
+                                    <div className="card--label">
+                                        Tag
+                                    </div>
+                                    <div className="card--value">
+                                        {this.state.selectedNodeTag}
+                                    </div>
+                                </React.Fragment>
+                            )}
+                            {this.state.selectedMilestoneValue !== "-" && (
+                                <React.Fragment>
+                                    <div className="card--label">
+                                        Milestone
+                                    </div>
+                                    <div className="card--value">
+                                        {this.state.selectedMilestoneValue}
+                                    </div>
+                                </React.Fragment>
+                            )}
                         </div>
-                    </div>
-                    <div className="graph-border">
-                        <div
-                            className="viva"
-                            ref={r => this.setupGraph(r)}
-                        />
-                    </div>
-                    <div className="sidepanel-border card tablet-hidden margin-l-s">
-                        <div className="card--header">
+                        <div className="card--header card--header-secondary">
                             <h2>Key</h2>
                         </div>
                         <div className="card--content">
@@ -259,13 +310,21 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             <div className="visualizer--key visualizer--key__value milestone margin-t-t">
                                 Milestone
                             </div>
-                            <div className="visualizer--key margin-t-t">
-                                Value and milestone transactions are larger.
-                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                    <div className="graph-border">
+                        <div
+                            className="viva"
+                            onClick={() => {
+                                if (Date.now() - this._lastClick > 300) {
+                                    this.selectNode();
+                                }
+                            }}
+                            ref={r => this.setupGraph(r)}
+                        />
+                    </div>
+                </div >
+            </div >
         );
     }
 
@@ -334,12 +393,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graphics.link(() => Viva.Graph.View.webglLine(Visualizer.EDGE_COLOR_DEFAULT));
 
             const events = Viva.Graph.webglInputEvents(this._graphics, this._graph);
-            events.click(node => {
-                this.setState({
-                    selectedNode: this.state.selectedNode === node.id ? "-" : node.id,
-                    selectedNodeValue: this.state.selectedNode === node.id ? "-" : node.data.value,
-                    selectedMilestoneValue: this.state.selectedNode === node.id ? "-" : node.data.milestone || "-"
-                });
+            events.click(node => this.selectNode(node));
+
+            events.mouseEnter(node => {
+                if (this.state.selectedNode === "-") {
+                    this.highlightConnections(node.id);
+                }
+            });
+
+            events.mouseLeave(node => {
+                if (this.state.selectedNode === "-") {
+                    this.clearConnections();
+                }
             });
 
             this._renderer = Viva.Graph.View.renderer(this._graph, {
@@ -377,6 +442,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 const node = this._graph.getNode(sn);
                 if (node) {
                     node.data.confirmed = true;
+                    this.styleNode(node);
                 }
             }
 
@@ -385,6 +451,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 const node = this._graph.getNode(ms.hash);
                 if (node) {
                     node.data.milestone = ms.milestoneIndex;
+                    this.styleNode(node);
                 }
             }
 
@@ -394,11 +461,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                     const added: string[] = [];
 
-                    this._graph.addNode(tx.hash, { confirmed: false, value: tx.value, milestone: false });
+                    this._graph.addNode(tx.hash, { confirmed: false, value: tx.value, tag: tx.tag, milestone: false });
                     added.push(tx.hash);
 
                     if (!this._graph.getNode(tx.trunk)) {
-                        this._graph.addNode(tx.trunk, { confirmed: false, value: 0, milestone: false });
+                        this._graph.addNode(tx.trunk, { confirmed: false, value: 0, tag: "-", milestone: false });
+
                         added.push(tx.trunk);
                     }
 
@@ -406,14 +474,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                     if (tx.trunk !== tx.branch) {
                         if (!this._graph.getNode(tx.branch)) {
-                            this._graph.addNode(tx.branch, { confirmed: false, value: 0, milestone: false });
+                            this._graph.addNode(tx.branch, { confirmed: false, value: 0, tag: "-", milestone: false });
                             added.push(tx.branch);
                         }
 
                         this._graph.addLink(tx.branch, tx.hash);
                     }
 
-                    this._transactionHashes.push(...added);
+                    for (const add of added) {
+                        this._transactionHashes.push(add);
+                        const node = this._graph.getNode(add);
+                        this.styleNode(node);
+                    }
 
                     while (this._transactionHashes.length > Visualizer.MAX_TRANSACTIONS) {
                         const nodeToRemove = this._transactionHashes.shift();
@@ -437,37 +509,147 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 }
             }
 
-            this._graph.forEachNode(node => {
-                if (this._graphics) {
-                    const nodeUI = this._graphics.getNodeUI(node.id);
-                    if (nodeUI) {
-                        if (node.data.milestone) {
-                            nodeUI.color = Visualizer.COLOR_MILESTONE;
-                            nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
-                        } else if (node.data.confirmed) {
-                            if (node.data.value === 0) {
-                                nodeUI.color = Visualizer.COLOR_ZERO_CONFIRMED;
-                                nodeUI.size = Visualizer.VERTEX_SIZE_REGULAR;
-                            } else {
-                                nodeUI.color = Visualizer.COLOR_VALUE_CONFIRMED;
-                                nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
-                            }
-                        } else {
-                            nodeUI.color = Visualizer.COLOR_PENDING;
-                            if (node.data.value === 0) {
-                                nodeUI.size = Visualizer.VERTEX_SIZE_REGULAR;
-                            } else {
-                                nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
-                            }
-                        }
-                    }
-                }
-            });
+            if (this.state.selectedNode !== "-") {
+                this.highlightConnections(this.state.selectedNode);
+            }
         }
 
         if (this._drawTimer) {
             this._drawTimer = requestAnimationFrame(() => this.drawUpdates());
         }
+    }
+
+    /**
+     * Style the node.
+     * @param node The node to style.
+     */
+    private styleNode(node: Viva.Graph.INode | undefined): void {
+        if (this._graphics && node) {
+            const nodeUI = this._graphics.getNodeUI(node.id);
+            if (nodeUI) {
+                if (node.data.milestone) {
+                    nodeUI.color = Visualizer.COLOR_MILESTONE;
+                    nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
+                } else if (node.data.confirmed) {
+                    if (node.data.value === 0) {
+                        nodeUI.color = Visualizer.COLOR_ZERO_CONFIRMED;
+                        nodeUI.size = Visualizer.VERTEX_SIZE_REGULAR;
+                    } else {
+                        nodeUI.color = Visualizer.COLOR_VALUE_CONFIRMED;
+                        nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
+                    }
+                } else {
+                    nodeUI.color = Visualizer.COLOR_PENDING;
+                    if (node.data.value === 0) {
+                        nodeUI.size = Visualizer.VERTEX_SIZE_REGULAR;
+                    } else {
+                        nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Get the connections from the node.
+     * @param node The node starting point.
+     * @param field The field to use for direction.
+     * @returns The list of connection ids.
+     */
+    private getNodeConnections(node: string, field: "fromId" | "toId"): string[] {
+        const nodesToProcess: string[] = [node];
+        const usedNodes: string[] = [node];
+        const connections: string[] = [];
+
+        while (nodesToProcess.length > 0) {
+            const currentNode = nodesToProcess.shift();
+            if (currentNode) {
+                this._graph?.forEachLinkedNode(currentNode, (connectedNode, link) => {
+                    if (link[field] === currentNode && !usedNodes.includes(connectedNode.id)) {
+                        connections.push(link.id);
+                        nodesToProcess.push(connectedNode.id);
+                        usedNodes.push(connectedNode.id);
+                    }
+                });
+            }
+        }
+
+        return connections;
+    }
+
+    /**
+     * Select the clicked node.
+     * @param node The node to select.
+     */
+    private selectNode(node?: Viva.Graph.INode): void {
+        const isDeselect = !node || this.state.selectedNode === node.id;
+        this.setState({
+            selectedNode: isDeselect || !node ? "-" : node.id,
+            selectedNodeValue: isDeselect || !node ? "-" : node.data.value,
+            selectedNodeTag: isDeselect || !node ? "-" : node.data.tag,
+            selectedMilestoneValue: isDeselect || !node ? "-" : node.data.milestone || "-"
+        });
+
+        this.clearConnections();
+
+        if (!isDeselect && node) {
+            this.highlightConnections(node.id);
+        }
+
+        this._lastClick = Date.now();
+    }
+
+    /**
+     * Highlight the forward and backwards cones.
+     * @param nodeId The node to highlight.
+     */
+    private highlightConnections(nodeId: string): void {
+        const confirming = this.getNodeConnections(nodeId, "toId");
+        for (const confirm of confirming) {
+            const linkUI = this._graphics?.getLinkUI(confirm);
+            if (linkUI) {
+                linkUI.color = Visualizer.EDGE_COLOR_CONFIRMING;
+            }
+        }
+
+        const confirmedBy = this.getNodeConnections(nodeId, "fromId");
+        for (const confirm of confirmedBy) {
+            const linkUI = this._graphics?.getLinkUI(confirm);
+            if (linkUI) {
+                linkUI.color = Visualizer.EDGE_COLOR_CONFIRMED_BY;
+            }
+        }
+    }
+
+    /**
+     * Clear the forward and backwards cones.
+     */
+    private clearConnections(): void {
+        this._graph?.forEachLink((link: Viva.Graph.ILink) => {
+            const linkUI = this._graphics?.getLinkUI(link.id);
+            if (linkUI) {
+                linkUI.color = Visualizer.EDGE_COLOR_DEFAULT;
+            }
+        });
+    }
+
+    /**
+     * Highlight nodes.
+     */
+    private highlightNodes(): void {
+        const trimmedTag = this.state.tagFilter.trim();
+        const regEx = new RegExp(trimmedTag, "g");
+
+        this._graph?.forEachNode((node: Viva.Graph.INode) => {
+            if (trimmedTag.length > 0 && regEx.test(node.data.tag)) {
+                const linkUI = this._graphics?.getNodeUI(node.id);
+                if (linkUI) {
+                    linkUI.color = Visualizer.COLOR_HIGHLIGHTED;
+                }
+            } else {
+                this.styleNode(node);
+            }
+        });
     }
 
     /**
@@ -477,8 +659,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         if (this._graphElement) {
             if (this._graphics) {
                 this._graphics.updateSize();
-                this._graphics.scale(1,
-                    { x: this._graphElement.clientWidth / 2, y: this._graphElement.clientHeight / 2 });
+                this._graphics.scale(1, {
+                    x: this._graphElement.clientWidth / 2,
+                    y: this._graphElement.clientHeight / 2
+                }
+                );
             }
         }
     }

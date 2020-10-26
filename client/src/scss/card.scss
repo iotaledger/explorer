@@ -72,6 +72,13 @@
     &.card--header__space-between {
       justify-content: space-between;
     }
+
+    &.card--header-secondary {
+      min-height: auto;
+      margin: 0px 0px 0px 26px;
+      padding: 0;
+      border: 0;
+    }
   }
 
   p {
@@ -196,16 +203,19 @@
     }
 
     &.card--value-textarea {
+      min-height: 150px;
       max-height: 150px;
       padding: 10px;
       background: $gray-noon;
       overflow: auto;
 
       &.card--value-textarea__ascii {
+        max-height: 350px;
         white-space: pre-wrap;
       }
 
       &.card--value-textarea__json {
+        max-height: 350px;
         font-family: 'Courier New', Courier, monospace;
         white-space: pre-wrap;
       }

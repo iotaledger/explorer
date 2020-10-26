@@ -21,4 +21,14 @@ export interface VisualizerState extends FeedsState {
      * The selected milestone value.
      */
     selectedMilestoneValue: string;
+
+    /**
+     * The selected node tag.
+     */
+    selectedNodeTag: string;
+
+    /**
+     * Filter on a specific tag.
+     */
+    tagFilter: string;
 }

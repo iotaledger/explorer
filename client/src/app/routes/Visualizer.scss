@@ -4,7 +4,11 @@
 @import '../../scss/variables';
 
 .visualizer {
-  margin: 40px;
+  margin: 30px 40px;
+
+  h1 {
+    min-width: 230px;
+  }
 
   @include phone-down {
     margin: 20px;
@@ -43,8 +47,20 @@
     }
   }
 
+  .filter {
+    flex: 1;
+
+    @media (max-width: $tablet-width) {
+      display: none;
+    }
+
+    .card--content {
+      padding: 10px 30px;
+    }
+  }
+
   .sidepanel-border {
-    width: 220px;
+    flex: 0 0 220px;
     border-radius: 6px;
     background: #ffffff;
 
@@ -58,6 +74,10 @@
       &.phone-hidden {
         display: none;
       }
+    }
+
+    .hash {
+      width: 135px;
     }
 
     .visualizer--key {

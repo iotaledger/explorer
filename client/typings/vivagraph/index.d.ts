@@ -65,7 +65,7 @@ declare module "vivagraphjs" {
                     size: number;
                 } | undefined;
                 getLinkUI: (linkId: string) => {
-                    color: string;
+                    color: number;
                 } | undefined;
                 setNodeProgram: (program: WebGLProgram) => void;
                 updateSize: () => void;
@@ -84,7 +84,7 @@ declare module "vivagraphjs" {
                 on: (event: "scale", callback: (scale: number) => void) => void;
             }
             function webglGraphics(): IWebGLGraphics;
-            function webglLine(color: string): IItem;
+            function webglLine(color: string | number): IItem;
 
             function renderer(graph: IGraph, options: {
                 container: HTMLElement | null;

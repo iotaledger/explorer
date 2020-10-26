@@ -15,4 +15,8 @@ export interface IFeedTransaction {
      * The transaction value.
      */
     value: number;
+    /**
+     * The transaction tag.
+     */
+    tag: string;
 }

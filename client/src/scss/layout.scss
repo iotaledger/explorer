@@ -68,7 +68,6 @@
   margin-left: 2px !important;
 }
 
-
 .margin-b-s {
   margin-bottom: 20px;
 }
@@ -147,4 +146,14 @@
 
 .padding-l-m {
   padding-left: 30px;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-ellipsis {
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  word-break: normal !important;
 }

@@ -1,3 +1,4 @@
+import { IFeedTransaction } from "../../models/api/IFeedTransaction";
 import { CurrencyState } from "./CurrencyState";
 
 export interface FeedsState extends CurrencyState {
@@ -24,24 +25,7 @@ export interface FeedsState extends CurrencyState {
     /**
      * Latest transactions.
      */
-    transactions: {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The trunk.
-         */
-        trunk: string;
-        /**
-         * The branch.
-         */
-        branch: string;
-        /**
-         * The transaction value.
-         */
-        value: number;
-    }[];
+    transactions: IFeedTransaction[];
 
     /**
      * Confirmed transactions.

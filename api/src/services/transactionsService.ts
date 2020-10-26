@@ -204,7 +204,8 @@ export class TransactionsService {
                     hash: message.hash,
                     value: message.value,
                     branch: message.branch,
-                    trunk: message.trunk
+                    trunk: message.trunk,
+                    tag: message.tag
                 });
             });
 

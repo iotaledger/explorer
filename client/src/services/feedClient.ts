@@ -3,6 +3,7 @@ import { TrytesHelper } from "../helpers/trytesHelper";
 import { IFeedSubscribeRequest } from "../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../models/api/IFeedSubscribeResponse";
 import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
+import { IFeedTransaction } from "../models/api/IFeedTransaction";
 import { IFeedUnsubscribeRequest } from "../models/api/IFeedUnsubscribeRequest";
 
 /**
@@ -27,24 +28,7 @@ export class FeedClient {
     /**
      * The latest transactions.
      */
-    private _transactions: {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The tx value.
-         */
-        value: number;
-        /**
-         * The connected trunk.
-         */
-        trunk: string;
-        /**
-         * The connected branch.
-         */
-        branch: string;
-    }[];
+    private _transactions: IFeedTransaction[];
 
     /**
      * Existing hashes.
@@ -211,24 +195,7 @@ export class FeedClient {
      * Get the transactions as trytes.
      * @returns The trytes.
      */
-    public getTransactions(): {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The trunk.
-         */
-        trunk: string;
-        /**
-         * The branch.
-         */
-        branch: string;
-        /**
-         * The transaction value.
-         */
-        value: number;
-    }[] {
+    public getTransactions(): IFeedTransaction[] {
         return this._transactions.slice();
     }
 

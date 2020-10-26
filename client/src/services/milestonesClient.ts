@@ -66,7 +66,7 @@ export class MilestonesClient {
                 async () => {
                     await this.updateMilestones();
                 },
-                30000);
+                10000);
             setTimeout(
                 async () => {
                     await this.updateMilestones();
