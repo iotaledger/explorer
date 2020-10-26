@@ -5,6 +5,7 @@ import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import chevronDownWhite from "../../assets/chevron-down-white.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { UnitsHelper } from "../../helpers/unitsHelper";
+import { IFeedTransaction } from "../../models/api/IFeedTransaction";
 import { ValueFilter } from "../../models/services/valueFilter";
 import { NetworkService } from "../../services/networkService";
 import Feeds from "../components/Feeds";
@@ -387,24 +388,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
      * Filter the transactions and return them.
      * @param transactions The transactions to filter.
      */
-    protected transactionsUpdated(transactions: {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The trunk.
-         */
-        trunk: string;
-        /**
-         * The branch.
-         */
-        branch: string;
-        /**
-         * The transaction value.
-         */
-        value: number;
-    }[]): void {
+    protected transactionsUpdated(transactions: IFeedTransaction[]): void {
         if (this._isMounted && this._feedClient) {
             const minLimit = convertUnits(this.state.valueMinimum, this.state.valueMinimumUnits, Unit.i);
             const maxLimit = convertUnits(this.state.valueMaximum, this.state.valueMaximumUnits, Unit.i);

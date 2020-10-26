@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../helpers/circleNodeShader";
+import { IFeedTransaction } from "../../models/api/IFeedTransaction";
 import Feeds from "../components/Feeds";
 import "./Visualizer.scss";
 import { VisualizerRouteProps } from "./VisualizerRouteProps";
@@ -24,12 +25,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Vertex size.
      */
-    private static readonly VERTEX_SIZE_ZERO: number = 20;
+    private static readonly VERTEX_SIZE_REGULAR: number = 20;
 
     /**
      * Vertex size.
      */
-    private static readonly VERTEX_SIZE_VALUE: number = 30;
+    private static readonly VERTEX_SIZE_LARGE: number = 30;
 
     /**
      * Vertex confirmed value colour.
@@ -45,6 +46,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Vertex confirmed zero colour.
      */
     private static readonly COLOR_ZERO_CONFIRMED: string = "0x0fc1b7";
+
+    /**
+     * Vertex milestone colour.
+     */
+    private static readonly COLOR_MILESTONE: string = "0xb8172d";
 
     /**
      * The graph instance.
@@ -64,43 +70,31 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * All the transactions to vizualise.
      */
-    private readonly _transactionHashes: {
-        /**
-         * The hash of the transactions.
-         */
-        hash: string;
-        /**
-         * Is it confirmed.
-         */
-        confirmed: boolean;
-    }[];
+    private readonly _transactionHashes: string[];
 
     /**
      * New transactions to process.
      */
-    private _newTransactions: {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The trunk.
-         */
-        trunk: string;
-        /**
-         * The branch.
-         */
-        branch: string;
-        /**
-         * The transaction value.
-         */
-        value: number;
-    }[];
+    private _newTransactions: IFeedTransaction[];
 
     /**
      * New confirmed transactions.
      */
     private _newConfirmed: string[];
+
+    /**
+     * New confirmed transactions.
+     */
+    private _newMilestones: {
+        /**
+         * The tx hash.
+         */
+        hash: string;
+        /**
+         * The milestone index.
+         */
+        milestoneIndex: number;
+    }[];
 
     /**
      * Timer for display updates.
@@ -127,6 +121,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         this._transactionHashes = [];
         this._newTransactions = [];
         this._newConfirmed = [];
+        this._newMilestones = [];
 
         this._graphElement = null;
         this._resize = () => this.resize();
@@ -143,7 +138,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             currencies: [],
             transactionCount: 0,
             selectedNode: "-",
-            selectedNodeValue: "-"
+            selectedNodeValue: "-",
+            selectedMilestoneValue: "-"
         };
     }
 
@@ -232,6 +228,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             <div className="card--value">
                                 {this.state.selectedNodeValue}
                             </div>
+                            <div className="card--label">
+                                Milestone
+                            </div>
+                            <div className="card--value">
+                                {this.state.selectedMilestoneValue}
+                            </div>
                         </div>
                     </div>
                     <div className="graph-border">
@@ -254,7 +256,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             <div className="visualizer--key visualizer--key__value confirmed-zero margin-t-t">
                                 Zero Confirmed
                             </div>
-                            <div className="visualizer--key margin-t-t">Value transactions are larger.</div>
+                            <div className="visualizer--key visualizer--key__value milestone margin-t-t">
+                                Milestone
+                            </div>
+                            <div className="visualizer--key margin-t-t">
+                                Value and milestone transactions are larger.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -266,24 +273,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * The transactions have been updated.
      * @param transactions The updated transactions.
      */
-    protected transactionsUpdated(transactions: {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The trunk.
-         */
-        trunk: string;
-        /**
-         * The branch.
-         */
-        branch: string;
-        /**
-         * The transaction value.
-         */
-        value: number;
-    }[]): void {
+    protected transactionsUpdated(transactions: IFeedTransaction[]): void {
         this._newTransactions = this._newTransactions.concat(transactions);
     }
 
@@ -293,6 +283,23 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     protected confirmedUpdated(confirmed: string[]): void {
         this._newConfirmed = this._newConfirmed.concat(confirmed);
+    }
+
+    /**
+     * The milestones were updated.
+     * @param milestones The list of miletsones.
+     */
+    protected milestonesUpdated(milestones: {
+        /**
+         * The tx hash.
+         */
+        hash: string;
+        /**
+         * The milestone index.
+         */
+        milestoneIndex: number;
+    }[]): void {
+        this._newMilestones = milestones;
     }
 
     /**
@@ -320,7 +327,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graphics.setNodeProgram(buildCircleNodeShader());
 
             this._graphics.node(node => ({
-                size: node.data.value === 0 ? Visualizer.VERTEX_SIZE_ZERO : Visualizer.VERTEX_SIZE_VALUE,
+                size: node.data.milestone || node.data.value !== 0
+                    ? Visualizer.VERTEX_SIZE_LARGE : Visualizer.VERTEX_SIZE_REGULAR,
                 color: Visualizer.COLOR_PENDING
             }));
             this._graphics.link(() => Viva.Graph.View.webglLine(Visualizer.EDGE_COLOR_DEFAULT));
@@ -329,7 +337,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             events.click(node => {
                 this.setState({
                     selectedNode: this.state.selectedNode === node.id ? "-" : node.id,
-                    selectedNodeValue: this.state.selectedNode === node.id ? "-" : node.data.value
+                    selectedNodeValue: this.state.selectedNode === node.id ? "-" : node.data.value,
+                    selectedMilestoneValue: this.state.selectedNode === node.id ? "-" : node.data.milestone || "-"
                 });
             });
 
@@ -371,17 +380,25 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 }
             }
 
+            const milestones = this._newMilestones.slice();
+            for (const ms of milestones) {
+                const node = this._graph.getNode(ms.hash);
+                if (node) {
+                    node.data.milestone = ms.milestoneIndex;
+                }
+            }
+
             for (const tx of txs) {
                 if (!this._graph.getNode(tx.hash)) {
                     this._graph.beginUpdate();
 
                     const added: string[] = [];
 
-                    this._graph.addNode(tx.hash, { confirmed: false, value: tx.value });
+                    this._graph.addNode(tx.hash, { confirmed: false, value: tx.value, milestone: false });
                     added.push(tx.hash);
 
                     if (!this._graph.getNode(tx.trunk)) {
-                        this._graph.addNode(tx.trunk, { confirmed: false, value: 0 });
+                        this._graph.addNode(tx.trunk, { confirmed: false, value: 0, milestone: false });
                         added.push(tx.trunk);
                     }
 
@@ -389,19 +406,19 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                     if (tx.trunk !== tx.branch) {
                         if (!this._graph.getNode(tx.branch)) {
-                            this._graph.addNode(tx.branch, { confirmed: false, value: 0 });
+                            this._graph.addNode(tx.branch, { confirmed: false, value: 0, milestone: false });
                             added.push(tx.branch);
                         }
 
                         this._graph.addLink(tx.branch, tx.hash);
                     }
 
-                    this._transactionHashes.push(...added.map(a => ({ hash: a, confirmed: false })));
+                    this._transactionHashes.push(...added);
 
                     while (this._transactionHashes.length > Visualizer.MAX_TRANSACTIONS) {
                         const nodeToRemove = this._transactionHashes.shift();
-                        if (nodeToRemove && !added.includes(nodeToRemove.hash)) {
-                            this._graph.forEachLinkedNode(nodeToRemove.hash, (linkedNode, link) => {
+                        if (nodeToRemove && !added.includes(nodeToRemove)) {
+                            this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
                                 if (this._graph) {
                                     this._graph.removeLink(link);
 
@@ -410,7 +427,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     }
                                 }
                             });
-                            this._graph.removeNode(nodeToRemove.hash);
+                            this._graph.removeNode(nodeToRemove);
                         }
                     }
 
@@ -424,10 +441,25 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 if (this._graphics) {
                     const nodeUI = this._graphics.getNodeUI(node.id);
                     if (nodeUI) {
-                        nodeUI.color = node.data.confirmed
-                            ? (node.data.value === 0
-                                ? Visualizer.COLOR_ZERO_CONFIRMED : Visualizer.COLOR_VALUE_CONFIRMED)
-                            : Visualizer.COLOR_PENDING;
+                        if (node.data.milestone) {
+                            nodeUI.color = Visualizer.COLOR_MILESTONE;
+                            nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
+                        } else if (node.data.confirmed) {
+                            if (node.data.value === 0) {
+                                nodeUI.color = Visualizer.COLOR_ZERO_CONFIRMED;
+                                nodeUI.size = Visualizer.VERTEX_SIZE_REGULAR;
+                            } else {
+                                nodeUI.color = Visualizer.COLOR_VALUE_CONFIRMED;
+                                nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
+                            }
+                        } else {
+                            nodeUI.color = Visualizer.COLOR_PENDING;
+                            if (node.data.value === 0) {
+                                nodeUI.size = Visualizer.VERTEX_SIZE_REGULAR;
+                            } else {
+                                nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
+                            }
+                        }
                     }
                 }
             });

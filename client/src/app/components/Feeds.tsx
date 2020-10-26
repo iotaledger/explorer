@@ -1,5 +1,6 @@
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { IFeedTransaction } from "../../models/api/IFeedTransaction";
 import { FeedClient } from "../../services/feedClient";
 import { MilestonesClient } from "../../services/milestonesClient";
 import Currency from "./Currency";
@@ -83,24 +84,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * The transactions have been updated.
      * @param transactions The updated transactions.
      */
-    protected transactionsUpdated(transactions: {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The trunk.
-         */
-        trunk: string;
-        /**
-         * The branch.
-         */
-        branch: string;
-        /**
-         * The transaction value.
-         */
-        value: number;
-    }[]): void {
+    protected transactionsUpdated(transactions: IFeedTransaction[]): void {
     }
 
     /**
@@ -108,6 +92,22 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * @param confirmed The updated confirmed transactions.
      */
     protected confirmedUpdated(confirmed: string[]): void {
+    }
+
+    /**
+     * The milestones were updated.
+     * @param milestones The list of miletsones.
+     */
+    protected milestonesUpdated(milestones: {
+        /**
+         * The tx hash.
+         */
+        hash: string;
+        /**
+         * The milestone index.
+         */
+        milestoneIndex: number;
+    }[]): void {
     }
 
     /**
@@ -238,10 +238,14 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * Update the milestone feeds.
      */
     private updateMilestones(): void {
-        if (this._isMounted && this._milestonesClient) {
-            this.setState({
-                milestones: this._milestonesClient.getMilestones()
-            });
+        if (this._milestonesClient) {
+            const milestones = this._milestonesClient.getMilestones();
+            if (this._isMounted) {
+                this.setState({
+                    milestones
+                });
+            }
+            this.milestonesUpdated(milestones);
         }
     }
 }

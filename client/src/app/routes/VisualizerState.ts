@@ -16,4 +16,9 @@ export interface VisualizerState extends FeedsState {
      * The selected node value.
      */
     selectedNodeValue: string;
+
+    /**
+     * The selected milestone value.
+     */
+    selectedMilestoneValue: string;
 }

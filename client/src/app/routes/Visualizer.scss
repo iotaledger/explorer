@@ -83,6 +83,10 @@
         &.confirmed-zero {
           background-color: $main-green;
         }
+
+        &.milestone {
+          background-color: #b8172d;
+        }
       }
     }
   }

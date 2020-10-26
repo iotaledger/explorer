@@ -1,5 +1,6 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
+import { IFeedTransaction } from "../models/api/IFeedTransaction";
 import { ISn } from "../models/zmq/ISn";
 import { ITx } from "../models/zmq/ITx";
 import { ZmqService } from "./zmqService";
@@ -21,12 +22,7 @@ export class TransactionsService {
     /**
      * The most recent transactions.
      */
-    private _txValues: {
-        hash: string;
-        trunk: string;
-        branch: string;
-        value: number;
-    }[];
+    private _txValues: IFeedTransaction[];
 
     /**
      * The transaction tps history.
@@ -104,6 +100,7 @@ export class TransactionsService {
      */
     public async init(): Promise<void> {
         this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._networkId}`);
+
         this._txValues = [];
         this._tps = [];
         this._totalTxs = 0;
@@ -284,17 +281,19 @@ export class TransactionsService {
                 subs = this._subscribers;
             }
 
+            const tps = {
+                start: this._tps.length > 0 ? this._tps[this._tps.length - 1].ts : now,
+                end: this._tps.length > 0 ? this._tps[0].ts : now,
+                tx: this._tps.map(t => t.tx),
+                sn: this._tps.map(t => t.sn)
+            };
+
             for (const subscriptionId in subs) {
                 const data: IFeedSubscriptionMessage = {
                     subscriptionId,
                     transactions: this._txValues,
                     confirmed: this._confirmedHashes,
-                    tps: {
-                        start: this._tps.length > 0 ? this._tps[this._tps.length - 1].ts : now,
-                        end: this._tps.length > 0 ? this._tps[0].ts : now,
-                        tx: this._tps.map(t => t.tx),
-                        sn: this._tps.map(t => t.sn)
-                    }
+                    tps
                 };
 
                 await subs[subscriptionId](data);
