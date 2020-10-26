@@ -1,5 +1,6 @@
 import isBundle from "@iota/bundle-validator";
 import { trytesToTrits, value } from "@iota/converter";
+import { parseMessage } from "@iota/mam.js";
 import { asTransactionTrytes } from "@iota/transaction-converter";
 import { isEmpty, isTrytes } from "@iota/validators";
 import classNames from "classnames";
@@ -404,6 +405,24 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                     </div>
                                                 </div>
+                                                {this.state.streamsV0Root && (
+                                                    <div className="col fill">
+                                                        <div className="card--label">
+                                                            Streams v0 Decoder Root
+                                                        </div>
+                                                        <div className="card--value row middle">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => this.props.history.push(
+                                                                    `/${this.props.match.params.network
+                                                                    }/streams/0/${this.state.streamsV0Root}`)}
+                                                                className="margin-r-t"
+                                                            >
+                                                                {this.state.streamsV0Root}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
                                                 {this.state.message !== undefined && (
                                                     <React.Fragment>
                                                         <div className="card--label row middle margin-b-2">
@@ -622,7 +641,20 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
      */
     private buildDetails(details?: ICachedTransaction): void {
         if (details) {
-            const singleDecoded = TrytesHelper.decodeMessage(details?.tx.signatureMessageFragment);
+            let streamsV0Root: string | undefined;
+            let messageTrytes = details?.tx.signatureMessageFragment;
+
+            try {
+                // Can we parse the content as a StreamsV0 Message
+                const parsedStreamsV0 = parseMessage(details.tx.signatureMessageFragment, details.tx.address);
+                if (parsedStreamsV0.message) {
+                    messageTrytes = parsedStreamsV0.message;
+                    streamsV0Root = details.tx.address;
+                }
+            } catch { }
+
+            const singleDecoded = TrytesHelper.decodeMessage(messageTrytes);
+
             this.setState(
                 {
                     status: "",
@@ -636,10 +668,11 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                     nextTransaction: details.tx.currentIndex < details.tx.lastIndex
                         ? details.tx.trunkTransaction : undefined,
                     rawMessageTrytes: details?.tx.signatureMessageFragment,
-                    bundleTailHash: details?.tx.currentIndex === 0 ? details.tx.hash : undefined
+                    bundleTailHash: details?.tx.currentIndex === 0 ? details.tx.hash : undefined,
+                    streamsV0Root
                 },
                 async () => {
-                    if (this.state.details) {
+                    if (this.state.details && this.state.details.tx.lastIndex > 0) {
                         const thisGroup =
                             await this._tangleCacheService.getTransactionBundleGroup(
                                 this.props.match.params.network,
@@ -654,7 +687,16 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 ? true
                                 : isBundle(thisGroup.map(t => t.tx));
                             const isConsistent = thisGroup.map(tx => tx.tx.value).reduce((a, b) => a + b, 0) === 0;
-                            const combinedMessages = thisGroup.map(t => t.tx.signatureMessageFragment).join("");
+                            let combinedMessages = thisGroup.map(t => t.tx.signatureMessageFragment).join("");
+
+                            try {
+                                const parsedStreamsV0 = parseMessage(combinedMessages, details.tx.address);
+                                if (parsedStreamsV0.message) {
+                                    combinedMessages = parsedStreamsV0.message;
+                                    streamsV0Root = details.tx.address;
+                                }
+                            } catch { }
+
                             const spanMessage = TrytesHelper.decodeMessage(combinedMessages);
 
                             let message = this.state.message;
@@ -699,7 +741,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 messageType,
                                 messageSpan,
                                 rawMessageTrytes,
-                                bundleTailHash: thisGroup[0].tx.hash
+                                bundleTailHash: thisGroup[0].tx.hash,
+                                streamsV0Root
                             }, async () => {
                                 const children = await this._tangleCacheService.getTransactionChildren(
                                     this.props.match.params.network, this.props.match.params.hash);

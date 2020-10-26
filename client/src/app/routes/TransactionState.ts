@@ -110,4 +110,9 @@ export interface TransactionState {
      * The tail hash for reattaching.
      */
     bundleTailHash?: string;
+
+    /**
+     * Does this look like a streams v0 root.
+     */
+    streamsV0Root?: string;
 }
