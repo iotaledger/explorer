@@ -39,7 +39,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                 <input
                     className="search--text-input"
                     type="text"
-                    autoFocus={true}
+                    autoFocus={!this.props.compact}
                     value={this.state.query}
                     onChange={e => this.setState({
                         query: e.target.value.toUpperCase(),
