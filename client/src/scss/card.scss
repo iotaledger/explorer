@@ -162,6 +162,10 @@
         box-shadow: none;
       }
     }
+
+    &.card--label__no-case {
+      text-transform: none;
+    }
   }
 
   .card--value {

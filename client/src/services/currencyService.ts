@@ -313,6 +313,46 @@ export class CurrencyService {
     }
 
     /**
+     * Convert from current currency to iota.
+     * @param valueInCurrent The value in current currency.
+     * @param currencyData The currency data.
+     * @returns The converted fiat.
+     */
+    public convertFiatToMiota(
+        valueInCurrent: number,
+        currencyData: ICurrencySettings): number {
+        let converted = 0;
+        if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
+            const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
+
+            if (selectedFiatToBase) {
+                converted = valueInCurrent / selectedFiatToBase.rate / currencyData.baseCurrencyRate;
+            }
+        }
+        return converted;
+    }
+
+    /**
+     * Convert the iota to fiat.
+     * @param miota The value in iota.
+     * @param currencyData The currency data.
+     * @returns The converted fiat.
+     */
+    public convertMiotaToFiat(
+        miota: number,
+        currencyData: ICurrencySettings): number {
+        let converted = 0;
+        if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
+            const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
+
+            if (selectedFiatToBase) {
+                converted = miota * (selectedFiatToBase.rate * currencyData.baseCurrencyRate);
+            }
+        }
+        return converted;
+    }
+
+    /**
      * Format the amount with currency sumbol.
      * @param currencyData The currency data.
      * @param amount The amount to format.

@@ -1,5 +1,6 @@
 import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
+import currencyIcon from "../assets/currency.svg";
 import exploreIcon from "../assets/explore.svg";
 import marketsIcon from "../assets/markets.svg";
 import streamsIcon from "../assets/streams.svg";
@@ -19,6 +20,7 @@ import Address from "./routes/Address";
 import { AddressRouteProps } from "./routes/AddressRouteProps";
 import Bundle from "./routes/Bundle";
 import { BundleRouteProps } from "./routes/BundleRouteProps";
+import CurrencyConverter from "./routes/CurrencyConverter";
 import Landing from "./routes/Landing";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
@@ -103,11 +105,13 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                         : ""}`}
                     switcher={this.props.match.params.action &&
                         this.props.match.params.action !== "markets" &&
+                        this.props.match.params.action !== "currency-converter" &&
                         switcher}
                     search={this.props.match.params.action &&
                         this.props.match.params.action !== "streams" &&
                         this.props.match.params.action !== "visualizer" &&
-                        this.props.match.params.action !== "markets" && (
+                        this.props.match.params.action !== "markets" &&
+                        this.props.match.params.action !== "currency-converter" && (
                             <SearchInput
                                 onSearch={query => this.setQuery(query)}
                                 compact={true}
@@ -133,6 +137,11 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             label: "Markets",
                             url: `/${this.state.networkId}/markets/`,
                             icon: marketsIcon
+                        },
+                        {
+                            label: "Currency Converter",
+                            url: `/${this.state.networkId}/currency-converter/`,
+                            icon: currencyIcon
                         }
                     ]}
                 />
@@ -143,6 +152,13 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             component={() =>
                                 (
                                     <Markets />
+                                )}
+                        />
+                        <Route
+                            path="/:network/currency-converter"
+                            component={() =>
+                                (
+                                    <CurrencyConverter />
                                 )}
                         />
                         <Route
@@ -234,6 +250,10 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             .concat({
                                 label: "Markets",
                                 url: `${this.state.networkId}/markets/`
+                            })
+                            .concat({
+                                label: "Currency Converter",
+                                url: `${this.state.networkId}/currency-converter/`
                             })
                     }
                 />
