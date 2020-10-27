@@ -218,7 +218,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 value={this.state.filter}
                                 onChange={e => this.setState(
                                     { filter: e.target.value.toUpperCase() },
-                                    () => this.highlightNodes())}
+                                    () => this.restyleNodes())}
                                 maxLength={90}
                             />
                         </div>
@@ -532,6 +532,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             }
 
             this._graph.beginUpdate();
+            const added: string[] = [];
 
             for (const tx of txs) {
                 const existingNode = this._graph.getNode(tx.hash);
@@ -546,8 +547,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     };
                     this._graph.addNode(tx.hash, updatedData);
                 } else {
-                    const added: string[] = [];
-
                     this._graph.addNode(tx.hash, {
                         confirmed: confirmed.includes(tx.hash),
                         value: tx.value,
@@ -580,27 +579,29 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                         this._graph.addLink(tx.branch, tx.hash);
                     }
-
-                    this._transactionHashes.push(...added);
-
-                    while (this._transactionHashes.length > Visualizer.MAX_TRANSACTIONS) {
-                        const nodeToRemove = this._transactionHashes.shift();
-                        if (nodeToRemove && !added.includes(nodeToRemove)) {
-                            this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
-                                if (this._graph) {
-                                    this._graph.removeLink(link);
-
-                                    if (linkedNode.links.length === 0) {
-                                        this._graph.removeNode(linkedNode.id);
-                                    }
-                                }
-                            });
-                            this._graph.removeNode(nodeToRemove);
-                        }
-                    }
                 }
             }
 
+            this._graph.endUpdate();
+
+            this._transactionHashes.push(...added);
+
+            this._graph.beginUpdate();
+            while (this._transactionHashes.length > Visualizer.MAX_TRANSACTIONS) {
+                const nodeToRemove = this._transactionHashes.shift();
+                if (nodeToRemove && !added.includes(nodeToRemove)) {
+                    this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
+                        if (this._graph) {
+                            this._graph.removeLink(link);
+
+                            if (linkedNode.links.length === 0) {
+                                this._graph.removeNode(linkedNode.id);
+                            }
+                        }
+                    });
+                    this._graph.removeNode(nodeToRemove);
+                }
+            }
             this._graph.endUpdate();
 
             this.setState({ transactionCount: this._transactionHashes.length });
@@ -776,9 +777,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     }
 
     /**
-     * Highlight nodes.
+     * Restyle all the nodes.
      */
-    private highlightNodes(): void {
+    private restyleNodes(): void {
         const regEx = this.highlightNodesRegEx();
 
         if (this._graph) {
