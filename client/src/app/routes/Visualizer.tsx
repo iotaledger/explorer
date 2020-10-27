@@ -457,11 +457,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             this._graphics.setNodeProgram(buildCircleNodeShader());
 
-            this._graphics.node(node => ({
-                size: node.data.milestone || (node.data.value !== 0 && node.data.value !== undefined)
-                    ? Visualizer.VERTEX_SIZE_LARGE : Visualizer.VERTEX_SIZE_REGULAR,
-                color: Visualizer.COLOR_PENDING
-            }));
+            this._graphics.node(node => this.calculateNodeStyle(
+                node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data)));
+
             this._graphics.link(() => Viva.Graph.View.webglLine(Visualizer.EDGE_COLOR_DEFAULT));
 
             const events = Viva.Graph.webglInputEvents(this._graphics, this._graph);
@@ -509,43 +507,62 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             const confirmed = this._newConfirmed.slice();
             this._newConfirmed = [];
+            const milestones = this._newMilestones.slice();
+            this._newMilestones = [];
+
+            const highlightRegEx = this.highlightNodesRegEx();
+
+            const miHash: { [id: string]: number } = {};
+            for (const ms of milestones) {
+                miHash[ms.hash] = ms.milestoneIndex;
+
+                const node = this._graph.getNode(ms.hash);
+                if (node) {
+                    node.data.milestone = ms.milestoneIndex;
+                    this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
+                }
+            }
 
             for (const sn of confirmed) {
                 const node = this._graph.getNode(sn);
                 if (node) {
                     node.data.confirmed = true;
-                    this.styleNode(node);
+                    this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
                 }
             }
 
-            const milestones = this._newMilestones.slice();
-            this._newMilestones = [];
-
-            for (const ms of milestones) {
-                const node = this._graph.getNode(ms.hash);
-                if (node) {
-                    node.data.milestone = ms.milestoneIndex;
-                    this.styleNode(node);
-                }
-            }
+            this._graph.beginUpdate();
 
             for (const tx of txs) {
-                if (!this._graph.getNode(tx.hash)) {
-                    this._graph.beginUpdate();
-
+                const existingNode = this._graph.getNode(tx.hash);
+                if (existingNode) {
+                    const updatedData: INodeData = {
+                        confirmed: confirmed.includes(tx.hash) || existingNode.data.confirmed,
+                        value: tx.value || existingNode.data.value,
+                        tag: tx.tag || existingNode.data.tag,
+                        address: tx.address || existingNode.data.address,
+                        bundle: tx.bundle || existingNode.data.bundle,
+                        milestone: miHash[tx.hash] || existingNode.data.milestone
+                    };
+                    this._graph.addNode(tx.hash, updatedData);
+                } else {
                     const added: string[] = [];
 
                     this._graph.addNode(tx.hash, {
-                        confirmed: false,
+                        confirmed: confirmed.includes(tx.hash),
                         value: tx.value,
                         tag: tx.tag,
                         address: tx.address,
-                        bundle: tx.bundle
+                        bundle: tx.bundle,
+                        milestone: miHash[tx.hash]
                     });
                     added.push(tx.hash);
 
                     if (!this._graph.getNode(tx.trunk)) {
-                        this._graph.addNode(tx.trunk, {});
+                        this._graph.addNode(tx.trunk, {
+                            confirmed: confirmed.includes(tx.hash),
+                            milestone: miHash[tx.hash]
+                        });
 
                         added.push(tx.trunk);
                     }
@@ -554,18 +571,17 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                     if (tx.trunk !== tx.branch) {
                         if (!this._graph.getNode(tx.branch)) {
-                            this._graph.addNode(tx.branch, {});
+                            this._graph.addNode(tx.branch, {
+                                confirmed: confirmed.includes(tx.hash),
+                                milestone: miHash[tx.hash]
+                            });
                             added.push(tx.branch);
                         }
 
                         this._graph.addLink(tx.branch, tx.hash);
                     }
 
-                    for (const add of added) {
-                        this._transactionHashes.push(add);
-                        const node = this._graph.getNode(add);
-                        this.styleNode(node);
-                    }
+                    this._transactionHashes.push(...added);
 
                     while (this._transactionHashes.length > Visualizer.MAX_TRANSACTIONS) {
                         const nodeToRemove = this._transactionHashes.shift();
@@ -582,12 +598,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             this._graph.removeNode(nodeToRemove);
                         }
                     }
-
-                    this._graph.endUpdate();
-
-                    this.setState({ transactionCount: this._transactionHashes.length });
                 }
             }
+
+            this._graph.endUpdate();
+
+            this.setState({ transactionCount: this._transactionHashes.length });
         }
 
         if (this._drawTimer) {
@@ -598,31 +614,58 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Style the node.
      * @param node The node to style.
+     * @param highlight Highlight the node.
      */
-    private styleNode(node: Viva.Graph.INode<INodeData> | undefined): void {
+    private styleNode(node: Viva.Graph.INode<INodeData> | undefined, highlight: boolean): void {
         if (this._graphics && node) {
             const nodeUI = this._graphics.getNodeUI(node.id);
             if (nodeUI) {
-                if (node.data.milestone) {
-                    nodeUI.color = Visualizer.COLOR_MILESTONE;
-                    nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
-                } else if (node.data.confirmed) {
-                    nodeUI.color = Visualizer.COLOR_ZERO_CONFIRMED;
-                    if (node.data.value === undefined || node.data.value === 0) {
-                        nodeUI.size = Visualizer.VERTEX_SIZE_REGULAR;
-                    } else {
-                        nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
-                    }
-                } else {
-                    nodeUI.color = Visualizer.COLOR_PENDING;
-                    if (node.data.value === undefined || node.data.value === 0) {
-                        nodeUI.size = Visualizer.VERTEX_SIZE_REGULAR;
-                    } else {
-                        nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
-                    }
-                }
+                const { color, size } = this.calculateNodeStyle(node, highlight);
+                nodeUI.color = color;
+                nodeUI.size = size;
             }
         }
+    }
+
+    /**
+     * Style the node.
+     * @param node The node to style.
+     * @param highlight Highlight the node.
+     * @returns The size and color for the node.
+     */
+    private calculateNodeStyle(node: Viva.Graph.INode<INodeData> | undefined, highlight: boolean): {
+        color: string;
+        size: number;
+    } {
+        let color = Visualizer.COLOR_PENDING;
+        let size = Visualizer.VERTEX_SIZE_REGULAR;
+
+        if (node) {
+            if (highlight) {
+                color = Visualizer.COLOR_HIGHLIGHTED;
+            } else if (node.data.milestone) {
+                color = Visualizer.COLOR_MILESTONE;
+            } else if (node.data.confirmed) {
+                if (node.data.value !== 0 && node.data.value !== undefined) {
+                    color = Visualizer.COLOR_VALUE_CONFIRMED;
+                } else {
+                    color = Visualizer.COLOR_ZERO_CONFIRMED;
+                }
+            } else {
+                color = Visualizer.COLOR_PENDING;
+            }
+
+            if (node.data.milestone || (node.data.value !== 0 && node.data.value !== undefined)) {
+                size = Visualizer.VERTEX_SIZE_LARGE;
+            } else {
+                size = Visualizer.VERTEX_SIZE_REGULAR;
+            }
+        }
+
+        return {
+            color,
+            size
+        };
     }
 
     /**
@@ -691,20 +734,26 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @param nodeId The node to highlight.
      */
     private highlightConnections(nodeId: string): void {
-        const confirming = this.getNodeConnections(nodeId, "toId");
-        for (const confirm of confirming) {
-            const linkUI = this._graphics?.getLinkUI(confirm);
-            if (linkUI) {
-                linkUI.color = Visualizer.EDGE_COLOR_CONFIRMING;
-            }
-        }
+        if (this._graph) {
+            this._graph.beginUpdate();
 
-        const confirmedBy = this.getNodeConnections(nodeId, "fromId");
-        for (const confirm of confirmedBy) {
-            const linkUI = this._graphics?.getLinkUI(confirm);
-            if (linkUI) {
-                linkUI.color = Visualizer.EDGE_COLOR_CONFIRMED_BY;
+            const confirming = this.getNodeConnections(nodeId, "toId");
+            for (const confirm of confirming) {
+                const linkUI = this._graphics?.getLinkUI(confirm);
+                if (linkUI) {
+                    linkUI.color = Visualizer.EDGE_COLOR_CONFIRMING;
+                }
             }
+
+            const confirmedBy = this.getNodeConnections(nodeId, "fromId");
+            for (const confirm of confirmedBy) {
+                const linkUI = this._graphics?.getLinkUI(confirm);
+                if (linkUI) {
+                    linkUI.color = Visualizer.EDGE_COLOR_CONFIRMED_BY;
+                }
+            }
+
+            this._graph.endUpdate();
         }
     }
 
@@ -712,37 +761,81 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Clear the forward and backwards cones.
      */
     private clearConnections(): void {
-        this._graph?.forEachLink((link: Viva.Graph.ILink<unknown>) => {
-            const linkUI = this._graphics?.getLinkUI(link.id);
-            if (linkUI) {
-                linkUI.color = Visualizer.EDGE_COLOR_DEFAULT;
-            }
-        });
+        if (this._graph) {
+            this._graph.beginUpdate();
+
+            this._graph?.forEachLink((link: Viva.Graph.ILink<unknown>) => {
+                const linkUI = this._graphics?.getLinkUI(link.id);
+                if (linkUI) {
+                    linkUI.color = Visualizer.EDGE_COLOR_DEFAULT;
+                }
+            });
+
+            this._graph.endUpdate();
+        }
     }
 
     /**
      * Highlight nodes.
      */
     private highlightNodes(): void {
-        const trimmedFilter = this.state.filter.trim();
-        const regEx = new RegExp(trimmedFilter, "g");
+        const regEx = this.highlightNodesRegEx();
 
-        this._graph?.forEachNode((node: Viva.Graph.INode<INodeData>) => {
-            if (trimmedFilter.length > 0 &&
-                (
-                    regEx.test(node.id) ||
-                    regEx.test(node.data.tag || "") ||
-                    regEx.test(node.data.address || "") ||
-                    regEx.test(node.data.bundle || "")
-                )) {
-                const linkUI = this._graphics?.getNodeUI(node.id);
-                if (linkUI) {
-                    linkUI.color = Visualizer.COLOR_HIGHLIGHTED;
-                }
-            } else {
-                this.styleNode(node);
-            }
-        });
+        if (this._graph) {
+            this._graph.beginUpdate();
+
+            this._graph?.forEachNode((node: Viva.Graph.INode<INodeData>) => {
+                this.styleNode(node, this.testForHighlight(regEx, node.id, node.data));
+            });
+
+            this._graph.endUpdate();
+        }
+    }
+
+    /**
+     * Highlight nodes regex.
+     * @returns The reg exp for highlighting.
+     */
+    private highlightNodesRegEx(): RegExp | undefined {
+        const trimmedFilter = this.state.filter.trim();
+
+        if (trimmedFilter.length > 0) {
+            return new RegExp(trimmedFilter);
+        }
+    }
+
+    /**
+     * Highlight nodes.
+     * @param regEx The pattern to match in the properties.
+     * @param nodeId The node to match the data.
+     * @param data The data node to match.
+     * @returns True if we should highlight the node.
+     */
+    private testForHighlight(
+        regEx: RegExp | undefined,
+        nodeId: string | undefined,
+        data: INodeData | undefined): boolean {
+        if (!regEx || !nodeId || !data) {
+            return false;
+        }
+
+        if (regEx.test(nodeId)) {
+            return true;
+        }
+
+        if (data.tag && regEx.test(data.tag)) {
+            return true;
+        }
+
+        if (data.address && regEx.test(data.address)) {
+            return true;
+        }
+
+        if (data.bundle && regEx.test(data.bundle)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
