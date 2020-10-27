@@ -42,6 +42,11 @@ export interface ISettings extends ICurrencySettings {
      * Format values in full.
      */
     formatFull?: boolean;
+
+    /**
+     * Display visualization in dark mode.
+     */
+    darkMode?: boolean;
 }
 
 export type SettingsKeys = keyof ISettings;

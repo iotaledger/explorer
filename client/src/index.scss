@@ -63,16 +63,21 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-	border-radius: 0px;
-	background-color: $gray-daylight;
+  border-radius: 0px;
+  background-color: $gray-daylight;
 }
 
 ::-webkit-scrollbar {
-	width: 12px;
-	background-color: $gray-daylight;
+  width: 12px;
+  background-color: $gray-daylight;
 }
 
 ::-webkit-scrollbar-thumb {
-	border-radius: 0px;
-	background-color: $gray-header;
+  border-radius: 0px;
+  background-color: $gray-header;
+}
+
+:root {
+  --context-primary: #131f37;
+  --context-secondary: #485776;
 }

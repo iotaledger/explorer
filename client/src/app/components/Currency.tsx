@@ -8,7 +8,7 @@ import { CurrencyState } from "./CurrencyState";
 /**
  * Component which will provide facilities for a component with currencies.
  */
-abstract class CurrencyBase<P, S extends CurrencyState> extends AsyncComponent<P, S> {
+abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S> {
     /**
      * The settings service.
      */
@@ -86,4 +86,4 @@ abstract class CurrencyBase<P, S extends CurrencyState> extends AsyncComponent<P
     protected abstract updateCurrency(): void;
 }
 
-export default CurrencyBase;
+export default Currency;

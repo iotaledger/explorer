@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
@@ -22,7 +23,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Edge colour default.
      */
-    private static readonly EDGE_COLOR_DEFAULT: number = 0xEEEEEEFF;
+    private static readonly EDGE_COLOR_LIGHT: number = 0x00000055;
+
+    /**
+     * Edge colour default.
+     */
+    private static readonly EDGE_COLOR_DARK: number = 0xFFFFFF11;
 
     /**
      * Edge color confirming.
@@ -166,7 +172,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             selectedNodeAddress: "-",
             selectedNodeBundle: "-",
             selectedMilestoneValue: "-",
-            filter: ""
+            filter: "",
+            darkMode: this._settingsService.get().darkMode ?? false
         };
     }
 
@@ -204,7 +211,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     public render(): ReactNode {
         return (
-            <div className="visualizer">
+            <div className={
+                classNames("visualizer", { "dark-mode": this.state.darkMode })
+            }
+            >
                 <div className="row middle">
                     <h1 className="margin-r-t margin-b-t">Visualizer</h1>
                     <div className="card margin-b-s filter fill">
@@ -221,6 +231,13 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     () => this.restyleNodes())}
                                 maxLength={90}
                             />
+                            <button
+                                type="button"
+                                className="card--action margin-l-s"
+                                onClick={() => this.toggleMode()}
+                            >
+                                {this.state.darkMode ? "Light Mode" : "Dark Mode"}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -463,7 +480,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graphics.node(node => this.calculateNodeStyle(
                 node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data)));
 
-            this._graphics.link(() => Viva.Graph.View.webglLine(Visualizer.EDGE_COLOR_DEFAULT));
+            this._graphics.link(() => Viva.Graph.View.webglLine(this.state.darkMode
+                ? Visualizer.EDGE_COLOR_DARK : Visualizer.EDGE_COLOR_LIGHT));
 
             const events = Viva.Graph.webglInputEvents(this._graphics, this._graph);
             events.click(node => this.selectNode(node));
@@ -476,7 +494,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             events.mouseLeave(node => {
                 if (this.state.selectedNode === "-") {
-                    this.clearConnections();
+                    this.styleConnections();
                 }
             });
 
@@ -724,7 +742,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 : node.data.milestone.toString()
         });
 
-        this.clearConnections();
+        this.styleConnections();
 
         if (!isDeselect && node) {
             this.highlightConnections(node.id);
@@ -762,16 +780,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     }
 
     /**
-     * Clear the forward and backwards cones.
+     * Style the connections as default colors.
      */
-    private clearConnections(): void {
+    private styleConnections(): void {
         if (this._graph) {
             this._graph.beginUpdate();
 
             this._graph?.forEachLink((link: Viva.Graph.ILink<unknown>) => {
                 const linkUI = this._graphics?.getLinkUI(link.id);
                 if (linkUI) {
-                    linkUI.color = Visualizer.EDGE_COLOR_DEFAULT;
+                    linkUI.color = this.state.darkMode
+                        ? Visualizer.EDGE_COLOR_DARK
+                        : Visualizer.EDGE_COLOR_LIGHT;
                 }
             });
 
@@ -856,6 +876,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 );
             }
         }
+    }
+
+    /**
+     * Toggle the display mode.
+     */
+    private toggleMode(): void {
+        this.setState({
+            darkMode: !this.state.darkMode
+        }, () => {
+            this._settingsService.saveSingle("darkMode", this.state.darkMode);
+            this.styleConnections();
+        });
     }
 }
 

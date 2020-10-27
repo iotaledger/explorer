@@ -41,4 +41,9 @@ export interface VisualizerState extends FeedsState {
      * Filter on a specific tag/address/hash/bundle.
      */
     filter: string;
+
+    /**
+     * Show the graph in dark mode.
+     */
+    darkMode: boolean;
 }
