@@ -45,19 +45,19 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private static readonly VERTEX_SIZE_LARGE: number = 30;
 
     /**
-     * Vertex confirmed value colour.
-     */
-    private static readonly COLOR_VALUE_CONFIRMED: string = "0xe79c18";
-
-    /**
      * Vertex pending zero colour.
      */
-    private static readonly COLOR_PENDING: string = "0x8493ad";
+    private static readonly COLOR_PENDING: string = "0xbbbbbb";
 
     /**
      * Vertex confirmed zero colour.
      */
     private static readonly COLOR_ZERO_CONFIRMED: string = "0x0fc1b7";
+
+    /**
+     * Vertex confirmed value colour.
+     */
+    private static readonly COLOR_VALUE_CONFIRMED: string = "0x3f985a";
 
     /**
      * Vertex milestone colour.
@@ -67,7 +67,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Vertex highlighted colour.
      */
-    private static readonly COLOR_HIGHLIGHTED: string = "0x0000ff";
+    private static readonly COLOR_SEARCH_RESULT: string = "0xe79c18";
 
     /**
      * The graph instance.
@@ -390,6 +390,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             <div className="visualizer--key visualizer--key__value milestone">
                                 Milestone
                             </div>
+                            <div className="visualizer--key visualizer--key__value search-result">
+                                Search Result
+                            </div>
                             <p className="margin-t-t margin-b-t">
                                 Value transactions and Milestones are displayed as larger nodes.
                             </p>
@@ -643,7 +646,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
         if (node) {
             if (highlight) {
-                color = Visualizer.COLOR_HIGHLIGHTED;
+                color = Visualizer.COLOR_SEARCH_RESULT;
             } else if (node.data.milestone) {
                 color = Visualizer.COLOR_MILESTONE;
             } else if (node.data.confirmed) {

@@ -108,11 +108,11 @@
       text-align: center;
 
       &.pending {
-        background-color: $gray;
+        background-color: #bbbbbb;
       }
 
       &.confirmed-value {
-        background-color: #e79c18;
+        background-color: #3f985a;
       }
 
       &.confirmed-zero {
@@ -120,8 +120,12 @@
       }
 
       &.milestone {
-        margin-right: 20px;
         background-color: #b8172d;
+      }
+
+      &.search-result {
+        margin-right: 20px;
+        background-color: #e79c18;
       }
     }
   }
