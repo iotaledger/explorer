@@ -18,7 +18,7 @@ class MessageButton extends Component<MessageButtonProps, MessageButtonState> {
 
         this.state = {
             active: false,
-            message: props.buttonType === "copy" ? "COPIED" : ""
+            message: props.buttonType === "copy" ? "Copied" : ""
         };
     }
 

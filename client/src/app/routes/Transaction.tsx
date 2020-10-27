@@ -248,6 +248,32 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                     </p>
                                                                 </span>
                                                             </div>
+                                                            {this.state.actionResultHash && (
+                                                                <React.Fragment>
+                                                                    <div className="card--label">
+                                                                        Action Result Hash
+                                                                    </div>
+                                                                    <div className="card--value row middle">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => this.props.history.push(
+                                                                                `/${this.props.match.params.network
+                                                                                }/transaction/${
+                                                                                    this.state.actionResultHash}`)}
+                                                                            className="margin-r-t"
+                                                                        >
+                                                                            {this.state.actionResultHash}
+                                                                        </button>
+                                                                        <MessageButton
+                                                                            onClick={() => ClipboardHelper.copy(
+                                                                                this.state.actionResultHash
+                                                                            )}
+                                                                            buttonType="copy"
+                                                                            labelPosition="top"
+                                                                        />
+                                                                    </div>
+                                                                </React.Fragment>
+                                                            )}
                                                         </React.Fragment>
                                                     )}
                                             </React.Fragment>
@@ -817,20 +843,24 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
         this.setState(
             {
                 actionBusy: true,
-                actionBusyMessage: "Reattaching bundle, please wait..."
+                actionBusyMessage: "Reattaching bundle, please wait...",
+                actionResultHash: ""
             },
             async () => {
-                const wasReattached = await this._tangleCacheService.replayBundle(
+                const transactions = await this._tangleCacheService.replayBundle(
                     this.props.match.params.network,
                     this.state.bundleTailHash ?? "");
 
                 this.setState(
                     {
                         actionBusy: false,
-                        actionBusyMessage: wasReattached ? "Bundle reattached." : "Unable to reattach bundle."
+                        actionBusyMessage: transactions && transactions.length > 0
+                            ? "Bundle reattached."
+                            : "Unable to reattach bundle.",
+                        actionResultHash: transactions && transactions.length > 0 ? transactions[0].hash : undefined
                     },
                     async () => {
-                        if (wasReattached) {
+                        if (transactions && transactions.length > 0) {
                             await this.checkConfirmation();
                         }
                     });
@@ -844,7 +874,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
         this.setState(
             {
                 actionBusy: true,
-                actionBusyMessage: "Promoting transaction, please wait..."
+                actionBusyMessage: "Promoting transaction, please wait...",
+                actionResultHash: undefined
             },
             async () => {
                 const isPromotable = await this._tangleCacheService.canPromoteTransaction(
@@ -852,17 +883,20 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                     this.state.bundleTailHash ?? "");
 
                 if (isPromotable) {
-                    const wasPromoted = await this._tangleCacheService.promoteTransaction(
+                    const transactions = await this._tangleCacheService.promoteTransaction(
                         this.props.match.params.network,
                         this.state.bundleTailHash ?? "");
 
                     this.setState(
                         {
                             actionBusy: false,
-                            actionBusyMessage: wasPromoted ? "Transaction promoted." : "Unable to promote transaction."
+                            actionBusyMessage: transactions && transactions.length > 0
+                                ? "Transaction promoted."
+                                : "Unable to promote transaction.",
+                            actionResultHash: transactions && transactions.length > 0 ? transactions[0].hash : undefined
                         },
                         async () => {
-                            if (wasPromoted) {
+                            if (transactions && transactions.length > 0) {
                                 await this.checkConfirmation();
                             }
                         }

@@ -1,4 +1,4 @@
-import { composeAPI } from "@iota/core";
+import { composeAPI, Transaction } from "@iota/core";
 import { mamFetch, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
@@ -629,7 +629,7 @@ export class TangleCacheService {
      */
     public async promoteTransaction(
         networkId: string,
-        tailHash: string): Promise<boolean> {
+        tailHash: string): Promise<Transaction[] | undefined> {
         try {
             const networkConfig = this._networkService.get(networkId);
 
@@ -638,18 +638,18 @@ export class TangleCacheService {
                     provider: networkConfig.provider
                 });
 
-                await api.promoteTransaction(
+                const response = await api.promoteTransaction(
                     tailHash,
                     networkConfig.depth,
                     networkConfig.mwm
                 );
 
-                return true;
+                if (Array.isArray(response) && response.length > 0) {
+                    return response[0] as Transaction[];
+                }
             }
-            return false;
         } catch (err) {
             console.log(err);
-            return false;
         }
     }
 
@@ -661,7 +661,7 @@ export class TangleCacheService {
      */
     public async replayBundle(
         networkId: string,
-        tailHash: string): Promise<boolean> {
+        tailHash: string): Promise<readonly Transaction[] | undefined> {
         try {
             const networkConfig = this._networkService.get(networkId);
 
@@ -670,19 +670,14 @@ export class TangleCacheService {
                     provider: networkConfig.provider
                 });
 
-                await api.replayBundle(
+                return await api.replayBundle(
                     tailHash,
                     networkConfig.depth,
                     networkConfig.mwm
                 );
-
-                return true;
             }
-
-            return false;
         } catch (err) {
             console.log(err);
-            return false;
         }
     }
 

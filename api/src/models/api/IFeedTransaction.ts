@@ -19,4 +19,12 @@ export interface IFeedTransaction {
      * The transaction tag.
      */
     tag: string;
+    /**
+     * The address hash.
+     */
+    address: string;
+    /**
+     * The bundle hash.
+     */
+    bundle: string;
 }

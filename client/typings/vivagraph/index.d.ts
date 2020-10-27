@@ -3,30 +3,30 @@
 /* eslint-disable no-shadow */
 declare module "vivagraphjs" {
     export namespace Graph {
-        export interface ILink {
+        export interface ILink<T> {
             id: string;
             fromId: string;
             toId: string;
-            data: any;
+            data: T;
         }
-        export interface INode {
+        export interface INode<T> {
             id: string;
             links: ILink[];
-            data: any;
+            data: T;
         }
-        export interface IGraph {
-            getLink: (nodeA: string, nodeB: string) => ILink | undefined;
-            addLink: (nodeA: string, nodeB: string, data?: any) => void;
-            removeLink: (link: ILink) => void;
-            getNode: (node: string) => INode | undefined;
-            addNode: (node: string, data?: any) => void;
+        export interface IGraph<T, U> {
+            getLink: (nodeA: string, nodeB: string) => ILink<U> | undefined;
+            addLink: (nodeA: string, nodeB: string, data?: U) => void;
+            removeLink: (link: ILink<U>) => void;
+            getNode: (node: string) => INode<T> | undefined;
+            addNode: (node: string, data?: T) => void;
             removeNode: (node: string) => void;
 
             beginUpdate: () => void;
             endUpdate: () => void;
-            forEachNode: (callback: (node: INode) => void) => void;
-            forEachLink: (callback: (link: ILink) => void) => void;
-            forEachLinkedNode: (node: string, callback: (linkedNode: INode, link: ILink) => void) => void;
+            forEachNode: (callback: (node: INode<T>) => void) => void;
+            forEachLink: (callback: (link: ILink<U>) => void) => void;
+            forEachLinkedNode: (node: string, callback: (linkedNode: INode<T>, link: ILink<U>) => void) => void;
         }
 
         export interface ILocation {
@@ -57,9 +57,9 @@ declare module "vivagraphjs" {
             export interface IItem {
 
             }
-            export interface IWebGLGraphics {
-                link: (callback: (link: ILink) => IItem) => void;
-                node: (callback: (node: INode) => IItem) => void;
+            export interface IWebGLGraphics<T, U> {
+                link: (callback: (link: ILink<U>) => IItem) => void;
+                node: (callback: (node: INode<T>) => IItem) => void;
                 getNodeUI: (nodeId: string) => {
                     color: string;
                     size: number;
@@ -83,7 +83,7 @@ declare module "vivagraphjs" {
 
                 on: (event: "scale", callback: (scale: number) => void) => void;
             }
-            function webglGraphics(): IWebGLGraphics;
+            function webglGraphics(): IWebGLGraphics<T, U>;
             function webglLine(color: string | number): IItem;
 
             function renderer(graph: IGraph, options: {

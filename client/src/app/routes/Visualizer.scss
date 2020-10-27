@@ -14,6 +14,7 @@
     margin: 20px;
   }
 
+
   .graph-border {
     display: flex;
     position: relative;
@@ -79,34 +80,48 @@
     .hash {
       width: 135px;
     }
+  }
 
-    .visualizer--key {
-      @include font-size(12px);
+  .key {
+    flex: 1;
 
-      margin-right: 10px;
-      font-family: $metropolis;
+    .card--content {
+      padding: 10px 20px;
 
-      &.visualizer--key__value {
-        padding: 6px;
-        border-radius: 6px;
-        color: $white;
-        text-align: center;
+      .card--label {
+        margin: 6px 20px 6px 0px;
+      }
+    }
+  }
 
-        &.pending {
-          background-color: $gray;
-        }
+  .visualizer--key {
+    @include font-size(12px);
 
-        &.confirmed-value {
-          background-color: #e79c18;
-        }
+    margin-right: 10px;
+    font-family: $metropolis;
 
-        &.confirmed-zero {
-          background-color: $main-green;
-        }
+    &.visualizer--key__value {
+      margin: 6px 6px 6px 0px;
+      padding: 6px;
+      border-radius: 6px;
+      color: $white;
+      text-align: center;
 
-        &.milestone {
-          background-color: #b8172d;
-        }
+      &.pending {
+        background-color: $gray;
+      }
+
+      &.confirmed-value {
+        background-color: #e79c18;
+      }
+
+      &.confirmed-zero {
+        background-color: $main-green;
+      }
+
+      &.milestone {
+        margin-right: 20px;
+        background-color: #b8172d;
       }
     }
   }

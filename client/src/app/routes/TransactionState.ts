@@ -107,6 +107,11 @@ export interface TransactionState {
     actionBusyMessage: string;
 
     /**
+     * The resulting hash for the action.
+     */
+    actionResultHash?: string;
+
+    /**
      * The tail hash for reattaching.
      */
     bundleTailHash?: string;

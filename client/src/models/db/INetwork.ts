@@ -9,6 +9,11 @@ export interface INetwork {
     network: string;
 
     /**
+     * The protocol 0=OG, 1=Chrysalis Pt2, 2=Coordicide.
+     */
+    protocol: number;
+
+    /**
      * The label.
      */
     label: string;

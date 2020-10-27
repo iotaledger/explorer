@@ -2,7 +2,9 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../helpers/circleNodeShader";
+import { UnitsHelper } from "../../helpers/unitsHelper";
 import { IFeedTransaction } from "../../models/api/IFeedTransaction";
+import { INodeData } from "../../models/graph/INodeData";
 import Feeds from "../components/Feeds";
 import "./Visualizer.scss";
 import { VisualizerRouteProps } from "./VisualizerRouteProps";
@@ -70,7 +72,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * The graph instance.
      */
-    private _graph?: Viva.Graph.IGraph;
+    private _graph?: Viva.Graph.IGraph<INodeData, unknown>;
 
     /**
      * The renderer instance.
@@ -80,7 +82,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * The graphics instance.
      */
-    private _graphics?: Viva.Graph.View.IWebGLGraphics;
+    private _graphics?: Viva.Graph.View.IWebGLGraphics<INodeData, unknown>;
 
     /**
      * All the transactions to vizualise.
@@ -161,8 +163,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             selectedNode: "-",
             selectedNodeValue: "-",
             selectedNodeTag: "-",
+            selectedNodeAddress: "-",
+            selectedNodeBundle: "-",
             selectedMilestoneValue: "-",
-            tagFilter: ""
+            filter: ""
         };
     }
 
@@ -206,16 +210,16 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     <div className="card margin-b-s filter fill">
                         <div className="card--content row middle">
                             <div className="card--label margin-r-s">
-                                Tag Filter
+                                Search
                             </div>
                             <input
-                                className="input"
+                                className="input form-input-long"
                                 type="text"
-                                value={this.state.tagFilter}
+                                value={this.state.filter}
                                 onChange={e => this.setState(
-                                    { tagFilter: e.target.value.toUpperCase() },
+                                    { filter: e.target.value.toUpperCase() },
                                     () => this.highlightNodes())}
-                                maxLength={27}
+                                maxLength={90}
                             />
                         </div>
                     </div>
@@ -244,8 +248,13 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             <div className="card--value">
                                 {this.state.confirmedTransactionsPerSecondPercent}
                             </div>
+                        </div>
+                        <div className="card--header">
+                            <h2>Selected</h2>
+                        </div>
+                        <div className="card--content">
                             <div className="card--label">
-                                Hash
+                                Transaction
                             </div>
                             <div className="card--value overflow-ellipsis">
                                 {this.state.selectedNode.length > 1 && (
@@ -263,23 +272,64 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 )}
                                 {this.state.selectedNode.length === 1 && this.state.selectedNode}
                             </div>
-                            {this.state.selectedMilestoneValue === "-" && (
-                                <React.Fragment>
-                                    <div className="card--label">
-                                        Value
-                                    </div>
-                                    <div className="card--value">
-                                        {this.state.selectedNodeValue}
-                                    </div>
-                                </React.Fragment>
-                            )}
+                            <div className="card--label">
+                                Address
+                            </div>
+                            <div className="card--value overflow-ellipsis">
+                                {this.state.selectedNodeAddress.length > 1 && (
+                                    <a
+                                        className="button"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        href={
+                                            `${window.location.origin}/${this.props.match.params.network
+                                            }/address/${this.state.selectedNodeAddress}`
+                                        }
+                                    >
+                                        {this.state.selectedNodeAddress}
+                                    </a>
+                                )}
+                                {this.state.selectedNodeAddress.length === 1 && this.state.selectedNodeAddress}
+                            </div>
+                            <div className="card--label">
+                                Bundle
+                            </div>
+                            <div className="card--value overflow-ellipsis">
+                                {this.state.selectedNodeBundle.length > 1 && (
+                                    <a
+                                        className="button"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        href={
+                                            `${window.location.origin}/${this.props.match.params.network
+                                            }/bundle/${this.state.selectedNodeBundle}`
+                                        }
+                                    >
+                                        {this.state.selectedNodeBundle}
+                                    </a>
+                                )}
+                                {this.state.selectedNodeBundle.length === 1 && this.state.selectedNodeBundle}
+                            </div>
                             {this.state.selectedMilestoneValue === "-" && (
                                 <React.Fragment>
                                     <div className="card--label">
                                         Tag
                                     </div>
-                                    <div className="card--value">
-                                        {this.state.selectedNodeTag}
+                                    <div className="card--value overflow-ellipsis">
+                                        {this.state.selectedNodeTag.length > 1 && (
+                                            <a
+                                                className="button"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                href={
+                                                    `${window.location.origin}/${this.props.match.params.network
+                                                    }/tag/${this.state.selectedNodeTag}`
+                                                }
+                                            >
+                                                {this.state.selectedNodeTag}
+                                            </a>
+                                        )}
+                                        {this.state.selectedNodeTag.length === 1 && this.state.selectedNodeTag}
                                     </div>
                                 </React.Fragment>
                             )}
@@ -293,23 +343,17 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     </div>
                                 </React.Fragment>
                             )}
-                        </div>
-                        <div className="card--header card--header-secondary">
-                            <h2>Key</h2>
-                        </div>
-                        <div className="card--content">
-                            <div className="visualizer--key visualizer--key__value pending margin-t-t">
-                                Pending
-                            </div>
-                            <div className="visualizer--key visualizer--key__value confirmed-value margin-t-t">
-                                Value Confirmed
-                            </div>
-                            <div className="visualizer--key visualizer--key__value confirmed-zero margin-t-t">
-                                Zero Confirmed
-                            </div>
-                            <div className="visualizer--key visualizer--key__value milestone margin-t-t">
-                                Milestone
-                            </div>
+                            {this.state.selectedMilestoneValue === "-" && (
+                                <React.Fragment>
+                                    <div className="card--label">
+                                        Value
+                                    </div>
+                                    <div className="card--value">
+                                        {this.state.selectedNodeValue}
+                                    </div>
+                                </React.Fragment>
+                            )}
+
                         </div>
                     </div>
                     <div className="graph-border">
@@ -323,8 +367,36 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             ref={r => this.setupGraph(r)}
                         />
                     </div>
-                </div >
-            </div >
+                </div>
+                <div className="row middle margin-t-s">
+                    <div className="card key fill">
+                        <div className="card--content row row--tablet-responsive middle wrap">
+                            <div className="card--label margin-r-s margin-b-t">
+                                Key
+                            </div>
+                            <div className="visualizer--key visualizer--key__value pending">
+                                Pending
+                            </div>
+                            <div
+                                className="visualizer--key visualizer--key__value confirmed-value"
+                            >
+                                Value Confirmed
+                            </div>
+                            <div
+                                className="visualizer--key visualizer--key__value confirmed-zero"
+                            >
+                                Zero Confirmed
+                            </div>
+                            <div className="visualizer--key visualizer--key__value milestone">
+                                Milestone
+                            </div>
+                            <p className="margin-t-t margin-b-t">
+                                Value transactions and Milestones are displayed as larger nodes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         );
     }
 
@@ -386,7 +458,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graphics.setNodeProgram(buildCircleNodeShader());
 
             this._graphics.node(node => ({
-                size: node.data.milestone || node.data.value !== 0
+                size: node.data.milestone || (node.data.value !== 0 && node.data.value !== undefined)
                     ? Visualizer.VERTEX_SIZE_LARGE : Visualizer.VERTEX_SIZE_REGULAR,
                 color: Visualizer.COLOR_PENDING
             }));
@@ -447,6 +519,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             }
 
             const milestones = this._newMilestones.slice();
+            this._newMilestones = [];
+
             for (const ms of milestones) {
                 const node = this._graph.getNode(ms.hash);
                 if (node) {
@@ -461,11 +535,17 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                     const added: string[] = [];
 
-                    this._graph.addNode(tx.hash, { confirmed: false, value: tx.value, tag: tx.tag, milestone: false });
+                    this._graph.addNode(tx.hash, {
+                        confirmed: false,
+                        value: tx.value,
+                        tag: tx.tag,
+                        address: tx.address,
+                        bundle: tx.bundle
+                    });
                     added.push(tx.hash);
 
                     if (!this._graph.getNode(tx.trunk)) {
-                        this._graph.addNode(tx.trunk, { confirmed: false, value: 0, tag: "-", milestone: false });
+                        this._graph.addNode(tx.trunk, {});
 
                         added.push(tx.trunk);
                     }
@@ -474,7 +554,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                     if (tx.trunk !== tx.branch) {
                         if (!this._graph.getNode(tx.branch)) {
-                            this._graph.addNode(tx.branch, { confirmed: false, value: 0, tag: "-", milestone: false });
+                            this._graph.addNode(tx.branch, {});
                             added.push(tx.branch);
                         }
 
@@ -508,10 +588,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     this.setState({ transactionCount: this._transactionHashes.length });
                 }
             }
-
-            if (this.state.selectedNode !== "-") {
-                this.highlightConnections(this.state.selectedNode);
-            }
         }
 
         if (this._drawTimer) {
@@ -523,7 +599,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Style the node.
      * @param node The node to style.
      */
-    private styleNode(node: Viva.Graph.INode | undefined): void {
+    private styleNode(node: Viva.Graph.INode<INodeData> | undefined): void {
         if (this._graphics && node) {
             const nodeUI = this._graphics.getNodeUI(node.id);
             if (nodeUI) {
@@ -531,16 +607,15 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     nodeUI.color = Visualizer.COLOR_MILESTONE;
                     nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
                 } else if (node.data.confirmed) {
-                    if (node.data.value === 0) {
-                        nodeUI.color = Visualizer.COLOR_ZERO_CONFIRMED;
+                    nodeUI.color = Visualizer.COLOR_ZERO_CONFIRMED;
+                    if (node.data.value === undefined || node.data.value === 0) {
                         nodeUI.size = Visualizer.VERTEX_SIZE_REGULAR;
                     } else {
-                        nodeUI.color = Visualizer.COLOR_VALUE_CONFIRMED;
                         nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
                     }
                 } else {
                     nodeUI.color = Visualizer.COLOR_PENDING;
-                    if (node.data.value === 0) {
+                    if (node.data.value === undefined || node.data.value === 0) {
                         nodeUI.size = Visualizer.VERTEX_SIZE_REGULAR;
                     } else {
                         nodeUI.size = Visualizer.VERTEX_SIZE_LARGE;
@@ -581,13 +656,25 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Select the clicked node.
      * @param node The node to select.
      */
-    private selectNode(node?: Viva.Graph.INode): void {
+    private selectNode(node?: Viva.Graph.INode<INodeData>): void {
         const isDeselect = !node || this.state.selectedNode === node.id;
         this.setState({
             selectedNode: isDeselect || !node ? "-" : node.id,
-            selectedNodeValue: isDeselect || !node ? "-" : node.data.value,
-            selectedNodeTag: isDeselect || !node ? "-" : node.data.tag,
-            selectedMilestoneValue: isDeselect || !node ? "-" : node.data.milestone || "-"
+            selectedNodeValue: isDeselect || !node || node.data.value === undefined
+                ? "-"
+                : UnitsHelper.formatBest(node.data.value),
+            selectedNodeAddress: isDeselect || !node || node.data.address === undefined
+                ? "-"
+                : node.data.address,
+            selectedNodeBundle: isDeselect || !node || node.data.bundle === undefined
+                ? "-"
+                : node.data.bundle,
+            selectedNodeTag: isDeselect || !node || node.data.tag === undefined
+                ? "-"
+                : node.data.tag,
+            selectedMilestoneValue: isDeselect || !node || node.data.milestone === undefined
+                ? "-"
+                : node.data.milestone.toString()
         });
 
         this.clearConnections();
@@ -625,7 +712,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Clear the forward and backwards cones.
      */
     private clearConnections(): void {
-        this._graph?.forEachLink((link: Viva.Graph.ILink) => {
+        this._graph?.forEachLink((link: Viva.Graph.ILink<unknown>) => {
             const linkUI = this._graphics?.getLinkUI(link.id);
             if (linkUI) {
                 linkUI.color = Visualizer.EDGE_COLOR_DEFAULT;
@@ -637,11 +724,17 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Highlight nodes.
      */
     private highlightNodes(): void {
-        const trimmedTag = this.state.tagFilter.trim();
-        const regEx = new RegExp(trimmedTag, "g");
+        const trimmedFilter = this.state.filter.trim();
+        const regEx = new RegExp(trimmedFilter, "g");
 
-        this._graph?.forEachNode((node: Viva.Graph.INode) => {
-            if (trimmedTag.length > 0 && regEx.test(node.data.tag)) {
+        this._graph?.forEachNode((node: Viva.Graph.INode<INodeData>) => {
+            if (trimmedFilter.length > 0 &&
+                (
+                    regEx.test(node.id) ||
+                    regEx.test(node.data.tag || "") ||
+                    regEx.test(node.data.address || "") ||
+                    regEx.test(node.data.bundle || "")
+                )) {
                 const linkUI = this._graphics?.getNodeUI(node.id);
                 if (linkUI) {
                     linkUI.color = Visualizer.COLOR_HIGHLIGHTED;

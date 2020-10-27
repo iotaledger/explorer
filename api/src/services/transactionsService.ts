@@ -205,7 +205,9 @@ export class TransactionsService {
                     value: message.value,
                     branch: message.branch,
                     trunk: message.trunk,
-                    tag: message.tag
+                    tag: message.tag,
+                    address: message.address,
+                    bundle: message.bundle
                 });
             });
 

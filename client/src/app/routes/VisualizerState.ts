@@ -28,7 +28,17 @@ export interface VisualizerState extends FeedsState {
     selectedNodeTag: string;
 
     /**
-     * Filter on a specific tag.
+     * The selected node address.
      */
-    tagFilter: string;
+    selectedNodeAddress: string;
+
+    /**
+     * The selected node bundle.
+     */
+    selectedNodeBundle: string;
+
+    /**
+     * Filter on a specific tag/address/hash/bundle.
+     */
+    filter: string;
 }
