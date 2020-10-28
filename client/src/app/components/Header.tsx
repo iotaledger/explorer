@@ -50,15 +50,14 @@ class Header extends Component<HeaderProps, HeaderState> {
                 </nav>
                 {this.props.tools && this.props.tools.length > 0 && (
                     <React.Fragment>
-                        <div className="tools tools--large">
-                            <span className="margin-r-s">Tools</span>
-                            <button
-                                type="button"
-                                onClick={() => this.setState({ isExpanded: true })}
-                            >
-                                <img src={menuIcon} alt="Tools" />
-                            </button>
-                        </div>
+                        <button
+                            className="tools tools--large"
+                            type="button"
+                            onClick={() => this.setState({ isExpanded: true })}
+                        >
+                            <span className="margin-r-m">Tools</span>
+                            <img src={menuIcon} alt="Tools" />
+                        </button>
                         {this.state.isExpanded && (
                             <React.Fragment>
                                 <div

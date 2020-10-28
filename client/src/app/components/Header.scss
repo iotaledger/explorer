@@ -57,12 +57,20 @@ header {
       justify-content: center;
       width: 150px;
       height: 100%;
+      border: 0;
+      border-radius: 0;
+      outline: 0;
       background: rgba(72, 87, 118, 0.1);
       color: $white;
       font-family: $metropolis;
+      font-weight: normal;
 
       @media (max-width: 1360px) {
         display: none;
+      }
+
+      &:focus {
+        box-shadow: none;
       }
     }
 
