@@ -1,0 +1,22 @@
+runtime: custom
+env: flex
+service: %SERVICE-ID%
+
+network:
+  session_affinity: true
+
+manual_scaling:
+  instances: 1
+
+resources:
+  cpu: 8
+  memory_gb: 24
+  disk_size_gb: 20
+
+handlers:
+  - url: /(.*)
+    static_files: dist/\1
+    upload: dist/(.*)
+
+env_variables:
+  CONFIG_ID: "%CONFIG-ID%"

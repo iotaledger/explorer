@@ -43,7 +43,7 @@ jobs:
       - name: GCP Config
         run: |
           cd api
-          mv app.template.yaml app.yaml
+          mv app.template.prod.yaml app.yaml
           sed -i 's/%SERVICE-ID%/${{ env.GCP_SERVICE_ID }}/g' app.yaml
           sed -i 's/%CONFIG-ID%/${{ env.CONFIG_ID }}/g' app.yaml
           mv dispatch.template.yaml dispatch.yaml
