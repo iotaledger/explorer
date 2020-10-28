@@ -7,21 +7,15 @@ You should copy `./src/assets/config/config.template` to `./src/assets/config/co
 ```js
 {
     "apiEndpoint": "ENDPOINT",                      /* The url of the api endpoint e.g. https://api.my-domain.com */
-    "networks": [                                    /* List of networks to support */
-        {
-            "network": "mainnet",                    /* Network type */
-            "label": "Mainnet",                      /* Nework display label */
-            "node": {                                /* Node for requests */
-                "provider": "NODE_1",                /* Address for node */
-                "depth": 3,                          /* Depth for network */             
-                "mwm": 14                            /* MWM for network */
-            },
-            "coordinatorAddress": "AAA...ZZZ",       /* Coordinator Address on network */
-            "coordinatorSecurityLevel": 2            /* Coordinator security level */
-        }
-    ],
-    "googleMapsKey": "GOOGLE-MAPS-KEY",             /* Key for using with Google maps API */
     "googleAnalyticsId": "GOOGLE-ANALYTICS-ID"      /* Optional, google analytics id */
+}
+```
+
+e.g. To run it locally with the API
+
+```json
+{
+    "apiEndpoint": "http://localhost:4000/"
 }
 ```
 
@@ -31,14 +25,10 @@ You should copy `./src/assets/config/config.template` to `./src/assets/config/co
 npm run build
 ```
 
-## Deploy
+## Running
 
-The app is configured to use zeit/now for hosting, you can configure `./now.json` to suit your own setup.
-
-If you want to use a different name for the config file you can specify an environment variable of CONFIG_ID, e.g. set CONFIG_ID to `dev` will load `config.dev.json` instead.
-
-After modifying the configuration files you can deploy using the folllowing commands:
+Now that the app has been built you can run it with.
 
 ```shell
-now
+npm run start
 ```
