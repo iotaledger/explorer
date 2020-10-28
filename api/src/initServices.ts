@@ -69,7 +69,7 @@ export async function initServices(config: IConfiguration) {
         }
     }
 
-    const UPDATE_INTERVAL_MINUTES = 240; // 4 hours
+    const UPDATE_INTERVAL_MINUTES = 30;
 
     const update = async () => {
         const currencyService = new CurrencyService(config);
