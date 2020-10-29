@@ -91,7 +91,8 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
                         this._currencyData.baseCurrencyRate,
                         this._currencyData,
                         true,
-                        2)
+                        3,
+                        8)
                     : "--"
             });
         }

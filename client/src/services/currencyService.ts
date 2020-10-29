@@ -285,13 +285,15 @@ export class CurrencyService {
      * @param currencyData The currency data.
      * @param includeSymbol Include the symbol in the formatting.
      * @param numDigits The number of digits to display.
+     * @param extendToFindMax Extend the decimal places until non zero or limit.
      * @returns The converted fiat.
      */
     public convertFiatBase(
         valueInBase: number,
         currencyData: ICurrencySettings,
         includeSymbol: boolean,
-        numDigits: number): string {
+        numDigits: number,
+        extendToFindMax?: number): string {
         let converted = "";
         if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
             const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
@@ -303,10 +305,17 @@ export class CurrencyService {
                     converted += `${this.getSymbol(currencyData.fiatCode)} `;
                 }
 
-                converted += fiat
-                    .toFixed(numDigits)
-                    .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                if (extendToFindMax !== undefined) {
+                    const regEx = new RegExp(`^-?\\d*\\.?0*\\d{0,${numDigits}}`);
+                    const found = regEx.exec(fiat.toFixed(extendToFindMax));
+                    if (found) {
+                        converted += found[0];
+                    }
+                } else {
+                    converted += fiat
+                        .toFixed(numDigits)
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
             }
         }
         return converted;
@@ -357,19 +366,32 @@ export class CurrencyService {
      * @param currencyData The currency data.
      * @param amount The amount to format.
      * @param numDigits The number of digits to display.
+     * @param extendToFindMax Extend the decimal places until non zero or limit.
      * @returns The formatted amount.
      */
-    public formatCurrency(currencyData: ICurrencySettings | undefined, amount: number, numDigits: number): string {
+    public formatCurrency(
+        currencyData: ICurrencySettings | undefined,
+        amount: number,
+        numDigits: number,
+        extendToFindMax?: number): string {
         let formatted = "";
 
         if (currencyData) {
             formatted = `${this.getSymbol(currencyData.fiatCode)} `;
         }
 
-        formatted += amount
-            .toFixed(numDigits)
-            .toString()
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        if (extendToFindMax !== undefined) {
+            const regEx = new RegExp(`^-?\\d*\\.?0*\\d{0,${numDigits}}`);
+            const found = regEx.exec(amount.toFixed(extendToFindMax));
+            if (found) {
+                formatted += found[0];
+            }
+        } else {
+            formatted += amount
+                .toFixed(numDigits)
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
 
         return formatted;
     }
