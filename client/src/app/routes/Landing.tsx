@@ -406,7 +406,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                         this._currencyData.baseCurrencyRate,
                         this._currencyData,
                         true,
-                        2)
+                        3,
+                        8)
                     : "--"
             });
         }

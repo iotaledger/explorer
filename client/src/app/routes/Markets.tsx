@@ -119,7 +119,7 @@ class Markets extends Currency<unknown, MarketsState> {
             axisY: {
                 type: Chartist.AutoScaleAxis
             },
-            plugins: [this.pointLabels(0, 2)]
+            plugins: [this.pointLabels(0, 3)]
         };
 
         const volumeChartOptions: unknown = {
@@ -333,7 +333,8 @@ class Markets extends Currency<unknown, MarketsState> {
                             this._currencyData.baseCurrencyRate,
                             this._currencyData,
                             true,
-                            2)
+                            3,
+                            8)
                         : "--"
                 },
                 async () => {
@@ -383,11 +384,11 @@ class Markets extends Currency<unknown, MarketsState> {
                                 }
                             )),
                             priceAllTimeHigh:
-                                `${this._currencyService.formatCurrency(this._currencyData, maxPrice, 2)
+                                `${this._currencyService.formatCurrency(this._currencyData, maxPrice, 3, 8)
                                 } on ${DateHelper.formatNoTime(maxPriceDate)
                                 }`,
                             priceAllTimeLow:
-                                `${this._currencyService.formatCurrency(this._currencyData, minPrice, 2)
+                                `${this._currencyService.formatCurrency(this._currencyData, minPrice, 3, 8)
                                 } on ${DateHelper.formatNoTime(minPriceDate)
                                 }`,
                             volumeAllTimeHigh:
@@ -455,9 +456,10 @@ class Markets extends Currency<unknown, MarketsState> {
      * Display a hover tooltip.
      * @param chartIndex The tool tip index to populate.
      * @param decimalPlaces The decimal places for the currency.
+     * @param maxDecimalPlaces The max decimal places to show.
      * @returns The plugin.
      */
-    private pointLabels(chartIndex: number, decimalPlaces: number):
+    private pointLabels(chartIndex: number, decimalPlaces: number, maxDecimalPlaces?: number):
         (chart: IChartistLineChart | IChartistBarChart) => void {
         return (chart: IChartistLineChart | IChartistBarChart) => {
             const horizs = document.querySelectorAll(".crosshair-h");
@@ -546,7 +548,8 @@ class Markets extends Currency<unknown, MarketsState> {
                         toolTips[chartIndex].innerHTML = `${moment(this._points[chartIndex][hit].value.x * 1000)
                             .format("LL")
                             }<br/>${this._currencyService.formatCurrency(
-                                this._currencyData, this._points[chartIndex][hit].value.y, decimalPlaces)}`;
+                                this._currencyData,
+                                this._points[chartIndex][hit].value.y, decimalPlaces, maxDecimalPlaces)}`;
                     } else {
                         toolTips[chartIndex].className = "tooltip hidden";
                     }
