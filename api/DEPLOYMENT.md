@@ -18,7 +18,8 @@ You can configure the application to store data either in Amazon DynamoDB `dynam
     "rootStorageFolder": "../.local-storage",        /* Optional to use instead of DynamoDB */
     "allowedDomains": [                              /* A list of domains for the cors allow-origin */
         "www.mydomain.com"
-    ]
+    ],
+    "verboseLogging": false                          /* Set to true for the API to log all its request/responses */
 }
 ```
 
@@ -30,7 +31,8 @@ e.g. To run the API locally
     "rootStorageFolder": "../.local-storage",
     "allowedDomains": [
         "http://localhost:3000"
-    ]
+    ],
+    "verboseLogging": false
 }
 ```
 
