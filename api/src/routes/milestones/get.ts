@@ -23,6 +23,6 @@ export async function get(
     const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${request.network}`);
 
     return {
-        milestones: milestonesService.getMilestones()
+        milestones: milestonesService ? milestonesService.getMilestones() : []
     };
 }

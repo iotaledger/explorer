@@ -50,11 +50,7 @@ export class FetchHelper {
             const json = await res.json();
             return json as U;
         } catch (err) {
-            if (err.name === "AbortError") {
-                throw new Error("Timeout");
-            } else {
-                throw err;
-            }
+            throw err.name === "AbortError" ? new Error("Timeout") : err;
         } finally {
             if (timerId) {
                 clearTimeout(timerId);

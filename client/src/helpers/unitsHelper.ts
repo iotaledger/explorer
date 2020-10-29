@@ -20,15 +20,7 @@ export class UnitsHelper {
      * @returns The formated value.
      */
     public static formatUnits(value: number, unit: Unit): string {
-        let ret;
-
-        if (unit === "i") {
-            ret = `${value} i`;
-        } else {
-            ret = `${convertUnits(value, Unit.i, unit).toFixed(2)} ${unit}`;
-        }
-
-        return ret;
+        return unit === "i" ? `${value} i` : `${convertUnits(value, Unit.i, unit).toFixed(2)} ${unit}`;
     }
 
     /**

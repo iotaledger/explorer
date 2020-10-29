@@ -1,5 +1,5 @@
 import { promises } from "fs";
-import { join } from "path";
+import path from "path";
 import { IStorageService } from "../models/services/IStorageService";
 
 /**
@@ -29,7 +29,7 @@ export class LocalStorageService<T> implements IStorageService<T> {
      */
     constructor(rootFolderPath: string, storageName: string, idName: string) {
         this._rootFolderPath = rootFolderPath;
-        this._fullFolderPath = join(rootFolderPath, storageName);
+        this._fullFolderPath = path.join(rootFolderPath, storageName);
         this._idName = idName;
     }
 
@@ -53,7 +53,7 @@ export class LocalStorageService<T> implements IStorageService<T> {
      */
     public async get(id: string): Promise<T | undefined> {
         try {
-            const fullPath = join(this._fullFolderPath, `${id}.json`);
+            const fullPath = path.join(this._fullFolderPath, `${id}.json`);
 
             const buffer = await promises.readFile(fullPath);
 
@@ -68,7 +68,7 @@ export class LocalStorageService<T> implements IStorageService<T> {
      */
     public async set(item: T): Promise<void> {
         try {
-            const fullPath = join(this._fullFolderPath, `${item[this._idName]}.json`);
+            const fullPath = path.join(this._fullFolderPath, `${item[this._idName]}.json`);
 
             await promises.mkdir(this._fullFolderPath, { recursive: true });
 
@@ -83,7 +83,7 @@ export class LocalStorageService<T> implements IStorageService<T> {
      */
     public async remove(itemKey: string): Promise<void> {
         try {
-            const fullPath = join(this._fullFolderPath, `${itemKey}.json`);
+            const fullPath = path.join(this._fullFolderPath, `${itemKey}.json`);
 
             await promises.unlink(fullPath);
         } catch {
@@ -101,7 +101,7 @@ export class LocalStorageService<T> implements IStorageService<T> {
             const files = await promises.readdir(this._fullFolderPath);
 
             for (const file of files) {
-                const fullPath = join(this._fullFolderPath, file);
+                const fullPath = path.join(this._fullFolderPath, file);
 
                 const buffer = await promises.readFile(fullPath);
 

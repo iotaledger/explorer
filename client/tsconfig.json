@@ -16,14 +16,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "preserve",
+    "jsx": "react",
     "forceConsistentCasingInFileNames": true,
     "typeRoots": [
-        "./typings",
-        "./node_modules/@types"
-    ]
+      "./typings",
+      "./node_modules/@types"
+    ],
+    "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src", "../api/src/models/clients/chronicle", "../api/src/models/clients/chronicleClient.ts"
+    "src"
   ]
 }

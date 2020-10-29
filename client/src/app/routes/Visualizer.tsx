@@ -668,20 +668,16 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             } else if (node.data.milestone) {
                 color = Visualizer.COLOR_MILESTONE;
             } else if (node.data.confirmed) {
-                if (node.data.value !== 0 && node.data.value !== undefined) {
-                    color = Visualizer.COLOR_VALUE_CONFIRMED;
-                } else {
-                    color = Visualizer.COLOR_ZERO_CONFIRMED;
-                }
+                color = node.data.value !== 0 && node.data.value !== undefined
+                    ? Visualizer.COLOR_VALUE_CONFIRMED
+                    : Visualizer.COLOR_ZERO_CONFIRMED;
             } else {
                 color = Visualizer.COLOR_PENDING;
             }
 
-            if (node.data.milestone || (node.data.value !== 0 && node.data.value !== undefined)) {
-                size = Visualizer.VERTEX_SIZE_LARGE;
-            } else {
-                size = Visualizer.VERTEX_SIZE_REGULAR;
-            }
+            size = node.data.milestone || (node.data.value !== 0 && node.data.value !== undefined)
+                ? Visualizer.VERTEX_SIZE_LARGE
+                : Visualizer.VERTEX_SIZE_REGULAR;
         }
 
         return {

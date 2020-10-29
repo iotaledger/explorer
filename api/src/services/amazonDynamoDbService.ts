@@ -74,11 +74,9 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
 
             log += `Table '${this._fullTableName}' Created Successfully\n`;
         } catch (err) {
-            if (err.code === "ResourceInUseException") {
-                log += `Table '${this._fullTableName}' Already Exists\n`;
-            } else {
-                log += `Table '${this._fullTableName}' Creation Failed\n${err.toString()}\n`;
-            }
+            log += err.code === "ResourceInUseException"
+                ? `Table '${this._fullTableName}' Already Exists\n`
+                : `Table '${this._fullTableName}' Creation Failed\n${err.toString()}\n`;
         }
 
         return log;

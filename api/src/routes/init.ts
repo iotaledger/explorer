@@ -44,11 +44,7 @@ export async function init(config: IConfiguration): Promise<string[]> {
         log += `Failed\n${err.toString()}\n`;
     }
 
-    if (!log.includes("Failed")) {
-        log += "Initialization Succeeded";
-    } else {
-        log += "Initialization Failed";
-    }
+    log += !log.includes("Failed") ? "Initialization Succeeded" : "Initialization Failed";
 
     return log.split("\n");
 }
