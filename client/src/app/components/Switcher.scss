@@ -8,10 +8,11 @@
   height: 42px;
   padding: 5px;
   border-radius: 6px;
-  background-color: rgba(72, 87, 118, 0.1);
+  background: rgba(19, 31, 55, 0.5);
+  backdrop-filter: blur(2px);
 
   @include phone-down {
-    padding: 0;
+    background-color: var(--context-primary);
   }
 
   button {

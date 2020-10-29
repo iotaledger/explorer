@@ -8,18 +8,21 @@
   flex: 1;
   flex-direction: row;
   margin: 0px 20px 20px 20px;
+  backdrop-filter: blur(1px);
 
   &.search-input--compact {
     margin: 0px;
 
     .search--text-input {
       @include font-size(12px);
+
       height: 32px;
       padding: 0px 12px;
     }
 
     .search--button {
       @include font-size(12px);
+
       width: 32px;
     }
   }
@@ -37,6 +40,7 @@
 
     @include phone-down {
       @include font-size(12px);
+
       height: 32px;
       padding: 0px 12px;
     }
@@ -56,15 +60,21 @@
 
     @include phone-down {
       @include font-size(12px);
+
       width: 64px;
     }
+
 
     &:focus {
       box-shadow: 0 0 3px 0 $white;
     }
 
     &:disabled {
-      opacity: 0.5;
+      opacity: 0.8;
+
+      @include phone-down {
+        opacity: 1;
+      }
     }
   }
 }
