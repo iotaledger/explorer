@@ -45,7 +45,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
 
         this.state = {
             statusBusy: true,
-            status: "Finding transactions...",
+            status: "Finding bundle transactions...",
             bundle,
             groups: [],
             currency: "USD",
@@ -120,48 +120,52 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
             }[] = [];
 
             for (let i = 0; i < bundleGroupsPlain.length; i++) {
-                const isConsistent = bundleGroupsPlain[i].map(tx => tx.tx.value).reduce((a, b) => a + b, 0) === 0;
+                const isMissing = bundleGroupsPlain[i].filter(t => t.isEmpty).length > 0;
 
-                let confirmationState: ConfirmationState;
-                if (!isConsistent) {
-                    confirmationState = "consistency";
-                } else if (confirmedIndex === i) {
-                    confirmationState = confirmationStates[i];
-                } else if (confirmedIndex >= 0 && confirmationStates[i] !== "confirmed") {
-                    confirmationState = "reattachment";
-                } else {
-                    confirmationState = confirmationStates[i];
+                if (!isMissing) {
+                    const isConsistent = bundleGroupsPlain[i].map(tx => tx.tx.value).reduce((a, b) => a + b, 0) === 0;
+
+                    let confirmationState: ConfirmationState;
+                    if (!isConsistent) {
+                        confirmationState = "consistency";
+                    } else if (confirmedIndex === i) {
+                        confirmationState = confirmationStates[i];
+                    } else if (confirmedIndex >= 0 && confirmationStates[i] !== "confirmed") {
+                        confirmationState = "reattachment";
+                    } else {
+                        confirmationState = confirmationStates[i];
+                    }
+
+                    let inputAddresses = new Set(bundleGroupsPlain[i]
+                        .filter(t => t.tx.value < 0).map(t => t.tx.address));
+                    const outputAddresses = new Set(bundleGroupsPlain[i]
+                        .filter(t => t.tx.value > 0).map(t => t.tx.address));
+
+                    if (inputAddresses.size === 0 && inputAddresses.size === 0) {
+                        inputAddresses = new Set(bundleGroupsPlain[i].map(t => t.tx.address));
+                    }
+
+                    bundleGroups.push({
+                        inputs: bundleGroupsPlain[i]
+                            .filter(t => inputAddresses.has(t.tx.address) && t.tx.value <= 0)
+                            .map(t => ({
+                                details: t,
+                                valueCurrency: this._currencyData
+                                    ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
+                            })),
+                        outputs: bundleGroupsPlain[i]
+                            .filter(t => outputAddresses.has(t.tx.address) && t.tx.value >= 0)
+                            .map(t => ({
+                                details: t,
+                                valueCurrency: this._currencyData
+                                    ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
+                            })),
+                        timestamp: DateHelper.milliseconds(bundleGroupsPlain[i][0].tx.timestamp === 0
+                            ? bundleGroupsPlain[i][0].tx.attachmentTimestamp
+                            : bundleGroupsPlain[i][0].tx.timestamp),
+                        confirmationState
+                    });
                 }
-
-                let inputAddresses = new Set(bundleGroupsPlain[i]
-                    .filter(t => t.tx.value < 0).map(t => t.tx.address));
-                const outputAddresses = new Set(bundleGroupsPlain[i]
-                    .filter(t => t.tx.value > 0).map(t => t.tx.address));
-
-                if (inputAddresses.size === 0 && inputAddresses.size === 0) {
-                    inputAddresses = new Set(bundleGroupsPlain[i].map(t => t.tx.address));
-                }
-
-                bundleGroups.push({
-                    inputs: bundleGroupsPlain[i]
-                        .filter(t => inputAddresses.has(t.tx.address) && t.tx.value <= 0)
-                        .map(t => ({
-                            details: t,
-                            valueCurrency: this._currencyData
-                                ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
-                        })),
-                    outputs: bundleGroupsPlain[i]
-                        .filter(t => outputAddresses.has(t.tx.address) && t.tx.value >= 0)
-                        .map(t => ({
-                            details: t,
-                            valueCurrency: this._currencyData
-                                ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
-                        })),
-                    timestamp: DateHelper.milliseconds(bundleGroupsPlain[i][0].tx.timestamp === 0
-                        ? bundleGroupsPlain[i][0].tx.attachmentTimestamp
-                        : bundleGroupsPlain[i][0].tx.timestamp),
-                    confirmationState
-                });
             }
 
             this.setState({
@@ -227,7 +231,14 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                         </div>
                                     </div>
                                 )}
-                                {this.state.groups?.map((group, idx) => (
+                                {!this.state.statusBusy && this.state.groups?.length === 0 && (
+                                    <div className="card margin-t-s">
+                                        <div className="card--content middle row">
+                                            <p>Unable to retrieve the data for this bundle.</p>
+                                        </div>
+                                    </div>
+                                )}
+                                {!this.state.statusBusy && this.state.groups?.map((group, idx) => (
                                     <React.Fragment key={idx}>
                                         <div className="row space-between margin-t-s">
                                             <p>

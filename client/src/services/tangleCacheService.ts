@@ -1,6 +1,7 @@
 import { composeAPI, Transaction } from "@iota/core";
 import { mamFetch, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
+import { isEmpty } from "@iota/validators";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { ITransactionsCursor } from "../models/api/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/transactionsGetMode";
@@ -327,6 +328,7 @@ export class TangleCacheService {
                                 timestamp,
                                 attachmentTimestamp
                             };
+                            tranCache[unknownHash].isEmpty = isEmpty(response.trytes[i]);
 
                             if (response.milestoneIndexes[i] === 0) {
                                 tranCache[unknownHash].confirmationState = "pending";
@@ -353,7 +355,8 @@ export class TangleCacheService {
                     tx: asTransactionObject("9".repeat(2673)),
                     confirmationState: "unknown",
                     cached: 0,
-                    manual: false
+                    manual: false,
+                    isEmpty: true
                 });
         }
 
@@ -362,7 +365,8 @@ export class TangleCacheService {
                 tx: asTransactionObject("9".repeat(2673)),
                 confirmationState: "unknown",
                 milestoneIndex: 0,
-                cached: 0
+                cached: 0,
+                isEmpty: true
             }));
         }
 

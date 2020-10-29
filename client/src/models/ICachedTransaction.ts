@@ -8,6 +8,11 @@ export interface ICachedTransaction {
     tx: Transaction;
 
     /**
+     * Is the data missing.
+     */
+    isEmpty: boolean;
+
+    /**
      * The milestone index it was confirmed by.
      */
     milestoneIndex: number;
