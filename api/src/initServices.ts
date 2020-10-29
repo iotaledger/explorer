@@ -30,42 +30,45 @@ export async function initServices(config: IConfiguration) {
     const enabledNetworks = networks.filter(v => v.isEnabled);
 
     for (const networkConfig of enabledNetworks) {
-        if (networkConfig.zmqEndpoint) {
-            ServiceFactory.register(
-                `zmq-${networkConfig.network}`, () => new ZmqService(
-                    networkConfig.zmqEndpoint, [
-                    "sn",
-                    "tx",
-                    networkConfig.coordinatorAddress
-                ])
-            );
+        if (networkConfig.protocolVersion === "og") {
+            if (networkConfig.zmqEndpoint) {
+                ServiceFactory.register(
+                    `zmq-${networkConfig.network}`, () => new ZmqService(
+                        networkConfig.zmqEndpoint, [
+                        "sn",
+                        "tx",
+                        networkConfig.coordinatorAddress
+                    ])
+                );
 
-            ServiceFactory.register(
-                `milestones-${networkConfig.network}`,
-                () => new MilestonesService(networkConfig.network));
+                ServiceFactory.register(
+                    `milestones-${networkConfig.network}`,
+                    () => new MilestonesService(networkConfig.network));
 
-
-            ServiceFactory.register(
-                `transactions-${networkConfig.network}`,
-                () => new TransactionsService(networkConfig.network));
+                ServiceFactory.register(
+                    `transactions-${networkConfig.network}`,
+                    () => new TransactionsService(networkConfig.network));
+            }
         }
     }
 
     for (const networkConfig of enabledNetworks) {
-        const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
-        if (milestonesService) {
-            await milestonesService.init();
-        }
+        if (networkConfig.protocolVersion === "og") {
+            const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
+            if (milestonesService) {
+                await milestonesService.init();
+            }
 
-        const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
+            const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
 
-        if (transactionService) {
-            await transactionService.init();
-        }
+            if (transactionService) {
+                await transactionService.init();
+            }
 
-        const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
-        if (zmqService) {
-            zmqService.connect();
+            const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
+            if (zmqService) {
+                zmqService.connect();
+            }
         }
     }
 

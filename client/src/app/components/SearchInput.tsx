@@ -42,10 +42,14 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                     autoFocus={!this.props.compact}
                     value={this.state.query}
                     onChange={e => this.setState({
-                        query: e.target.value.toUpperCase(),
-                        isValid: this.isValid(e.target.value.trim().toUpperCase())
+                        query: this.props.protocolVersion === "og" ? e.target.value.toUpperCase() : e.target.value,
+                        isValid: this.isValid(this.props.protocolVersion === "og"
+                            ? e.target.value.toUpperCase() : e.target.value)
                     })}
-                    placeholder={this.props.compact ? "Search..." : "Search transactions, bundles, addresses, tags"}
+                    placeholder={this.props.compact ? "Search..." : (
+                        this.props.protocolVersion === "chrysalis"
+                            ? "Search messages, addresses, outputs, indexes"
+                            : "Search transactions, bundles, addresses, tags")}
                     onKeyDown={e => {
                         if (e.keyCode === 13 && this.state.isValid) {
                             this.props.onSearch(this.state.query);
@@ -55,7 +59,9 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                 <button
                     className="search--button"
                     type="submit"
-                    onClick={() => this.props.onSearch(this.state.query.trim().toUpperCase())}
+                    onClick={() => this.props.onSearch(this.props.protocolVersion === "og"
+                        ? this.state.query.trim().toUpperCase()
+                        : this.state.query.trim())}
                     disabled={!this.state.isValid}
                 >
                     {this.props.compact ? (<FaSearch />) : "Search"}
@@ -73,12 +79,17 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
         if (!query) {
             return false;
         }
-        if (!isTrytes(query)) {
-            return false;
-        }
-        return ((query.trim().length > 0 && query.trim().length <= 27) ||
+
+        if (this.props.protocolVersion === "og") {
+            if (!isTrytes(query)) {
+                return false;
+            }
+            return ((query.trim().length > 0 && query.trim().length <= 27) ||
                 query.trim().length === 81 ||
                 query.trim().length === 90);
+        }
+
+        return query.length > 0;
     }
 }
 

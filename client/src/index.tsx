@@ -58,7 +58,9 @@ async function initialiseServices(): Promise<void> {
     const networks = networkService.networks();
 
     if (networks.length > 0) {
-        PaletteHelper.setPalette(networks[0].primaryColor, networks[0].secondaryColor);
+        if (networks[0].primaryColor && networks[0].secondaryColor) {
+            PaletteHelper.setPalette(networks[0].primaryColor, networks[0].secondaryColor);
+        }
 
         for (const netConfig of networks) {
             ServiceFactory.register(

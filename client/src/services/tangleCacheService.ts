@@ -637,7 +637,7 @@ export class TangleCacheService {
         try {
             const networkConfig = this._networkService.get(networkId);
 
-            if (networkConfig) {
+            if (networkConfig?.depth !== undefined && networkConfig.mwm !== undefined) {
                 const api = composeAPI({
                     provider: networkConfig.provider
                 });
@@ -669,7 +669,7 @@ export class TangleCacheService {
         try {
             const networkConfig = this._networkService.get(networkId);
 
-            if (networkConfig) {
+            if (networkConfig?.depth !== undefined && networkConfig.mwm !== undefined) {
                 const api = composeAPI({
                     provider: networkConfig.provider
                 });

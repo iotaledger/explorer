@@ -1,3 +1,4 @@
+import { ProtocolVersion } from "./protocolVersion";
 
 /**
  * Definition of network configuration.
@@ -9,9 +10,9 @@ export interface INetwork {
     network: string;
 
     /**
-     * The protocol 0=OG, 1=Chrysalis Pt2, 2=Coordicide.
+     * The protocol version.
      */
-    protocol: number;
+    protocolVersion: ProtocolVersion;
 
     /**
      * The label.
@@ -21,22 +22,22 @@ export interface INetwork {
     /**
      * The description for the network.
      */
-    description: string;
+    description?: string;
 
     /**
      * The provider to use for IOTA communication.
      */
-    provider: string;
+    provider?: string;
 
     /**
      * Depth for attaches.
      */
-    depth: number;
+    depth?: number;
 
     /**
      * Minimum weight magnitude for attaches.
      */
-    mwm: number;
+    mwm?: number;
 
     /**
      * The permanode endpoint.
@@ -51,27 +52,22 @@ export interface INetwork {
     /**
      * The address of the coordinator.
      */
-    coordinatorAddress: string;
+    coordinatorAddress?: string;
 
     /**
      * The level of the coordinator security.
      */
-    coordinatorSecurityLevel: number;
-
-    /**
-     * The state of the network.
-     */
-    state: string;
+    coordinatorSecurityLevel?: number;
 
     /**
      * The primary color.
      */
-    primaryColor: string;
+    primaryColor?: string;
 
     /**
      * The secondary color.
      */
-    secondaryColor: string;
+    secondaryColor?: string;
 
     /**
      * Is the network enabled.
@@ -81,12 +77,12 @@ export interface INetwork {
     /**
      * Is the network enabled.
      */
-    isHidden: boolean;
+    isHidden?: boolean;
 
     /**
      * Show the market figures.
      */
-    showMarket: boolean;
+    showMarket?: boolean;
 
     /**
      * The ordering for the networks.

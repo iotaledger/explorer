@@ -222,11 +222,13 @@
         h1 {
           @include font-size(32px);
 
+          margin-bottom: 28px;
+
           font-family: $metropolis;
         }
 
         .filters {
-          margin: 28px 0px;
+          margin: 0px 0px 28px 0px;
           padding: 23px;
 
           .col {

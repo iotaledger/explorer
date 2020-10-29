@@ -78,6 +78,8 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const currentNetworkConfig = this.state.networks.find(n => n.network === this.state.networkId);
+
         const switcher = (
             <Switcher
                 items={this.state.networks.filter(network => network.isEnabled).map(n => ({
@@ -100,7 +102,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
         return (
             <div className="app">
                 <Header
-                    rootPath={`/${this.state.networks.find(n => n.network === this.state.networkId)?.isEnabled
+                    rootPath={`/${currentNetworkConfig?.isEnabled
                         ? this.state.networkId
                         : ""}`}
                     switcher={this.props.match.params.action &&
@@ -115,6 +117,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             <SearchInput
                                 onSearch={query => this.setQuery(query)}
                                 compact={true}
+                                protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
                             />
                         )}
                     tools={[
@@ -173,6 +176,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                             <SearchInput
                                                 onSearch={query => this.setQuery(query)}
                                                 compact={false}
+                                                protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
                                             />
                                         )}
                                     />
@@ -223,7 +227,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                 )}
                         />
                         <Route
-                            path="/:network/search/:hash?"
+                            path="/:network/search/:query?"
                             component={(props: RouteComponentProps<SearchRouteProps>) =>
                                 (
                                     <Search {...props} />
@@ -281,7 +285,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                 },
                 () => {
                     const config = this.state.networks.find(n => n.network === network);
-                    if (config) {
+                    if (config?.primaryColor && config.secondaryColor) {
                         PaletteHelper.setPalette(config.primaryColor, config.secondaryColor);
                     }
                     if (!this.props.location.pathname.startsWith(`/${network}`) && updateLocation) {

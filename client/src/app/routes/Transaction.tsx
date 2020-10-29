@@ -802,6 +802,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             const networkService = ServiceFactory.get<NetworkService>("network");
             const networkConfig = networkService.get(this.props.match.params.network);
             if (networkConfig && thisGroup[0].tx.address === networkConfig.coordinatorAddress &&
+                networkConfig.coordinatorSecurityLevel !== undefined &&
                 thisGroup.length === networkConfig.coordinatorSecurityLevel + 1) {
                 const mi = value(trytesToTrits(thisGroup[0].tx.tag));
                 if (!Number.isNaN(mi)) {
