@@ -5,7 +5,7 @@ import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import chevronDownWhite from "../../assets/chevron-down-white.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { UnitsHelper } from "../../helpers/unitsHelper";
-import { IFeedTransaction } from "../../models/api/IFeedTransaction";
+import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
 import { INetwork } from "../../models/db/INetwork";
 import { ValueFilter } from "../../models/services/valueFilter";
 import { NetworkService } from "../../services/networkService";

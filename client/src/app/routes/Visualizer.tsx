@@ -4,7 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../helpers/circleNodeShader";
 import { UnitsHelper } from "../../helpers/unitsHelper";
-import { IFeedTransaction } from "../../models/api/IFeedTransaction";
+import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
 import { INodeData } from "../../models/graph/INodeData";
 import Feeds from "../components/Feeds";
 import "./Visualizer.scss";

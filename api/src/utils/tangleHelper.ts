@@ -1,8 +1,10 @@
 import { composeAPI } from "@iota/core";
+import { Bech32Helper, Converter, SingleNodeClient } from "@iota/iota2.js";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
-import { ITransactionsCursor } from "../models/api/ITransactionsCursor";
-import { TransactionsGetMode } from "../models/api/transactionsGetMode";
+import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
+import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
 import { INetwork } from "../models/db/INetwork";
 
 /**
@@ -198,5 +200,77 @@ export class TangleHelper {
             trytes: allTrytes.map(t => t.trytes || "9".repeat(2673)),
             milestoneIndexes: allTrytes.map(t => t.milestoneIndex ?? 0)
         };
+    }
+
+    /**
+     * Find item on the chrysalis network.
+     * @param network The network to find the items on.
+     * @param query The query to use for finding items.
+     * @returns The item found.
+     */
+    public static async search(network: INetwork, query: string): Promise<ISearchResponse> {
+        const client = new SingleNodeClient(network.provider);
+
+        try {
+            if (/^\d+$/.test(query)) {
+                const milestone = await client.milestone(Number.parseInt(query, 10));
+
+                return {
+                    milestone
+                };
+            }
+        } catch { }
+
+        try {
+            const message = await client.message(query);
+
+            return {
+                message
+            };
+        } catch { }
+
+        try {
+            const messages = await client.messagesFind(query);
+
+            if (messages.count > 0) {
+                return {
+                    indexMessageIds: messages.messageIds
+                };
+            }
+        } catch { }
+
+        try {
+            let addr = query;
+
+            try {
+                // Hornet doesn't yet support bech32 lookup
+                // so convert to regular hex format here
+                const parts = Bech32Helper.fromBech32(query);
+                if (parts && parts.addressType === 1) {
+                    addr = Converter.bytesToHex(parts.addressBytes);
+                }
+            } catch {}
+
+            const address = await client.address(addr);
+
+            if (address.count > 0) {
+                const addressOutputs = await client.addressOutputs(addr);
+
+                return {
+                    address,
+                    addressOutputIds: addressOutputs.outputIds
+                };
+            }
+        } catch { }
+
+        try {
+            const output = await client.output(query);
+
+            return {
+                output
+            };
+        } catch { }
+
+        return {};
     }
 }

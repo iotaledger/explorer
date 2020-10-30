@@ -1,4 +1,4 @@
-import { IFeedTransaction } from "../../models/api/IFeedTransaction";
+import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
 import { CurrencyState } from "./CurrencyState";
 
 export interface FeedsState extends CurrencyState {

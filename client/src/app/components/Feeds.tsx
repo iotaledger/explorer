@@ -1,6 +1,6 @@
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedTransaction } from "../../models/api/IFeedTransaction";
+import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
 import { INetwork } from "../../models/db/INetwork";
 import { FeedClient } from "../../services/feedClient";
 import { MilestonesClient } from "../../services/milestonesClient";

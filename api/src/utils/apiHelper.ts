@@ -110,7 +110,7 @@ export async function executeRoute(
             if (mod) {
                 if (mod[route.func]) {
                     response = await mod[route.func](config, params, body, req.headers || {});
-                    if (!response.error) {
+                    if (response && !response.error) {
                         status = 200;
                     }
                 } else {
@@ -123,7 +123,7 @@ export async function executeRoute(
             }
         } else if (route.inline) {
             response = await route.inline(config, params, body, req.headers || {});
-            if (!response.error) {
+            if (response && !response.error) {
                 status = 200;
             }
         } else {
@@ -131,7 +131,7 @@ export async function executeRoute(
         }
     } catch (err) {
         status = err.httpCode || status;
-        response = { error: err.message };
+        response = { error: err };
     }
 
     if (verboseLogging || response.error) {

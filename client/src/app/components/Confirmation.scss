@@ -9,7 +9,9 @@
   height: 24px;
   margin-left: 20px;
   padding: 0px 8px;
+  border: 0;
   border-radius: 6px;
+  outline: none;
   background-color: $gray-light;
   color: $gray-midnight;
   font-family: $metropolis;
@@ -39,5 +41,9 @@
   &.confirmation__conflicting {
     background-color: $danger;
     color: $white;
+  }
+
+  &.confirmation__no-click {
+    pointer-events: none;
   }
 }

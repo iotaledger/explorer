@@ -25,6 +25,7 @@
     },
     "dependencies": {
         "@iota/core": "^1.0.0-beta.29",
+        "@iota/iota2.js": "github:obany/iota2.js",
         "@iota/transaction-converter": "^1.0.0-beta.23",
         "@iota/validators": "^1.0.0-beta.23",
         "abort-controller": "^3.0.0",

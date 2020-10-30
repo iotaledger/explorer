@@ -13,10 +13,13 @@ class Confirmation extends Component<ConfirmationProps> {
      */
     public render(): ReactNode {
         return (
-            <span
+            <button
+                type="button"
+                onClick={this.props.onClick}
                 className={
                     classNames(
                         "confirmation",
+                        { "confirmation__no-click": !this.props.onClick },
                         { "confirmation__confirmed": this.props.state === "confirmed" },
                         { "confirmation__pending": this.props.state === "pending" },
                         { "confirmation__unknown": this.props.state === "unknown" },
@@ -37,7 +40,7 @@ class Confirmation extends Component<ConfirmationProps> {
                 {this.props.state === "conflicting" &&
                     (`Conflicting${this.props.milestoneIndex !== undefined && this.props.milestoneIndex < 0
                         ? ` at MS ${this.props.milestoneIndex}` : ""}`)}
-            </span>
+            </button>
         );
     }
 }

@@ -48,7 +48,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                     })}
                     placeholder={this.props.compact ? "Search..." : (
                         this.props.protocolVersion === "chrysalis"
-                            ? "Search messages, addresses, outputs, indexes"
+                            ? "Search messages, addresses, outputs, milestones, indexes"
                             : "Search transactions, bundles, addresses, tags")}
                     onKeyDown={e => {
                         if (e.keyCode === 13 && this.state.isValid) {

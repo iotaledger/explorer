@@ -1,0 +1,136 @@
+@import '../../../scss/fonts';
+@import '../../../scss/mixins';
+@import '../../../scss/media-queries';
+@import '../../../scss/variables';
+
+.address {
+  display: flex;
+  flex-direction: column;
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+
+    .inner {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      max-width: $desktop-width;
+      margin: 40px 20px;
+
+      @include desktop-down {
+        max-width: 100%;
+        padding-right: 20px;
+        padding-left: 20px;
+
+        > .row {
+          flex-direction: column;
+        }
+      }
+
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      p {
+        @include font-size(12px);
+
+        color: $gray-10;
+        font-family: $metropolis;
+        font-weight: bold;
+      }
+
+      .status {
+        @include font-size(14px);
+      }
+
+      .cards {
+        flex: 1;
+        margin-right: 24px;
+
+        @include desktop-down {
+          flex: unset;
+          width: 100%;
+          margin-right: 0px;
+        }
+
+
+        .value-buttons {
+          .col {
+            flex: 1;
+            width: auto;
+          }
+        }
+
+        @include desktop-down {
+          .value-buttons {
+            flex-direction: column;
+
+            .col {
+              flex: unset;
+              width: 100%;
+            }
+
+            .col + .col {
+              margin-top: 23px;
+              margin-left: 0px;
+            }
+          }
+        }
+
+        .svg-navigation {
+          width: 16px;
+          height: 16px;
+        }
+
+        .item-details + .item-details {
+          margin-top: 40px;
+        }
+
+        .card + .card {
+          margin-top: 23px;
+        }
+
+        .col + .col {
+          margin-left: 23px;
+
+          @include tablet-down {
+            margin-left: 0px;
+          }
+        }
+
+        .value {
+          @include font-size(18px);
+
+          display: flex;
+          align-items: center;
+          padding: 8px 8px 6px 8px;
+          border-radius: 6px;
+          font-family: $metropolis-bold;
+
+          &.value__positive {
+            background-color: #e7f4d9;
+            color: #5da06e;
+          }
+
+          &.value__negative {
+            background-color: #ffe5d9;
+            color: #eb5446;
+          }
+
+          &.value__zero {
+            background-color: #f2f5fb;
+            color: #8493ad;
+          }
+
+          &.value__inprogress {
+            border: 1px solid #c3d0e4;
+            background-color: #ffffff;
+            color: #c3d0e4;
+          }
+        }
+      }
+    }
+  }
+}

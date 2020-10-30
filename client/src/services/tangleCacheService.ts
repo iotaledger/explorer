@@ -1,10 +1,12 @@
 import { composeAPI, Transaction } from "@iota/core";
+import { IMessageMetadata, SingleNodeClient } from "@iota/iota2.js";
 import { mamFetch, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { isEmpty } from "@iota/validators";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { ITransactionsCursor } from "../models/api/ITransactionsCursor";
-import { TransactionsGetMode } from "../models/api/transactionsGetMode";
+import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
+import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
 import { ICachedTransaction } from "../models/ICachedTransaction";
 import { ApiClient } from "./apiClient";
 import { ApiStreamsV0Client } from "./apiStreamsV0Client";
@@ -42,7 +44,7 @@ export class TangleCacheService {
     /**
      * Find transaction results.
      */
-    private readonly _findCache: {
+    private readonly _ogCache: {
         /**
          * Network.
          */
@@ -130,11 +132,68 @@ export class TangleCacheService {
     };
 
     /**
+     * Chrysalis Search results.
+     */
+    private readonly _chrysalisSearchCache: {
+        /**
+         * Network.
+         */
+        [network: string]: {
+            /**
+             * The query type.
+             */
+            [query: string]: {
+                /**
+                 * Search response.
+                 */
+                data?: ISearchResponse;
+
+                /**
+                 * The time of cache.
+                 */
+                cached: number;
+            };
+        };
+    };
+
+    /**
+     * Chrysalis Metadata results.
+     */
+    private readonly _chrysalisMetadataChildrenCache: {
+        /**
+         * Network.
+         */
+        [network: string]: {
+            /**
+             * The query type.
+             */
+            [query: string]: {
+                /**
+                 * Metadata response.
+                 */
+                metadata?: IMessageMetadata;
+
+                /**
+                 * Childen ids.
+                 */
+                childrenIds?: string[];
+
+                /**
+                 * The time of cache.
+                 */
+                cached: number;
+            };
+        };
+    };
+
+    /**
      * Create a new instance of TangleCacheService.
      */
     constructor() {
         this._transactionCache = {};
-        this._findCache = {};
+        this._ogCache = {};
+        this._chrysalisSearchCache = {};
+        this._chrysalisMetadataChildrenCache = {};
         this._addressBalances = {};
         this._streamsV0 = {};
 
@@ -144,12 +203,15 @@ export class TangleCacheService {
         for (const networkConfig of networks) {
             this._transactionCache[networkConfig.network] = {};
 
-            this._findCache[networkConfig.network] = {
+            this._ogCache[networkConfig.network] = {
                 tags: {},
                 addresses: {},
                 bundles: {},
                 transaction: {}
             };
+
+            this._chrysalisSearchCache[networkConfig.network] = {};
+            this._chrysalisMetadataChildrenCache[networkConfig.network] = {};
 
             this._addressBalances[networkConfig.network] = {};
             this._streamsV0[networkConfig.network] = {};
@@ -192,7 +254,7 @@ export class TangleCacheService {
         let doLookup = true;
         let cursor: ITransactionsCursor = {};
 
-        const findCache = this._findCache[networkId];
+        const findCache = this._ogCache[networkId];
         const tranCache = this._transactionCache[networkId];
 
         if (findCache && nextCursor === undefined) {
@@ -686,6 +748,95 @@ export class TangleCacheService {
     }
 
     /**
+     * Search for items on the network.
+     * @param networkId The network to search
+     * @param query The query to searh for.
+     * @returns The search response.
+     */
+    public async search(networkId: string, query: string): Promise<ISearchResponse | undefined> {
+        if (!this._chrysalisSearchCache[networkId][query]) {
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
+
+            const response = await apiClient.search({
+                network: networkId,
+                query
+            });
+
+            if (response.address ||
+                response.message ||
+                response.indexMessageIds ||
+                response.milestone ||
+                response.output) {
+                this._chrysalisSearchCache[networkId][query] = {
+                    data: response,
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._chrysalisSearchCache[networkId][query]?.data;
+    }
+
+    /**
+     * Get the message metadata.
+     * @param networkId The network to search
+     * @param messageId The message if to get the metadata for.
+     * @returns The metadata response.
+     */
+    public async messageMetadata(networkId: string, messageId: string): Promise<IMessageMetadata | undefined> {
+        if (!this._chrysalisMetadataChildrenCache[networkId][messageId] ||
+            !this._chrysalisMetadataChildrenCache[networkId][messageId].metadata) {
+            const networkConfig = this._networkService.get(networkId);
+
+            if (networkConfig?.provider) {
+                const client = new SingleNodeClient(networkConfig.provider);
+
+                const metadata = await client.messageMetadata(messageId);
+
+                if (metadata) {
+                    this._chrysalisMetadataChildrenCache[networkId][messageId] =
+                        this._chrysalisMetadataChildrenCache[networkId][messageId] || {
+                            cached: Date.now()
+                        };
+                    this._chrysalisMetadataChildrenCache[networkId][messageId].metadata = metadata;
+                }
+            }
+        }
+
+        return this._chrysalisMetadataChildrenCache[networkId][messageId]?.metadata;
+    }
+
+    /**
+     * Get the message children.
+     * @param networkId The network to search
+     * @param messageId The message if to get the metadata for.
+     * @returns The children response.
+     */
+    public async messageChildren(networkId: string, messageId: string): Promise<string[] | undefined> {
+        if (!this._chrysalisMetadataChildrenCache[networkId][messageId] ||
+            !this._chrysalisMetadataChildrenCache[networkId][messageId].childrenIds) {
+            const networkConfig = this._networkService.get(networkId);
+
+            if (networkConfig?.provider) {
+                const client = new SingleNodeClient(networkConfig.provider);
+
+                const children = await client.messageChildren(messageId);
+
+                if (children) {
+                    this._chrysalisMetadataChildrenCache[networkId][messageId] =
+                        this._chrysalisMetadataChildrenCache[networkId][messageId] || {
+                            cached: Date.now()
+                        };
+                    this._chrysalisMetadataChildrenCache[networkId][messageId].childrenIds =
+                        children.childrenMessageIds;
+                }
+            }
+        }
+
+        return this._chrysalisMetadataChildrenCache[networkId][messageId]?.childrenIds;
+    }
+
+    /**
      * Check all the cached items and remove any stale items.
      */
     private staleCheck(): void {
@@ -702,8 +853,8 @@ export class TangleCacheService {
             }
         }
 
-        for (const net in this._findCache) {
-            const findCache = this._findCache[net];
+        for (const net in this._ogCache) {
+            const findCache = this._ogCache[net];
             if (findCache) {
                 for (const hashType in findCache) {
                     const hashCache = findCache[hashType as TransactionsGetMode];
@@ -725,6 +876,28 @@ export class TangleCacheService {
                 for (const address in addrBalance) {
                     if (now - addrBalance[address].cached >= this.STALE_TIME) {
                         delete addrBalance[address];
+                    }
+                }
+            }
+        }
+
+        for (const net in this._chrysalisSearchCache) {
+            const queries = this._chrysalisSearchCache[net];
+            if (queries) {
+                for (const query in queries) {
+                    if (now - queries[query].cached >= this.STALE_TIME) {
+                        delete queries[query];
+                    }
+                }
+            }
+        }
+
+        for (const net in this._chrysalisMetadataChildrenCache) {
+            const messageIds = this._chrysalisMetadataChildrenCache[net];
+            if (messageIds) {
+                for (const messageId in messageIds) {
+                    if (now - messageIds[messageId].cached >= this.STALE_TIME) {
+                        delete messageIds[messageId];
                     }
                 }
             }

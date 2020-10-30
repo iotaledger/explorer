@@ -1,4 +1,6 @@
 import { FetchHelper } from "../helpers/fetchHelper";
+import { ISearchRequest } from "../models/api/chrysalis/ISearchRequest";
+import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
 import { IMarketGetRequest } from "../models/api/IMarketGetRequest";
 import { IMarketGetResponse } from "../models/api/IMarketGetResponse";
@@ -6,10 +8,10 @@ import { IMilestonesGetRequest } from "../models/api/IMilestonesGetRequest";
 import { IMilestonesGetResponse } from "../models/api/IMilestonesGetResponse";
 import { INetworkGetResponse } from "../models/api/INetworkGetResponse";
 import { IResponse } from "../models/api/IResponse";
-import { ITransactionsGetRequest } from "../models/api/ITransactionsGetRequest";
-import { ITransactionsGetResponse } from "../models/api/ITransactionsGetResponse";
-import { ITrytesRetrieveRequest } from "../models/api/ITrytesRetrieveRequest";
-import { ITrytesRetrieveResponse } from "../models/api/ITrytesRetrieveResponse";
+import { ITransactionsGetRequest } from "../models/api/og/ITransactionsGetRequest";
+import { ITransactionsGetResponse } from "../models/api/og/ITransactionsGetResponse";
+import { ITrytesRetrieveRequest } from "../models/api/og/ITrytesRetrieveRequest";
+import { ITrytesRetrieveResponse } from "../models/api/og/ITrytesRetrieveResponse";
 
 /**
  * Class to handle api communications.
@@ -99,6 +101,18 @@ export class ApiClient {
     public async marketGet(request: IMarketGetRequest): Promise<IMarketGetResponse> {
         return this.callApi<unknown, IMarketGetResponse>(
             `market/${request.currency}`,
+            "get"
+        );
+    }
+
+    /**
+     * Find items from the tangle.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async search(request: ISearchRequest): Promise<ISearchResponse> {
+        return this.callApi<unknown, ISearchResponse>(
+            `search/${request.network}/${request.query}`,
             "get"
         );
     }

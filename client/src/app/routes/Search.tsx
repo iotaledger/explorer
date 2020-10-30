@@ -94,22 +94,62 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
                                         <h2>Not found</h2>
                                     </div>
                                     <div className="card--content">
-                                        {this.state.protocolVersion === "og" && (
-                                            <p>
-                                                We could not find any messages, addresses, outputs, indexes
-                                                with the provided input.
-                                            </p>
-                                        )}
                                         {this.state.protocolVersion === "chrysalis" && (
-                                            <p>
-                                                We could not find any transactions, bundles, addresses or tags
-                                                with the provided input.
-                                            </p>
+                                            <React.Fragment>
+                                                <p>
+                                                    We could not find any messages, addresses, outputs, milestones
+                                                    or indexes for the query.
+                                                </p>
+                                                <br />
+                                                <p className="card--value">
+                                                    <ul>
+                                                        <li>
+                                                            <span>Query</span>
+                                                            <span>{this.props.match.params.query}</span>
+                                                        </li>
+                                                    </ul>
+                                                </p>
+                                                <br />
+                                                <p>The following formats are supported:</p>
+                                                <br />
+                                                <ul>
+                                                    <li>
+                                                        <span>Messages</span>
+                                                        <span>64 Hex characters</span>
+                                                    </li>
+                                                    <li>
+                                                        <span>Addresses</span>
+                                                        <span>64 Hex characters or Bech32 Format</span>
+                                                    </li>
+                                                    <li>
+                                                        <span>Outputs</span>
+                                                        <span>68 Hex characters</span>
+                                                    </li>
+                                                    <li>
+                                                        <span>Milestone Index</span>
+                                                        <span>Numeric</span>
+                                                    </li>
+                                                    <li>
+                                                        <span>Indexes</span>
+                                                        <span>Free-form data</span>
+                                                    </li>
+                                                </ul>
+                                                <br />
+                                                <p>Please perform another search with a valid hash.</p>
+                                            </React.Fragment>
                                         )}
-                                        <br />
-                                        <p className="card--value">
-                                            {this.props.match.params.query}
-                                        </p>
+                                        {this.state.protocolVersion === "og" && (
+                                            <React.Fragment>
+                                                <p>
+                                                    We could not find any transactions, bundles, addresses or tags
+                                                    with the provided input.
+                                                </p>
+                                                <br />
+                                                <p className="card--value">
+                                                    Query: {this.props.match.params.query}
+                                                </p>
+                                            </React.Fragment>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -169,7 +209,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
      * Update the state of the component.
      */
     private updateState(): void {
-        const hash = (this.props.match.params.query ?? "").trim();
+        const query = (this.props.match.params.query ?? "").trim();
 
         let status = "";
         let statusBusy = false;
@@ -177,14 +217,14 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
         let redirect = "";
         let invalidError = "";
 
-        if (hash.length > 0) {
+        if (query.length > 0) {
             if (this.state.protocolVersion === "og") {
-                if (isTrytes(hash)) {
-                    if (hash.length <= 27) {
-                        redirect = `/${this.props.match.params.network}/tag/${hash}`;
-                    } else if (hash.length === 90) {
-                        redirect = `/${this.props.match.params.network}/address/${hash}`;
-                    } else if (hash.length === 81) {
+                if (isTrytes(query)) {
+                    if (query.length <= 27) {
+                        redirect = `/${this.props.match.params.network}/tag/${query}`;
+                    } else if (query.length === 90) {
+                        redirect = `/${this.props.match.params.network}/address/${query}`;
+                    } else if (query.length === 81) {
                         status = "Detecting hash type...";
                         statusBusy = true;
                         setTimeout(
@@ -192,7 +232,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
                                 const { hashType } = await this._tangleCacheService.findTransactionHashes(
                                     this.props.match.params.network,
                                     undefined,
-                                    hash
+                                    query
                                 );
 
                                 if (hashType) {
@@ -207,7 +247,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
                                     this.setState({
                                         status: "",
                                         statusBusy: false,
-                                        redirect: `/${this.props.match.params.network}/${ht}/${hash}`
+                                        redirect: `/${this.props.match.params.network}/${ht}/${query}`
                                     });
                                 } else {
                                     this.setState({
@@ -219,7 +259,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
                             },
                             0);
                     } else {
-                        invalidError = `the hash length ${hash.length} is not valid`;
+                        invalidError = `the hash length ${query.length} is not valid`;
                         completion = "invalid";
                     }
                 } else {
@@ -227,8 +267,44 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
                     completion = "invalid";
                 }
             } else if (this.state.protocolVersion === "chrysalis") {
-                invalidError = "Hold your horses I am not connected to anything yet!";
-                completion = "invalid";
+                status = "Detecting query type...";
+                statusBusy = true;
+                setTimeout(
+                    async () => {
+                        const response = await this._tangleCacheService.search(
+                            this.props.match.params.network,
+                            query
+                        );
+
+                        if (response) {
+                            let objType = "";
+                            let objParam = query;
+                            if (response.message) {
+                                objType = "message";
+                            } else if (response.address) {
+                                objType = "addr";
+                            } else if (response.indexMessageIds) {
+                                objType = "indexed";
+                            } else if (response.output) {
+                                objType = "message";
+                                objParam = response.output.messageId;
+                            } else if (response.milestone) {
+                                objType = "milestone";
+                            }
+                            this.setState({
+                                status: "",
+                                statusBusy: false,
+                                redirect: `/${this.props.match.params.network}/${objType}/${objParam}`
+                            });
+                        } else {
+                            this.setState({
+                                completion: "notFound",
+                                status: "",
+                                statusBusy: false
+                            });
+                        }
+                    },
+                    0);
             }
         } else {
             invalidError = "the query is empty";

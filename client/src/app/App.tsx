@@ -16,22 +16,30 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import SearchInput from "./components/SearchInput";
 import Switcher from "./components/Switcher";
-import Address from "./routes/Address";
-import { AddressRouteProps } from "./routes/AddressRouteProps";
-import Bundle from "./routes/Bundle";
-import { BundleRouteProps } from "./routes/BundleRouteProps";
+import Addr from "./routes/chrysalis/Addr";
+import { AddrRouteProps } from "./routes/chrysalis/AddrRouteProps";
+import Indexed from "./routes/chrysalis/Indexed";
+import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
+import Message from "./routes/chrysalis/Message";
+import { MessageRouteProps } from "./routes/chrysalis/MessageRouteProps";
+import Milestone from "./routes/chrysalis/Milestone";
+import { MilestoneRouteProps } from "./routes/chrysalis/MilestoneRouteProps";
 import CurrencyConverter from "./routes/CurrencyConverter";
 import Landing from "./routes/Landing";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
+import Address from "./routes/og/Address";
+import { AddressRouteProps } from "./routes/og/AddressRouteProps";
+import Bundle from "./routes/og/Bundle";
+import { BundleRouteProps } from "./routes/og/BundleRouteProps";
+import Tag from "./routes/og/Tag";
+import { TagRouteProps } from "./routes/og/TagRouteProps";
+import Transaction from "./routes/og/Transaction";
+import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
 import Search from "./routes/Search";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
-import Tag from "./routes/Tag";
-import { TagRouteProps } from "./routes/TagRouteProps";
-import Transaction from "./routes/Transaction";
-import { TransactionRouteProps } from "./routes/TransactionRouteProps";
 import Visualizer from "./routes/Visualizer";
 import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
 
@@ -233,6 +241,43 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                     <Search {...props} />
                                 )}
                         />
+                        <Route
+                            path="/:network/addr/:address"
+                            component={(props: RouteComponentProps<AddrRouteProps>) =>
+                                (
+                                    <Addr
+                                        {...props}
+                                    />
+                                )}
+                        />
+                        <Route
+                            path="/:network/milestone/:milestoneIndex"
+                            component={(props: RouteComponentProps<MilestoneRouteProps>) =>
+                                (
+                                    <Milestone
+                                        {...props}
+                                    />
+                                )}
+                        />
+                        <Route
+                            path="/:network/message/:messageId"
+                            component={(props: RouteComponentProps<MessageRouteProps>) =>
+                                (
+                                    <Message
+                                        {...props}
+                                    />
+                                )}
+                        />
+                        <Route
+                            path="/:network/indexed/:index"
+                            component={(props: RouteComponentProps<IndexedRouteProps>) =>
+                                (
+                                    <Indexed
+                                        {...props}
+                                    />
+                                )}
+                        />
+
                     </Switch>
                 </div>
                 <Footer
@@ -289,7 +334,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                         PaletteHelper.setPalette(config.primaryColor, config.secondaryColor);
                     }
                     if (!this.props.location.pathname.startsWith(`/${network}`) && updateLocation) {
-                        this.props.history.replace(`/${network}`);
+                        window.history.replaceState(undefined, window.document.title, `/${network}`);
                     }
                     window.scrollTo({
                         left: 0,
