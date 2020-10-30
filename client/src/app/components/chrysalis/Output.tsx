@@ -34,27 +34,6 @@ class Output extends Component<OutputProps, OutputState> {
                 </div>
                 <div className="card--content">
                     <div className="card--label">
-                        Output Id
-                    </div>
-                    <div className="card--value row middle">
-                        <button
-                            type="button"
-                            onClick={() => this.props.history.push(
-                                `/${this.props.network
-                                }/search/${this.props.id}`)}
-                            className="margin-r-t"
-                        >
-                            {this.props.id}
-                        </button>
-                        <MessageButton
-                            onClick={() => ClipboardHelper.copy(
-                                this.props.id
-                            )}
-                            buttonType="copy"
-                            labelPosition="top"
-                        />
-                    </div>
-                    <div className="card--label">
                         Message Id
                     </div>
                     <div className="card--value row middle">
