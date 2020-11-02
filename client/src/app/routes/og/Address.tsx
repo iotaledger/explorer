@@ -1,5 +1,4 @@
 import { addChecksum } from "@iota/checksum";
-import { isTrytes } from "@iota/validators";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -7,6 +6,7 @@ import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
+import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { UnitsHelper } from "../../../helpers/unitsHelper";
 import { ICachedTransaction } from "../../../models/ICachedTransaction";
 import { SettingsService } from "../../../services/settingsService";
@@ -49,7 +49,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
         let address;
         let checksum;
         if ((this.props.match.params.hash.length === 81 || this.props.match.params.hash.length === 90) &&
-            isTrytes(this.props.match.params.hash)) {
+            TrytesHelper.isTrytes(this.props.match.params.hash)) {
             address = props.match.params.hash.slice(0, 81);
             checksum = addChecksum(this.props.match.params.hash.slice(0, 81)).slice(-9);
         }

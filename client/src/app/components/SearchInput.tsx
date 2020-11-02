@@ -1,7 +1,7 @@
-import { isTrytes } from "@iota/validators";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { FaSearch } from "react-icons/fa";
+import { TrytesHelper } from "../../helpers/trytesHelper";
 import AsyncComponent from "./AsyncComponent";
 import "./SearchInput.scss";
 import { SearchInputProps } from "./SearchInputProps";
@@ -81,7 +81,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
         }
 
         if (this.props.protocolVersion === "og") {
-            if (!isTrytes(query)) {
+            if (!TrytesHelper.isTrytes(query)) {
                 return false;
             }
             return ((query.trim().length > 0 && query.trim().length <= 27) ||

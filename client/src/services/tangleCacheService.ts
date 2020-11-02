@@ -1,9 +1,8 @@
-import { composeAPI, Transaction } from "@iota/core";
-import { IMessageMetadata, SingleNodeClient } from "@iota/iota2.js";
+import { IMessageMetadata } from "@iota/iota2.js";
 import { mamFetch, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
-import { isEmpty } from "@iota/validators";
 import { ServiceFactory } from "../factories/serviceFactory";
+import { TrytesHelper } from "../helpers/trytesHelper";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
 import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
@@ -390,7 +389,7 @@ export class TangleCacheService {
                                 timestamp,
                                 attachmentTimestamp
                             };
-                            tranCache[unknownHash].isEmpty = isEmpty(response.trytes[i]);
+                            tranCache[unknownHash].isEmpty = TrytesHelper.isEmpty(response.trytes[i]);
 
                             if (response.milestoneIndexes[i] === 0) {
                                 tranCache[unknownHash].confirmationState = "pending";
@@ -536,25 +535,17 @@ export class TangleCacheService {
             if (!addrBalance[addressHash] ||
                 now - addrBalance[addressHash].balance > 30000) {
                 try {
-                    const networkConfig = this._networkService.get(networkId);
+                    const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-                    if (networkConfig) {
-                        const api = composeAPI({
-                            provider: networkConfig.provider
-                        });
+                    const response = await apiClient.addressGet({
+                        network: networkId,
+                        hash: addressHash
+                    });
 
-                        const response = await api.getBalances([addressHash]);
-                        if (response?.balances) {
-                            let balance = 0;
-                            for (let i = 0; i < response.balances.length; i++) {
-                                balance += response.balances[i];
-                            }
-                            addrBalance[addressHash] = {
-                                balance,
-                                cached: now
-                            };
-                        }
-                    }
+                    addrBalance[addressHash] = {
+                        balance: response.balance ?? 0,
+                        cached: now
+                    };
                 } catch (err) {
                     console.error(err);
                 }
@@ -669,19 +660,15 @@ export class TangleCacheService {
         networkId: string,
         tailHash: string): Promise<boolean> {
         try {
-            const networkConfig = this._networkService.get(networkId);
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-            if (networkConfig) {
-                const api = composeAPI({
-                    provider: networkConfig.provider
-                });
+            const response = await apiClient.transactionAction({
+                network: networkId,
+                action: "isPromotable",
+                hash: tailHash
+            });
 
-                return await api.isPromotable(
-                    tailHash
-                );
-            }
-
-            return false;
+            return response.result === "yes";
         } catch {
             return false;
         }
@@ -695,25 +682,17 @@ export class TangleCacheService {
      */
     public async promoteTransaction(
         networkId: string,
-        tailHash: string): Promise<Transaction[] | undefined> {
+        tailHash: string): Promise<string | undefined> {
         try {
-            const networkConfig = this._networkService.get(networkId);
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-            if (networkConfig?.depth !== undefined && networkConfig.mwm !== undefined) {
-                const api = composeAPI({
-                    provider: networkConfig.provider
-                });
+            const response = await apiClient.transactionAction({
+                network: networkId,
+                action: "promote",
+                hash: tailHash
+            });
 
-                const response = await api.promoteTransaction(
-                    tailHash,
-                    networkConfig.depth,
-                    networkConfig.mwm
-                );
-
-                if (Array.isArray(response) && response.length > 0) {
-                    return response[0] as Transaction[];
-                }
-            }
+            return response.result;
         } catch (err) {
             console.log(err);
         }
@@ -727,21 +706,17 @@ export class TangleCacheService {
      */
     public async replayBundle(
         networkId: string,
-        tailHash: string): Promise<readonly Transaction[] | undefined> {
+        tailHash: string): Promise<string | undefined> {
         try {
-            const networkConfig = this._networkService.get(networkId);
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-            if (networkConfig?.depth !== undefined && networkConfig.mwm !== undefined) {
-                const api = composeAPI({
-                    provider: networkConfig.provider
-                });
+            const response = await apiClient.transactionAction({
+                network: networkId,
+                action: "replay",
+                hash: tailHash
+            });
 
-                return await api.replayBundle(
-                    tailHash,
-                    networkConfig.depth,
-                    networkConfig.mwm
-                );
-            }
+            return response.result;
         } catch (err) {
             console.log(err);
         }
@@ -779,61 +754,43 @@ export class TangleCacheService {
 
     /**
      * Get the message metadata.
-     * @param networkId The network to search
+     * @param network The network to search
      * @param messageId The message if to get the metadata for.
-     * @returns The metadata response.
+     * @param fields The fields to retrieve.
+     * @param force Bypass the cache.
+     * @returns The details response.
      */
-    public async messageMetadata(networkId: string, messageId: string): Promise<IMessageMetadata | undefined> {
-        if (!this._chrysalisMetadataChildrenCache[networkId][messageId] ||
-            !this._chrysalisMetadataChildrenCache[networkId][messageId].metadata) {
-            const networkConfig = this._networkService.get(networkId);
+    public async messageDetails(
+        network: string,
+        messageId: string,
+        fields: "metadata" | "children" | "all",
+        force?: boolean): Promise<{
+            metadata?: IMessageMetadata;
+            childrenIds?: string[];
+        }> {
+        if (!this._chrysalisMetadataChildrenCache[network][messageId] || force) {
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-            if (networkConfig?.provider) {
-                const client = new SingleNodeClient(networkConfig.provider);
+            const response = await apiClient.messageDetails({ network, messageId, fields });
 
-                const metadata = await client.messageMetadata(messageId);
-
-                if (metadata) {
-                    this._chrysalisMetadataChildrenCache[networkId][messageId] =
-                        this._chrysalisMetadataChildrenCache[networkId][messageId] || {
-                            cached: Date.now()
-                        };
-                    this._chrysalisMetadataChildrenCache[networkId][messageId].metadata = metadata;
+            if (response) {
+                this._chrysalisMetadataChildrenCache[network][messageId] =
+                    this._chrysalisMetadataChildrenCache[network][messageId] || {
+                        cached: Date.now()
+                    };
+                if (fields === "metadata" || fields === "all") {
+                    this._chrysalisMetadataChildrenCache[network][messageId].metadata = response.metadata;
+                }
+                if (fields === "children" || fields === "all") {
+                    this._chrysalisMetadataChildrenCache[network][messageId].childrenIds = response.childrenMessageIds;
                 }
             }
         }
 
-        return this._chrysalisMetadataChildrenCache[networkId][messageId]?.metadata;
-    }
-
-    /**
-     * Get the message children.
-     * @param networkId The network to search
-     * @param messageId The message if to get the metadata for.
-     * @returns The children response.
-     */
-    public async messageChildren(networkId: string, messageId: string): Promise<string[] | undefined> {
-        if (!this._chrysalisMetadataChildrenCache[networkId][messageId] ||
-            !this._chrysalisMetadataChildrenCache[networkId][messageId].childrenIds) {
-            const networkConfig = this._networkService.get(networkId);
-
-            if (networkConfig?.provider) {
-                const client = new SingleNodeClient(networkConfig.provider);
-
-                const children = await client.messageChildren(messageId);
-
-                if (children) {
-                    this._chrysalisMetadataChildrenCache[networkId][messageId] =
-                        this._chrysalisMetadataChildrenCache[networkId][messageId] || {
-                            cached: Date.now()
-                        };
-                    this._chrysalisMetadataChildrenCache[networkId][messageId].childrenIds =
-                        children.childrenMessageIds;
-                }
-            }
-        }
-
-        return this._chrysalisMetadataChildrenCache[networkId][messageId]?.childrenIds;
+        return {
+            metadata: this._chrysalisMetadataChildrenCache[network][messageId]?.metadata,
+            childrenIds: this._chrysalisMetadataChildrenCache[network][messageId]?.childrenIds
+        };
     }
 
     /**

@@ -1,7 +1,7 @@
-import { isTrytes } from "@iota/validators";
 import React, { Component, ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { TrytesHelper } from "../../helpers/trytesHelper";
 import { ProtocolVersion } from "../../models/db/protocolVersion";
 import { NetworkService } from "../../services/networkService";
 import { TangleCacheService } from "../../services/tangleCacheService";
@@ -219,7 +219,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
 
         if (query.length > 0) {
             if (this.state.protocolVersion === "og") {
-                if (isTrytes(query)) {
+                if (TrytesHelper.isTrytes(query)) {
                     if (query.length <= 27) {
                         redirect = `/${this.props.match.params.network}/tag/${query}`;
                     } else if (query.length === 90) {

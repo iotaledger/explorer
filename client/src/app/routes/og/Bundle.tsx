@@ -1,4 +1,3 @@
-import { isTrytes } from "@iota/validators";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import chevronDownGray from "../../../assets/chevron-down-gray.svg";
@@ -7,6 +6,7 @@ import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
+import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { UnitsHelper } from "../../../helpers/unitsHelper";
 import { ConfirmationState } from "../../../models/confirmationState";
 import { ICachedTransaction } from "../../../models/ICachedTransaction";
@@ -39,7 +39,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
 
         let bundle;
         if (this.props.match.params.hash.length === 81 &&
-            isTrytes(this.props.match.params.hash)) {
+            TrytesHelper.isTrytes(this.props.match.params.hash)) {
             bundle = props.match.params.hash;
         }
 

@@ -2,7 +2,6 @@ import isBundle from "@iota/bundle-validator";
 import { trytesToTrits, value } from "@iota/converter";
 import { parseMessage } from "@iota/mam.js";
 import { asTransactionTrytes } from "@iota/transaction-converter";
-import { isEmpty, isTrytes } from "@iota/validators";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -51,7 +50,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
 
         let hash;
         if (this.props.match.params.hash.length === 81 &&
-            isTrytes(this.props.match.params.hash)) {
+            TrytesHelper.isTrytes(this.props.match.params.hash)) {
             hash = props.match.params.hash;
         }
 
@@ -85,7 +84,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             let details: ICachedTransaction | undefined;
 
             if (transactions && transactions.length > 0) {
-                if (isEmpty(asTransactionTrytes(transactions[0].tx))) {
+                if (TrytesHelper.isEmpty(asTransactionTrytes(transactions[0].tx))) {
                     this.setState({
                         status: "There is no data for this transaction.",
                         statusBusy: false
@@ -848,20 +847,20 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                 actionResultHash: ""
             },
             async () => {
-                const transactions = await this._tangleCacheService.replayBundle(
+                const newHash = await this._tangleCacheService.replayBundle(
                     this.props.match.params.network,
                     this.state.bundleTailHash ?? "");
 
                 this.setState(
                     {
                         actionBusy: false,
-                        actionBusyMessage: transactions && transactions.length > 0
+                        actionBusyMessage: newHash
                             ? "Bundle reattached."
                             : "Unable to reattach bundle.",
-                        actionResultHash: transactions && transactions.length > 0 ? transactions[0].hash : undefined
+                        actionResultHash: newHash
                     },
                     async () => {
-                        if (transactions && transactions.length > 0) {
+                        if (newHash) {
                             await this.checkConfirmation();
                         }
                     });
@@ -884,20 +883,20 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                     this.state.bundleTailHash ?? "");
 
                 if (isPromotable) {
-                    const transactions = await this._tangleCacheService.promoteTransaction(
+                    const newHash = await this._tangleCacheService.promoteTransaction(
                         this.props.match.params.network,
                         this.state.bundleTailHash ?? "");
 
                     this.setState(
                         {
                             actionBusy: false,
-                            actionBusyMessage: transactions && transactions.length > 0
+                            actionBusyMessage: newHash
                                 ? "Transaction promoted."
                                 : "Unable to promote transaction.",
-                            actionResultHash: transactions && transactions.length > 0 ? transactions[0].hash : undefined
+                            actionResultHash: newHash
                         },
                         async () => {
-                            if (transactions && transactions.length > 0) {
+                            if (newHash) {
                                 await this.checkConfirmation();
                             }
                         }

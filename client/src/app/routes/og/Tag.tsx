@@ -1,4 +1,3 @@
-import { isTrytes } from "@iota/validators";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -6,6 +5,7 @@ import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
+import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { UnitsHelper } from "../../../helpers/unitsHelper";
 import { ICachedTransaction } from "../../../models/ICachedTransaction";
 import { SettingsService } from "../../../services/settingsService";
@@ -46,7 +46,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
         let tag;
         let tagFill;
         if (this.props.match.params.hash.length <= 27 &&
-            isTrytes(this.props.match.params.hash)) {
+            TrytesHelper.isTrytes(this.props.match.params.hash)) {
             tag = props.match.params.hash.replace(/9*$/, "");
             tagFill = "9".repeat(27 - tag.length);
 

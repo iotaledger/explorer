@@ -24,6 +24,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
     private readonly _tangleCacheService: TangleCacheService;
 
     /**
+     * Timer to check to state update.
+     */
+    private _timerId?: NodeJS.Timer;
+
+    /**
      * Create a new instance of Message.
      * @param props The props.
      */
@@ -57,25 +62,49 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
             this.setState({
                 message: result.message
             }, async () => {
-                const metadata = await this._tangleCacheService.messageMetadata(
-                    this.props.match.params.network, this.props.match.params.messageId);
+                const details = await this._tangleCacheService.messageDetails(
+                    this.props.match.params.network, this.props.match.params.messageId, "all");
 
                 this.setState({
-                    metadata,
-                    confirmationState: metadata?.referencedByMilestoneIndex !== undefined ? "confirmed" : "pending"
-                }, async () => {
-                    const childrenIds = await this._tangleCacheService.messageChildren(
-                        this.props.match.params.network, this.props.match.params.messageId);
-
-                    this.setState({
-                        childrenIds,
-                        childrenBusy: false
-                    });
+                    metadata: details.metadata,
+                    childrenIds: details.childrenIds,
+                    confirmationState: details?.metadata?.referencedByMilestoneIndex !== undefined
+                        ? "confirmed" : "pending",
+                    childrenBusy: false
                 });
+
+                if (!details?.metadata?.referencedByMilestoneIndex) {
+                    this._timerId = setInterval(async () => {
+                        const details2 = await this._tangleCacheService.messageDetails(
+                            this.props.match.params.network, this.props.match.params.messageId, "metadata", true);
+
+                        this.setState({
+                            metadata: details2.metadata,
+                            confirmationState: details2?.metadata?.referencedByMilestoneIndex !== undefined
+                                ? "confirmed" : "pending"
+                        });
+
+                        if (details2?.metadata?.referencedByMilestoneIndex && this._timerId) {
+                            clearInterval(this._timerId);
+                            this._timerId = undefined;
+                        }
+                    }, 10000);
+                }
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network
                 }/search/${this.props.match.params.messageId}`);
+        }
+    }
+
+    /**
+     * The component will unmount so update flag.
+     */
+    public componentWillUnmount(): void {
+        super.componentWillUnmount();
+        if (this._timerId) {
+            clearInterval(this._timerId);
+            this._timerId = undefined;
         }
     }
 

@@ -1,4 +1,6 @@
 import { FetchHelper } from "../helpers/fetchHelper";
+import { IMessageDetailsRequest } from "../models/api/chrysalis/IMessageDetailsRequest";
+import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
 import { ISearchRequest } from "../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
@@ -8,6 +10,10 @@ import { IMilestonesGetRequest } from "../models/api/IMilestonesGetRequest";
 import { IMilestonesGetResponse } from "../models/api/IMilestonesGetResponse";
 import { INetworkGetResponse } from "../models/api/INetworkGetResponse";
 import { IResponse } from "../models/api/IResponse";
+import { IAddressGetRequest } from "../models/api/og/IAddressGetRequest";
+import { IAddressGetResponse } from "../models/api/og/IAddressGetResponse";
+import { ITransactionActionRequest } from "../models/api/og/ITransactionActionRequest";
+import { ITransactionActionResponse } from "../models/api/og/ITransactionActionResponse";
 import { ITransactionsGetRequest } from "../models/api/og/ITransactionsGetRequest";
 import { ITransactionsGetResponse } from "../models/api/og/ITransactionsGetResponse";
 import { ITrytesRetrieveRequest } from "../models/api/og/ITrytesRetrieveRequest";
@@ -82,6 +88,35 @@ export class ApiClient {
     }
 
     /**
+     * Perform tangle operation on hash.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async transactionAction(request: ITransactionActionRequest): Promise<ITransactionActionResponse> {
+        const { network, ...rest } = request;
+
+        return this.callApi<unknown, ITransactionActionResponse>(
+            `transactions/action/${network}`,
+            "post",
+            rest
+        );
+    }
+
+    /**
+     * Perform tangle operation on address.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async addressGet(request: IAddressGetRequest): Promise<IAddressGetResponse> {
+        const { network, ...rest } = request;
+
+        return this.callApi<unknown, IAddressGetResponse>(
+            `address/${network}${FetchHelper.urlParams(rest)}`,
+            "get"
+        );
+    }
+
+    /**
      * Get milestones from the tangle.
      * @param request The request to send.
      * @returns The response from the request.
@@ -113,6 +148,18 @@ export class ApiClient {
     public async search(request: ISearchRequest): Promise<ISearchResponse> {
         return this.callApi<unknown, ISearchResponse>(
             `search/${request.network}/${request.query}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the message details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async messageDetails(request: IMessageDetailsRequest): Promise<IMessageDetailsResponse> {
+        return this.callApi<unknown, ISearchResponse>(
+            `message/${request.network}/${request.messageId}/${request.fields}`,
             "get"
         );
     }
