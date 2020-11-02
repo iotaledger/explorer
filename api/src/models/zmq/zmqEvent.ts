@@ -1,5 +1,5 @@
 /**
- * The differnt event that can be passed through zmq.
+ * The different event that can be passed through zmq.
  */
 export type ZmqEvent =
     "antn" |

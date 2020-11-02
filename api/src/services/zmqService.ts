@@ -1,3 +1,4 @@
+import { v4 } from "uuid";
 import { Subscriber } from "zeromq";
 import { IAddress } from "../models/zmq/IAddress";
 import { IAntn } from "../models/zmq/IAntn";
@@ -15,8 +16,7 @@ import { IRtl } from "../models/zmq/IRtl";
 import { ISn } from "../models/zmq/ISn";
 import { ITx } from "../models/zmq/ITx";
 import { ITxTrytes } from "../models/zmq/ITxTrytes";
-import { ZmqEvent } from "../models/zmq/zmqEvents";
-import { TrytesHelper } from "../utils/trytesHelper";
+import { ZmqEvent } from "../models/zmq/zmqEvent";
 
 /**
  * Class to handle ZMQ service.
@@ -30,7 +30,7 @@ export class ZmqService {
     /**
      * The events to subscribe to.
      */
-    private readonly _events: string[];
+    private readonly _events: (ZmqEvent | string)[];
 
     /**
      * The callback for different events.
@@ -65,7 +65,7 @@ export class ZmqService {
      * @param endpoint The gateway for the zmq service.
      * @param events The events to subscribe to.
      */
-    constructor(endpoint: string, events: string[]) {
+    constructor(endpoint: string, events: (ZmqEvent | string)[]) {
         this._endpoint = endpoint;
         this._events = events;
         this._lastMessageTime = 0;
@@ -492,7 +492,7 @@ export class ZmqService {
             this._subscriptions[event] = [];
         }
 
-        const id = TrytesHelper.generateHash(27);
+        const id = v4();
 
         this._subscriptions[event].push({ id, callback });
 

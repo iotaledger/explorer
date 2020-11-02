@@ -47,7 +47,12 @@ export interface INetwork {
     /**
      * The zmq feed to communicate with.
      */
-    zmqEndpoint?: string;
+    feedEndpoint?: string;
+
+    /**
+     * The mqtt feed to communicate with.
+     */
+    mqttEndpoint?: string;
 
     /**
      * The address of the coordinator.

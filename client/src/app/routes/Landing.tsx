@@ -342,7 +342,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                             <span className="card--label">Milestone</span>
                                             <span className="card--label">
                                                 {this.state.networkConfig.protocolVersion === "og"
-                                                    ? "Transaction" : "Message"}
+                                                    ? "Transaction" : "Milestone Id"}
                                             </span>
                                         </div>
                                         {this.state.milestones.length === 0 && (
@@ -356,7 +356,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                     to={
                                                         `/${this.props.match.params.network
                                                         }/${this.state.networkConfig.protocolVersion === "og"
-                                                            ? "transaction" : "message"}/${tx.hash}`
+                                                            ? "transaction" : "milestone"}/${this
+                                                            .state.networkConfig.protocolVersion === "og"
+                                                            ? tx.hash : tx.milestoneIndex}`
                                                     }
                                                 >
                                                     {tx.hash}

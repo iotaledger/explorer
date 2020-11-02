@@ -45,9 +45,9 @@ export interface INetwork {
     permaNodeEndpoint?: string;
 
     /**
-     * The zmq feed to communicate with.
+     * The feed to communicate with.
      */
-    zmqEndpoint?: string;
+    feedEndpoint?: string;
 
     /**
      * The address of the coordinator.

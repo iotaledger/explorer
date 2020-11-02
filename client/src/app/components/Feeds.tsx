@@ -265,8 +265,8 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
         if (this._networkConfig?.protocolVersion === "og") {
             this.buildTransactions();
-            this.buildMilestones();
         }
+        this.buildMilestones();
     }
 }
 
