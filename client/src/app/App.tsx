@@ -128,7 +128,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                 protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
                             />
                         )}
-                    tools={[
+                    tools={this.state.networks.length > 0 ? [
                         {
                             label: "Explorer",
                             url: `/${this.state.networkId}/`,
@@ -154,135 +154,144 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             url: `/${this.state.networkId}/currency-converter/`,
                             icon: currencyIcon
                         }
-                    ]}
+                    ] : []}
                 />
                 <div className="content">
-                    <Switch>
-                        <Route
-                            path="/:network/markets"
-                            component={() =>
-                                (
-                                    <Markets />
-                                )}
-                        />
-                        <Route
-                            path="/:network/currency-converter"
-                            component={() =>
-                                (
-                                    <CurrencyConverter />
-                                )}
-                        />
-                        <Route
-                            exact={true}
-                            path="/:network?"
-                            component={(props: RouteComponentProps<LandingRouteProps>) =>
-                                (
-                                    <Landing
-                                        {...props}
-                                        switcher={switcher}
-                                        search={(
-                                            <SearchInput
-                                                onSearch={query => this.setQuery(query)}
-                                                compact={false}
-                                                protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
+                    {this.state.networks.length > 0
+                        ? (
+                            <Switch>
+                                <Route
+                                    path="/:network/markets"
+                                    component={() =>
+                                        (
+                                            <Markets />
+                                        )}
+                                />
+                                <Route
+                                    path="/:network/currency-converter"
+                                    component={() =>
+                                        (
+                                            <CurrencyConverter />
+                                        )}
+                                />
+                                <Route
+                                    exact={true}
+                                    path="/:network?"
+                                    component={(props: RouteComponentProps<LandingRouteProps>) =>
+                                        (
+                                            <Landing
+                                                {...props}
+                                                switcher={switcher}
+                                                search={(
+                                                    <SearchInput
+                                                        onSearch={query => this.setQuery(query)}
+                                                        compact={false}
+                                                        protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
+                                                    />
+                                                )}
                                             />
                                         )}
-                                    />
-                                )}
-                        />
-                        <Route
-                            path="/:network/streams/0/:hash?/:mode?/:key?"
-                            component={(props: RouteComponentProps<StreamsV0RouteProps>) =>
-                                (
-                                    <StreamsV0 {...props} />
-                                )}
-                        />
-                        <Route
-                            path="/:network/visualizer/"
-                            component={(props: RouteComponentProps<VisualizerRouteProps>) =>
-                                (
-                                    <Visualizer {...props} />
-                                )}
-                        />
-                        <Route
-                            path="/:network/transaction/:hash"
-                            component={(props: RouteComponentProps<TransactionRouteProps>) =>
-                                (
-                                    <Transaction {...props} />
-                                )}
-                        />
-                        <Route
-                            path="/:network/tag/:hash"
-                            component={(props: RouteComponentProps<TagRouteProps>) =>
-                                (
-                                    <Tag {...props} />
-                                )}
-                        />
-                        <Route
-                            path="/:network/address/:hash"
-                            component={(props: RouteComponentProps<AddressRouteProps>) =>
-                                (
-                                    <Address
-                                        {...props}
-                                    />
-                                )}
-                        />
-                        <Route
-                            path="/:network/bundle/:hash"
-                            component={(props: RouteComponentProps<BundleRouteProps>) =>
-                                (
-                                    <Bundle {...props} />
-                                )}
-                        />
-                        <Route
-                            path="/:network/search/:query?"
-                            component={(props: RouteComponentProps<SearchRouteProps>) =>
-                                (
-                                    <Search {...props} />
-                                )}
-                        />
-                        <Route
-                            path="/:network/addr/:address"
-                            component={(props: RouteComponentProps<AddrRouteProps>) =>
-                                (
-                                    <Addr
-                                        {...props}
-                                    />
-                                )}
-                        />
-                        <Route
-                            path="/:network/milestone/:milestoneIndex"
-                            component={(props: RouteComponentProps<MilestoneRouteProps>) =>
-                                (
-                                    <Milestone
-                                        {...props}
-                                    />
-                                )}
-                        />
-                        <Route
-                            path="/:network/message/:messageId"
-                            component={(props: RouteComponentProps<MessageRouteProps>) =>
-                                (
-                                    <Message
-                                        {...props}
-                                    />
-                                )}
-                        />
-                        <Route
-                            path="/:network/indexed/:index"
-                            component={(props: RouteComponentProps<IndexedRouteProps>) =>
-                                (
-                                    <Indexed
-                                        {...props}
-                                    />
-                                )}
-                        />
-
-                    </Switch>
+                                />
+                                <Route
+                                    path="/:network/streams/0/:hash?/:mode?/:key?"
+                                    component={(props: RouteComponentProps<StreamsV0RouteProps>) =>
+                                        (
+                                            <StreamsV0 {...props} />
+                                        )}
+                                />
+                                <Route
+                                    path="/:network/visualizer/"
+                                    component={(props: RouteComponentProps<VisualizerRouteProps>) =>
+                                        (
+                                            <Visualizer {...props} />
+                                        )}
+                                />
+                                <Route
+                                    path="/:network/transaction/:hash"
+                                    component={(props: RouteComponentProps<TransactionRouteProps>) =>
+                                        (
+                                            <Transaction {...props} />
+                                        )}
+                                />
+                                <Route
+                                    path="/:network/tag/:hash"
+                                    component={(props: RouteComponentProps<TagRouteProps>) =>
+                                        (
+                                            <Tag {...props} />
+                                        )}
+                                />
+                                <Route
+                                    path="/:network/address/:hash"
+                                    component={(props: RouteComponentProps<AddressRouteProps>) =>
+                                        (
+                                            <Address
+                                                {...props}
+                                            />
+                                        )}
+                                />
+                                <Route
+                                    path="/:network/bundle/:hash"
+                                    component={(props: RouteComponentProps<BundleRouteProps>) =>
+                                        (
+                                            <Bundle {...props} />
+                                        )}
+                                />
+                                <Route
+                                    path="/:network/search/:query?"
+                                    component={(props: RouteComponentProps<SearchRouteProps>) =>
+                                        (
+                                            <Search {...props} />
+                                        )}
+                                />
+                                <Route
+                                    path="/:network/addr/:address"
+                                    component={(props: RouteComponentProps<AddrRouteProps>) =>
+                                        (
+                                            <Addr
+                                                {...props}
+                                            />
+                                        )}
+                                />
+                                <Route
+                                    path="/:network/milestone/:milestoneIndex"
+                                    component={(props: RouteComponentProps<MilestoneRouteProps>) =>
+                                        (
+                                            <Milestone
+                                                {...props}
+                                            />
+                                        )}
+                                />
+                                <Route
+                                    path="/:network/message/:messageId"
+                                    component={(props: RouteComponentProps<MessageRouteProps>) =>
+                                        (
+                                            <Message
+                                                {...props}
+                                            />
+                                        )}
+                                />
+                                <Route
+                                    path="/:network/indexed/:index"
+                                    component={(props: RouteComponentProps<IndexedRouteProps>) =>
+                                        (
+                                            <Indexed
+                                                {...props}
+                                            />
+                                        )}
+                                />
+                            </Switch>
+                        )
+                        : (
+                            <div className="maintenance">
+                                <div className="maintenance-inner">
+                                    Explorer is currently undergoing maintenance, please check back later.
+                                </div>
+                            </div>
+                        )}
                 </div>
                 <Footer
                     dynamic={
-                        this.state.networks
+                        this.state.networks.length > 0 ? this.state.networks
                             .filter(network => network.isEnabled)
                             .map(n => ({
                                 label: n.label,
@@ -303,7 +312,12 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             .concat({
                                 label: "Currency Converter",
                                 url: `${this.state.networkId}/currency-converter/`
-                            })
+                            }) : [
+                                {
+                                    label: "Maintenance Mode",
+                                    url: ""
+                                }
+                            ]
                     }
                 />
                 <Disclaimer />
