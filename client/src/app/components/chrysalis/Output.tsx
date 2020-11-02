@@ -18,7 +18,8 @@ class Output extends Component<OutputProps, OutputState> {
         super(props);
 
         this.state = {
-            formatFull: false
+            formatFull: false,
+            isGenesis: props.output.messageId === "0".repeat(64)
         };
     }
 
@@ -37,37 +38,51 @@ class Output extends Component<OutputProps, OutputState> {
                         Message Id
                     </div>
                     <div className="card--value row middle">
-                        <button
-                            type="button"
-                            onClick={() => this.props.history.push(
-                                `/${this.props.network
-                                }/message/${this.props.output.messageId}`)}
-                            className="margin-r-t"
-                        >
-                            {this.props.output.messageId}
-                        </button>
-                        <MessageButton
-                            onClick={() => ClipboardHelper.copy(
-                                this.props.output.messageId
-                            )}
-                            buttonType="copy"
-                            labelPosition="top"
-                        />
+                        {this.state.isGenesis && (
+                            <span>Genesis</span>
+                        )}
+                        {!this.state.isGenesis && (
+                            <React.Fragment>
+                                <button
+                                    type="button"
+                                    onClick={() => this.props.history.push(
+                                        `/${this.props.network
+                                        }/message/${this.props.output.messageId}`)}
+                                    className="margin-r-t"
+                                >
+                                    {this.props.output.messageId}
+                                </button>
+                                <MessageButton
+                                    onClick={() => ClipboardHelper.copy(
+                                        this.props.output.messageId
+                                    )}
+                                    buttonType="copy"
+                                    labelPosition="top"
+                                />
+                            </React.Fragment>
+                        )}
                     </div>
                     <div className="card--label">
                         Transaction Id
                     </div>
                     <div className="card--value row middle">
-                        <span className="margin-r-t">
-                            {this.props.output.transactionId}
-                        </span>
-                        <MessageButton
-                            onClick={() => ClipboardHelper.copy(
-                                this.props.output.transactionId
-                            )}
-                            buttonType="copy"
-                            labelPosition="top"
-                        />
+                        {this.state.isGenesis && (
+                            <span>Genesis</span>
+                        )}
+                        {!this.state.isGenesis && (
+                            <React.Fragment>
+                                <span className="margin-r-t">
+                                    {this.props.output.transactionId}
+                                </span>
+                                <MessageButton
+                                    onClick={() => ClipboardHelper.copy(
+                                        this.props.output.transactionId
+                                    )}
+                                    buttonType="copy"
+                                    labelPosition="top"
+                                />
+                            </React.Fragment>
+                        )}
                     </div>
                     <div className="card--label">
                         Is Spent
