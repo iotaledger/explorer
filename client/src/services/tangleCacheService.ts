@@ -1,15 +1,18 @@
 import { IMessageMetadata } from "@iota/iota2.js";
-import { mamFetch, MamMode } from "@iota/mam.js";
+import { mamFetch as mamFetchChrysalis } from "@iota/mam-chrysalis.js";
+import { mamFetch as mamFetchOg, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
 import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
+import { ProtocolVersion } from "../models/db/protocolVersion";
 import { ICachedTransaction } from "../models/ICachedTransaction";
 import { ApiClient } from "./apiClient";
-import { ApiStreamsV0Client } from "./apiStreamsV0Client";
+import { ChrysalisApiStreamsV0Client } from "./chrysalisApiStreamsV0Client";
 import { NetworkService } from "./networkService";
+import { OgApiStreamsV0Client } from "./ogApiStreamsV0Client";
 
 /**
  * Cache tangle requests.
@@ -186,6 +189,11 @@ export class TangleCacheService {
     };
 
     /**
+     * Protocol versions.
+     */
+    private readonly _networkProtocols: { [network: string]: ProtocolVersion };
+
+    /**
      * Create a new instance of TangleCacheService.
      */
     constructor() {
@@ -195,12 +203,14 @@ export class TangleCacheService {
         this._chrysalisMetadataChildrenCache = {};
         this._addressBalances = {};
         this._streamsV0 = {};
+        this._networkProtocols = {};
 
         this._networkService = ServiceFactory.get<NetworkService>("network");
         const networks = this._networkService.networks();
 
         for (const networkConfig of networks) {
             this._transactionCache[networkConfig.network] = {};
+            this._networkProtocols[networkConfig.network] = networkConfig.protocolVersion;
 
             this._ogCache[networkConfig.network] = {
                 tags: {},
@@ -458,7 +468,7 @@ export class TangleCacheService {
                 if (!response.error) {
                     this._transactionCache[networkId] = this._transactionCache[networkId] || {};
                     this._transactionCache[networkId][hash] = this._transactionCache[networkId][hash] || {};
-                    this._transactionCache[networkId][hash].children = response.hashes;
+                    this._transactionCache[networkId][hash].children = [...new Set(response.hashes)];
                 }
             } catch {
             }
@@ -603,13 +613,13 @@ export class TangleCacheService {
 
     /**
      * Get the payload at the given streams v0 root.
+     * @param network Which network are we getting the transactions for.
      * @param root The root.
      * @param mode The mode for the fetch.
      * @param key The key for the fetch if restricted mode.
-     * @param network Which network are we getting the transactions for.
      * @returns The balance for the address.
      */
-    public async getStreamsV0Packet(root: string, mode: MamMode, key: string, network: string): Promise<{
+    public async getStreamsV0Packet(network: string, root: string, mode: MamMode, key: string): Promise<{
         /**
          * The payload at the given root.
          */
@@ -628,18 +638,34 @@ export class TangleCacheService {
         if (streamsV0Cache) {
             if (!streamsV0Cache[root]) {
                 try {
-                    const api = new ApiStreamsV0Client(network);
+                    if (this._networkProtocols[network] === "og") {
+                        const api = new OgApiStreamsV0Client(network);
 
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const result = await mamFetch(api as any, root, mode, key);
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const result = await mamFetchOg(api as any, root, mode, key);
 
-                    if (result) {
-                        streamsV0Cache[root] = {
-                            payload: result.message,
-                            nextRoot: result.nextRoot,
-                            tag: result.tag,
-                            cached: Date.now()
-                        };
+                        if (result) {
+                            streamsV0Cache[root] = {
+                                payload: result.message,
+                                nextRoot: result.nextRoot,
+                                tag: result.tag,
+                                cached: Date.now()
+                            };
+                        }
+                    } else if (this._networkProtocols[network] === "chrysalis") {
+                        const api = new ChrysalisApiStreamsV0Client(network);
+
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const result = await mamFetchChrysalis(api as any, root, mode, key);
+
+                        if (result) {
+                            streamsV0Cache[root] = {
+                                payload: result.message,
+                                nextRoot: result.nextRoot,
+                                tag: result.tag,
+                                cached: Date.now()
+                            };
+                        }
                     }
                 } catch (err) {
                     console.error(err);

@@ -18,6 +18,7 @@
     "noEmit": true,
     "jsx": "react",
     "forceConsistentCasingInFileNames": true,
+    "downlevelIteration": true,
     "typeRoots": [
       "./typings",
       "./node_modules/@types"

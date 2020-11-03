@@ -6,7 +6,7 @@ import { ApiClient } from "./apiClient";
 /**
  * Class to handle api communications to api for mam.
  */
-export class ApiStreamsV0Client {
+export class OgApiStreamsV0Client {
     /**
      * The base api client.
      */
