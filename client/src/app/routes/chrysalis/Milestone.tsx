@@ -6,6 +6,7 @@ import { DateHelper } from "../../../helpers/dateHelper";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import MessageButton from "../../components/MessageButton";
+import SidePanel from "../../components/SidePanel";
 import "./Milestone.scss";
 import { MilestoneRouteProps } from "./MilestoneRouteProps";
 import { MilestoneState } from "./MilestoneState";
@@ -127,6 +128,7 @@ class Milestone extends AsyncComponent<RouteComponentProps<MilestoneRouteProps>,
                                     </div>
                                 </div>
                             </div>
+                            <SidePanel {...this.props} />
                         </div>
                     </div>
                 </div>

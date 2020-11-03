@@ -8,6 +8,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import Output from "../../components/chrysalis/Output";
 import CurrencyButton from "../../components/CurrencyButton";
+import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
 import ValueButton from "../../components/ValueButton";
 import "./Addr.scss";
@@ -164,6 +165,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </div>
                                     ))}
                             </div>
+                            <SidePanel {...this.props} />
                         </div>
                     </div>
                 </div>

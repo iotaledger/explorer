@@ -5,6 +5,7 @@ import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import MessageButton from "../../components/MessageButton";
+import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
 import "./Indexed.scss";
 import { IndexedRouteProps } from "./IndexedRouteProps";
@@ -132,6 +133,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                     </div>
                                 </div>
                             </div>
+                            <SidePanel {...this.props} />
                         </div>
                     </div>
                 </div>

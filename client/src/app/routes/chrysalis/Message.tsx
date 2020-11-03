@@ -9,6 +9,7 @@ import MilestonePayload from "../../components/chrysalis/MilestonePayload";
 import TransactionPayload from "../../components/chrysalis/TransactionPayload";
 import Confirmation from "../../components/Confirmation";
 import MessageButton from "../../components/MessageButton";
+import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
 import "./Message.scss";
 import { MessageRouteProps } from "./MessageRouteProps";
@@ -296,6 +297,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     </div>
                                 </div>
                             </div>
+                            <SidePanel {...this.props} />
                         </div>
                     </div>
                 </div>

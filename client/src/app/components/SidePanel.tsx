@@ -42,17 +42,19 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
                     <h2>Stats</h2>
                 </div>
                 <div className="card--sections">
-                    <div className="card--section card--section__highlight">
-                        <div className="card--label card--label__highlight padding-t-s">
-                            Transactions Per Second
+                    {this._networkConfig?.protocolVersion === "og" && (
+                        <div className="card--section card--section__highlight">
+                            <div className="card--label card--label__highlight padding-t-s">
+                                Transactions Per Second
+                            </div>
+                            <div className="card--value card--value__large padding-t-s">
+                                {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
+                            </div>
+                            <LineChart
+                                values={this.state.transactionsPerSecondHistory}
+                            />
                         </div>
-                        <div className="card--value card--value__large padding-t-s">
-                            {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
-                        </div>
-                        <LineChart
-                            values={this.state.transactionsPerSecondHistory}
-                        />
-                    </div>
+                    )}
                     <div className="card--section feed">
                         <div className="card--label card--label__underline">
                             Milestones
@@ -70,24 +72,26 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
                         ))}
                         <div className="card--sep" />
                     </div>
-                    <div className="card--section feed">
-                        <div className="card--label card--label__underline">
-                            Transactions
-                        </div>
-                        {this.state.transactions.slice(0, 5).map(tx => (
-                            <div className="row feed-item" key={tx.hash}>
-                                <span className="feed-item--value">
-                                    {UnitsHelper.formatBest(tx.value)}
-                                </span>
-                                <Link
-                                    className="feed-item--hash"
-                                    to={`/${this.props.match.params.network}/transaction/${tx.hash}`}
-                                >
-                                    {tx.hash}
-                                </Link>
+                    {this._networkConfig?.protocolVersion === "og" && (
+                        <div className="card--section feed">
+                            <div className="card--label card--label__underline">
+                                Transactions
                             </div>
-                        ))}
-                    </div>
+                            {this.state.transactions.slice(0, 5).map(tx => (
+                                <div className="row feed-item" key={tx.hash}>
+                                    <span className="feed-item--value">
+                                        {UnitsHelper.formatBest(tx.value)}
+                                    </span>
+                                    <Link
+                                        className="feed-item--hash"
+                                        to={`/${this.props.match.params.network}/transaction/${tx.hash}`}
+                                    >
+                                        {tx.hash}
+                                    </Link>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         );
