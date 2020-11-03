@@ -17,6 +17,7 @@
   font-family: $metropolis;
   font-weight: bold;
   white-space: nowrap;
+  cursor: pointer;
 
   &.confirmation__confirmed {
     background-color: #73b183;
