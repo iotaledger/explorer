@@ -1,10 +1,11 @@
-import React, { Component, ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import { ProtocolVersion } from "../../models/db/protocolVersion";
 import { NetworkService } from "../../services/networkService";
 import { TangleCacheService } from "../../services/tangleCacheService";
+import AsyncComponent from "../components/AsyncComponent";
 import Spinner from "../components/Spinner";
 import "./Search.scss";
 import { SearchRouteProps } from "./SearchRouteProps";
@@ -13,7 +14,7 @@ import { SearchState } from "./SearchState";
 /**
  * Component which will show the search page.
  */
-class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchState> {
+class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, SearchState> {
     /**
      * API Client for tangle requests.
      */
@@ -45,6 +46,7 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
      * The component mounted.
      */
     public componentDidMount(): void {
+        super.componentDidMount();
         window.scrollTo(0, 0);
 
         this.updateState();
@@ -101,14 +103,14 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
                                                     or indexes for the query.
                                                 </p>
                                                 <br />
-                                                <p className="card--value">
+                                                <div className="card--value">
                                                     <ul>
                                                         <li>
                                                             <span>Query</span>
                                                             <span>{this.props.match.params.query}</span>
                                                         </li>
                                                     </ul>
-                                                </p>
+                                                </div>
                                                 <br />
                                                 <p>The following formats are supported:</p>
                                                 <br />
@@ -227,37 +229,40 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
                     } else if (query.length === 81) {
                         status = "Detecting hash type...";
                         statusBusy = true;
-                        setTimeout(
-                            async () => {
-                                const { hashType } = await this._tangleCacheService.findTransactionHashes(
-                                    this.props.match.params.network,
-                                    undefined,
-                                    query
-                                );
+                        if (this._isMounted) {
+                            setImmediate(
+                                async () => {
+                                    if (this._isMounted) {
+                                        const { hashType } = await this._tangleCacheService.findTransactionHashes(
+                                            this.props.match.params.network,
+                                            undefined,
+                                            query
+                                        );
 
-                                if (hashType) {
-                                    let ht = "";
-                                    if (hashType === "addresses") {
-                                        ht = "address";
-                                    } else if (hashType === "bundles") {
-                                        ht = "bundle";
-                                    } else if (hashType === "transaction") {
-                                        ht = "transaction";
+                                        if (hashType) {
+                                            let ht = "";
+                                            if (hashType === "addresses") {
+                                                ht = "address";
+                                            } else if (hashType === "bundles") {
+                                                ht = "bundle";
+                                            } else if (hashType === "transaction") {
+                                                ht = "transaction";
+                                            }
+                                            this.setState({
+                                                status: "",
+                                                statusBusy: false,
+                                                redirect: `/${this.props.match.params.network}/${ht}/${query}`
+                                            });
+                                        } else {
+                                            this.setState({
+                                                completion: "notFound",
+                                                status: "",
+                                                statusBusy: false
+                                            });
+                                        }
                                     }
-                                    this.setState({
-                                        status: "",
-                                        statusBusy: false,
-                                        redirect: `/${this.props.match.params.network}/${ht}/${query}`
-                                    });
-                                } else {
-                                    this.setState({
-                                        completion: "notFound",
-                                        status: "",
-                                        statusBusy: false
-                                    });
-                                }
-                            },
-                            0);
+                                });
+                        }
                     } else {
                         invalidError = `the hash length ${query.length} is not valid`;
                         completion = "invalid";
@@ -269,42 +274,45 @@ class Search extends Component<RouteComponentProps<SearchRouteProps>, SearchStat
             } else if (this.state.protocolVersion === "chrysalis") {
                 status = "Detecting query type...";
                 statusBusy = true;
-                setTimeout(
-                    async () => {
-                        const response = await this._tangleCacheService.search(
-                            this.props.match.params.network,
-                            query
-                        );
+                if (this._isMounted) {
+                    setImmediate(
+                        async () => {
+                            if (this._isMounted) {
+                                const response = await this._tangleCacheService.search(
+                                    this.props.match.params.network,
+                                    query
+                                );
 
-                        if (response) {
-                            let objType = "";
-                            let objParam = query;
-                            if (response.message) {
-                                objType = "message";
-                            } else if (response.address) {
-                                objType = "addr";
-                            } else if (response.indexMessageIds) {
-                                objType = "indexed";
-                            } else if (response.output) {
-                                objType = "message";
-                                objParam = response.output.messageId;
-                            } else if (response.milestone) {
-                                objType = "milestone";
+                                if (response) {
+                                    let objType = "";
+                                    let objParam = query;
+                                    if (response.message) {
+                                        objType = "message";
+                                    } else if (response.address) {
+                                        objType = "addr";
+                                    } else if (response.indexMessageIds) {
+                                        objType = "indexed";
+                                    } else if (response.output) {
+                                        objType = "message";
+                                        objParam = response.output.messageId;
+                                    } else if (response.milestone) {
+                                        objType = "milestone";
+                                    }
+                                    this.setState({
+                                        status: "",
+                                        statusBusy: false,
+                                        redirect: `/${this.props.match.params.network}/${objType}/${objParam}`
+                                    });
+                                } else {
+                                    this.setState({
+                                        completion: "notFound",
+                                        status: "",
+                                        statusBusy: false
+                                    });
+                                }
                             }
-                            this.setState({
-                                status: "",
-                                statusBusy: false,
-                                redirect: `/${this.props.match.params.network}/${objType}/${objParam}`
-                            });
-                        } else {
-                            this.setState({
-                                completion: "notFound",
-                                status: "",
-                                statusBusy: false
-                            });
-                        }
-                    },
-                    0);
+                        });
+                }
             }
         } else {
             invalidError = "the query is empty";

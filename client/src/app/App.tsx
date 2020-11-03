@@ -412,7 +412,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                         PaletteHelper.setPalette(config.primaryColor, config.secondaryColor);
                     }
                     if (!this.props.location.pathname.startsWith(`/${network}`) && updateLocation) {
-                        window.history.replaceState(undefined, window.document.title, `/${network}`);
+                        this.props.history.replace(`/${network}`);
                     }
                     window.scrollTo({
                         left: 0,
