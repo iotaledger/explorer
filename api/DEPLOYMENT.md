@@ -65,7 +65,7 @@ e.g. `../.local-storage/network/mainnet.json`
     "provider": "https://nodes.iota.cafe:443",
     "depth": 3,
     "mwm": 14,
-    "zmqEndpoint": "tcp://zmq.iota.org:5556",
+    "feedEndpoint": "tcp://zmq.iota.org:5556",
     "coordinatorAddress": "UDYXTZBE9GZGPM9SSQV9LTZNDLJIZMPUVVXYXFYVBLIEUHLSEWFTKZZLXYRHHWVQV9MNNX9KZC9D9UZWZ",
     "coordinatorSecurityLevel": 2,
     "primaryColor": "#131F37",

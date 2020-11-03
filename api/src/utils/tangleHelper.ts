@@ -1,8 +1,11 @@
-import { composeAPI } from "@iota/core";
+import { composeAPI, Transaction } from "@iota/core";
+import { Bech32Helper, Converter, SingleNodeClient } from "@iota/iota2.js";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
-import { ITransactionsCursor } from "../models/api/ITransactionsCursor";
-import { TransactionsGetMode } from "../models/api/transactionsGetMode";
+import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
+import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
+import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
 import { INetwork } from "../models/db/INetwork";
 
 /**
@@ -183,7 +186,7 @@ export class TangleHelper {
                     provider: network.provider
                 });
 
-                const statesResponse = await api.getInclusionStates(missingState.map(a => a.hash), []);
+                const statesResponse = await api.getInclusionStates(missingState.map(a => a.hash));
                 if (statesResponse) {
                     for (let i = 0; i < statesResponse.length; i++) {
                         missingState[i].milestoneIndex = statesResponse[i] ? 1 : 0;
@@ -198,5 +201,201 @@ export class TangleHelper {
             trytes: allTrytes.map(t => t.trytes || "9".repeat(2673)),
             milestoneIndexes: allTrytes.map(t => t.milestoneIndex ?? 0)
         };
+    }
+
+    /**
+     * Can we promote the tranaction.
+     * @param network The network to use.
+     * @param tailHash The hash.
+     * @returns True if the transaction is promotable.
+     */
+    public static async canPromoteTransaction(
+        network: INetwork,
+        tailHash: string): Promise<boolean> {
+        try {
+            const api = composeAPI({
+                provider: network.provider
+            });
+
+            const result = await api.isPromotable(
+                tailHash
+            );
+            return result as boolean;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * Promote the tranaction.
+     * @param network The network to use.
+     * @param tailHash The hash.
+     * @returns Hash if the transaction was promoted.
+     */
+    public static async promoteTransaction(
+        network: INetwork,
+        tailHash: string): Promise<string | undefined> {
+        try {
+            const api = composeAPI({
+                provider: network.provider
+            });
+
+            const response = await api.promoteTransaction(
+                tailHash,
+                network.depth,
+                network.mwm
+            );
+
+            if (Array.isArray(response) && response.length > 0) {
+                const txs = response[0] as Transaction[];
+                return txs.length > 0 ? txs[0].hash : undefined;
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    /**
+     * Replay the tranaction.
+     * @param network The network to use.
+     * @param tailHash The hash.
+     * @returns True if the transaction was promoted.
+     */
+    public static async replayBundle(
+        network: INetwork,
+        tailHash: string): Promise<string | undefined> {
+        try {
+            const api = composeAPI({
+                provider: network.provider
+            });
+
+            const response = await api.replayBundle(
+                tailHash,
+                network.depth,
+                network.mwm
+            );
+            if (Array.isArray(response) && response.length > 0) {
+                return response[0].hash as string;
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    /**
+     * Get the balance for an address.
+     * @param network Which network are we getting the address details for.
+     * @param addressHash The addresss hash to get the balance.
+     * @returns The balance for the address.
+     */
+    public static async getAddressBalance(
+        network: INetwork,
+        addressHash: string): Promise<number> {
+        try {
+            const api = composeAPI({
+                provider: network.provider
+            });
+
+            const response = await api.getBalances([addressHash]);
+            if (response?.balances && response?.balance.length > 0) {
+                return response?.balance[0] as number;
+            }
+        } catch (err) {
+            console.error(err);
+        }
+
+        return 0;
+    }
+
+    /**
+     * Find item on the chrysalis network.
+     * @param network The network to find the items on.
+     * @param query The query to use for finding items.
+     * @returns The item found.
+     */
+    public static async search(network: INetwork, query: string): Promise<ISearchResponse> {
+        const client = new SingleNodeClient(network.provider);
+
+        try {
+            if (/^\d+$/.test(query)) {
+                const milestone = await client.milestone(Number.parseInt(query, 10));
+
+                return {
+                    milestone
+                };
+            }
+        } catch { }
+
+        try {
+            const message = await client.message(query);
+
+            return {
+                message
+            };
+        } catch { }
+
+        try {
+            const messages = await client.messagesFind(query);
+
+            if (messages.count > 0) {
+                return {
+                    indexMessageIds: messages.messageIds
+                };
+            }
+        } catch { }
+
+        try {
+            let addr = query;
+
+            try {
+                // Hornet doesn't yet support bech32 lookup
+                // so convert to regular hex format here
+                const parts = Bech32Helper.fromBech32(query);
+                if (parts && parts.addressType === 1) {
+                    addr = Converter.bytesToHex(parts.addressBytes);
+                }
+            } catch { }
+
+            const address = await client.address(addr);
+
+            if (address.count > 0) {
+                const addressOutputs = await client.addressOutputs(addr);
+
+                return {
+                    address,
+                    addressOutputIds: addressOutputs.outputIds
+                };
+            }
+        } catch { }
+
+        try {
+            const output = await client.output(query);
+
+            return {
+                output
+            };
+        } catch { }
+
+        return {};
+    }
+
+    /**
+     * Get the message details.
+     * @param network The network to find the items on.
+     * @param messageId The message id to get the details.
+     * @returns The item details.
+     */
+    public static async messageDetails(network: INetwork, messageId: string): Promise<IMessageDetailsResponse> {
+        const client = new SingleNodeClient(network.provider);
+
+        try {
+            const metadata = await client.messageMetadata(messageId);
+            const children = await client.messageChildren(messageId);
+
+            return {
+                metadata,
+                childrenMessageIds: children ? children.childrenMessageIds : undefined
+            };
+        } catch { }
     }
 }

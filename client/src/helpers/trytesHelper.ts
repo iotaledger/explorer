@@ -130,4 +130,22 @@ export class TrytesHelper {
         }
         return mwm;
     }
+
+    /**
+     * Is the string trytes of any length.
+     * @param trytes The trytes to test.
+     * @returns True if it is trytes.
+     */
+    public static isTrytes(trytes: string): boolean {
+        return /^[9A-Z]+$/.test(trytes);
+    }
+
+    /**
+     * Is the string trytes all 9s.
+     * @param trytes The trytes to test.
+     * @returns True if it is trytes.
+     */
+    public static isEmpty(trytes: string): boolean {
+        return /^9*$/.test(trytes);
+    }
 }

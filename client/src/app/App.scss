@@ -1,3 +1,7 @@
+@import '../scss/fonts';
+@import '../scss/media-queries';
+@import '../scss/mixins';
+
 .app {
   display: flex;
   flex: 1;
@@ -6,5 +10,17 @@
   .content {
     flex: 1;
     min-height: 300px;
+  }
+
+  .maintenance {
+    display: flex;
+    justify-content: center;
+    margin: 100px 0px;
+
+    .maintenance-inner {
+      @include font-size(18px);
+      max-width: $desktop-width;
+      font-family: $metropolis;
+    }
   }
 }

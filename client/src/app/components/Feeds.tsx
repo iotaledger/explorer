@@ -1,8 +1,10 @@
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedTransaction } from "../../models/api/IFeedTransaction";
+import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
+import { INetwork } from "../../models/db/INetwork";
 import { FeedClient } from "../../services/feedClient";
 import { MilestonesClient } from "../../services/milestonesClient";
+import { NetworkService } from "../../services/networkService";
 import Currency from "./Currency";
 import { FeedsState } from "./FeedsState";
 
@@ -36,13 +38,17 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     protected _timerId?: NodeJS.Timer;
 
     /**
+     * The network configuration;
+     */
+    protected _networkConfig: INetwork | undefined;
+
+    /**
      * The component mounted.
      */
     public componentDidMount(): void {
         super.componentDidMount();
 
-        this.buildTransactions();
-        this.buildMilestones();
+        this.initNetworkServices();
     }
 
     /**
@@ -57,10 +63,9 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
         if (this.props.match.params.network !== prevProps.match.params.network) {
             this.closeTransactions();
-            this.buildTransactions();
-
             this.closeMilestones();
-            this.buildMilestones();
+
+            this.initNetworkServices();
         }
     }
 
@@ -247,6 +252,21 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             }
             this.milestonesUpdated(milestones);
         }
+    }
+
+    /**
+     * Initialise the services for the network.
+     */
+    private initNetworkServices(): void {
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        this._networkConfig = this.props.match.params.network
+            ? networkService.get(this.props.match.params.network)
+            : undefined;
+
+        if (this._networkConfig?.protocolVersion === "og") {
+            this.buildTransactions();
+        }
+        this.buildMilestones();
     }
 }
 

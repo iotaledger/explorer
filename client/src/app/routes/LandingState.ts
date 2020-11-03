@@ -1,4 +1,5 @@
 import { Unit } from "@iota/unit-converter";
+import { INetwork } from "../../models/db/INetwork";
 import { ValueFilter } from "../../models/services/valueFilter";
 import { CurrencyState } from "../components/CurrencyState";
 import { FeedsState } from "../components/FeedsState";
@@ -7,17 +8,7 @@ export interface LandingState extends CurrencyState, FeedsState {
     /**
      * The name of the network.
      */
-    networkLabel: string;
-
-    /**
-     * The description of the network.
-     */
-    networkDescription: string;
-
-    /**
-     * The network is enabled.
-     */
-    networkIsEnabled?: boolean;
+    networkConfig: INetwork;
 
     /**
      * The market cap in eur.
@@ -82,9 +73,4 @@ export interface LandingState extends CurrencyState, FeedsState {
          */
         value: number;
     }[];
-
-    /**
-     * Show the market data.
-     */
-    showMarket: boolean;
 }

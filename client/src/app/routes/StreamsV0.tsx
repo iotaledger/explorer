@@ -385,7 +385,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
     private async loadNextPacket(force?: boolean): Promise<void> {
         if (this._nextRoot && (this._updateTimer || force) && this.state.statusBusy) {
             const packet = await this._tangleCacheService.getStreamsV0Packet(
-                this._nextRoot, this.state.mode, this.state.sideKey, this.props.match.params.network);
+                this.props.match.params.network, this._nextRoot, this.state.mode, this.state.sideKey);
 
             if (packet) {
                 const packets = this.state.packets;

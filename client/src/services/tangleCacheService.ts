@@ -1,14 +1,18 @@
-import { composeAPI, Transaction } from "@iota/core";
-import { mamFetch, MamMode } from "@iota/mam.js";
+import { IMessageMetadata } from "@iota/iota2.js";
+import { mamFetch as mamFetchChrysalis } from "@iota/mam-chrysalis.js";
+import { mamFetch as mamFetchOg, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
-import { isEmpty } from "@iota/validators";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { ITransactionsCursor } from "../models/api/ITransactionsCursor";
-import { TransactionsGetMode } from "../models/api/transactionsGetMode";
+import { TrytesHelper } from "../helpers/trytesHelper";
+import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
+import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
+import { ProtocolVersion } from "../models/db/protocolVersion";
 import { ICachedTransaction } from "../models/ICachedTransaction";
 import { ApiClient } from "./apiClient";
-import { ApiStreamsV0Client } from "./apiStreamsV0Client";
+import { ChrysalisApiStreamsV0Client } from "./chrysalisApiStreamsV0Client";
 import { NetworkService } from "./networkService";
+import { OgApiStreamsV0Client } from "./ogApiStreamsV0Client";
 
 /**
  * Cache tangle requests.
@@ -42,7 +46,7 @@ export class TangleCacheService {
     /**
      * Find transaction results.
      */
-    private readonly _findCache: {
+    private readonly _ogCache: {
         /**
          * Network.
          */
@@ -130,26 +134,93 @@ export class TangleCacheService {
     };
 
     /**
+     * Chrysalis Search results.
+     */
+    private readonly _chrysalisSearchCache: {
+        /**
+         * Network.
+         */
+        [network: string]: {
+            /**
+             * The query type.
+             */
+            [query: string]: {
+                /**
+                 * Search response.
+                 */
+                data?: ISearchResponse;
+
+                /**
+                 * The time of cache.
+                 */
+                cached: number;
+            };
+        };
+    };
+
+    /**
+     * Chrysalis Metadata results.
+     */
+    private readonly _chrysalisMetadataChildrenCache: {
+        /**
+         * Network.
+         */
+        [network: string]: {
+            /**
+             * The query type.
+             */
+            [query: string]: {
+                /**
+                 * Metadata response.
+                 */
+                metadata?: IMessageMetadata;
+
+                /**
+                 * Childen ids.
+                 */
+                childrenIds?: string[];
+
+                /**
+                 * The time of cache.
+                 */
+                cached: number;
+            };
+        };
+    };
+
+    /**
+     * Protocol versions.
+     */
+    private readonly _networkProtocols: { [network: string]: ProtocolVersion };
+
+    /**
      * Create a new instance of TangleCacheService.
      */
     constructor() {
         this._transactionCache = {};
-        this._findCache = {};
+        this._ogCache = {};
+        this._chrysalisSearchCache = {};
+        this._chrysalisMetadataChildrenCache = {};
         this._addressBalances = {};
         this._streamsV0 = {};
+        this._networkProtocols = {};
 
         this._networkService = ServiceFactory.get<NetworkService>("network");
         const networks = this._networkService.networks();
 
         for (const networkConfig of networks) {
             this._transactionCache[networkConfig.network] = {};
+            this._networkProtocols[networkConfig.network] = networkConfig.protocolVersion;
 
-            this._findCache[networkConfig.network] = {
+            this._ogCache[networkConfig.network] = {
                 tags: {},
                 addresses: {},
                 bundles: {},
                 transaction: {}
             };
+
+            this._chrysalisSearchCache[networkConfig.network] = {};
+            this._chrysalisMetadataChildrenCache[networkConfig.network] = {};
 
             this._addressBalances[networkConfig.network] = {};
             this._streamsV0[networkConfig.network] = {};
@@ -192,7 +263,7 @@ export class TangleCacheService {
         let doLookup = true;
         let cursor: ITransactionsCursor = {};
 
-        const findCache = this._findCache[networkId];
+        const findCache = this._ogCache[networkId];
         const tranCache = this._transactionCache[networkId];
 
         if (findCache && nextCursor === undefined) {
@@ -328,7 +399,7 @@ export class TangleCacheService {
                                 timestamp,
                                 attachmentTimestamp
                             };
-                            tranCache[unknownHash].isEmpty = isEmpty(response.trytes[i]);
+                            tranCache[unknownHash].isEmpty = TrytesHelper.isEmpty(response.trytes[i]);
 
                             if (response.milestoneIndexes[i] === 0) {
                                 tranCache[unknownHash].confirmationState = "pending";
@@ -397,7 +468,7 @@ export class TangleCacheService {
                 if (!response.error) {
                     this._transactionCache[networkId] = this._transactionCache[networkId] || {};
                     this._transactionCache[networkId][hash] = this._transactionCache[networkId][hash] || {};
-                    this._transactionCache[networkId][hash].children = response.hashes;
+                    this._transactionCache[networkId][hash].children = [...new Set(response.hashes)];
                 }
             } catch {
             }
@@ -474,25 +545,17 @@ export class TangleCacheService {
             if (!addrBalance[addressHash] ||
                 now - addrBalance[addressHash].balance > 30000) {
                 try {
-                    const networkConfig = this._networkService.get(networkId);
+                    const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-                    if (networkConfig) {
-                        const api = composeAPI({
-                            provider: networkConfig.provider
-                        });
+                    const response = await apiClient.addressGet({
+                        network: networkId,
+                        hash: addressHash
+                    });
 
-                        const response = await api.getBalances([addressHash]);
-                        if (response?.balances) {
-                            let balance = 0;
-                            for (let i = 0; i < response.balances.length; i++) {
-                                balance += response.balances[i];
-                            }
-                            addrBalance[addressHash] = {
-                                balance,
-                                cached: now
-                            };
-                        }
-                    }
+                    addrBalance[addressHash] = {
+                        balance: response.balance ?? 0,
+                        cached: now
+                    };
                 } catch (err) {
                     console.error(err);
                 }
@@ -550,13 +613,13 @@ export class TangleCacheService {
 
     /**
      * Get the payload at the given streams v0 root.
+     * @param network Which network are we getting the transactions for.
      * @param root The root.
      * @param mode The mode for the fetch.
      * @param key The key for the fetch if restricted mode.
-     * @param network Which network are we getting the transactions for.
      * @returns The balance for the address.
      */
-    public async getStreamsV0Packet(root: string, mode: MamMode, key: string, network: string): Promise<{
+    public async getStreamsV0Packet(network: string, root: string, mode: MamMode, key: string): Promise<{
         /**
          * The payload at the given root.
          */
@@ -575,18 +638,34 @@ export class TangleCacheService {
         if (streamsV0Cache) {
             if (!streamsV0Cache[root]) {
                 try {
-                    const api = new ApiStreamsV0Client(network);
+                    if (this._networkProtocols[network] === "og") {
+                        const api = new OgApiStreamsV0Client(network);
 
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const result = await mamFetch(api as any, root, mode, key);
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const result = await mamFetchOg(api as any, root, mode, key);
 
-                    if (result) {
-                        streamsV0Cache[root] = {
-                            payload: result.message,
-                            nextRoot: result.nextRoot,
-                            tag: result.tag,
-                            cached: Date.now()
-                        };
+                        if (result) {
+                            streamsV0Cache[root] = {
+                                payload: result.message,
+                                nextRoot: result.nextRoot,
+                                tag: result.tag,
+                                cached: Date.now()
+                            };
+                        }
+                    } else if (this._networkProtocols[network] === "chrysalis") {
+                        const api = new ChrysalisApiStreamsV0Client(network);
+
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const result = await mamFetchChrysalis(api as any, root, mode, key);
+
+                        if (result) {
+                            streamsV0Cache[root] = {
+                                payload: result.message,
+                                nextRoot: result.nextRoot,
+                                tag: result.tag,
+                                cached: Date.now()
+                            };
+                        }
                     }
                 } catch (err) {
                     console.error(err);
@@ -607,19 +686,15 @@ export class TangleCacheService {
         networkId: string,
         tailHash: string): Promise<boolean> {
         try {
-            const networkConfig = this._networkService.get(networkId);
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-            if (networkConfig) {
-                const api = composeAPI({
-                    provider: networkConfig.provider
-                });
+            const response = await apiClient.transactionAction({
+                network: networkId,
+                action: "isPromotable",
+                hash: tailHash
+            });
 
-                return await api.isPromotable(
-                    tailHash
-                );
-            }
-
-            return false;
+            return response.result === "yes";
         } catch {
             return false;
         }
@@ -633,25 +708,17 @@ export class TangleCacheService {
      */
     public async promoteTransaction(
         networkId: string,
-        tailHash: string): Promise<Transaction[] | undefined> {
+        tailHash: string): Promise<string | undefined> {
         try {
-            const networkConfig = this._networkService.get(networkId);
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-            if (networkConfig) {
-                const api = composeAPI({
-                    provider: networkConfig.provider
-                });
+            const response = await apiClient.transactionAction({
+                network: networkId,
+                action: "promote",
+                hash: tailHash
+            });
 
-                const response = await api.promoteTransaction(
-                    tailHash,
-                    networkConfig.depth,
-                    networkConfig.mwm
-                );
-
-                if (Array.isArray(response) && response.length > 0) {
-                    return response[0] as Transaction[];
-                }
-            }
+            return response.result;
         } catch (err) {
             console.log(err);
         }
@@ -665,24 +732,91 @@ export class TangleCacheService {
      */
     public async replayBundle(
         networkId: string,
-        tailHash: string): Promise<readonly Transaction[] | undefined> {
+        tailHash: string): Promise<string | undefined> {
         try {
-            const networkConfig = this._networkService.get(networkId);
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-            if (networkConfig) {
-                const api = composeAPI({
-                    provider: networkConfig.provider
-                });
+            const response = await apiClient.transactionAction({
+                network: networkId,
+                action: "replay",
+                hash: tailHash
+            });
 
-                return await api.replayBundle(
-                    tailHash,
-                    networkConfig.depth,
-                    networkConfig.mwm
-                );
-            }
+            return response.result;
         } catch (err) {
             console.log(err);
         }
+    }
+
+    /**
+     * Search for items on the network.
+     * @param networkId The network to search
+     * @param query The query to searh for.
+     * @returns The search response.
+     */
+    public async search(networkId: string, query: string): Promise<ISearchResponse | undefined> {
+        if (!this._chrysalisSearchCache[networkId][query]) {
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
+
+            const response = await apiClient.search({
+                network: networkId,
+                query
+            });
+
+            if (response.address ||
+                response.message ||
+                response.indexMessageIds ||
+                response.milestone ||
+                response.output) {
+                this._chrysalisSearchCache[networkId][query] = {
+                    data: response,
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._chrysalisSearchCache[networkId][query]?.data;
+    }
+
+    /**
+     * Get the message metadata.
+     * @param network The network to search
+     * @param messageId The message if to get the metadata for.
+     * @param fields The fields to retrieve.
+     * @param force Bypass the cache.
+     * @returns The details response.
+     */
+    public async messageDetails(
+        network: string,
+        messageId: string,
+        fields: "metadata" | "children" | "all",
+        force?: boolean): Promise<{
+            metadata?: IMessageMetadata;
+            childrenIds?: string[];
+        }> {
+        if (!this._chrysalisMetadataChildrenCache[network][messageId] || force) {
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
+
+            const response = await apiClient.messageDetails({ network, messageId, fields });
+
+            if (response) {
+                this._chrysalisMetadataChildrenCache[network][messageId] =
+                    this._chrysalisMetadataChildrenCache[network][messageId] || {
+                        cached: Date.now()
+                    };
+                if (fields === "metadata" || fields === "all") {
+                    this._chrysalisMetadataChildrenCache[network][messageId].metadata = response.metadata;
+                }
+                if (fields === "children" || fields === "all") {
+                    this._chrysalisMetadataChildrenCache[network][messageId].childrenIds = response.childrenMessageIds;
+                }
+            }
+        }
+
+        return {
+            metadata: this._chrysalisMetadataChildrenCache[network][messageId]?.metadata,
+            childrenIds: this._chrysalisMetadataChildrenCache[network][messageId]?.childrenIds
+        };
     }
 
     /**
@@ -702,8 +836,8 @@ export class TangleCacheService {
             }
         }
 
-        for (const net in this._findCache) {
-            const findCache = this._findCache[net];
+        for (const net in this._ogCache) {
+            const findCache = this._ogCache[net];
             if (findCache) {
                 for (const hashType in findCache) {
                     const hashCache = findCache[hashType as TransactionsGetMode];
@@ -725,6 +859,28 @@ export class TangleCacheService {
                 for (const address in addrBalance) {
                     if (now - addrBalance[address].cached >= this.STALE_TIME) {
                         delete addrBalance[address];
+                    }
+                }
+            }
+        }
+
+        for (const net in this._chrysalisSearchCache) {
+            const queries = this._chrysalisSearchCache[net];
+            if (queries) {
+                for (const query in queries) {
+                    if (now - queries[query].cached >= this.STALE_TIME) {
+                        delete queries[query];
+                    }
+                }
+            }
+        }
+
+        for (const net in this._chrysalisMetadataChildrenCache) {
+            const messageIds = this._chrysalisMetadataChildrenCache[net];
+            if (messageIds) {
+                for (const messageId in messageIds) {
+                    if (now - messageIds[messageId].cached >= this.STALE_TIME) {
+                        delete messageIds[messageId];
                     }
                 }
             }

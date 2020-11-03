@@ -1,4 +1,11 @@
+import { ProtocolVersion } from "../../models/db/protocolVersion";
+
 export interface SearchState {
+    /**
+     * The version of the protocol.
+     */
+    protocolVersion: ProtocolVersion;
+
     /**
      * Is the component busy.
      */

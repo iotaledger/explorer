@@ -2,9 +2,9 @@ import SocketIOClient from "socket.io-client";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { IFeedSubscribeRequest } from "../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../models/api/IFeedSubscribeResponse";
-import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
-import { IFeedTransaction } from "../models/api/IFeedTransaction";
 import { IFeedUnsubscribeRequest } from "../models/api/IFeedUnsubscribeRequest";
+import { IFeedSubscriptionMessage } from "../models/api/og/IFeedSubscriptionMessage";
+import { IFeedTransaction } from "../models/api/og/IFeedTransaction";
 
 /**
  * Class to handle api communications.

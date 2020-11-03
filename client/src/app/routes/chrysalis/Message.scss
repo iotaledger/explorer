@@ -1,0 +1,57 @@
+@import '../../../scss/fonts';
+@import '../../../scss/mixins';
+@import '../../../scss/media-queries';
+@import '../../../scss/variables';
+
+.message {
+  display: flex;
+  flex-direction: column;
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+
+    .inner {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      max-width: $desktop-width;
+      margin: 40px 20px;
+
+      @include desktop-down {
+        max-width: 100%;
+        padding-right: 20px;
+        padding-left: 20px;
+
+        > .row {
+          flex-direction: column;
+        }
+      }
+
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      .cards {
+        flex: 1;
+        margin-right: 24px;
+
+        @include desktop-down {
+          flex: unset;
+          width: 100%;
+          margin-right: 0px;
+        }
+      }
+
+      .card + .card {
+        margin-top: 23px;
+      }
+
+      .transaction-payload-wrapper {
+        margin-top: 23px;
+        margin-bottom: 23px;
+      }
+    }
+  }
+}

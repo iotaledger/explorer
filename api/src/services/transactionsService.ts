@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../factories/serviceFactory";
-import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
-import { IFeedTransaction } from "../models/api/IFeedTransaction";
+import { IFeedSubscriptionMessage } from "../models/api/og/IFeedSubscriptionMessage";
+import { IFeedTransaction } from "../models/api/og/IFeedTransaction";
 import { ISn } from "../models/zmq/ISn";
 import { ITx } from "../models/zmq/ITx";
 import { ZmqService } from "./zmqService";

@@ -17,6 +17,11 @@
     align-items: center;
   }
 
+  h3 {
+    display: flex;
+    align-items: center;
+  }
+
   .card--header-count {
     @include font-size(12px);
 
@@ -69,6 +74,7 @@
       margin: 20px 20px 0 20px;
     }
 
+
     &.card--header__space-between {
       justify-content: space-between;
     }
@@ -94,6 +100,10 @@
     @include phone-down {
       padding: 15px 20px;
     }
+  }
+
+  .card--inline-row + .card--inline-row {
+    margin-top: 23px;
   }
 
   .card--action {
@@ -216,6 +226,13 @@
       &.card--value-textarea__ascii {
         max-height: 350px;
         white-space: pre-wrap;
+      }
+
+      &.card--value-textarea__hex {
+        max-height: 350px;
+        font-family: 'Courier New', Courier, monospace;
+        white-space: pre-wrap;
+        word-break: break-word;
       }
 
       &.card--value-textarea__json {

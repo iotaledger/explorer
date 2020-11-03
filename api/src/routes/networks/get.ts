@@ -20,7 +20,10 @@ export async function get(config: IConfiguration): Promise<INetworkGetResponse> 
                 const copy = { ...n };
                 // We don't want to make these public
                 delete copy.permaNodeEndpoint;
-                delete copy.zmqEndpoint;
+                delete copy.feedEndpoint;
+                delete copy.mwm;
+                delete copy.depth;
+                delete copy.provider;
                 return copy;
             })
             .sort((a, b) => a.order - b.order)

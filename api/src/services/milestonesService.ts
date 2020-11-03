@@ -1,9 +1,7 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IMilestoneStore } from "../models/db/IMilestoneStore";
+import { IFeedService } from "../models/services/IFeedService";
 import { IStorageService } from "../models/services/IStorageService";
-import { IAddress } from "../models/zmq/IAddress";
-import { NetworkService } from "./networkService";
-import { ZmqService } from "./zmqService";
 
 /**
  * Class to handle milestones service.
@@ -15,9 +13,9 @@ export class MilestonesService {
     private readonly _networkId: string;
 
     /**
-     * The zmq service.
+     * The feed service.
      */
-    private _zmqService: ZmqService;
+    private _feedService: IFeedService;
 
     /**
      * The milestone store service.
@@ -70,7 +68,7 @@ export class MilestonesService {
      * Initialise the milestones.
      */
     public async init(): Promise<void> {
-        this._zmqService = ServiceFactory.get<ZmqService>(`zmq-${this._networkId}`);
+        this._feedService = ServiceFactory.get<IFeedService>(`feed-${this._networkId}`);
         this._milestones = [];
 
         this._milestoneStorageService = ServiceFactory.get<IStorageService<IMilestoneStore>>("milestone-storage");
@@ -121,40 +119,31 @@ export class MilestonesService {
      * Initialise network.
      */
     private async initNetwork(): Promise<void> {
-        const networkService = ServiceFactory.get<NetworkService>("network");
+        this._subscriptionAddressId = this._feedService.subscribeMilestones(
+            async (milestoneIndex: number, hash: string) => {
+                this._lastUpdate = Date.now();
 
-        if (networkService) {
-            const networkConfig = await networkService.get(this._networkId);
+                if ((this._milestones.length === 0 ||
+                    milestoneIndex > this._milestones[0].milestoneIndex) &&
+                    this._milestones
+                        .findIndex(p => p.milestoneIndex === milestoneIndex) === -1) {
+                    this._milestones.unshift({
+                        hash,
+                        milestoneIndex
+                    });
 
-            this._subscriptionAddressId = this._zmqService.subscribeAddress(
-                networkConfig.coordinatorAddress,
-                async (evnt: string, message: IAddress) => {
-                    if (message.address === networkConfig.coordinatorAddress) {
-                        this._lastUpdate = Date.now();
+                    this._milestones = this._milestones.slice(0, 100);
 
-                        if ((this._milestones.length === 0 ||
-                            message.milestoneIndex > this._milestones[0].milestoneIndex) &&
-                            this._milestones
-                                .findIndex(p => p.milestoneIndex === message.milestoneIndex) === -1) {
-                            this._milestones.unshift({
-                                hash: message.transaction,
-                                milestoneIndex: message.milestoneIndex
-                            });
-
-                            this._milestones = this._milestones.slice(0, 100);
-
-                            if (this._milestoneStorageService) {
-                                this._milestoneStorageService.set({
-                                    network: this._networkId,
-                                    indexes: this._milestones
-                                }).catch(err => {
-                                    console.error(`Failed writing ${this._networkId} milestone store`, err);
-                                });
-                            }
-                        }
+                    if (this._milestoneStorageService) {
+                        this._milestoneStorageService.set({
+                            network: this._networkId,
+                            indexes: this._milestones
+                        }).catch(err => {
+                            console.error(`Failed writing ${this._networkId} milestone store`, err);
+                        });
                     }
-                });
-        }
+                }
+            });
     }
 
     /**
@@ -162,7 +151,7 @@ export class MilestonesService {
      */
     private closeNetwork(): void {
         if (this._subscriptionAddressId) {
-            this._zmqService.unsubscribe(this._subscriptionAddressId);
+            this._feedService.unsubscribe(this._subscriptionAddressId);
             this._subscriptionAddressId = undefined;
         }
     }

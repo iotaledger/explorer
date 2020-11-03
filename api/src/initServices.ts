@@ -5,11 +5,15 @@ import { ICurrencyState } from "./models/db/ICurrencyState";
 import { IMarket } from "./models/db/IMarket";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
 import { INetwork } from "./models/db/INetwork";
+import { IFeedService } from "./models/services/IFeedService";
 import { AmazonDynamoDbService } from "./services/amazonDynamoDbService";
+import { ChrysalisFeedService } from "./services/chrysalisFeedService";
 import { CurrencyService } from "./services/currencyService";
 import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesService } from "./services/milestonesService";
+import { MqttService } from "./services/mqttService";
 import { NetworkService } from "./services/networkService";
+import { OgFeedService } from "./services/ogFeedService";
 import { TransactionsService } from "./services/transactionsService";
 import { ZmqService } from "./services/zmqService";
 
@@ -30,42 +34,83 @@ export async function initServices(config: IConfiguration) {
     const enabledNetworks = networks.filter(v => v.isEnabled);
 
     for (const networkConfig of enabledNetworks) {
-        if (networkConfig.zmqEndpoint) {
-            ServiceFactory.register(
-                `zmq-${networkConfig.network}`, () => new ZmqService(
-                    networkConfig.zmqEndpoint, [
-                    "sn",
-                    "tx",
-                    networkConfig.coordinatorAddress
-                ])
-            );
+        if (networkConfig.protocolVersion === "og") {
+            if (networkConfig.feedEndpoint) {
+                ServiceFactory.register(
+                    `zmq-${networkConfig.network}`, () => new ZmqService(
+                        networkConfig.feedEndpoint, [
+                        "tx",
+                        "sn",
+                        networkConfig.coordinatorAddress
+                    ])
+                );
 
-            ServiceFactory.register(
-                `milestones-${networkConfig.network}`,
-                () => new MilestonesService(networkConfig.network));
+                ServiceFactory.register(
+                    `feed-${networkConfig.network}`, () => new OgFeedService(
+                        networkConfig.network, networkConfig.coordinatorAddress)
+                );
 
+                ServiceFactory.register(
+                    `transactions-${networkConfig.network}`,
+                    () => new TransactionsService(networkConfig.network));
+            }
+        } else if (networkConfig.protocolVersion === "chrysalis") {
+            if (networkConfig.feedEndpoint) {
+                ServiceFactory.register(
+                    `mqtt-${networkConfig.network}`, () => new MqttService(
+                        networkConfig.feedEndpoint, ["milestones"])
+                );
 
-            ServiceFactory.register(
-                `transactions-${networkConfig.network}`,
-                () => new TransactionsService(networkConfig.network));
+                ServiceFactory.register(
+                    `feed-${networkConfig.network}`, () => new ChrysalisFeedService(
+                        networkConfig.network, networkConfig.provider)
+                );
+            }
+        }
+
+        if (networkConfig.protocolVersion === "og" || networkConfig.protocolVersion === "chrysalis") {
+            if (networkConfig.feedEndpoint) {
+                ServiceFactory.register(
+                    `milestones-${networkConfig.network}`,
+                    () => new MilestonesService(networkConfig.network));
+            }
         }
     }
 
     for (const networkConfig of enabledNetworks) {
-        const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
-        if (milestonesService) {
-            await milestonesService.init();
+        if (networkConfig.protocolVersion === "og") {
+            const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
+            if (zmqService) {
+                zmqService.connect();
+            }
+        }
+        if (networkConfig.protocolVersion === "chrysalis") {
+            const mqttService = ServiceFactory.get<MqttService>(`mqtt-${networkConfig.network}`);
+            if (mqttService) {
+                mqttService.connect();
+            }
         }
 
-        const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
-
-        if (transactionService) {
-            await transactionService.init();
+        if (networkConfig.protocolVersion === "og" || networkConfig.protocolVersion === "chrysalis") {
+            const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
+            if (milestonesService) {
+                await milestonesService.init();
+            }
         }
 
-        const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
-        if (zmqService) {
-            zmqService.connect();
+        if (networkConfig.protocolVersion === "og") {
+            const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
+
+            if (transactionService) {
+                await transactionService.init();
+            }
+        }
+
+        if (networkConfig.protocolVersion === "og" || networkConfig.protocolVersion === "chrysalis") {
+            const feedService = ServiceFactory.get<IFeedService>(`feed-${networkConfig.network}`);
+            if (feedService) {
+                feedService.connect();
+            }
         }
     }
 
