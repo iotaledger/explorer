@@ -64,10 +64,10 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async transactionsGet(request: ITransactionsGetRequest): Promise<ITransactionsGetResponse> {
-        const { network, ...rest } = request;
+        const { network, hash, ...rest } = request;
 
         return this.callApi<unknown, ITransactionsGetResponse>(
-            `transactions/${network}${FetchHelper.urlParams(rest)}`,
+            `transactions/${network}/${hash}/${FetchHelper.urlParams(rest)}`,
             "get"
         );
     }
@@ -93,12 +93,9 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async transactionAction(request: ITransactionActionRequest): Promise<ITransactionActionResponse> {
-        const { network, ...rest } = request;
-
         return this.callApi<unknown, ITransactionActionResponse>(
-            `transactions/action/${network}`,
-            "post",
-            rest
+            `transactions/${request.network}/${request.hash}/action/${request.action}`,
+            "get"
         );
     }
 
@@ -108,10 +105,8 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async addressGet(request: IAddressGetRequest): Promise<IAddressGetResponse> {
-        const { network, ...rest } = request;
-
         return this.callApi<unknown, IAddressGetResponse>(
-            `address/${network}${FetchHelper.urlParams(rest)}`,
+            `address/${request.network}/${request.hash}`,
             "get"
         );
     }
