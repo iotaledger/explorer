@@ -297,8 +297,8 @@ export class TangleHelper {
             });
 
             const response = await api.getBalances([addressHash]);
-            if (response?.balances && response?.balance.length > 0) {
-                return response?.balance[0] as number;
+            if (response?.balances && response?.balances.length > 0) {
+                return response?.balances[0] as number;
             }
         } catch (err) {
             console.error(err);
