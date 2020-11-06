@@ -120,4 +120,14 @@ export interface TransactionState {
      * Does this look like a streams v0 root.
      */
     streamsV0Root?: string;
+
+    /**
+     * The address.
+     */
+    address?: string;
+
+    /**
+     * The address checksum.
+     */
+    checksum?: string;
 }

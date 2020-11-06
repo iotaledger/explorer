@@ -193,7 +193,8 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                             </span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
-                                                    this.state.address)}
+                                                    `${this.state.address}${this.state.checksum}`
+                                                )}
                                                 buttonType="copy"
                                                 labelPosition="top"
                                             />

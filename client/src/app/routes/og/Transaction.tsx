@@ -1,4 +1,5 @@
 import isBundle from "@iota/bundle-validator";
+import { addChecksum } from "@iota/checksum";
 import { trytesToTrits, value } from "@iota/converter";
 import { parseMessage } from "@iota/mam.js";
 import { asTransactionTrytes } from "@iota/transaction-converter";
@@ -203,14 +204,17 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         type="button"
                                                         onClick={() => this.props.history.push(
                                                             `/${this.props.match.params.network
-                                                            }/address/${this.state.details?.tx.address}`)}
+                                                            }/address/${this.state.address}`)}
                                                         className="margin-r-t"
                                                     >
-                                                        {this.state.details.tx.address}
+                                                        {this.state.address}
+                                                        <span className="card--value__light">
+                                                            {this.state.checksum}
+                                                        </span>
                                                     </button>
                                                     <MessageButton
                                                         onClick={() => ClipboardHelper.copy(
-                                                            this.state.details?.tx.address
+                                                            `${this.state.address}${this.state.checksum}`
                                                         )}
                                                         buttonType="copy"
                                                         labelPosition="top"
@@ -694,7 +698,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                         ? details.tx.trunkTransaction : undefined,
                     rawMessageTrytes: details?.tx.signatureMessageFragment,
                     bundleTailHash: details?.tx.currentIndex === 0 ? details.tx.hash : undefined,
-                    streamsV0Root
+                    streamsV0Root,
+                    address: details?.tx.address,
+                    checksum: addChecksum(details?.tx.address).slice(-9)
                 },
                 async () => {
                     if (this.state.details) {
