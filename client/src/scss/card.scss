@@ -211,6 +211,14 @@
       color: $gray;
     }
 
+    button {
+      &:hover {
+        .card--value__light {
+          color: lighten($main-green-highlight, 10%);
+        }
+      }
+    }
+
     &.card--value__large,
     .card--value__large {
       @include font-size(18px);
