@@ -1,7 +1,6 @@
+import { IAddressOutputs, IMessageMetadata, IMilestone, IOutput } from "@iota/iota2.js";
 import * as mqtt from "mqtt";
 import { v4 } from "uuid";
-import { IMilestones } from "../models/mqtt/IMilestones";
-import { MqttEvent } from "../models/mqtt/mqttEvent";
 
 /**
  * Class to handle MQTT service.
@@ -15,7 +14,7 @@ export class MqttService {
     /**
      * The events to subscribe to.
      */
-    private readonly _events: (MqttEvent | string)[];
+    private readonly _events: string[];
 
     /**
      * The callback for different events.
@@ -50,7 +49,7 @@ export class MqttService {
      * @param endpoint The gateway for the service.
      * @param events The events to subscribe to.
      */
-    constructor(endpoint: string, events: (MqttEvent | string)[]) {
+    constructor(endpoint: string, events: string[]) {
         this._endpoint = endpoint;
         this._events = events;
         this._lastMessageTime = 0;
@@ -114,12 +113,47 @@ export class MqttService {
     }
 
     /**
-     * Subscribe to milestones event.
+     * Subscribe to an address event.
+     * @param addressId The address id to subscribe to.
+     * @param callback The callback to call with data for the event.
+     * @returns An id to use for unsubscribe.
+     */
+    public subscribeAddressOutputs(addressId: string,
+        callback: (eventName: string, data: IAddressOutputs) => Promise<void>): string {
+        return this.internalAddEventCallback(`addresses/${addressId}/outputs`, callback);
+    }
+
+    /**
+     * Subscribe to an output event.
+     * @param outputId The output id to subscribe to.
+     * @param callback The callback to call with data for the event.
+     * @returns An id to use for unsubscribe.
+     */
+    public subscribeOutput(outputId: string,
+        callback: (eventName: string, data: IOutput) => Promise<void>): string {
+        return this.internalAddEventCallback(`outputs/${outputId}`, callback);
+    }
+
+    /**
+     * Subscribe to a message metadata event.
+     * @param messageId The message id to subscribe to.
+     * @param callback The callback to call with data for the event.
+     * @returns An id to use for unsubscribe.
+     */
+    public subscribeMessageMetadata(messageId: string,
+        callback: (eventName: string, data: IMessageMetadata) => Promise<void>): string {
+        return this.internalAddEventCallback(`messages/${messageId}/metadata`, callback);
+    }
+
+    /**
+     * Subscribe to latest milestones event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(event: "milestones", callback: (eventName: string, data: IMilestones) => Promise<void>): string;
+    public subscribe(
+        event: "milestones/latest" | "milestones/solid",
+        callback: (eventName: string, data: IMilestone) => Promise<void>): string;
 
     /**
      * Subscribe to named event.
@@ -128,7 +162,7 @@ export class MqttService {
      * @returns An id to use for unsubscribe.
      */
     public subscribe(
-        event: MqttEvent,
+        event: string,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         callback: (eventName: string, data: any) => Promise<void>
     ): string {
@@ -170,8 +204,20 @@ export class MqttService {
 
             // eslint-disable-next-line default-case
             switch (topic) {
-                case "milestones": {
-                    data = JSON.parse(json) as IMilestones;
+                case "milestones/latest":
+                case "milestones/solid": {
+                    data = JSON.parse(json) as IMilestone;
+                    break;
+                }
+
+                default: {
+                    if (topic.startsWith("outputs")) {
+                        data = JSON.parse(json) as IOutput;
+                    } else if (topic.startsWith("addresses")) {
+                        data = JSON.parse(json) as IAddressOutputs;
+                    } else if (topic.startsWith("messages")) {
+                        data = JSON.parse(json) as IMessageMetadata;
+                    }
                     break;
                 }
             }
