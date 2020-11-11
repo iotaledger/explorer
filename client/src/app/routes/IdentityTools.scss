@@ -1,0 +1,72 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+
+.streams-v0 {
+  display: flex;
+  flex-direction: column;
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+
+    .inner {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      max-width: $desktop-width;
+      margin: 40px 20px;
+
+      @include desktop-down {
+        max-width: 100%;
+        padding-right: 20px;
+        padding-left: 20px;
+
+        > .row {
+          flex-direction: column;
+        }
+      }
+
+      @include phone-down {
+        padding-right: 0;
+        padding-left: 0;
+      }
+
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      p {
+        @include font-size(12px);
+
+        color: $gray-10;
+        font-family: $metropolis;
+        font-weight: bold;
+      }
+
+      .status {
+        @include font-size(14px);
+      }
+
+      .cards {
+        flex: 1;
+        margin-right: 24px;
+
+        @include phone-down {
+          margin-right: unset;
+        }
+
+        .item-details {
+          @include font-size(14px);
+          font-family: $metropolis;
+
+          .item-details-root {
+            word-break: break-all;
+          }
+        }
+      }
+    }
+  }
+}
