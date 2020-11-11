@@ -58,12 +58,12 @@ export async function initServices(config: IConfiguration) {
             if (networkConfig.feedEndpoint) {
                 ServiceFactory.register(
                     `mqtt-${networkConfig.network}`, () => new MqttService(
-                        networkConfig.feedEndpoint, ["milestones"])
+                        networkConfig.feedEndpoint, ["milestones/latest"])
                 );
 
                 ServiceFactory.register(
                     `feed-${networkConfig.network}`, () => new ChrysalisFeedService(
-                        networkConfig.network, networkConfig.provider)
+                        networkConfig.network)
                 );
             }
         }

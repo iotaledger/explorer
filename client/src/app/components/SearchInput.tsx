@@ -42,9 +42,12 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                     autoFocus={!this.props.compact}
                     value={this.state.query}
                     onChange={e => this.setState({
-                        query: this.props.protocolVersion === "og" ? e.target.value.toUpperCase() : e.target.value,
+                        query: this.props.protocolVersion === "og"
+                            ? e.target.value.toUpperCase().trim()
+                            : e.target.value.trim(),
                         isValid: this.isValid(this.props.protocolVersion === "og"
-                            ? e.target.value.toUpperCase() : e.target.value)
+                            ? e.target.value.toUpperCase().trim()
+                            : e.target.value.trim())
                     })}
                     placeholder={this.props.compact ? "Search..." : (
                         this.props.protocolVersion === "chrysalis"
