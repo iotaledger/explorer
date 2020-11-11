@@ -251,7 +251,7 @@ class IdentityTools extends AsyncComponent<RouteComponentProps<StreamsV0RoutePro
 
         console.log("loadDID")
         
-        const did = await this._tangleCacheService.resolveDID(this.props.match.params.network, "did test")
+        const did = await this._tangleCacheService.resolveDID(this.props.match.params.network, "did:iota:3tukwL7jMP5cfxtUB8je7wAUkaPSAgBMeGnY6YBivpHf")
         
         console.log("did: ", did)
 

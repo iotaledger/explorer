@@ -15,6 +15,8 @@ import { NetworkService } from "./networkService";
 import { OgApiStreamsV0Client } from "./ogApiStreamsV0Client";
 import { ogIdentityClient } from "./ogIdentityClient";
 
+import * as lib from "iota-identity-wasm-test/web/";
+
 /**
  * Cache tangle requests.
  */
@@ -914,7 +916,7 @@ export class TangleCacheService {
 
 
 
-    public resolveDID(network: string, did: any): Promise<{
+    public async resolveDID(network: string, did: any): Promise<{
         /**
          * The document at the given DID.
          */
@@ -932,8 +934,20 @@ export class TangleCacheService {
 
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         // const result = await mamFetchOg(api as any, root, mode, key);
+                        console.log("did:", did)
+                        console.log("lib:", lib)
+                        
+                        // await lib.init();
+                        console.log("lib:", lib)
+                        const id = await lib.init();
+                        console.log("api", api)
+                        console.log("network", network) 
+                        const document = await lib.resolve(did, { node: "https://explorer-api.einfachiota.de", network: "main" });
+                        // const document = await lib.resolve(did, { node:  api, network });
+
                         const result = true
                         console.log("tangle service: api:", api)
+                        console.log("document:", document)
 
                         if (result) {
                             identityCache[did] = {
@@ -943,6 +957,7 @@ export class TangleCacheService {
                         }
                     } else {
                         // TODO: crysalis
+                        console.log("crysalis not supportet yet");
                     }
                 } catch (err) {
                     console.error(err);
