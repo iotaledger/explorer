@@ -128,7 +128,7 @@ class IdentityTools extends AsyncComponent<RouteComponentProps<StreamsV0RoutePro
                                             <button
                                                 type="button"
                                                 className="form-button selected margin-r-t margin-b-t"
-                                                onClick={() => this.findData()}
+                                                onClick={() => this.resolveDID()}
                                                 disabled={this.state.statusBusy || !this.state.isValid}
                                             >
                                                 Resolve
@@ -162,12 +162,12 @@ class IdentityTools extends AsyncComponent<RouteComponentProps<StreamsV0RoutePro
 
         const root = this.state.root.toUpperCase();
         if (root.length > 0) {
-            if (root.length !== 81) {
-                rootValidation = `The root must be 81 in length, it is ${root.length}.`;
+            if (root.length < 9 || root.length > 57) {
+                rootValidation = `The DID length is invalid, it is ${root.length}.`;
             }
 
-            if (!/^[9A-Z]*$/.test(root)) {
-                rootValidation = "Trytes must be characters A-Z or 9.";
+            if (root.slice(0, 9) != 'did:iota:') {
+                rootValidation = "Invalid DID";
             }
         }
 
@@ -193,26 +193,71 @@ class IdentityTools extends AsyncComponent<RouteComponentProps<StreamsV0RoutePro
         const isValid = this.validate();
 
         if (isValid) {
-            let url = `/${this.props.match.params.network}/streams/0/${this.state.root}/${this.state.mode}`;
-            if (this.state.mode === "restricted") {
-                url += `/${this.state.sideKey}`;
-            }
-            if (this.props.location.pathname !== url) {
-                this.props.history.replace(url);
-            }
+
+            console.log("valid ID -> ask backend")
+
+            // let url = `/${this.props.match.params.network}/streams/0/${this.state.root}/${this.state.mode}`;
+            // if (this.state.mode === "restricted") {
+            //     url += `/${this.state.sideKey}`;
+            // }
+            // if (this.props.location.pathname !== url) {
+            //     this.props.history.replace(url);
+            // }
+            // this.setState(
+            //     {
+            //         statusBusy: true,
+            //         status: "Waiting for channel data...",
+            //         packets: []
+            //     },
+            //     async () => {
+            //         this._nextRoot = this.state.root;
+            //         this._timeout = 100;
+            //         await this.loadNextPacket(true);
+            //     });
+        }
+    }
+
+
+     /**
+     * Resolve the DID
+     */
+
+    private resolveDID(): void {
+
+        const isValid = this.validate();
+
+        if (isValid) {
+
+            console.log("valid ID -> ask backend")
+
+
+        console.log("resolveDID")
+
             this.setState(
                 {
                     statusBusy: true,
-                    status: "Waiting for channel data...",
+                    status: "Waiting for DID documents...",
                     packets: []
                 },
                 async () => {
-                    this._nextRoot = this.state.root;
                     this._timeout = 100;
-                    await this.loadNextPacket(true);
-                });
+                    await this.loadDID(true);
+                }
+            )
         }
     }
+
+    private async loadDID(force?: boolean): Promise<void> {
+
+        console.log("loadDID")
+        
+        const did = await this._tangleCacheService.resolveDID(this.props.match.params.network, "did test")
+        
+        console.log("did: ", did)
+
+    }
+
+
 
     /**
      * Stop loading the data.
@@ -224,6 +269,8 @@ class IdentityTools extends AsyncComponent<RouteComponentProps<StreamsV0RoutePro
         }
         this.setState({ statusBusy: false, status: "" });
     }
+
+    
 
     /**
      * Load the next packet from the channel.

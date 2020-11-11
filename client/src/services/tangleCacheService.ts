@@ -13,6 +13,7 @@ import { ApiClient } from "./apiClient";
 import { ChrysalisApiStreamsV0Client } from "./chrysalisApiStreamsV0Client";
 import { NetworkService } from "./networkService";
 import { OgApiStreamsV0Client } from "./ogApiStreamsV0Client";
+import { ogIdentityClient } from "./ogIdentityClient";
 
 /**
  * Cache tangle requests.
@@ -133,6 +134,28 @@ export class TangleCacheService {
         };
     };
 
+
+    private readonly _identity: {
+        /**
+         * Network.
+         */
+        [network: string]: {
+            /**
+             * The DID.
+             */
+        [did: string]: {
+                /**
+                 * The document.
+                 */
+                document: string;
+                /**
+                 * The time of cache.
+                 */
+                cached: number;
+            };
+        };
+    };
+
     /**
      * Chrysalis Search results.
      */
@@ -203,6 +226,7 @@ export class TangleCacheService {
         this._chrysalisMetadataChildrenCache = {};
         this._addressBalances = {};
         this._streamsV0 = {};
+        this._identity = {};
         this._networkProtocols = {};
 
         this._networkService = ServiceFactory.get<NetworkService>("network");
@@ -224,6 +248,7 @@ export class TangleCacheService {
 
             this._addressBalances[networkConfig.network] = {};
             this._streamsV0[networkConfig.network] = {};
+            this._identity[networkConfig.network] = {};
         }
 
         // Check for stale cache items every minute
@@ -885,5 +910,46 @@ export class TangleCacheService {
                 }
             }
         }
+    }
+
+
+
+    public resolveDID(network: string, did: any): Promise<{
+        /**
+         * The document at the given DID.
+         */
+        document: any;
+    } | undefined> {
+        const identityCache = this._identity[network];
+
+        console.log("tangle service: resolveDID")
+
+        if (identityCache) {
+            if (!identityCache[did]) {
+                try {
+                    if (this._networkProtocols[network] === "og") {
+                        const api = new ogIdentityClient(network);
+
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        // const result = await mamFetchOg(api as any, root, mode, key);
+                        const result = true
+                        console.log("tangle service: api:", api)
+
+                        if (result) {
+                            identityCache[did] = {
+                                document: "test",
+                                cached: Date.now()
+                            };
+                        }
+                    } else {
+                        // TODO: crysalis
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        }
+
+        return identityCache[did];
     }
 }
