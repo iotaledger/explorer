@@ -1,34 +1,35 @@
-import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
+import { IFeedItemChrysalis } from "../../models/api/og/IFeedItemChrysalis";
+import { IFeedItemOg } from "../../models/api/og/IFeedItemOg";
 import { CurrencyState } from "./CurrencyState";
 
 export interface FeedsState extends CurrencyState {
     /**
-     * The transactions per second.
+     * The items per second.
      */
-    transactionsPerSecond: string;
+    itemsPerSecond: string;
 
     /**
-     * The confirmed transactions per second.
+     * The confirmed items per second.
      */
-    confirmedTransactionsPerSecond: string;
+    confirmedItemsPerSecond: string;
 
     /**
-     * The confirmed transactions per second.
+     * The confirmed items per second.
      */
-    confirmedTransactionsPerSecondPercent: string;
+    confirmedItemsPerSecondPercent: string;
 
     /**
-     * The transactions per second.
+     * The items per second.
      */
-    transactionsPerSecondHistory: number[];
+    itemsPerSecondHistory: number[];
 
     /**
-     * Latest transactions.
+     * Latest items.
      */
-    transactions: IFeedTransaction[];
+    items: (IFeedItemOg | IFeedItemChrysalis)[];
 
     /**
-     * Confirmed transactions.
+     * Confirmed items.
      */
     confirmed: string[];
 
@@ -37,7 +38,7 @@ export interface FeedsState extends CurrencyState {
      */
     milestones: {
         /**
-         * The transaction hash.
+         * The milestone hash.
          */
         hash: string;
         /**

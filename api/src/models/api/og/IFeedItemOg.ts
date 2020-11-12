@@ -1,8 +1,8 @@
-export interface IFeedTransaction {
+export interface IFeedItemOg {
     /**
      * The hash.
      */
-    hash: string;
+    id: string;
     /**
      * The trunk.
      */

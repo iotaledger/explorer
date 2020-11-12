@@ -2,17 +2,15 @@ import { IResponse } from "../IResponse";
 
 export interface IStatsGetResponse extends IResponse {
     /**
-     * The transations per second.
+     * The items per second.
      */
-    tps: number;
-
+    itemsPerSecond?: number;
     /**
-     * The confirmed transations per second.
+     * The confirmed items per second.
      */
-    ctps: number;
-
+    confirmedItemsPerSecond?: number;
     /**
      * The confirmed rate.
      */
-    confirmationRate: number;
+    confirmationRate?: number;
 }

@@ -2,8 +2,8 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IStatsGetRequest } from "../../models/api/og/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/og/IStatsGetResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
+import { IItemsService } from "../../models/services/IItemsService";
 import { NetworkService } from "../../services/networkService";
-import { TransactionsService } from "../../services/transactionsService";
 import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
@@ -20,7 +20,11 @@ export async function get(
     const networks = (await networkService.networks()).map(n => n.network);
     ValidationHelper.oneOf(request.network, networks, "network");
 
-    const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${request.network}`);
+    const itemsService = ServiceFactory.get<IItemsService>(`items-${request.network}`);
 
-    return transactionService.getStats();
+    return itemsService ? itemsService.getStats() : {
+        itemsPerSecond: 0,
+        confirmedItemsPerSecond: 0,
+        confirmationRate: 0
+    };
 }

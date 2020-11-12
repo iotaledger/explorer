@@ -3,8 +3,8 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
 import { IResponse } from "../../models/api/IResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
+import { IItemsService } from "../../models/services/IItemsService";
 import { NetworkService } from "../../services/networkService";
-import { TransactionsService } from "../../services/transactionsService";
 import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
@@ -23,9 +23,11 @@ export async function unsubscribe(
         const networks = (await networkService.networks()).map(n => n.network);
         ValidationHelper.oneOf(request.network, networks, "network");
 
-        const transactionsService = ServiceFactory.get<TransactionsService>(`transactions-${request.network}`);
+        const itemsService = ServiceFactory.get<IItemsService>(`items-${request.network}`);
 
-        transactionsService.unsubscribe(request.subscriptionId);
+        if (itemsService) {
+            itemsService.unsubscribe(request.subscriptionId);
+        }
 
         response = {
         };

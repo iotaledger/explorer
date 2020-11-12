@@ -1,10 +1,14 @@
 import SocketIOClient from "socket.io-client";
+import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { IFeedSubscribeRequest } from "../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../models/api/IFeedSubscribeResponse";
 import { IFeedUnsubscribeRequest } from "../models/api/IFeedUnsubscribeRequest";
+import { IFeedItemChrysalis } from "../models/api/og/IFeedItemChrysalis";
+import { IFeedItemOg } from "../models/api/og/IFeedItemOg";
 import { IFeedSubscriptionMessage } from "../models/api/og/IFeedSubscriptionMessage";
-import { IFeedTransaction } from "../models/api/og/IFeedTransaction";
+import { INetwork } from "../models/db/INetwork";
+import { NetworkService } from "./networkService";
 
 /**
  * Class to handle api communications.
@@ -21,48 +25,53 @@ export class FeedClient {
     private readonly _networkId: string;
 
     /**
+     * Network configuration.
+     */
+    private readonly _networkConfig?: INetwork;
+
+    /**
      * The web socket to communicate on.
      */
     private readonly _socket: SocketIOClient.Socket;
 
     /**
-     * The latest transactions.
+     * The latest items.
      */
-    private _transactions: IFeedTransaction[];
+    private _items: (IFeedItemOg | IFeedItemChrysalis)[];
 
     /**
-     * Existing hashes.
+     * Existing ids.
      */
-    private _existingHashes: string[];
+    private _existingIds: string[];
 
     /**
-     * The confirmed transactions.
+     * The confirmed items.
      */
-    private _confirmed: string[];
+    private _confirmedIds: string[];
 
     /**
-     * The tps.
+     * The ips.
      */
-    private _tps: {
+    private _ips: {
         /**
-         * The start timestamp for the tps.
+         * The start timestamp for the ips.
          */
         start: number;
 
         /**
-         * The end timestamp for the tps.
+         * The end timestamp for the ips.
          */
         end: number;
 
         /**
-         * The tps counts.
+         * The ips counts.
          */
-        tx: number[];
+        itemCount: number[];
 
         /**
-         * The confirmed tps counts.
+         * The confirmed ips counts.
          */
-        sn: number[];
+        confirmedItemCount: number[];
     };
 
     /**
@@ -84,6 +93,9 @@ export class FeedClient {
         this._endpoint = endpoint;
         this._networkId = networkId;
 
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        this._networkConfig = networkService.get(this._networkId);
+
         // Use websocket by default
         // eslint-disable-next-line new-cap
         this._socket = SocketIOClient(this._endpoint, { upgrade: true, transports: ["websocket"] });
@@ -93,14 +105,14 @@ export class FeedClient {
             this._socket.io.opts.transports = ["polling", "websocket"];
         });
 
-        this._transactions = [];
-        this._confirmed = [];
-        this._existingHashes = [];
-        this._tps = {
+        this._items = [];
+        this._confirmedIds = [];
+        this._existingIds = [];
+        this._ips = {
             start: 0,
             end: 0,
-            tx: [],
-            sn: []
+            itemCount: [],
+            confirmedItemCount: []
         };
 
         this._subscribers = {};
@@ -129,33 +141,32 @@ export class FeedClient {
                 });
                 this._socket.on("transactions", async (transactionsResponse: IFeedSubscriptionMessage) => {
                     if (transactionsResponse.subscriptionId === this._subscriptionId) {
-                        this._tps = transactionsResponse.tps;
-                        this._confirmed = transactionsResponse.confirmed;
+                        this._ips = transactionsResponse.ips;
+                        this._confirmedIds = transactionsResponse.confirmed;
 
-                        const newTxs = transactionsResponse.transactions;
-                        if (newTxs) {
-                            this._transactions = newTxs
-                                .filter(nh => !this._existingHashes.includes(nh.hash))
-                                .concat(this._transactions);
+                        if (transactionsResponse.items) {
+                            this._items = transactionsResponse.items
+                                .filter(nh => !this._existingIds.includes(nh.id))
+                                .concat(this._items);
 
                             let removeItems: {
-                                hash: string;
+                                id: string;
                                 value: number;
                             }[] = [];
 
-                            const zero = this._transactions.filter(t => t.value === 0);
+                            const zero = this._items.filter(t => t.value === 0);
                             const zeroToRemoveCount = zero.length - 100;
                             if (zeroToRemoveCount > 0) {
                                 removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
                             }
-                            const nonZero = this._transactions.filter(t => t.value !== 0);
+                            const nonZero = this._items.filter(t => t.value !== 0);
                             const nonZeroToRemoveCount = nonZero.length - 100;
                             if (nonZeroToRemoveCount > 0) {
                                 removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
                             }
 
-                            this._transactions = this._transactions.filter(t => !removeItems.includes(t));
-                            this._existingHashes = this._transactions.map(t => t.hash);
+                            this._items = this._items.filter(t => !removeItems.includes(t));
+                            this._existingIds = this._items.map(t => t.id);
                         }
 
                         for (const sub in this._subscribers) {
@@ -192,63 +203,63 @@ export class FeedClient {
     }
 
     /**
-     * Get the transactions as trytes.
-     * @returns The trytes.
+     * Get the items.
+     * @returns The item details.
      */
-    public getTransactions(): IFeedTransaction[] {
-        return this._transactions.slice();
+    public getItems(): (IFeedItemOg | IFeedItemChrysalis)[] {
+        return this._items.slice();
     }
 
     /**
-     * Get the confirmed transactions as hashes.
+     * Get the confirmed ids.
      * @returns The hahes.
      */
-    public getConfirmedTransactions(): string[] {
-        return this._confirmed;
+    public getConfirmedIds(): string[] {
+        return this._confirmedIds;
     }
 
     /**
-     * Get the tps history array.
-     * @returns The tps.
+     * Get the items per second history array.
+     * @returns The ips.
      */
-    public getTxTpsHistory(): number[] {
-        return this._tps.tx.slice();
+    public getIpsHistory(): number[] {
+        return this._ips.itemCount.slice();
     }
 
     /**
-     * Calculate the tps.
-     * @returns The tps.
+     * Calculate the ips.
+     * @returns The ips.
      */
-    public getTps(): {
+    public getIitemPerSecond(): {
         /**
-         * Transactions count per second.
+         * Items per second.
          */
-        tx: number;
+        itemsPerSecond: number;
         /**
-         * Confirmed count per second.
+         * Confirmed per second.
          */
-        sn: number;
+        confirmedPerSecond: number;
     } {
-        let txTps = -1;
-        let snTps = -1;
+        let itemsPerSecond = -1;
+        let confirmedPerSecond = -1;
 
-        const tps = this._tps;
-        if (tps) {
-            const spanS = (this._tps.end - this._tps.start) / 1000;
+        const ips = this._ips;
+        if (ips) {
+            const spanS = (this._ips.end - this._ips.start) / 1000;
             if (spanS > 0) {
-                if (tps.tx.length > 0) {
-                    const txTotal = tps.tx.reduce((a, b) => a + b, 0);
-                    txTps = txTotal / spanS;
+                if (ips.itemCount.length > 0) {
+                    const ipsTotal = ips.itemCount.reduce((a, b) => a + b, 0);
+                    itemsPerSecond = ipsTotal / spanS;
                 }
-                if (tps.sn.length > 0) {
-                    const snTotal = tps.sn.reduce((a, b) => a + b, 0);
-                    snTps = snTotal / spanS;
+                if (ips.confirmedItemCount.length > 0) {
+                    const cipsTotal = ips.confirmedItemCount.reduce((a, b) => a + b, 0);
+                    confirmedPerSecond = cipsTotal / spanS;
                 }
             }
         }
         return {
-            tx: txTps,
-            sn: snTps
+            itemsPerSecond,
+            confirmedPerSecond
         };
     }
 }

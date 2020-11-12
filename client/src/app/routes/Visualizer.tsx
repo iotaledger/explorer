@@ -4,7 +4,8 @@ import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../helpers/circleNodeShader";
 import { UnitsHelper } from "../../helpers/unitsHelper";
-import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
+import { IFeedItemChrysalis } from "../../models/api/og/IFeedItemChrysalis";
+import { IFeedItemOg } from "../../models/api/og/IFeedItemOg";
 import { INodeData } from "../../models/graph/INodeData";
 import Feeds from "../components/Feeds";
 import "./Visualizer.scss";
@@ -98,7 +99,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * New transactions to process.
      */
-    private _newTransactions: IFeedTransaction[];
+    private _newItems: (IFeedItemOg | IFeedItemChrysalis)[];
 
     /**
      * New confirmed transactions.
@@ -147,7 +148,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         super(props);
 
         this._transactionHashes = [];
-        this._newTransactions = [];
+        this._newItems = [];
         this._newConfirmed = [];
         this._newMilestones = [];
         this._lastClick = 0;
@@ -156,11 +157,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         this._resize = () => this.resize();
 
         this.state = {
-            transactionsPerSecond: "--",
-            confirmedTransactionsPerSecond: "--",
-            confirmedTransactionsPerSecondPercent: "--",
-            transactionsPerSecondHistory: [],
-            transactions: [],
+            itemsPerSecond: "--",
+            confirmedItemsPerSecond: "--",
+            confirmedItemsPerSecondPercent: "--",
+            itemsPerSecondHistory: [],
+            items: [],
             confirmed: [],
             milestones: [],
             currency: "USD",
@@ -227,9 +228,13 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 type="text"
                                 value={this.state.filter}
                                 onChange={e => this.setState(
-                                    { filter: e.target.value.toUpperCase() },
+                                    {
+                                        filter: this._networkConfig?.protocolVersion === "og"
+                                            ? e.target.value.toUpperCase()
+                                            : e.target.value
+                                    },
                                     () => this.restyleNodes())}
-                                maxLength={90}
+                                maxLength={this._networkConfig?.protocolVersion === "og" ? 90 : 2000}
                             />
                             <button
                                 type="button"
@@ -254,16 +259,16 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 {this.state.transactionCount}
                             </div>
                             <div className="card--label">
-                                TPS / CTPS
+                                {this._networkConfig?.protocolVersion === "chrysalis" ? "MPS / CMPS" : "TPS / CTPS"}
                             </div>
                             <div className="card--value">
-                                {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
+                                {this.state.itemsPerSecond} / {this.state.confirmedItemsPerSecond}
                             </div>
                             <div className="card--label">
                                 Confirmation Rate
                             </div>
                             <div className="card--value">
-                                {this.state.confirmedTransactionsPerSecondPercent}
+                                {this.state.confirmedItemsPerSecondPercent}
                             </div>
                         </div>
                         <div className="card--header">
@@ -271,7 +276,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                         </div>
                         <div className="card--content">
                             <div className="card--label">
-                                Transaction
+                                {this._networkConfig?.protocolVersion === "og" ? "Transaction" : "Message"}
                             </div>
                             <div className="card--value overflow-ellipsis">
                                 {this.state.selectedNode.length > 1 && (
@@ -281,7 +286,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                         rel="noopener noreferrer"
                                         href={
                                             `${window.location.origin}/${this.props.match.params.network
-                                            }/transaction/${this.state.selectedNode}`
+                                            }/${this._networkConfig?.protocolVersion === "og"
+                                                ? "transaction" : "message"}/${this.state.selectedNode}`
                                         }
                                     >
                                         {this.state.selectedNode}
@@ -289,48 +295,52 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 )}
                                 {this.state.selectedNode.length === 1 && this.state.selectedNode}
                             </div>
-                            <div className="card--label">
-                                Address
-                            </div>
-                            <div className="card--value overflow-ellipsis">
-                                {this.state.selectedNodeAddress.length > 1 && (
-                                    <a
-                                        className="button"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        href={
-                                            `${window.location.origin}/${this.props.match.params.network
-                                            }/address/${this.state.selectedNodeAddress}`
-                                        }
-                                    >
-                                        {this.state.selectedNodeAddress}
-                                    </a>
-                                )}
-                                {this.state.selectedNodeAddress.length === 1 && this.state.selectedNodeAddress}
-                            </div>
-                            <div className="card--label">
-                                Bundle
-                            </div>
-                            <div className="card--value overflow-ellipsis">
-                                {this.state.selectedNodeBundle.length > 1 && (
-                                    <a
-                                        className="button"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        href={
-                                            `${window.location.origin}/${this.props.match.params.network
-                                            }/bundle/${this.state.selectedNodeBundle}`
-                                        }
-                                    >
-                                        {this.state.selectedNodeBundle}
-                                    </a>
-                                )}
-                                {this.state.selectedNodeBundle.length === 1 && this.state.selectedNodeBundle}
-                            </div>
+                            {this._networkConfig?.protocolVersion === "og" && (
+                                <React.Fragment>
+                                    <div className="card--label">
+                                        Address
+                                    </div>
+                                    <div className="card--value overflow-ellipsis">
+                                        {this.state.selectedNodeAddress.length > 1 && (
+                                            <a
+                                                className="button"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                href={
+                                                    `${window.location.origin}/${this.props.match.params.network
+                                                    }/address/${this.state.selectedNodeAddress}`
+                                                }
+                                            >
+                                                {this.state.selectedNodeAddress}
+                                            </a>
+                                        )}
+                                        {this.state.selectedNodeAddress.length === 1 && this.state.selectedNodeAddress}
+                                    </div>
+                                    <div className="card--label">
+                                        Bundle
+                                    </div>
+                                    <div className="card--value overflow-ellipsis">
+                                        {this.state.selectedNodeBundle.length > 1 && (
+                                            <a
+                                                className="button"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                href={
+                                                    `${window.location.origin}/${this.props.match.params.network
+                                                    }/bundle/${this.state.selectedNodeBundle}`
+                                                }
+                                            >
+                                                {this.state.selectedNodeBundle}
+                                            </a>
+                                        )}
+                                        {this.state.selectedNodeBundle.length === 1 && this.state.selectedNodeBundle}
+                                    </div>
+                                </React.Fragment>
+                            )}
                             {this.state.selectedMilestoneValue === "-" && (
                                 <React.Fragment>
                                     <div className="card--label">
-                                        Tag
+                                        {this._networkConfig?.protocolVersion === "og" ? "Tag" : "Index"}
                                     </div>
                                     <div className="card--value overflow-ellipsis">
                                         {this.state.selectedNodeTag.length > 1 && (
@@ -340,7 +350,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                 rel="noopener noreferrer"
                                                 href={
                                                     `${window.location.origin}/${this.props.match.params.network
-                                                    }/tag/${this.state.selectedNodeTag}`
+                                                    }/${this._networkConfig?.protocolVersion === "og"
+                                                        ? "tag" : "indexed"}/${this.state.selectedNodeTag}`
                                                 }
                                             >
                                                 {this.state.selectedNodeTag}
@@ -424,8 +435,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * The transactions have been updated.
      * @param transactions The updated transactions.
      */
-    protected transactionsUpdated(transactions: IFeedTransaction[]): void {
-        this._newTransactions = this._newTransactions.concat(transactions);
+    protected itemsUpdated(transactions: IFeedItemOg[]): void {
+        this._newItems = this._newItems.concat(transactions);
     }
 
     /**
@@ -521,10 +532,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Draw any updates.
      */
     private drawUpdates(): void {
-        if (this._graph && this._renderer && this._newTransactions.length > 0) {
-            const consumeLength = Math.floor(this._newTransactions.length / 50);
-            const txs = this._newTransactions.slice(0, consumeLength);
-            this._newTransactions = this._newTransactions.slice(consumeLength);
+        if (this._graph && this._renderer && this._newItems.length > 0) {
+            const consumeLength = Math.floor(this._newItems.length / 50);
+            const items = this._newItems.slice(0, consumeLength);
+            this._newItems = this._newItems.slice(consumeLength);
 
             const confirmed = this._newConfirmed.slice();
             this._newConfirmed = [];
@@ -555,50 +566,71 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graph.beginUpdate();
             const added: string[] = [];
 
-            for (const tx of txs) {
-                const existingNode = this._graph.getNode(tx.hash);
+            for (const item of items) {
+                const existingNode = this._graph.getNode(item.id);
+
+                let tag;
+                let address;
+                let bundle;
+                let p1;
+                let p2;
+
+                // eslint-disable-next-line no-prototype-builtins
+                if (item.hasOwnProperty("parent1")) {
+                    const og = item as IFeedItemChrysalis;
+                    tag = og.indexationKey;
+                    p1 = og.parent1;
+                    p2 = og.parent2;
+                } else {
+                    const og = item as IFeedItemOg;
+                    tag = og.tag;
+                    address = og.address;
+                    bundle = og.bundle;
+                    p1 = og.trunk;
+                    p2 = og.branch;
+                }
                 if (existingNode) {
                     const updatedData: INodeData = {
-                        confirmed: confirmed.includes(tx.hash) || existingNode.data.confirmed,
-                        value: tx.value || existingNode.data.value,
-                        tag: tx.tag || existingNode.data.tag,
-                        address: tx.address || existingNode.data.address,
-                        bundle: tx.bundle || existingNode.data.bundle,
-                        milestone: miHash[tx.hash] || existingNode.data.milestone
+                        confirmed: confirmed.includes(item.id) || existingNode.data.confirmed,
+                        value: item.value || existingNode.data.value,
+                        tag: tag ?? existingNode.data.tag,
+                        address: address ?? existingNode.data.address,
+                        bundle: bundle ?? existingNode.data.bundle,
+                        milestone: miHash[item.id] || existingNode.data.milestone
                     };
-                    this._graph.addNode(tx.hash, updatedData);
+                    this._graph.addNode(item.id, updatedData);
                 } else {
-                    this._graph.addNode(tx.hash, {
-                        confirmed: confirmed.includes(tx.hash),
-                        value: tx.value,
-                        tag: tx.tag,
-                        address: tx.address,
-                        bundle: tx.bundle,
-                        milestone: miHash[tx.hash]
+                    this._graph.addNode(item.id, {
+                        confirmed: confirmed.includes(item.id),
+                        value: item.value,
+                        tag,
+                        address,
+                        bundle,
+                        milestone: miHash[item.id]
                     });
-                    added.push(tx.hash);
+                    added.push(item.id);
 
-                    if (!this._graph.getNode(tx.trunk)) {
-                        this._graph.addNode(tx.trunk, {
-                            confirmed: confirmed.includes(tx.hash),
-                            milestone: miHash[tx.hash]
+                    if (!this._graph.getNode(p1)) {
+                        this._graph.addNode(p1, {
+                            confirmed: confirmed.includes(item.id),
+                            milestone: miHash[item.id]
                         });
 
-                        added.push(tx.trunk);
+                        added.push(p1);
                     }
 
-                    this._graph.addLink(tx.trunk, tx.hash);
+                    this._graph.addLink(p1, item.id);
 
-                    if (tx.trunk !== tx.branch) {
-                        if (!this._graph.getNode(tx.branch)) {
-                            this._graph.addNode(tx.branch, {
-                                confirmed: confirmed.includes(tx.hash),
-                                milestone: miHash[tx.hash]
+                    if (p1 !== p2) {
+                        if (!this._graph.getNode(p2)) {
+                            this._graph.addNode(p2, {
+                                confirmed: confirmed.includes(item.id),
+                                milestone: miHash[item.id]
                             });
-                            added.push(tx.branch);
+                            added.push(p2);
                         }
 
-                        this._graph.addLink(tx.branch, tx.hash);
+                        this._graph.addLink(p2, item.id);
                     }
                 }
             }

@@ -1,4 +1,5 @@
-import { IFeedTransaction } from "./IFeedTransaction";
+import { IFeedItemChrysalis } from "./IFeedItemChrysalis";
+import { IFeedItemOg } from "./IFeedItemOg";
 
 export interface IFeedSubscriptionMessage {
     /**
@@ -9,7 +10,7 @@ export interface IFeedSubscriptionMessage {
     /**
      * The latest transactions.
      */
-    transactions: IFeedTransaction[];
+    items: (IFeedItemOg | IFeedItemChrysalis)[];
 
     /**
      * The confirmed transactions.
@@ -19,25 +20,25 @@ export interface IFeedSubscriptionMessage {
     /**
      * The tps data.
      */
-    tps: {
+    ips: {
         /**
-         * The start timestamp for the tps.
+         * The start timestamp for the ips.
          */
         start: number;
 
         /**
-         * The end timestamp for the tps.
+         * The end timestamp for the ips.
          */
         end: number;
 
         /**
-         * The tps counts.
+         * The ips counts.
          */
-        tx: number[];
+        itemCount: number[];
 
         /**
          * The confirmed tps counts.
          */
-        sn: number[];
+        confirmedItemCount: number[];
     };
 }

@@ -1,4 +1,5 @@
 
+import { MqttClient } from "@iota/iota2.js";
 import { ServiceFactory } from "./factories/serviceFactory";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { ICurrencyState } from "./models/db/ICurrencyState";
@@ -6,15 +7,16 @@ import { IMarket } from "./models/db/IMarket";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
 import { INetwork } from "./models/db/INetwork";
 import { IFeedService } from "./models/services/IFeedService";
+import { IItemsService } from "./models/services/IItemsService";
 import { AmazonDynamoDbService } from "./services/amazonDynamoDbService";
 import { ChrysalisFeedService } from "./services/chrysalisFeedService";
+import { ChrysalisItemsService } from "./services/chrysalisItemsService";
 import { CurrencyService } from "./services/currencyService";
 import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesService } from "./services/milestonesService";
-import { MqttService } from "./services/mqttService";
 import { NetworkService } from "./services/networkService";
 import { OgFeedService } from "./services/ogFeedService";
-import { TransactionsService } from "./services/transactionsService";
+import { OgItemsService } from "./services/ogItemsService";
 import { ZmqService } from "./services/zmqService";
 
 /**
@@ -51,20 +53,24 @@ export async function initServices(config: IConfiguration) {
                 );
 
                 ServiceFactory.register(
-                    `transactions-${networkConfig.network}`,
-                    () => new TransactionsService(networkConfig.network));
+                    `items-${networkConfig.network}`,
+                    () => new OgItemsService(networkConfig.network));
             }
         } else if (networkConfig.protocolVersion === "chrysalis") {
             if (networkConfig.feedEndpoint) {
                 ServiceFactory.register(
-                    `mqtt-${networkConfig.network}`, () => new MqttService(
-                        networkConfig.feedEndpoint, ["milestones/latest"])
+                    `mqtt-${networkConfig.network}`, () => new MqttClient(
+                        networkConfig.feedEndpoint)
                 );
 
                 ServiceFactory.register(
                     `feed-${networkConfig.network}`, () => new ChrysalisFeedService(
                         networkConfig.network)
                 );
+
+                ServiceFactory.register(
+                    `items-${networkConfig.network}`,
+                    () => new ChrysalisItemsService(networkConfig.network));
             }
         }
 
@@ -84,12 +90,6 @@ export async function initServices(config: IConfiguration) {
                 zmqService.connect();
             }
         }
-        if (networkConfig.protocolVersion === "chrysalis") {
-            const mqttService = ServiceFactory.get<MqttService>(`mqtt-${networkConfig.network}`);
-            if (mqttService) {
-                mqttService.connect();
-            }
-        }
 
         if (networkConfig.protocolVersion === "og" || networkConfig.protocolVersion === "chrysalis") {
             const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
@@ -98,11 +98,12 @@ export async function initServices(config: IConfiguration) {
             }
         }
 
-        if (networkConfig.protocolVersion === "og") {
-            const transactionService = ServiceFactory.get<TransactionsService>(`transactions-${networkConfig.network}`);
+        if (networkConfig.protocolVersion === "og" || networkConfig.protocolVersion === "chrysalis") {
+            const itemsService = ServiceFactory.get<IItemsService>(
+                `items-${networkConfig.network}`);
 
-            if (transactionService) {
-                await transactionService.init();
+            if (itemsService) {
+                itemsService.init();
             }
         }
 

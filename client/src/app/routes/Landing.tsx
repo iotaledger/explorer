@@ -5,7 +5,8 @@ import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import chevronDownWhite from "../../assets/chevron-down-white.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { UnitsHelper } from "../../helpers/unitsHelper";
-import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
+import { IFeedItemChrysalis } from "../../models/api/og/IFeedItemChrysalis";
+import { IFeedItemOg } from "../../models/api/og/IFeedItemOg";
 import { INetwork } from "../../models/db/INetwork";
 import { ValueFilter } from "../../models/services/valueFilter";
 import { NetworkService } from "../../services/networkService";
@@ -42,17 +43,17 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             valueMaximum: "1",
             valueMaximumUnits: Unit.Ti,
             valueFilter: "both",
-            transactionsPerSecond: "--",
-            confirmedTransactionsPerSecond: "--",
-            confirmedTransactionsPerSecondPercent: "--",
-            transactionsPerSecondHistory: [],
+            itemsPerSecond: "--",
+            confirmedItemsPerSecond: "--",
+            confirmedItemsPerSecondPercent: "--",
+            itemsPerSecondHistory: [],
             marketCapEUR: 0,
             marketCapCurrency: "--",
             priceEUR: 0,
             priceCurrency: "--",
-            transactions: [],
+            items: [],
             confirmed: [],
-            filteredTransactions: [],
+            filteredItems: [],
             milestones: [],
             currency: "USD",
             currencies: [],
@@ -70,8 +71,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
         this.setState({
             valueMinimum: settings.valueMinimum ?? "0",
             valueMinimumUnits: settings.valueMinimumUnits ?? Unit.i,
-            valueMaximum: settings.valueMaximum ?? "1",
-            valueMaximumUnits: settings.valueMaximumUnits ?? Unit.Ti,
+            valueMaximum: settings.valueMaximum ?? "3",
+            valueMaximumUnits: settings.valueMaximumUnits ?? Unit.Pi,
             valueFilter: settings.valueFilter ?? "both",
             formatFull: settings.formatFull
         });
@@ -99,27 +100,23 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                     </div>
                                     <div className="row space-between info-boxes">
                                         <div className="info-box">
-                                            <span className="info-box--title">Transactions per Second</span>
+                                            <span className="info-box--title">{
+                                                this.state.networkConfig.protocolVersion === "og"
+                                                    ? "Transactions"
+                                                    : "Messages"
+                                            } per Second
+                                            </span>
                                             <span className="info-box--value">
-                                                {this.state.networkConfig.protocolVersion === "og" && (
-                                                    <React.Fragment>
-                                                        {this.state.transactionsPerSecond} / {
-                                                            this.state.confirmedTransactionsPerSecond
-                                                        }
-                                                    </React.Fragment>
-                                                )}
-                                                {this.state.networkConfig.protocolVersion === "chrysalis" && (
-                                                    <React.Fragment>
-                                                        :(
-                                                    </React.Fragment>
-                                                )}
+                                                {this.state.itemsPerSecond} / {
+                                                    this.state.confirmedItemsPerSecond
+                                                }
                                             </span>
                                             <span className="info-box--action info-box--action__labelvalue">
                                                 <span className="info-box--action__label margin-l-t margin-r-t">
                                                     Confirmation Rate:
                                                 </span>
                                                 <span className="info-box--action__value margin-r-t">
-                                                    {this.state.confirmedTransactionsPerSecondPercent}
+                                                    {this.state.confirmedItemsPerSecondPercent}
                                                 </span>
                                             </span>
                                         </div>
@@ -192,7 +189,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                         <div className="feeds-section">
                             <h1>Feeds</h1>
                             {this.state.networkConfig.isEnabled &&
-                                this.state.networkConfig.protocolVersion === "og" && (
+                                (
                                     <div className="row filters wrap card">
                                         <div className="col">
                                             <span className="card--label">Value Filter</span>
@@ -293,41 +290,45 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                     ? "Transaction" : "Message"}
                                             </span>
                                         </div>
-                                        {this.state.filteredTransactions.length === 0 &&
-                                            this.state.networkConfig.protocolVersion === "og" && (
-                                                <p>There are no transactions with the current filter.</p>
-                                            )}
-                                        {this.state.networkConfig.protocolVersion === "chrysalis" && (
-                                            <p>There is no live feed availabe for Chrysalis.</p>
+                                        {this.state.filteredItems.length === 0 && (
+                                            <p>There are no items with the current filter.</p>
                                         )}
-                                        {this.state.filteredTransactions.map(tx => (
-                                            <div className="row feed-item" key={tx.hash}>
+                                        {this.state.filteredItems.map(item => (
+                                            <div className="row feed-item" key={item.id}>
                                                 <span className="feed-item--value">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => this.setState(
-                                                            {
-                                                                formatFull: !this.state.formatFull
-                                                            },
-                                                            () => this._settingsService.saveSingle(
-                                                                "formatFull",
-                                                                this.state.formatFull)
-                                                        )}
-                                                    >
-                                                        {this.state.formatFull
-                                                            ? `${tx.value} i`
-                                                            : UnitsHelper.formatBest(tx.value)}
-                                                    </button>
+                                                    {this.isValueItem(item) && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => this.setState(
+                                                                {
+                                                                    formatFull: !this.state.formatFull
+                                                                },
+                                                                () => this._settingsService.saveSingle(
+                                                                    "formatFull",
+                                                                    this.state.formatFull)
+                                                            )}
+                                                        >
+                                                            {this.state.formatFull
+                                                                ? `${item.value} i`
+                                                                : UnitsHelper.formatBest(item.value)}
+                                                        </button>
+                                                    )}
+                                                    {!this.isValueItem(item) && (
+                                                        <span>
+                                                            {(item as IFeedItemChrysalis).payloadType === 1
+                                                                ? "MS" : "Index"}
+                                                        </span>
+                                                    )}
                                                 </span>
                                                 <Link
                                                     className="feed-item--hash"
                                                     to={
                                                         `/${this.props.match.params.network
                                                         }/${this.state.networkConfig.protocolVersion === "og"
-                                                            ? "transaction" : "message"}/${tx.hash}`
+                                                            ? "transaction" : "message"}/${item.id}`
                                                     }
                                                 >
-                                                    {tx.hash}
+                                                    {item.id}
                                                 </Link>
                                             </div>
                                         ))}
@@ -357,8 +358,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                         `/${this.props.match.params.network
                                                         }/${this.state.networkConfig.protocolVersion === "og"
                                                             ? "transaction" : "milestone"}/${this
-                                                            .state.networkConfig.protocolVersion === "og"
-                                                            ? tx.hash : tx.milestoneIndex}`
+                                                                .state.networkConfig.protocolVersion === "og"
+                                                                ? tx.hash : tx.milestoneIndex}`
                                                     }
                                                 >
                                                     {tx.hash}
@@ -417,15 +418,15 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
 
     /**
      * Filter the transactions and return them.
-     * @param transactions The transactions to filter.
+     * @param items The transactions to filter.
      */
-    protected transactionsUpdated(transactions: IFeedTransaction[]): void {
+    protected itemsUpdated(items: (IFeedItemOg | IFeedItemChrysalis)[]): void {
         if (this._isMounted && this._feedClient) {
             const minLimit = convertUnits(this.state.valueMinimum, this.state.valueMinimumUnits, Unit.i);
             const maxLimit = convertUnits(this.state.valueMaximum, this.state.valueMaximumUnits, Unit.i);
 
             this.setState({
-                filteredTransactions: transactions
+                filteredItems: items
                     .filter(t => (
                         this.state.valueFilter === "zeroOnly"
                             ? true
@@ -482,8 +483,22 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
 
             this._settingsService.save();
 
-            this.transactionsUpdated(this.state.transactions);
+            this.itemsUpdated(this.state.items);
         }
+    }
+
+    /**
+     * Is this a value item.
+     * @param item Is this a value item.
+     * @returns True if this is a value item.
+     */
+    private isValueItem(item: IFeedItemOg | IFeedItemChrysalis): boolean {
+        // eslint-disable-next-line no-prototype-builtins
+        if (item.hasOwnProperty("payloadType")) {
+            const feedItemChrysalis = item as IFeedItemChrysalis;
+            return feedItemChrysalis.payloadType === 0;
+        }
+        return true;
     }
 }
 
