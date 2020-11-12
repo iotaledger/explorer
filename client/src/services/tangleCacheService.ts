@@ -939,7 +939,7 @@ export class TangleCacheService {
                         
                         // await lib.init();
                         console.log("lib:", lib)
-                        const id = await lib.init();
+                        const id = await lib.init("/static/iota_identity_wasm_bg.wasm");
                         console.log("api", api)
                         console.log("network", network) 
                         const document = await lib.resolve(did, { node: "https://explorer-api.einfachiota.de", network: "main" });
