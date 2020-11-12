@@ -92,7 +92,7 @@ class IdentityTools extends AsyncComponent<RouteComponentProps<StreamsV0RoutePro
             <div className="streams-v0">
                 <div className="wrapper">
                     <div className="inner">
-                        <h1>Identtiy Tools</h1>
+                        <h1>Identity Tools</h1>
                         <div className="row">
                             <div className="cards">
                                 <div className="card">
