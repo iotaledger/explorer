@@ -446,6 +446,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             } else if (this.state.valueFilter === "nonZeroOnly") {
                 filter = (item: IFeedItem) =>
                     item.value !== undefined &&
+                    item.value !== 0 &&
                     Math.abs(item.value) >= minLimit &&
                     Math.abs(item.value) <= maxLimit;
             } else if (this.state.valueFilter === "milestone") {

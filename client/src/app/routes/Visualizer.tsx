@@ -332,26 +332,27 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                             )}
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem?.metaData.Tag && (
-                                        <React.Fragment>
-                                            <div className="card--label">
-                                                Tag
-                                            </div>
-                                            <div className="card--value overflow-ellipsis">
-                                                <a
-                                                    className="button"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    href={
-                                                        `${window.location.origin}/${this.props.match.params.network
-                                                        }/tag/${this.state.selectedFeedItem?.metaData.Tag}`
-                                                    }
-                                                >
-                                                    {this.state.selectedFeedItem?.metaData.Tag as string}
-                                                </a>
-                                            </div>
-                                        </React.Fragment>
-                                    )}
+                                    {this.state.selectedFeedItem?.metaData.Tag &&
+                                        this.state.selectedFeedItem?.metaData.MS === undefined && (
+                                            <React.Fragment>
+                                                <div className="card--label">
+                                                    Tag
+                                                </div>
+                                                <div className="card--value overflow-ellipsis">
+                                                    <a
+                                                        className="button"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        href={
+                                                            `${window.location.origin}/${this.props.match.params.network
+                                                            }/tag/${this.state.selectedFeedItem?.metaData.Tag}`
+                                                        }
+                                                    >
+                                                        {this.state.selectedFeedItem?.metaData.Tag as string}
+                                                    </a>
+                                                </div>
+                                            </React.Fragment>
+                                        )}
                                     {this.state.selectedFeedItem?.metaData.Index && (
                                         <React.Fragment>
                                             <div className="card--label">
@@ -382,17 +383,17 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                             </div>
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem?.value !== undefined && (
-                                        <React.Fragment>
-                                            <div className="card--label">
-                                                Value
-                                            </div>
-                                            <div className="card--value">
-                                                {UnitsHelper.formatBest(this.state.selectedFeedItem?.value)}
-                                            </div>
-                                        </React.Fragment>
-                                    )}
-
+                                    {this.state.selectedFeedItem?.value !== undefined &&
+                                        this.state.selectedFeedItem?.metaData.MS === undefined && (
+                                            <React.Fragment>
+                                                <div className="card--label">
+                                                    Value
+                                                </div>
+                                                <div className="card--value">
+                                                    {UnitsHelper.formatBest(this.state.selectedFeedItem?.value)}
+                                                </div>
+                                            </React.Fragment>
+                                        )}
                                 </div>
                             </React.Fragment>
                         )}
