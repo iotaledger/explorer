@@ -1,8 +1,6 @@
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { UnitsHelper } from "../../helpers/unitsHelper";
-import { IFeedItemChrysalis } from "../../models/api/og/IFeedItemChrysalis";
-import { IFeedItemOg } from "../../models/api/og/IFeedItemOg";
 import Feeds from "./Feeds";
 import { FeedsState } from "./FeedsState";
 import LineChart from "./LineChart";
@@ -60,13 +58,13 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
                             Milestones
                         </div>
                         {this.state.milestones.slice(0, 5).map(tx => (
-                            <div className="row feed-item" key={tx.hash}>
+                            <div className="row feed-item" key={tx.id}>
                                 <span className="feed-item--value">{tx.milestoneIndex}</span>
                                 <Link
                                     className="feed-item--hash"
-                                    to={`/${this.props.match.params.network}/transaction/${tx.hash}`}
+                                    to={`/${this.props.match.params.network}/transaction/${tx.id}`}
                                 >
-                                    {tx.hash}
+                                    {tx.id}
                                 </Link>
                             </div>
                         ))}
@@ -78,15 +76,14 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
                         </div>
                         {this.state.items.slice(0, 5).map(item => (
                             <div className="row feed-item" key={item.id}>
-                                {this.isValueItem(item) && (
+                                {item.value !== undefined && (
                                     <span className="feed-item--value">
                                         {UnitsHelper.formatBest(item.value)}
                                     </span>
                                 )}
-                                {!this.isValueItem(item) && (
+                                {item.value === undefined && (
                                     <span className="feed-item--value">
-                                        {(item as IFeedItemChrysalis).payloadType === 1
-                                            ? "MS" : "Index"}
+                                        {item.payloadType}
                                     </span>
                                 )}
                                 <Link
@@ -101,20 +98,6 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
                 </div>
             </div>
         );
-    }
-
-    /**
-     * Is this a value item.
-     * @param item Is this a value item.
-     * @returns True if this is a value item.
-     */
-    private isValueItem(item: IFeedItemOg | IFeedItemChrysalis): boolean {
-        // eslint-disable-next-line no-prototype-builtins
-        if (item.hasOwnProperty("payloadType")) {
-            const feedItemChrysalis = item as IFeedItemChrysalis;
-            return feedItemChrysalis.payloadType === 0;
-        }
-        return true;
     }
 }
 

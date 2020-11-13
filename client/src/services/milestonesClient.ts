@@ -21,9 +21,9 @@ export class MilestonesClient {
      */
     private _milestones: {
         /**
-         * The tx hash.
+         * The id.
          */
-        hash: string;
+        id: string;
         /**
          * The tx value.
          */
@@ -96,9 +96,9 @@ export class MilestonesClient {
      */
     public getMilestones(): {
         /**
-         * The tx hash.
+         * The id.
          */
-        hash: string;
+        id: string;
         /**
          * The milestone index.
          */

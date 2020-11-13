@@ -41,13 +41,13 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                             >
                                 <h3 className="margin-b-t">Input {idx}</h3>
                                 <div className="card--label">
-                                    Transaction Id {idx + 1}
+                                    Transaction Id
                                 </div>
                                 <div className="card--value">
                                     {input.transactionId}
                                 </div>
                                 <div className="card--label">
-                                    Transaction Output Index {idx + 1}
+                                    Transaction Output Index
                                 </div>
                                 <div className="card--value">
                                     {input.transactionOutputIndex}

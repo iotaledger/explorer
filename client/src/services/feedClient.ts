@@ -1,13 +1,14 @@
+import { Blake2b, Converter, deserializeMessage, ReadStream } from "@iota/iota2.js";
+import { asTransactionObject } from "@iota/transaction-converter";
 import SocketIOClient from "socket.io-client";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { IFeedSubscribeRequest } from "../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../models/api/IFeedSubscribeResponse";
 import { IFeedUnsubscribeRequest } from "../models/api/IFeedUnsubscribeRequest";
-import { IFeedItemChrysalis } from "../models/api/og/IFeedItemChrysalis";
-import { IFeedItemOg } from "../models/api/og/IFeedItemOg";
 import { IFeedSubscriptionMessage } from "../models/api/og/IFeedSubscriptionMessage";
 import { INetwork } from "../models/db/INetwork";
+import { IFeedItem } from "../models/IFeedItem";
 import { NetworkService } from "./networkService";
 
 /**
@@ -37,7 +38,7 @@ export class FeedClient {
     /**
      * The latest items.
      */
-    private _items: (IFeedItemOg | IFeedItemChrysalis)[];
+    private _items: IFeedItem[];
 
     /**
      * Existing ids.
@@ -139,30 +140,39 @@ export class FeedClient {
                         this._subscriptionId = subscribeResponse.subscriptionId;
                     }
                 });
-                this._socket.on("transactions", async (transactionsResponse: IFeedSubscriptionMessage) => {
-                    if (transactionsResponse.subscriptionId === this._subscriptionId) {
-                        this._ips = transactionsResponse.ips;
-                        this._confirmedIds = transactionsResponse.confirmed;
+                this._socket.on("transactions", async (subscriptionMessage: IFeedSubscriptionMessage) => {
+                    if (subscriptionMessage.subscriptionId === this._subscriptionId) {
+                        this._ips = subscriptionMessage.ips;
+                        this._confirmedIds = subscriptionMessage.confirmed;
 
-                        if (transactionsResponse.items) {
-                            this._items = transactionsResponse.items
+                        const newItems = subscriptionMessage.items.map(item => this.convertItem(item));
+
+                        if (subscriptionMessage.items) {
+                            this._items = newItems
                                 .filter(nh => !this._existingIds.includes(nh.id))
                                 .concat(this._items);
 
-                            let removeItems: {
-                                id: string;
-                                value: number;
-                            }[] = [];
+                            let removeItems: IFeedItem[] = [];
 
-                            const zero = this._items.filter(t => t.value === 0);
-                            const zeroToRemoveCount = zero.length - 100;
+                            const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
+                            const zeroToRemoveCount = zero.length - 500;
                             if (zeroToRemoveCount > 0) {
                                 removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
                             }
-                            const nonZero = this._items.filter(t => t.value !== 0);
-                            const nonZeroToRemoveCount = nonZero.length - 100;
+                            const nonZero = this._items.filter(t => t.payloadType === "Transaction" && t.value !== 0);
+                            const nonZeroToRemoveCount = nonZero.length - 500;
                             if (nonZeroToRemoveCount > 0) {
                                 removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
+                            }
+                            const indexPayload = this._items.filter(t => t.payloadType === "Index");
+                            const indexPayloadToRemoveCount = indexPayload.length - 500;
+                            if (indexPayloadToRemoveCount > 0) {
+                                removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
+                            }
+                            const msPayload = this._items.filter(t => t.payloadType === "MS");
+                            const msPayloadToRemoveCount = msPayload.length - 500;
+                            if (msPayloadToRemoveCount > 0) {
+                                removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
                             }
 
                             this._items = this._items.filter(t => !removeItems.includes(t));
@@ -206,7 +216,7 @@ export class FeedClient {
      * Get the items.
      * @returns The item details.
      */
-    public getItems(): (IFeedItemOg | IFeedItemChrysalis)[] {
+    public getItems(): IFeedItem[] {
         return this._items.slice();
     }
 
@@ -260,6 +270,62 @@ export class FeedClient {
         return {
             itemsPerSecond,
             confirmedPerSecond
+        };
+    }
+
+    /**
+     * Convert the feed item into real data.
+     * @param item The item source.
+     * @returns The feed item.
+     */
+    private convertItem(item: string): IFeedItem {
+        if (this._networkConfig?.protocolVersion === "chrysalis") {
+            const bytes = Converter.hexToBytes(item);
+            const messageId = Converter.bytesToHex(Blake2b.sum256(bytes));
+            const message = deserializeMessage(new ReadStream(bytes));
+
+            let value;
+            let payloadType: "Transaction" | "Index" | "MS" | "No Payload" = "No Payload";
+            const metaData: { [key: string]: unknown } = {};
+
+            if (message.payload?.type === 0) {
+                payloadType = "Transaction";
+                value = message.payload.essence.outputs.reduce((total, output) => total + output.amount, 0);
+
+                if (message.payload.essence.payload) {
+                    metaData.Index = message.payload.essence.payload.index;
+                }
+            } else if (message.payload?.type === 1) {
+                payloadType = "MS";
+                metaData.MS = message.payload.index;
+            } else if (message.payload?.type === 2) {
+                payloadType = "Index";
+                metaData.Index = message.payload.index;
+            }
+
+            return {
+                id: messageId,
+                value,
+                parent1: message.parent1MessageId ?? "",
+                parent2: message.parent2MessageId ?? "",
+                metaData,
+                payloadType
+            };
+        }
+
+        const tx = asTransactionObject(item);
+
+        return {
+            id: tx.hash,
+            value: tx.value,
+            parent1: tx.trunkTransaction,
+            parent2: tx.branchTransaction,
+            metaData: {
+                "Tag": tx.tag,
+                "Address": tx.address,
+                "Bundle": tx.bundle
+            },
+            payloadType: "Transaction"
         };
     }
 }

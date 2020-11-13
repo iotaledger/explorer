@@ -32,7 +32,7 @@ export class ChrysalisFeedService implements IFeedService {
      * @param callback The callback for new milestones.
      * @returns The subscription id.
      */
-    public subscribeMilestones(callback: (milestone: number, hash: string) => void): string {
+    public subscribeMilestones(callback: (milestone: number, id: string) => void): string {
         return this._mqttClient.milestonesLatest((topic, message) => {
             callback(message.milestoneIndex, message.milestoneId);
         });

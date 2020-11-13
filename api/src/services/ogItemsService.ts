@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { ISn } from "../models/zmq/ISn";
-import { ITx } from "../models/zmq/ITx";
+import { ITxTrytes } from "../models/zmq/ITxTrytes";
 import { ItemServiceBase } from "./itemServiceBase";
 import { ZmqService } from "./zmqService";
 
@@ -54,18 +54,10 @@ export class OgItemsService extends ItemServiceBase {
         super.startSubscription();
 
         this._itemSubscriptionId = this._zmqService.subscribe(
-            "tx", async (evnt: string, message: ITx) => {
+            "trytes", async (evnt: string, message: ITxTrytes) => {
                 this._totalItems++;
 
-                this._items.push({
-                    id: message.hash,
-                    value: message.value,
-                    branch: message.branch,
-                    trunk: message.trunk,
-                    tag: message.tag,
-                    address: message.address,
-                    bundle: message.bundle
-                });
+                this._items.push(message.trytes);
             });
 
         this._confirmedSubscriptionId = this._zmqService.subscribe(

@@ -1,5 +1,4 @@
-import { IFeedItemChrysalis } from "../../models/api/og/IFeedItemChrysalis";
-import { IFeedItemOg } from "../../models/api/og/IFeedItemOg";
+import { IFeedItem } from "../../models/IFeedItem";
 import { CurrencyState } from "./CurrencyState";
 
 export interface FeedsState extends CurrencyState {
@@ -26,7 +25,7 @@ export interface FeedsState extends CurrencyState {
     /**
      * Latest items.
      */
-    items: (IFeedItemOg | IFeedItemChrysalis)[];
+    items: IFeedItem[];
 
     /**
      * Confirmed items.
@@ -38,9 +37,9 @@ export interface FeedsState extends CurrencyState {
      */
     milestones: {
         /**
-         * The milestone hash.
+         * The id.
          */
-        hash: string;
+        id: string;
         /**
          * The milestone index.
          */

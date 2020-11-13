@@ -1,7 +1,6 @@
 import { Unit } from "@iota/unit-converter";
-import { IFeedItemChrysalis } from "../../models/api/og/IFeedItemChrysalis";
-import { IFeedItemOg } from "../../models/api/og/IFeedItemOg";
 import { INetwork } from "../../models/db/INetwork";
+import { IFeedItem } from "../../models/IFeedItem";
 import { ValueFilter } from "../../models/services/valueFilter";
 import { CurrencyState } from "../components/CurrencyState";
 import { FeedsState } from "../components/FeedsState";
@@ -65,5 +64,5 @@ export interface LandingState extends CurrencyState, FeedsState {
     /**
      * Latest transactions.
      */
-    filteredItems: (IFeedItemOg | IFeedItemChrysalis)[];
+    filteredItems: IFeedItem[];
 }

@@ -4,9 +4,8 @@ import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../helpers/circleNodeShader";
 import { UnitsHelper } from "../../helpers/unitsHelper";
-import { IFeedItemChrysalis } from "../../models/api/og/IFeedItemChrysalis";
-import { IFeedItemOg } from "../../models/api/og/IFeedItemOg";
 import { INodeData } from "../../models/graph/INodeData";
+import { IFeedItem } from "../../models/IFeedItem";
 import Feeds from "../components/Feeds";
 import "./Visualizer.scss";
 import { VisualizerRouteProps } from "./VisualizerRouteProps";
@@ -99,7 +98,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * New transactions to process.
      */
-    private _newItems: (IFeedItemOg | IFeedItemChrysalis)[];
+    private _newItems: IFeedItem[];
 
     /**
      * New confirmed transactions.
@@ -107,18 +106,14 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private _newConfirmed: string[];
 
     /**
-     * New confirmed transactions.
+     * Existing milestones.
      */
-    private _newMilestones: {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The milestone index.
-         */
-        milestoneIndex: number;
-    }[];
+    private _msIndexToNode: {
+        [index: number]: {
+            id: string;
+            lastSeen: number;
+        };
+    };
 
     /**
      * Timer for display updates.
@@ -150,7 +145,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         this._transactionHashes = [];
         this._newItems = [];
         this._newConfirmed = [];
-        this._newMilestones = [];
+        this._msIndexToNode = {};
         this._lastClick = 0;
 
         this._graphElement = null;
@@ -167,12 +162,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             currency: "USD",
             currencies: [],
             transactionCount: 0,
-            selectedNode: "-",
-            selectedNodeValue: "-",
-            selectedNodeTag: "-",
-            selectedNodeAddress: "-",
-            selectedNodeBundle: "-",
-            selectedMilestoneValue: "-",
+            selectedFeedItem: undefined,
             filter: "",
             darkMode: this._settingsService.get().darkMode ?? false
         };
@@ -271,118 +261,141 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 {this.state.confirmedItemsPerSecondPercent}
                             </div>
                         </div>
-                        <div className="card--header">
-                            <h2>Selected</h2>
-                        </div>
-                        <div className="card--content">
-                            <div className="card--label">
-                                {this._networkConfig?.protocolVersion === "og" ? "Transaction" : "Message"}
-                            </div>
-                            <div className="card--value overflow-ellipsis">
-                                {this.state.selectedNode.length > 1 && (
-                                    <a
-                                        className="button"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        href={
-                                            `${window.location.origin}/${this.props.match.params.network
-                                            }/${this._networkConfig?.protocolVersion === "og"
-                                                ? "transaction" : "message"}/${this.state.selectedNode}`
-                                        }
-                                    >
-                                        {this.state.selectedNode}
-                                    </a>
-                                )}
-                                {this.state.selectedNode.length === 1 && this.state.selectedNode}
-                            </div>
-                            {this._networkConfig?.protocolVersion === "og" && (
-                                <React.Fragment>
+                        {this.state.selectedFeedItem && (
+                            <React.Fragment>
+                                <div className="card--header">
+                                    <h2>Selected</h2>
+                                </div>
+                                <div className="card--content">
                                     <div className="card--label">
-                                        Address
+                                        {this._networkConfig?.protocolVersion === "og" ? "Transaction" : "Message"}
                                     </div>
                                     <div className="card--value overflow-ellipsis">
-                                        {this.state.selectedNodeAddress.length > 1 && (
-                                            <a
-                                                className="button"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                href={
-                                                    `${window.location.origin}/${this.props.match.params.network
-                                                    }/address/${this.state.selectedNodeAddress}`
-                                                }
-                                            >
-                                                {this.state.selectedNodeAddress}
-                                            </a>
-                                        )}
-                                        {this.state.selectedNodeAddress.length === 1 && this.state.selectedNodeAddress}
+                                        <a
+                                            className="button"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            href={
+                                                `${window.location.origin}/${this.props.match.params.network
+                                                }/${this._networkConfig?.protocolVersion === "og"
+                                                    ? "transaction" : "message"}/${this.state.selectedFeedItem.id}`
+                                            }
+                                        >
+                                            {this.state.selectedFeedItem.id}
+                                        </a>
                                     </div>
-                                    <div className="card--label">
-                                        Bundle
-                                    </div>
-                                    <div className="card--value overflow-ellipsis">
-                                        {this.state.selectedNodeBundle.length > 1 && (
-                                            <a
-                                                className="button"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                href={
-                                                    `${window.location.origin}/${this.props.match.params.network
-                                                    }/bundle/${this.state.selectedNodeBundle}`
-                                                }
-                                            >
-                                                {this.state.selectedNodeBundle}
-                                            </a>
-                                        )}
-                                        {this.state.selectedNodeBundle.length === 1 && this.state.selectedNodeBundle}
-                                    </div>
-                                </React.Fragment>
-                            )}
-                            {this.state.selectedMilestoneValue === "-" && (
-                                <React.Fragment>
-                                    <div className="card--label">
-                                        {this._networkConfig?.protocolVersion === "og" ? "Tag" : "Index"}
-                                    </div>
-                                    <div className="card--value overflow-ellipsis">
-                                        {this.state.selectedNodeTag.length > 1 && (
-                                            <a
-                                                className="button"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                href={
-                                                    `${window.location.origin}/${this.props.match.params.network
-                                                    }/${this._networkConfig?.protocolVersion === "og"
-                                                        ? "tag" : "indexed"}/${this.state.selectedNodeTag}`
-                                                }
-                                            >
-                                                {this.state.selectedNodeTag}
-                                            </a>
-                                        )}
-                                        {this.state.selectedNodeTag.length === 1 && this.state.selectedNodeTag}
-                                    </div>
-                                </React.Fragment>
-                            )}
-                            {this.state.selectedMilestoneValue !== "-" && (
-                                <React.Fragment>
-                                    <div className="card--label">
-                                        Milestone
-                                    </div>
-                                    <div className="card--value">
-                                        {this.state.selectedMilestoneValue}
-                                    </div>
-                                </React.Fragment>
-                            )}
-                            {this.state.selectedMilestoneValue === "-" && (
-                                <React.Fragment>
-                                    <div className="card--label">
-                                        Value
-                                    </div>
-                                    <div className="card--value">
-                                        {this.state.selectedNodeValue}
-                                    </div>
-                                </React.Fragment>
-                            )}
+                                    {this._networkConfig?.protocolVersion === "og" && (
+                                        <React.Fragment>
+                                            {this.state.selectedFeedItem?.metaData.Address && (
+                                                <React.Fragment>
+                                                    <div className="card--label">
+                                                        Address
+                                                    </div>
+                                                    <div className="card--value overflow-ellipsis">
+                                                        <a
+                                                            className="button"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            href={
+                                                                `${window.location.origin
+                                                                }/${this.props.match.params.network
+                                                                }/address/${this
+                                                                    .state.selectedFeedItem?.metaData.Address}`
+                                                            }
+                                                        >
+                                                            {this.state.selectedFeedItem?.metaData.Address as string}
+                                                        </a>
+                                                    </div>
+                                                </React.Fragment>
+                                            )}
+                                            {this.state.selectedFeedItem?.metaData.Bundle && (
+                                                <React.Fragment>
+                                                    <div className="card--label">
+                                                        Bundle
+                                                    </div>
+                                                    <div className="card--value overflow-ellipsis">
+                                                        <a
+                                                            className="button"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            href={
+                                                                `${window.location.origin
+                                                                }/${this.props.match.params.network
+                                                                }/bundle/${this
+                                                                    .state.selectedFeedItem?.metaData.Bundle}`
+                                                            }
+                                                        >
+                                                            {this.state.selectedFeedItem?.metaData.Bundle as string}
+                                                        </a>
+                                                    </div>
+                                                </React.Fragment>
+                                            )}
+                                        </React.Fragment>
+                                    )}
+                                    {this.state.selectedFeedItem?.metaData.Tag && (
+                                        <React.Fragment>
+                                            <div className="card--label">
+                                                Tag
+                                            </div>
+                                            <div className="card--value overflow-ellipsis">
+                                                <a
+                                                    className="button"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    href={
+                                                        `${window.location.origin}/${this.props.match.params.network
+                                                        }/tag/${this.state.selectedFeedItem?.metaData.Tag}`
+                                                    }
+                                                >
+                                                    {this.state.selectedFeedItem?.metaData.Tag as string}
+                                                </a>
+                                            </div>
+                                        </React.Fragment>
+                                    )}
+                                    {this.state.selectedFeedItem?.metaData.Index && (
+                                        <React.Fragment>
+                                            <div className="card--label">
+                                                Index
+                                            </div>
+                                            <div className="card--value overflow-ellipsis">
+                                                <a
+                                                    className="button"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    href={
+                                                        `${window.location.origin}/${this.props.match.params.network
+                                                        }/indexed/${this.state.selectedFeedItem?.metaData.Index}`
+                                                    }
+                                                >
+                                                    {this.state.selectedFeedItem?.metaData.Index as string}
+                                                </a>
+                                            </div>
+                                        </React.Fragment>
+                                    )}
+                                    {this.state.selectedFeedItem?.metaData.MS !== undefined && (
+                                        <React.Fragment>
+                                            <div className="card--label">
+                                                Milestone
+                                            </div>
+                                            <div className="card--value">
+                                                {this.state.selectedFeedItem?.metaData.MS as number}
+                                            </div>
+                                        </React.Fragment>
+                                    )}
+                                    {this.state.selectedFeedItem?.value !== undefined && (
+                                        <React.Fragment>
+                                            <div className="card--label">
+                                                Value
+                                            </div>
+                                            <div className="card--value">
+                                                {UnitsHelper.formatBest(this.state.selectedFeedItem?.value)}
+                                            </div>
+                                        </React.Fragment>
+                                    )}
 
-                        </div>
+                                </div>
+                            </React.Fragment>
+                        )}
                     </div>
                     <div className="graph-border">
                         <div
@@ -435,8 +448,27 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * The transactions have been updated.
      * @param transactions The updated transactions.
      */
-    protected itemsUpdated(transactions: IFeedItemOg[]): void {
+    protected itemsUpdated(transactions: IFeedItem[]): void {
         this._newItems = this._newItems.concat(transactions);
+
+        if (this._networkConfig?.protocolVersion === "chrysalis") {
+            // For chrysalis networks the milestones message id is extracted from messages
+
+            let changed = false;
+            for (const message of this._newItems) {
+                if (message.metaData.MS) {
+                    this._msIndexToNode[message.metaData.MS as number] = {
+                        id: message.id,
+                        lastSeen: Date.now()
+                    };
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                this.highlightMilestones();
+            }
+        }
     }
 
     /**
@@ -453,15 +485,25 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     protected milestonesUpdated(milestones: {
         /**
-         * The tx hash.
+         * The id.
          */
-        hash: string;
+        id: string;
         /**
          * The milestone index.
          */
         milestoneIndex: number;
     }[]): void {
-        this._newMilestones = milestones;
+        if (this._networkConfig?.protocolVersion === "og") {
+            // For OG networks the milestones have the index and tx hash
+            for (const ms of milestones) {
+                this._msIndexToNode[ms.milestoneIndex] = {
+                    id: ms.id,
+                    lastSeen: Date.now()
+                };
+            }
+
+            this.highlightMilestones();
+        }
     }
 
     /**
@@ -498,13 +540,13 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             events.click(node => this.selectNode(node));
 
             events.mouseEnter(node => {
-                if (this.state.selectedNode === "-") {
+                if (!this.state.selectedFeedItem) {
                     this.highlightConnections(node.id);
                 }
             });
 
             events.mouseLeave(node => {
-                if (this.state.selectedNode === "-") {
+                if (!this.state.selectedFeedItem) {
                     this.styleConnections();
                 }
             });
@@ -539,21 +581,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             const confirmed = this._newConfirmed.slice();
             this._newConfirmed = [];
-            const milestones = this._newMilestones.slice();
-            this._newMilestones = [];
 
             const highlightRegEx = this.highlightNodesRegEx();
-
-            const miHash: { [id: string]: number } = {};
-            for (const ms of milestones) {
-                miHash[ms.hash] = ms.milestoneIndex;
-
-                const node = this._graph.getNode(ms.hash);
-                if (node) {
-                    node.data.milestone = ms.milestoneIndex;
-                    this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
-                }
-            }
 
             for (const sn of confirmed) {
                 const node = this._graph.getNode(sn);
@@ -569,68 +598,38 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             for (const item of items) {
                 const existingNode = this._graph.getNode(item.id);
 
-                let tag;
-                let address;
-                let bundle;
-                let p1;
-                let p2;
-
-                // eslint-disable-next-line no-prototype-builtins
-                if (item.hasOwnProperty("parent1")) {
-                    const og = item as IFeedItemChrysalis;
-                    tag = og.indexationKey;
-                    p1 = og.parent1;
-                    p2 = og.parent2;
-                } else {
-                    const og = item as IFeedItemOg;
-                    tag = og.tag;
-                    address = og.address;
-                    bundle = og.bundle;
-                    p1 = og.trunk;
-                    p2 = og.branch;
-                }
                 if (existingNode) {
                     const updatedData: INodeData = {
                         confirmed: confirmed.includes(item.id) || existingNode.data.confirmed,
-                        value: item.value || existingNode.data.value,
-                        tag: tag ?? existingNode.data.tag,
-                        address: address ?? existingNode.data.address,
-                        bundle: bundle ?? existingNode.data.bundle,
-                        milestone: miHash[item.id] || existingNode.data.milestone
+                        feedItem: item
                     };
                     this._graph.addNode(item.id, updatedData);
                 } else {
                     this._graph.addNode(item.id, {
                         confirmed: confirmed.includes(item.id),
-                        value: item.value,
-                        tag,
-                        address,
-                        bundle,
-                        milestone: miHash[item.id]
+                        feedItem: item
                     });
                     added.push(item.id);
 
-                    if (!this._graph.getNode(p1)) {
-                        this._graph.addNode(p1, {
-                            confirmed: confirmed.includes(item.id),
-                            milestone: miHash[item.id]
+                    if (!this._graph.getNode(item.parent1)) {
+                        this._graph.addNode(item.parent1, {
+                            confirmed: confirmed.includes(item.id)
                         });
 
-                        added.push(p1);
+                        added.push(item.parent1);
                     }
 
-                    this._graph.addLink(p1, item.id);
+                    this._graph.addLink(item.parent1, item.id);
 
-                    if (p1 !== p2) {
-                        if (!this._graph.getNode(p2)) {
-                            this._graph.addNode(p2, {
-                                confirmed: confirmed.includes(item.id),
-                                milestone: miHash[item.id]
+                    if (item.parent1 !== item.parent2) {
+                        if (!this._graph.getNode(item.parent2)) {
+                            this._graph.addNode(item.parent2, {
+                                confirmed: confirmed.includes(item.id)
                             });
-                            added.push(p2);
+                            added.push(item.parent2);
                         }
 
-                        this._graph.addLink(p2, item.id);
+                        this._graph.addLink(item.parent2, item.id);
                     }
                 }
             }
@@ -697,17 +696,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         if (node) {
             if (highlight) {
                 color = Visualizer.COLOR_SEARCH_RESULT;
-            } else if (node.data.milestone) {
+            } else if (node.data.feedItem?.metaData.MS) {
                 color = Visualizer.COLOR_MILESTONE;
             } else if (node.data.confirmed) {
-                color = node.data.value !== 0 && node.data.value !== undefined
+                color = node.data.feedItem?.value !== 0 && node.data.feedItem?.value !== undefined
                     ? Visualizer.COLOR_VALUE_CONFIRMED
                     : Visualizer.COLOR_ZERO_CONFIRMED;
             } else {
                 color = Visualizer.COLOR_PENDING;
             }
 
-            size = node.data.milestone || (node.data.value !== 0 && node.data.value !== undefined)
+            size = node.data.feedItem?.metaData.MS ||
+                (node.data.feedItem?.value !== 0 && node.data.feedItem?.value !== undefined)
                 ? Visualizer.VERTEX_SIZE_LARGE
                 : Visualizer.VERTEX_SIZE_REGULAR;
         }
@@ -750,24 +750,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @param node The node to select.
      */
     private selectNode(node?: Viva.Graph.INode<INodeData>): void {
-        const isDeselect = !node || this.state.selectedNode === node.id;
+        const isDeselect = !node || this.state.selectedFeedItem?.id === node.id;
         this.setState({
-            selectedNode: isDeselect || !node ? "-" : node.id,
-            selectedNodeValue: isDeselect || !node || node.data.value === undefined
-                ? "-"
-                : UnitsHelper.formatBest(node.data.value),
-            selectedNodeAddress: isDeselect || !node || node.data.address === undefined
-                ? "-"
-                : node.data.address,
-            selectedNodeBundle: isDeselect || !node || node.data.bundle === undefined
-                ? "-"
-                : node.data.bundle,
-            selectedNodeTag: isDeselect || !node || node.data.tag === undefined
-                ? "-"
-                : node.data.tag,
-            selectedMilestoneValue: isDeselect || !node || node.data.milestone === undefined
-                ? "-"
-                : node.data.milestone.toString()
+            selectedFeedItem: isDeselect || !node
+                ? undefined
+                : node.data.feedItem
         });
 
         this.styleConnections();
@@ -875,16 +862,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             return true;
         }
 
-        if (data.tag && regEx.test(data.tag)) {
-            return true;
-        }
-
-        if (data.address && regEx.test(data.address)) {
-            return true;
-        }
-
-        if (data.bundle && regEx.test(data.bundle)) {
-            return true;
+        if (data.feedItem) {
+            for (const key in data.feedItem.metaData) {
+                if (regEx.test(data.feedItem.metaData[key] as string)) {
+                    return true;
+                }
+            }
         }
 
         return false;
@@ -916,6 +899,32 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._settingsService.saveSingle("darkMode", this.state.darkMode);
             this.styleConnections();
         });
+    }
+
+    private highlightMilestones(): void {
+        if (this._graph) {
+            const highlightRegEx = this.highlightNodesRegEx();
+
+            const toRemove: number[] = [];
+            const now = Date.now();
+
+            const keys: number[] = Object.keys(this._msIndexToNode).map(s => Number(s));
+            for (let i = 0; i < keys.length; i++) {
+                const msIndex = keys[i];
+                const node = this._graph.getNode(this._msIndexToNode[msIndex].id);
+                if (node?.data.feedItem) {
+                    this._msIndexToNode[msIndex].lastSeen = now;
+                    node.data.feedItem.metaData.MS = msIndex;
+                    this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
+                } else if (now - this._msIndexToNode[msIndex].lastSeen > 300000) {
+                    toRemove.push(msIndex);
+                }
+            }
+
+            for (const rem of toRemove) {
+                delete this._msIndexToNode[rem];
+            }
+        }
     }
 }
 

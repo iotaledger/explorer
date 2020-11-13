@@ -1,28 +1,10 @@
+import { IFeedItem } from "../IFeedItem";
+
 export interface INodeData {
     /**
-     * The transaction tag.
+     * The feed item.
      */
-    tag?: string;
-
-    /**
-     * The transaction value.
-     */
-    value?: number;
-
-    /**
-     * The transaction address.
-     */
-    address?: string;
-
-    /**
-     * The transaction bundle.
-     */
-    bundle?: string;
-
-    /**
-     * The transaction milestone.
-     */
-    milestone?: number;
+    feedItem?: IFeedItem;
 
     /**
      * Is the transaction confirmed.

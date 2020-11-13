@@ -1,4 +1,4 @@
-import { IMessage, IMessageMetadata, IMqttClient } from "@iota/iota2.js";
+import { Converter, IMessageMetadata, IMqttClient } from "@iota/iota2.js";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { ItemServiceBase } from "./itemServiceBase";
 
@@ -52,32 +52,11 @@ export class ChrysalisItemsService extends ItemServiceBase {
     protected startSubscription(): void {
         super.startSubscription();
 
-        this._itemSubscriptionId = this._mqttClient.messages(
-            (topic: string, messageId: string, message: IMessage) => {
+        this._itemSubscriptionId = this._mqttClient.messagesRaw(
+            (topic: string, message: Uint8Array) => {
                 this._totalItems++;
 
-                let value = 0;
-                let indexationKey = "";
-
-                // Transaction payload
-                if (message.payload?.type === 0) {
-                    value = message.payload.essence.outputs.reduce((total, output) => total + output.amount, 0);
-
-                    if (message.payload.essence.payload) {
-                        indexationKey = message.payload.essence.payload.index;
-                    }
-                } else if (message.payload?.type === 2) {
-                    indexationKey = message.payload?.index;
-                }
-
-                this._items.push({
-                    id: messageId,
-                    value,
-                    parent1: message.parent1MessageId,
-                    parent2: message.parent2MessageId,
-                    indexationKey,
-                    payloadType: message.payload?.type
-                });
+                this._items.push(Converter.bytesToHex(message));
             });
 
         this._confirmedSubscriptionId = this._mqttClient.messagesMetadata(

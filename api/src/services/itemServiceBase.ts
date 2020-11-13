@@ -1,5 +1,3 @@
-import { IFeedItemChrysalis } from "../models/api/og/IFeedItemChrysalis";
-import { IFeedItemOg } from "../models/api/og/IFeedItemOg";
 import { IFeedSubscriptionMessage } from "../models/api/og/IFeedSubscriptionMessage";
 
 /**
@@ -9,7 +7,7 @@ export abstract class ItemServiceBase {
     /**
      * The most recent items.
      */
-    protected _items: (IFeedItemOg | IFeedItemChrysalis)[];
+    protected _items: string[];
 
     /**
      * The current total since last timestamp.

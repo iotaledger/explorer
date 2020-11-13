@@ -47,9 +47,9 @@ export class MilestonesService {
      */
     private _milestones: {
         /**
-         * The transaction hash.
+         * The id.
          */
-        hash: string;
+        id: string;
         /**
          * The milestone index.
          */
@@ -104,9 +104,9 @@ export class MilestonesService {
      */
     public getMilestones(): {
         /**
-         * The transaction hash.
+         * The id.
          */
-        hash: string;
+        id: string;
         /**
          * The milestone index.
          */
@@ -120,15 +120,13 @@ export class MilestonesService {
      */
     private async initNetwork(): Promise<void> {
         this._subscriptionAddressId = this._feedService.subscribeMilestones(
-            async (milestoneIndex: number, hash: string) => {
+            async (milestoneIndex: number, id: string) => {
                 this._lastUpdate = Date.now();
 
-                if ((this._milestones.length === 0 ||
-                    milestoneIndex > this._milestones[0].milestoneIndex) &&
-                    this._milestones
+                if (this._milestones
                         .findIndex(p => p.milestoneIndex === milestoneIndex) === -1) {
                     this._milestones.unshift({
-                        hash,
+                        id,
                         milestoneIndex
                     });
 

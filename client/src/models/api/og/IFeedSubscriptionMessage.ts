@@ -1,6 +1,3 @@
-import { IFeedItemChrysalis } from "./IFeedItemChrysalis";
-import { IFeedItemOg } from "./IFeedItemOg";
-
 export interface IFeedSubscriptionMessage {
     /**
      * The subscription id created.
@@ -8,17 +5,17 @@ export interface IFeedSubscriptionMessage {
     subscriptionId: string;
 
     /**
-     * The latest transactions.
+     * The latest items.
      */
-    items: (IFeedItemOg | IFeedItemChrysalis)[];
+    items: string[];
 
     /**
-     * The confirmed transactions.
+     * The confirmed items.
      */
     confirmed: string[];
 
     /**
-     * The tps data.
+     * The ips data.
      */
     ips: {
         /**
@@ -32,12 +29,12 @@ export interface IFeedSubscriptionMessage {
         end: number;
 
         /**
-         * The ips counts.
+         * The item counts.
          */
         itemCount: number[];
 
         /**
-         * The confirmed tps counts.
+         * The confirmed item counts.
          */
         confirmedItemCount: number[];
     };
