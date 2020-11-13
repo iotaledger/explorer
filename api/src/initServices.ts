@@ -41,7 +41,7 @@ export async function initServices(config: IConfiguration) {
                 ServiceFactory.register(
                     `zmq-${networkConfig.network}`, () => new ZmqService(
                         networkConfig.feedEndpoint, [
-                        "tx",
+                        "trytes",
                         "sn",
                         networkConfig.coordinatorAddress
                     ])
