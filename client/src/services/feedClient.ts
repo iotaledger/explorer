@@ -83,7 +83,7 @@ export class FeedClient {
     /**
      * The subscribers.
      */
-    private readonly _subscribers: { [id: string]: () => void };
+    private readonly _subscribers: { [id: string]: (newItems: IFeedItem[]) => void };
 
     /**
      * Create a new instance of TransactionsClient.
@@ -124,7 +124,7 @@ export class FeedClient {
      * @param callback Callback called with transactions data.
      * @returns The subscription id.
      */
-    public subscribe(callback: () => void): string {
+    public subscribe(callback: (newItems: IFeedItem[]) => void): string {
         const subscriptionId = TrytesHelper.generateHash(27);
         this._subscribers[subscriptionId] = callback;
 
@@ -148,39 +148,43 @@ export class FeedClient {
                         const newItems = subscriptionMessage.items.map(item => this.convertItem(item));
 
                         if (subscriptionMessage.items) {
-                            this._items = newItems
-                                .filter(nh => !this._existingIds.includes(nh.id))
-                                .concat(this._items);
+                            const filteredNewItems = newItems
+                                .filter(nh => !this._existingIds.includes(nh.id));
 
-                            let removeItems: IFeedItem[] = [];
+                            if (filteredNewItems.length > 0) {
+                                this._items = filteredNewItems.slice().concat(this._items);
 
-                            const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
-                            const zeroToRemoveCount = zero.length - 500;
-                            if (zeroToRemoveCount > 0) {
-                                removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
-                            }
-                            const nonZero = this._items.filter(t => t.payloadType === "Transaction" && t.value !== 0);
-                            const nonZeroToRemoveCount = nonZero.length - 500;
-                            if (nonZeroToRemoveCount > 0) {
-                                removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
-                            }
-                            const indexPayload = this._items.filter(t => t.payloadType === "Index");
-                            const indexPayloadToRemoveCount = indexPayload.length - 500;
-                            if (indexPayloadToRemoveCount > 0) {
-                                removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
-                            }
-                            const msPayload = this._items.filter(t => t.payloadType === "MS");
-                            const msPayloadToRemoveCount = msPayload.length - 500;
-                            if (msPayloadToRemoveCount > 0) {
-                                removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
-                            }
+                                let removeItems: IFeedItem[] = [];
 
-                            this._items = this._items.filter(t => !removeItems.includes(t));
-                            this._existingIds = this._items.map(t => t.id);
-                        }
+                                const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
+                                const zeroToRemoveCount = zero.length - 500;
+                                if (zeroToRemoveCount > 0) {
+                                    removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
+                                }
+                                const nonZero = this._items.filter(t => t.payloadType === "Transaction" &&
+                                    t.value !== 0);
+                                const nonZeroToRemoveCount = nonZero.length - 500;
+                                if (nonZeroToRemoveCount > 0) {
+                                    removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
+                                }
+                                const indexPayload = this._items.filter(t => t.payloadType === "Index");
+                                const indexPayloadToRemoveCount = indexPayload.length - 500;
+                                if (indexPayloadToRemoveCount > 0) {
+                                    removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
+                                }
+                                const msPayload = this._items.filter(t => t.payloadType === "MS");
+                                const msPayloadToRemoveCount = msPayload.length - 500;
+                                if (msPayloadToRemoveCount > 0) {
+                                    removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
+                                }
 
-                        for (const sub in this._subscribers) {
-                            this._subscribers[sub]();
+                                this._items = this._items.filter(t => !removeItems.includes(t));
+                                this._existingIds = this._items.map(t => t.id);
+
+                                for (const sub in this._subscribers) {
+                                    this._subscribers[sub](filteredNewItems);
+                                }
+                            }
                         }
                     }
                 });

@@ -130,15 +130,15 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
                 if (this._feedClient) {
                     this._itemSubscriptionId = this._feedClient.subscribe(
-                        () => {
+                        updatedItems => {
                             if (this._isMounted) {
-                                this.updateItems();
+                                this.updateItems(updatedItems);
                                 this.updateTps();
                             }
                         }
                     );
 
-                    this.updateItems();
+                    this.updateItems(this._feedClient.getItems());
                     this.updateTps();
                     this._timerId = setInterval(() => this.updateTps(), 2000);
                 }
@@ -165,20 +165,20 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
     /**
      * Update the items feeds.
+     * @param newItems Just the new items.
      */
-    private updateItems(): void {
+    private updateItems(newItems: IFeedItem[]): void {
         if (this._isMounted && this._feedClient) {
-            const items = this._feedClient.getItems();
             const confirmed = this._feedClient.getConfirmedIds();
             const ipsHistory = this._feedClient.getIpsHistory();
 
             this.setState({
-                items,
+                items: newItems,
                 confirmed,
                 // Increase values by +100 to add more area under the graph
                 itemsPerSecondHistory: ipsHistory.reverse().map(v => v + 100)
             }, () => {
-                this.itemsUpdated(items);
+                this.itemsUpdated(newItems);
                 this.confirmedUpdated(confirmed);
             });
         }

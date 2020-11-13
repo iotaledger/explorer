@@ -12,20 +12,20 @@ export interface IFeedItem {
     /**
      * The parent 1.
      */
-    parent1: string;
+    parent1?: string;
 
     /**
      * The parent 2.
      */
-    parent2: string;
+    parent2?: string;
 
     /**
      * Metadata for the item.
      */
-    metaData: { [key: string]: unknown };
+    metaData?: { [key: string]: unknown };
 
     /**
      * The payload type if this is Chrysalis.
      */
-    payloadType: "Transaction" | "Index" | "MS" | "No Payload";
+    payloadType?: "Transaction" | "Index" | "MS" | "No Payload";
 }

@@ -4,7 +4,7 @@ export interface INodeData {
     /**
      * The feed item.
      */
-    feedItem?: IFeedItem;
+    feedItem: IFeedItem;
 
     /**
      * Is the transaction confirmed.

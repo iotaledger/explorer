@@ -93,7 +93,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * All the transactions to vizualise.
      */
-    private readonly _transactionHashes: string[];
+    private readonly _existingIds: string[];
 
     /**
      * New transactions to process.
@@ -142,7 +142,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     constructor(props: RouteComponentProps<VisualizerRouteProps>) {
         super(props);
 
-        this._transactionHashes = [];
+        this._existingIds = [];
         this._newItems = [];
         this._newConfirmed = [];
         this._msIndexToNode = {};
@@ -286,7 +286,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     </div>
                                     {this._networkConfig?.protocolVersion === "og" && (
                                         <React.Fragment>
-                                            {this.state.selectedFeedItem?.metaData.Address && (
+                                            {this.state.selectedFeedItem?.metaData?.Address && (
                                                 <React.Fragment>
                                                     <div className="card--label">
                                                         Address
@@ -308,7 +308,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                     </div>
                                                 </React.Fragment>
                                             )}
-                                            {this.state.selectedFeedItem?.metaData.Bundle && (
+                                            {this.state.selectedFeedItem?.metaData?.Bundle && (
                                                 <React.Fragment>
                                                     <div className="card--label">
                                                         Bundle
@@ -332,8 +332,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                             )}
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem?.metaData.Tag &&
-                                        this.state.selectedFeedItem?.metaData.MS === undefined && (
+                                    {this.state.selectedFeedItem?.metaData?.Tag &&
+                                        this.state.selectedFeedItem?.metaData?.MS === undefined && (
                                             <React.Fragment>
                                                 <div className="card--label">
                                                     Tag
@@ -353,7 +353,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                 </div>
                                             </React.Fragment>
                                         )}
-                                    {this.state.selectedFeedItem?.metaData.Index && (
+                                    {this.state.selectedFeedItem?.metaData?.Index && (
                                         <React.Fragment>
                                             <div className="card--label">
                                                 Index
@@ -373,7 +373,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                             </div>
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem?.metaData.MS !== undefined && (
+                                    {this.state.selectedFeedItem?.metaData?.MS !== undefined && (
                                         <React.Fragment>
                                             <div className="card--label">
                                                 Milestone
@@ -384,7 +384,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                         </React.Fragment>
                                     )}
                                     {this.state.selectedFeedItem?.value !== undefined &&
-                                        this.state.selectedFeedItem?.metaData.MS === undefined && (
+                                        this.state.selectedFeedItem?.metaData?.MS === undefined && (
                                             <React.Fragment>
                                                 <div className="card--label">
                                                     Value
@@ -446,19 +446,19 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     }
 
     /**
-     * The transactions have been updated.
-     * @param transactions The updated transactions.
+     * The items have been updated.
+     * @param newItems The updated items.
      */
-    protected itemsUpdated(transactions: IFeedItem[]): void {
-        this._newItems = this._newItems.concat(transactions);
+    protected itemsUpdated(newItems: IFeedItem[]): void {
+        this._newItems = this._newItems.concat(newItems);
 
         if (this._networkConfig?.protocolVersion === "chrysalis") {
             // For chrysalis networks the milestones message id is extracted from messages
 
             let changed = false;
             for (const message of this._newItems) {
-                if (message.metaData.MS) {
-                    this._msIndexToNode[message.metaData.MS as number] = {
+                if (message.metaData?.MS) {
+                    this._msIndexToNode[message.metaData?.MS as number] = {
                         id: message.id,
                         lastSeen: Date.now()
                     };
@@ -576,7 +576,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     private drawUpdates(): void {
         if (this._graph && this._renderer && this._newItems.length > 0) {
-            const consumeLength = Math.floor(this._newItems.length / 50);
+            const consumeLength = Math.min(this._newItems.length, 10);
             const items = this._newItems.slice(0, consumeLength);
             this._newItems = this._newItems.slice(consumeLength);
 
@@ -612,20 +612,28 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     });
                     added.push(item.id);
 
-                    if (!this._graph.getNode(item.parent1)) {
-                        this._graph.addNode(item.parent1, {
-                            confirmed: confirmed.includes(item.id)
-                        });
+                    if (item.parent1) {
+                        if (!this._graph.getNode(item.parent1)) {
+                            this._graph.addNode(item.parent1, {
+                                confirmed: confirmed.includes(item.id),
+                                feedItem: {
+                                    id: item.parent1
+                                }
+                            });
 
-                        added.push(item.parent1);
+                            added.push(item.parent1);
+                        }
+
+                        this._graph.addLink(item.parent1, item.id);
                     }
 
-                    this._graph.addLink(item.parent1, item.id);
-
-                    if (item.parent1 !== item.parent2) {
+                    if (item.parent2 && item.parent1 !== item.parent2) {
                         if (!this._graph.getNode(item.parent2)) {
                             this._graph.addNode(item.parent2, {
-                                confirmed: confirmed.includes(item.id)
+                                confirmed: confirmed.includes(item.id),
+                                feedItem: {
+                                    id: item.parent2
+                                }
                             });
                             added.push(item.parent2);
                         }
@@ -637,11 +645,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             this._graph.endUpdate();
 
-            this._transactionHashes.push(...added);
+            this._existingIds.push(...added);
 
             this._graph.beginUpdate();
-            while (this._transactionHashes.length > Visualizer.MAX_TRANSACTIONS) {
-                const nodeToRemove = this._transactionHashes.shift();
+            while (this._existingIds.length > Visualizer.MAX_TRANSACTIONS) {
+                const nodeToRemove = this._existingIds.shift();
                 if (nodeToRemove && !added.includes(nodeToRemove)) {
                     this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
                         if (this._graph) {
@@ -649,15 +657,23 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                             if (linkedNode.links.length === 0) {
                                 this._graph.removeNode(linkedNode.id);
+                                if (linkedNode.data.feedItem.metaData?.MS) {
+                                    delete this._msIndexToNode[linkedNode.data.feedItem.metaData?.MS as number];
+                                }
                             }
                         }
                     });
                     this._graph.removeNode(nodeToRemove);
+                    const removeNode = this._graph.getNode(nodeToRemove);
+
+                    if (removeNode?.data.feedItem.metaData?.MS) {
+                        delete this._msIndexToNode[removeNode?.data.feedItem.metaData?.MS as number];
+                    }
                 }
             }
             this._graph.endUpdate();
 
-            this.setState({ transactionCount: this._transactionHashes.length });
+            this.setState({ transactionCount: this._existingIds.length });
         }
 
         if (this._drawTimer) {
@@ -697,7 +713,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         if (node) {
             if (highlight) {
                 color = Visualizer.COLOR_SEARCH_RESULT;
-            } else if (node.data.feedItem?.metaData.MS) {
+            } else if (node.data.feedItem.metaData?.MS) {
                 color = Visualizer.COLOR_MILESTONE;
             } else if (node.data.confirmed) {
                 color = node.data.feedItem?.value !== 0 && node.data.feedItem?.value !== undefined
@@ -707,7 +723,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 color = Visualizer.COLOR_PENDING;
             }
 
-            size = node.data.feedItem?.metaData.MS ||
+            size = node.data.feedItem.metaData?.MS ||
                 (node.data.feedItem?.value !== 0 && node.data.feedItem?.value !== undefined)
                 ? Visualizer.VERTEX_SIZE_LARGE
                 : Visualizer.VERTEX_SIZE_REGULAR;
@@ -915,6 +931,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 const node = this._graph.getNode(this._msIndexToNode[msIndex].id);
                 if (node?.data.feedItem) {
                     this._msIndexToNode[msIndex].lastSeen = now;
+                    node.data.feedItem.metaData = node.data.feedItem.metaData ?? {};
                     node.data.feedItem.metaData.MS = msIndex;
                     this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
                 } else if (now - this._msIndexToNode[msIndex].lastSeen > 300000) {

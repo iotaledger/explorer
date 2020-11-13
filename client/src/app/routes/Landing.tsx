@@ -431,10 +431,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
     }
 
     /**
-     * Filter the transactions and return them.
-     * @param items The transactions to filter.
+     * Filter the items and update the feed.
      */
-    protected itemsUpdated(items: IFeedItem[]): void {
+    protected itemsUpdated(): void {
         if (this._isMounted && this._feedClient) {
             const minLimit = convertUnits(this.state.valueMinimum, this.state.valueMinimumUnits, Unit.i);
             const maxLimit = convertUnits(this.state.valueMaximum, this.state.valueMaximumUnits, Unit.i);
@@ -461,7 +460,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             }
 
             this.setState({
-                filteredItems: items
+                filteredItems: this._feedClient.getItems()
                     .filter(item => filter(item))
                     .slice(0, 10)
             });
@@ -511,7 +510,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
 
             this._settingsService.save();
 
-            this.itemsUpdated(this.state.items);
+            this.itemsUpdated();
         }
     }
 }
