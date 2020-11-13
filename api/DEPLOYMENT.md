@@ -79,3 +79,27 @@ e.g. `../.local-storage/network/mainnet.json`
 ```
 
 An optional `permaNodeEndpoint` can be added if you have access to a chronicle node.
+
+## Running with Docker
+
+A Dockerfile is also provided so that you can run the API as a Docker container. After configuring the API as explained in the [Configuration](#Configuration) section:
+
+Build the Docker image:
+
+```shell
+docker build --tag iotaledger/explorer-api .
+```
+
+Create a network for your container (if not created yet): 
+
+```shell
+docker network create explorer
+```
+
+and finally run the container:
+
+```shell
+docker run --name explorer-api --network explorer -p 4000:4000 -d iotaledger/explorer-api
+```
+
+Your API endpoint will now be listening to the port `4000` of your localhost. 

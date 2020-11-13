@@ -2,6 +2,7 @@
 node_modules
 .vercel
 .local-storage
+.DS_Store
 
 /api/dist
 /client/build
