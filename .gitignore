@@ -2,6 +2,7 @@
 node_modules
 .vercel
 .local-storage
+application-data
 .DS_Store
 
 /api/dist
