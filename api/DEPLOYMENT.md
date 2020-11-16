@@ -8,7 +8,7 @@ You can configure the application to store data either in Amazon DynamoDB `dynam
 
 ```js
 {
-    "fixerApiKey": "FIXER_API_KEY"                   /* API Key for using fixer.io */
+    "fixerApiKey": "FIXER_API_KEY",                  /* API Key for using fixer.io */
     "dynamoDbConnection": {
         "region": "AWS-REGION",                      /* AWS Region e.g. eu-central-1 */
         "accessKeyId": "AWS-ACCESS-KEY-ID",          /* AWS Access Key e.g. AKIAI57SG4YC2ZUCSABC */
@@ -19,7 +19,7 @@ You can configure the application to store data either in Amazon DynamoDB `dynam
     "allowedDomains": [                              /* A list of domains for the cors allow-origin */
         "www.mydomain.com"
     ],
-    "verboseLogging": false                          /* Set to true for the API to log all its request/responses */
+    "verboseLogging": false                         /* Set to true for the API to log all its request/responses */
 }
 ```
 
@@ -82,9 +82,9 @@ An optional `permaNodeEndpoint` can be added if you have access to a chronicle n
 
 ## Running with Docker
 
-A Dockerfile is also provided, so that you can run the API endpoint as a Docker container. As per the instructions on API [Configuration](#Configuration), you need to provide a configuration for local file storage on the container:
+A [Dockerfile](./Dockerfile) is also provided, so that you can run the API endpoint as a Docker container. As per the instructions on API [Configuration](#Configuration), you need to provide a configuration for local file storage on the container:
 
-```json
+```js
 {
     "fixerApiKey": "MY-KEY",
     "rootStorageFolder": "/app/data/.local-storage",  /* container's folder used for local storage */
