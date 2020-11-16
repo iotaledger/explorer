@@ -156,7 +156,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
             itemsPerSecondHistory: [],
-            items: [],
             confirmed: [],
             milestones: [],
             currency: "USD",

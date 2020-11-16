@@ -50,7 +50,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             marketCapCurrency: "--",
             priceEUR: 0,
             priceCurrency: "--",
-            items: [],
             confirmed: [],
             filteredItems: [],
             milestones: [],

@@ -121,7 +121,6 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     private buildItems(): void {
         this.setState(
             {
-                items: [],
                 itemsPerSecond: "--"
             },
             () => {
@@ -173,7 +172,6 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             const ipsHistory = this._feedClient.getIpsHistory();
 
             this.setState({
-                items: newItems,
                 confirmed,
                 // Increase values by +100 to add more area under the graph
                 itemsPerSecondHistory: ipsHistory.reverse().map(v => v + 100)

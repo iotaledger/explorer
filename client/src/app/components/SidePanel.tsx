@@ -1,16 +1,17 @@
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { UnitsHelper } from "../../helpers/unitsHelper";
+import { IFeedItem } from "../../models/IFeedItem";
 import Feeds from "./Feeds";
-import { FeedsState } from "./FeedsState";
 import LineChart from "./LineChart";
 import "./SidePanel.scss";
 import { SidePanelRouteProps } from "./SidePanelRouteProps";
+import { SidePanelState } from "./SidePanelState";
 
 /**
  * Component which will show the side panel component.
  */
-class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsState> {
+class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, SidePanelState> {
     /**
      * Create a new instance of SidePanel.
      * @param props The props.
@@ -74,7 +75,7 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
                         <div className="card--label card--label__underline">
                             {this._networkConfig?.protocolVersion === "og" ? "Transactions" : "Messages"}
                         </div>
-                        {this.state.items.slice(0, 5).map(item => (
+                        {this.state.items.map(item => (
                             <div className="row feed-item" key={item.id}>
                                 {item.value !== undefined && (
                                     <span className="feed-item--value">
@@ -98,6 +99,14 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
                 </div>
             </div>
         );
+    }
+
+    /**
+     * The items have been updated.
+     * @param items The updated items.
+     */
+    protected itemsUpdated(items: IFeedItem[]): void {
+        this.setState({ items: items.concat(this.state.items).slice(0, 5) });
     }
 }
 
