@@ -35,7 +35,7 @@ npm run start
 
 ## Running with Docker
 
-A [Dockerfile](./Dockerfile) is also provided to run the web application as a Docker container. First of all you need to [configure](#Configuration) the application, to point to the corresponding API endpoint. The API endpoint might be based on Docker as well, as explained [here](../api/DEPLOYMENT.md).
+A [Dockerfile](./Dockerfile) is also provided to run the web application as a Docker container. First of all you need to [configure](#Configuration) the application, to point to the corresponding API endpoint. The API endpoint might be based on Docker as well, as explained [here](../api/DEPLOYMENT.md#running-with-docker).
 
 Build the Docker image: 
 
