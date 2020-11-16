@@ -7,6 +7,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { UnitsHelper } from "../../helpers/unitsHelper";
 import { INetwork } from "../../models/db/INetwork";
 import { IFeedItem } from "../../models/IFeedItem";
+import { IFilterSettings } from "../../models/services/IFilterSettings";
 import { ValueFilter } from "../../models/services/valueFilter";
 import { NetworkService } from "../../services/networkService";
 import Feeds from "../components/Feeds";
@@ -66,12 +67,20 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
         super.componentDidMount();
 
         const settings = this._settingsService.get();
+
+        let filterSettings: IFilterSettings | undefined;
+
+        if (this._networkConfig && settings.filters) {
+            filterSettings = settings.filters[this._networkConfig.network];
+        }
+
+
         this.setState({
-            valueMinimum: settings.valueMinimum ?? "0",
-            valueMinimumUnits: settings.valueMinimumUnits ?? Unit.i,
-            valueMaximum: settings.valueMaximum ?? "3",
-            valueMaximumUnits: settings.valueMaximumUnits ?? Unit.Pi,
-            valueFilter: settings.valueFilter ?? "all",
+            valueMinimum: filterSettings?.valueMinimum ?? "0",
+            valueMinimumUnits: filterSettings?.valueMinimumUnits ?? Unit.i,
+            valueMaximum: filterSettings?.valueMaximum ?? "3",
+            valueMaximumUnits: filterSettings?.valueMaximumUnits ?? Unit.Pi,
+            valueFilter: filterSettings?.valueFilter ?? "all",
             formatFull: settings.formatFull
         });
     }
@@ -498,14 +507,17 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
      * Update the transaction feeds.
      */
     private async updateFilters(): Promise<void> {
-        if (this._isMounted) {
+        if (this._isMounted && this._networkConfig) {
             const settings = this._settingsService.get();
 
-            settings.valueFilter = this.state.valueFilter;
-            settings.valueMinimum = this.state.valueMinimum;
-            settings.valueMinimumUnits = this.state.valueMinimumUnits;
-            settings.valueMaximum = this.state.valueMaximum;
-            settings.valueMaximumUnits = this.state.valueMaximumUnits;
+            settings.filters = settings.filters ?? {};
+            settings.filters[this._networkConfig?.network] = {
+                valueFilter: this.state.valueFilter,
+                valueMinimum: this.state.valueMinimum,
+                valueMinimumUnits: this.state.valueMinimumUnits,
+                valueMaximum: this.state.valueMaximum,
+                valueMaximumUnits: this.state.valueMaximumUnits
+            };
 
             this._settingsService.save();
 
