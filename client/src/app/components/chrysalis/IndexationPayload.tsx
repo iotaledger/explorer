@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import { Converter } from "@iota/iota2.js";
 import React, { Component, ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { TextHelper } from "../../../helpers/textHelper";
 import MessageButton from "../MessageButton";
@@ -53,15 +54,15 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                         Index
                     </div>
                     <div className="card--value row middle">
-                        <button
-                            type="button"
+                        <Link
                             className="margin-r-t"
-                            onClick={() => this.props.history.push(
+                            to={
                                 `/${this.props.network
-                                }/indexed/${this.props.payload.index}`)}
+                                }/indexed/${this.props.payload.index}`
+                            }
                         >
                             {this.props.payload.index}
-                        </button>
+                        </Link>
                         <MessageButton
                             onClick={() => ClipboardHelper.copy(
                                 this.props.payload.index

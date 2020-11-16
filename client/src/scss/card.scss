@@ -211,7 +211,7 @@
       color: $gray;
     }
 
-    button {
+    a, button {
       &:hover {
         .card--value__light {
           color: lighten($main-green-highlight, 10%);
@@ -325,9 +325,10 @@
         box-shadow: none;
       }
 
-      &:disabled {
+      &:disabled, &.disabled {
         cursor: default;
         opacity: 0.3;
+        pointer-events: none;
       }
     }
   }

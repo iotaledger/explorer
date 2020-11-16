@@ -1,7 +1,7 @@
 import { addChecksum } from "@iota/checksum";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
@@ -362,31 +362,39 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                         </div>
                                                     )}
                                                     <div className="card--value">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => this.props.history.push(
+                                                        <Link
+                                                            to={
                                                                 `/${this.props.match.params.network
-                                                                }/transaction/${item.hash}`)}
+                                                                }/transaction/${item.hash}`
+                                                            }
                                                         >
                                                             {item.hash}
-                                                        </button>
+                                                        </Link>
                                                     </div>
                                                     {item.details && (
                                                         <div className="row middle card--value">
-                                                            <img
-                                                                src={chevronRightGreen}
-                                                                alt="bundle"
-                                                                className="svg-navigation margin-r-t"
-                                                            />
-                                                            <button
-                                                                type="button"
+                                                            <Link
                                                                 className="card--value__tertiary"
-                                                                onClick={() => this.props.history.push(
+                                                                to={
                                                                     `/${this.props.match.params.network
-                                                                    }/bundle/${item.details?.tx.bundle}`)}
+                                                                    }/bundle/${item.details?.tx.bundle}`
+                                                                }
+                                                            >
+                                                                <img
+                                                                    src={chevronRightGreen}
+                                                                    alt="bundle"
+                                                                    className="svg-navigation margin-r-t"
+                                                                />
+                                                            </Link>
+                                                            <Link
+                                                                className="card--value__tertiary"
+                                                                to={
+                                                                    `/${this.props.match.params.network
+                                                                    }/bundle/${item.details?.tx.bundle}`
+                                                                }
                                                             >
                                                                 {item.details.tx.bundle}
-                                                            </button>
+                                                            </Link>
                                                         </div>
                                                     )}
                                                 </div>
