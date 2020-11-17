@@ -28,4 +28,9 @@ export interface IFeedItem {
      * The payload type if this is Chrysalis.
      */
     payloadType?: "Transaction" | "Index" | "MS" | "No Payload";
+
+    /**
+     * Is the item confirmed.
+     */
+    confirmed: boolean;
 }

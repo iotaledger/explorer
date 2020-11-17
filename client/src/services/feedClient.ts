@@ -16,6 +16,11 @@ import { NetworkService } from "./networkService";
  */
 export class FeedClient {
     /**
+     * Minimun number of each item to keep.
+     */
+    private static readonly MIN_ITEMS_PER_TYPE: number = 10;
+
+    /**
      * The endpoint for performing communications.
      */
     private readonly _endpoint: string;
@@ -44,11 +49,6 @@ export class FeedClient {
      * Existing ids.
      */
     private _existingIds: string[];
-
-    /**
-     * The confirmed items.
-     */
-    private _confirmedIds: string[];
 
     /**
      * The ips.
@@ -107,7 +107,6 @@ export class FeedClient {
         });
 
         this._items = [];
-        this._confirmedIds = [];
         this._existingIds = [];
         this._ips = {
             start: 0,
@@ -145,44 +144,48 @@ export class FeedClient {
                         this._ips = subscriptionMessage.ips;
 
                         if (subscriptionMessage.confirmed) {
-                            this._confirmedIds = this._confirmedIds.concat(subscriptionMessage.confirmed);
-                            if (this._confirmedIds.length > 5000) {
-                                this._confirmedIds = this._confirmedIds.slice(this._confirmedIds.length - 5000);
+                            for (const confirmed of subscriptionMessage.confirmed) {
+                                const existing = this._items.find(c => c.id === confirmed);
+                                if (existing) {
+                                    existing.confirmed = true;
+                                }
                             }
                         }
 
                         const filteredNewItems = subscriptionMessage.items
-                            .map(item => this.convertItem(item))
+                            .map(item => this.convertItem(item, subscriptionMessage.confirmed.includes(item)))
                             .filter(nh => !this._existingIds.includes(nh.id));
 
                         if (filteredNewItems.length > 0) {
                             this._items = filteredNewItems.slice().concat(this._items);
 
+                            // Keep at least 10 of each type for the landing page feed
                             let removeItems: IFeedItem[] = [];
 
                             const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
-                            const zeroToRemoveCount = zero.length - 500;
+                            const zeroToRemoveCount = zero.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (zeroToRemoveCount > 0) {
                                 removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
                             }
                             const nonZero = this._items.filter(t => t.payloadType === "Transaction" &&
                                 t.value !== 0);
-                            const nonZeroToRemoveCount = nonZero.length - 500;
+                            const nonZeroToRemoveCount = nonZero.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (nonZeroToRemoveCount > 0) {
                                 removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
                             }
                             const indexPayload = this._items.filter(t => t.payloadType === "Index");
-                            const indexPayloadToRemoveCount = indexPayload.length - 500;
+                            const indexPayloadToRemoveCount = indexPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (indexPayloadToRemoveCount > 0) {
                                 removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
                             }
                             const msPayload = this._items.filter(t => t.payloadType === "MS");
-                            const msPayloadToRemoveCount = msPayload.length - 500;
+                            const msPayloadToRemoveCount = msPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (msPayloadToRemoveCount > 0) {
                                 removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
                             }
 
                             this._items = this._items.filter(t => !removeItems.includes(t));
+
                             this._existingIds = this._items.map(t => t.id);
                         }
 
@@ -225,14 +228,6 @@ export class FeedClient {
      */
     public getItems(): IFeedItem[] {
         return this._items.slice();
-    }
-
-    /**
-     * Get the confirmed ids.
-     * @returns The hahes.
-     */
-    public getConfirmedIds(): string[] {
-        return this._confirmedIds;
     }
 
     /**
@@ -283,9 +278,10 @@ export class FeedClient {
     /**
      * Convert the feed item into real data.
      * @param item The item source.
+     * @param confirmed Is the item confirmed.
      * @returns The feed item.
      */
-    private convertItem(item: string): IFeedItem {
+    private convertItem(item: string, confirmed: boolean): IFeedItem {
         if (this._networkConfig?.protocolVersion === "chrysalis") {
             const bytes = Converter.hexToBytes(item);
             const messageId = Converter.bytesToHex(Blake2b.sum256(bytes));
@@ -316,7 +312,8 @@ export class FeedClient {
                 parent1: message.parent1MessageId ?? "",
                 parent2: message.parent2MessageId ?? "",
                 metaData,
-                payloadType
+                payloadType,
+                confirmed: false
             };
         }
 
@@ -332,7 +329,8 @@ export class FeedClient {
                 "Address": tx.address,
                 "Bundle": tx.bundle
             },
-            payloadType: "Transaction"
+            payloadType: "Transaction",
+            confirmed
         };
     }
 }

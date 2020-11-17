@@ -137,7 +137,8 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                         }
                     );
 
-                    this.updateItems(this._feedClient.getItems(), this._feedClient.getConfirmedIds());
+                    const items = this._feedClient.getItems();
+                    this.updateItems(this._feedClient.getItems(), items.filter(i => i.confirmed).map(i => i.id));
                     this.updateTps();
                     this._timerId = setInterval(() => this.updateTps(), 2000);
                 }

@@ -16,9 +16,9 @@ import { VisualizerState } from "./VisualizerState";
  */
 class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, VisualizerState> {
     /**
-     * Maximum number of transactions.
+     * Maximum number of items.
      */
-    private static readonly MAX_TRANSACTIONS: number = 5000;
+    private static readonly MAX_ITEMS: number = 5000;
 
     /**
      * Edge colour default.
@@ -91,19 +91,14 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private _graphics?: Viva.Graph.View.IWebGLGraphics<INodeData, unknown>;
 
     /**
-     * All the transactions to vizualise.
+     * All the items being visualized.
      */
     private readonly _existingIds: string[];
 
     /**
-     * New transactions to process.
+     * New items to process.
      */
     private _newItems: IFeedItem[];
-
-    /**
-     * Recent confirmed transactions.
-     */
-    private _confirmedIds: string[];
 
     /**
      * Nodes to remove.
@@ -154,7 +149,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
         this._existingIds = [];
         this._newItems = [];
-        this._confirmedIds = [];
         this._msIndexToNode = {};
         this._lastClick = 0;
         this._smallNetworkInterval = 0;
@@ -171,7 +165,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             milestones: [],
             currency: "USD",
             currencies: [],
-            transactionCount: 0,
+            itemCount: 0,
             selectedFeedItem: undefined,
             filter: "",
             darkMode: this._settingsService.get().darkMode ?? false
@@ -253,10 +247,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                         </div>
                         <div className="card--content">
                             <div className="card--label">
-                                Transactions
+                                {this._networkConfig?.protocolVersion === "og" ? "Transactions" : "Messages"}
                             </div>
                             <div className="card--value">
-                                {this.state.transactionCount}
+                                {this.state.itemCount}
                             </div>
                             <div className="card--label">
                                 {this._networkConfig?.protocolVersion === "chrysalis" ? "MPS / CMPS" : "TPS / CTPS"}
@@ -446,7 +440,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 Search Result
                             </div>
                             <p className="margin-t-t margin-b-t">
-                                Value transactions and Milestones are displayed as larger nodes.
+                                Value items and Milestones are displayed as larger nodes.
                             </p>
                         </div>
                     </div>
@@ -483,24 +477,17 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     }
 
     /**
-     * The confirmed transactions have been updated.
-     * @param confirmed The updated confirmed transactions.
+     * The confirmed items have been updated.
+     * @param confirmed The updated confirmed items.
      */
     protected confirmedUpdated(confirmed: string[]): void {
-        this._confirmedIds = this._confirmedIds.concat(confirmed);
-
-        if (this._confirmedIds.length > Visualizer.MAX_TRANSACTIONS) {
-            this._confirmedIds = this._confirmedIds
-                .slice(this._confirmedIds.length - Visualizer.MAX_TRANSACTIONS);
-        }
-
         if (this._graph) {
             const highlightRegEx = this.highlightNodesRegEx();
 
             for (const sn of confirmed) {
                 const node = this._graph.getNode(sn);
                 if (node) {
-                    node.data.confirmed = true;
+                    node.data.feedItem.confirmed = true;
                     this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
                 }
             }
@@ -607,7 +594,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             const items = this._newItems.slice(0, consumeLength);
             this._newItems = this._newItems.slice(consumeLength);
 
-            this._graph.beginUpdate();
             const added: string[] = [];
             const now = Date.now();
 
@@ -616,7 +602,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                 if (!existingNode) {
                     this._graph.addNode(item.id, {
-                        confirmed: this._confirmedIds.includes(item.id),
                         feedItem: item,
                         added: now
                     });
@@ -625,9 +610,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     if (item.parent1) {
                         if (!this._graph.getNode(item.parent1)) {
                             this._graph.addNode(item.parent1, {
-                                confirmed: this._confirmedIds.includes(item.id),
                                 feedItem: {
-                                    id: item.parent1
+                                    id: item.parent1,
+                                    confirmed: false
                                 },
                                 added: now
                             });
@@ -641,9 +626,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     if (item.parent2 && item.parent1 !== item.parent2) {
                         if (!this._graph.getNode(item.parent2)) {
                             this._graph.addNode(item.parent2, {
-                                confirmed: this._confirmedIds.includes(item.id),
                                 feedItem: {
-                                    id: item.parent2
+                                    id: item.parent2,
+                                    confirmed: false
                                 },
                                 added: now
                             });
@@ -655,13 +640,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 }
             }
 
-            this._graph.endUpdate();
-
             this._existingIds.push(...added);
 
             // remove any nodes over the max limit, earliest in the list
             // are the oldest
-            while (this._existingIds.length > Visualizer.MAX_TRANSACTIONS) {
+            while (this._existingIds.length > Visualizer.MAX_ITEMS) {
                 const nodeToRemove = this._existingIds.shift();
                 if (nodeToRemove && !added.includes(nodeToRemove)) {
                     this._removeNodes.push(nodeToRemove);
@@ -674,7 +657,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 this.removeSmallNetworks();
             }
 
-            this.setState({ transactionCount: this._existingIds.length });
+            this.setState({ itemCount: this._existingIds.length });
         }
 
         if (this._drawTimer) {
@@ -716,7 +699,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 color = Visualizer.COLOR_SEARCH_RESULT;
             } else if (node.data.feedItem.metaData?.MS) {
                 color = Visualizer.COLOR_MILESTONE;
-            } else if (node.data.confirmed) {
+            } else if (node.data.feedItem.confirmed) {
                 color = node.data.feedItem?.value !== 0 && node.data.feedItem?.value !== undefined
                     ? Visualizer.COLOR_VALUE_CONFIRMED
                     : Visualizer.COLOR_ZERO_CONFIRMED;
@@ -790,8 +773,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     private highlightConnections(nodeId: string): void {
         if (this._graph) {
-            this._graph.beginUpdate();
-
             const confirming = this.getNodeConnections(nodeId, "toId");
             for (const confirm of confirming) {
                 const linkUI = this._graphics?.getLinkUI(confirm);
@@ -807,8 +788,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     linkUI.color = Visualizer.EDGE_COLOR_CONFIRMED_BY;
                 }
             }
-
-            this._graph.endUpdate();
         }
     }
 
@@ -817,8 +796,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     private styleConnections(): void {
         if (this._graph) {
-            this._graph.beginUpdate();
-
             this._graph.forEachLink((link: Viva.Graph.ILink<unknown>) => {
                 const linkUI = this._graphics?.getLinkUI(link.id);
                 if (linkUI) {
@@ -827,8 +804,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                         : Visualizer.EDGE_COLOR_LIGHT;
                 }
             });
-
-            this._graph.endUpdate();
         }
     }
 
@@ -839,13 +814,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         const regEx = this.highlightNodesRegEx();
 
         if (this._graph) {
-            this._graph.beginUpdate();
-
             this._graph.forEachNode((node: Viva.Graph.INode<INodeData>) => {
                 this.styleNode(node, this.testForHighlight(regEx, node.id, node.data));
             });
-
-            this._graph.endUpdate();
         }
     }
 
@@ -954,8 +925,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     private removeNodes(): void {
         if (this._graph) {
-            this._graph.beginUpdate();
-
             while (this._removeNodes.length > 0) {
                 const nodeToRemove = this._removeNodes.shift();
                 if (nodeToRemove) {
@@ -985,7 +954,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     }
                 }
             }
-            this._graph.endUpdate();
         }
     }
 

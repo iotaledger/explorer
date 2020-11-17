@@ -7,11 +7,6 @@ export interface INodeData {
     feedItem: IFeedItem;
 
     /**
-     * Is the transaction confirmed.
-     */
-    confirmed?: boolean;
-
-    /**
      * When was the node added.
      */
     added: number;

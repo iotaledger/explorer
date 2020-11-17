@@ -6,7 +6,7 @@ export interface VisualizerState extends FeedsState {
     /**
      * The number of transactions being displayed.
      */
-    transactionCount: number;
+    itemCount: number;
 
     /**
      * The selected node value.
