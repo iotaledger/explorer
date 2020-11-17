@@ -18,7 +18,7 @@ export class FeedClient {
     /**
      * Minimun number of each item to keep.
      */
-    private static readonly MIN_ITEMS_PER_TYPE: number = 10;
+    private static readonly MIN_ITEMS_PER_TYPE: number = 50;
 
     /**
      * The endpoint for performing communications.
@@ -159,7 +159,6 @@ export class FeedClient {
                         if (filteredNewItems.length > 0) {
                             this._items = filteredNewItems.slice().concat(this._items);
 
-                            // Keep at least 10 of each type for the landing page feed
                             let removeItems: IFeedItem[] = [];
 
                             const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
@@ -168,7 +167,7 @@ export class FeedClient {
                                 removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
                             }
                             const nonZero = this._items.filter(t => t.payloadType === "Transaction" &&
-                                t.value !== 0);
+                                t.value !== 0 && t.value !== undefined);
                             const nonZeroToRemoveCount = nonZero.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (nonZeroToRemoveCount > 0) {
                                 removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));

@@ -436,7 +436,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             const minLimit = convertUnits(this.state.valueMinimum, this.state.valueMinimumUnits, Unit.i);
             const maxLimit = convertUnits(this.state.valueMaximum, this.state.valueMaximumUnits, Unit.i);
 
-            let filter = (item: IFeedItem) => true;
+            let filter = (item: IFeedItem) =>
+                item.value === undefined ||
+                (item.value !== undefined &&
+                    Math.abs(item.value) >= minLimit &&
+                    Math.abs(item.value) <= maxLimit);
 
             if (this.state.valueFilter === "zeroOnly") {
                 filter = (item: IFeedItem) => item.value === 0;
