@@ -101,9 +101,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private _newItems: IFeedItem[];
 
     /**
-     * New confirmed transactions.
+     * Recent confirmed transactions.
      */
-    private _newConfirmed: string[];
+    private _confirmedIds: string[];
 
     /**
      * Nodes to remove.
@@ -154,7 +154,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
         this._existingIds = [];
         this._newItems = [];
-        this._newConfirmed = [];
+        this._confirmedIds = [];
         this._msIndexToNode = {};
         this._lastClick = 0;
         this._smallNetworkInterval = 0;
@@ -488,7 +488,24 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @param confirmed The updated confirmed transactions.
      */
     protected confirmedUpdated(confirmed: string[]): void {
-        this._newConfirmed = this._newConfirmed.concat(confirmed);
+        this._confirmedIds = this._confirmedIds.concat(confirmed);
+
+        if (this._confirmedIds.length > Visualizer.MAX_TRANSACTIONS) {
+            this._confirmedIds = this._confirmedIds
+                .slice(this._confirmedIds.length - Visualizer.MAX_TRANSACTIONS);
+        }
+
+        if (this._graph) {
+            const highlightRegEx = this.highlightNodesRegEx();
+
+            for (const sn of confirmed) {
+                const node = this._graph.getNode(sn);
+                if (node) {
+                    node.data.confirmed = true;
+                    this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
+                }
+            }
+        }
     }
 
     /**
@@ -591,37 +608,16 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             const items = this._newItems.slice(0, consumeLength);
             this._newItems = this._newItems.slice(consumeLength);
 
-            const confirmed = this._newConfirmed.slice();
-            this._newConfirmed = [];
-
-            const now = Date.now();
-
-            const highlightRegEx = this.highlightNodesRegEx();
-
-            for (const sn of confirmed) {
-                const node = this._graph.getNode(sn);
-                if (node) {
-                    node.data.confirmed = true;
-                    this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
-                }
-            }
-
             this._graph.beginUpdate();
             const added: string[] = [];
+            const now = Date.now();
 
             for (const item of items) {
                 const existingNode = this._graph.getNode(item.id);
 
-                if (existingNode) {
-                    const updatedData: INodeData = {
-                        confirmed: confirmed.includes(item.id) || existingNode.data.confirmed,
-                        feedItem: item,
-                        added: existingNode.data.added
-                    };
-                    this._graph.addNode(item.id, updatedData);
-                } else {
+                if (!existingNode) {
                     this._graph.addNode(item.id, {
-                        confirmed: confirmed.includes(item.id),
+                        confirmed: this._confirmedIds.includes(item.id),
                         feedItem: item,
                         added: now
                     });
@@ -630,7 +626,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     if (item.parent1) {
                         if (!this._graph.getNode(item.parent1)) {
                             this._graph.addNode(item.parent1, {
-                                confirmed: confirmed.includes(item.id),
+                                confirmed: this._confirmedIds.includes(item.id),
                                 feedItem: {
                                     id: item.parent1
                                 },
@@ -646,7 +642,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     if (item.parent2 && item.parent1 !== item.parent2) {
                         if (!this._graph.getNode(item.parent2)) {
                             this._graph.addNode(item.parent2, {
-                                confirmed: confirmed.includes(item.id),
+                                confirmed: this._confirmedIds.includes(item.id),
                                 feedItem: {
                                     id: item.parent2
                                 },
@@ -664,7 +660,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             this._existingIds.push(...added);
 
-            // remove any nodes over the max limit
+            // remove any nodes over the max limit, earliest in the list
+            // are the oldest
             while (this._existingIds.length > Visualizer.MAX_TRANSACTIONS) {
                 const nodeToRemove = this._existingIds.shift();
                 if (nodeToRemove && !added.includes(nodeToRemove)) {
@@ -673,7 +670,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             }
             this.removeNodes();
 
-            // Check for small graphs to remove
+            // Check for small graphs to remove every few iterations
             if (this._smallNetworkInterval++ % 5 === 0) {
                 this.removeSmallNetworks();
             }
@@ -983,6 +980,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     if (removeNode?.data.feedItem.metaData?.MS) {
                         delete this._msIndexToNode[removeNode?.data.feedItem.metaData?.MS as number];
                     }
+
+                    if (this.state.selectedFeedItem?.id === nodeToRemove) {
+                        this.setState({ selectedFeedItem: undefined });
+                    }
                 }
             }
             this._graph.endUpdate();
@@ -1019,6 +1020,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 });
 
                 for (const subGraph in subGraphs) {
+                    // If the subgraph has very few nodes in comparison to the whole graph
+                    // and has not been added to for at least a minute then remove it
                     if (subGraphs[subGraph].nodes.length < this._existingIds.length * 0.03 &&
                         now - subGraphs[subGraph].mostRecentChange > 60000) {
                         removed = true;
