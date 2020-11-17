@@ -45,6 +45,7 @@ declare module "vivagraphjs" {
 
         export interface IEvents {
             click: (handler: (node: INode) => void) => void;
+            dblClick: (handler: (node: INode) => void) => void;
             mouseEnter: (handler: (node: INode) => void) => void;
             mouseLeave: (handler: (node: INode) => void) => void;
         }
