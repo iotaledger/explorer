@@ -553,6 +553,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             const events = Viva.Graph.webglInputEvents(this._graphics, this._graph);
             events.click(node => this.selectNode(node));
+            events.dblClick(node => {
+                window.open(`${window.location.origin}${RouteBuilder.buildItem(
+                    this._networkConfig, node.id)}`, "_blank");
+            });
 
             events.mouseEnter(node => {
                 if (!this.state.selectedFeedItem) {
