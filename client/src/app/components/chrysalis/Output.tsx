@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import React, { Component, ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { UnitsHelper } from "../../../helpers/unitsHelper";
 import MessageButton from "../MessageButton";
@@ -43,15 +44,15 @@ class Output extends Component<OutputProps, OutputState> {
                         )}
                         {!this.state.isGenesis && (
                             <React.Fragment>
-                                <button
-                                    type="button"
-                                    onClick={() => this.props.history.push(
+                                <Link
+                                    to={
                                         `/${this.props.network
-                                        }/message/${this.props.output.messageId}`)}
+                                        }/message/${this.props.output.messageId}`
+                                    }
                                     className="margin-r-t"
                                 >
                                     {this.props.output.messageId}
-                                </button>
+                                </Link>
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(
                                         this.props.output.messageId

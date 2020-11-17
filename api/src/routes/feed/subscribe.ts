@@ -3,8 +3,8 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
+import { IItemsService } from "../../models/services/IItemsService";
 import { NetworkService } from "../../services/networkService";
-import { TransactionsService } from "../../services/transactionsService";
 import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
@@ -26,11 +26,13 @@ export async function subscribe(
         const networks = (await networkService.networks()).map(n => n.network);
         ValidationHelper.oneOf(request.network, networks, "network");
 
-        const transactionsService = ServiceFactory.get<TransactionsService>(`transactions-${request.network}`);
+        const itemsService = ServiceFactory.get<IItemsService>(`items-${request.network}`);
 
-        await transactionsService.subscribe(socket.id, async transactionData => {
-            socket.emit("transactions", transactionData);
-        });
+        if (itemsService) {
+            itemsService.subscribe(socket.id, async data => {
+                socket.emit("transactions", data);
+            });
+        }
 
         response = {
             subscriptionId: socket.id,

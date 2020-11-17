@@ -9,9 +9,9 @@ export interface IMilestoneStore {
      */
     indexes: {
         /**
-         * The hash for the milestone.
+         * The id for the transaction or message.
          */
-        hash: string;
+        id: string;
 
         /**
          * The milestone index.

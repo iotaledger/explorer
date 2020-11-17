@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { TangleCacheService } from "../../../services/tangleCacheService";
@@ -160,15 +160,15 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 <div className="card--value row middle">
                                                     {this.state.message?.parent1MessageId !== "0".repeat(64) && (
                                                         <React.Fragment>
-                                                            <button
-                                                                type="button"
+                                                            <Link
                                                                 className="margin-r-t"
-                                                                onClick={() => this.props.history.push(
+                                                                to={
                                                                     `/${this.props.match.params.network
-                                                                    }/message/${this.state.message?.parent1MessageId}`)}
+                                                                    }/message/${this.state.message?.parent1MessageId}`
+                                                                }
                                                             >
                                                                 {this.state.message?.parent1MessageId}
-                                                            </button>
+                                                            </Link>
                                                             <MessageButton
                                                                 onClick={() => ClipboardHelper.copy(
                                                                     this.state.message?.parent1MessageId
@@ -188,15 +188,15 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 <div className="card--value row middle">
                                                     {this.state.message?.parent2MessageId !== "0".repeat(64) && (
                                                         <React.Fragment>
-                                                            <button
+                                                            <Link
                                                                 type="button"
-                                                                className="margin-r-t"
-                                                                onClick={() => this.props.history.push(
+                                                                to={
                                                                     `/${this.props.match.params.network
-                                                                    }/message/${this.state.message?.parent2MessageId}`)}
+                                                                    }/message/${this.state.message?.parent2MessageId}`
+                                                                }
                                                             >
                                                                 {this.state.message?.parent2MessageId}
-                                                            </button>
+                                                            </Link>
                                                             <MessageButton
                                                                 onClick={() => ClipboardHelper.copy(
                                                                     this.state.message?.parent2MessageId
@@ -284,14 +284,14 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         {this.state.childrenBusy && (<Spinner />)}
                                         {this.state.childrenIds?.map(childId => (
                                             <div className="card--value" key={childId}>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => this.props.history.push(
+                                                <Link
+                                                    to={
                                                         `/${this.props.match.params.network
-                                                        }/message/${childId}`)}
+                                                        }/message/${childId}`
+                                                    }
                                                 >
                                                     {childId}
-                                                </button>
+                                                </Link>
                                             </div>
                                         ))}
                                     </div>

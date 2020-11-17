@@ -44,10 +44,10 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                     onChange={e => this.setState({
                         query: this.props.protocolVersion === "og"
                             ? e.target.value.toUpperCase().trim()
-                            : e.target.value.trim(),
+                            : e.target.value,
                         isValid: this.isValid(this.props.protocolVersion === "og"
                             ? e.target.value.toUpperCase().trim()
-                            : e.target.value.trim())
+                            : e.target.value)
                     })}
                     placeholder={this.props.compact ? "Search..." : (
                         this.props.protocolVersion === "chrysalis"
@@ -55,16 +55,14 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                             : "Search transactions, bundles, addresses, tags")}
                     onKeyDown={e => {
                         if (e.keyCode === 13 && this.state.isValid) {
-                            this.props.onSearch(this.state.query);
+                            this.doSearch();
                         }
                     }}
                 />
                 <button
                     className="search--button"
                     type="submit"
-                    onClick={() => this.props.onSearch(this.props.protocolVersion === "og"
-                        ? this.state.query.trim().toUpperCase()
-                        : this.state.query.trim())}
+                    onClick={() => this.doSearch()}
                     disabled={!this.state.isValid}
                 >
                     {this.props.compact ? (<FaSearch />) : "Search"}
@@ -92,7 +90,16 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                 query.trim().length === 90);
         }
 
-        return query.length > 0;
+        return query.trim().length > 0;
+    }
+
+    /**
+     * Perform the search.
+     */
+    private doSearch(): void {
+        this.props.onSearch(this.props.protocolVersion === "og"
+            ? this.state.query.trim().toUpperCase()
+            : this.state.query.trim());
     }
 }
 

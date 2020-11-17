@@ -1,5 +1,3 @@
-import { IFeedTransaction } from "./IFeedTransaction";
-
 export interface IFeedSubscriptionMessage {
     /**
      * The subscription id created.
@@ -7,37 +5,37 @@ export interface IFeedSubscriptionMessage {
     subscriptionId: string;
 
     /**
-     * The latest transactions.
+     * The latest items.
      */
-    transactions: IFeedTransaction[];
+    items: string[];
 
     /**
-     * The confirmed transactions.
+     * The confirmed items.
      */
     confirmed: string[];
 
     /**
-     * The tps data.
+     * The ips data.
      */
-    tps: {
+    ips: {
         /**
-         * The start timestamp for the tps.
+         * The start timestamp for the ips.
          */
         start: number;
 
         /**
-         * The end timestamp for the tps.
+         * The end timestamp for the ips.
          */
         end: number;
 
         /**
-         * The tps counts.
+         * The item counts.
          */
-        tx: number[];
+        itemCount: number[];
 
         /**
-         * The confirmed tps counts.
+         * The confirmed item counts.
          */
-        sn: number[];
+        confirmedItemCount: number[];
     };
 }

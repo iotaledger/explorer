@@ -51,6 +51,20 @@ class MilestonePayload extends Component<MilestonePayloadProps> {
                     <div className="card--value">
                         {this.props.payload.inclusionMerkleProof}
                     </div>
+                    {this.props.payload.publicKeys && (
+                        <React.Fragment>
+                            <div className="card--label">
+                                Public Keys
+                            </div>
+                            <div className="card--value">
+                                {this.props.payload.publicKeys?.map(pubKey => (
+                                    <div key={pubKey} className="margin-b-s">
+                                        {pubKey}
+                                    </div>
+                                ))}
+                            </div>
+                        </React.Fragment>
+                    )}
                     <div className="card--label">
                         Signatures
                     </div>

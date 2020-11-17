@@ -4,9 +4,11 @@ import { Link, RouteComponentProps } from "react-router-dom";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import chevronDownWhite from "../../assets/chevron-down-white.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { RouteBuilder } from "../../helpers/routeBuilder";
 import { UnitsHelper } from "../../helpers/unitsHelper";
-import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
 import { INetwork } from "../../models/db/INetwork";
+import { IFeedItem } from "../../models/IFeedItem";
+import { IFilterSettings } from "../../models/services/IFilterSettings";
 import { ValueFilter } from "../../models/services/valueFilter";
 import { NetworkService } from "../../services/networkService";
 import Feeds from "../components/Feeds";
@@ -41,18 +43,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             valueMinimumUnits: Unit.i,
             valueMaximum: "1",
             valueMaximumUnits: Unit.Ti,
-            valueFilter: "both",
-            transactionsPerSecond: "--",
-            confirmedTransactionsPerSecond: "--",
-            confirmedTransactionsPerSecondPercent: "--",
-            transactionsPerSecondHistory: [],
+            valueFilter: "all",
+            itemsPerSecond: "--",
+            confirmedItemsPerSecond: "--",
+            confirmedItemsPerSecondPercent: "--",
+            itemsPerSecondHistory: [],
             marketCapEUR: 0,
             marketCapCurrency: "--",
             priceEUR: 0,
             priceCurrency: "--",
-            transactions: [],
-            confirmed: [],
-            filteredTransactions: [],
+            filteredItems: [],
             milestones: [],
             currency: "USD",
             currencies: [],
@@ -67,12 +67,20 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
         super.componentDidMount();
 
         const settings = this._settingsService.get();
+
+        let filterSettings: IFilterSettings | undefined;
+
+        if (this._networkConfig && settings.filters) {
+            filterSettings = settings.filters[this._networkConfig.network];
+        }
+
+
         this.setState({
-            valueMinimum: settings.valueMinimum ?? "0",
-            valueMinimumUnits: settings.valueMinimumUnits ?? Unit.i,
-            valueMaximum: settings.valueMaximum ?? "1",
-            valueMaximumUnits: settings.valueMaximumUnits ?? Unit.Ti,
-            valueFilter: settings.valueFilter ?? "both",
+            valueMinimum: filterSettings?.valueMinimum ?? "0",
+            valueMinimumUnits: filterSettings?.valueMinimumUnits ?? Unit.i,
+            valueMaximum: filterSettings?.valueMaximum ?? "3",
+            valueMaximumUnits: filterSettings?.valueMaximumUnits ?? Unit.Pi,
+            valueFilter: filterSettings?.valueFilter ?? "all",
             formatFull: settings.formatFull
         });
     }
@@ -99,27 +107,23 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                     </div>
                                     <div className="row space-between info-boxes">
                                         <div className="info-box">
-                                            <span className="info-box--title">Transactions per Second</span>
+                                            <span className="info-box--title">{
+                                                this.state.networkConfig.protocolVersion === "og"
+                                                    ? "Transactions"
+                                                    : "Messages"
+                                            } per Second
+                                            </span>
                                             <span className="info-box--value">
-                                                {this.state.networkConfig.protocolVersion === "og" && (
-                                                    <React.Fragment>
-                                                        {this.state.transactionsPerSecond} / {
-                                                            this.state.confirmedTransactionsPerSecond
-                                                        }
-                                                    </React.Fragment>
-                                                )}
-                                                {this.state.networkConfig.protocolVersion === "chrysalis" && (
-                                                    <React.Fragment>
-                                                        :(
-                                                    </React.Fragment>
-                                                )}
+                                                {this.state.itemsPerSecond} / {
+                                                    this.state.confirmedItemsPerSecond
+                                                }
                                             </span>
                                             <span className="info-box--action info-box--action__labelvalue">
                                                 <span className="info-box--action__label margin-l-t margin-r-t">
                                                     Confirmation Rate:
                                                 </span>
                                                 <span className="info-box--action__value margin-r-t">
-                                                    {this.state.confirmedTransactionsPerSecondPercent}
+                                                    {this.state.confirmedItemsPerSecondPercent}
                                                 </span>
                                             </span>
                                         </div>
@@ -192,10 +196,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                         <div className="feeds-section">
                             <h1>Feeds</h1>
                             {this.state.networkConfig.isEnabled &&
-                                this.state.networkConfig.protocolVersion === "og" && (
+                                (
                                     <div className="row filters wrap card">
                                         <div className="col">
-                                            <span className="card--label">Value Filter</span>
+                                            <span className="card--label">
+                                                {this._networkConfig?.protocolVersion === "og"
+                                                    ? "Value" : "Payload"} Filter
+                                            </span>
                                             <span className="filter--value">
                                                 <div className="select-wrapper">
                                                     <select
@@ -206,78 +213,88 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                             },
                                                             async () => this.updateFilters())}
                                                     >
-                                                        <option value="both">Both</option>
+                                                        <option value="all">All</option>
                                                         <option value="zeroOnly">Zero Only</option>
                                                         <option value="nonZeroOnly">Non Zero Only</option>
+                                                        {this._networkConfig?.protocolVersion === "chrysalis" && (
+                                                            <React.Fragment>
+                                                                <option value="milestone">Milestone</option>
+                                                                <option value="indexed">Indexed</option>
+                                                                <option value="noPayload">No Payload</option>
+                                                            </React.Fragment>
+                                                        )}
                                                     </select>
                                                     <img src={chevronDownGray} alt="expand" />
                                                 </div>
                                             </span>
                                         </div>
-                                        {this.state.valueFilter !== "zeroOnly" && (
-                                            <React.Fragment>
-                                                <div className="col">
-                                                    <span className="card--label">Minimum</span>
-                                                    <span className="filter--value">
-                                                        <div className="select-wrapper">
-                                                            <select
-                                                                className="select-plus"
-                                                                value={this.state.valueMinimumUnits}
-                                                                onChange={e => this.setState(
-                                                                    { valueMinimumUnits: e.target.value as Unit },
-                                                                    async () => this.updateFilters())}
-                                                            >
-                                                                <option value="i">i</option>
-                                                                <option value="Ki">Ki</option>
-                                                                <option value="Mi">Mi</option>
-                                                                <option value="Gi">Gi</option>
-                                                                <option value="Ti">Ti</option>
-                                                                <option value="Pi">Pi</option>
-                                                            </select>
-                                                            <img src={chevronDownGray} alt="expand" />
-                                                        </div>
-                                                        <input
-                                                            className="input-plus"
-                                                            type="text"
-                                                            value={this.state.valueMinimum}
-                                                            onChange={e => this.updateMinimum(e.target.value)}
-                                                        />
-                                                    </span>
-                                                </div>
-                                                <div className="col">
-                                                    <span className="card--label">&nbsp;</span>
-                                                    <span className="card--label margin-b-t">To</span>
-                                                </div>
-                                                <div className="col">
-                                                    <span className="card--label">Maximum</span>
-                                                    <span className="filter--value">
-                                                        <div className="select-wrapper">
-                                                            <select
-                                                                className="select-plus"
-                                                                value={this.state.valueMaximumUnits}
-                                                                onChange={e => this.setState(
-                                                                    { valueMaximumUnits: e.target.value as Unit },
-                                                                    async () => this.updateFilters())}
-                                                            >
-                                                                <option value="i">i</option>
-                                                                <option value="Ki">Ki</option>
-                                                                <option value="Mi">Mi</option>
-                                                                <option value="Gi">Gi</option>
-                                                                <option value="Ti">Ti</option>
-                                                                <option value="Pi">Pi</option>
-                                                            </select>
-                                                            <img src={chevronDownGray} alt="expand" />
-                                                        </div>
-                                                        <input
-                                                            className="input-plus"
-                                                            type="text"
-                                                            value={this.state.valueMaximum}
-                                                            onChange={e => this.updateMaximum(e.target.value)}
-                                                        />
-                                                    </span>
-                                                </div>
-                                            </React.Fragment>
-                                        )}
+                                        {this.state.valueFilter !== "zeroOnly" &&
+                                            this.state.valueFilter !== "milestone" &&
+                                            this.state.valueFilter !== "indexed" &&
+                                            this.state.valueFilter !== "noPayload" && (
+                                                <React.Fragment>
+                                                    <div className="col">
+                                                        <span className="card--label">Minimum</span>
+                                                        <span className="filter--value">
+                                                            <div className="select-wrapper">
+                                                                <select
+                                                                    className="select-plus"
+                                                                    value={this.state.valueMinimumUnits}
+                                                                    onChange={e => this.setState(
+                                                                        { valueMinimumUnits: e.target.value as Unit },
+                                                                        async () => this.updateFilters())}
+                                                                >
+                                                                    <option value="i">i</option>
+                                                                    <option value="Ki">Ki</option>
+                                                                    <option value="Mi">Mi</option>
+                                                                    <option value="Gi">Gi</option>
+                                                                    <option value="Ti">Ti</option>
+                                                                    <option value="Pi">Pi</option>
+                                                                </select>
+                                                                <img src={chevronDownGray} alt="expand" />
+                                                            </div>
+                                                            <input
+                                                                className="input-plus"
+                                                                type="text"
+                                                                value={this.state.valueMinimum}
+                                                                onChange={e => this.updateMinimum(e.target.value)}
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                    <div className="col">
+                                                        <span className="card--label">&nbsp;</span>
+                                                        <span className="card--label margin-b-t">To</span>
+                                                    </div>
+                                                    <div className="col">
+                                                        <span className="card--label">Maximum</span>
+                                                        <span className="filter--value">
+                                                            <div className="select-wrapper">
+                                                                <select
+                                                                    className="select-plus"
+                                                                    value={this.state.valueMaximumUnits}
+                                                                    onChange={e => this.setState(
+                                                                        { valueMaximumUnits: e.target.value as Unit },
+                                                                        async () => this.updateFilters())}
+                                                                >
+                                                                    <option value="i">i</option>
+                                                                    <option value="Ki">Ki</option>
+                                                                    <option value="Mi">Mi</option>
+                                                                    <option value="Gi">Gi</option>
+                                                                    <option value="Ti">Ti</option>
+                                                                    <option value="Pi">Pi</option>
+                                                                </select>
+                                                                <img src={chevronDownGray} alt="expand" />
+                                                            </div>
+                                                            <input
+                                                                className="input-plus"
+                                                                type="text"
+                                                                value={this.state.valueMaximum}
+                                                                onChange={e => this.updateMaximum(e.target.value)}
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                </React.Fragment>
+                                            )}
                                     </div>
                                 )}
                             <div className="row wrap feeds">
@@ -287,47 +304,49 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                     </div>
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
-                                            <span className="card--label">Amount</span>
+                                            <span className="card--label">
+                                                {this.state.networkConfig.protocolVersion === "og"
+                                                    ? "Amount" : "Data"}
+                                            </span>
                                             <span className="card--label">
                                                 {this.state.networkConfig.protocolVersion === "og"
                                                     ? "Transaction" : "Message"}
                                             </span>
                                         </div>
-                                        {this.state.filteredTransactions.length === 0 &&
-                                            this.state.networkConfig.protocolVersion === "og" && (
-                                                <p>There are no transactions with the current filter.</p>
-                                            )}
-                                        {this.state.networkConfig.protocolVersion === "chrysalis" && (
-                                            <p>There is no live feed availabe for Chrysalis.</p>
+                                        {this.state.filteredItems.length === 0 && (
+                                            <p>There are no items with the current filter.</p>
                                         )}
-                                        {this.state.filteredTransactions.map(tx => (
-                                            <div className="row feed-item" key={tx.hash}>
+                                        {this.state.filteredItems.map(item => (
+                                            <div className="row feed-item" key={item.id}>
                                                 <span className="feed-item--value">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => this.setState(
-                                                            {
-                                                                formatFull: !this.state.formatFull
-                                                            },
-                                                            () => this._settingsService.saveSingle(
-                                                                "formatFull",
-                                                                this.state.formatFull)
-                                                        )}
-                                                    >
-                                                        {this.state.formatFull
-                                                            ? `${tx.value} i`
-                                                            : UnitsHelper.formatBest(tx.value)}
-                                                    </button>
+                                                    {item.value !== undefined && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => this.setState(
+                                                                {
+                                                                    formatFull: !this.state.formatFull
+                                                                },
+                                                                () => this._settingsService.saveSingle(
+                                                                    "formatFull",
+                                                                    this.state.formatFull)
+                                                            )}
+                                                        >
+                                                            {this.state.formatFull
+                                                                ? `${item.value} i`
+                                                                : UnitsHelper.formatBest(item.value)}
+                                                        </button>
+                                                    )}
+                                                    {item.value === undefined && (
+                                                        <span>
+                                                            {item.payloadType}
+                                                        </span>
+                                                    )}
                                                 </span>
                                                 <Link
                                                     className="feed-item--hash"
-                                                    to={
-                                                        `/${this.props.match.params.network
-                                                        }/${this.state.networkConfig.protocolVersion === "og"
-                                                            ? "transaction" : "message"}/${tx.hash}`
-                                                    }
+                                                    to={RouteBuilder.buildItem(this.state.networkConfig, item.id)}
                                                 >
-                                                    {tx.hash}
+                                                    {item.id}
                                                 </Link>
                                             </div>
                                         ))}
@@ -348,20 +367,14 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                         {this.state.milestones.length === 0 && (
                                             <p>There are no milestones to display.</p>
                                         )}
-                                        {this.state.milestones.slice(0, 10).map(tx => (
-                                            <div className="row feed-item" key={tx.hash}>
-                                                <span className="feed-item--value">{tx.milestoneIndex}</span>
+                                        {this.state.milestones.slice(0, 10).map(ms => (
+                                            <div className="row feed-item" key={ms.id}>
+                                                <span className="feed-item--value">{ms.milestoneIndex}</span>
                                                 <Link
                                                     className="feed-item--hash"
-                                                    to={
-                                                        `/${this.props.match.params.network
-                                                        }/${this.state.networkConfig.protocolVersion === "og"
-                                                            ? "transaction" : "milestone"}/${this
-                                                            .state.networkConfig.protocolVersion === "og"
-                                                            ? tx.hash : tx.milestoneIndex}`
-                                                    }
+                                                    to={RouteBuilder.buildMilestone(this.state.networkConfig, ms)}
                                                 >
-                                                    {tx.hash}
+                                                    {ms.id}
                                                 </Link>
                                             </div>
                                         ))}
@@ -416,24 +429,37 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
     }
 
     /**
-     * Filter the transactions and return them.
-     * @param transactions The transactions to filter.
+     * Filter the items and update the feed.
      */
-    protected transactionsUpdated(transactions: IFeedTransaction[]): void {
+    protected itemsUpdated(): void {
         if (this._isMounted && this._feedClient) {
             const minLimit = convertUnits(this.state.valueMinimum, this.state.valueMinimumUnits, Unit.i);
             const maxLimit = convertUnits(this.state.valueMaximum, this.state.valueMaximumUnits, Unit.i);
 
+            let filter = (item: IFeedItem) => true;
+
+            if (this.state.valueFilter === "zeroOnly") {
+                filter = (item: IFeedItem) => item.value === 0;
+            } else if (this.state.valueFilter === "nonZeroOnly") {
+                filter = (item: IFeedItem) =>
+                    item.value !== undefined &&
+                    item.value !== 0 &&
+                    Math.abs(item.value) >= minLimit &&
+                    Math.abs(item.value) <= maxLimit;
+            } else if (this.state.valueFilter === "milestone") {
+                filter = (item: IFeedItem) =>
+                    item.payloadType === "MS";
+            } else if (this.state.valueFilter === "indexed") {
+                filter = (item: IFeedItem) =>
+                    item.payloadType === "Index";
+            } else if (this.state.valueFilter === "noPayload") {
+                filter = (item: IFeedItem) =>
+                    item.payloadType === "No Payload";
+            }
+
             this.setState({
-                filteredTransactions: transactions
-                    .filter(t => (
-                        this.state.valueFilter === "zeroOnly"
-                            ? true
-                            : Math.abs(t.value) >= minLimit && Math.abs(t.value) <= maxLimit)
-                    )
-                    .filter(t => (this.state.valueFilter === "both" ? true
-                        : (this.state.valueFilter === "zeroOnly" ? t.value === 0
-                            : t.value !== 0)))
+                filteredItems: this._feedClient.getItems()
+                    .filter(item => filter(item))
                     .slice(0, 10)
             });
         }
@@ -471,18 +497,21 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
      * Update the transaction feeds.
      */
     private async updateFilters(): Promise<void> {
-        if (this._isMounted) {
+        if (this._isMounted && this._networkConfig) {
             const settings = this._settingsService.get();
 
-            settings.valueFilter = this.state.valueFilter;
-            settings.valueMinimum = this.state.valueMinimum;
-            settings.valueMinimumUnits = this.state.valueMinimumUnits;
-            settings.valueMaximum = this.state.valueMaximum;
-            settings.valueMaximumUnits = this.state.valueMaximumUnits;
+            settings.filters = settings.filters ?? {};
+            settings.filters[this._networkConfig?.network] = {
+                valueFilter: this.state.valueFilter,
+                valueMinimum: this.state.valueMinimum,
+                valueMinimumUnits: this.state.valueMinimumUnits,
+                valueMaximum: this.state.valueMaximum,
+                valueMaximumUnits: this.state.valueMaximumUnits
+            };
 
             this._settingsService.save();
 
-            this.transactionsUpdated(this.state.transactions);
+            this.itemsUpdated();
         }
     }
 }

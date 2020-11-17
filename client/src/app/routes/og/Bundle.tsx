@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import chevronDownGray from "../../../assets/chevron-down-gray.svg";
 import chevronLeftGreen from "../../../assets/chevron-left-green.svg";
 import chevronRightGreen from "../../../assets/chevron-right-green.svg";
@@ -279,38 +279,38 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                                 </span>
                                                             </div>
                                                             <div className="card--value">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => this.props.history.push(
+                                                                <Link
+                                                                    to={
                                                                         `/${this.props.match.params.network
-                                                                        }/transaction/${item.details.tx.hash}`)}
+                                                                        }/transaction/${item.details.tx.hash}`
+                                                                    }
                                                                 >
                                                                     {item.details.tx.hash}
-                                                                </button>
+                                                                </Link>
                                                             </div>
                                                             <div className="row middle card--value">
-                                                                <button
-                                                                    type="button"
+                                                                <Link
                                                                     className="card--value__tertiary"
-                                                                    onClick={() => this.props.history.push(
+                                                                    to={
                                                                         `/${this.props.match.params.network
-                                                                        }/address/${item.details.tx.address}`)}
+                                                                        }/address/${item.details.tx.address}`
+                                                                    }
                                                                 >
                                                                     <img
                                                                         src={chevronLeftGreen}
                                                                         alt="address"
                                                                         className="svg-navigation margin-r-t"
                                                                     />
-                                                                </button>
-                                                                <button
-                                                                    type="button"
+                                                                </Link>
+                                                                <Link
                                                                     className="card--value__tertiary"
-                                                                    onClick={() => this.props.history.push(
+                                                                    to={
                                                                         `/${this.props.match.params.network
-                                                                        }/address/${item.details.tx.address}`)}
+                                                                        }/address/${item.details.tx.address}`
+                                                                    }
                                                                 >
                                                                     {item.details.tx.address}
-                                                                </button>
+                                                                </Link>
                                                             </div>
                                                         </div>
                                                     ))}
@@ -349,38 +349,38 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                                 </span>
                                                             </div>
                                                             <div className="card--value">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => this.props.history.push(
+                                                                <Link
+                                                                    to={
                                                                         `/${this.props.match.params.network
-                                                                        }/transaction/${item.details.tx.hash}`)}
+                                                                        }/transaction/${item.details.tx.hash}`
+                                                                    }
                                                                 >
                                                                     {item.details.tx.hash}
-                                                                </button>
+                                                                </Link>
                                                             </div>
                                                             <div className="row middle card--value">
-                                                                <button
-                                                                    type="button"
+                                                                <Link
                                                                     className="card--value__tertiary"
-                                                                    onClick={() => this.props.history.push(
+                                                                    to={
                                                                         `/${this.props.match.params.network
-                                                                        }/address/${item.details.tx.address}`)}
+                                                                        }/address/${item.details.tx.address}`
+                                                                    }
                                                                 >
                                                                     {item.details.tx.address}
-                                                                </button>
-                                                                <button
-                                                                    type="button"
+                                                                </Link>
+                                                                <Link
                                                                     className="card--value__tertiary"
-                                                                    onClick={() => this.props.history.push(
+                                                                    to={
                                                                         `/${this.props.match.params.network
-                                                                        }/address/${item.details.tx.address}`)}
+                                                                        }/address/${item.details.tx.address}`
+                                                                    }
                                                                 >
                                                                     <img
                                                                         src={chevronRightGreen}
                                                                         alt="address"
                                                                         className="svg-navigation margin-l-t"
                                                                     />
-                                                                </button>
+                                                                </Link>
                                                             </div>
                                                         </div>
                                                     ))}

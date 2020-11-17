@@ -1,16 +1,18 @@
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteBuilder } from "../../helpers/routeBuilder";
 import { UnitsHelper } from "../../helpers/unitsHelper";
+import { IFeedItem } from "../../models/IFeedItem";
 import Feeds from "./Feeds";
-import { FeedsState } from "./FeedsState";
 import LineChart from "./LineChart";
 import "./SidePanel.scss";
 import { SidePanelRouteProps } from "./SidePanelRouteProps";
+import { SidePanelState } from "./SidePanelState";
 
 /**
  * Component which will show the side panel component.
  */
-class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsState> {
+class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, SidePanelState> {
     /**
      * Create a new instance of SidePanel.
      * @param props The props.
@@ -19,12 +21,11 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
         super(props);
 
         this.state = {
-            transactionsPerSecond: "--",
-            confirmedTransactionsPerSecond: "--",
-            confirmedTransactionsPerSecondPercent: "--",
-            transactionsPerSecondHistory: [],
-            transactions: [],
-            confirmed: [],
+            itemsPerSecond: "--",
+            confirmedItemsPerSecond: "--",
+            confirmedItemsPerSecondPercent: "--",
+            itemsPerSecondHistory: [],
+            items: [],
             milestones: [],
             currency: "USD",
             currencies: []
@@ -42,59 +43,70 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, FeedsSta
                     <h2>Stats</h2>
                 </div>
                 <div className="card--sections">
-                    {this._networkConfig?.protocolVersion === "og" && (
-                        <div className="card--section card--section__highlight">
-                            <div className="card--label card--label__highlight padding-t-s">
-                                Transactions Per Second
-                            </div>
-                            <div className="card--value card--value__large padding-t-s">
-                                {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
-                            </div>
-                            <LineChart
-                                values={this.state.transactionsPerSecondHistory}
-                            />
+                    <div className="card--section card--section__highlight">
+                        <div className="card--label card--label__highlight padding-t-s">
+                            {this._networkConfig?.protocolVersion === "og" ? "Transactions" : "Messages"} Per Second
                         </div>
-                    )}
+                        <div className="card--value card--value__large padding-t-s">
+                            {this.state.itemsPerSecond} / {this.state.confirmedItemsPerSecond}
+                        </div>
+                        <LineChart
+                            values={this.state.itemsPerSecondHistory}
+                        />
+                    </div>
                     <div className="card--section feed">
                         <div className="card--label card--label__underline">
                             Milestones
                         </div>
-                        {this.state.milestones.slice(0, 5).map(tx => (
-                            <div className="row feed-item" key={tx.hash}>
-                                <span className="feed-item--value">{tx.milestoneIndex}</span>
+                        {this.state.milestones.slice(0, 5).map(item => (
+                            <div className="row feed-item" key={item.id}>
+                                <span className="feed-item--value">{item.milestoneIndex}</span>
                                 <Link
                                     className="feed-item--hash"
-                                    to={`/${this.props.match.params.network}/transaction/${tx.hash}`}
+                                    to={RouteBuilder.buildMilestone(this._networkConfig, item)}
                                 >
-                                    {tx.hash}
+                                    {item.id}
                                 </Link>
                             </div>
                         ))}
                         <div className="card--sep" />
                     </div>
-                    {this._networkConfig?.protocolVersion === "og" && (
-                        <div className="card--section feed">
-                            <div className="card--label card--label__underline">
-                                Transactions
-                            </div>
-                            {this.state.transactions.slice(0, 5).map(tx => (
-                                <div className="row feed-item" key={tx.hash}>
-                                    <span className="feed-item--value">
-                                        {UnitsHelper.formatBest(tx.value)}
-                                    </span>
-                                    <Link
-                                        className="feed-item--hash"
-                                        to={`/${this.props.match.params.network}/transaction/${tx.hash}`}
-                                    >
-                                        {tx.hash}
-                                    </Link>
-                                </div>
-                            ))}
+                    <div className="card--section feed">
+                        <div className="card--label card--label__underline">
+                            {this._networkConfig?.protocolVersion === "og" ? "Transactions" : "Messages"}
                         </div>
-                    )}
+                        {this.state.items.map(item => (
+                            <div className="row feed-item" key={item.id}>
+                                {item.value !== undefined && (
+                                    <span className="feed-item--value">
+                                        {UnitsHelper.formatBest(item.value)}
+                                    </span>
+                                )}
+                                {item.value === undefined && (
+                                    <span className="feed-item--value">
+                                        {item.payloadType}
+                                    </span>
+                                )}
+                                <Link
+                                    className="feed-item--hash"
+                                    to={RouteBuilder.buildItem(this._networkConfig, item.id)}
+                                >
+                                    {item.id}
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         );
+    }
+
+    /**
+     * The items have been updated.
+     * @param items The updated items.
+     */
+    protected itemsUpdated(items: IFeedItem[]): void {
+        this.setState({ items: items.concat(this.state.items).slice(0, 5) });
     }
 }
 

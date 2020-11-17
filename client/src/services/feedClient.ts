@@ -1,15 +1,25 @@
+import { Blake2b, Converter, deserializeMessage, ReadStream } from "@iota/iota2.js";
+import { asTransactionObject } from "@iota/transaction-converter";
 import SocketIOClient from "socket.io-client";
+import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { IFeedSubscribeRequest } from "../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../models/api/IFeedSubscribeResponse";
 import { IFeedUnsubscribeRequest } from "../models/api/IFeedUnsubscribeRequest";
 import { IFeedSubscriptionMessage } from "../models/api/og/IFeedSubscriptionMessage";
-import { IFeedTransaction } from "../models/api/og/IFeedTransaction";
+import { INetwork } from "../models/db/INetwork";
+import { IFeedItem } from "../models/IFeedItem";
+import { NetworkService } from "./networkService";
 
 /**
  * Class to handle api communications.
  */
 export class FeedClient {
+    /**
+     * Minimun number of each item to keep.
+     */
+    private static readonly MIN_ITEMS_PER_TYPE: number = 10;
+
     /**
      * The endpoint for performing communications.
      */
@@ -21,48 +31,48 @@ export class FeedClient {
     private readonly _networkId: string;
 
     /**
+     * Network configuration.
+     */
+    private readonly _networkConfig?: INetwork;
+
+    /**
      * The web socket to communicate on.
      */
     private readonly _socket: SocketIOClient.Socket;
 
     /**
-     * The latest transactions.
+     * The latest items.
      */
-    private _transactions: IFeedTransaction[];
+    private _items: IFeedItem[];
 
     /**
-     * Existing hashes.
+     * Existing ids.
      */
-    private _existingHashes: string[];
+    private _existingIds: string[];
 
     /**
-     * The confirmed transactions.
+     * The ips.
      */
-    private _confirmed: string[];
-
-    /**
-     * The tps.
-     */
-    private _tps: {
+    private _ips: {
         /**
-         * The start timestamp for the tps.
+         * The start timestamp for the ips.
          */
         start: number;
 
         /**
-         * The end timestamp for the tps.
+         * The end timestamp for the ips.
          */
         end: number;
 
         /**
-         * The tps counts.
+         * The ips counts.
          */
-        tx: number[];
+        itemCount: number[];
 
         /**
-         * The confirmed tps counts.
+         * The confirmed ips counts.
          */
-        sn: number[];
+        confirmedItemCount: number[];
     };
 
     /**
@@ -73,7 +83,7 @@ export class FeedClient {
     /**
      * The subscribers.
      */
-    private readonly _subscribers: { [id: string]: () => void };
+    private readonly _subscribers: { [id: string]: (newItems: IFeedItem[], newConfirmations: string[]) => void };
 
     /**
      * Create a new instance of TransactionsClient.
@@ -84,6 +94,9 @@ export class FeedClient {
         this._endpoint = endpoint;
         this._networkId = networkId;
 
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        this._networkConfig = networkService.get(this._networkId);
+
         // Use websocket by default
         // eslint-disable-next-line new-cap
         this._socket = SocketIOClient(this._endpoint, { upgrade: true, transports: ["websocket"] });
@@ -93,14 +106,13 @@ export class FeedClient {
             this._socket.io.opts.transports = ["polling", "websocket"];
         });
 
-        this._transactions = [];
-        this._confirmed = [];
-        this._existingHashes = [];
-        this._tps = {
+        this._items = [];
+        this._existingIds = [];
+        this._ips = {
             start: 0,
             end: 0,
-            tx: [],
-            sn: []
+            itemCount: [],
+            confirmedItemCount: []
         };
 
         this._subscribers = {};
@@ -111,7 +123,7 @@ export class FeedClient {
      * @param callback Callback called with transactions data.
      * @returns The subscription id.
      */
-    public subscribe(callback: () => void): string {
+    public subscribe(callback: (newItems: IFeedItem[], newConfirmed: string[]) => void): string {
         const subscriptionId = TrytesHelper.generateHash(27);
         this._subscribers[subscriptionId] = callback;
 
@@ -127,39 +139,58 @@ export class FeedClient {
                         this._subscriptionId = subscribeResponse.subscriptionId;
                     }
                 });
-                this._socket.on("transactions", async (transactionsResponse: IFeedSubscriptionMessage) => {
-                    if (transactionsResponse.subscriptionId === this._subscriptionId) {
-                        this._tps = transactionsResponse.tps;
-                        this._confirmed = transactionsResponse.confirmed;
+                this._socket.on("transactions", async (subscriptionMessage: IFeedSubscriptionMessage) => {
+                    if (subscriptionMessage.subscriptionId === this._subscriptionId) {
+                        this._ips = subscriptionMessage.ips;
 
-                        const newTxs = transactionsResponse.transactions;
-                        if (newTxs) {
-                            this._transactions = newTxs
-                                .filter(nh => !this._existingHashes.includes(nh.hash))
-                                .concat(this._transactions);
+                        if (subscriptionMessage.confirmed) {
+                            for (const confirmed of subscriptionMessage.confirmed) {
+                                const existing = this._items.find(c => c.id === confirmed);
+                                if (existing) {
+                                    existing.confirmed = true;
+                                }
+                            }
+                        }
 
-                            let removeItems: {
-                                hash: string;
-                                value: number;
-                            }[] = [];
+                        const filteredNewItems = subscriptionMessage.items
+                            .map(item => this.convertItem(item, subscriptionMessage.confirmed.includes(item)))
+                            .filter(nh => !this._existingIds.includes(nh.id));
 
-                            const zero = this._transactions.filter(t => t.value === 0);
-                            const zeroToRemoveCount = zero.length - 100;
+                        if (filteredNewItems.length > 0) {
+                            this._items = filteredNewItems.slice().concat(this._items);
+
+                            // Keep at least 10 of each type for the landing page feed
+                            let removeItems: IFeedItem[] = [];
+
+                            const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
+                            const zeroToRemoveCount = zero.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (zeroToRemoveCount > 0) {
                                 removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
                             }
-                            const nonZero = this._transactions.filter(t => t.value !== 0);
-                            const nonZeroToRemoveCount = nonZero.length - 100;
+                            const nonZero = this._items.filter(t => t.payloadType === "Transaction" &&
+                                t.value !== 0);
+                            const nonZeroToRemoveCount = nonZero.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (nonZeroToRemoveCount > 0) {
                                 removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
                             }
+                            const indexPayload = this._items.filter(t => t.payloadType === "Index");
+                            const indexPayloadToRemoveCount = indexPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (indexPayloadToRemoveCount > 0) {
+                                removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
+                            }
+                            const msPayload = this._items.filter(t => t.payloadType === "MS");
+                            const msPayloadToRemoveCount = msPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (msPayloadToRemoveCount > 0) {
+                                removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
+                            }
 
-                            this._transactions = this._transactions.filter(t => !removeItems.includes(t));
-                            this._existingHashes = this._transactions.map(t => t.hash);
+                            this._items = this._items.filter(t => !removeItems.includes(t));
+
+                            this._existingIds = this._items.map(t => t.id);
                         }
 
                         for (const sub in this._subscribers) {
-                            this._subscribers[sub]();
+                            this._subscribers[sub](filteredNewItems, subscriptionMessage.confirmed);
                         }
                     }
                 });
@@ -192,63 +223,114 @@ export class FeedClient {
     }
 
     /**
-     * Get the transactions as trytes.
-     * @returns The trytes.
+     * Get the items.
+     * @returns The item details.
      */
-    public getTransactions(): IFeedTransaction[] {
-        return this._transactions.slice();
+    public getItems(): IFeedItem[] {
+        return this._items.slice();
     }
 
     /**
-     * Get the confirmed transactions as hashes.
-     * @returns The hahes.
+     * Get the items per second history array.
+     * @returns The ips.
      */
-    public getConfirmedTransactions(): string[] {
-        return this._confirmed;
+    public getIpsHistory(): number[] {
+        return this._ips.itemCount.slice();
     }
 
     /**
-     * Get the tps history array.
-     * @returns The tps.
+     * Calculate the ips.
+     * @returns The ips.
      */
-    public getTxTpsHistory(): number[] {
-        return this._tps.tx.slice();
-    }
-
-    /**
-     * Calculate the tps.
-     * @returns The tps.
-     */
-    public getTps(): {
+    public getIitemPerSecond(): {
         /**
-         * Transactions count per second.
+         * Items per second.
          */
-        tx: number;
+        itemsPerSecond: number;
         /**
-         * Confirmed count per second.
+         * Confirmed per second.
          */
-        sn: number;
+        confirmedPerSecond: number;
     } {
-        let txTps = -1;
-        let snTps = -1;
+        let itemsPerSecond = -1;
+        let confirmedPerSecond = -1;
 
-        const tps = this._tps;
-        if (tps) {
-            const spanS = (this._tps.end - this._tps.start) / 1000;
+        const ips = this._ips;
+        if (ips) {
+            const spanS = (this._ips.end - this._ips.start) / 1000;
             if (spanS > 0) {
-                if (tps.tx.length > 0) {
-                    const txTotal = tps.tx.reduce((a, b) => a + b, 0);
-                    txTps = txTotal / spanS;
+                if (ips.itemCount.length > 0) {
+                    const ipsTotal = ips.itemCount.reduce((a, b) => a + b, 0);
+                    itemsPerSecond = ipsTotal / spanS;
                 }
-                if (tps.sn.length > 0) {
-                    const snTotal = tps.sn.reduce((a, b) => a + b, 0);
-                    snTps = snTotal / spanS;
+                if (ips.confirmedItemCount.length > 0) {
+                    const cipsTotal = ips.confirmedItemCount.reduce((a, b) => a + b, 0);
+                    confirmedPerSecond = cipsTotal / spanS;
                 }
             }
         }
         return {
-            tx: txTps,
-            sn: snTps
+            itemsPerSecond,
+            confirmedPerSecond
+        };
+    }
+
+    /**
+     * Convert the feed item into real data.
+     * @param item The item source.
+     * @param confirmed Is the item confirmed.
+     * @returns The feed item.
+     */
+    private convertItem(item: string, confirmed: boolean): IFeedItem {
+        if (this._networkConfig?.protocolVersion === "chrysalis") {
+            const bytes = Converter.hexToBytes(item);
+            const messageId = Converter.bytesToHex(Blake2b.sum256(bytes));
+            const message = deserializeMessage(new ReadStream(bytes));
+
+            let value;
+            let payloadType: "Transaction" | "Index" | "MS" | "No Payload" = "No Payload";
+            const metaData: { [key: string]: unknown } = {};
+
+            if (message.payload?.type === 0) {
+                payloadType = "Transaction";
+                value = message.payload.essence.outputs.reduce((total, output) => total + output.amount, 0);
+
+                if (message.payload.essence.payload) {
+                    metaData.Index = message.payload.essence.payload.index;
+                }
+            } else if (message.payload?.type === 1) {
+                payloadType = "MS";
+                metaData.MS = message.payload.index;
+            } else if (message.payload?.type === 2) {
+                payloadType = "Index";
+                metaData.Index = message.payload.index;
+            }
+
+            return {
+                id: messageId,
+                value,
+                parent1: message.parent1MessageId ?? "",
+                parent2: message.parent2MessageId ?? "",
+                metaData,
+                payloadType,
+                confirmed: false
+            };
+        }
+
+        const tx = asTransactionObject(item);
+
+        return {
+            id: tx.hash,
+            value: tx.value,
+            parent1: tx.trunkTransaction,
+            parent2: tx.branchTransaction,
+            metaData: {
+                "Tag": tx.tag,
+                "Address": tx.address,
+                "Bundle": tx.bundle
+            },
+            payloadType: "Transaction",
+            confirmed
         };
     }
 }

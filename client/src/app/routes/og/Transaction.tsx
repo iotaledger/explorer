@@ -5,7 +5,7 @@ import { parseMessage } from "@iota/mam.js";
 import { asTransactionTrytes } from "@iota/transaction-converter";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import chevronLeftGreen from "../../../assets/chevron-left-green.svg";
 import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -200,18 +200,16 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     Address
                                                 </div>
                                                 <div className="card--value row middle">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => this.props.history.push(
-                                                            `/${this.props.match.params.network
-                                                            }/address/${this.state.address}`)}
+                                                    <Link
+                                                        to={`/${this.props.match.params.network
+                                                            }/address/${this.state.address}`}
                                                         className="margin-r-t"
                                                     >
                                                         {this.state.address}
                                                         <span className="card--value__light">
                                                             {this.state.checksum}
                                                         </span>
-                                                    </button>
+                                                    </Link>
                                                     <MessageButton
                                                         onClick={() => ClipboardHelper.copy(
                                                             `${this.state.address}${this.state.checksum}`
@@ -257,16 +255,16 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                         Action Result Hash
                                                                     </div>
                                                                     <div className="card--value row middle">
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => this.props.history.push(
+                                                                        <Link
+                                                                            to={
                                                                                 `/${this.props.match.params.network
                                                                                 }/transaction/${
-                                                                                    this.state.actionResultHash}`)}
+                                                                                    this.state.actionResultHash}`
+                                                                            }
                                                                             className="margin-r-t"
                                                                         >
                                                                             {this.state.actionResultHash}
-                                                                        </button>
+                                                                        </Link>
                                                                         <MessageButton
                                                                             onClick={() => ClipboardHelper.copy(
                                                                                 this.state.actionResultHash
@@ -326,15 +324,15 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     Bundle Hash
                                                 </div>
                                                 <div className="card--value row middle">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => this.props.history.push(
+                                                    <Link
+                                                        to={
                                                             `/${this.props.match.params.network
-                                                            }/bundle/${this.state.details?.tx.bundle}`)}
+                                                            }/bundle/${this.state.details?.tx.bundle}`
+                                                        }
                                                         className="margin-r-t"
                                                     >
                                                         {this.state.details?.tx.bundle}
-                                                    </button>
+                                                    </Link>
                                                     <MessageButton
                                                         onClick={() => ClipboardHelper.copy(
                                                             this.state.details?.tx.bundle)}
@@ -347,39 +345,43 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     Index
                                                 </div>
                                                 <div className="card--value row middle">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => this.props.history.push(
+                                                    <Link
+                                                        to={
                                                             `/${this.props.match.params.network
-                                                            }/transaction/${this.state.previousTransaction}`)}
-                                                        disabled={this.state.previousTransaction === undefined}
-                                                        className="btn-navigation"
+                                                            }/transaction/${this.state.previousTransaction}`
+                                                        }
+                                                        className={classNames(
+                                                            "btn-navigation",
+                                                            { disabled: this.state.previousTransaction === undefined }
+                                                        )}
                                                     >
                                                         <img
                                                             src={chevronLeftGreen}
                                                             alt="Previous"
                                                             className="svg-navigation margin-r-t"
                                                         />
-                                                    </button>
+                                                    </Link>
                                                     <span>
                                                         {this.state.details.tx.currentIndex + 1}
                                                         &nbsp;/&nbsp;
                                                         {this.state.details.tx.lastIndex + 1}
                                                     </span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => this.props.history.push(
+                                                    <Link
+                                                        to={
                                                             `/${this.props.match.params.network
-                                                            }/transaction/${this.state.nextTransaction}`)}
-                                                        disabled={this.state.nextTransaction === undefined}
-                                                        className="btn-navigation"
+                                                            }/transaction/${this.state.nextTransaction}`
+                                                        }
+                                                        className={classNames(
+                                                            "btn-navigation",
+                                                            { disabled: this.state.nextTransaction === undefined }
+                                                        )}
                                                     >
                                                         <img
                                                             src={chevronRightGreen}
                                                             alt="Next"
                                                             className="svg-navigation margin-l-t"
                                                         />
-                                                    </button>
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </div>
@@ -394,15 +396,15 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             Tag
                                                         </div>
                                                         <div className="card--value row middle">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => this.props.history.push(
+                                                            <Link
+                                                                to={
                                                                     `/${this.props.match.params.network
-                                                                    }/tag/${this.state.details?.tx.tag}`)}
+                                                                    }/tag/${this.state.details?.tx.tag}`
+                                                                }
                                                                 className="margin-r-t"
                                                             >
                                                                 {this.state.details.tx.tag}
-                                                            </button>
+                                                            </Link>
                                                             <MessageButton
                                                                 onClick={() => ClipboardHelper.copy(
                                                                     this.state.details?.tx.tag)}
@@ -416,15 +418,15 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             Obsolete Tag
                                                         </div>
                                                         <div className="card--value row middle">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => this.props.history.push(
+                                                            <Link
+                                                                to={
                                                                     `/${this.props.match.params.network
-                                                                    }/tag/${this.state.details?.tx.obsoleteTag}`)}
+                                                                    }/tag/${this.state.details?.tx.obsoleteTag}`
+                                                                }
                                                                 className="margin-r-t"
                                                             >
                                                                 {this.state.details.tx.obsoleteTag}
-                                                            </button>
+                                                            </Link>
                                                             <MessageButton
                                                                 onClick={() => ClipboardHelper.copy(
                                                                     this.state.details?.tx.obsoleteTag)}
@@ -440,15 +442,15 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             Streams v0 Decoder Root
                                                         </div>
                                                         <div className="card--value row middle">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => this.props.history.push(
+                                                            <Link
+                                                                to={
                                                                     `/${this.props.match.params.network
-                                                                    }/streams/0/${this.state.streamsV0Root}`)}
+                                                                    }/streams/0/${this.state.streamsV0Root}`
+                                                                }
                                                                 className="margin-r-t"
                                                             >
                                                                 {this.state.streamsV0Root}
-                                                            </button>
+                                                            </Link>
                                                         </div>
                                                     </div>
                                                 )}
@@ -519,31 +521,31 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             Trunk
                                                         </div>
                                                         <div className="card--value">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => this.props.history.push(
+                                                            <Link
+                                                                to={
                                                                     `/${this.props.match.params.network
                                                                     }/transaction/${
                                                                         this.state.details?.tx.trunkTransaction
-                                                                    }`)}
+                                                                    }`
+                                                                }
                                                             >
                                                                 {this.state.details.tx.trunkTransaction}
-                                                            </button>
+                                                            </Link>
                                                         </div>
                                                         <div className="card--label">
                                                             Branch
                                                         </div>
                                                         <div className="card--value">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => this.props.history.push(
+                                                            <Link
+                                                                to={
                                                                     `/${this.props.match.params.network
                                                                     }/transaction/${
                                                                         this.state.details?.tx.branchTransaction
-                                                                    }`)}
+                                                                    }`
+                                                                }
                                                             >
                                                                 {this.state.details.tx.branchTransaction}
-                                                            </button>
+                                                            </Link>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -639,14 +641,14 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 {this.state.childrenBusy && (<Spinner />)}
                                                 {this.state.children?.map(child => (
                                                     <div className="card--value" key={child}>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => this.props.history.push(
+                                                        <Link
+                                                            to={
                                                                 `/${this.props.match.params.network
-                                                                }/transaction/${child}`)}
+                                                                }/transaction/${child}`
+                                                            }
                                                         >
                                                             {child}
-                                                        </button>
+                                                        </Link>
                                                     </div>
                                                 ))}
                                             </div>

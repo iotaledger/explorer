@@ -1,7 +1,7 @@
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
 import { INetwork } from "../../models/db/INetwork";
+import { IFeedItem } from "../../models/IFeedItem";
 import { FeedClient } from "../../services/feedClient";
 import { MilestonesClient } from "../../services/milestonesClient";
 import { NetworkService } from "../../services/networkService";
@@ -23,9 +23,9 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     protected _milestonesClient?: MilestonesClient;
 
     /**
-     * The transactions feed subscription.
+     * The items feed subscription.
      */
-    protected _txSubscriptionId?: string;
+    protected _itemSubscriptionId?: string;
 
     /**
      * The milestones feed subscription.
@@ -62,7 +62,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         }
 
         if (this.props.match.params.network !== prevProps.match.params.network) {
-            this.closeTransactions();
+            this.closeItems();
             this.closeMilestones();
 
             this.initNetworkServices();
@@ -75,7 +75,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     public componentWillUnmount(): void {
         super.componentWillUnmount();
 
-        this.closeTransactions();
+        this.closeItems();
         this.closeMilestones();
     }
 
@@ -86,15 +86,15 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     }
 
     /**
-     * The transactions have been updated.
-     * @param transactions The updated transactions.
+     * The items have been updated.
+     * @param items The updated items.
      */
-    protected transactionsUpdated(transactions: IFeedTransaction[]): void {
+    protected itemsUpdated(items: IFeedItem[]): void {
     }
 
     /**
-     * The confirmed transactions have been updated.
-     * @param confirmed The updated confirmed transactions.
+     * The confirmed items have been updated.
+     * @param confirmed The updated confirmed items.
      */
     protected confirmedUpdated(confirmed: string[]): void {
     }
@@ -105,9 +105,9 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      */
     protected milestonesUpdated(milestones: {
         /**
-         * The tx hash.
+         * The id.
          */
-        hash: string;
+        id: string;
         /**
          * The milestone index.
          */
@@ -118,27 +118,27 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Build the feeds for transactions.
      */
-    private buildTransactions(): void {
+    private buildItems(): void {
         this.setState(
             {
-                transactions: [],
-                transactionsPerSecond: "--"
+                itemsPerSecond: "--"
             },
             () => {
                 this._feedClient = ServiceFactory.get<FeedClient>(
                     `feed-${this.props.match.params.network}`);
 
                 if (this._feedClient) {
-                    this._txSubscriptionId = this._feedClient.subscribe(
-                        () => {
+                    this._itemSubscriptionId = this._feedClient.subscribe(
+                        (updatedItems, updatedConfirmed) => {
                             if (this._isMounted) {
-                                this.updateTransactions();
+                                this.updateItems(updatedItems, updatedConfirmed);
                                 this.updateTps();
                             }
                         }
                     );
 
-                    this.updateTransactions();
+                    const items = this._feedClient.getItems();
+                    this.updateItems(this._feedClient.getItems(), items.filter(i => i.confirmed).map(i => i.id));
                     this.updateTps();
                     this._timerId = setInterval(() => this.updateTps(), 2000);
                 }
@@ -148,11 +148,11 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Close the feeds for transactions.
      */
-    private closeTransactions(): void {
+    private closeItems(): void {
         if (this._feedClient) {
-            if (this._txSubscriptionId) {
-                this._feedClient.unsubscribe(this._txSubscriptionId);
-                this._txSubscriptionId = undefined;
+            if (this._itemSubscriptionId) {
+                this._feedClient.unsubscribe(this._itemSubscriptionId);
+                this._itemSubscriptionId = undefined;
             }
             this._feedClient = undefined;
         }
@@ -164,22 +164,20 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     }
 
     /**
-     * Update the transaction feeds.
+     * Update the items feeds.
+     * @param newItems Just the new items.
+     * @param newConfirmed New confirmed items.
      */
-    private updateTransactions(): void {
+    private updateItems(newItems: IFeedItem[], newConfirmed: string[]): void {
         if (this._isMounted && this._feedClient) {
-            const transactions = this._feedClient.getTransactions();
-            const confirmed = this._feedClient.getConfirmedTransactions();
-            const tpsHistory = this._feedClient.getTxTpsHistory();
+            const ipsHistory = this._feedClient.getIpsHistory();
 
             this.setState({
-                transactions,
-                confirmed,
                 // Increase values by +100 to add more area under the graph
-                transactionsPerSecondHistory: tpsHistory.reverse().map(v => v + 100)
+                itemsPerSecondHistory: ipsHistory.reverse().map(v => v + 100)
             }, () => {
-                this.transactionsUpdated(transactions);
-                this.confirmedUpdated(confirmed);
+                this.itemsUpdated(newItems);
+                this.confirmedUpdated(newConfirmed);
             });
         }
     }
@@ -189,13 +187,13 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      */
     private updateTps(): void {
         if (this._isMounted && this._feedClient) {
-            const tps = this._feedClient.getTps();
+            const ips = this._feedClient.getIitemPerSecond();
 
             this.setState({
-                transactionsPerSecond: tps.tx >= 0 ? tps.tx.toFixed(2) : "--",
-                confirmedTransactionsPerSecond: tps.sn >= 0 ? tps.sn.toFixed(2) : "--",
-                confirmedTransactionsPerSecondPercent: tps.tx > 0
-                    ? `${(tps.sn / tps.tx * 100).toFixed(2)}%` : "--"
+                itemsPerSecond: ips.itemsPerSecond >= 0 ? ips.itemsPerSecond.toFixed(2) : "--",
+                confirmedItemsPerSecond: ips.confirmedPerSecond >= 0 ? ips.confirmedPerSecond.toFixed(2) : "--",
+                confirmedItemsPerSecondPercent: ips.itemsPerSecond > 0
+                    ? `${(ips.confirmedPerSecond / ips.itemsPerSecond * 100).toFixed(2)}%` : "--"
             });
         }
     }
@@ -263,9 +261,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             ? networkService.get(this.props.match.params.network)
             : undefined;
 
-        if (this._networkConfig?.protocolVersion === "og") {
-            this.buildTransactions();
-        }
+        this.buildItems();
         this.buildMilestones();
     }
 }

@@ -1,5 +1,6 @@
 import { Unit } from "@iota/unit-converter";
 import { INetwork } from "../../models/db/INetwork";
+import { IFeedItem } from "../../models/IFeedItem";
 import { ValueFilter } from "../../models/services/valueFilter";
 import { CurrencyState } from "../components/CurrencyState";
 import { FeedsState } from "../components/FeedsState";
@@ -63,14 +64,5 @@ export interface LandingState extends CurrencyState, FeedsState {
     /**
      * Latest transactions.
      */
-    filteredTransactions: {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The tx value.
-         */
-        value: number;
-    }[];
+    filteredItems: IFeedItem[];
 }

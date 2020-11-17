@@ -1,45 +1,34 @@
-import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
 import { CurrencyState } from "./CurrencyState";
 
 export interface FeedsState extends CurrencyState {
     /**
-     * The transactions per second.
+     * The items per second.
      */
-    transactionsPerSecond: string;
+    itemsPerSecond: string;
 
     /**
-     * The confirmed transactions per second.
+     * The confirmed items per second.
      */
-    confirmedTransactionsPerSecond: string;
+    confirmedItemsPerSecond: string;
 
     /**
-     * The confirmed transactions per second.
+     * The confirmed items per second.
      */
-    confirmedTransactionsPerSecondPercent: string;
+    confirmedItemsPerSecondPercent: string;
 
     /**
-     * The transactions per second.
+     * The items per second.
      */
-    transactionsPerSecondHistory: number[];
-
-    /**
-     * Latest transactions.
-     */
-    transactions: IFeedTransaction[];
-
-    /**
-     * Confirmed transactions.
-     */
-    confirmed: string[];
+    itemsPerSecondHistory: number[];
 
     /**
      * Latest milestones.
      */
     milestones: {
         /**
-         * The transaction hash.
+         * The id.
          */
-        hash: string;
+        id: string;
         /**
          * The milestone index.
          */

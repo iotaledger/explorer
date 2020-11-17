@@ -1,31 +1,18 @@
+import { IFeedItem } from "../IFeedItem";
+
 export interface INodeData {
     /**
-     * The transaction tag.
+     * The feed item.
      */
-    tag?: string;
+    feedItem: IFeedItem;
 
     /**
-     * The transaction value.
+     * When was the node added.
      */
-    value?: number;
+    added: number;
 
     /**
-     * The transaction address.
+     * The graph number.
      */
-    address?: string;
-
-    /**
-     * The transaction bundle.
-     */
-    bundle?: string;
-
-    /**
-     * The transaction milestone.
-     */
-    milestone?: number;
-
-    /**
-     * Is the transaction confirmed.
-     */
-    confirmed?: boolean;
+    graphId?: number;
 }

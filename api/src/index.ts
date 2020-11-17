@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import compression from "compression";
 import express, { Application } from "express";
 import { Server } from "http";
-import SocketIO from "socket.io";
+import { Server as SocketIOServer } from "socket.io";
 import { initServices } from "./initServices";
 import { IFeedSubscribeRequest } from "./models/api/IFeedSubscribeRequest";
 import { IConfiguration } from "./models/configuration/IConfiguration";
@@ -48,8 +48,7 @@ for (const route of routes) {
 }
 
 const server = new Server(app);
-// eslint-disable-next-line new-cap
-const socketServer = SocketIO(server);
+const socketServer = new SocketIOServer(server);
 
 const sockets: {
     [socketId: string]: string;

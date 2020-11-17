@@ -3,9 +3,10 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../helpers/circleNodeShader";
+import { RouteBuilder } from "../../helpers/routeBuilder";
 import { UnitsHelper } from "../../helpers/unitsHelper";
-import { IFeedTransaction } from "../../models/api/og/IFeedTransaction";
 import { INodeData } from "../../models/graph/INodeData";
+import { IFeedItem } from "../../models/IFeedItem";
 import Feeds from "../components/Feeds";
 import "./Visualizer.scss";
 import { VisualizerRouteProps } from "./VisualizerRouteProps";
@@ -16,9 +17,9 @@ import { VisualizerState } from "./VisualizerState";
  */
 class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, VisualizerState> {
     /**
-     * Maximum number of transactions.
+     * Maximum number of items.
      */
-    private static readonly MAX_TRANSACTIONS: number = 5000;
+    private static readonly MAX_ITEMS: number = 5000;
 
     /**
      * Edge colour default.
@@ -91,33 +92,29 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private _graphics?: Viva.Graph.View.IWebGLGraphics<INodeData, unknown>;
 
     /**
-     * All the transactions to vizualise.
+     * All the items being visualized.
      */
-    private readonly _transactionHashes: string[];
+    private readonly _existingIds: string[];
 
     /**
-     * New transactions to process.
+     * New items to process.
      */
-    private _newTransactions: IFeedTransaction[];
+    private _newItems: IFeedItem[];
 
     /**
-     * New confirmed transactions.
+     * Nodes to remove.
      */
-    private _newConfirmed: string[];
+    private readonly _removeNodes: string[];
 
     /**
-     * New confirmed transactions.
+     * Existing milestones.
      */
-    private _newMilestones: {
-        /**
-         * The tx hash.
-         */
-        hash: string;
-        /**
-         * The milestone index.
-         */
-        milestoneIndex: number;
-    }[];
+    private _msIndexToNode: {
+        [index: number]: {
+            id: string;
+            lastSeen: number;
+        };
+    };
 
     /**
      * Timer for display updates.
@@ -140,38 +137,37 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private _lastClick: number;
 
     /**
+     * Counter to check for small networks.
+     */
+    private _smallNetworkInterval: number;
+
+    /**
      * Create a new instance of Visualizer.
      * @param props The props.
      */
     constructor(props: RouteComponentProps<VisualizerRouteProps>) {
         super(props);
 
-        this._transactionHashes = [];
-        this._newTransactions = [];
-        this._newConfirmed = [];
-        this._newMilestones = [];
+        this._existingIds = [];
+        this._newItems = [];
+        this._msIndexToNode = {};
         this._lastClick = 0;
+        this._smallNetworkInterval = 0;
+        this._removeNodes = [];
 
         this._graphElement = null;
         this._resize = () => this.resize();
 
         this.state = {
-            transactionsPerSecond: "--",
-            confirmedTransactionsPerSecond: "--",
-            confirmedTransactionsPerSecondPercent: "--",
-            transactionsPerSecondHistory: [],
-            transactions: [],
-            confirmed: [],
+            itemsPerSecond: "--",
+            confirmedItemsPerSecond: "--",
+            confirmedItemsPerSecondPercent: "--",
+            itemsPerSecondHistory: [],
             milestones: [],
             currency: "USD",
             currencies: [],
-            transactionCount: 0,
-            selectedNode: "-",
-            selectedNodeValue: "-",
-            selectedNodeTag: "-",
-            selectedNodeAddress: "-",
-            selectedNodeBundle: "-",
-            selectedMilestoneValue: "-",
+            itemCount: 0,
+            selectedFeedItem: undefined,
             filter: "",
             darkMode: this._settingsService.get().darkMode ?? false
         };
@@ -227,9 +223,13 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 type="text"
                                 value={this.state.filter}
                                 onChange={e => this.setState(
-                                    { filter: e.target.value.toUpperCase() },
+                                    {
+                                        filter: this._networkConfig?.protocolVersion === "og"
+                                            ? e.target.value.toUpperCase()
+                                            : e.target.value
+                                    },
                                     () => this.restyleNodes())}
-                                maxLength={90}
+                                maxLength={this._networkConfig?.protocolVersion === "og" ? 90 : 2000}
                             />
                             <button
                                 type="button"
@@ -248,130 +248,159 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                         </div>
                         <div className="card--content">
                             <div className="card--label">
-                                Transactions
+                                {this._networkConfig?.protocolVersion === "og" ? "Transactions" : "Messages"}
                             </div>
                             <div className="card--value">
-                                {this.state.transactionCount}
+                                {this.state.itemCount}
                             </div>
                             <div className="card--label">
-                                TPS / CTPS
+                                {this._networkConfig?.protocolVersion === "chrysalis" ? "MPS / CMPS" : "TPS / CTPS"}
                             </div>
                             <div className="card--value">
-                                {this.state.transactionsPerSecond} / {this.state.confirmedTransactionsPerSecond}
+                                {this.state.itemsPerSecond} / {this.state.confirmedItemsPerSecond}
                             </div>
                             <div className="card--label">
                                 Confirmation Rate
                             </div>
                             <div className="card--value">
-                                {this.state.confirmedTransactionsPerSecondPercent}
+                                {this.state.confirmedItemsPerSecondPercent}
                             </div>
                         </div>
-                        <div className="card--header">
-                            <h2>Selected</h2>
-                        </div>
-                        <div className="card--content">
-                            <div className="card--label">
-                                Transaction
-                            </div>
-                            <div className="card--value overflow-ellipsis">
-                                {this.state.selectedNode.length > 1 && (
-                                    <a
-                                        className="button"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        href={
-                                            `${window.location.origin}/${this.props.match.params.network
-                                            }/transaction/${this.state.selectedNode}`
-                                        }
-                                    >
-                                        {this.state.selectedNode}
-                                    </a>
-                                )}
-                                {this.state.selectedNode.length === 1 && this.state.selectedNode}
-                            </div>
-                            <div className="card--label">
-                                Address
-                            </div>
-                            <div className="card--value overflow-ellipsis">
-                                {this.state.selectedNodeAddress.length > 1 && (
-                                    <a
-                                        className="button"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        href={
-                                            `${window.location.origin}/${this.props.match.params.network
-                                            }/address/${this.state.selectedNodeAddress}`
-                                        }
-                                    >
-                                        {this.state.selectedNodeAddress}
-                                    </a>
-                                )}
-                                {this.state.selectedNodeAddress.length === 1 && this.state.selectedNodeAddress}
-                            </div>
-                            <div className="card--label">
-                                Bundle
-                            </div>
-                            <div className="card--value overflow-ellipsis">
-                                {this.state.selectedNodeBundle.length > 1 && (
-                                    <a
-                                        className="button"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        href={
-                                            `${window.location.origin}/${this.props.match.params.network
-                                            }/bundle/${this.state.selectedNodeBundle}`
-                                        }
-                                    >
-                                        {this.state.selectedNodeBundle}
-                                    </a>
-                                )}
-                                {this.state.selectedNodeBundle.length === 1 && this.state.selectedNodeBundle}
-                            </div>
-                            {this.state.selectedMilestoneValue === "-" && (
-                                <React.Fragment>
+                        {this.state.selectedFeedItem && (
+                            <React.Fragment>
+                                <div className="card--header">
+                                    <h2>Selected</h2>
+                                </div>
+                                <div className="card--content">
                                     <div className="card--label">
-                                        Tag
+                                        {this._networkConfig?.protocolVersion === "og" ? "Transaction" : "Message"}
                                     </div>
                                     <div className="card--value overflow-ellipsis">
-                                        {this.state.selectedNodeTag.length > 1 && (
-                                            <a
-                                                className="button"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                href={
-                                                    `${window.location.origin}/${this.props.match.params.network
-                                                    }/tag/${this.state.selectedNodeTag}`
-                                                }
-                                            >
-                                                {this.state.selectedNodeTag}
-                                            </a>
+                                        <a
+                                            className="button"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            href={
+                                                `${window.location.origin}${RouteBuilder.buildItem(
+                                                    this._networkConfig, this.state.selectedFeedItem.id)}`
+                                            }
+                                        >
+                                            {this.state.selectedFeedItem.id}
+                                        </a>
+                                    </div>
+                                    {this._networkConfig?.protocolVersion === "og" && (
+                                        <React.Fragment>
+                                            {this.state.selectedFeedItem?.metaData?.Address && (
+                                                <React.Fragment>
+                                                    <div className="card--label">
+                                                        Address
+                                                    </div>
+                                                    <div className="card--value overflow-ellipsis">
+                                                        <a
+                                                            className="button"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            href={
+                                                                `${window.location.origin
+                                                                }/${this.props.match.params.network
+                                                                }/address/${this
+                                                                    .state.selectedFeedItem?.metaData.Address}`
+                                                            }
+                                                        >
+                                                            {this.state.selectedFeedItem?.metaData.Address as string}
+                                                        </a>
+                                                    </div>
+                                                </React.Fragment>
+                                            )}
+                                            {this.state.selectedFeedItem?.metaData?.Bundle && (
+                                                <React.Fragment>
+                                                    <div className="card--label">
+                                                        Bundle
+                                                    </div>
+                                                    <div className="card--value overflow-ellipsis">
+                                                        <a
+                                                            className="button"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            href={
+                                                                `${window.location.origin
+                                                                }/${this.props.match.params.network
+                                                                }/bundle/${this
+                                                                    .state.selectedFeedItem?.metaData.Bundle}`
+                                                            }
+                                                        >
+                                                            {this.state.selectedFeedItem?.metaData.Bundle as string}
+                                                        </a>
+                                                    </div>
+                                                </React.Fragment>
+                                            )}
+                                        </React.Fragment>
+                                    )}
+                                    {this.state.selectedFeedItem?.metaData?.Tag &&
+                                        this.state.selectedFeedItem?.metaData?.MS === undefined && (
+                                            <React.Fragment>
+                                                <div className="card--label">
+                                                    Tag
+                                                </div>
+                                                <div className="card--value overflow-ellipsis">
+                                                    <a
+                                                        className="button"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        href={
+                                                            `${window.location.origin}/${this.props.match.params.network
+                                                            }/tag/${this.state.selectedFeedItem?.metaData.Tag}`
+                                                        }
+                                                    >
+                                                        {this.state.selectedFeedItem?.metaData.Tag as string}
+                                                    </a>
+                                                </div>
+                                            </React.Fragment>
                                         )}
-                                        {this.state.selectedNodeTag.length === 1 && this.state.selectedNodeTag}
-                                    </div>
-                                </React.Fragment>
-                            )}
-                            {this.state.selectedMilestoneValue !== "-" && (
-                                <React.Fragment>
-                                    <div className="card--label">
-                                        Milestone
-                                    </div>
-                                    <div className="card--value">
-                                        {this.state.selectedMilestoneValue}
-                                    </div>
-                                </React.Fragment>
-                            )}
-                            {this.state.selectedMilestoneValue === "-" && (
-                                <React.Fragment>
-                                    <div className="card--label">
-                                        Value
-                                    </div>
-                                    <div className="card--value">
-                                        {this.state.selectedNodeValue}
-                                    </div>
-                                </React.Fragment>
-                            )}
-
-                        </div>
+                                    {this.state.selectedFeedItem?.metaData?.Index && (
+                                        <React.Fragment>
+                                            <div className="card--label">
+                                                Index
+                                            </div>
+                                            <div className="card--value overflow-ellipsis">
+                                                <a
+                                                    className="button"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    href={
+                                                        `${window.location.origin}/${this.props.match.params.network
+                                                        }/indexed/${this.state.selectedFeedItem?.metaData.Index}`
+                                                    }
+                                                >
+                                                    {this.state.selectedFeedItem?.metaData.Index as string}
+                                                </a>
+                                            </div>
+                                        </React.Fragment>
+                                    )}
+                                    {this.state.selectedFeedItem?.metaData?.MS !== undefined && (
+                                        <React.Fragment>
+                                            <div className="card--label">
+                                                Milestone
+                                            </div>
+                                            <div className="card--value">
+                                                {this.state.selectedFeedItem?.metaData.MS as number}
+                                            </div>
+                                        </React.Fragment>
+                                    )}
+                                    {this.state.selectedFeedItem?.value !== undefined &&
+                                        this.state.selectedFeedItem?.metaData?.MS === undefined && (
+                                            <React.Fragment>
+                                                <div className="card--label">
+                                                    Value
+                                                </div>
+                                                <div className="card--value">
+                                                    {UnitsHelper.formatBest(this.state.selectedFeedItem?.value)}
+                                                </div>
+                                            </React.Fragment>
+                                        )}
+                                </div>
+                            </React.Fragment>
+                        )}
                     </div>
                     <div className="graph-border">
                         <div
@@ -411,7 +440,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 Search Result
                             </div>
                             <p className="margin-t-t margin-b-t">
-                                Value transactions and Milestones are displayed as larger nodes.
+                                Value items and Milestones are displayed as larger nodes.
                             </p>
                         </div>
                     </div>
@@ -421,19 +450,48 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     }
 
     /**
-     * The transactions have been updated.
-     * @param transactions The updated transactions.
+     * The items have been updated.
+     * @param newItems The updated items.
      */
-    protected transactionsUpdated(transactions: IFeedTransaction[]): void {
-        this._newTransactions = this._newTransactions.concat(transactions);
+    protected itemsUpdated(newItems: IFeedItem[]): void {
+        this._newItems = this._newItems.concat(newItems);
+
+        if (this._networkConfig?.protocolVersion === "chrysalis") {
+            // For chrysalis networks the milestones message id is extracted from messages
+
+            let changed = false;
+            for (const message of this._newItems) {
+                if (message.metaData?.MS) {
+                    this._msIndexToNode[message.metaData?.MS as number] = {
+                        id: message.id,
+                        lastSeen: Date.now()
+                    };
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                this.highlightMilestones();
+            }
+        }
     }
 
     /**
-     * The confirmed transactions have been updated.
-     * @param confirmed The updated confirmed transactions.
+     * The confirmed items have been updated.
+     * @param confirmed The updated confirmed items.
      */
     protected confirmedUpdated(confirmed: string[]): void {
-        this._newConfirmed = this._newConfirmed.concat(confirmed);
+        if (this._graph) {
+            const highlightRegEx = this.highlightNodesRegEx();
+
+            for (const sn of confirmed) {
+                const node = this._graph.getNode(sn);
+                if (node) {
+                    node.data.feedItem.confirmed = true;
+                    this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
+                }
+            }
+        }
     }
 
     /**
@@ -442,15 +500,25 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     protected milestonesUpdated(milestones: {
         /**
-         * The tx hash.
+         * The id.
          */
-        hash: string;
+        id: string;
         /**
          * The milestone index.
          */
         milestoneIndex: number;
     }[]): void {
-        this._newMilestones = milestones;
+        if (this._networkConfig?.protocolVersion === "og") {
+            // For OG networks the milestones have the index and tx hash
+            for (const ms of milestones) {
+                this._msIndexToNode[ms.milestoneIndex] = {
+                    id: ms.id,
+                    lastSeen: Date.now()
+                };
+            }
+
+            this.highlightMilestones();
+        }
     }
 
     /**
@@ -487,13 +555,13 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             events.click(node => this.selectNode(node));
 
             events.mouseEnter(node => {
-                if (this.state.selectedNode === "-") {
+                if (!this.state.selectedFeedItem) {
                     this.highlightConnections(node.id);
                 }
             });
 
             events.mouseLeave(node => {
-                if (this.state.selectedNode === "-") {
+                if (!this.state.selectedFeedItem) {
                     this.styleConnections();
                 }
             });
@@ -521,111 +589,75 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Draw any updates.
      */
     private drawUpdates(): void {
-        if (this._graph && this._renderer && this._newTransactions.length > 0) {
-            const consumeLength = Math.floor(this._newTransactions.length / 50);
-            const txs = this._newTransactions.slice(0, consumeLength);
-            this._newTransactions = this._newTransactions.slice(consumeLength);
+        if (this._graph && this._renderer && this._newItems.length > 0) {
+            const consumeLength = Math.ceil(this._newItems.length / 50);
+            const items = this._newItems.slice(0, consumeLength);
+            this._newItems = this._newItems.slice(consumeLength);
 
-            const confirmed = this._newConfirmed.slice();
-            this._newConfirmed = [];
-            const milestones = this._newMilestones.slice();
-            this._newMilestones = [];
-
-            const highlightRegEx = this.highlightNodesRegEx();
-
-            const miHash: { [id: string]: number } = {};
-            for (const ms of milestones) {
-                miHash[ms.hash] = ms.milestoneIndex;
-
-                const node = this._graph.getNode(ms.hash);
-                if (node) {
-                    node.data.milestone = ms.milestoneIndex;
-                    this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
-                }
-            }
-
-            for (const sn of confirmed) {
-                const node = this._graph.getNode(sn);
-                if (node) {
-                    node.data.confirmed = true;
-                    this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
-                }
-            }
-
-            this._graph.beginUpdate();
             const added: string[] = [];
+            const now = Date.now();
 
-            for (const tx of txs) {
-                const existingNode = this._graph.getNode(tx.hash);
-                if (existingNode) {
-                    const updatedData: INodeData = {
-                        confirmed: confirmed.includes(tx.hash) || existingNode.data.confirmed,
-                        value: tx.value || existingNode.data.value,
-                        tag: tx.tag || existingNode.data.tag,
-                        address: tx.address || existingNode.data.address,
-                        bundle: tx.bundle || existingNode.data.bundle,
-                        milestone: miHash[tx.hash] || existingNode.data.milestone
-                    };
-                    this._graph.addNode(tx.hash, updatedData);
-                } else {
-                    this._graph.addNode(tx.hash, {
-                        confirmed: confirmed.includes(tx.hash),
-                        value: tx.value,
-                        tag: tx.tag,
-                        address: tx.address,
-                        bundle: tx.bundle,
-                        milestone: miHash[tx.hash]
+            for (const item of items) {
+                const existingNode = this._graph.getNode(item.id);
+
+                if (!existingNode) {
+                    this._graph.addNode(item.id, {
+                        feedItem: item,
+                        added: now
                     });
-                    added.push(tx.hash);
+                    added.push(item.id);
 
-                    if (!this._graph.getNode(tx.trunk)) {
-                        this._graph.addNode(tx.trunk, {
-                            confirmed: confirmed.includes(tx.hash),
-                            milestone: miHash[tx.hash]
-                        });
-
-                        added.push(tx.trunk);
-                    }
-
-                    this._graph.addLink(tx.trunk, tx.hash);
-
-                    if (tx.trunk !== tx.branch) {
-                        if (!this._graph.getNode(tx.branch)) {
-                            this._graph.addNode(tx.branch, {
-                                confirmed: confirmed.includes(tx.hash),
-                                milestone: miHash[tx.hash]
+                    if (item.parent1) {
+                        if (!this._graph.getNode(item.parent1)) {
+                            this._graph.addNode(item.parent1, {
+                                feedItem: {
+                                    id: item.parent1,
+                                    confirmed: false
+                                },
+                                added: now
                             });
-                            added.push(tx.branch);
+
+                            added.push(item.parent1);
                         }
 
-                        this._graph.addLink(tx.branch, tx.hash);
+                        this._graph.addLink(item.parent1, item.id);
+                    }
+
+                    if (item.parent2 && item.parent1 !== item.parent2) {
+                        if (!this._graph.getNode(item.parent2)) {
+                            this._graph.addNode(item.parent2, {
+                                feedItem: {
+                                    id: item.parent2,
+                                    confirmed: false
+                                },
+                                added: now
+                            });
+                            added.push(item.parent2);
+                        }
+
+                        this._graph.addLink(item.parent2, item.id);
                     }
                 }
             }
 
-            this._graph.endUpdate();
+            this._existingIds.push(...added);
 
-            this._transactionHashes.push(...added);
-
-            this._graph.beginUpdate();
-            while (this._transactionHashes.length > Visualizer.MAX_TRANSACTIONS) {
-                const nodeToRemove = this._transactionHashes.shift();
+            // remove any nodes over the max limit, earliest in the list
+            // are the oldest
+            while (this._existingIds.length > Visualizer.MAX_ITEMS) {
+                const nodeToRemove = this._existingIds.shift();
                 if (nodeToRemove && !added.includes(nodeToRemove)) {
-                    this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
-                        if (this._graph) {
-                            this._graph.removeLink(link);
-
-                            if (linkedNode.links.length === 0) {
-                                this._graph.removeNode(linkedNode.id);
-                            }
-                        }
-                    });
-                    this._graph.removeNode(nodeToRemove);
+                    this._removeNodes.push(nodeToRemove);
                 }
             }
-            this._graph.endUpdate();
+            this.removeNodes();
 
-            this.setState({ transactionCount: this._transactionHashes.length });
+            // Check for small graphs to remove every few iterations
+            if (this._smallNetworkInterval++ % 100 === 0) {
+                this.removeSmallNetworks();
+            }
+
+            this.setState({ itemCount: this._existingIds.length });
         }
 
         if (this._drawTimer) {
@@ -665,17 +697,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         if (node) {
             if (highlight) {
                 color = Visualizer.COLOR_SEARCH_RESULT;
-            } else if (node.data.milestone) {
+            } else if (node.data.feedItem.metaData?.MS) {
                 color = Visualizer.COLOR_MILESTONE;
-            } else if (node.data.confirmed) {
-                color = node.data.value !== 0 && node.data.value !== undefined
+            } else if (node.data.feedItem.confirmed) {
+                color = node.data.feedItem?.value !== 0 && node.data.feedItem?.value !== undefined
                     ? Visualizer.COLOR_VALUE_CONFIRMED
                     : Visualizer.COLOR_ZERO_CONFIRMED;
             } else {
                 color = Visualizer.COLOR_PENDING;
             }
 
-            size = node.data.milestone || (node.data.value !== 0 && node.data.value !== undefined)
+            size = node.data.feedItem.metaData?.MS ||
+                (node.data.feedItem?.value !== 0 && node.data.feedItem?.value !== undefined)
                 ? Visualizer.VERTEX_SIZE_LARGE
                 : Visualizer.VERTEX_SIZE_REGULAR;
         }
@@ -718,24 +751,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @param node The node to select.
      */
     private selectNode(node?: Viva.Graph.INode<INodeData>): void {
-        const isDeselect = !node || this.state.selectedNode === node.id;
+        const isDeselect = !node || this.state.selectedFeedItem?.id === node.id;
         this.setState({
-            selectedNode: isDeselect || !node ? "-" : node.id,
-            selectedNodeValue: isDeselect || !node || node.data.value === undefined
-                ? "-"
-                : UnitsHelper.formatBest(node.data.value),
-            selectedNodeAddress: isDeselect || !node || node.data.address === undefined
-                ? "-"
-                : node.data.address,
-            selectedNodeBundle: isDeselect || !node || node.data.bundle === undefined
-                ? "-"
-                : node.data.bundle,
-            selectedNodeTag: isDeselect || !node || node.data.tag === undefined
-                ? "-"
-                : node.data.tag,
-            selectedMilestoneValue: isDeselect || !node || node.data.milestone === undefined
-                ? "-"
-                : node.data.milestone.toString()
+            selectedFeedItem: isDeselect || !node
+                ? undefined
+                : node.data.feedItem
         });
 
         this.styleConnections();
@@ -753,8 +773,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     private highlightConnections(nodeId: string): void {
         if (this._graph) {
-            this._graph.beginUpdate();
-
             const confirming = this.getNodeConnections(nodeId, "toId");
             for (const confirm of confirming) {
                 const linkUI = this._graphics?.getLinkUI(confirm);
@@ -770,8 +788,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     linkUI.color = Visualizer.EDGE_COLOR_CONFIRMED_BY;
                 }
             }
-
-            this._graph.endUpdate();
         }
     }
 
@@ -780,9 +796,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     private styleConnections(): void {
         if (this._graph) {
-            this._graph.beginUpdate();
-
-            this._graph?.forEachLink((link: Viva.Graph.ILink<unknown>) => {
+            this._graph.forEachLink((link: Viva.Graph.ILink<unknown>) => {
                 const linkUI = this._graphics?.getLinkUI(link.id);
                 if (linkUI) {
                     linkUI.color = this.state.darkMode
@@ -790,8 +804,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                         : Visualizer.EDGE_COLOR_LIGHT;
                 }
             });
-
-            this._graph.endUpdate();
         }
     }
 
@@ -802,13 +814,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         const regEx = this.highlightNodesRegEx();
 
         if (this._graph) {
-            this._graph.beginUpdate();
-
-            this._graph?.forEachNode((node: Viva.Graph.INode<INodeData>) => {
+            this._graph.forEachNode((node: Viva.Graph.INode<INodeData>) => {
                 this.styleNode(node, this.testForHighlight(regEx, node.id, node.data));
             });
-
-            this._graph.endUpdate();
         }
     }
 
@@ -843,16 +851,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             return true;
         }
 
-        if (data.tag && regEx.test(data.tag)) {
-            return true;
-        }
-
-        if (data.address && regEx.test(data.address)) {
-            return true;
-        }
-
-        if (data.bundle && regEx.test(data.bundle)) {
-            return true;
+        if (data.feedItem) {
+            for (const key in data.feedItem.metaData) {
+                if (regEx.test(data.feedItem.metaData[key] as string)) {
+                    return true;
+                }
+            }
         }
 
         return false;
@@ -884,6 +888,168 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._settingsService.saveSingle("darkMode", this.state.darkMode);
             this.styleConnections();
         });
+    }
+
+    /**
+     * Highlight any milestones.
+     */
+    private highlightMilestones(): void {
+        if (this._graph) {
+            const highlightRegEx = this.highlightNodesRegEx();
+
+            const toRemove: number[] = [];
+            const now = Date.now();
+
+            const keys: number[] = Object.keys(this._msIndexToNode).map(s => Number(s));
+            for (let i = 0; i < keys.length; i++) {
+                const msIndex = keys[i];
+                const node = this._graph.getNode(this._msIndexToNode[msIndex].id);
+                if (node?.data.feedItem) {
+                    this._msIndexToNode[msIndex].lastSeen = now;
+                    node.data.feedItem.metaData = node.data.feedItem.metaData ?? {};
+                    node.data.feedItem.metaData.MS = msIndex;
+                    this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
+                } else if (now - this._msIndexToNode[msIndex].lastSeen > 300000) {
+                    toRemove.push(msIndex);
+                }
+            }
+
+            for (const rem of toRemove) {
+                delete this._msIndexToNode[rem];
+            }
+        }
+    }
+
+    /**
+     * Remove the nodes from the queue.
+     */
+    private removeNodes(): void {
+        if (this._graph) {
+            while (this._removeNodes.length > 0) {
+                const nodeToRemove = this._removeNodes.shift();
+                if (nodeToRemove) {
+                    this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
+                        if (this._graph) {
+                            this._graph.removeLink(link);
+
+                            if (linkedNode.links.length === 0) {
+                                this._graph.removeNode(linkedNode.id);
+                                if (linkedNode.data.feedItem.metaData?.MS) {
+                                    delete this._msIndexToNode[linkedNode.data.feedItem.metaData?.MS as number];
+                                }
+                            }
+                        }
+                    });
+
+                    this._graph.removeNode(nodeToRemove);
+
+                    const removeNode = this._graph.getNode(nodeToRemove);
+
+                    if (removeNode?.data.feedItem.metaData?.MS) {
+                        delete this._msIndexToNode[removeNode?.data.feedItem.metaData?.MS as number];
+                    }
+
+                    if (this.state.selectedFeedItem?.id === nodeToRemove) {
+                        this.setState({ selectedFeedItem: undefined });
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Remove any small disonnected networks.
+     */
+    private removeSmallNetworks(): void {
+        if (this._graph) {
+            let removed = false;
+            const now = Date.now();
+            do {
+                removed = false;
+                let graphId = 0;
+                const subGraphs: {
+                    [id: number]: {
+                        nodes: string[];
+                        mostRecentChange: number;
+                    };
+                } = {};
+
+                this._graph.forEachNode((node: Viva.Graph.INode<INodeData>) => {
+                    node.data.graphId = undefined;
+                });
+
+                this._graph.forEachNode((node: Viva.Graph.INode<INodeData>) => {
+                    if (!node.data.graphId) {
+                        graphId++;
+                        const nodesInGraph = this.calculateSubGraph(node.id, graphId);
+                        subGraphs[graphId] = nodesInGraph;
+                    }
+                });
+
+                for (const subGraph in subGraphs) {
+                    // If the subgraph has very few nodes in comparison to the whole graph
+                    // and has not been added to for at least a minute then remove it
+                    if (subGraphs[subGraph].nodes.length < this._existingIds.length * 0.03 &&
+                        now - subGraphs[subGraph].mostRecentChange > 60000) {
+                        removed = true;
+                        this._removeNodes.push(...subGraphs[subGraph].nodes);
+                    }
+                }
+
+                if (removed) {
+                    this.removeNodes();
+                }
+            } while (removed);
+        }
+    }
+
+    /**
+     * Calculate a sub graph from the starting node.
+     * @param startNodeId The node to start with.
+     * @param graphId The graph id to mark the nodes with.
+     * @returns The nodes visited and the most recent added time.
+     */
+    private calculateSubGraph(startNodeId: string, graphId: number): {
+        nodes: string[];
+        mostRecentChange: number;
+    } {
+        if (this._graph) {
+            const nodesToVisit: string[] = [startNodeId];
+            const nodesVisited = [];
+            let mostRecentChange = 0;
+
+            while (nodesToVisit.length > 0) {
+                const nodeId = nodesToVisit.shift();
+
+                if (nodeId) {
+                    nodesVisited.push(nodeId);
+
+                    const node = this._graph.getNode(nodeId);
+
+                    if (node?.data && !node.data.graphId) {
+                        node.data.graphId = graphId;
+                        if (node.data.added > mostRecentChange) {
+                            mostRecentChange = node.data.added;
+                        }
+                        this._graph.forEachLinkedNode(nodeId, (linkedNode: Viva.Graph.INode<INodeData>) => {
+                            if (!linkedNode.data.graphId && !nodesToVisit.includes(linkedNode.id)) {
+                                nodesToVisit.push(linkedNode.id);
+                            }
+                        });
+                    }
+                }
+            }
+
+            return {
+                nodes: nodesVisited,
+                mostRecentChange
+            };
+        }
+
+        return {
+            nodes: [],
+            mostRecentChange: 0
+        };
     }
 }
 

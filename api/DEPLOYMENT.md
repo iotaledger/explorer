@@ -8,7 +8,7 @@ You can configure the application to store data either in Amazon DynamoDB `dynam
 
 ```js
 {
-    "fixerApiKey": "FIXER_API_KEY"                   /* API Key for using fixer.io */
+    "fixerApiKey": "FIXER_API_KEY",                  /* API Key for using fixer.io */
     "dynamoDbConnection": {
         "region": "AWS-REGION",                      /* AWS Region e.g. eu-central-1 */
         "accessKeyId": "AWS-ACCESS-KEY-ID",          /* AWS Access Key e.g. AKIAI57SG4YC2ZUCSABC */
@@ -19,7 +19,7 @@ You can configure the application to store data either in Amazon DynamoDB `dynam
     "allowedDomains": [                              /* A list of domains for the cors allow-origin */
         "www.mydomain.com"
     ],
-    "verboseLogging": false                          /* Set to true for the API to log all its request/responses */
+    "verboseLogging": false                         /* Set to true for the API to log all its request/responses */
 }
 ```
 
@@ -79,3 +79,46 @@ e.g. `../.local-storage/network/mainnet.json`
 ```
 
 An optional `permaNodeEndpoint` can be added if you have access to a chronicle node.
+
+## Running with Docker
+
+A [Dockerfile](./Dockerfile) is also provided, so that you can run the API endpoint as a Docker container. As per the instructions on API [Configuration](#Configuration), you need to provide a configuration for local file storage on the container:
+
+```js
+{
+    "fixerApiKey": "MY-KEY",
+    "rootStorageFolder": "/app/data/.local-storage",  /* container's folder used for local storage */
+    "allowedDomains": [
+        "http://localhost:3000"
+    ],
+    "verboseLogging": false
+}
+```
+
+and copy it to  `./src/data/config.local.json`. 
+
+Afterwards, you need to create a new local folder (for instance `./application-data`) that will be used to store locally the temporary data used by the API implementation. Additionally, under such folder you need to include a `network` sub-folder that will contain the JSON configuration files of the networks managed, as explained in the [Deploy Section](#Deploy). 
+
+When running the Docker container, the folder for data storage (named `/app/data/.local-storage` in our example) will have to be made available through a Volume (see example below) mapped to our folder on the host (`./application-data` in our example).
+
+After the preparations described above, the instructions to be performed are as follows (assuming your current working directory is `api`):
+
+Build the Docker image:
+
+```shell
+docker build --tag iotaledger/explorer-api .
+```
+
+Create a network (named `explorer` in the example below) for your container (if not created yet). Such network allows you to isolate your container from other containers. If you also run the [client web application](../client) through Docker it is advisable that you run both containers on the same network: 
+
+```shell
+docker network create explorer
+```
+
+and finally run the container. 
+
+```shell
+docker run --name explorer-api --network explorer -p 4000:4000 --volume $(pwd)/application-data:/app/data/.local-storage -d iotaledger/explorer-api
+```
+
+Your API endpoint will now be listening to the port `4000` of your localhost. 

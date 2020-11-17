@@ -1,32 +1,14 @@
-import { Unit } from "@iota/unit-converter";
+
 import { ICurrencySettings } from "./ICurrencySettings";
-import { ValueFilter } from "./valueFilter";
+import { IFilterSettings } from "./IFilterSettings";
 
 export interface ISettings extends ICurrencySettings {
     /**
-     * Value filter for feeds.
+     * Filter settings for each network.
      */
-    valueFilter?: ValueFilter;
-
-    /**
-     * Value limit feeds.
-     */
-    valueMinimum?: string;
-
-    /**
-     * Value limit units for feeds.
-     */
-    valueMinimumUnits?: Unit;
-
-    /**
-     * Value limit feeds.
-     */
-    valueMaximum?: string;
-
-    /**
-     * Value limit units for feeds.
-     */
-    valueMaximumUnits?: Unit;
+    filters?: {
+        [network: string]: IFilterSettings;
+    };
 
     /**
      * Hide zero transactions.
