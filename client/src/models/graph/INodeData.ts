@@ -10,4 +10,14 @@ export interface INodeData {
      * Is the transaction confirmed.
      */
     confirmed?: boolean;
+
+    /**
+     * When was the node added.
+     */
+    added: number;
+
+    /**
+     * The graph number.
+     */
+    graphId?: number;
 }

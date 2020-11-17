@@ -106,6 +106,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private _newConfirmed: string[];
 
     /**
+     * Nodes to remove.
+     */
+    private readonly _removeNodes: string[];
+
+    /**
      * Existing milestones.
      */
     private _msIndexToNode: {
@@ -136,6 +141,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private _lastClick: number;
 
     /**
+     * Counter to check for small networks.
+     */
+    private _smallNetworkInterval: number;
+
+    /**
      * Create a new instance of Visualizer.
      * @param props The props.
      */
@@ -147,6 +157,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         this._newConfirmed = [];
         this._msIndexToNode = {};
         this._lastClick = 0;
+        this._smallNetworkInterval = 0;
+        this._removeNodes = [];
 
         this._graphElement = null;
         this._resize = () => this.resize();
@@ -582,6 +594,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             const confirmed = this._newConfirmed.slice();
             this._newConfirmed = [];
 
+            const now = Date.now();
+
             const highlightRegEx = this.highlightNodesRegEx();
 
             for (const sn of confirmed) {
@@ -601,13 +615,15 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 if (existingNode) {
                     const updatedData: INodeData = {
                         confirmed: confirmed.includes(item.id) || existingNode.data.confirmed,
-                        feedItem: item
+                        feedItem: item,
+                        added: existingNode.data.added
                     };
                     this._graph.addNode(item.id, updatedData);
                 } else {
                     this._graph.addNode(item.id, {
                         confirmed: confirmed.includes(item.id),
-                        feedItem: item
+                        feedItem: item,
+                        added: now
                     });
                     added.push(item.id);
 
@@ -617,7 +633,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 confirmed: confirmed.includes(item.id),
                                 feedItem: {
                                     id: item.parent1
-                                }
+                                },
+                                added: now
                             });
 
                             added.push(item.parent1);
@@ -632,7 +649,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 confirmed: confirmed.includes(item.id),
                                 feedItem: {
                                     id: item.parent2
-                                }
+                                },
+                                added: now
                             });
                             added.push(item.parent2);
                         }
@@ -646,31 +664,19 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
             this._existingIds.push(...added);
 
-            this._graph.beginUpdate();
+            // remove any nodes over the max limit
             while (this._existingIds.length > Visualizer.MAX_TRANSACTIONS) {
                 const nodeToRemove = this._existingIds.shift();
                 if (nodeToRemove && !added.includes(nodeToRemove)) {
-                    this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
-                        if (this._graph) {
-                            this._graph.removeLink(link);
-
-                            if (linkedNode.links.length === 0) {
-                                this._graph.removeNode(linkedNode.id);
-                                if (linkedNode.data.feedItem.metaData?.MS) {
-                                    delete this._msIndexToNode[linkedNode.data.feedItem.metaData?.MS as number];
-                                }
-                            }
-                        }
-                    });
-                    this._graph.removeNode(nodeToRemove);
-                    const removeNode = this._graph.getNode(nodeToRemove);
-
-                    if (removeNode?.data.feedItem.metaData?.MS) {
-                        delete this._msIndexToNode[removeNode?.data.feedItem.metaData?.MS as number];
-                    }
+                    this._removeNodes.push(nodeToRemove);
                 }
             }
-            this._graph.endUpdate();
+            this.removeNodes();
+
+            // Check for small graphs to remove
+            if (this._smallNetworkInterval++ % 5 === 0) {
+                this.removeSmallNetworks();
+            }
 
             this.setState({ transactionCount: this._existingIds.length });
         }
@@ -817,7 +823,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         if (this._graph) {
             this._graph.beginUpdate();
 
-            this._graph?.forEachLink((link: Viva.Graph.ILink<unknown>) => {
+            this._graph.forEachLink((link: Viva.Graph.ILink<unknown>) => {
                 const linkUI = this._graphics?.getLinkUI(link.id);
                 if (linkUI) {
                     linkUI.color = this.state.darkMode
@@ -839,7 +845,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         if (this._graph) {
             this._graph.beginUpdate();
 
-            this._graph?.forEachNode((node: Viva.Graph.INode<INodeData>) => {
+            this._graph.forEachNode((node: Viva.Graph.INode<INodeData>) => {
                 this.styleNode(node, this.testForHighlight(regEx, node.id, node.data));
             });
 
@@ -917,6 +923,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         });
     }
 
+    /**
+     * Highlight any milestones.
+     */
     private highlightMilestones(): void {
         if (this._graph) {
             const highlightRegEx = this.highlightNodesRegEx();
@@ -942,6 +951,135 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 delete this._msIndexToNode[rem];
             }
         }
+    }
+
+    /**
+     * Remove the nodes from the queue.
+     */
+    private removeNodes(): void {
+        if (this._graph) {
+            this._graph.beginUpdate();
+
+            while (this._removeNodes.length > 0) {
+                const nodeToRemove = this._removeNodes.shift();
+                if (nodeToRemove) {
+                    this._graph.forEachLinkedNode(nodeToRemove, (linkedNode, link) => {
+                        if (this._graph) {
+                            this._graph.removeLink(link);
+
+                            if (linkedNode.links.length === 0) {
+                                this._graph.removeNode(linkedNode.id);
+                                if (linkedNode.data.feedItem.metaData?.MS) {
+                                    delete this._msIndexToNode[linkedNode.data.feedItem.metaData?.MS as number];
+                                }
+                            }
+                        }
+                    });
+
+                    this._graph.removeNode(nodeToRemove);
+
+                    const removeNode = this._graph.getNode(nodeToRemove);
+
+                    if (removeNode?.data.feedItem.metaData?.MS) {
+                        delete this._msIndexToNode[removeNode?.data.feedItem.metaData?.MS as number];
+                    }
+                }
+            }
+            this._graph.endUpdate();
+        }
+    }
+
+    /**
+     * Remove any small disonnected networks.
+     */
+    private removeSmallNetworks(): void {
+        if (this._graph) {
+            let removed = false;
+            const now = Date.now();
+            do {
+                removed = false;
+                let graphId = 0;
+                const subGraphs: {
+                    [id: number]: {
+                        nodes: string[];
+                        mostRecentChange: number;
+                    };
+                } = {};
+
+                this._graph.forEachNode((node: Viva.Graph.INode<INodeData>) => {
+                    node.data.graphId = undefined;
+                });
+
+                this._graph.forEachNode((node: Viva.Graph.INode<INodeData>) => {
+                    if (!node.data.graphId) {
+                        graphId++;
+                        const nodesInGraph = this.calculateSubGraph(node.id, graphId);
+                        subGraphs[graphId] = nodesInGraph;
+                    }
+                });
+
+                for (const subGraph in subGraphs) {
+                    if (subGraphs[subGraph].nodes.length < this._existingIds.length * 0.03 &&
+                        now - subGraphs[subGraph].mostRecentChange > 60000) {
+                        removed = true;
+                        this._removeNodes.push(...subGraphs[subGraph].nodes);
+                    }
+                }
+
+                if (removed) {
+                    this.removeNodes();
+                }
+            } while (removed);
+        }
+    }
+
+    /**
+     * Calculate a sub graph from the starting node.
+     * @param startNodeId The node to start with.
+     * @param graphId The graph id to mark the nodes with.
+     * @returns The nodes visited and the most recent added time.
+     */
+    private calculateSubGraph(startNodeId: string, graphId: number): {
+        nodes: string[];
+        mostRecentChange: number;
+    } {
+        if (this._graph) {
+            const nodesToVisit: string[] = [startNodeId];
+            const nodesVisited = [];
+            let mostRecentChange = 0;
+
+            while (nodesToVisit.length > 0) {
+                const nodeId = nodesToVisit.shift();
+
+                if (nodeId) {
+                    nodesVisited.push(nodeId);
+
+                    const node = this._graph.getNode(nodeId);
+
+                    if (node?.data && !node.data.graphId) {
+                        node.data.graphId = graphId;
+                        if (node.data.added > mostRecentChange) {
+                            mostRecentChange = node.data.added;
+                        }
+                        this._graph.forEachLinkedNode(nodeId, (linkedNode: Viva.Graph.INode<INodeData>) => {
+                            if (!linkedNode.data.graphId && !nodesToVisit.includes(linkedNode.id)) {
+                                nodesToVisit.push(linkedNode.id);
+                            }
+                        });
+                    }
+                }
+            }
+
+            return {
+                nodes: nodesVisited,
+                mostRecentChange
+            };
+        }
+
+        return {
+            nodes: [],
+            mostRecentChange: 0
+        };
     }
 }
 
