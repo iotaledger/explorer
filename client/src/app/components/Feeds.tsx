@@ -129,15 +129,15 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
                 if (this._feedClient) {
                     this._itemSubscriptionId = this._feedClient.subscribe(
-                        updatedItems => {
+                        (updatedItems, updatedConfirmed) => {
                             if (this._isMounted) {
-                                this.updateItems(updatedItems);
+                                this.updateItems(updatedItems, updatedConfirmed);
                                 this.updateTps();
                             }
                         }
                     );
 
-                    this.updateItems(this._feedClient.getItems());
+                    this.updateItems(this._feedClient.getItems(), this._feedClient.getConfirmedIds());
                     this.updateTps();
                     this._timerId = setInterval(() => this.updateTps(), 2000);
                 }
@@ -165,19 +165,18 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Update the items feeds.
      * @param newItems Just the new items.
+     * @param newConfirmed New confirmed items.
      */
-    private updateItems(newItems: IFeedItem[]): void {
+    private updateItems(newItems: IFeedItem[], newConfirmed: string[]): void {
         if (this._isMounted && this._feedClient) {
-            const confirmed = this._feedClient.getConfirmedIds();
             const ipsHistory = this._feedClient.getIpsHistory();
 
             this.setState({
-                confirmed,
                 // Increase values by +100 to add more area under the graph
                 itemsPerSecondHistory: ipsHistory.reverse().map(v => v + 100)
             }, () => {
                 this.itemsUpdated(newItems);
-                this.confirmedUpdated(confirmed);
+                this.confirmedUpdated(newConfirmed);
             });
         }
     }

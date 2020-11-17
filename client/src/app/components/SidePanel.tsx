@@ -25,7 +25,6 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, SidePane
             confirmedItemsPerSecondPercent: "--",
             itemsPerSecondHistory: [],
             items: [],
-            confirmed: [],
             milestones: [],
             currency: "USD",
             currencies: []

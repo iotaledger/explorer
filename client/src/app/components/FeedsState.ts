@@ -22,11 +22,6 @@ export interface FeedsState extends CurrencyState {
     itemsPerSecondHistory: number[];
 
     /**
-     * Confirmed items.
-     */
-    confirmed: string[];
-
-    /**
      * Latest milestones.
      */
     milestones: {

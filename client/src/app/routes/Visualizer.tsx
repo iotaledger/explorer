@@ -168,7 +168,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
             itemsPerSecondHistory: [],
-            confirmed: [],
             milestones: [],
             currency: "USD",
             currencies: [],
@@ -604,7 +603,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     private drawUpdates(): void {
         if (this._graph && this._renderer && this._newItems.length > 0) {
-            const consumeLength = Math.min(this._newItems.length, 10);
+            const consumeLength = Math.ceil(this._newItems.length / 50);
             const items = this._newItems.slice(0, consumeLength);
             this._newItems = this._newItems.slice(consumeLength);
 
@@ -671,7 +670,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this.removeNodes();
 
             // Check for small graphs to remove every few iterations
-            if (this._smallNetworkInterval++ % 5 === 0) {
+            if (this._smallNetworkInterval++ % 100 === 0) {
                 this.removeSmallNetworks();
             }
 
