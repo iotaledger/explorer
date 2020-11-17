@@ -1,7 +1,5 @@
 FROM node:12.14.1-alpine3.11
-RUN apk update
-RUN apk --no-cache add git
-RUN apk --no-cache add nginx
+RUN apk add -U --no-cache git nginx
 
 # Working DIR
 WORKDIR /usr/src/app
