@@ -4,6 +4,7 @@ import { Link, RouteComponentProps } from "react-router-dom";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import chevronDownWhite from "../../assets/chevron-down-white.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { RouteBuilder } from "../../helpers/routeBuilder";
 import { UnitsHelper } from "../../helpers/unitsHelper";
 import { INetwork } from "../../models/db/INetwork";
 import { IFeedItem } from "../../models/IFeedItem";
@@ -343,11 +344,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                 </span>
                                                 <Link
                                                     className="feed-item--hash"
-                                                    to={
-                                                        `/${this.props.match.params.network
-                                                        }/${this.state.networkConfig.protocolVersion === "og"
-                                                            ? "transaction" : "message"}/${item.id}`
-                                                    }
+                                                    to={RouteBuilder.buildItem(this.state.networkConfig, item.id)}
                                                 >
                                                     {item.id}
                                                 </Link>
@@ -370,20 +367,14 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                         {this.state.milestones.length === 0 && (
                                             <p>There are no milestones to display.</p>
                                         )}
-                                        {this.state.milestones.slice(0, 10).map(tx => (
-                                            <div className="row feed-item" key={tx.id}>
-                                                <span className="feed-item--value">{tx.milestoneIndex}</span>
+                                        {this.state.milestones.slice(0, 10).map(ms => (
+                                            <div className="row feed-item" key={ms.id}>
+                                                <span className="feed-item--value">{ms.milestoneIndex}</span>
                                                 <Link
                                                     className="feed-item--hash"
-                                                    to={
-                                                        `/${this.props.match.params.network
-                                                        }/${this.state.networkConfig.protocolVersion === "og"
-                                                            ? "transaction" : "milestone"}/${this
-                                                                .state.networkConfig.protocolVersion === "og"
-                                                                ? tx.id : tx.milestoneIndex}`
-                                                    }
+                                                    to={RouteBuilder.buildMilestone(this.state.networkConfig, ms)}
                                                 >
-                                                    {tx.id}
+                                                    {ms.id}
                                                 </Link>
                                             </div>
                                         ))}

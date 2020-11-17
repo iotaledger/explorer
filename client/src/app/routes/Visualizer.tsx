@@ -3,6 +3,7 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../helpers/circleNodeShader";
+import { RouteBuilder } from "../../helpers/routeBuilder";
 import { UnitsHelper } from "../../helpers/unitsHelper";
 import { INodeData } from "../../models/graph/INodeData";
 import { IFeedItem } from "../../models/IFeedItem";
@@ -280,9 +281,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             href={
-                                                `${window.location.origin}/${this.props.match.params.network
-                                                }/${this._networkConfig?.protocolVersion === "og"
-                                                    ? "transaction" : "message"}/${this.state.selectedFeedItem.id}`
+                                                `${window.location.origin}${RouteBuilder.buildItem(
+                                                    this._networkConfig, this.state.selectedFeedItem.id)}`
                                             }
                                         >
                                             {this.state.selectedFeedItem.id}

@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteBuilder } from "../../helpers/routeBuilder";
 import { UnitsHelper } from "../../helpers/unitsHelper";
 import { IFeedItem } from "../../models/IFeedItem";
 import Feeds from "./Feeds";
@@ -57,14 +58,14 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, SidePane
                         <div className="card--label card--label__underline">
                             Milestones
                         </div>
-                        {this.state.milestones.slice(0, 5).map(tx => (
-                            <div className="row feed-item" key={tx.id}>
-                                <span className="feed-item--value">{tx.milestoneIndex}</span>
+                        {this.state.milestones.slice(0, 5).map(item => (
+                            <div className="row feed-item" key={item.id}>
+                                <span className="feed-item--value">{item.milestoneIndex}</span>
                                 <Link
                                     className="feed-item--hash"
-                                    to={`/${this.props.match.params.network}/transaction/${tx.id}`}
+                                    to={RouteBuilder.buildMilestone(this._networkConfig, item)}
                                 >
-                                    {tx.id}
+                                    {item.id}
                                 </Link>
                             </div>
                         ))}
@@ -88,7 +89,7 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, SidePane
                                 )}
                                 <Link
                                     className="feed-item--hash"
-                                    to={`/${this.props.match.params.network}/transaction/${item.id}`}
+                                    to={RouteBuilder.buildItem(this._networkConfig, item.id)}
                                 >
                                     {item.id}
                                 </Link>
