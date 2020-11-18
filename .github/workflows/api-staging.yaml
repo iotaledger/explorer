@@ -26,6 +26,8 @@ jobs:
       GCP_PROD_DOMAIN: ${{ secrets.GCP_PROD_DOMAIN }}
       GCP_STAGING_SERVICE_ID: ${{ secrets.GCP_STAGING_SERVICE_ID }}
       GCP_STAGING_DOMAIN: ${{ secrets.GCP_STAGING_DOMAIN }}
+      GCP_BOT_PROD_SERVICE_ID: ${{ secrets.GCP_BOT_PROD_SERVICE_ID }}
+      GCP_BOT_PROD_DOMAIN: ${{ secrets.GCP_BOT_PROD_DOMAIN }}
 
     steps:
       - uses: actions/checkout@v2
@@ -51,6 +53,8 @@ jobs:
           sed -i 's/%GCP-PROD-SERVICE-ID%/${{ env.GCP_PROD_SERVICE_ID }}/g' dispatch.yaml
           sed -i 's/%GCP-STAGING-DOMAIN%/${{ env.GCP_STAGING_DOMAIN }}/g' dispatch.yaml
           sed -i 's/%GCP-STAGING-SERVICE-ID%/${{ env.GCP_STAGING_SERVICE_ID }}/g' dispatch.yaml
+          sed -i 's/%GCP-BOT-PROD-DOMAIN%/${{ env.GCP_BOT_PROD_DOMAIN }}/g' dispatch.yaml
+          sed -i 's/%GCP-BOT-PROD-SERVICE-ID%/${{ env.GCP_BOT_PROD_SERVICE_ID }}/g' dispatch.yaml
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           version: latest
