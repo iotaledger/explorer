@@ -34,7 +34,7 @@ jobs:
           sed -i 's/COIN-MARKET-CAP-KEY/${{ env.CONFIG_COIN_MARKET_CAP_KEY }}/g' config.$CONFIG_ID.json
       - name: GCP Config
         run: |
-          cd api
+          cd discord-bot
           mv app.template.prod.yaml app.yaml
           sed -i 's/%SERVICE-ID%/${{ env.GCP_SERVICE_ID }}/g' app.yaml
           sed -i 's/%CONFIG-ID%/${{ env.CONFIG_ID }}/g' app.yaml
