@@ -294,6 +294,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 </Link>
                                             </div>
                                         ))}
+                                        {!this.state.childrenBusy &&
+                                            this.state.childrenIds &&
+                                            this.state.childrenIds.length === 0 && (
+                                                <p>There are no children for this message.</p>
+                                            )}
                                     </div>
                                 </div>
                             </div>

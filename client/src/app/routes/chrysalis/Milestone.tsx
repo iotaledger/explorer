@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -74,15 +74,22 @@ class Milestone extends AsyncComponent<RouteComponentProps<MilestoneRouteProps>,
                                             {this.state.milestone?.milestoneIndex}
                                         </div>
                                         <div className="card--label">
-                                            Id
+                                            Message Id
                                         </div>
                                         <div className="card--value row middle">
                                             <span className="margin-r-t">
-                                                {this.state.milestone?.milestoneId}
+                                                <Link
+                                                    to={`/${this.props.match.params.network
+                                                        }/message/${this.state.milestone?.messageId}`}
+                                                    className="info-box--title linked"
+                                                >
+                                                    {this.state.milestone?.messageId}
+                                                </Link>
+
                                             </span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
-                                                    this.state.milestone?.milestoneId
+                                                    this.state.milestone?.messageId
                                                 )}
                                                 buttonType="copy"
                                                 labelPosition="top"

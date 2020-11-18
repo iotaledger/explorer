@@ -17,5 +17,10 @@ export interface IMilestoneStore {
          * The milestone index.
          */
         milestoneIndex: number;
+
+        /**
+         * The milestone timestamp.
+         */
+        timestamp: number;
     }[];
 }

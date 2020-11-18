@@ -54,6 +54,10 @@ export class MilestonesService {
          * The milestone index.
          */
         milestoneIndex: number;
+        /**
+         * The milestone timestamp.
+         */
+        timestamp: number;
     }[];
 
     /**
@@ -111,6 +115,10 @@ export class MilestonesService {
          * The milestone index.
          */
         milestoneIndex: number;
+        /**
+         * The milestone timestamp.
+         */
+        timestamp: number;
     }[] {
         return this._milestones;
     }
@@ -120,14 +128,15 @@ export class MilestonesService {
      */
     private async initNetwork(): Promise<void> {
         this._subscriptionAddressId = this._feedService.subscribeMilestones(
-            async (milestoneIndex: number, id: string) => {
+            async (milestoneIndex: number, id: string, timestamp: number) => {
                 this._lastUpdate = Date.now();
 
                 if (this._milestones
                         .findIndex(p => p.milestoneIndex === milestoneIndex) === -1) {
                     this._milestones.unshift({
                         id,
-                        milestoneIndex
+                        milestoneIndex,
+                        timestamp
                     });
 
                     this._milestones = this._milestones.slice(0, 100);
