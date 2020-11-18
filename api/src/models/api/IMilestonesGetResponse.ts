@@ -14,5 +14,10 @@ export interface IMilestonesGetResponse extends IResponse {
          * The milestone index.
          */
         milestoneIndex: number;
+
+        /**
+         * The milestone timestamp.
+         */
+        timestamp: number;
     }[];
 }

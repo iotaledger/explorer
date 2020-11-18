@@ -287,7 +287,7 @@ export class FeedClient {
             const message = deserializeMessage(new ReadStream(bytes));
 
             let value;
-            let payloadType: "Transaction" | "Index" | "MS" | "No Payload" = "No Payload";
+            let payloadType: "Transaction" | "Index" | "MS" | "None" = "None";
             const metaData: { [key: string]: unknown } = {};
 
             if (message.payload?.type === 0) {

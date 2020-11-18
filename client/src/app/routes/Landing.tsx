@@ -361,7 +361,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                             <span className="card--label">Milestone</span>
                                             <span className="card--label">
                                                 {this.state.networkConfig.protocolVersion === "og"
-                                                    ? "Transaction" : "Milestone Id"}
+                                                    ? "Transaction" : "Message Id"}
                                             </span>
                                         </div>
                                         {this.state.milestones.length === 0 && (
@@ -458,7 +458,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                     item.payloadType === "Index";
             } else if (this.state.valueFilter === "noPayload") {
                 filter = (item: IFeedItem) =>
-                    item.payloadType === "No Payload";
+                    item.payloadType === "None";
             }
 
             this.setState({

@@ -1,4 +1,4 @@
-import { IMqttClient } from "@iota/iota2.js";
+import { IClient, IMqttClient, SingleNodeClient } from "@iota/iota2.js";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IFeedService } from "../models/services/IFeedService";
 
@@ -12,11 +12,18 @@ export class ChrysalisFeedService implements IFeedService {
     private readonly _mqttClient: IMqttClient;
 
     /**
+     * API Client.
+     */
+    private readonly _apiClient: IClient;
+
+    /**
      * Create a new instance of OgFeedService.
      * @param networkId The network id.
+     * @param provider Provider for API Endpoint.
      */
-    constructor(networkId: string) {
+    constructor(networkId: string, provider: string) {
         this._mqttClient = ServiceFactory.get<IMqttClient>(`mqtt-${networkId}`);
+        this._apiClient = new SingleNodeClient(provider);
 
         this._mqttClient.statusChanged(data => console.log("Status", data));
     }
@@ -32,9 +39,10 @@ export class ChrysalisFeedService implements IFeedService {
      * @param callback The callback for new milestones.
      * @returns The subscription id.
      */
-    public subscribeMilestones(callback: (milestone: number, id: string) => void): string {
-        return this._mqttClient.milestonesLatest((topic, message) => {
-            callback(message.milestoneIndex, message.milestoneId);
+    public subscribeMilestones(callback: (milestone: number, id: string, timestamp: number) => void): string {
+        return this._mqttClient.milestonesLatest(async (topic, message) => {
+            const ms = await this._apiClient.milestone(message.milestoneIndex);
+            callback(message.milestoneIndex, ms.messageId, message.timestamp);
         });
     }
 

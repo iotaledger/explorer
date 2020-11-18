@@ -38,10 +38,10 @@ export class OgFeedService implements IFeedService {
      * @param callback The callback for new milestones.
      * @returns The subscription id.
      */
-    public subscribeMilestones(callback: (milestone: number, id: string) => void): string {
+    public subscribeMilestones(callback: (milestone: number, id: string, timestamp: number) => void): string {
         return this._zmqService.subscribeAddress(this._coordinatorAddress, async (evnt, message) => {
             if (message.address === this._coordinatorAddress) {
-                callback(message.milestoneIndex, message.transaction);
+                callback(message.milestoneIndex, message.transaction, Date.now());
             }
         });
     }

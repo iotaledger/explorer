@@ -3,3 +3,5 @@ dispatch:
     service: %GCP-PROD-SERVICE-ID%
   - url: "%GCP-STAGING-DOMAIN%/*"
     service: %GCP-STAGING-SERVICE-ID%
+  - url: "explorer-bot.dag.sh/*"
+    service: bot
