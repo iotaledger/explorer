@@ -14,6 +14,7 @@ RUN echo 'server {\
     location / {\
         root   /usr/src/app/build;\
         index  index.html index.htm;\
+        try_files $uri /index.html;\
     }\
   }' > /etc/nginx/conf.d/default.conf
 
