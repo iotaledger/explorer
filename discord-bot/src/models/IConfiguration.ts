@@ -3,6 +3,11 @@
  */
 export interface IConfiguration {
     /**
+     * API Endpoint or explorer.
+     */
+    explorerEndpoint: string;
+
+    /**
      * The token for the bot.
      */
     discordToken: string;

@@ -1,4 +1,5 @@
 {
+    "explorerEndpoint": "EXPLORER-ENDPOINT",
     "discordToken": "DISCORD-TOKEN",
     "coinMarketCapKey": "COIN-MARKET-CAP-KEY"
 }

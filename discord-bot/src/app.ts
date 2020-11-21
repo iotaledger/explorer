@@ -7,7 +7,6 @@ import { ICurrenciesResponse } from "./models/ICurrenciesResponse";
 import { IItemsPerSecond } from "./models/IItemsPerSecond";
 import { INetworksResponse } from "./models/INetworksResponse";
 
-const EXPLORER_URL = "http://explorer-api.iota.org/";
 const COIN_GECKO_URL = "https://api.coingecko.com/api/v3/";
 const CMC_URL = "https://pro-api.coinmarketcap.com/v1/";
 
@@ -85,7 +84,7 @@ export class App {
                         const now = Date.now();
                         if (!this._currencies || now - this._timeLastCurrencies > MS_30_MINUTES) {
                             this._currencies = await FetchHelper.json<unknown, ICurrenciesResponse>(
-                                EXPLORER_URL,
+                                this._config.explorerEndpoint,
                                 "currencies",
                                 "get");
                             this._timeLastCurrencies = now;
@@ -97,7 +96,7 @@ export class App {
                         const now = Date.now();
                         if (!this._networks || now - this._timeLastNetworks > MS_30_MINUTES) {
                             this._networks = await FetchHelper.json<unknown, INetworksResponse>(
-                                EXPLORER_URL,
+                                this._config.explorerEndpoint,
                                 "networks",
                                 "get");
                             this._timeLastNetworks = now;
@@ -144,7 +143,7 @@ export class App {
 
             if (foundNetwork) {
                 const res = await FetchHelper.json<unknown, IItemsPerSecond>(
-                    EXPLORER_URL, `stats/${foundNetwork.network}`, "get");
+                    this._config.explorerEndpoint, `stats/${foundNetwork.network}`, "get");
 
                 const embed = new MessageEmbed()
                     .setTitle(foundNetwork.label)
