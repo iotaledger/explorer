@@ -1,2 +1,2 @@
 export type ConfirmationState =
-    "unknown" | "confirmed" | "pending" | "subtangle" | "reattachment" | "consistency" | "conflicting";
+    "unknown" | "confirmed" | "pending" | "subtangle" | "reattachment" | "consistency" | "conflicting" | "referenced";

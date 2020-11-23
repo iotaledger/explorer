@@ -181,6 +181,11 @@ export class TangleCacheService {
                 childrenIds?: string[];
 
                 /**
+                 * Validations if the message is conflicting.
+                 */
+                validations?: string[];
+
+                /**
                  * The time of cache.
                  */
                 cached: number;
@@ -792,6 +797,7 @@ export class TangleCacheService {
         fields: "metadata" | "children" | "all",
         force?: boolean): Promise<{
             metadata?: IMessageMetadata;
+            validations?: string[];
             childrenIds?: string[];
         }> {
         if (!this._chrysalisMetadataChildrenCache[network][messageId] || force) {
@@ -806,6 +812,7 @@ export class TangleCacheService {
                     };
                 if (fields === "metadata" || fields === "all") {
                     this._chrysalisMetadataChildrenCache[network][messageId].metadata = response.metadata;
+                    this._chrysalisMetadataChildrenCache[network][messageId].validations = response.validations;
                 }
                 if (fields === "children" || fields === "all") {
                     this._chrysalisMetadataChildrenCache[network][messageId].childrenIds = response.childrenMessageIds;
@@ -815,6 +822,7 @@ export class TangleCacheService {
 
         return {
             metadata: this._chrysalisMetadataChildrenCache[network][messageId]?.metadata,
+            validations: this._chrysalisMetadataChildrenCache[network][messageId]?.validations,
             childrenIds: this._chrysalisMetadataChildrenCache[network][messageId]?.childrenIds
         };
     }

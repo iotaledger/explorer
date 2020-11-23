@@ -13,6 +13,11 @@ export interface MessageState {
     metadata?: IMessageMetadata;
 
     /**
+     * Validations if the message is conflicting.
+     */
+    validations?: string[];
+
+    /**
      * Are we busy loading the children.
      */
     childrenBusy: boolean;

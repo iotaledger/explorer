@@ -8,6 +8,7 @@ import IndexationPayload from "../../components/chrysalis/IndexationPayload";
 import MilestonePayload from "../../components/chrysalis/MilestonePayload";
 import TransactionPayload from "../../components/chrysalis/TransactionPayload";
 import Confirmation from "../../components/Confirmation";
+import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
 import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
@@ -69,8 +70,9 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 this.setState({
                     metadata: details.metadata,
                     childrenIds: details.childrenIds,
+                    validations: details.validations,
                     confirmationState: details?.metadata?.referencedByMilestoneIndex !== undefined
-                        ? "confirmed" : "pending",
+                        ? "referenced" : "pending",
                     childrenBusy: false
                 });
 
@@ -81,8 +83,9 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
 
                         this.setState({
                             metadata: details2.metadata,
+                            validations: details2.validations,
                             confirmationState: details2?.metadata?.referencedByMilestoneIndex !== undefined
-                                ? "confirmed" : "pending"
+                                ? "referenced" : "pending"
                         });
 
                         if (details2?.metadata?.referencedByMilestoneIndex && this._timerId) {
@@ -218,14 +221,51 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         <div className="card--value row middle">
                                             <span className="margin-r-t">{this.state.message?.nonce}</span>
                                         </div>
-                                        <div className="card--label">
-                                            Is Solid
-                                        </div>
-                                        <div className="card--value row middle">
-                                            <span className="margin-r-t">
-                                                {this.state.metadata?.isSolid ? "Yes" : "No"}
-                                            </span>
-                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="card">
+                                    <div className="card--header card--header__space-between">
+                                        <h2>
+                                            Metadata
+                                        </h2>
+                                    </div>
+                                    <div className="card--content">
+                                        {!this.state.metadata && (
+                                            <Spinner />
+                                        )}
+                                        {this.state.metadata && (
+                                            <React.Fragment>
+                                                <div className="card--label">
+                                                    Is Solid
+                                                </div>
+                                                <div className="card--value row middle">
+                                                    <span className="margin-r-t">
+                                                        {this.state.metadata?.isSolid ? "Yes" : "No"}
+                                                    </span>
+                                                </div>
+                                                <div className="card--label">
+                                                    Ledger Inclusion
+                                                </div>
+                                                <div className="card--value row middle">
+                                                    <InclusionState state={this.state.metadata?.ledgerInclusionState} />
+                                                </div>
+                                                {this.state.validations && this.state.validations.length > 0 && (
+                                                    <React.Fragment>
+                                                        <div className="card--label">
+                                                            Conflicts
+                                                        </div>
+                                                        <div className="card--value row middle">
+                                                            <span className="margin-r-t">
+                                                                {this.state.validations.map((v, idx) => (
+                                                                    <div key={idx}>{v}</div>
+                                                                ))}
+                                                            </span>
+                                                        </div>
+                                                    </React.Fragment>
+                                                )}
+                                            </React.Fragment>
+                                        )}
                                     </div>
                                 </div>
                                 {this.state.message?.payload && (

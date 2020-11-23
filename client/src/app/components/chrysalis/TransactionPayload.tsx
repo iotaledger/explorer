@@ -1,7 +1,9 @@
 /* eslint-disable max-len */
+import { Converter, Ed25519Address, IReferenceUnlockBlock, ISignatureUnlockBlock } from "@iota/iota2.js";
 import React, { Component, ReactNode } from "react";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { UnitsHelper } from "../../../helpers/unitsHelper";
+import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import Bech32Address from "./Bech32Address";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
 import { TransactionPayloadState } from "./TransactionPayloadState";
@@ -17,8 +19,34 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
     constructor(props: TransactionPayloadProps) {
         super(props);
 
+        const signatureBlocks: ISignatureUnlockBlock[] = [];
+        for (let i = 0; i < props.payload.unlockBlocks.length; i++) {
+            if (props.payload.unlockBlocks[i].type === 0) {
+                const sigUnlockBlock = props.payload.unlockBlocks[i] as ISignatureUnlockBlock;
+                signatureBlocks.push(sigUnlockBlock);
+            } else {
+                const refUnlockBlock = props.payload.unlockBlocks[i] as IReferenceUnlockBlock;
+                signatureBlocks.push(props.payload.unlockBlocks[refUnlockBlock.reference] as ISignatureUnlockBlock);
+            }
+        }
+
+        const unlockAddresses: IBech32AddressDetails[] = [];
+        for (let i = 0; i < signatureBlocks.length; i++) {
+            unlockAddresses.push(
+                Bech32AddressHelper.buildAddress(
+                    Converter.bytesToHex(
+                        Ed25519Address.publicKeyToAddress(
+                            Converter.hexToBytes(
+                                signatureBlocks[i].signature.publicKey)
+                        )
+                    )
+                )
+            );
+        }
+
         this.state = {
-            formatFull: false
+            formatFull: false,
+            unlockAddresses
         };
     }
 
@@ -40,6 +68,11 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                                 className="card--inline-row"
                             >
                                 <h3 className="margin-b-t">Input {idx}</h3>
+                                <Bech32Address
+                                    network={this.props.network}
+                                    history={this.props.history}
+                                    addressDetails={this.state.unlockAddresses[idx]}
+                                />
                                 <div className="card--label">
                                     Transaction Id
                                 </div>
