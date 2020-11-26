@@ -651,6 +651,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </Link>
                                                     </div>
                                                 ))}
+                                                {!this.state.childrenBusy &&
+                                                    this.state.children &&
+                                                    this.state.children.length === 0 && (
+                                                        <p>There are no children for this message.</p>
+                                                    )}
+
                                             </div>
                                         </div>
 
