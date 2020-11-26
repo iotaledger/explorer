@@ -134,7 +134,7 @@ export async function executeRoute(
         response = { error: err };
     }
 
-    if (verboseLogging || response.error) {
+    if (verboseLogging || (response?.error)) {
         console.log(`<=== duration: ${Date.now() - start}ms`);
         console.log(inspect(response, false, undefined, false));
     }

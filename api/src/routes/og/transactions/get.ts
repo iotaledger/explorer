@@ -63,7 +63,9 @@ export async function get(
         }
     }
 
-    if ((!txHashes || txHashes.length === 0) && request.hash.length === 81) {
+    // We can't find the hash as an address, bundle etc, so see if this was a tx hash
+    // but not if we were looking for approvees as we don't want to list ourselves
+    if (request.mode !== "approvees" && (!txHashes || txHashes.length === 0) && request.hash.length === 81) {
         const { trytes } = await TangleHelper.getTrytes(networkConfig, [request.hash]);
 
         if (trytes && trytes.length > 0 && !isEmpty(trytes[0])) {
