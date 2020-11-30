@@ -1,4 +1,4 @@
-import { IOutput } from "@iota/iota2.js";
+import { IOutputResponse } from "@iota/iota2.js";
 import * as H from "history";
 
 export interface OutputProps {
@@ -15,7 +15,7 @@ export interface OutputProps {
     /**
      * The output to display.
      */
-    output: IOutput;
+    output: IOutputResponse;
 
     /**
      * History for navigation.

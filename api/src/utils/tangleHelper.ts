@@ -345,26 +345,28 @@ export class TangleHelper {
         } catch { }
 
         try {
-            let addr = query;
+            if (Bech32Helper.matches(query)) {
+                const address = await client.address(query);
 
-            try {
-                // Hornet doesn't yet support bech32 lookup
-                // so convert to regular hex format here
-                const parts = Bech32Helper.fromBech32(query);
-                if (parts && parts.addressType === 1) {
-                    addr = Converter.bytesToHex(parts.addressBytes);
+                if (address.count > 0) {
+                    const addressOutputs = await client.addressOutputs(query);
+
+                    return {
+                        address,
+                        addressOutputIds: addressOutputs.outputIds
+                    };
                 }
-            } catch { }
+            } else if (Converter.isHex(query)) {
+                const address = await client.addressEd25519(query);
 
-            const address = await client.address(addr);
+                if (address.count > 0) {
+                    const addressOutputs = await client.addressEd25519Outputs(query);
 
-            if (address.count > 0) {
-                const addressOutputs = await client.addressOutputs(addr);
-
-                return {
-                    address,
-                    addressOutputIds: addressOutputs.outputIds
-                };
+                    return {
+                        address,
+                        addressOutputIds: addressOutputs.outputIds
+                    };
+                }
             }
         } catch { }
 
