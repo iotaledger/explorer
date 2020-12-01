@@ -1,4 +1,4 @@
-import { IMessage, IMessages } from "@iota/iota2.js";
+import { IMessage, IMessagesResponse } from "@iota/iota2.js";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { ApiClient } from "./apiClient";
 
@@ -30,7 +30,7 @@ export class ChrysalisApiStreamsV0Client {
      * @param indexationKey The index value.
      * @returns The messageId.
      */
-    public async messagesFind(indexationKey: string): Promise<IMessages> {
+    public async messagesFind(indexationKey: string): Promise<IMessagesResponse> {
         const result = await this._apiClient.search({
             network: this._network,
             query: indexationKey

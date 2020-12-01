@@ -1,4 +1,4 @@
-import { IOutput } from "@iota/iota2.js";
+import { IOutputResponse } from "@iota/iota2.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -62,7 +62,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 balance: result.address.balance,
                 outputIds: result.addressOutputIds
             }, async () => {
-                const outputs: IOutput[] = [];
+                const outputs: IOutputResponse[] = [];
 
                 if (result.addressOutputIds) {
                     for (const outputId of result.addressOutputIds) {

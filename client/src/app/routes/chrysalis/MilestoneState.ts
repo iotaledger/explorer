@@ -1,10 +1,10 @@
-import { IMilestone } from "@iota/iota2.js";
+import { IMilestoneResponse } from "@iota/iota2.js";
 
 export interface MilestoneState {
     /**
      * Milestone.
      */
-    milestone?: IMilestone;
+    milestone?: IMilestoneResponse;
 
     /**
      * The previous milestone is available.

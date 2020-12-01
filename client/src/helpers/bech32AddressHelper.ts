@@ -1,4 +1,4 @@
-import { Bech32Helper, Converter } from "@iota/iota2.js";
+import { Bech32Helper, Converter, ED25519_ADDRESS_TYPE } from "@iota/iota2.js";
 import { IBech32AddressDetails } from "../models/IBech32AddressDetails";
 
 export class Bech32AddressHelper {
@@ -27,8 +27,8 @@ export class Bech32AddressHelper {
         if (!bech32) {
             // We assume this is hex and ed25519 for now
             hex = address;
-            type = 1;
-            bech32 = Bech32Helper.toBech32(1, Converter.hexToBytes(hex));
+            type = ED25519_ADDRESS_TYPE;
+            bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, Converter.hexToBytes(hex));
         }
 
         return {
@@ -45,7 +45,7 @@ export class Bech32AddressHelper {
      * @returns The label.
      */
     public static typeLabel(addressType?: number): string | undefined {
-        if (addressType === 1) {
+        if (addressType === ED25519_ADDRESS_TYPE) {
             return "Ed25519";
         }
     }
