@@ -73,8 +73,15 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                     </div>
                     {!this.state.json && (
                         <React.Fragment>
-                            <div className="card--label">
-                                Data ASCII
+                            <div className="card--label row middle">
+                                <span className="margin-r-t">Data ASCII</span>
+                                <MessageButton
+                                    onClick={() => ClipboardHelper.copy(
+                                        this.state.ascii
+                                    )}
+                                    buttonType="copy"
+                                    labelPosition="right"
+                                />
                             </div>
                             <div className="card--value card--value-textarea card--value-textarea__ascii">
                                 {this.state.ascii}
@@ -83,16 +90,30 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                     )}
                     {this.state.json && (
                         <React.Fragment>
-                            <div className="card--label">
-                                Data JSON
+                            <div className="card--label row middle">
+                                <span className="margin-r-t">Data JSON</span>
+                                <MessageButton
+                                    onClick={() => ClipboardHelper.copy(
+                                        this.state.json
+                                    )}
+                                    buttonType="copy"
+                                    labelPosition="right"
+                                />
                             </div>
                             <div className="card--value card--value-textarea card--value-textarea__json">
                                 {this.state.json}
                             </div>
                         </React.Fragment>
                     )}
-                    <div className="card--label">
-                        Data Hex
+                    <div className="card--label row middle">
+                        <span className="margin-r-t">Data Hex</span>
+                        <MessageButton
+                            onClick={() => ClipboardHelper.copy(
+                                this.state.hex
+                            )}
+                            buttonType="copy"
+                            labelPosition="right"
+                        />
                     </div>
                     <div className="card--value card--value-textarea card--value-textarea__hex">
                         {this.state.hex}

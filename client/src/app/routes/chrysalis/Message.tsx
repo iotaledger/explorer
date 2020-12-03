@@ -192,7 +192,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                     {this.state.message?.parent2MessageId !== "0".repeat(64) && (
                                                         <React.Fragment>
                                                             <Link
-                                                                type="button"
+                                                                className="margin-r-t"
                                                                 to={
                                                                     `/${this.props.match.params.network
                                                                     }/message/${this.state.message?.parent2MessageId}`

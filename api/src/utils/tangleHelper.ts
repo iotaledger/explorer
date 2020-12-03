@@ -315,6 +315,7 @@ export class TangleHelper {
      */
     public static async search(network: INetwork, query: string): Promise<ISearchResponse> {
         const client = new SingleNodeClient(network.provider);
+        const queryLower = query.toLowerCase();
 
         try {
             if (/^\d+$/.test(query)) {
@@ -327,11 +328,13 @@ export class TangleHelper {
         } catch { }
 
         try {
-            const message = await client.message(query);
+            if (Converter.isHex(queryLower) && queryLower.length === 64) {
+                const message = await client.message(query);
 
-            return {
-                message
-            };
+                return {
+                    message
+                };
+            }
         } catch { }
 
         try {
@@ -345,22 +348,22 @@ export class TangleHelper {
         } catch { }
 
         try {
-            if (Bech32Helper.matches(query)) {
-                const address = await client.address(query);
+            if (Bech32Helper.matches(queryLower)) {
+                const address = await client.address(queryLower);
 
                 if (address.count > 0) {
-                    const addressOutputs = await client.addressOutputs(query);
+                    const addressOutputs = await client.addressOutputs(queryLower);
 
                     return {
                         address,
                         addressOutputIds: addressOutputs.outputIds
                     };
                 }
-            } else if (Converter.isHex(query)) {
-                const address = await client.addressEd25519(query);
+            } else if (Converter.isHex(queryLower)) {
+                const address = await client.addressEd25519(queryLower);
 
                 if (address.count > 0) {
-                    const addressOutputs = await client.addressEd25519Outputs(query);
+                    const addressOutputs = await client.addressEd25519Outputs(queryLower);
 
                     return {
                         address,
@@ -371,11 +374,13 @@ export class TangleHelper {
         } catch { }
 
         try {
-            const output = await client.output(query);
+            if (Converter.isHex(queryLower) && queryLower.length === 68) {
+                const output = await client.output(queryLower);
 
-            return {
-                output
-            };
+                return {
+                    output
+                };
+            }
         } catch { }
 
         return {};
@@ -398,7 +403,6 @@ export class TangleHelper {
             if (metadata.ledgerInclusionState === "conflicting") {
                 const message = await client.message(messageId);
                 validations = await MessageHelper.validateTransaction(client, message);
-                console.log({ validations });
             }
 
             return {

@@ -1,5 +1,5 @@
 /**
- * Helper methods for clipbaord.
+ * Helper methods for clipboard.
  */
 export class ClipboardHelper {
     /**
