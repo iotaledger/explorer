@@ -51,7 +51,7 @@ class MilestonePayload extends Component<MilestonePayloadProps> {
                     <div className="card--label">
                         Parent Message 1
                     </div>
-                    <div className="card--value row">
+                    <div className="card--value row middle">
                         <Link
                             className="margin-r-t"
                             to={
@@ -72,7 +72,7 @@ class MilestonePayload extends Component<MilestonePayloadProps> {
                     <div className="card--label">
                         Parent Message 2
                     </div>
-                    <div className="card--value row">
+                    <div className="card--value row middle">
                         <Link
                             className="margin-r-t"
                             to={
