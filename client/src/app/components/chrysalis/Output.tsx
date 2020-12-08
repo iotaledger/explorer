@@ -32,7 +32,7 @@ class Output extends Component<OutputProps, OutputState> {
         return (
             <div className="output">
                 <div className="card--header">
-                    <h2>{this.props.output.output.type === 0 ? "Signature Locked " : ""} Output {this.props.output.outputIndex}</h2>
+                    <h2>{this.props.output.output.type === 0 ? "Signature Locked" : ""} Output</h2>
                 </div>
                 <div className="card--content">
                     <div className="card--label">
@@ -84,6 +84,12 @@ class Output extends Component<OutputProps, OutputState> {
                                 />
                             </React.Fragment>
                         )}
+                    </div>
+                    <div className="card--label">
+                        Index
+                    </div>
+                    <div className="card--value">
+                        {this.props.output.outputIndex}
                     </div>
                     <div className="card--label">
                         Is Spent
