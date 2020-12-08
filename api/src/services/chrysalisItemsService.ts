@@ -61,7 +61,8 @@ export class ChrysalisItemsService extends ItemServiceBase {
 
         this._confirmedSubscriptionId = this._mqttClient.messagesMetadata(
             (topic: string, message: IMessageMetadata) => {
-                if (message.referencedByMilestoneIndex && !this._confirmedIds.includes(message.messageId)) {
+                if ((message.referencedByMilestoneIndex || message.milestoneIndex) &&
+                    !this._confirmedIds.includes(message.messageId)) {
                     this._totalConfirmed++;
                     this._confirmedIds.push(message.messageId);
                 }

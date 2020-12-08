@@ -214,10 +214,15 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                             async () => this.updateFilters())}
                                                     >
                                                         <option value="all">All</option>
-                                                        <option value="zeroOnly">Zero Only</option>
-                                                        <option value="nonZeroOnly">Non Zero Only</option>
+                                                        {this._networkConfig?.protocolVersion === "og" && (
+                                                            <React.Fragment>
+                                                                <option value="zeroOnly">Zero Only</option>
+                                                                <option value="nonZeroOnly">Non Zero Only</option>
+                                                            </React.Fragment>
+                                                        )}
                                                         {this._networkConfig?.protocolVersion === "chrysalis" && (
                                                             <React.Fragment>
+                                                                <option value="transaction">Transaction</option>
                                                                 <option value="milestone">Milestone</option>
                                                                 <option value="indexed">Indexed</option>
                                                                 <option value="noPayload">No Payload</option>
@@ -444,7 +449,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
 
             if (this.state.valueFilter === "zeroOnly") {
                 filter = (item: IFeedItem) => item.value === 0;
-            } else if (this.state.valueFilter === "nonZeroOnly") {
+            } else if (this.state.valueFilter === "nonZeroOnly" || this.state.valueFilter === "transaction") {
                 filter = (item: IFeedItem) =>
                     item.value !== undefined &&
                     item.value !== 0 &&

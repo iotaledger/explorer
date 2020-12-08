@@ -1,4 +1,4 @@
 /**
  * The filter for values.
  */
-export type ValueFilter = "all" | "zeroOnly" | "nonZeroOnly" | "milestone" | "indexed" | "noPayload";
+export type ValueFilter = "all" | "zeroOnly" | "nonZeroOnly" | "transaction" | "milestone" | "indexed" | "noPayload";

@@ -14,13 +14,10 @@ class Confirmation extends Component<ConfirmationProps> {
     public render(): ReactNode {
         return (
             <div
-                onClick={this.props.onClick}
                 className={
                     classNames(
                         "confirmation",
-                        { "confirmation__no-click": !this.props.onClick },
                         { "confirmation__confirmed": this.props.state === "confirmed" },
-                        { "confirmation__confirmed": this.props.state === "referenced" },
                         { "confirmation__pending": this.props.state === "pending" },
                         { "confirmation__unknown": this.props.state === "unknown" },
                         { "confirmation__reattachment": this.props.state === "reattachment" },
@@ -32,9 +29,6 @@ class Confirmation extends Component<ConfirmationProps> {
                 {this.props.state === "unknown" && ("Unknown")}
                 {this.props.state === "confirmed" &&
                     (`Confirmed${this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
-                        ? ` by MS ${this.props.milestoneIndex}` : ""}`)}
-                {this.props.state === "referenced" &&
-                    (`Referenced${this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
                         ? ` by MS ${this.props.milestoneIndex}` : ""}`)}
                 {this.props.state === "pending" && ("Pending")}
                 {this.props.state === "subtangle" && ("Subtangle not updated")}

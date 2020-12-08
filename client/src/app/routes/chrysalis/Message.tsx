@@ -1,15 +1,17 @@
+import { IMessageMetadata } from "@iota/iota2.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import IndexationPayload from "../../components/chrysalis/IndexationPayload";
 import MilestonePayload from "../../components/chrysalis/MilestonePayload";
 import TransactionPayload from "../../components/chrysalis/TransactionPayload";
-import Confirmation from "../../components/Confirmation";
 import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
+import MessageTangleState from "../../components/MessageTangleState";
 import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
 import "./Message.scss";
@@ -40,7 +42,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
         this.state = {
-            confirmationState: "pending",
+            messageTangleStatus: "pending",
             childrenBusy: true
         };
     }
@@ -71,12 +73,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                     metadata: details.metadata,
                     childrenIds: details.childrenIds,
                     validations: details.validations,
-                    confirmationState: details?.metadata?.referencedByMilestoneIndex !== undefined
-                        ? "referenced" : "pending",
+                    messageTangleStatus: this.calculateStatus(details?.metadata),
                     childrenBusy: false
                 });
 
-                if (!details?.metadata?.referencedByMilestoneIndex) {
+                if (!details?.metadata?.referencedByMilestoneIndex || !details?.metadata?.milestoneIndex) {
                     this._timerId = setInterval(async () => {
                         const details2 = await this._tangleCacheService.messageDetails(
                             this.props.match.params.network, this.props.match.params.messageId, "metadata", true);
@@ -84,11 +85,12 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                         this.setState({
                             metadata: details2.metadata,
                             validations: details2.validations,
-                            confirmationState: details2?.metadata?.referencedByMilestoneIndex !== undefined
-                                ? "referenced" : "pending"
+                            messageTangleStatus: this.calculateStatus(details2?.metadata)
                         });
 
-                        if (details2?.metadata?.referencedByMilestoneIndex && this._timerId) {
+                        if ((details2?.metadata?.referencedByMilestoneIndex ||
+                            details2?.metadata?.milestoneIndex) &&
+                            this._timerId) {
                             clearInterval(this._timerId);
                             this._timerId = undefined;
                         }
@@ -131,9 +133,10 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         <h2>
                                             General
                                         </h2>
-                                        <Confirmation
-                                            state={this.state.confirmationState}
-                                            milestoneIndex={this.state.metadata?.referencedByMilestoneIndex}
+                                        <MessageTangleState
+                                            status={this.state.messageTangleStatus}
+                                            milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
+                                                this.state.metadata?.milestoneIndex}
                                             onClick={this.state.metadata?.referencedByMilestoneIndex
                                                 ? () => this.props.history.push(
                                                     `/${this.props.match.params.network
@@ -348,6 +351,27 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 </div>
             </div >
         );
+    }
+
+    /**
+     * Calculate the status for the message.
+     * @param metadata The metadata to calculate the status from.
+     * @returns The message status.
+     */
+    private calculateStatus(metadata?: IMessageMetadata): MessageTangleStatus {
+        let messageTangleStatus: MessageTangleStatus = "unknown";
+
+        if (metadata) {
+            if (metadata.milestoneIndex) {
+                messageTangleStatus = "milestone";
+            } else if (metadata.referencedByMilestoneIndex) {
+                messageTangleStatus = "referenced";
+            } else {
+                messageTangleStatus = "pending";
+            }
+        }
+
+        return messageTangleStatus;
     }
 }
 

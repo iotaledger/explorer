@@ -1,5 +1,5 @@
 import { IMessage, IMessageMetadata } from "@iota/iota2.js";
-import { ConfirmationState } from "../../../models/confirmationState";
+import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 
 export interface MessageState {
     /**
@@ -28,7 +28,7 @@ export interface MessageState {
     childrenIds?: string[];
 
     /**
-     * The confirmation state.
+     * The state of the message on the tangle.
      */
-    confirmationState: ConfirmationState;
+    messageTangleStatus: MessageTangleStatus;
 }

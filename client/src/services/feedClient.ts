@@ -161,16 +161,12 @@ export class FeedClient {
 
                             let removeItems: IFeedItem[] = [];
 
-                            const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
-                            const zeroToRemoveCount = zero.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                            if (zeroToRemoveCount > 0) {
-                                removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
-                            }
-                            const nonZero = this._items.filter(t => t.payloadType === "Transaction" &&
-                                t.value !== 0 && t.value !== undefined);
-                            const nonZeroToRemoveCount = nonZero.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                            if (nonZeroToRemoveCount > 0) {
-                                removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
+                            const transactionPayload = this._items.filter(t => t.payloadType === "Transaction");
+                            const transactionPayloadToRemoveCount =
+                                transactionPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (transactionPayloadToRemoveCount > 0) {
+                                removeItems =
+                                    removeItems.concat(transactionPayload.slice(-transactionPayloadToRemoveCount));
                             }
                             const indexPayload = this._items.filter(t => t.payloadType === "Index");
                             const indexPayloadToRemoveCount = indexPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
@@ -284,32 +280,38 @@ export class FeedClient {
         if (this._networkConfig?.protocolVersion === "chrysalis") {
             const bytes = Converter.hexToBytes(item);
             const messageId = Converter.bytesToHex(Blake2b.sum256(bytes));
-            const message = deserializeMessage(new ReadStream(bytes));
 
             let value;
             let payloadType: "Transaction" | "Index" | "MS" | "None" = "None";
             const metaData: { [key: string]: unknown } = {};
+            let message;
 
-            if (message.payload?.type === 0) {
-                payloadType = "Transaction";
-                value = message.payload.essence.outputs.reduce((total, output) => total + output.amount, 0);
+            try {
+                message = deserializeMessage(new ReadStream(bytes));
 
-                if (message.payload.essence.payload) {
-                    metaData.Index = message.payload.essence.payload.index;
+                if (message.payload?.type === 0) {
+                    payloadType = "Transaction";
+                    value = message.payload.essence.outputs.reduce((total, output) => total + output.amount, 0);
+
+                    if (message.payload.essence.payload) {
+                        metaData.Index = message.payload.essence.payload.index;
+                    }
+                } else if (message.payload?.type === 1) {
+                    payloadType = "MS";
+                    metaData.MS = message.payload.index;
+                } else if (message.payload?.type === 2) {
+                    payloadType = "Index";
+                    metaData.Index = message.payload.index;
                 }
-            } else if (message.payload?.type === 1) {
-                payloadType = "MS";
-                metaData.MS = message.payload.index;
-            } else if (message.payload?.type === 2) {
-                payloadType = "Index";
-                metaData.Index = message.payload.index;
+            } catch (err) {
+                console.error(err);
             }
 
             return {
                 id: messageId,
                 value,
-                parent1: message.parent1MessageId ?? "",
-                parent2: message.parent2MessageId ?? "",
+                parent1: message?.parent1MessageId ?? "",
+                parent2: message?.parent2MessageId ?? "",
                 metaData,
                 payloadType,
                 confirmed: false

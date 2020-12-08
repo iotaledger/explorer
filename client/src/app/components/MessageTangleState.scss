@@ -2,7 +2,7 @@
 @import '../../scss/mixins';
 @import '../../scss/variables';
 
-.confirmation {
+.message-tangle-state {
   @include font-size(12px);
   display: flex;
   align-items: center;
@@ -19,33 +19,27 @@
   white-space: nowrap;
   cursor: pointer;
 
-  &.confirmation__confirmed {
+  &.message-tangle-state__referenced {
     background-color: #73b183;
     color: $white;
   }
 
-  &.confirmation__referenced {
+  &.message-tangle-state__milestone {
     background-color: #73b183;
     color: $white;
   }
 
-  &.confirmation__pending {
+  &.message-tangle-state__pending {
     background-color: $gray-light;
     color: #8493ad;
   }
 
-  &.confirmation__reattachment {
-    background-color: #4140df;
-    color: #978df2;
-  }
-
-  &.confirmation__consistency {
+  &.message-tangle-state__conflicting {
     background-color: $danger;
     color: $white;
   }
 
-  &.confirmation__conflicting {
-    background-color: $danger;
-    color: $white;
+  &.confirmation__no-click {
+    pointer-events: none;
   }
 }

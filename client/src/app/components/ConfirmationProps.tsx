@@ -10,9 +10,4 @@ export interface ConfirmationProps {
      * The milestone that confirmed it.
      */
     milestoneIndex?: number;
-
-    /**
-     * The button click.
-     */
-    onClick?(): void;
 }

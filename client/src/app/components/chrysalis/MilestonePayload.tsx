@@ -1,6 +1,9 @@
 /* eslint-disable max-len */
 import React, { Component, ReactNode } from "react";
+import { Link } from "react-router-dom";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
+import MessageButton from "../MessageButton";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 
 /**
@@ -44,6 +47,48 @@ class MilestonePayload extends Component<MilestonePayloadProps> {
                                 this.props.payload.timestamp
                             )
                         )}
+                    </div>
+                    <div className="card--label">
+                        Parent Message 1
+                    </div>
+                    <div className="card--value row">
+                        <Link
+                            className="margin-r-t"
+                            to={
+                                `/${this.props.network
+                                }/message/${this.props.payload.parent1MessageId}`
+                            }
+                        >
+                            {this.props.payload.parent1MessageId}
+                        </Link>
+                        <MessageButton
+                            onClick={() => ClipboardHelper.copy(
+                                this.props.payload.parent1MessageId
+                            )}
+                            buttonType="copy"
+                            labelPosition="top"
+                        />
+                    </div>
+                    <div className="card--label">
+                        Parent Message 2
+                    </div>
+                    <div className="card--value row">
+                        <Link
+                            className="margin-r-t"
+                            to={
+                                `/${this.props.network
+                                }/message/${this.props.payload.parent2MessageId}`
+                            }
+                        >
+                            {this.props.payload.parent2MessageId}
+                        </Link>
+                        <MessageButton
+                            onClick={() => ClipboardHelper.copy(
+                                this.props.payload.parent2MessageId
+                            )}
+                            buttonType="copy"
+                            labelPosition="top"
+                        />
                     </div>
                     <div className="card--label">
                         Inclusion Merkle Proof
