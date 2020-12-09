@@ -12,7 +12,7 @@ class ToolsPanel extends Component<ToolsPanelProps> {
      */
     public render(): ReactNode {
         return (
-            <div className="tools-panel card">
+            <div className="toolspanel card">
                 <div className="card--header">
                     <h2>Tools</h2>
                 </div>
