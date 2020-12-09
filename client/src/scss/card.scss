@@ -117,10 +117,19 @@
     font-family: $inter;
     font-weight: bold;
     cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      color: $main-green-highlight;
+    }
 
     &:disabled {
       opacity: 0.3;
       pointer-events: none;
+    }
+
+    &.card--action-plain {
+      border: 0;
     }
   }
 
@@ -149,7 +158,8 @@
     text-transform: uppercase;
     white-space: nowrap;
 
-    button {
+    button,
+    .button {
       @include font-size(12px);
 
       padding: 0;

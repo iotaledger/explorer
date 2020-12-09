@@ -1,8 +1,11 @@
-import { IMessageMetadata } from "@iota/iota2.js";
+import { IMessageMetadata, serializeMessage, WriteStream } from "@iota/iota2.js";
 import React, { ReactNode } from "react";
+import { FaFileDownload } from "react-icons/fa";
 import { Link, RouteComponentProps } from "react-router-dom";
+import chevronDownGray from "../../../assets/chevron-down-gray.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { DownloadHelper } from "../../../helpers/downloadHelper";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -14,6 +17,7 @@ import MessageButton from "../../components/MessageButton";
 import MessageTangleState from "../../components/MessageTangleState";
 import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
+import ToolsPanel from "../../components/ToolsPanel";
 import "./Message.scss";
 import { MessageRouteProps } from "./MessageRouteProps";
 import { MessageState } from "./MessageState";
@@ -43,7 +47,9 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
 
         this.state = {
             messageTangleStatus: "pending",
-            childrenBusy: true
+            childrenBusy: true,
+            dataUrls: {},
+            selectedDataUrl: "json"
         };
     }
 
@@ -63,8 +69,20 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 behavior: "smooth"
             });
 
+            const writeStream = new WriteStream();
+            serializeMessage(writeStream, result.message);
+            const finalBytes = writeStream.finalBytes();
+
+            const dataUrls = {
+                json: DownloadHelper.createJsonDataUrl(result.message),
+                bin: DownloadHelper.createBinaryDataUrl(finalBytes),
+                base64: DownloadHelper.createBase64DataUrl(finalBytes),
+                hex: DownloadHelper.createHexDataUrl(finalBytes)
+            };
+
             this.setState({
-                message: result.message
+                message: result.message,
+                dataUrls
             }, async () => {
                 const details = await this._tangleCacheService.messageDetails(
                     this.props.match.params.network, this.props.match.params.messageId, "all");
@@ -313,7 +331,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             )}
                                     </React.Fragment>
                                 )}
-
                                 <div className="card margin-t-s">
                                     <div className="card--header">
                                         <h2>Child Messages</h2>
@@ -345,11 +362,44 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     </div>
                                 </div>
                             </div>
-                            <SidePanel {...this.props} />
+                            <div className="side-panel-container">
+                                <SidePanel {...this.props} />
+                                <ToolsPanel>
+                                    <div className="card--section">
+                                        <div className="card--label card--label__underline">
+                                            Export Message
+                                        </div>
+                                        <div className="card--value row">
+                                            <div className="select-wrapper">
+                                                <select
+                                                    value={this.state.selectedDataUrl}
+                                                    onChange={e => this.setState(
+                                                        { selectedDataUrl: e.target.value })}
+                                                >
+                                                    <option value="json">JSON</option>
+                                                    <option value="bin">Binary</option>
+                                                    <option value="hex">Hex</option>
+                                                    <option value="base64">Base64</option>
+                                                </select>
+                                                <img src={chevronDownGray} alt="expand" />
+                                            </div>
+                                            <a
+                                                className="card--action card--action-plain"
+                                                href={this.state.dataUrls[this.state.selectedDataUrl]}
+                                                download={DownloadHelper.filename(
+                                                    this.props.match.params.messageId, this.state.selectedDataUrl)}
+                                                role="button"
+                                            >
+                                                <FaFileDownload />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </ToolsPanel>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div >
+            </div>
         );
     }
 

@@ -3,20 +3,26 @@
 @import '../../scss/media-queries';
 @import '../../scss/variables';
 
-.side-panel {
+.tools-panel {
   display: flex;
   flex-direction: row;
   width: 241px;
 
   @include desktop-down {
     flex: 1;
-    width: 100%;
+    @include desktop-down {
+      width: 100%;
+    }
     margin-top: 20px;
   }
 
 
   &.card {
     padding-bottom: 30px;
+
+    .card--header {
+      margin-left: 20px;
+    }
 
     .card--sections {
       display: flex;
@@ -29,7 +35,8 @@
       }
 
       @include desktop-down {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
 
         .card--section {
           flex: 1;
@@ -71,59 +78,6 @@
 
     .line-container {
       border-bottom: 1px solid $gray-noon;
-    }
-
-    .feed {
-      .card--label {
-        margin-top: 23px;
-
-        @include desktop-down {
-          margin-top: 10px;
-        }
-      }
-
-      .feed-item {
-        padding-top: 10px;
-        padding-right: 23px;
-        padding-left: 23px;
-
-        .feed-item--value {
-          @include font-size(12px);
-
-          min-width: 60px;
-          color: $main-green;
-          font-family: $inter;
-
-          button {
-            border: 0;
-            background: transparent;
-            color: inherit;
-            text-align: left;
-            cursor: pointer;
-          }
-        }
-
-        .feed-item--hash {
-          @include font-size(12px);
-
-          width: 135px;
-
-          @include desktop-down {
-            width: 100%;
-          }
-
-
-          color: $gray-10;
-          font-family: $inter;
-          text-decoration: none;
-          text-overflow: ellipsis;
-          overflow: hidden;
-
-          &:hover {
-            text-decoration: underline;
-          }
-        }
-      }
     }
   }
 }

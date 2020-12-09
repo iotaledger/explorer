@@ -31,4 +31,16 @@ export interface MessageState {
      * The state of the message on the tangle.
      */
     messageTangleStatus: MessageTangleStatus;
+
+    /**
+     * The data urls.
+     */
+    dataUrls: {
+        [id: string]: string;
+    };
+
+    /**
+     * The selected data url.
+     */
+    selectedDataUrl: string;
 }
