@@ -36,6 +36,6 @@ export interface HeaderProps {
         /**
          * The icon to display.
          */
-        icon: string;
+        icon: ReactNode;
     }[];
 }

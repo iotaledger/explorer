@@ -88,12 +88,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                                                     to={tool.url}
                                                     onClick={() => this.setState({ isExpanded: false })}
                                                 >
-                                                    <span
-                                                        className="icon"
-                                                        dangerouslySetInnerHTML={
-                                                            { __html: tool.icon }
-                                                        }
-                                                    />
+                                                    {tool.icon}
                                                     <span className="margin-l-s">{tool.label}</span>
                                                 </Link>
                                             ))}
