@@ -61,12 +61,12 @@ socketServer.on("connection", socket => {
         if (!response.error) {
             sockets[socket.id] = data.network;
         }
-        console.log("Socket::Subscribe", socket.id, response.subscriptionId);
+        console.log("Socket::Subscribe", socket.id);
         socket.emit("subscribe", response);
     });
 
     socket.on("unsubscribe", data => {
-        console.log("Socket::Unsubscribe", socket.id, data.subscriptionId);
+        console.log("Socket::Unsubscribe", socket.id);
         const response = unsubscribe(config, socket, data);
         if (sockets[socket.id]) {
             delete sockets[socket.id];
