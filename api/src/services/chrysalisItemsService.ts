@@ -7,11 +7,6 @@ import { ItemServiceBase } from "./itemServiceBase";
  */
 export class ChrysalisItemsService extends ItemServiceBase {
     /**
-     * The network configuration.
-     */
-    private readonly _networkId: string;
-
-    /**
      * The mqtt client.
      */
     private _mqttClient: IMqttClient;
@@ -22,18 +17,9 @@ export class ChrysalisItemsService extends ItemServiceBase {
     private _itemSubscriptionId: string;
 
     /**
-     * Confirmed subscription id.
+     * Metadata subscription id.
      */
-    private _confirmedSubscriptionId: string;
-
-    /**
-     * Create a new instance of MessagesService.
-     * @param networkId The network configuration.
-     */
-    constructor(networkId: string) {
-        super();
-        this._networkId = networkId;
-    }
+    private _metadataSubscriptionId: string;
 
     /**
      * Initialise the service.
@@ -59,13 +45,19 @@ export class ChrysalisItemsService extends ItemServiceBase {
                 this._items.push(Converter.bytesToHex(message));
             });
 
-        this._confirmedSubscriptionId = this._mqttClient.messagesMetadata(
-            (topic: string, message: IMessageMetadata) => {
-                if ((message.referencedByMilestoneIndex || message.milestoneIndex) &&
-                    !this._confirmedIds.includes(message.messageId)) {
+        this._metadataSubscriptionId = this._mqttClient.messagesMetadata(
+            (topic: string, metadata: IMessageMetadata) => {
+                if ((metadata.referencedByMilestoneIndex || metadata.milestoneIndex)) {
                     this._totalConfirmed++;
-                    this._confirmedIds.push(message.messageId);
                 }
+                this._itemMetadata[metadata.messageId] = {
+                    milestone: metadata.milestoneIndex,
+                    referenced: metadata.referencedByMilestoneIndex,
+                    solid: metadata.isSolid,
+                    conflicting: metadata.ledgerInclusionState === "conflicting",
+                    included: metadata.ledgerInclusionState === "included",
+                    ...this._itemMetadata[metadata.messageId]
+                };
             });
     }
 
@@ -79,9 +71,9 @@ export class ChrysalisItemsService extends ItemServiceBase {
             this._mqttClient.unsubscribe(this._itemSubscriptionId);
             this._itemSubscriptionId = undefined;
         }
-        if (this._confirmedSubscriptionId) {
-            this._mqttClient.unsubscribe(this._confirmedSubscriptionId);
-            this._confirmedSubscriptionId = undefined;
+        if (this._metadataSubscriptionId) {
+            this._mqttClient.unsubscribe(this._metadataSubscriptionId);
+            this._metadataSubscriptionId = undefined;
         }
     }
 }

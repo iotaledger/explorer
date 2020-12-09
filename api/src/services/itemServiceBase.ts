@@ -1,9 +1,17 @@
-import { IFeedSubscriptionMessage } from "../models/api/og/IFeedSubscriptionMessage";
+import { ServiceFactory } from "../factories/serviceFactory";
+import { IFeedItemMetadata } from "../models/api/IFeedItemMetadata";
+import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
+import { IFeedService } from "../models/services/IFeedService";
 
 /**
  * Class to handle messages service.
  */
 export abstract class ItemServiceBase {
+    /**
+     * The network configuration.
+     */
+    protected readonly _networkId: string;
+
     /**
      * The most recent items.
      */
@@ -15,9 +23,9 @@ export abstract class ItemServiceBase {
     protected _totalItems: number;
 
     /**
-     * The most recent confirmed items.
+     * The most recent item metadata.
      */
-    protected _confirmedIds: string[];
+    protected _itemMetadata: { [id: string]: IFeedItemMetadata };
 
     /**
      * The current total confirmed since last timestamp.
@@ -60,11 +68,23 @@ export abstract class ItemServiceBase {
     };
 
     /**
-     * Create a new instance of ItemServiceBase.
+     * Milestone subscription id.
      */
-    constructor() {
+    private _milestoneSubscriptionId: string;
+
+    /**
+     * Feed service.
+     */
+    private _feedService: IFeedService;
+
+    /**
+     * Create a new instance of ItemServiceBase.
+     * @param networkId The network configuration.
+     */
+    constructor(networkId: string) {
         this._subscribers = {};
         this._timerCounter = 0;
+        this._networkId = networkId;
     }
 
     /**
@@ -72,13 +92,15 @@ export abstract class ItemServiceBase {
      */
     public init(): void {
         this._items = [];
+        this._itemMetadata = {};
         this._ips = [];
         this._totalItems = 0;
 
-        this._confirmedIds = [];
         this._totalConfirmed = 0;
 
         this.startTimer();
+
+        this._feedService = ServiceFactory.get<IFeedService>(`feed-${this._networkId}`);
     }
 
     /**
@@ -164,6 +186,15 @@ export abstract class ItemServiceBase {
      */
     protected startSubscription(): void {
         this.stopSubscription();
+
+        this._milestoneSubscriptionId = this._feedService.subscribeMilestones(
+            (milestone: number, id: string, timestamp: number) => {
+                this._totalConfirmed++;
+                this._itemMetadata[id] = {
+                    milestone,
+                    ...this._itemMetadata[id]
+                };
+            });
     }
 
     /**
@@ -172,6 +203,11 @@ export abstract class ItemServiceBase {
     protected stopSubscription(): void {
         this._totalItems = 0;
         this._totalConfirmed = 0;
+
+        if (this._milestoneSubscriptionId) {
+            this._feedService.unsubscribe(this._milestoneSubscriptionId);
+            this._milestoneSubscriptionId = undefined;
+        }
     }
 
     /**
@@ -181,12 +217,12 @@ export abstract class ItemServiceBase {
         this.stopTimer();
         this._timerId = setInterval(
             async () => {
-                if (this._timerCounter++ % 10 === 0) {
+                if (this._timerCounter++ % 100 === 0) {
                     this.handleTps();
                 }
                 await this.updateSubscriptions();
             },
-            500);
+            50);
     }
 
     /**
@@ -207,9 +243,8 @@ export abstract class ItemServiceBase {
         const now = Date.now();
 
         const tranCount = Object.keys(this._items).length;
-        const snCount = this._confirmedIds.length;
 
-        if (tranCount > 0 || snCount > 0 || singleSubscriberId) {
+        if (tranCount > 0 || singleSubscriberId) {
             let subs: {
                 [id: string]: (data: IFeedSubscriptionMessage) => Promise<void>;
             };
@@ -232,7 +267,7 @@ export abstract class ItemServiceBase {
                 const data: IFeedSubscriptionMessage = {
                     subscriptionId,
                     items: this._items,
-                    confirmed: this._confirmedIds,
+                    itemsMetadata: this._itemMetadata,
                     ips
                 };
 
@@ -241,7 +276,7 @@ export abstract class ItemServiceBase {
 
             if (!singleSubscriberId) {
                 this._items = [];
-                this._confirmedIds = [];
+                this._itemMetadata = {};
             }
         }
     }

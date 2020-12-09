@@ -1,4 +1,4 @@
-import { IFeedSubscriptionMessage } from "../api/og/IFeedSubscriptionMessage";
+import { IFeedSubscriptionMessage } from "../api/IFeedSubscriptionMessage";
 
 /**
  * Interface definition for an items service.

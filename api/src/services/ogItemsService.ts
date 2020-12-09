@@ -9,11 +9,6 @@ import { ZmqService } from "./zmqService";
  */
 export class OgItemsService extends ItemServiceBase {
     /**
-     * The network configuration.
-     */
-    private readonly _networkId: string;
-
-    /**
      * The zmq service.
      */
     private _zmqService: ZmqService;
@@ -27,16 +22,6 @@ export class OgItemsService extends ItemServiceBase {
      * Confirmed subscription id.
      */
     private _confirmedSubscriptionId: string;
-
-    /**
-     * Create a new instance of OgItemsService.
-     * @param networkId The network configuration.
-     */
-    constructor(networkId: string) {
-        super();
-
-        this._networkId = networkId;
-    }
 
     /**
      * Initialise the service.
@@ -62,10 +47,11 @@ export class OgItemsService extends ItemServiceBase {
 
         this._confirmedSubscriptionId = this._zmqService.subscribe(
             "sn", async (evnt: string, message: ISn) => {
-                if (!this._confirmedIds.includes(message.transaction)) {
-                    this._totalConfirmed++;
-                    this._confirmedIds.push(message.transaction);
-                }
+                this._totalConfirmed++;
+                this._itemMetadata[message.transaction] = {
+                    confirmed: message.index,
+                    ...this._itemMetadata[message.transaction]
+                };
             });
     }
 

@@ -1,3 +1,5 @@
+import { IFeedItemMetadata } from "./IFeedItemMetadata";
+
 export interface IFeedSubscriptionMessage {
     /**
      * The subscription id created.
@@ -10,9 +12,11 @@ export interface IFeedSubscriptionMessage {
     items: string[];
 
     /**
-     * The confirmed items.
+     * The items metadata.
      */
-    confirmed: string[];
+    itemsMetadata: {
+        [id: string]: IFeedItemMetadata;
+    };
 
     /**
      * The ips data.

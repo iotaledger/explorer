@@ -5,6 +5,7 @@ import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../helpers/circleNodeShader";
 import { RouteBuilder } from "../../helpers/routeBuilder";
 import { UnitsHelper } from "../../helpers/unitsHelper";
+import { IFeedItemMetadata } from "../../models/api/IFeedItemMetadata";
 import { INodeData } from "../../models/graph/INodeData";
 import { IFeedItem } from "../../models/IFeedItem";
 import Feeds from "../components/Feeds";
@@ -34,22 +35,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Edge color confirming.
      */
-    private static readonly EDGE_COLOR_CONFIRMING: number = 0x00FF00FF;
+    private static readonly EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
 
     /**
      * Edge color confirmed by.
      */
-    private static readonly EDGE_COLOR_CONFIRMED_BY: number = 0xFFA500FF;
-
-    /**
-     * Vertex size.
-     */
-    private static readonly VERTEX_SIZE_REGULAR: number = 20;
-
-    /**
-     * Vertex size.
-     */
-    private static readonly VERTEX_SIZE_LARGE: number = 30;
+    private static readonly EDGE_COLOR_CONFIRMED_BY: number = 0x0000FFFF;
 
     /**
      * Vertex pending zero colour.
@@ -67,9 +58,24 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private static readonly COLOR_VALUE_CONFIRMED: string = "0x3f985a";
 
     /**
+     * Vertex referenced colour.
+     */
+    private static readonly COLOR_REFERENCED: string = "0x61e884";
+
+    /**
+     * Vertex conflicting colour.
+     */
+    private static readonly COLOR_CONFLICTING: string = "0xff8b5c";
+
+    /**
+     * Vertex included colour.
+     */
+    private static readonly COLOR_INCLUDED: string = "0x4caaff";
+
+    /**
      * Vertex milestone colour.
      */
-    private static readonly COLOR_MILESTONE: string = "0xb8172d";
+    private static readonly COLOR_MILESTONE: string = "0x666af6";
 
     /**
      * Vertex highlighted colour.
@@ -97,29 +103,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private readonly _existingIds: string[];
 
     /**
-     * New items to process.
-     */
-    private _newItems: IFeedItem[];
-
-    /**
      * Nodes to remove.
      */
     private readonly _removeNodes: string[];
-
-    /**
-     * Existing milestones.
-     */
-    private _msIndexToNode: {
-        [index: number]: {
-            id: string;
-            lastSeen: number;
-        };
-    };
-
-    /**
-     * Timer for display updates.
-     */
-    private _drawTimer?: number;
 
     /**
      * The resize method
@@ -137,9 +123,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private _lastClick: number;
 
     /**
-     * Counter to check for small networks.
+     * Skip the initial load.
      */
-    private _smallNetworkInterval: number;
+    private _hadInitialLoad: boolean;
 
     /**
      * Create a new instance of Visualizer.
@@ -149,11 +135,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         super(props);
 
         this._existingIds = [];
-        this._newItems = [];
-        this._msIndexToNode = {};
         this._lastClick = 0;
-        this._smallNetworkInterval = 0;
         this._removeNodes = [];
+        this._hadInitialLoad = false;
 
         this._graphElement = null;
         this._resize = () => this.resize();
@@ -193,10 +177,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     public componentWillUnmount(): void {
         super.componentWillUnmount();
-        if (this._drawTimer) {
-            cancelAnimationFrame(this._drawTimer);
-            this._drawTimer = undefined;
-        }
         this._graphElement = null;
         window.removeEventListener("resize", this._resize);
     }
@@ -290,7 +270,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     </div>
                                     {this._networkConfig?.protocolVersion === "og" && (
                                         <React.Fragment>
-                                            {this.state.selectedFeedItem?.metaData?.Address && (
+                                            {this.state.selectedFeedItem?.properties?.Address && (
                                                 <React.Fragment>
                                                     <div className="card--label">
                                                         Address
@@ -304,15 +284,15 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                                 `${window.location.origin
                                                                 }/${this.props.match.params.network
                                                                 }/address/${this
-                                                                    .state.selectedFeedItem?.metaData.Address}`
+                                                                    .state.selectedFeedItem?.properties.Address}`
                                                             }
                                                         >
-                                                            {this.state.selectedFeedItem?.metaData.Address as string}
+                                                            {this.state.selectedFeedItem?.properties.Address as string}
                                                         </a>
                                                     </div>
                                                 </React.Fragment>
                                             )}
-                                            {this.state.selectedFeedItem?.metaData?.Bundle && (
+                                            {this.state.selectedFeedItem?.properties?.Bundle && (
                                                 <React.Fragment>
                                                     <div className="card--label">
                                                         Bundle
@@ -326,18 +306,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                                 `${window.location.origin
                                                                 }/${this.props.match.params.network
                                                                 }/bundle/${this
-                                                                    .state.selectedFeedItem?.metaData.Bundle}`
+                                                                    .state.selectedFeedItem?.properties.Bundle}`
                                                             }
                                                         >
-                                                            {this.state.selectedFeedItem?.metaData.Bundle as string}
+                                                            {this.state.selectedFeedItem?.properties.Bundle as string}
                                                         </a>
                                                     </div>
                                                 </React.Fragment>
                                             )}
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem?.metaData?.Tag &&
-                                        this.state.selectedFeedItem?.metaData?.MS === undefined && (
+                                    {this.state.selectedFeedItem?.properties?.Tag &&
+                                        this.state.selectedFeedItem?.properties?.MS === undefined && (
                                             <React.Fragment>
                                                 <div className="card--label">
                                                     Tag
@@ -349,15 +329,15 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                         rel="noopener noreferrer"
                                                         href={
                                                             `${window.location.origin}/${this.props.match.params.network
-                                                            }/tag/${this.state.selectedFeedItem?.metaData.Tag}`
+                                                            }/tag/${this.state.selectedFeedItem?.properties.Tag}`
                                                         }
                                                     >
-                                                        {this.state.selectedFeedItem?.metaData.Tag as string}
+                                                        {this.state.selectedFeedItem?.properties.Tag as string}
                                                     </a>
                                                 </div>
                                             </React.Fragment>
                                         )}
-                                    {this.state.selectedFeedItem?.metaData?.Index && (
+                                    {this.state.selectedFeedItem?.properties?.Index && (
                                         <React.Fragment>
                                             <div className="card--label">
                                                 Index
@@ -369,26 +349,26 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                     rel="noopener noreferrer"
                                                     href={
                                                         `${window.location.origin}/${this.props.match.params.network
-                                                        }/indexed/${this.state.selectedFeedItem?.metaData.Index}`
+                                                        }/indexed/${this.state.selectedFeedItem?.properties.Index}`
                                                     }
                                                 >
-                                                    {this.state.selectedFeedItem?.metaData.Index as string}
+                                                    {this.state.selectedFeedItem?.properties.Index as string}
                                                 </a>
                                             </div>
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem?.metaData?.MS !== undefined && (
+                                    {this.state.selectedFeedItem?.properties?.MS !== undefined && (
                                         <React.Fragment>
                                             <div className="card--label">
                                                 Milestone
                                             </div>
                                             <div className="card--value">
-                                                {this.state.selectedFeedItem?.metaData.MS as number}
+                                                {this.state.selectedFeedItem?.properties.MS as number}
                                             </div>
                                         </React.Fragment>
                                     )}
                                     {this.state.selectedFeedItem?.value !== undefined &&
-                                        this.state.selectedFeedItem?.metaData?.MS === undefined && (
+                                        this.state.selectedFeedItem?.properties?.MS === undefined && (
                                             <React.Fragment>
                                                 <div className="card--label">
                                                     Value
@@ -423,25 +403,45 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             <div className="visualizer--key visualizer--key__value pending">
                                 Pending
                             </div>
-                            <div
-                                className="visualizer--key visualizer--key__value confirmed-value"
-                            >
-                                Value Confirmed
-                            </div>
-                            <div
-                                className="visualizer--key visualizer--key__value confirmed-zero"
-                            >
-                                Zero Confirmed
-                            </div>
+                            {this._networkConfig?.protocolVersion === "chrysalis" && (
+                                <React.Fragment>
+                                    <div
+                                        className="visualizer--key visualizer--key__value referenced"
+                                    >
+                                        Referenced
+                                    </div>
+                                    <div
+                                        className="visualizer--key visualizer--key__value included"
+                                    >
+                                        Included
+                                    </div>
+                                    <div
+                                        className="visualizer--key visualizer--key__value conflicting"
+                                    >
+                                        Conflicting
+                                    </div>
+                                </React.Fragment>
+                            )}
+                            {this._networkConfig?.protocolVersion === "og" && (
+                                <React.Fragment>
+                                    <div
+                                        className="visualizer--key visualizer--key__value confirmed-value"
+                                    >
+                                        Value Confirmed
+                                    </div>
+                                    <div
+                                        className="visualizer--key visualizer--key__value confirmed-zero"
+                                    >
+                                        Zero Confirmed
+                                    </div>
+                                </React.Fragment>
+                            )}
                             <div className="visualizer--key visualizer--key__value milestone">
                                 Milestone
                             </div>
                             <div className="visualizer--key visualizer--key__value search-result">
                                 Search Result
                             </div>
-                            <p className="margin-t-t margin-b-t">
-                                Value items and Milestones are displayed as larger nodes.
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -454,70 +454,69 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @param newItems The updated items.
      */
     protected itemsUpdated(newItems: IFeedItem[]): void {
-        this._newItems = this._newItems.concat(newItems);
+        if (this._graph) {
+            if (this._hadInitialLoad) {
+                const now = Date.now();
 
-        if (this._networkConfig?.protocolVersion === "chrysalis") {
-            // For chrysalis networks the milestones message id is extracted from messages
+                for (const item of newItems) {
+                    const existingNode = this._graph.getNode(item.id);
 
-            let changed = false;
-            for (const message of this._newItems) {
-                if (message.metaData?.MS) {
-                    this._msIndexToNode[message.metaData?.MS as number] = {
-                        id: message.id,
-                        lastSeen: Date.now()
-                    };
-                    changed = true;
+                    if (!existingNode) {
+                        this._graph.addNode(item.id, {
+                            feedItem: item,
+                            added: now
+                        });
+                        this._existingIds.push(item.id);
+
+                        if (item.parent1) {
+                            if (!this._graph.getNode(item.parent1)) {
+                                this._graph.addNode(item.parent1);
+                                this._existingIds.push(item.parent1);
+                            }
+
+                            this._graph.addLink(item.parent1, item.id);
+                        }
+
+                        if (item.parent2 && item.parent1 !== item.parent2) {
+                            if (!this._graph.getNode(item.parent2)) {
+                                this._graph.addNode(item.parent2);
+                                this._existingIds.push(item.parent2);
+                            }
+
+                            this._graph.addLink(item.parent2, item.id);
+                        }
+                    }
                 }
-            }
 
-            if (changed) {
-                this.highlightMilestones();
+                this.checkLimit();
+
+                this.setState({ itemCount: this._existingIds.length });
+            } else {
+                this._hadInitialLoad = true;
             }
         }
     }
 
     /**
      * The confirmed items have been updated.
-     * @param confirmed The updated confirmed items.
+     * @param metaData The updated confirmed items.
      */
-    protected confirmedUpdated(confirmed: string[]): void {
-        if (this._graph) {
+    protected metadataUpdated(metaData: { [id: string]: IFeedItemMetadata }): void {
+        if (this._graph && this._hadInitialLoad) {
             const highlightRegEx = this.highlightNodesRegEx();
 
-            for (const sn of confirmed) {
-                const node = this._graph.getNode(sn);
+            for (const meta in metaData) {
+                const node = this._graph.getNode(meta);
                 if (node) {
-                    node.data.feedItem.confirmed = true;
+                    if (node.data) {
+                        node.data.feedItem.metaData = {
+                            ...metaData[meta],
+                            ...node.data.feedItem.metaData
+                        };
+                    }
                     this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
                 }
             }
-        }
-    }
-
-    /**
-     * The milestones were updated.
-     * @param milestones The list of miletsones.
-     */
-    protected milestonesUpdated(milestones: {
-        /**
-         * The id.
-         */
-        id: string;
-        /**
-         * The milestone index.
-         */
-        milestoneIndex: number;
-    }[]): void {
-        if (this._networkConfig?.protocolVersion === "og") {
-            // For OG networks the milestones have the index and tx hash
-            for (const ms of milestones) {
-                this._msIndexToNode[ms.milestoneIndex] = {
-                    id: ms.id,
-                    lastSeen: Date.now()
-                };
-            }
-
-            this.highlightMilestones();
         }
     }
 
@@ -584,88 +583,25 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             for (let i = 0; i < 12; i++) {
                 this._renderer.zoomOut();
             }
-
-            this._drawTimer = requestAnimationFrame(() => this.drawUpdates());
         }
     }
 
     /**
-     * Draw any updates.
+     * Check the limit of items.
      */
-    private drawUpdates(): void {
-        if (this._graph && this._renderer && this._newItems.length > 0) {
-            const consumeLength = Math.ceil(this._newItems.length / 50);
-            const items = this._newItems.slice(0, consumeLength);
-            this._newItems = this._newItems.slice(consumeLength);
-
-            const added: string[] = [];
-            const now = Date.now();
-
-            for (const item of items) {
-                const existingNode = this._graph.getNode(item.id);
-
-                if (!existingNode) {
-                    this._graph.addNode(item.id, {
-                        feedItem: item,
-                        added: now
-                    });
-                    added.push(item.id);
-
-                    if (item.parent1) {
-                        if (!this._graph.getNode(item.parent1)) {
-                            this._graph.addNode(item.parent1, {
-                                feedItem: {
-                                    id: item.parent1,
-                                    confirmed: false
-                                },
-                                added: now
-                            });
-
-                            added.push(item.parent1);
-                        }
-
-                        this._graph.addLink(item.parent1, item.id);
-                    }
-
-                    if (item.parent2 && item.parent1 !== item.parent2) {
-                        if (!this._graph.getNode(item.parent2)) {
-                            this._graph.addNode(item.parent2, {
-                                feedItem: {
-                                    id: item.parent2,
-                                    confirmed: false
-                                },
-                                added: now
-                            });
-                            added.push(item.parent2);
-                        }
-
-                        this._graph.addLink(item.parent2, item.id);
-                    }
-                }
-            }
-
-            this._existingIds.push(...added);
-
+    private checkLimit(): void {
+        if (this._graph && this._renderer) {
             // remove any nodes over the max limit, earliest in the list
             // are the oldest
             while (this._existingIds.length > Visualizer.MAX_ITEMS) {
                 const nodeToRemove = this._existingIds.shift();
-                if (nodeToRemove && !added.includes(nodeToRemove)) {
+                if (nodeToRemove) {
                     this._removeNodes.push(nodeToRemove);
                 }
             }
             this.removeNodes();
 
-            // Check for small graphs to remove every few iterations
-            if (this._smallNetworkInterval++ % 100 === 0) {
-                this.removeSmallNetworks();
-            }
-
             this.setState({ itemCount: this._existingIds.length });
-        }
-
-        if (this._drawTimer) {
-            this._drawTimer = requestAnimationFrame(() => this.drawUpdates());
         }
     }
 
@@ -674,7 +610,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @param node The node to style.
      * @param highlight Highlight the node.
      */
-    private styleNode(node: Viva.Graph.INode<INodeData> | undefined, highlight: boolean): void {
+    private styleNode(node: Viva.Graph.INode<INodeData, unknown> | undefined, highlight: boolean): void {
         if (this._graphics && node) {
             const nodeUI = this._graphics.getNodeUI(node.id);
             if (nodeUI) {
@@ -691,30 +627,34 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @param highlight Highlight the node.
      * @returns The size and color for the node.
      */
-    private calculateNodeStyle(node: Viva.Graph.INode<INodeData> | undefined, highlight: boolean): {
+    private calculateNodeStyle(node: Viva.Graph.INode<INodeData, unknown> | undefined, highlight: boolean): {
         color: string;
         size: number;
     } {
         let color = Visualizer.COLOR_PENDING;
-        let size = Visualizer.VERTEX_SIZE_REGULAR;
+        let size = 10;
 
-        if (node) {
+        if (node?.data) {
+            size = 20;
             if (highlight) {
                 color = Visualizer.COLOR_SEARCH_RESULT;
-            } else if (node.data.feedItem.metaData?.MS) {
+            } else if (node.data.feedItem.properties?.MS) {
                 color = Visualizer.COLOR_MILESTONE;
-            } else if (node.data.feedItem.confirmed) {
+                size = 30;
+            } else if (node.data.feedItem.metaData?.conflicting) {
+                color = Visualizer.COLOR_CONFLICTING;
+            } else if (node.data.feedItem.metaData?.confirmed) {
                 color = node.data.feedItem?.value !== 0 && node.data.feedItem?.value !== undefined
                     ? Visualizer.COLOR_VALUE_CONFIRMED
                     : Visualizer.COLOR_ZERO_CONFIRMED;
+            } else if (node.data.feedItem.metaData?.included) {
+                color = Visualizer.COLOR_INCLUDED;
+                size = 30;
+            } else if (node.data.feedItem.metaData?.referenced) {
+                color = Visualizer.COLOR_REFERENCED;
             } else {
                 color = Visualizer.COLOR_PENDING;
             }
-
-            size = node.data.feedItem.metaData?.MS ||
-                (node.data.feedItem?.value !== 0 && node.data.feedItem?.value !== undefined)
-                ? Visualizer.VERTEX_SIZE_LARGE
-                : Visualizer.VERTEX_SIZE_REGULAR;
         }
 
         return {
@@ -754,12 +694,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Select the clicked node.
      * @param node The node to select.
      */
-    private selectNode(node?: Viva.Graph.INode<INodeData>): void {
+    private selectNode(node?: Viva.Graph.INode<INodeData, unknown>): void {
         const isDeselect = !node || this.state.selectedFeedItem?.id === node.id;
         this.setState({
             selectedFeedItem: isDeselect || !node
                 ? undefined
-                : node.data.feedItem
+                : node.data?.feedItem
         });
 
         this.styleConnections();
@@ -818,7 +758,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         const regEx = this.highlightNodesRegEx();
 
         if (this._graph) {
-            this._graph.forEachNode((node: Viva.Graph.INode<INodeData>) => {
+            this._graph.forEachNode((node: Viva.Graph.INode<INodeData, unknown>) => {
                 this.styleNode(node, this.testForHighlight(regEx, node.id, node.data));
             });
         }
@@ -856,8 +796,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         }
 
         if (data.feedItem) {
-            for (const key in data.feedItem.metaData) {
-                if (regEx.test(data.feedItem.metaData[key] as string)) {
+            for (const key in data.feedItem.properties) {
+                if (regEx.test(data.feedItem.properties[key] as string)) {
                     return true;
                 }
             }
@@ -895,36 +835,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     }
 
     /**
-     * Highlight any milestones.
-     */
-    private highlightMilestones(): void {
-        if (this._graph) {
-            const highlightRegEx = this.highlightNodesRegEx();
-
-            const toRemove: number[] = [];
-            const now = Date.now();
-
-            const keys: number[] = Object.keys(this._msIndexToNode).map(s => Number(s));
-            for (let i = 0; i < keys.length; i++) {
-                const msIndex = keys[i];
-                const node = this._graph.getNode(this._msIndexToNode[msIndex].id);
-                if (node?.data.feedItem) {
-                    this._msIndexToNode[msIndex].lastSeen = now;
-                    node.data.feedItem.metaData = node.data.feedItem.metaData ?? {};
-                    node.data.feedItem.metaData.MS = msIndex;
-                    this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
-                } else if (now - this._msIndexToNode[msIndex].lastSeen > 300000) {
-                    toRemove.push(msIndex);
-                }
-            }
-
-            for (const rem of toRemove) {
-                delete this._msIndexToNode[rem];
-            }
-        }
-    }
-
-    /**
      * Remove the nodes from the queue.
      */
     private removeNodes(): void {
@@ -938,20 +848,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
                             if (linkedNode.links.length === 0) {
                                 this._graph.removeNode(linkedNode.id);
-                                if (linkedNode.data.feedItem.metaData?.MS) {
-                                    delete this._msIndexToNode[linkedNode.data.feedItem.metaData?.MS as number];
-                                }
                             }
                         }
                     });
 
                     this._graph.removeNode(nodeToRemove);
-
-                    const removeNode = this._graph.getNode(nodeToRemove);
-
-                    if (removeNode?.data.feedItem.metaData?.MS) {
-                        delete this._msIndexToNode[removeNode?.data.feedItem.metaData?.MS as number];
-                    }
 
                     if (this.state.selectedFeedItem?.id === nodeToRemove) {
                         this.setState({ selectedFeedItem: undefined });
@@ -959,101 +860,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 }
             }
         }
-    }
-
-    /**
-     * Remove any small disonnected networks.
-     */
-    private removeSmallNetworks(): void {
-        if (this._graph) {
-            let removed = false;
-            const now = Date.now();
-            do {
-                removed = false;
-                let graphId = 0;
-                const subGraphs: {
-                    [id: number]: {
-                        nodes: string[];
-                        mostRecentChange: number;
-                    };
-                } = {};
-
-                this._graph.forEachNode((node: Viva.Graph.INode<INodeData>) => {
-                    node.data.graphId = undefined;
-                });
-
-                this._graph.forEachNode((node: Viva.Graph.INode<INodeData>) => {
-                    if (!node.data.graphId) {
-                        graphId++;
-                        const nodesInGraph = this.calculateSubGraph(node.id, graphId);
-                        subGraphs[graphId] = nodesInGraph;
-                    }
-                });
-
-                for (const subGraph in subGraphs) {
-                    // If the subgraph has very few nodes in comparison to the whole graph
-                    // and has not been added to for at least a minute then remove it
-                    if (subGraphs[subGraph].nodes.length < this._existingIds.length * 0.03 &&
-                        now - subGraphs[subGraph].mostRecentChange > 60000) {
-                        removed = true;
-                        this._removeNodes.push(...subGraphs[subGraph].nodes);
-                    }
-                }
-
-                if (removed) {
-                    this.removeNodes();
-                }
-            } while (removed);
-        }
-    }
-
-    /**
-     * Calculate a sub graph from the starting node.
-     * @param startNodeId The node to start with.
-     * @param graphId The graph id to mark the nodes with.
-     * @returns The nodes visited and the most recent added time.
-     */
-    private calculateSubGraph(startNodeId: string, graphId: number): {
-        nodes: string[];
-        mostRecentChange: number;
-    } {
-        if (this._graph) {
-            const nodesToVisit: string[] = [startNodeId];
-            const nodesVisited = [];
-            let mostRecentChange = 0;
-
-            while (nodesToVisit.length > 0) {
-                const nodeId = nodesToVisit.shift();
-
-                if (nodeId) {
-                    nodesVisited.push(nodeId);
-
-                    const node = this._graph.getNode(nodeId);
-
-                    if (node?.data && !node.data.graphId) {
-                        node.data.graphId = graphId;
-                        if (node.data.added > mostRecentChange) {
-                            mostRecentChange = node.data.added;
-                        }
-                        this._graph.forEachLinkedNode(nodeId, (linkedNode: Viva.Graph.INode<INodeData>) => {
-                            if (!linkedNode.data.graphId && !nodesToVisit.includes(linkedNode.id)) {
-                                nodesToVisit.push(linkedNode.id);
-                            }
-                        });
-                    }
-                }
-            }
-
-            return {
-                nodes: nodesVisited,
-                mostRecentChange
-            };
-        }
-
-        return {
-            nodes: [],
-            mostRecentChange: 0
-        };
     }
 }
 

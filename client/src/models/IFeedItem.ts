@@ -1,3 +1,5 @@
+import { IFeedItemMetadata } from "./api/IFeedItemMetadata";
+
 export interface IFeedItem {
     /**
      * The hash.
@@ -22,7 +24,7 @@ export interface IFeedItem {
     /**
      * Metadata for the item.
      */
-    metaData?: { [key: string]: unknown };
+    properties?: { [key: string]: unknown };
 
     /**
      * The payload type if this is Chrysalis.
@@ -30,7 +32,7 @@ export interface IFeedItem {
     payloadType?: "Transaction" | "Index" | "MS" | "None";
 
     /**
-     * Is the item confirmed.
+     * Metadata for the item.
      */
-    confirmed: boolean;
+    metaData?: IFeedItemMetadata;
 }

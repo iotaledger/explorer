@@ -125,16 +125,28 @@
         background-color: #bbbbbb;
       }
 
+      &.referenced {
+          background-color: #61e884;
+      }
+
+      &.included {
+        background-color: #4caaff;
+      }
+
+      &.conflicting {
+        background-color: #ff8b5c;
+      }
+
       &.confirmed-value {
         background-color: #3f985a;
       }
 
       &.confirmed-zero {
-        background-color: $main-green;
+        background-color: #0fc1b7;
       }
 
       &.milestone {
-        background-color: #b8172d;
+        background-color: #666af6;
       }
 
       &.search-result {

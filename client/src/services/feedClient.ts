@@ -3,10 +3,11 @@ import { asTransactionObject } from "@iota/transaction-converter";
 import SocketIOClient from "socket.io-client";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
+import { IFeedItemMetadata } from "../models/api/IFeedItemMetadata";
 import { IFeedSubscribeRequest } from "../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../models/api/IFeedSubscribeResponse";
+import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
 import { IFeedUnsubscribeRequest } from "../models/api/IFeedUnsubscribeRequest";
-import { IFeedSubscriptionMessage } from "../models/api/og/IFeedSubscriptionMessage";
 import { INetwork } from "../models/db/INetwork";
 import { IFeedItem } from "../models/IFeedItem";
 import { NetworkService } from "./networkService";
@@ -83,7 +84,9 @@ export class FeedClient {
     /**
      * The subscribers.
      */
-    private readonly _subscribers: { [id: string]: (newItems: IFeedItem[], newConfirmations: string[]) => void };
+    private readonly _subscribers: {
+        [id: string]: (newItems: IFeedItem[], metaData: { [id: string]: IFeedItemMetadata }) => void;
+    };
 
     /**
      * Create a new instance of TransactionsClient.
@@ -123,7 +126,7 @@ export class FeedClient {
      * @param callback Callback called with transactions data.
      * @returns The subscription id.
      */
-    public subscribe(callback: (newItems: IFeedItem[], newConfirmed: string[]) => void): string {
+    public subscribe(callback: (newItems: IFeedItem[], metaData: { [id: string]: IFeedItemMetadata }) => void): string {
         const subscriptionId = TrytesHelper.generateHash(27);
         this._subscribers[subscriptionId] = callback;
 
@@ -143,17 +146,20 @@ export class FeedClient {
                     if (subscriptionMessage.subscriptionId === this._subscriptionId) {
                         this._ips = subscriptionMessage.ips;
 
-                        if (subscriptionMessage.confirmed) {
-                            for (const confirmed of subscriptionMessage.confirmed) {
-                                const existing = this._items.find(c => c.id === confirmed);
+                        if (subscriptionMessage.itemsMetadata) {
+                            for (const metadataId in subscriptionMessage.itemsMetadata) {
+                                const existing = this._items.find(c => c.id === metadataId);
                                 if (existing) {
-                                    existing.confirmed = true;
+                                    existing.metaData = {
+                                        ...subscriptionMessage.itemsMetadata[metadataId],
+                                        ...existing.metaData
+                                    };
                                 }
                             }
                         }
 
                         const filteredNewItems = subscriptionMessage.items
-                            .map(item => this.convertItem(item, subscriptionMessage.confirmed.includes(item)))
+                            .map(item => this.convertItem(item))
                             .filter(nh => !this._existingIds.includes(nh.id));
 
                         if (filteredNewItems.length > 0) {
@@ -185,7 +191,7 @@ export class FeedClient {
                         }
 
                         for (const sub in this._subscribers) {
-                            this._subscribers[sub](filteredNewItems, subscriptionMessage.confirmed);
+                            this._subscribers[sub](filteredNewItems, subscriptionMessage.itemsMetadata);
                         }
                     }
                 });
@@ -273,17 +279,16 @@ export class FeedClient {
     /**
      * Convert the feed item into real data.
      * @param item The item source.
-     * @param confirmed Is the item confirmed.
      * @returns The feed item.
      */
-    private convertItem(item: string, confirmed: boolean): IFeedItem {
+    private convertItem(item: string): IFeedItem {
         if (this._networkConfig?.protocolVersion === "chrysalis") {
             const bytes = Converter.hexToBytes(item);
             const messageId = Converter.bytesToHex(Blake2b.sum256(bytes));
 
             let value;
             let payloadType: "Transaction" | "Index" | "MS" | "None" = "None";
-            const metaData: { [key: string]: unknown } = {};
+            const properties: { [key: string]: unknown } = {};
             let message;
 
             try {
@@ -294,14 +299,14 @@ export class FeedClient {
                     value = message.payload.essence.outputs.reduce((total, output) => total + output.amount, 0);
 
                     if (message.payload.essence.payload) {
-                        metaData.Index = message.payload.essence.payload.index;
+                        properties.Index = message.payload.essence.payload.index;
                     }
                 } else if (message.payload?.type === 1) {
                     payloadType = "MS";
-                    metaData.MS = message.payload.index;
+                    properties.MS = message.payload.index;
                 } else if (message.payload?.type === 2) {
                     payloadType = "Index";
-                    metaData.Index = message.payload.index;
+                    properties.Index = message.payload.index;
                 }
             } catch (err) {
                 console.error(err);
@@ -312,9 +317,8 @@ export class FeedClient {
                 value,
                 parent1: message?.parent1MessageId ?? "",
                 parent2: message?.parent2MessageId ?? "",
-                metaData,
-                payloadType,
-                confirmed: false
+                properties,
+                payloadType
             };
         }
 
@@ -325,13 +329,12 @@ export class FeedClient {
             value: tx.value,
             parent1: tx.trunkTransaction,
             parent2: tx.branchTransaction,
-            metaData: {
+            properties: {
                 "Tag": tx.tag,
                 "Address": tx.address,
                 "Bundle": tx.bundle
             },
-            payloadType: "Transaction",
-            confirmed
+            payloadType: "Transaction"
         };
     }
 }

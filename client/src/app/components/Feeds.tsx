@@ -1,5 +1,6 @@
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { IFeedItemMetadata } from "../../models/api/IFeedItemMetadata";
 import { INetwork } from "../../models/db/INetwork";
 import { IFeedItem } from "../../models/IFeedItem";
 import { FeedClient } from "../../services/feedClient";
@@ -94,9 +95,9 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
     /**
      * The confirmed items have been updated.
-     * @param confirmed The updated confirmed items.
+     * @param metaData The updated confirmed items.
      */
-    protected confirmedUpdated(confirmed: string[]): void {
+    protected metadataUpdated(metaData: { [id: string]: IFeedItemMetadata }): void {
     }
 
     /**
@@ -129,16 +130,15 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
                 if (this._feedClient) {
                     this._itemSubscriptionId = this._feedClient.subscribe(
-                        (updatedItems, updatedConfirmed) => {
+                        (updatedItems, metadata) => {
                             if (this._isMounted) {
-                                this.updateItems(updatedItems, updatedConfirmed);
+                                this.updateItems(updatedItems, metadata);
                                 this.updateTps();
                             }
                         }
                     );
 
-                    const items = this._feedClient.getItems();
-                    this.updateItems(this._feedClient.getItems(), items.filter(i => i.confirmed).map(i => i.id));
+                    this.updateItems(this._feedClient.getItems(), {});
                     this.updateTps();
                     this._timerId = setInterval(() => this.updateTps(), 2000);
                 }
@@ -166,9 +166,9 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Update the items feeds.
      * @param newItems Just the new items.
-     * @param newConfirmed New confirmed items.
+     * @param metaData New confirmed items.
      */
-    private updateItems(newItems: IFeedItem[], newConfirmed: string[]): void {
+    private updateItems(newItems: IFeedItem[], metaData: { [id: string]: IFeedItemMetadata }): void {
         if (this._isMounted && this._feedClient) {
             const ipsHistory = this._feedClient.getIpsHistory();
 
@@ -177,7 +177,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                 itemsPerSecondHistory: ipsHistory.reverse().map(v => v + 100)
             }, () => {
                 this.itemsUpdated(newItems);
-                this.confirmedUpdated(newConfirmed);
+                this.metadataUpdated(metaData);
             });
         }
     }
