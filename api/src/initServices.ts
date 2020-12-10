@@ -1,5 +1,5 @@
 
-import { MqttClient } from "@iota/iota2.js";
+import { MqttClient } from "@iota/iota.js";
 import { ServiceFactory } from "./factories/serviceFactory";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { ICurrencyState } from "./models/db/ICurrencyState";

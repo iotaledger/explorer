@@ -1,4 +1,4 @@
-import { IMessageMetadata } from "@iota/iota2.js";
+import { IMessageMetadata } from "@iota/iota.js";
 import { mamFetch as mamFetchChrysalis } from "@iota/mam-chrysalis.js";
 import { mamFetch as mamFetchOg, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";

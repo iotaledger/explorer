@@ -1,4 +1,4 @@
-import { IMessageMetadata } from "@iota/iota2.js";
+import { IMessageMetadata } from "@iota/iota.js";
 import { IResponse } from "../IResponse";
 
 export interface IMessageDetailsResponse extends IResponse {

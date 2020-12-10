@@ -1,4 +1,4 @@
-import { IMilestoneResponse } from "@iota/iota2.js";
+import { IMilestoneResponse } from "@iota/iota.js";
 
 export interface MilestoneState {
     /**

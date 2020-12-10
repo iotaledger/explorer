@@ -1,4 +1,4 @@
-import { IClient, IMqttClient, SingleNodeClient } from "@iota/iota2.js";
+import { IClient, IMqttClient, SingleNodeClient } from "@iota/iota.js";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IFeedService } from "../models/services/IFeedService";
 

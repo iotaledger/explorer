@@ -1,4 +1,4 @@
-import { IAddressResponse, IOutputResponse } from "@iota/iota2.js";
+import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 
 export interface AddrState {

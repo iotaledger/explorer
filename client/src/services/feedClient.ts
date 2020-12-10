@@ -1,4 +1,4 @@
-import { Blake2b, Converter, deserializeMessage, ReadStream } from "@iota/iota2.js";
+import { Blake2b, Converter, deserializeMessage, ReadStream } from "@iota/iota.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import SocketIOClient from "socket.io-client";
 import { ServiceFactory } from "../factories/serviceFactory";

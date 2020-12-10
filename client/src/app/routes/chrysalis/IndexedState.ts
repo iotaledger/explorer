@@ -1,4 +1,4 @@
-import { IMessage } from "@iota/iota2.js";
+import { IMessage } from "@iota/iota.js";
 
 export interface IndexedState {
     /**

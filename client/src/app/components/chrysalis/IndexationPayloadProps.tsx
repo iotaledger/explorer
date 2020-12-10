@@ -1,4 +1,4 @@
-import { IIndexationPayload } from "@iota/iota2.js";
+import { IIndexationPayload } from "@iota/iota.js";
 import * as H from "history";
 
 export interface IndexationPayloadProps {

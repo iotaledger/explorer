@@ -1,5 +1,5 @@
 import { composeAPI, Transaction } from "@iota/core";
-import { Bech32Helper, Converter, MessageHelper, SingleNodeClient } from "@iota/iota2.js";
+import { Bech32Helper, Converter, MessageHelper, SingleNodeClient } from "@iota/iota.js";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";

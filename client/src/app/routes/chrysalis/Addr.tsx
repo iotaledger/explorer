@@ -1,4 +1,4 @@
-import { IOutputResponse } from "@iota/iota2.js";
+import { IOutputResponse } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";

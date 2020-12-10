@@ -1,4 +1,4 @@
-import { IMilestonePayload } from "@iota/iota2.js";
+import { IMilestonePayload } from "@iota/iota.js";
 import * as H from "history";
 
 export interface MilestonePayloadProps {

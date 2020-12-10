@@ -1,4 +1,4 @@
-import { IMessage, IMessagesResponse } from "@iota/iota2.js";
+import { IMessage, IMessagesResponse } from "@iota/iota.js";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { ApiClient } from "./apiClient";
 

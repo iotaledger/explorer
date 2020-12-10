@@ -9,8 +9,8 @@
     },
     "license": "MIT",
     "dependencies": {
-        "@iota/iota2.js": "github:obany/iota2.js",
-        "@iota/mam-chrysalis.js": "github:iotaledger/mam.js#feature/chrysalis-p2",
+        "@iota/iota.js": "github:iotaledger/iota.js#chrysalis",
+        "@iota/mam-chrysalis.js": "github:iotaledger/mam.js#chrysalis",
         "@iota/mam.js": "^1.0.0-beta.7",
         "@iota/unit-converter": "^1.0.0-beta.30",
         "bluebird": "^3.7.2",

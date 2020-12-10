@@ -1,4 +1,4 @@
-import { IMessageMetadata, serializeMessage, WriteStream } from "@iota/iota2.js";
+import { IMessageMetadata, serializeMessage, WriteStream } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { FaFileDownload } from "react-icons/fa";
 import { Link, RouteComponentProps } from "react-router-dom";

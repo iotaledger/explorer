@@ -1,4 +1,4 @@
-import { IMessage, IMessageMetadata } from "@iota/iota2.js";
+import { IMessage, IMessageMetadata } from "@iota/iota.js";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 
 export interface MessageState {

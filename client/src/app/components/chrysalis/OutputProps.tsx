@@ -1,4 +1,4 @@
-import { IOutputResponse } from "@iota/iota2.js";
+import { IOutputResponse } from "@iota/iota.js";
 import * as H from "history";
 
 export interface OutputProps {

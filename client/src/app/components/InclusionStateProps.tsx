@@ -1,4 +1,4 @@
-import { LedgerInclusionState } from "@iota/iota2.js";
+import { LedgerInclusionState } from "@iota/iota.js";
 
 export interface InclusionStateProps {
     /**
