@@ -217,12 +217,12 @@ export abstract class ItemServiceBase {
         this.stopTimer();
         this._timerId = setInterval(
             async () => {
-                if (this._timerCounter++ % 100 === 0) {
+                if (this._timerCounter++ % 10 === 0) {
                     this.handleTps();
                 }
                 await this.updateSubscriptions();
             },
-            50);
+            500);
     }
 
     /**
