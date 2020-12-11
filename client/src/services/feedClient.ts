@@ -167,22 +167,41 @@ export class FeedClient {
 
                             let removeItems: IFeedItem[] = [];
 
-                            const transactionPayload = this._items.filter(t => t.payloadType === "Transaction");
-                            const transactionPayloadToRemoveCount =
-                                transactionPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                            if (transactionPayloadToRemoveCount > 0) {
-                                removeItems =
-                                    removeItems.concat(transactionPayload.slice(-transactionPayloadToRemoveCount));
-                            }
-                            const indexPayload = this._items.filter(t => t.payloadType === "Index");
-                            const indexPayloadToRemoveCount = indexPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                            if (indexPayloadToRemoveCount > 0) {
-                                removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
-                            }
-                            const msPayload = this._items.filter(t => t.payloadType === "MS");
-                            const msPayloadToRemoveCount = msPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                            if (msPayloadToRemoveCount > 0) {
-                                removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
+                            if (this._networkConfig?.protocolVersion === "og") {
+                                const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
+                                const zeroToRemoveCount = zero.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                                if (zeroToRemoveCount > 0) {
+                                    removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
+                                }
+                                const nonZero = this._items.filter(t => t.payloadType === "Transaction" &&
+                                    t.value !== 0 && t.value !== undefined);
+                                const nonZeroToRemoveCount = nonZero.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                                if (nonZeroToRemoveCount > 0) {
+                                    removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
+                                }
+                            } else {
+                                const transactionPayload = this._items.filter(t => t.payloadType === "Transaction");
+                                const transactionPayloadToRemoveCount =
+                                    transactionPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                                if (transactionPayloadToRemoveCount > 0) {
+                                    removeItems =
+                                        removeItems.concat(transactionPayload.slice(-transactionPayloadToRemoveCount));
+                                }
+                                const indexPayload = this._items.filter(t => t.payloadType === "Index");
+                                const indexPayloadToRemoveCount = indexPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                                if (indexPayloadToRemoveCount > 0) {
+                                    removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
+                                }
+                                const msPayload = this._items.filter(t => t.payloadType === "MS");
+                                const msPayloadToRemoveCount = msPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                                if (msPayloadToRemoveCount > 0) {
+                                    removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
+                                }
+                                const nonePayload = this._items.filter(t => t.payloadType === "None");
+                                const nonePayloadToRemoveCount = nonePayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                                if (nonePayloadToRemoveCount > 0) {
+                                    removeItems = removeItems.concat(nonePayload.slice(-nonePayloadToRemoveCount));
+                                }
                             }
 
                             this._items = this._items.filter(t => !removeItems.includes(t));
