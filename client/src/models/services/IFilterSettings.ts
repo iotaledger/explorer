@@ -1,4 +1,4 @@
-import { Unit } from "@iota/unit-converter";
+import { Units } from "@iota/iota.js";
 import { ValueFilter } from "./valueFilter";
 
 export interface IFilterSettings {
@@ -15,7 +15,7 @@ export interface IFilterSettings {
     /**
      * Value limit units for feeds.
      */
-    valueMinimumUnits?: Unit;
+    valueMinimumUnits?: Units;
 
     /**
      * Value limit feeds.
@@ -25,7 +25,7 @@ export interface IFilterSettings {
     /**
      * Value limit units for feeds.
      */
-    valueMaximumUnits?: Unit;
+    valueMaximumUnits?: Units;
 }
 
 

@@ -1,10 +1,10 @@
+import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../helpers/circleNodeShader";
 import { RouteBuilder } from "../../helpers/routeBuilder";
-import { UnitsHelper } from "../../helpers/unitsHelper";
 import { IFeedItemMetadata } from "../../models/api/IFeedItemMetadata";
 import { INodeData } from "../../models/graph/INodeData";
 import { IFeedItem } from "../../models/IFeedItem";

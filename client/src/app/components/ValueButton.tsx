@@ -1,7 +1,6 @@
-import { Unit } from "@iota/unit-converter";
+import { UnitsHelper, Units } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
-import { UnitsHelper } from "../../helpers/unitsHelper";
 import "./ValueButton.scss";
 import { ValueButtonProps } from "./ValueButtonProps";
 import { ValueButtonState } from "./ValueButtonState";
@@ -52,12 +51,12 @@ class ValueButton extends Component<ValueButtonProps, ValueButtonState> {
                     {UnitsHelper.formatUnits(this.props.value, this.state.units)}
                 </div>
                 <div className="value-button--selector">
-                    {[Unit.i, Unit.Ki, Unit.Mi, Unit.Gi, Unit.Ti, Unit.Pi].map(unit => (
+                    {Object.keys(UnitsHelper.UNIT_MAP).map(unit => (
                         <button
                             type="button"
                             key={unit}
                             className={classNames({ selected: this.state.units === unit })}
-                            onClick={() => this.setState({ units: unit })}
+                            onClick={() => this.setState({ units: unit as Units })}
                         >
                             {unit}
                         </button>

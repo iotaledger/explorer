@@ -1,11 +1,10 @@
-import { convertUnits, Unit } from "@iota/unit-converter";
+import { UnitsHelper, Units } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import chevronDownWhite from "../../assets/chevron-down-white.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { RouteBuilder } from "../../helpers/routeBuilder";
-import { UnitsHelper } from "../../helpers/unitsHelper";
 import { INetwork } from "../../models/db/INetwork";
 import { IFeedItem } from "../../models/IFeedItem";
 import { IFilterSettings } from "../../models/services/IFilterSettings";
@@ -40,9 +39,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
         this.state = {
             networkConfig: network,
             valueMinimum: "0",
-            valueMinimumUnits: Unit.i,
+            valueMinimumUnits: "i",
             valueMaximum: "1",
-            valueMaximumUnits: Unit.Ti,
+            valueMaximumUnits: "Ti",
             valueFilter: "all",
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
@@ -77,9 +76,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
 
         this.setState({
             valueMinimum: filterSettings?.valueMinimum ?? "0",
-            valueMinimumUnits: filterSettings?.valueMinimumUnits ?? Unit.i,
+            valueMinimumUnits: filterSettings?.valueMinimumUnits ?? "i",
             valueMaximum: filterSettings?.valueMaximum ?? "3",
-            valueMaximumUnits: filterSettings?.valueMaximumUnits ?? Unit.Pi,
+            valueMaximumUnits: filterSettings?.valueMaximumUnits ?? "Pi",
             valueFilter: filterSettings?.valueFilter ?? "all",
             formatFull: settings.formatFull
         });
@@ -246,7 +245,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                                     className="select-plus"
                                                                     value={this.state.valueMinimumUnits}
                                                                     onChange={e => this.setState(
-                                                                        { valueMinimumUnits: e.target.value as Unit },
+                                                                        { valueMinimumUnits: e.target.value as Units },
                                                                         async () => this.updateFilters())}
                                                                 >
                                                                     <option value="i">i</option>
@@ -278,7 +277,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                                     className="select-plus"
                                                                     value={this.state.valueMaximumUnits}
                                                                     onChange={e => this.setState(
-                                                                        { valueMaximumUnits: e.target.value as Unit },
+                                                                        { valueMaximumUnits: e.target.value as Units },
                                                                         async () => this.updateFilters())}
                                                                 >
                                                                     <option value="i">i</option>
@@ -438,8 +437,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
      */
     protected itemsUpdated(): void {
         if (this._isMounted && this._feedClient) {
-            const minLimit = convertUnits(this.state.valueMinimum, this.state.valueMinimumUnits, Unit.i);
-            const maxLimit = convertUnits(this.state.valueMaximum, this.state.valueMaximumUnits, Unit.i);
+            const minLimit = UnitsHelper.convertUnits(
+                Number.parseFloat(this.state.valueMinimum), this.state.valueMinimumUnits, "i");
+            const maxLimit = UnitsHelper.convertUnits(
+                Number.parseFloat(this.state.valueMaximum), this.state.valueMaximumUnits, "i");
 
             let filter = (item: IFeedItem) =>
                 item.value === undefined ||

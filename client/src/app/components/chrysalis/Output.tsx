@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
+import { UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { UnitsHelper } from "../../../helpers/unitsHelper";
 import MessageButton from "../MessageButton";
 import { OutputProps } from "./OutputProps";
 import { OutputState } from "./OutputState";

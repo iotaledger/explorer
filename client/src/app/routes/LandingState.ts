@@ -1,4 +1,4 @@
-import { Unit } from "@iota/unit-converter";
+import { Units } from "@iota/iota.js";
 import { INetwork } from "../../models/db/INetwork";
 import { IFeedItem } from "../../models/IFeedItem";
 import { ValueFilter } from "../../models/services/valueFilter";
@@ -39,7 +39,7 @@ export interface LandingState extends CurrencyState, FeedsState {
     /**
      * The unit type.
      */
-    valueMinimumUnits: Unit;
+    valueMinimumUnits: Units;
 
     /**
      * Limit the transactions by value.
@@ -49,7 +49,7 @@ export interface LandingState extends CurrencyState, FeedsState {
     /**
      * The unit type.
      */
-    valueMaximumUnits: Unit;
+    valueMaximumUnits: Units;
 
     /**
      * Filter specific value types.

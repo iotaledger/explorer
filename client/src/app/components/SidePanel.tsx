@@ -1,7 +1,7 @@
+import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { RouteBuilder } from "../../helpers/routeBuilder";
-import { UnitsHelper } from "../../helpers/unitsHelper";
 import { IFeedItem } from "../../models/IFeedItem";
 import Feeds from "./Feeds";
 import LineChart from "./LineChart";

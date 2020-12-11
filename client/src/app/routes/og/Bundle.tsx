@@ -1,3 +1,4 @@
+import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import chevronDownGray from "../../../assets/chevron-down-gray.svg";
@@ -7,7 +8,6 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
-import { UnitsHelper } from "../../../helpers/unitsHelper";
 import { ConfirmationState } from "../../../models/confirmationState";
 import { ICachedTransaction } from "../../../models/ICachedTransaction";
 import { TangleCacheService } from "../../../services/tangleCacheService";
