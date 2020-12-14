@@ -1,8 +1,10 @@
 /* eslint-disable max-len */
-import { Converter, Ed25519Address, IReferenceUnlockBlock, ISignatureUnlockBlock, UnitsHelper } from "@iota/iota.js";
+import { Converter, Ed25519Address, IReferenceUnlockBlock, ISignatureUnlockBlock, SIGNATURE_UNLOCK_BLOCK_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
+import MessageButton from "../MessageButton";
 import Bech32Address from "./Bech32Address";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
 import { TransactionPayloadState } from "./TransactionPayloadState";
@@ -20,7 +22,7 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
 
         const signatureBlocks: ISignatureUnlockBlock[] = [];
         for (let i = 0; i < props.payload.unlockBlocks.length; i++) {
-            if (props.payload.unlockBlocks[i].type === 0) {
+            if (props.payload.unlockBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE) {
                 const sigUnlockBlock = props.payload.unlockBlocks[i] as ISignatureUnlockBlock;
                 signatureBlocks.push(sigUnlockBlock);
             } else {
@@ -145,8 +147,13 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                                         <div className="card--label">
                                             Public Key
                                         </div>
-                                        <div className="card--value">
-                                            {unlockBlock.signature.publicKey}
+                                        <div className="card--value row middle">
+                                            <span className="margin-r-t">{unlockBlock.signature.publicKey}</span>
+                                            <MessageButton
+                                                onClick={() => ClipboardHelper.copy(unlockBlock.signature.publicKey)}
+                                                buttonType="copy"
+                                                labelPosition="top"
+                                            />
                                         </div>
                                         <div className="card--label">
                                             Signature
@@ -154,6 +161,11 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                                         <div className="card--value">
                                             {unlockBlock.signature.signature}
                                         </div>
+                                        <Bech32Address
+                                            network={this.props.network}
+                                            history={this.props.history}
+                                            addressDetails={this.state.unlockAddresses[idx]}
+                                        />
                                     </React.Fragment>
                                 )}
                                 {unlockBlock.type === 1 && (

@@ -51,7 +51,14 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                 </div>
                 <div className="card--content">
                     <div className="card--label">
-                        Index
+                        <span className="margin-r-t">Index</span>
+                        <MessageButton
+                            onClick={() => ClipboardHelper.copy(
+                                this.props.payload.index
+                            )}
+                            buttonType="copy"
+                            labelPosition="right"
+                        />
                     </div>
                     <div className="card--value row middle">
                         <Link
@@ -63,13 +70,6 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                         >
                             {this.props.payload.index}
                         </Link>
-                        <MessageButton
-                            onClick={() => ClipboardHelper.copy(
-                                this.props.payload.index
-                            )}
-                            buttonType="copy"
-                            labelPosition="top"
-                        />
                     </div>
                     {!this.state.json && (
                         <React.Fragment>
