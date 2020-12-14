@@ -78,6 +78,26 @@ e.g. `../.local-storage/network/mainnet.json`
 }
 ```
 
+For a chrysalis network we use a different `protocolVersion`, remove `depth`, `mwm`, `coordinatorAddress`, `coordinatorSecurityLevel` and update the `feedEndpoint` to be mqtt.
+
+e.g. `../.local-storage/network/chrysalis.json`
+
+```json
+{
+    "network": "chrysalis",
+    "label": "Chrysalis",
+    "provider": "https://api.mynode.com/",
+    "primaryColor": "#2E8698",
+    "secondaryColor": "#77c6d6",
+    "isEnabled": true,
+    "isHidden": false,
+    "order": 3,
+    "feedEndpoint": "mqtt://api.mynode.com:1883",
+    "protocolVersion": "chrysalis",
+    "description": "Chrysalis Alphanet network. This network makes no guarantees of its stability."
+}
+```
+
 An optional `permaNodeEndpoint` can be added if you have access to a chronicle node.
 
 ## Running with Docker
