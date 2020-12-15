@@ -189,7 +189,6 @@ export abstract class ItemServiceBase {
 
         this._milestoneSubscriptionId = this._feedService.subscribeMilestones(
             (milestone: number, id: string, timestamp: number) => {
-                this._totalConfirmed++;
                 this._itemMetadata[id] = {
                     milestone,
                     ...this._itemMetadata[id]
