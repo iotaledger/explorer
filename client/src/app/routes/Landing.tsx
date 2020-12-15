@@ -310,7 +310,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                         <div className="row feed-item--header">
                                             <span className="card--label">
                                                 {this.state.networkConfig.protocolVersion === "og"
-                                                    ? "Amount" : "Data"}
+                                                    ? "Amount" : "Payload"}
                                             </span>
                                             <span className="card--label">
                                                 {this.state.networkConfig.protocolVersion === "og"
