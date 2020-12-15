@@ -7,7 +7,7 @@
         "type": "git",
         "url": "https://github.com/iotaledger/explorer.git/tree/master/api"
     },
-    "license": "MIT",
+    "license": "Apache-2.0",
     "private": true,
     "scripts": {
         "build-clean": "rimraf ./dist/*",
