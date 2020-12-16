@@ -78,7 +78,7 @@ e.g. `../.local-storage/network/mainnet.json`
 }
 ```
 
-For a chrysalis network we use a different `protocolVersion`, remove `depth`, `mwm`, `coordinatorAddress`, `coordinatorSecurityLevel` and update the `feedEndpoint` to be mqtt.
+For a chrysalis network we use a different `protocolVersion`, add `bechHrp` and remove `depth`, `mwm`, `coordinatorAddress`, `coordinatorSecurityLevel`, also update the `feedEndpoint` to be mqtt.
 
 e.g. `../.local-storage/network/chrysalis.json`
 
@@ -94,6 +94,7 @@ e.g. `../.local-storage/network/chrysalis.json`
     "order": 3,
     "feedEndpoint": "mqtt://api.mynode.com:1883",
     "protocolVersion": "chrysalis",
+    "bechHrp": "iot",
     "description": "Chrysalis Alphanet network. This network makes no guarantees of its stability."
 }
 ```

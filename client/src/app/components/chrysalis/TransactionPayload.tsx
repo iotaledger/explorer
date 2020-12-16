@@ -1,9 +1,11 @@
 /* eslint-disable max-len */
 import { Converter, Ed25519Address, IReferenceUnlockBlock, ISignatureUnlockBlock, SIGNATURE_UNLOCK_BLOCK_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
+import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
+import { NetworkService } from "../../../services/networkService";
 import MessageButton from "../MessageButton";
 import Bech32Address from "./Bech32Address";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
@@ -14,11 +16,23 @@ import { TransactionPayloadState } from "./TransactionPayloadState";
  */
 class TransactionPayload extends Component<TransactionPayloadProps, TransactionPayloadState> {
     /**
+     * The hrp of bech addresses.
+     */
+    private readonly _bechHrp: string;
+
+    /**
      * Create a new instance of TransactionPayload.
      * @param props The props.
      */
     constructor(props: TransactionPayloadProps) {
         super(props);
+
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        const networkConfig = this.props.network
+            ? networkService.get(this.props.network)
+            : undefined;
+
+        this._bechHrp = networkConfig?.bechHrp ?? "iot";
 
         const signatureBlocks: ISignatureUnlockBlock[] = [];
         for (let i = 0; i < props.payload.unlockBlocks.length; i++) {
@@ -40,7 +54,8 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                             Converter.hexToBytes(
                                 signatureBlocks[i].signature.publicKey)
                         )
-                    )
+                    ),
+                    this._bechHrp
                 )
             );
         }
@@ -78,7 +93,8 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                                     Transaction Id
                                 </div>
                                 <div className="card--value">
-                                    {input.transactionId}
+                                    {input.transactionId !== "0".repeat(64) && input.transactionId}
+                                    {input.transactionId === "0".repeat(64) && "Genesis"}
                                 </div>
                                 <div className="card--label">
                                     Transaction Output Index
@@ -106,7 +122,7 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                                 <Bech32Address
                                     network={this.props.network}
                                     history={this.props.history}
-                                    addressDetails={Bech32AddressHelper.buildAddress(output.address.address)}
+                                    addressDetails={Bech32AddressHelper.buildAddress(output.address.address, this._bechHrp)}
                                 />
 
                                 <div className="card--label">

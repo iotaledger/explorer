@@ -60,6 +60,11 @@ export interface INetwork {
     coordinatorSecurityLevel?: number;
 
     /**
+     * The bech32 human readable part prefix.
+     */
+    bechHrp?: string;
+
+    /**
      * The primary color.
      */
     primaryColor?: string;

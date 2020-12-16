@@ -3,6 +3,7 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
+import { NetworkService } from "../../../services/networkService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
@@ -25,6 +26,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     private readonly _tangleCacheService: TangleCacheService;
 
     /**
+     * The hrp of bech addresses.
+     */
+    private readonly _bechHrp: string;
+
+    /**
      * Create a new instance of Addr.
      * @param props The props.
      */
@@ -33,8 +39,15 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        const networkConfig = this.props.match.params.network
+            ? networkService.get(this.props.match.params.network)
+            : undefined;
+
+        this._bechHrp = networkConfig?.bechHrp ?? "iot";
+
         this.state = {
-            ...Bech32AddressHelper.buildAddress(props.match.params.address),
+            ...Bech32AddressHelper.buildAddress(props.match.params.address, this._bechHrp),
             statusBusy: true,
             status: "Loading outputs..."
         };
@@ -58,7 +71,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
             this.setState({
                 address: result.address,
-                bech32AddressDetails: Bech32AddressHelper.buildAddress(result.address.address),
+                bech32AddressDetails: Bech32AddressHelper.buildAddress(result.address.address, this._bechHrp),
                 balance: result.address.balance,
                 outputIds: result.addressOutputIds
             }, async () => {

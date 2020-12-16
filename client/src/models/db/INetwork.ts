@@ -45,14 +45,9 @@ export interface INetwork {
     permaNodeEndpoint?: string;
 
     /**
-     * The zmq feed to communicate with.
+     * The feed to communicate with.
      */
     feedEndpoint?: string;
-
-    /**
-     * The mqtt feed to communicate with.
-     */
-    mqttEndpoint?: string;
 
     /**
      * The address of the coordinator.
@@ -63,6 +58,11 @@ export interface INetwork {
      * The level of the coordinator security.
      */
     coordinatorSecurityLevel?: number;
+
+    /**
+     * The bech32 human readable part prefix.
+     */
+    bechHrp?: string;
 
     /**
      * The primary color.
