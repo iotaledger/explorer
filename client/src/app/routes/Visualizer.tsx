@@ -317,7 +317,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                         </React.Fragment>
                                     )}
                                     {this.state.selectedFeedItem?.properties?.Tag &&
-                                        this.state.selectedFeedItem?.properties?.MS === undefined && (
+                                        this.state.selectedFeedItem.metaData?.milestone === undefined && (
                                             <React.Fragment>
                                                 <div className="card--label">
                                                     Tag
@@ -357,18 +357,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                             </div>
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem?.properties?.MS !== undefined && (
+                                    {this.state.selectedFeedItem.metaData?.milestone !== undefined && (
                                         <React.Fragment>
                                             <div className="card--label">
                                                 Milestone
                                             </div>
                                             <div className="card--value">
-                                                {this.state.selectedFeedItem?.properties.MS as number}
+                                                {this.state.selectedFeedItem.metaData.milestone}
                                             </div>
                                         </React.Fragment>
                                     )}
                                     {this.state.selectedFeedItem?.value !== undefined &&
-                                        this.state.selectedFeedItem?.properties?.MS === undefined && (
+                                        this.state.selectedFeedItem.metaData?.milestone === undefined && (
                                             <React.Fragment>
                                                 <div className="card--label">
                                                     Value
@@ -510,8 +510,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 if (node) {
                     if (node.data) {
                         node.data.feedItem.metaData = {
-                            ...metaData[meta],
-                            ...node.data.feedItem.metaData
+                            ...node.data.feedItem.metaData,
+                            ...metaData[meta]
                         };
                     }
                     this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
@@ -638,15 +638,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             size = 20;
             if (highlight) {
                 color = Visualizer.COLOR_SEARCH_RESULT;
-            } else if (node.data.feedItem.properties?.MS) {
+            } else if (node.data.feedItem.metaData?.milestone) {
                 color = Visualizer.COLOR_MILESTONE;
                 size = 30;
             } else if (node.data.feedItem.metaData?.conflicting) {
                 color = Visualizer.COLOR_CONFLICTING;
             } else if (node.data.feedItem.metaData?.confirmed) {
-                color = node.data.feedItem?.value !== 0 && node.data.feedItem?.value !== undefined
-                    ? Visualizer.COLOR_VALUE_CONFIRMED
-                    : Visualizer.COLOR_ZERO_CONFIRMED;
+                if (node.data.feedItem?.value !== 0 && node.data.feedItem?.value !== undefined) {
+                    color = Visualizer.COLOR_VALUE_CONFIRMED;
+                    size = 30;
+                } else {
+                    color = Visualizer.COLOR_ZERO_CONFIRMED;
+                }
             } else if (node.data.feedItem.metaData?.included) {
                 color = Visualizer.COLOR_INCLUDED;
                 size = 30;

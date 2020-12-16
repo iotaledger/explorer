@@ -151,8 +151,8 @@ export class FeedClient {
                                 const existing = this._items.find(c => c.id === metadataId);
                                 if (existing) {
                                     existing.metaData = {
-                                        ...subscriptionMessage.itemsMetadata[metadataId],
-                                        ...existing.metaData
+                                        ...existing.metaData,
+                                        ...subscriptionMessage.itemsMetadata[metadataId]
                                     };
                                 }
                             }

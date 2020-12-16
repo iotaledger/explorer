@@ -241,9 +241,9 @@ export abstract class ItemServiceBase {
     private async updateSubscriptions(singleSubscriberId?: string): Promise<void> {
         const now = Date.now();
 
-        const tranCount = Object.keys(this._items).length;
-
-        if (tranCount > 0 || singleSubscriberId) {
+        if (Object.keys(this._items).length > 0 ||
+            Object.keys(this._itemMetadata).length > 0 ||
+            singleSubscriberId) {
             let subs: {
                 [id: string]: (data: IFeedSubscriptionMessage) => Promise<void>;
             };
