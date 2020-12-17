@@ -22,7 +22,7 @@
         "react-dom": "^17.0.1",
         "react-icons": "^3.11.0",
         "react-router-dom": "^5.2.0",
-        "react-scripts": "^3.4.3",
+        "react-scripts": "^4.0.0",
         "react-sizeme": "^2.6.12",
         "socket.io-client": "^3.0.3",
         "universal-cookie": "^4.0.4",
