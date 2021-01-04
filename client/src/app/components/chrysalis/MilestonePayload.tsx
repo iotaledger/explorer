@@ -48,48 +48,31 @@ class MilestonePayload extends Component<MilestonePayloadProps> {
                             )
                         )}
                     </div>
-                    <div className="card--label">
-                        Parent Message 1
-                    </div>
-                    <div className="card--value row middle">
-                        <Link
-                            className="margin-r-t"
-                            to={
-                                `/${this.props.network
-                                }/message/${this.props.payload.parent1MessageId}`
-                            }
-                        >
-                            {this.props.payload.parent1MessageId}
-                        </Link>
-                        <MessageButton
-                            onClick={() => ClipboardHelper.copy(
-                                this.props.payload.parent1MessageId
-                            )}
-                            buttonType="copy"
-                            labelPosition="top"
-                        />
-                    </div>
-                    <div className="card--label">
-                        Parent Message 2
-                    </div>
-                    <div className="card--value row middle">
-                        <Link
-                            className="margin-r-t"
-                            to={
-                                `/${this.props.network
-                                }/message/${this.props.payload.parent2MessageId}`
-                            }
-                        >
-                            {this.props.payload.parent2MessageId}
-                        </Link>
-                        <MessageButton
-                            onClick={() => ClipboardHelper.copy(
-                                this.props.payload.parent2MessageId
-                            )}
-                            buttonType="copy"
-                            labelPosition="top"
-                        />
-                    </div>
+                    {this.props.payload.parents.map((parent, idx) => (
+                        <React.Fragment key={idx}>
+                            <div className="card--label">
+                                Parent Message {idx + 1}
+                            </div>
+                            <div className="card--value row middle">
+                                <Link
+                                    className="margin-r-t"
+                                    to={
+                                        `/${this.props.network
+                                        }/message/${parent}`
+                                    }
+                                >
+                                    {parent}
+                                </Link>
+                                <MessageButton
+                                    onClick={() => ClipboardHelper.copy(
+                                        parent
+                                    )}
+                                    buttonType="copy"
+                                    labelPosition="top"
+                                />
+                            </div>
+                        </React.Fragment>
+                    ))}
                     <div className="card--label">
                         Inclusion Merkle Proof
                     </div>

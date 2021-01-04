@@ -334,8 +334,7 @@ export class FeedClient {
             return {
                 id: messageId,
                 value,
-                parent1: message?.parent1MessageId ?? "",
-                parent2: message?.parent2MessageId ?? "",
+                parents: message?.parents ?? [],
                 properties,
                 payloadType
             };
@@ -346,8 +345,10 @@ export class FeedClient {
         return {
             id: tx.hash,
             value: tx.value,
-            parent1: tx.trunkTransaction,
-            parent2: tx.branchTransaction,
+            parents: [
+                tx.trunkTransaction,
+                tx.branchTransaction
+            ],
             properties: {
                 "Tag": tx.tag,
                 "Address": tx.address,

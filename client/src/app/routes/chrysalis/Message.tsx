@@ -176,65 +176,38 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 labelPosition="top"
                                             />
                                         </div>
-                                        {this.state.message && (
-                                            <React.Fragment>
+                                        {this.state.message?.parents?.map((parent, idx) => (
+                                            <React.Fragment key={idx}>
                                                 <div className="card--label">
-                                                    Parent Message 1
+                                                    Parent Message {idx + 1}
                                                 </div>
                                                 <div className="card--value row middle">
-                                                    {this.state.message?.parent1MessageId !== "0".repeat(64) && (
+                                                    {parent !== "0".repeat(64) && (
                                                         <React.Fragment>
                                                             <Link
                                                                 className="margin-r-t"
                                                                 to={
                                                                     `/${this.props.match.params.network
-                                                                    }/message/${this.state.message?.parent1MessageId}`
+                                                                    }/message/${parent}`
                                                                 }
                                                             >
-                                                                {this.state.message?.parent1MessageId}
+                                                                {parent}
                                                             </Link>
                                                             <MessageButton
                                                                 onClick={() => ClipboardHelper.copy(
-                                                                    this.state.message?.parent1MessageId
+                                                                    parent
                                                                 )}
                                                                 buttonType="copy"
                                                                 labelPosition="top"
                                                             />
                                                         </React.Fragment>
                                                     )}
-                                                    {this.state.message?.parent1MessageId === "0".repeat(64) && (
-                                                        <span>Genesis</span>
-                                                    )}
-                                                </div>
-                                                <div className="card--label">
-                                                    Parent Message 2
-                                                </div>
-                                                <div className="card--value row middle">
-                                                    {this.state.message?.parent2MessageId !== "0".repeat(64) && (
-                                                        <React.Fragment>
-                                                            <Link
-                                                                className="margin-r-t"
-                                                                to={
-                                                                    `/${this.props.match.params.network
-                                                                    }/message/${this.state.message?.parent2MessageId}`
-                                                                }
-                                                            >
-                                                                {this.state.message?.parent2MessageId}
-                                                            </Link>
-                                                            <MessageButton
-                                                                onClick={() => ClipboardHelper.copy(
-                                                                    this.state.message?.parent2MessageId
-                                                                )}
-                                                                buttonType="copy"
-                                                                labelPosition="top"
-                                                            />
-                                                        </React.Fragment>
-                                                    )}
-                                                    {this.state.message?.parent2MessageId === "0".repeat(64) && (
+                                                    {parent === "0".repeat(64) && (
                                                         <span>Genesis</span>
                                                     )}
                                                 </div>
                                             </React.Fragment>
+                                        )
                                         )}
                                         <div className="card--label">
                                             Nonce
