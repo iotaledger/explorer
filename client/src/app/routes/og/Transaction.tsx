@@ -726,30 +726,32 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 ? true
                                 : isBundle(thisGroup.map(t => t.tx));
                             const isConsistent = thisGroup.map(tx => tx.tx.value).reduce((a, b) => a + b, 0) === 0;
-                            let combinedMessages = thisGroup.map(t => t.tx.signatureMessageFragment).join("");
-
-                            try {
-                                const parsedStreamsV0 = parseMessage(combinedMessages, details.tx.address);
-                                if (parsedStreamsV0.message) {
-                                    combinedMessages = parsedStreamsV0.message;
-                                    streamsV0Root = details.tx.address;
-                                }
-                            } catch { }
-
-                            const spanMessage = TrytesHelper.decodeMessage(combinedMessages);
 
                             let message = this.state.message;
                             let messageType = this.state.messageType;
                             let messageSpan = this.state.messageSpan;
                             let rawMessageTrytes = this.state.rawMessageTrytes;
+                            if (thisGroup.length < 10) {
+                                let combinedMessages = thisGroup.map(t => t.tx.signatureMessageFragment).join("");
 
-                            if ((spanMessage.messageType === "ASCII" ||
-                                spanMessage.messageType === "JSON") &&
-                                spanMessage.message !== this.state.message) {
-                                message = spanMessage.message;
-                                messageType = spanMessage.messageType;
-                                rawMessageTrytes = combinedMessages;
-                                messageSpan = true;
+                                try {
+                                    const parsedStreamsV0 = parseMessage(combinedMessages, details.tx.address);
+                                    if (parsedStreamsV0.message) {
+                                        combinedMessages = parsedStreamsV0.message;
+                                        streamsV0Root = details.tx.address;
+                                    }
+                                } catch { }
+
+                                const spanMessage = TrytesHelper.decodeMessage(combinedMessages);
+
+                                if ((spanMessage.messageType === "ASCII" ||
+                                    spanMessage.messageType === "JSON") &&
+                                    spanMessage.message !== this.state.message) {
+                                    message = spanMessage.message;
+                                    messageType = spanMessage.messageType;
+                                    rawMessageTrytes = combinedMessages;
+                                    messageSpan = true;
+                                }
                             }
 
                             if (isBundleValid && isConsistent && this.state.details.confirmationState === "pending") {

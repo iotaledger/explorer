@@ -584,9 +584,10 @@ export class TangleCacheService {
         let thisGroup: ICachedTransaction[] = [];
         if (transaction.tx.lastIndex === 0) {
             thisGroup = [transaction];
-        } else if (transaction.tx.currentIndex === 0) {
-            // If this current index then we can just traverse the tree
+        } else if (transaction.tx.currentIndex === 0 && transaction.tx.lastIndex < 10) {
+            // If the current index is 0 then we can just traverse the indexes
             // to get the other transactions in this bundle group
+            // but only do this for small bundles
             let trunk = transaction.tx.trunkTransaction;
             thisGroup = [transaction];
             for (let i = 1; i <= transaction.tx.lastIndex; i++) {
