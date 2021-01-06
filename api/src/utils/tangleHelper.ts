@@ -1,5 +1,5 @@
 import { composeAPI, Transaction } from "@iota/core";
-import { Bech32Helper, Converter, MessageHelper, SingleNodeClient } from "@iota/iota.js";
+import { Bech32Helper, Converter, SingleNodeClient } from "@iota/iota.js";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
@@ -398,17 +398,10 @@ export class TangleHelper {
         try {
             const metadata = await client.messageMetadata(messageId);
             const children = await client.messageChildren(messageId);
-            let validations;
-
-            if (metadata.ledgerInclusionState === "conflicting") {
-                const message = await client.message(messageId);
-                validations = await MessageHelper.validateTransaction(client, message);
-            }
 
             return {
                 metadata,
-                childrenMessageIds: children ? children.childrenMessageIds : undefined,
-                validations
+                childrenMessageIds: children ? children.childrenMessageIds : undefined
             };
         } catch { }
     }

@@ -154,7 +154,7 @@ export class ApiClient {
      */
     public async messageDetails(request: IMessageDetailsRequest): Promise<IMessageDetailsResponse> {
         return this.callApi<unknown, ISearchResponse>(
-            `message/${request.network}/${request.messageId}/${request.fields}`,
+            `message/${request.network}/${request.messageId}`,
             "get"
         );
     }
