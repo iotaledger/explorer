@@ -115,8 +115,6 @@ export async function initServices(config: IConfiguration) {
         }
     }
 
-    const UPDATE_INTERVAL_MINUTES = 30;
-
     const update = async () => {
         const currencyService = new CurrencyService(config);
         const log = await currencyService.update();
@@ -125,7 +123,7 @@ export async function initServices(config: IConfiguration) {
 
     setInterval(
         update,
-        UPDATE_INTERVAL_MINUTES * 60000);
+        60000);
 
     await update();
 }

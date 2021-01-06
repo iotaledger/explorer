@@ -11,6 +11,16 @@ import { IStorageService } from "../models/services/IStorageService";
  */
 export class CurrencyService {
     /**
+     * Milliseconds per minute.
+     */
+    private static readonly MS_PER_MINUTE: number = 60000;
+
+    /**
+     * Milliseconds per day.
+     */
+    private static readonly MS_PER_DAY: number = 86400000;
+
+    /**
      * Is the service already updating.
      */
     private _isUpdating: boolean;
@@ -52,6 +62,7 @@ export class CurrencyService {
                 currentState = currentState || {
                     id: "default",
                     lastCurrencyUpdate: 0,
+                    lastFxUpdate: 0,
                     currentPriceEUR: 0,
                     marketCapEUR: 0,
                     volumeEUR: 0,
@@ -61,28 +72,35 @@ export class CurrencyService {
                 // If now date, default to 2 days ago
                 const lastCurrencyUpdate = currentState.lastCurrencyUpdate
                     ? new Date(currentState.lastCurrencyUpdate)
-                    : new Date(Date.now() - (2 * 86400000));
+                    : new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
+                const lastFxUpdate = currentState.lastFxUpdate
+                    ? new Date(currentState.lastFxUpdate)
+                    : new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
                 const now = new Date();
                 const nowMs = now.getTime();
 
-                // If we have no state, an update over an hour old, the day has changed, or force update
+                // If we have no state, an update over 15 minutes old, the day has changed, or force update
                 if (!currentState ||
-                    nowMs - lastCurrencyUpdate.getTime() > 3600000 ||
+                    nowMs - lastCurrencyUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 5) ||
                     (lastCurrencyUpdate.getDate() !== now.getDate()) ||
                     force) {
-                    if ((this._config.fixerApiKey || "FIXER-API-KEY") !== "FIXER-API-KEY") {
-                        log += "Updating fixer\n";
+                    // Update FX rates every 4 hours
+                    if (nowMs - lastFxUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 240)) {
+                        if ((this._config.fixerApiKey || "FIXER-API-KEY") !== "FIXER-API-KEY") {
+                            log += "Updating FX Rates\n";
 
-                        const fixerClient = new FixerClient(this._config.fixerApiKey);
-                        const data = await fixerClient.latest("EUR");
+                            const fixerClient = new FixerClient(this._config.fixerApiKey);
+                            const data = await fixerClient.latest("EUR");
 
-                        if (data?.rates) {
-                            log += `Rates ${JSON.stringify(data?.rates)}\n`;
+                            if (data?.rates) {
+                                log += `Rates ${JSON.stringify(data?.rates)}\n`;
 
-                            currentState.exchangeRatesEUR = data?.rates;
+                                currentState.exchangeRatesEUR = data?.rates;
+                                currentState.lastFxUpdate = nowMs;
+                            }
+                        } else {
+                            log += "Not updating fixer, no API Key\n";
                         }
-                    } else {
-                        log += "Not updating fixer, no API Key\n";
                     }
 
                     const marketStorage = ServiceFactory.get<IStorageService<IMarket>>("market-storage");
@@ -97,12 +115,12 @@ export class CurrencyService {
                     // Look for gaps in the data
                     const eur = markets.find(m => m.currency === "eur");
                     if (eur) {
-                        const numDays = (endDate.getTime() - startDate.getTime()) / 86400000;
+                        const numDays = (endDate.getTime() - startDate.getTime()) / CurrencyService.MS_PER_DAY;
 
                         const sortedByDate = eur.data.map(d => d.d).sort((a, b) => a.localeCompare(b));
 
                         for (let i = 0; i < numDays; i++) {
-                            const iMs = startDate.getTime() + (i * 86400000);
+                            const iMs = startDate.getTime() + (i * CurrencyService.MS_PER_DAY);
                             const iDate = this.indexDate(new Date(iMs));
                             const idx = sortedByDate.findIndex(d => d === iDate);
                             if (idx < 0) {
@@ -112,8 +130,8 @@ export class CurrencyService {
                     }
 
                     // Make sure we have the final figures for yesterday
-                    if (!dates.includes(endDate.getTime() - 86400000)) {
-                        dates.push(endDate.getTime() - 86400000);
+                    if (!dates.includes(endDate.getTime() - CurrencyService.MS_PER_DAY)) {
+                        dates.push(endDate.getTime() - CurrencyService.MS_PER_DAY);
                     }
 
                     // Finally todays date
@@ -132,7 +150,7 @@ export class CurrencyService {
 
                     await marketStorage.setAll(markets);
 
-                    currentState.lastCurrencyUpdate = now.getTime();
+                    currentState.lastCurrencyUpdate = nowMs;
                     if (currencyStorageService) {
                         await currencyStorageService.set(currentState);
                     }
@@ -153,14 +171,14 @@ export class CurrencyService {
      * @param markets The markets.
      * @param date The date to update the market for.
      * @param currentState Current state of currency.
-     * @param updateState Update the state.
+     * @param isToday Update the state.
      * @returns Log of the operations.
      */
     private async updateMarketsForDate(
         markets: IMarket[],
         date: Date,
         currentState: ICurrencyState,
-        updateState: boolean): Promise<string> {
+        isToday: boolean): Promise<string> {
         const year = date.getFullYear().toString();
         const month = `0${(date.getMonth() + 1).toString()}`.slice(-2);
         const day = `0${date.getDate().toString()}`.slice(-2);
@@ -169,22 +187,40 @@ export class CurrencyService {
 
         let log = `Coin Gecko ${fullDate}\n`;
 
+        let priceEUR;
+        let marketCapEUR;
+        let volumeEUR;
+
         const coinGeckoClient = new CoinGeckoClient();
-        const coinHistory = await coinGeckoClient.coinsHistory("iota", date);
+        if (isToday) {
+            const coinMarkets = await coinGeckoClient.coinMarkets("iota", "eur");
 
-        // eslint-disable-next-line camelcase
-        if (coinHistory?.market_data && currentState.exchangeRatesEUR) {
-            log += `History ${JSON.stringify(coinHistory)}\n`;
-
-            if (updateState || !currentState.currentPriceEUR) {
-                currentState.currentPriceEUR = coinHistory.market_data.current_price.eur;
-                currentState.marketCapEUR = coinHistory.market_data.market_cap.eur;
-                currentState.volumeEUR = coinHistory.market_data.total_volume.eur;
+            if (coinMarkets && coinMarkets.length > 0) {
+                priceEUR = coinMarkets[0].current_price;
+                marketCapEUR = coinMarkets[0].market_cap;
+                volumeEUR = coinMarkets[0].total_volume;
             }
 
-            const priceEUR = coinHistory.market_data.current_price.eur;
-            const marketCapEUR = coinHistory.market_data.market_cap.eur;
-            const volumeEUR = coinHistory.market_data.total_volume.eur;
+            log += `Markets ${JSON.stringify(coinMarkets)}\n`;
+        } else {
+            const coinHistory = await coinGeckoClient.coinsHistory("iota", date);
+
+            // eslint-disable-next-line camelcase
+            if (coinHistory?.market_data && currentState.exchangeRatesEUR) {
+                log += `History ${JSON.stringify(coinHistory)}\n`;
+
+                priceEUR = coinHistory.market_data.current_price.eur;
+                marketCapEUR = coinHistory.market_data.market_cap.eur;
+                volumeEUR = coinHistory.market_data.total_volume.eur;
+            }
+        }
+
+        if (priceEUR && marketCapEUR && volumeEUR) {
+            if (isToday || !currentState.currentPriceEUR) {
+                currentState.currentPriceEUR = priceEUR;
+                currentState.marketCapEUR = marketCapEUR;
+                currentState.volumeEUR = volumeEUR;
+            }
 
             for (const currency in currentState.exchangeRatesEUR) {
                 let market: IMarket = markets.find(m => m.currency === currency.toLowerCase());
