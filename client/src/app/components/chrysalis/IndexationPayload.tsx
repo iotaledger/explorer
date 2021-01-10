@@ -19,24 +19,28 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
     constructor(props: IndexationPayloadProps) {
         super(props);
 
-        const match = props.payload.data.match(/.{1,2}/g);
+        if (props.payload.data) {
+            const match = props.payload.data.match(/.{1,2}/g);
 
-        const ascii = Converter.hexToAscii(props.payload.data);
+            const ascii = Converter.hexToAscii(props.payload.data);
 
-        let json;
+            let json;
 
-        try {
-            const nonAscii = TextHelper.decodeNonASCII(ascii);
-            if (nonAscii) {
-                json = JSON.stringify(JSON.parse(nonAscii), undefined, "\t");
-            }
-        } catch { }
+            try {
+                const nonAscii = TextHelper.decodeNonASCII(ascii);
+                if (nonAscii) {
+                    json = JSON.stringify(JSON.parse(nonAscii), undefined, "\t");
+                }
+            } catch { }
 
-        this.state = {
-            hex: match ? match.join(" ") : props.payload.data,
-            ascii,
-            json
-        };
+            this.state = {
+                hex: match ? match.join(" ") : props.payload.data,
+                ascii,
+                json
+            };
+        } else {
+            this.state = {};
+        }
     }
 
     /**
@@ -71,7 +75,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             {this.props.payload.index}
                         </Link>
                     </div>
-                    {!this.state.json && (
+                    {!this.state.json && this.state.ascii && (
                         <React.Fragment>
                             <div className="card--label row middle">
                                 <span className="margin-r-t">Data ASCII</span>
@@ -105,19 +109,23 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             </div>
                         </React.Fragment>
                     )}
-                    <div className="card--label row middle">
-                        <span className="margin-r-t">Data Hex</span>
-                        <MessageButton
-                            onClick={() => ClipboardHelper.copy(
-                                this.state.hex
-                            )}
-                            buttonType="copy"
-                            labelPosition="right"
-                        />
-                    </div>
-                    <div className="card--value card--value-textarea card--value-textarea__hex">
-                        {this.state.hex}
-                    </div>
+                    {this.state.hex && (
+                        <React.Fragment>
+                            <div className="card--label row middle">
+                                <span className="margin-r-t">Data Hex</span>
+                                <MessageButton
+                                    onClick={() => ClipboardHelper.copy(
+                                        this.state.hex
+                                    )}
+                                    buttonType="copy"
+                                    labelPosition="right"
+                                />
+                            </div>
+                            <div className="card--value card--value-textarea card--value-textarea__hex">
+                                {this.state.hex}
+                            </div>
+                        </React.Fragment>
+                    )}
                 </div>
             </div>
         );
