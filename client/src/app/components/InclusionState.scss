@@ -6,35 +6,41 @@
   @include font-size(12px);
   display: flex;
   align-items: center;
-  height: 24px;
-  padding: 0px 8px;
-  border: 0;
-  border-radius: 6px;
-  outline: none;
-  background-color: $gray-light;
-  color: $gray-midnight;
   font-family: $metropolis;
-  font-weight: bold;
-  white-space: nowrap;
-  cursor: pointer;
 
-  &.inclusion__not-included {
-    background-color: $warning;
-    color: $white;
-  }
-
-  &.inclusion__included {
-    background-color: #73b183;
-    color: $white;
-  }
-
-  &.inclusion__no-transaction {
+  .inclusion-state-pill {
+    display: flex;
+    align-items: center;
+    height: 24px;
+    padding: 0px 8px;
+    margin-right: 10px;
+    border: 0;
+    border-radius: 6px;
+    outline: none;
     background-color: $gray-light;
-    color: #8493ad;
-  }
+    color: $gray-midnight;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
 
-  &.inclusion__conflicting {
-    background-color: $danger;
-    color: $white;
+    &.inclusion__not-included {
+      background-color: $warning;
+      color: $white;
+    }
+
+    &.inclusion__included {
+      background-color: #73b183;
+      color: $white;
+    }
+
+    &.inclusion__no-transaction {
+      background-color: #17a2b8;
+      color:  $white;
+    }
+
+    &.inclusion__conflicting {
+      background-color: $danger;
+      color: $white;
+    }
   }
 }
