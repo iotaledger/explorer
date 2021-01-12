@@ -25,7 +25,7 @@
     },
     "dependencies": {
         "@iota/core": "^1.0.0-beta.30",
-        "@iota/iota.js": "github:iotaledger/iota.js#chrysalis",
+        "@iota/iota.js": "github:iotaledger/iota.js#5fc82eb498dd0f59d0cc7a869fe2d9e653a24e7d",
         "@iota/transaction-converter": "^1.0.0-beta.30",
         "@iota/validators": "^1.0.0-beta.30",
         "abort-controller": "^3.0.0",
