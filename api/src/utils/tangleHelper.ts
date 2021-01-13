@@ -348,7 +348,7 @@ export class TangleHelper {
         } catch { }
 
         try {
-            if (Bech32Helper.matches(queryLower)) {
+            if (Bech32Helper.matches(queryLower, network.bechHrp)) {
                 const address = await client.address(queryLower);
 
                 if (address.count > 0) {
