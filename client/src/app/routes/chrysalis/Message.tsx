@@ -1,4 +1,4 @@
-import { CONFLICT_REASON_STRINGS, IMessageMetadata, serializeMessage, WriteStream } from "@iota/iota.js";
+import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, serializeMessage, TRANSACTION_PAYLOAD_TYPE, WriteStream } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { FaFileDownload } from "react-icons/fa";
 import { Link, RouteComponentProps } from "react-router-dom";
@@ -258,7 +258,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 </div>
                                 {this.state.message?.payload && (
                                     <React.Fragment>
-                                        {this.state.message.payload.type === 0 && (
+                                        {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE && (
                                             <div className="transaction-payload-wrapper">
                                                 <TransactionPayload
                                                     network={this.props.match.params.network}
@@ -267,7 +267,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 />
                                             </div>
                                         )}
-                                        {this.state.message.payload.type === 1 && (
+                                        {this.state.message.payload.type === MILESTONE_PAYLOAD_TYPE && (
                                             <div className="card">
                                                 <MilestonePayload
                                                     network={this.props.match.params.network}
@@ -276,7 +276,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 />
                                             </div>
                                         )}
-                                        {this.state.message.payload.type === 2 && (
+                                        {this.state.message.payload.type === INDEXATION_PAYLOAD_TYPE && (
                                             <div className="card">
                                                 <IndexationPayload
                                                     network={this.props.match.params.network}
@@ -286,7 +286,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             </div>
                                         )}
 
-                                        {this.state.message.payload.type === 0 &&
+                                        {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE &&
                                             this.state.message.payload.essence.payload && (
                                                 <div className="card">
                                                     <IndexationPayload

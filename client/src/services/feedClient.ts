@@ -1,4 +1,4 @@
-import { Blake2b, Converter, deserializeMessage, ReadStream } from "@iota/iota.js";
+import { Blake2b, Converter, deserializeMessage, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, ReadStream, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import SocketIOClient from "socket.io-client";
 import { ServiceFactory } from "../factories/serviceFactory";
@@ -313,17 +313,17 @@ export class FeedClient {
             try {
                 message = deserializeMessage(new ReadStream(bytes));
 
-                if (message.payload?.type === 0) {
+                if (message.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
                     payloadType = "Transaction";
                     value = message.payload.essence.outputs.reduce((total, output) => total + output.amount, 0);
 
                     if (message.payload.essence.payload) {
                         properties.Index = message.payload.essence.payload.index;
                     }
-                } else if (message.payload?.type === 1) {
+                } else if (message.payload?.type === MILESTONE_PAYLOAD_TYPE) {
                     payloadType = "MS";
                     properties.MS = message.payload.index;
-                } else if (message.payload?.type === 2) {
+                } else if (message.payload?.type === INDEXATION_PAYLOAD_TYPE) {
                     payloadType = "Index";
                     properties.Index = message.payload.index;
                 }
