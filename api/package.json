@@ -29,7 +29,7 @@
         "@iota/transaction-converter": "^1.0.0-beta.30",
         "@iota/validators": "^1.0.0-beta.30",
         "abort-controller": "^3.0.0",
-        "aws-sdk": "^2.797.0",
+        "aws-sdk": "^2.814.0",
         "body-parser": "^1.19.0",
         "compression": "^1.7.4",
         "cors": "^2.8.5",
