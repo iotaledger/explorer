@@ -5,9 +5,9 @@ export interface IndexationPayloadState {
     hex?: string;
 
     /**
-     * ASCII view of data.
+     * UFT8 view of data.
      */
-    ascii?: string;
+    utf8?: string;
 
     /**
      * JSON view of data.

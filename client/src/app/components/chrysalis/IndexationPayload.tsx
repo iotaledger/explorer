@@ -22,12 +22,12 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
         if (props.payload.data) {
             const match = props.payload.data.match(/.{1,2}/g);
 
-            const ascii = Converter.hexToAscii(props.payload.data);
+            const utf8 = Converter.hexToUtf8(props.payload.data);
 
             let json;
 
             try {
-                const nonAscii = TextHelper.decodeNonASCII(ascii);
+                const nonAscii = TextHelper.decodeNonASCII(utf8);
                 if (nonAscii) {
                     json = JSON.stringify(JSON.parse(nonAscii), undefined, "\t");
                 }
@@ -35,7 +35,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
 
             this.state = {
                 hex: match ? match.join(" ") : props.payload.data,
-                ascii,
+                utf8,
                 json
             };
         } else {
@@ -75,20 +75,20 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             {this.props.payload.index}
                         </Link>
                     </div>
-                    {!this.state.json && this.state.ascii && (
+                    {!this.state.json && this.state.utf8 && (
                         <React.Fragment>
                             <div className="card--label row middle">
-                                <span className="margin-r-t">Data ASCII</span>
+                                <span className="margin-r-t">Data Text</span>
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(
-                                        this.state.ascii
+                                        this.state.utf8
                                     )}
                                     buttonType="copy"
                                     labelPosition="right"
                                 />
                             </div>
-                            <div className="card--value card--value-textarea card--value-textarea__ascii">
-                                {this.state.ascii}
+                            <div className="card--value card--value-textarea card--value-textarea__utf8">
+                                {this.state.utf8}
                             </div>
                         </React.Fragment>
                     )}
