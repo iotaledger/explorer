@@ -9,7 +9,7 @@
     },
     "license": "Apache-2.0",
     "dependencies": {
-        "@iota/iota.js": "github:iotaledger/iota.js#5f606f2746ba34de6ce15b517ee755a7fdb1e623",
+        "@iota/iota.js": "github:iotaledger/iota.js#9c93c1ea249cec015683213c40a6d5977e1d7366",
         "@iota/mam-chrysalis.js": "github:iotaledger/mam.js#chrysalis",
         "@iota/mam.js": "^1.0.0-beta.7",
         "bluebird": "^3.7.2",
