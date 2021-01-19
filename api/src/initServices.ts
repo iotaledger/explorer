@@ -56,30 +56,27 @@ export async function initServices(config: IConfiguration) {
                     `items-${networkConfig.network}`,
                     () => new OgItemsService(networkConfig.network));
             }
-        } else if (networkConfig.protocolVersion === "chrysalis") {
-            if (networkConfig.feedEndpoint) {
-                ServiceFactory.register(
-                    `mqtt-${networkConfig.network}`, () => new MqttClient(
-                        networkConfig.feedEndpoint)
-                );
+        } else if (networkConfig.protocolVersion === "chrysalis" && networkConfig.feedEndpoint) {
+            ServiceFactory.register(
+                `mqtt-${networkConfig.network}`, () => new MqttClient(
+                    networkConfig.feedEndpoint)
+            );
 
-                ServiceFactory.register(
-                    `feed-${networkConfig.network}`, () => new ChrysalisFeedService(
-                        networkConfig.network, networkConfig.provider)
-                );
+            ServiceFactory.register(
+                `feed-${networkConfig.network}`, () => new ChrysalisFeedService(
+                    networkConfig.network, networkConfig.provider)
+            );
 
-                ServiceFactory.register(
-                    `items-${networkConfig.network}`,
-                    () => new ChrysalisItemsService(networkConfig.network));
-            }
+            ServiceFactory.register(
+                `items-${networkConfig.network}`,
+                () => new ChrysalisItemsService(networkConfig.network));
         }
 
-        if (networkConfig.protocolVersion === "og" || networkConfig.protocolVersion === "chrysalis") {
-            if (networkConfig.feedEndpoint) {
-                ServiceFactory.register(
-                    `milestones-${networkConfig.network}`,
-                    () => new MilestonesService(networkConfig.network));
-            }
+        if ((networkConfig.protocolVersion === "og" || networkConfig.protocolVersion === "chrysalis") &&
+            networkConfig.feedEndpoint) {
+            ServiceFactory.register(
+                `milestones-${networkConfig.network}`,
+                () => new MilestonesService(networkConfig.network));
         }
     }
 

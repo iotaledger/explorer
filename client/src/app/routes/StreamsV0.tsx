@@ -324,10 +324,8 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
             }
         }
 
-        if (this.state.mode === "restricted") {
-            if (this.state.sideKey.trim().length === 0) {
-                sideKeyValidation = "You must specify a key for restricted mode.";
-            }
+        if (this.state.mode === "restricted" && this.state.sideKey.trim().length === 0) {
+            sideKeyValidation = "You must specify a key for restricted mode.";
         }
 
         this.setState({

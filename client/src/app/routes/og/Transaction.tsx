@@ -725,7 +725,11 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                             const isBundleValid = this.state.details.confirmationState === "confirmed"
                                 ? true
                                 : isBundle(thisGroup.map(t => t.tx));
-                            const isConsistent = thisGroup.map(tx => tx.tx.value).reduce((a, b) => a + b, 0) === 0;
+                            let total = 0;
+                            for (const g of thisGroup) {
+                                total += g.tx.value;
+                            }
+                            const isConsistent = total === 0;
 
                             let message = this.state.message;
                             let messageType = this.state.messageType;
@@ -836,19 +840,17 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
         const transactions = await this._tangleCacheService.getTransactions(
             this.props.match.params.network, [this.props.match.params.hash], true);
 
-        if (transactions && transactions.length > 0) {
-            if (transactions[0].confirmationState === "confirmed") {
-                if (this._timerId) {
-                    clearInterval(this._timerId);
-                    this._timerId = undefined;
-                }
-                this.setState({
-                    details: {
-                        ...transactions[0],
-                        confirmationState: "confirmed"
-                    }
-                });
+        if (transactions && transactions.length > 0 && transactions[0].confirmationState === "confirmed") {
+            if (this._timerId) {
+                clearInterval(this._timerId);
+                this._timerId = undefined;
             }
+            this.setState({
+                details: {
+                    ...transactions[0],
+                    confirmationState: "confirmed"
+                }
+            });
         }
     }
 

@@ -249,13 +249,11 @@ export class TangleCacheService {
 
             if (hashType !== undefined) {
                 const cacheHashType = findCache[hashType];
-                if (cacheHashType?.[hash]) {
-                    // If the cache item was added less than a minute ago then use it.
-                    if (Date.now() - cacheHashType[hash].cached < 60000) {
-                        doLookup = false;
-                        transactionHashes = cacheHashType[hash].transactionHashes.slice();
-                        cursor = cacheHashType[hash].cursor;
-                    }
+                // If the cache item was added less than a minute ago then use it.
+                if (cacheHashType?.[hash] && Date.now() - cacheHashType[hash].cached < 60000) {
+                    doLookup = false;
+                    transactionHashes = cacheHashType[hash].transactionHashes.slice();
+                    cursor = cacheHashType[hash].cursor;
                 }
             }
         }
@@ -347,12 +345,10 @@ export class TangleCacheService {
                             let timestamp = tx.timestamp;
                             let attachmentTimestamp = tx.attachmentTimestamp;
 
-                            if (networkId === "mainnet") {
-                                // Early transactions had 81 trytes nonce and no attachment
-                                // timestamp so use the other timestamp in its place
-                                if (response.milestoneIndexes[i] <= 337541) {
-                                    attachmentTimestamp = tx.timestamp;
-                                }
+                            // Early transactions had 81 trytes nonce and no attachment
+                            // timestamp so use the other timestamp in its place
+                            if (networkId === "mainnet" && response.milestoneIndexes[i] <= 337541) {
+                                attachmentTimestamp = tx.timestamp;
                             }
                             // Some transactions have 0 timestamp to use attachment timestamp instead
                             if (tx.timestamp === 0) {

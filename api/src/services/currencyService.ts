@@ -122,7 +122,7 @@ export class CurrencyService {
                         for (let i = 0; i < numDays; i++) {
                             const iMs = startDate.getTime() + (i * CurrencyService.MS_PER_DAY);
                             const iDate = this.indexDate(new Date(iMs));
-                            const idx = sortedByDate.findIndex(d => d === iDate);
+                            const idx = sortedByDate.indexOf(iDate);
                             if (idx < 0) {
                                 dates.push(iMs);
                             }

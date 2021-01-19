@@ -174,14 +174,15 @@ export abstract class ItemServiceBase implements IItemsService {
         const tps = this._ips;
         if (tps) {
             const spanS = (end - start) / 1000;
-            if (spanS > 0) {
-                if (this._ips.length > 0) {
-                    const txTotal = tps.map(t => t.itemCount).reduce((a, b) => a + b, 0);
-                    ips = txTotal / spanS;
-
-                    const snTotal = tps.map(t => t.confirmedCount).reduce((a, b) => a + b, 0);
-                    cips = snTotal / spanS;
+            if (spanS > 0 && this._ips.length > 0) {
+                let txTotal = 0;
+                let snTotal = 0;
+                for (const t of tps) {
+                    txTotal += t.itemCount;
+                    snTotal += t.confirmedCount;
                 }
+                ips = txTotal / spanS;
+                cips = snTotal / spanS;
             }
         }
         return {
