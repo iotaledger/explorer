@@ -30,7 +30,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Edge colour default.
      */
-    private static readonly EDGE_COLOR_DARK: number = 0xFFFFFF11;
+    private static readonly EDGE_COLOR_DARK: number = 0xFFFFFF33;
 
     /**
      * Edge color confirming.
