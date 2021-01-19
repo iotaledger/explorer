@@ -39,5 +39,9 @@ export interface IItemsService {
          * The confirmed rate.
          */
         confirmationRate: number;
+        /**
+         * The latest milestone index.
+         */
+        latestMilestoneIndex?: number;
     };
 }

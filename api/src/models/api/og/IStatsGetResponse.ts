@@ -13,4 +13,8 @@ export interface IStatsGetResponse extends IResponse {
      * The confirmed rate.
      */
     confirmationRate?: number;
+    /**
+     * The latest milestone index.
+     */
+    latestMilestoneIndex?: number;
 }

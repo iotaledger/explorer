@@ -2,11 +2,12 @@ import { ServiceFactory } from "../factories/serviceFactory";
 import { IFeedItemMetadata } from "../models/api/IFeedItemMetadata";
 import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
 import { IFeedService } from "../models/services/IFeedService";
+import { IItemsService } from "../models/services/IItemsService";
 
 /**
  * Class to handle messages service.
  */
-export abstract class ItemServiceBase {
+export abstract class ItemServiceBase implements IItemsService {
     /**
      * The network configuration.
      */
@@ -59,6 +60,11 @@ export abstract class ItemServiceBase {
      * Timer counter.
      */
     private _timerCounter: number;
+
+    /**
+     * The latest milestone.
+     */
+    private _latestMilestoneIndex: number;
 
     /**
      * The callback for different events.
@@ -152,6 +158,10 @@ export abstract class ItemServiceBase {
          * The confirmed rate.
          */
         confirmationRate: number;
+        /**
+         * The latest milestone index.
+         */
+        latestMilestoneIndex: number;
     } {
         let ips = 0;
         let cips = 0;
@@ -177,7 +187,8 @@ export abstract class ItemServiceBase {
         return {
             itemsPerSecond: Number.parseFloat(ips.toFixed(2)),
             confirmedItemsPerSecond: Number.parseFloat(cips.toFixed(2)),
-            confirmationRate: Number.parseFloat((ips > 0 ? cips / ips * 100 : 0).toFixed(2))
+            confirmationRate: Number.parseFloat((ips > 0 ? cips / ips * 100 : 0).toFixed(2)),
+            latestMilestoneIndex: this._latestMilestoneIndex
         };
     }
 
@@ -189,6 +200,7 @@ export abstract class ItemServiceBase {
 
         this._milestoneSubscriptionId = this._feedService.subscribeMilestones(
             (milestone: number, id: string, timestamp: number) => {
+                this._latestMilestoneIndex = milestone;
                 this._itemMetadata[id] = {
                     milestone,
                     ...this._itemMetadata[id]
