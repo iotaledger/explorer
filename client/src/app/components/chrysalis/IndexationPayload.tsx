@@ -3,7 +3,7 @@ import { Converter } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { TextHelper } from "../../../helpers/textHelper";
+import JsonViewer from "../JsonViewer";
 import MessageButton from "../MessageButton";
 import { IndexationPayloadProps } from "./IndexationPayloadProps";
 import { IndexationPayloadState } from "./IndexationPayloadState";
@@ -27,10 +27,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
             let json;
 
             try {
-                const nonAscii = TextHelper.decodeNonASCII(utf8);
-                if (nonAscii) {
-                    json = JSON.stringify(JSON.parse(nonAscii), undefined, "\t");
-                }
+                json = JSON.stringify(JSON.parse(utf8), undefined, "  ");
             } catch { }
 
             this.state = {
@@ -104,8 +101,10 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                                     labelPosition="right"
                                 />
                             </div>
-                            <div className="card--value card--value-textarea card--value-textarea__json">
-                                {this.state.json}
+                            <div
+                                className="card--value card--value-textarea card--value-textarea__json"
+                            >
+                                <JsonViewer json={this.state.json} />
                             </div>
                         </React.Fragment>
                     )}

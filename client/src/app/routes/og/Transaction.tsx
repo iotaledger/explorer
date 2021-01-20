@@ -18,6 +18,7 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Confirmation from "../../components/Confirmation";
 import CurrencyButton from "../../components/CurrencyButton";
+import JsonViewer from "../../components/JsonViewer";
 import MessageButton from "../../components/MessageButton";
 import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
@@ -499,7 +500,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         >
                                                             {this.state.showRawMessageTrytes
                                                                 ? this.state.rawMessageTrytes
-                                                                : this.state.message}
+                                                                : (this.state.messageType === "JSON"
+                                                                    ? <JsonViewer json={this.state.message} />
+                                                                    : this.state.message)}
                                                         </div>
                                                         {this.state.messageSpan && (
                                                             <div className="card--value">
