@@ -22,9 +22,28 @@ export async function get(
 
     const itemsService = ServiceFactory.get<IItemsService>(`items-${request.network}`);
 
-    return itemsService ? itemsService.getStats() : {
+    const stats = itemsService.getStats();
+
+    if (stats) {
+        const timeSinceLastMsInMinutes = (Date.now() - stats.latestMilestoneIndexTime) / 60000;
+        let health = 0;
+        if (timeSinceLastMsInMinutes < 2) {
+            health = 2; // good
+        } else if (timeSinceLastMsInMinutes < 5) {
+            health = 1; // degraded
+        }
+        return {
+            ...stats,
+            health
+        };
+    }
+
+    return {
         itemsPerSecond: 0,
         confirmedItemsPerSecond: 0,
-        confirmationRate: 0
+        confirmationRate: 0,
+        latestMilestoneIndex: 0,
+        latestMilestoneIndexTime: 0,
+        health: 0
     };
 }

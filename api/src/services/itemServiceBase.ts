@@ -3,6 +3,7 @@ import { IFeedItemMetadata } from "../models/api/IFeedItemMetadata";
 import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
 import { IFeedService } from "../models/services/IFeedService";
 import { IItemsService } from "../models/services/IItemsService";
+import { IStatistics } from "../models/services/IStatistics";
 
 /**
  * Class to handle messages service.
@@ -65,6 +66,11 @@ export abstract class ItemServiceBase implements IItemsService {
      * The latest milestone.
      */
     private _latestMilestoneIndex: number;
+
+    /**
+     * The latest milestone time.
+     */
+    private _latestMilestoneIndexTime: number;
 
     /**
      * The callback for different events.
@@ -145,24 +151,7 @@ export abstract class ItemServiceBase implements IItemsService {
      * Get the current stats.
      * @returns The statistics for the network.
      */
-    public getStats(): {
-        /**
-         * The transations per second.
-         */
-        itemsPerSecond: number;
-        /**
-         * The confirmed transations per second.
-         */
-        confirmedItemsPerSecond: number;
-        /**
-         * The confirmed rate.
-         */
-        confirmationRate: number;
-        /**
-         * The latest milestone index.
-         */
-        latestMilestoneIndex: number;
-    } {
+    public getStats(): IStatistics {
         let ips = 0;
         let cips = 0;
 
@@ -189,7 +178,8 @@ export abstract class ItemServiceBase implements IItemsService {
             itemsPerSecond: Number.parseFloat(ips.toFixed(2)),
             confirmedItemsPerSecond: Number.parseFloat(cips.toFixed(2)),
             confirmationRate: Number.parseFloat((ips > 0 ? cips / ips * 100 : 0).toFixed(2)),
-            latestMilestoneIndex: this._latestMilestoneIndex
+            latestMilestoneIndex: this._latestMilestoneIndex,
+            latestMilestoneIndexTime: this._latestMilestoneIndexTime
         };
     }
 
@@ -202,6 +192,7 @@ export abstract class ItemServiceBase implements IItemsService {
         this._milestoneSubscriptionId = this._feedService.subscribeMilestones(
             (milestone: number, id: string, timestamp: number) => {
                 this._latestMilestoneIndex = milestone;
+                this._latestMilestoneIndexTime = timestamp;
                 this._itemMetadata[id] = {
                     milestone,
                     ...this._itemMetadata[id]

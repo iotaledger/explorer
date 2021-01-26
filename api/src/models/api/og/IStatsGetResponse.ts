@@ -1,20 +1,9 @@
+import { IStatistics } from "../../services/IStatistics";
 import { IResponse } from "../IResponse";
 
-export interface IStatsGetResponse extends IResponse {
+export interface IStatsGetResponse extends IStatistics, IResponse {
     /**
-     * The items per second.
+     * The health of the network 0=bad, 1=degraded, 2=good
      */
-    itemsPerSecond?: number;
-    /**
-     * The confirmed items per second.
-     */
-    confirmedItemsPerSecond?: number;
-    /**
-     * The confirmed rate.
-     */
-    confirmationRate?: number;
-    /**
-     * The latest milestone index.
-     */
-    latestMilestoneIndex?: number;
+    health?: number;
 }
