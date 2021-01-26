@@ -13,9 +13,9 @@ export interface MessageState {
     metadata?: IMessageMetadata;
 
     /**
-     * Validations if the message is conflicting.
+     * Reason for the conflict.
      */
-    validations?: string[];
+    conflictReason?: string;
 
     /**
      * Are we busy loading the children.

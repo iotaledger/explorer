@@ -1,5 +1,5 @@
 import { composeAPI, Transaction } from "@iota/core";
-import { Bech32Helper, Converter, MessageHelper, SingleNodeClient } from "@iota/iota.js";
+import { Bech32Helper, Converter, SingleNodeClient } from "@iota/iota.js";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
@@ -318,6 +318,7 @@ export class TangleHelper {
         const queryLower = query.toLowerCase();
 
         try {
+            // If the query is an integer then lookup a milestone
             if (/^\d+$/.test(query)) {
                 const milestone = await client.milestone(Number.parseInt(query, 10));
 
@@ -328,8 +329,24 @@ export class TangleHelper {
         } catch { }
 
         try {
+            // If the query is bech format lookup address
+            if (Bech32Helper.matches(queryLower, network.bechHrp)) {
+                const address = await client.address(queryLower);
+                if (address) {
+                    const addressOutputs = await client.addressOutputs(queryLower);
+
+                    return {
+                        address,
+                        addressOutputIds: addressOutputs.outputIds
+                    };
+                }
+            }
+        } catch { }
+
+        try {
+            // If the query is 64 bytes hex, try and look for a message
             if (Converter.isHex(queryLower) && queryLower.length === 64) {
-                const message = await client.message(query);
+                const message = await client.message(queryLower);
 
                 return {
                     message
@@ -338,48 +355,43 @@ export class TangleHelper {
         } catch { }
 
         try {
-            const messages = await client.messagesFind(query);
-
-            if (messages.count > 0) {
-                return {
-                    indexMessageIds: messages.messageIds
-                };
-            }
-        } catch { }
-
-        try {
-            if (Bech32Helper.matches(queryLower)) {
-                const address = await client.address(queryLower);
-
-                if (address.count > 0) {
-                    const addressOutputs = await client.addressOutputs(queryLower);
-
-                    return {
-                        address,
-                        addressOutputIds: addressOutputs.outputIds
-                    };
-                }
-            } else if (Converter.isHex(queryLower)) {
-                const address = await client.addressEd25519(queryLower);
-
-                if (address.count > 0) {
-                    const addressOutputs = await client.addressEd25519Outputs(queryLower);
-
-                    return {
-                        address,
-                        addressOutputIds: addressOutputs.outputIds
-                    };
-                }
-            }
-        } catch { }
-
-        try {
+            // If the query is 68 bytes hex, try and look for an output
             if (Converter.isHex(queryLower) && queryLower.length === 68) {
                 const output = await client.output(queryLower);
 
                 return {
                     output
                 };
+            }
+        } catch { }
+
+        try {
+            // If the query is bech format lookup address
+            if (Converter.isHex(queryLower) && queryLower.length === 64) {
+                // We have 64 characters hex so could possible be a raw ed25519 address
+                const address = await client.addressEd25519(queryLower);
+
+                const addressOutputs = await client.addressEd25519Outputs(queryLower);
+
+                if (addressOutputs.count > 0) {
+                    return {
+                        address,
+                        addressOutputIds: addressOutputs.outputIds
+                    };
+                }
+            }
+        } catch { }
+
+        try {
+            // If the query is between 1 and 64 characters try a indexation lookup
+            if (query.length > 0 && query.length <= 64) {
+                const messages = await client.messagesFind(query);
+
+                if (messages.count > 0) {
+                    return {
+                        indexMessageIds: messages.messageIds
+                    };
+                }
             }
         } catch { }
 
@@ -398,17 +410,10 @@ export class TangleHelper {
         try {
             const metadata = await client.messageMetadata(messageId);
             const children = await client.messageChildren(messageId);
-            let validations;
-
-            if (metadata.ledgerInclusionState === "conflicting") {
-                const message = await client.message(messageId);
-                validations = await MessageHelper.validateTransaction(client, message);
-            }
 
             return {
                 metadata,
-                childrenMessageIds: children ? children.childrenMessageIds : undefined,
-                validations
+                childrenMessageIds: children ? children.childrenMessageIds : undefined
             };
         } catch { }
     }

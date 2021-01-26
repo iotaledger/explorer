@@ -1,0 +1,28 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/variables';
+
+.json-viewer {
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre-wrap;
+
+  .string {
+    color: green;
+  }
+
+  .number {
+    color: darkorange;
+  }
+
+  .boolean {
+    color: blue;
+  }
+
+  .null {
+    color: magenta;
+  }
+
+  .key {
+    color: $gray-10;
+  }
+}

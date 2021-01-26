@@ -30,7 +30,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Edge colour default.
      */
-    private static readonly EDGE_COLOR_DARK: number = 0xFFFFFF11;
+    private static readonly EDGE_COLOR_DARK: number = 0xFFFFFF33;
 
     /**
      * Edge color confirming.
@@ -810,15 +810,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * The window was resized.
      */
     private resize(): void {
-        if (this._graphElement) {
-            if (this._graphics) {
-                this._graphics.updateSize();
-                this._graphics.scale(1, {
-                    x: this._graphElement.clientWidth / 2,
-                    y: this._graphElement.clientHeight / 2
-                }
-                );
-            }
+        if (this._graphElement && this._graphics) {
+            this._graphics.updateSize();
+            this._graphics.scale(1, {
+                x: this._graphElement.clientWidth / 2,
+                y: this._graphElement.clientHeight / 2
+            });
         }
     }
 

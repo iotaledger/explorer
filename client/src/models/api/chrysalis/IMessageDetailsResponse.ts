@@ -11,9 +11,4 @@ export interface IMessageDetailsResponse extends IResponse {
      * Message ids for the children.
      */
     childrenMessageIds?: string[];
-
-    /**
-     * Validations performed on conflicting transactions.
-     */
-    validations?: string[];
 }

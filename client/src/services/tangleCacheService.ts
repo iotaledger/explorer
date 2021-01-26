@@ -159,41 +159,6 @@ export class TangleCacheService {
     };
 
     /**
-     * Chrysalis Metadata results.
-     */
-    private readonly _chrysalisMetadataChildrenCache: {
-        /**
-         * Network.
-         */
-        [network: string]: {
-            /**
-             * The query type.
-             */
-            [query: string]: {
-                /**
-                 * Metadata response.
-                 */
-                metadata?: IMessageMetadata;
-
-                /**
-                 * Childen ids.
-                 */
-                childrenIds?: string[];
-
-                /**
-                 * Validations if the message is conflicting.
-                 */
-                validations?: string[];
-
-                /**
-                 * The time of cache.
-                 */
-                cached: number;
-            };
-        };
-    };
-
-    /**
      * Protocol versions.
      */
     private readonly _networkProtocols: { [network: string]: ProtocolVersion };
@@ -205,7 +170,6 @@ export class TangleCacheService {
         this._transactionCache = {};
         this._ogCache = {};
         this._chrysalisSearchCache = {};
-        this._chrysalisMetadataChildrenCache = {};
         this._addressBalances = {};
         this._streamsV0 = {};
         this._networkProtocols = {};
@@ -225,7 +189,6 @@ export class TangleCacheService {
             };
 
             this._chrysalisSearchCache[networkConfig.network] = {};
-            this._chrysalisMetadataChildrenCache[networkConfig.network] = {};
 
             this._addressBalances[networkConfig.network] = {};
             this._streamsV0[networkConfig.network] = {};
@@ -286,13 +249,11 @@ export class TangleCacheService {
 
             if (hashType !== undefined) {
                 const cacheHashType = findCache[hashType];
-                if (cacheHashType?.[hash]) {
-                    // If the cache item was added less than a minute ago then use it.
-                    if (Date.now() - cacheHashType[hash].cached < 60000) {
-                        doLookup = false;
-                        transactionHashes = cacheHashType[hash].transactionHashes.slice();
-                        cursor = cacheHashType[hash].cursor;
-                    }
+                // If the cache item was added less than a minute ago then use it.
+                if (cacheHashType?.[hash] && Date.now() - cacheHashType[hash].cached < 60000) {
+                    doLookup = false;
+                    transactionHashes = cacheHashType[hash].transactionHashes.slice();
+                    cursor = cacheHashType[hash].cursor;
                 }
             }
         }
@@ -384,12 +345,10 @@ export class TangleCacheService {
                             let timestamp = tx.timestamp;
                             let attachmentTimestamp = tx.attachmentTimestamp;
 
-                            if (networkId === "mainnet") {
-                                // Early transactions had 81 trytes nonce and no attachment
-                                // timestamp so use the other timestamp in its place
-                                if (response.milestoneIndexes[i] <= 337541) {
-                                    attachmentTimestamp = tx.timestamp;
-                                }
+                            // Early transactions had 81 trytes nonce and no attachment
+                            // timestamp so use the other timestamp in its place
+                            if (networkId === "mainnet" && response.milestoneIndexes[i] <= 337541) {
+                                attachmentTimestamp = tx.timestamp;
                             }
                             // Some transactions have 0 timestamp to use attachment timestamp instead
                             if (tx.timestamp === 0) {
@@ -584,9 +543,10 @@ export class TangleCacheService {
         let thisGroup: ICachedTransaction[] = [];
         if (transaction.tx.lastIndex === 0) {
             thisGroup = [transaction];
-        } else if (transaction.tx.currentIndex === 0) {
-            // If this current index then we can just traverse the tree
+        } else if (transaction.tx.currentIndex === 0 && transaction.tx.lastIndex < 10) {
+            // If the current index is 0 then we can just traverse the indexes
             // to get the other transactions in this bundle group
+            // but only do this for small bundles
             let trunk = transaction.tx.trunkTransaction;
             thisGroup = [transaction];
             for (let i = 1; i <= transaction.tx.lastIndex; i++) {
@@ -787,43 +747,28 @@ export class TangleCacheService {
      * Get the message metadata.
      * @param network The network to search
      * @param messageId The message if to get the metadata for.
-     * @param fields The fields to retrieve.
-     * @param force Bypass the cache.
      * @returns The details response.
      */
     public async messageDetails(
         network: string,
-        messageId: string,
-        fields: "metadata" | "children" | "all",
-        force?: boolean): Promise<{
+        messageId: string): Promise<{
             metadata?: IMessageMetadata;
-            validations?: string[];
             childrenIds?: string[];
         }> {
-        if (!this._chrysalisMetadataChildrenCache[network][messageId] || force) {
-            const apiClient = ServiceFactory.get<ApiClient>("api-client");
+        const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-            const response = await apiClient.messageDetails({ network, messageId, fields });
+        const response = await apiClient.messageDetails({ network, messageId });
 
-            if (response) {
-                this._chrysalisMetadataChildrenCache[network][messageId] =
-                    this._chrysalisMetadataChildrenCache[network][messageId] || {
-                        cached: Date.now()
-                    };
-                if (fields === "metadata" || fields === "all") {
-                    this._chrysalisMetadataChildrenCache[network][messageId].metadata = response.metadata;
-                    this._chrysalisMetadataChildrenCache[network][messageId].validations = response.validations;
-                }
-                if (fields === "children" || fields === "all") {
-                    this._chrysalisMetadataChildrenCache[network][messageId].childrenIds = response.childrenMessageIds;
-                }
-            }
+        if (response) {
+            return {
+                metadata: response.metadata,
+                childrenIds: response.childrenMessageIds
+            };
         }
 
         return {
-            metadata: this._chrysalisMetadataChildrenCache[network][messageId]?.metadata,
-            validations: this._chrysalisMetadataChildrenCache[network][messageId]?.validations,
-            childrenIds: this._chrysalisMetadataChildrenCache[network][messageId]?.childrenIds
+            metadata: undefined,
+            childrenIds: undefined
         };
     }
 
@@ -878,17 +823,6 @@ export class TangleCacheService {
                 for (const query in queries) {
                     if (now - queries[query].cached >= this.STALE_TIME) {
                         delete queries[query];
-                    }
-                }
-            }
-        }
-
-        for (const net in this._chrysalisMetadataChildrenCache) {
-            const messageIds = this._chrysalisMetadataChildrenCache[net];
-            if (messageIds) {
-                for (const messageId in messageIds) {
-                    if (now - messageIds[messageId].cached >= this.STALE_TIME) {
-                        delete messageIds[messageId];
                     }
                 }
             }

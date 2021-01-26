@@ -2,11 +2,12 @@ import { ServiceFactory } from "../factories/serviceFactory";
 import { IFeedItemMetadata } from "../models/api/IFeedItemMetadata";
 import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";
 import { IFeedService } from "../models/services/IFeedService";
+import { IItemsService } from "../models/services/IItemsService";
 
 /**
  * Class to handle messages service.
  */
-export abstract class ItemServiceBase {
+export abstract class ItemServiceBase implements IItemsService {
     /**
      * The network configuration.
      */
@@ -59,6 +60,11 @@ export abstract class ItemServiceBase {
      * Timer counter.
      */
     private _timerCounter: number;
+
+    /**
+     * The latest milestone.
+     */
+    private _latestMilestoneIndex: number;
 
     /**
      * The callback for different events.
@@ -152,6 +158,10 @@ export abstract class ItemServiceBase {
          * The confirmed rate.
          */
         confirmationRate: number;
+        /**
+         * The latest milestone index.
+         */
+        latestMilestoneIndex: number;
     } {
         let ips = 0;
         let cips = 0;
@@ -164,20 +174,22 @@ export abstract class ItemServiceBase {
         const tps = this._ips;
         if (tps) {
             const spanS = (end - start) / 1000;
-            if (spanS > 0) {
-                if (this._ips.length > 0) {
-                    const txTotal = tps.map(t => t.itemCount).reduce((a, b) => a + b, 0);
-                    ips = txTotal / spanS;
-
-                    const snTotal = tps.map(t => t.confirmedCount).reduce((a, b) => a + b, 0);
-                    cips = snTotal / spanS;
+            if (spanS > 0 && this._ips.length > 0) {
+                let txTotal = 0;
+                let snTotal = 0;
+                for (const t of tps) {
+                    txTotal += t.itemCount;
+                    snTotal += t.confirmedCount;
                 }
+                ips = txTotal / spanS;
+                cips = snTotal / spanS;
             }
         }
         return {
             itemsPerSecond: Number.parseFloat(ips.toFixed(2)),
             confirmedItemsPerSecond: Number.parseFloat(cips.toFixed(2)),
-            confirmationRate: Number.parseFloat((ips > 0 ? cips / ips * 100 : 0).toFixed(2))
+            confirmationRate: Number.parseFloat((ips > 0 ? cips / ips * 100 : 0).toFixed(2)),
+            latestMilestoneIndex: this._latestMilestoneIndex
         };
     }
 
@@ -189,6 +201,7 @@ export abstract class ItemServiceBase {
 
         this._milestoneSubscriptionId = this._feedService.subscribeMilestones(
             (milestone: number, id: string, timestamp: number) => {
+                this._latestMilestoneIndex = milestone;
                 this._itemMetadata[id] = {
                     milestone,
                     ...this._itemMetadata[id]

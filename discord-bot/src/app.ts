@@ -4,8 +4,8 @@ import { ICMCQuotesLatestResponse } from "./models/ICMCQuotesLatestResponse";
 import { ICoinGeckoPriceResponse } from "./models/ICoinGeckoPriceResponse";
 import { IConfiguration } from "./models/IConfiguration";
 import { ICurrenciesResponse } from "./models/ICurrenciesResponse";
-import { IItemsPerSecond } from "./models/IItemsPerSecond";
 import { INetworksResponse } from "./models/INetworksResponse";
+import { IStatsGetResponse } from "./models/IStatsGetResponse";
 
 const COIN_GECKO_URL = "https://api.coingecko.com/api/v3/";
 const CMC_URL = "https://pro-api.coinmarketcap.com/v1/";
@@ -113,6 +113,7 @@ export class App {
             }
         });
 
+        console.log("Bot Logging in...");
         await this._botClient.login(this._config.discordToken);
         console.log("Bot Login Complete");
     }
@@ -142,7 +143,7 @@ export class App {
                 n => `!${n.network}` === command && n.isEnabled && !n.isHidden);
 
             if (foundNetwork) {
-                const res = await FetchHelper.json<unknown, IItemsPerSecond>(
+                const res = await FetchHelper.json<unknown, IStatsGetResponse>(
                     this._config.explorerEndpoint, `stats/${foundNetwork.network}`, "get");
 
                 const embed = new MessageEmbed()
@@ -152,7 +153,8 @@ export class App {
                         ? "TPS" : "MPS", res.itemsPerSecond, true)
                     .addField(foundNetwork.protocolVersion === "og"
                         ? "CTPS" : "CMPS", res.confirmedItemsPerSecond, true)
-                    .addField("Confirmation", `${res.confirmationRate}%`, true);
+                    .addField("Confirmation", `${res.confirmationRate}%`, true)
+                    .addField("Latest Milestone Index", res.latestMilestoneIndex);
 
                 return embed;
             }

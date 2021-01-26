@@ -66,8 +66,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
             const { hashes } = await this._tangleCacheService.findTransactionHashes(
                 this.props.match.params.network,
                 "bundles",
-                this.props.match.params.hash,
-                250
+                this.props.match.params.hash
             );
 
             const bundleGroupsPlain = await this._tangleCacheService.getBundleGroups(
@@ -123,7 +122,11 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                 const isMissing = bundleGroupsPlain[i].filter(t => t.isEmpty).length > 0;
 
                 if (!isMissing) {
-                    const isConsistent = bundleGroupsPlain[i].map(tx => tx.tx.value).reduce((a, b) => a + b, 0) === 0;
+                    let total = 0;
+                    for (const bg of bundleGroupsPlain[i]) {
+                        total += bg.tx.value;
+                    }
+                    const isConsistent = total === 0;
 
                     let confirmationState: ConfirmationState;
                     if (!isConsistent) {

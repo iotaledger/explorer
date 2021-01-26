@@ -13,7 +13,7 @@ export class Bech32AddressHelper {
         let hex;
         let type;
 
-        if (Bech32Helper.matches(address)) {
+        if (Bech32Helper.matches(address, hrp)) {
             try {
                 const result = Bech32Helper.fromBech32(address, hrp);
                 if (result) {

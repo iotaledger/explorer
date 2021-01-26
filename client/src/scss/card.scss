@@ -241,7 +241,8 @@
       background: $gray-noon;
       overflow: auto;
 
-      &.card--value-textarea__ascii {
+      &.card--value-textarea__ascii,
+      &.card--value-textarea__utf8 {
         max-height: 350px;
         white-space: pre-wrap;
       }

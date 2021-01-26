@@ -10,6 +10,11 @@ export interface ICurrencyState {
     lastCurrencyUpdate: number;
 
     /**
+     * The time of the last fx update.
+     */
+    lastFxUpdate: number;
+
+    /**
      * The coin market cap currency EUR rate.
      */
     currentPriceEUR: number;

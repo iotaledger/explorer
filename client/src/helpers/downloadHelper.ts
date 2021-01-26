@@ -20,7 +20,8 @@ export class DownloadHelper {
      * @returns The data url.
      */
     public static createJsonDataUrl(object: unknown): string {
-        return `data:application/json;base64,${btoa(JSON.stringify(object, undefined, "\t"))}`;
+        const b64 = Converter.bytesToBase64(Converter.utf8ToBytes((JSON.stringify(object, undefined, "\t"))));
+        return `data:application/json;base64,${b64}`;
     }
 
     /**
@@ -29,8 +30,8 @@ export class DownloadHelper {
      * @returns The data url.
      */
     public static createBinaryDataUrl(data: Uint8Array): string {
-        const binaryString = Array.prototype.map.call(data, ch => String.fromCharCode(ch)).join("");
-        return `data:application/octet;base64,${btoa(binaryString)}`;
+        const b64 = Converter.bytesToBase64(data);
+        return `data:application/octet;base64,${b64}`;
     }
 
     /**
@@ -39,8 +40,8 @@ export class DownloadHelper {
      * @returns The data url.
      */
     public static createHexDataUrl(data: Uint8Array): string {
-        const hex = Converter.bytesToHex(data);
-        return `data:plain/text;base64,${btoa(hex)}`;
+        const b64 = Converter.bytesToBase64(Converter.utf8ToBytes(Converter.bytesToHex(data)));
+        return `data:plain/text;base64,${b64}`;
     }
 
     /**
@@ -49,7 +50,7 @@ export class DownloadHelper {
      * @returns The data url.
      */
     public static createBase64DataUrl(data: Uint8Array): string {
-        const base64String = btoa(Array.prototype.map.call(data, ch => String.fromCharCode(ch)).join(""));
-        return `data:plain/text;base64,${btoa(base64String)}`;
+        const b64 = Converter.bytesToBase64(Converter.utf8ToBytes(Converter.bytesToBase64(data)));
+        return `data:plain/text;base64,${b64}`;
     }
 }

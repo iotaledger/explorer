@@ -6,6 +6,7 @@ import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
+import JsonViewer from "../components/JsonViewer";
 import MessageButton from "../components/MessageButton";
 import Spinner from "../components/Spinner";
 import "./StreamsV0.scss";
@@ -271,7 +272,9 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                 >
                                                     {item.showRawMessageTrytes
                                                         ? item.rawMessageTrytes
-                                                        : item.message}
+                                                        : (item.messageType === "JSON"
+                                                            ? <JsonViewer json={item.message} />
+                                                            : item.message)}
                                                 </div>
                                                 {this.state.packets.length - 1 === idx && (
                                                     <React.Fragment>
@@ -324,10 +327,8 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
             }
         }
 
-        if (this.state.mode === "restricted") {
-            if (this.state.sideKey.trim().length === 0) {
-                sideKeyValidation = "You must specify a key for restricted mode.";
-            }
+        if (this.state.mode === "restricted" && this.state.sideKey.trim().length === 0) {
+            sideKeyValidation = "You must specify a key for restricted mode.";
         }
 
         this.setState({

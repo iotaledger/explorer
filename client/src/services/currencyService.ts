@@ -186,6 +186,11 @@ export class CurrencyService {
     };
 
     /**
+     * Milliseconds per minute.
+     */
+    private static readonly MS_PER_MINUTE: number = 60000;
+
+    /**
      * The network to use for transaction requests.
      */
     private readonly _settingsService: SettingsService;
@@ -234,7 +239,7 @@ export class CurrencyService {
         // if the data is out of date try and get some new info in the background
         // if it fails we don't care about the outcome as we already have data
         const lastUpdate = settings ? (settings.lastCurrencyUpdate ?? 0) : 0;
-        if (!hasData || Date.now() - lastUpdate > 3600000) {
+        if (!hasData || Date.now() - lastUpdate > (5 * CurrencyService.MS_PER_MINUTE)) {
             setTimeout(async () => this.loadData(callback), 0);
         }
     }

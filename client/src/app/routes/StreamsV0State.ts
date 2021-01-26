@@ -58,7 +58,7 @@ export interface StreamsV0State {
         /**
          * The decoded message.
          */
-        messageType?: string;
+        messageType?: "Trytes" | "ASCII" | "JSON";
 
         /**
          * Show the raw message trytes.

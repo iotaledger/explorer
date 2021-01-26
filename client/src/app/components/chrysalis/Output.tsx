@@ -1,8 +1,9 @@
 /* eslint-disable max-len */
-import { UnitsHelper } from "@iota/iota.js";
+import { SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { NameHelper } from "../../../helpers/nameHelper";
 import MessageButton from "../MessageButton";
 import { OutputProps } from "./OutputProps";
 import { OutputState } from "./OutputState";
@@ -32,7 +33,7 @@ class Output extends Component<OutputProps, OutputState> {
         return (
             <div className="output">
                 <div className="card--header">
-                    <h2>{this.props.output.output.type === 0 ? "Signature Locked" : ""} Output</h2>
+                    <h2>{NameHelper.getOutputTypeName(this.props.output.output.type)}</h2>
                 </div>
                 <div className="card--content">
                     <div className="card--label">
@@ -97,27 +98,28 @@ class Output extends Component<OutputProps, OutputState> {
                     <div className="card--value">
                         {this.props.output.isSpent ? "Yes" : "No"}
                     </div>
-                    {this.props.output.output.type === 0 && (
-                        <React.Fragment>
-                            <div className="card--label">
-                                Amount
-                            </div>
-                            <div className="card--value">
-                                <button
-                                    type="button"
-                                    onClick={() => this.setState(
-                                        {
-                                            formatFull: !this.state.formatFull
-                                        }
-                                    )}
-                                >
-                                    {this.state.formatFull
-                                        ? `${this.props.output.output.amount} i`
-                                        : UnitsHelper.formatBest(this.props.output.output.amount)}
-                                </button>
-                            </div>
-                        </React.Fragment>
-                    )}
+                    {(this.props.output.output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
+                        this.props.output.output.type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) && (
+                            <React.Fragment>
+                                <div className="card--label">
+                                    Amount
+                                </div>
+                                <div className="card--value">
+                                    <button
+                                        type="button"
+                                        onClick={() => this.setState(
+                                            {
+                                                formatFull: !this.state.formatFull
+                                            }
+                                        )}
+                                    >
+                                        {this.state.formatFull
+                                            ? `${this.props.output.output.amount} i`
+                                            : UnitsHelper.formatBest(this.props.output.output.amount)}
+                                    </button>
+                                </div>
+                            </React.Fragment>
+                        )}
                 </div>
             </div>
         );

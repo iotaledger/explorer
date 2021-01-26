@@ -1,4 +1,4 @@
-import { IMessageMetadata, serializeMessage, WriteStream } from "@iota/iota.js";
+import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, serializeMessage, TRANSACTION_PAYLOAD_TYPE, WriteStream } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { FaFileDownload } from "react-icons/fa";
 import { Link, RouteComponentProps } from "react-router-dom";
@@ -84,36 +84,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 message: result.message,
                 dataUrls
             }, async () => {
-                const details = await this._tangleCacheService.messageDetails(
-                    this.props.match.params.network, this.props.match.params.messageId, "all");
-
-                this.setState({
-                    metadata: details.metadata,
-                    childrenIds: details.childrenIds,
-                    validations: details.validations,
-                    messageTangleStatus: this.calculateStatus(details?.metadata),
-                    childrenBusy: false
-                });
-
-                if (!details?.metadata?.referencedByMilestoneIndex || !details?.metadata?.milestoneIndex) {
-                    this._timerId = setInterval(async () => {
-                        const details2 = await this._tangleCacheService.messageDetails(
-                            this.props.match.params.network, this.props.match.params.messageId, "metadata", true);
-
-                        this.setState({
-                            metadata: details2.metadata,
-                            validations: details2.validations,
-                            messageTangleStatus: this.calculateStatus(details2?.metadata)
-                        });
-
-                        if ((details2?.metadata?.referencedByMilestoneIndex ||
-                            details2?.metadata?.milestoneIndex) &&
-                            this._timerId) {
-                            clearInterval(this._timerId);
-                            this._timerId = undefined;
-                        }
-                    }, 10000);
-                }
+                await this.updateMessageDetails();
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network
@@ -127,7 +98,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
     public componentWillUnmount(): void {
         super.componentWillUnmount();
         if (this._timerId) {
-            clearInterval(this._timerId);
+            clearTimeout(this._timerId);
             this._timerId = undefined;
         }
     }
@@ -244,17 +215,13 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 <div className="card--value row middle">
                                                     <InclusionState state={this.state.metadata?.ledgerInclusionState} />
                                                 </div>
-                                                {this.state.validations && this.state.validations.length > 0 && (
+                                                {this.state.conflictReason && (
                                                     <React.Fragment>
                                                         <div className="card--label">
-                                                            Conflicts
+                                                            Conflict Reason
                                                         </div>
-                                                        <div className="card--value row middle">
-                                                            <span className="margin-r-t">
-                                                                {this.state.validations.map((v, idx) => (
-                                                                    <div key={idx}>{v}</div>
-                                                                ))}
-                                                            </span>
+                                                        <div className="card--value">
+                                                            {this.state.conflictReason}
                                                         </div>
                                                     </React.Fragment>
                                                 )}
@@ -264,7 +231,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 </div>
                                 {this.state.message?.payload && (
                                     <React.Fragment>
-                                        {this.state.message.payload.type === 0 && (
+                                        {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE && (
                                             <div className="transaction-payload-wrapper">
                                                 <TransactionPayload
                                                     network={this.props.match.params.network}
@@ -273,7 +240,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 />
                                             </div>
                                         )}
-                                        {this.state.message.payload.type === 1 && (
+                                        {this.state.message.payload.type === MILESTONE_PAYLOAD_TYPE && (
                                             <div className="card">
                                                 <MilestonePayload
                                                     network={this.props.match.params.network}
@@ -282,7 +249,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 />
                                             </div>
                                         )}
-                                        {this.state.message.payload.type === 2 && (
+                                        {this.state.message.payload.type === INDEXATION_PAYLOAD_TYPE && (
                                             <div className="card">
                                                 <IndexationPayload
                                                     network={this.props.match.params.network}
@@ -292,7 +259,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             </div>
                                         )}
 
-                                        {this.state.message.payload.type === 0 &&
+                                        {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE &&
                                             this.state.message.payload.essence.payload && (
                                                 <div className="card">
                                                     <IndexationPayload
@@ -377,6 +344,29 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
     }
 
     /**
+     * Update the message details.
+     */
+    private async updateMessageDetails(): Promise<void> {
+        const details = await this._tangleCacheService.messageDetails(
+            this.props.match.params.network, this.props.match.params.messageId);
+
+        this.setState({
+            metadata: details?.metadata,
+            conflictReason: this.calculateConflictReason(details?.metadata),
+            childrenIds: details?.childrenIds && details?.childrenIds.length > 0
+                ? details?.childrenIds : (this.state.childrenIds ?? []),
+            messageTangleStatus: this.calculateStatus(details?.metadata),
+            childrenBusy: false
+        });
+
+        if (!details?.metadata?.referencedByMilestoneIndex) {
+            this._timerId = setTimeout(async () => {
+                await this.updateMessageDetails();
+            }, 10000);
+        }
+    }
+
+    /**
      * Calculate the status for the message.
      * @param metadata The metadata to calculate the status from.
      * @returns The message status.
@@ -395,6 +385,23 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
         }
 
         return messageTangleStatus;
+    }
+
+    /**
+     * Calculate the conflict reason for the message.
+     * @param metadata The metadata to calculate the conflict reason from.
+     * @returns The conflict reason.
+     */
+    private calculateConflictReason(metadata?: IMessageMetadata): string {
+        let conflictReason: string = "";
+
+        if (metadata?.ledgerInclusionState === "conflicting") {
+            conflictReason = metadata.conflictReason && CONFLICT_REASON_STRINGS[metadata.conflictReason]
+                ? CONFLICT_REASON_STRINGS[metadata.conflictReason]
+                : "The reason for the conflict is unknown";
+        }
+
+        return conflictReason;
     }
 }
 

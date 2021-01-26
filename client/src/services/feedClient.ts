@@ -1,4 +1,4 @@
-import { Blake2b, Converter, deserializeMessage, ReadStream } from "@iota/iota.js";
+import { Blake2b, Converter, deserializeMessage, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, ReadStream, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import SocketIOClient from "socket.io-client";
 import { ServiceFactory } from "../factories/serviceFactory";
@@ -280,11 +280,18 @@ export class FeedClient {
             const spanS = (this._ips.end - this._ips.start) / 1000;
             if (spanS > 0) {
                 if (ips.itemCount.length > 0) {
-                    const ipsTotal = ips.itemCount.reduce((a, b) => a + b, 0);
+                    let ipsTotal = 0;
+                    for (const i of ips.itemCount) {
+                        ipsTotal += i;
+                    }
                     itemsPerSecond = ipsTotal / spanS;
                 }
                 if (ips.confirmedItemCount.length > 0) {
-                    const cipsTotal = ips.confirmedItemCount.reduce((a, b) => a + b, 0);
+                    let cipsTotal = 0;
+                    for (const i of ips.confirmedItemCount) {
+                        cipsTotal += i;
+                    }
+
                     confirmedPerSecond = cipsTotal / spanS;
                 }
             }
@@ -313,17 +320,23 @@ export class FeedClient {
             try {
                 message = deserializeMessage(new ReadStream(bytes));
 
-                if (message.payload?.type === 0) {
+                if (message.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
                     payloadType = "Transaction";
-                    value = message.payload.essence.outputs.reduce((total, output) => total + output.amount, 0);
+                    value = 0;
+
+                    for (const output of message.payload.essence.outputs) {
+                        if (output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE) {
+                            value += output.amount;
+                        }
+                    }
 
                     if (message.payload.essence.payload) {
                         properties.Index = message.payload.essence.payload.index;
                     }
-                } else if (message.payload?.type === 1) {
+                } else if (message.payload?.type === MILESTONE_PAYLOAD_TYPE) {
                     payloadType = "MS";
                     properties.MS = message.payload.index;
-                } else if (message.payload?.type === 2) {
+                } else if (message.payload?.type === INDEXATION_PAYLOAD_TYPE) {
                     payloadType = "Index";
                     properties.Index = message.payload.index;
                 }

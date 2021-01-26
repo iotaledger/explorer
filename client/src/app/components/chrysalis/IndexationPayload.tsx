@@ -3,7 +3,7 @@ import { Converter } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { TextHelper } from "../../../helpers/textHelper";
+import JsonViewer from "../JsonViewer";
 import MessageButton from "../MessageButton";
 import { IndexationPayloadProps } from "./IndexationPayloadProps";
 import { IndexationPayloadState } from "./IndexationPayloadState";
@@ -19,24 +19,25 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
     constructor(props: IndexationPayloadProps) {
         super(props);
 
-        const match = props.payload.data.match(/.{1,2}/g);
+        if (props.payload.data) {
+            const match = props.payload.data.match(/.{1,2}/g);
 
-        const ascii = Converter.hexToAscii(props.payload.data);
+            const utf8 = Converter.hexToUtf8(props.payload.data);
 
-        let json;
+            let json;
 
-        try {
-            const nonAscii = TextHelper.decodeNonASCII(ascii);
-            if (nonAscii) {
-                json = JSON.stringify(JSON.parse(nonAscii), undefined, "\t");
-            }
-        } catch { }
+            try {
+                json = JSON.stringify(JSON.parse(utf8), undefined, "  ");
+            } catch { }
 
-        this.state = {
-            hex: match ? match.join(" ") : props.payload.data,
-            ascii,
-            json
-        };
+            this.state = {
+                hex: match ? match.join(" ") : props.payload.data,
+                utf8,
+                json
+            };
+        } else {
+            this.state = {};
+        }
     }
 
     /**
@@ -71,20 +72,20 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             {this.props.payload.index}
                         </Link>
                     </div>
-                    {!this.state.json && (
+                    {!this.state.json && this.state.utf8 && (
                         <React.Fragment>
                             <div className="card--label row middle">
-                                <span className="margin-r-t">Data ASCII</span>
+                                <span className="margin-r-t">Data Text</span>
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(
-                                        this.state.ascii
+                                        this.state.utf8
                                     )}
                                     buttonType="copy"
                                     labelPosition="right"
                                 />
                             </div>
-                            <div className="card--value card--value-textarea card--value-textarea__ascii">
-                                {this.state.ascii}
+                            <div className="card--value card--value-textarea card--value-textarea__utf8">
+                                {this.state.utf8}
                             </div>
                         </React.Fragment>
                     )}
@@ -100,24 +101,30 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                                     labelPosition="right"
                                 />
                             </div>
-                            <div className="card--value card--value-textarea card--value-textarea__json">
-                                {this.state.json}
+                            <div
+                                className="card--value card--value-textarea card--value-textarea__json"
+                            >
+                                <JsonViewer json={this.state.json} />
                             </div>
                         </React.Fragment>
                     )}
-                    <div className="card--label row middle">
-                        <span className="margin-r-t">Data Hex</span>
-                        <MessageButton
-                            onClick={() => ClipboardHelper.copy(
-                                this.state.hex
-                            )}
-                            buttonType="copy"
-                            labelPosition="right"
-                        />
-                    </div>
-                    <div className="card--value card--value-textarea card--value-textarea__hex">
-                        {this.state.hex}
-                    </div>
+                    {this.state.hex && (
+                        <React.Fragment>
+                            <div className="card--label row middle">
+                                <span className="margin-r-t">Data Hex</span>
+                                <MessageButton
+                                    onClick={() => ClipboardHelper.copy(
+                                        this.state.hex
+                                    )}
+                                    buttonType="copy"
+                                    labelPosition="right"
+                                />
+                            </div>
+                            <div className="card--value card--value-textarea card--value-textarea__hex">
+                                {this.state.hex}
+                            </div>
+                        </React.Fragment>
+                    )}
                 </div>
             </div>
         );

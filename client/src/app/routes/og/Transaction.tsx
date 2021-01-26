@@ -18,6 +18,7 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Confirmation from "../../components/Confirmation";
 import CurrencyButton from "../../components/CurrencyButton";
+import JsonViewer from "../../components/JsonViewer";
 import MessageButton from "../../components/MessageButton";
 import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
@@ -499,7 +500,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         >
                                                             {this.state.showRawMessageTrytes
                                                                 ? this.state.rawMessageTrytes
-                                                                : this.state.message}
+                                                                : (this.state.messageType === "JSON"
+                                                                    ? <JsonViewer json={this.state.message} />
+                                                                    : this.state.message)}
                                                         </div>
                                                         {this.state.messageSpan && (
                                                             <div className="card--value">
@@ -725,31 +728,37 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                             const isBundleValid = this.state.details.confirmationState === "confirmed"
                                 ? true
                                 : isBundle(thisGroup.map(t => t.tx));
-                            const isConsistent = thisGroup.map(tx => tx.tx.value).reduce((a, b) => a + b, 0) === 0;
-                            let combinedMessages = thisGroup.map(t => t.tx.signatureMessageFragment).join("");
-
-                            try {
-                                const parsedStreamsV0 = parseMessage(combinedMessages, details.tx.address);
-                                if (parsedStreamsV0.message) {
-                                    combinedMessages = parsedStreamsV0.message;
-                                    streamsV0Root = details.tx.address;
-                                }
-                            } catch { }
-
-                            const spanMessage = TrytesHelper.decodeMessage(combinedMessages);
+                            let total = 0;
+                            for (const g of thisGroup) {
+                                total += g.tx.value;
+                            }
+                            const isConsistent = total === 0;
 
                             let message = this.state.message;
                             let messageType = this.state.messageType;
                             let messageSpan = this.state.messageSpan;
                             let rawMessageTrytes = this.state.rawMessageTrytes;
+                            if (thisGroup.length < 10) {
+                                let combinedMessages = thisGroup.map(t => t.tx.signatureMessageFragment).join("");
 
-                            if ((spanMessage.messageType === "ASCII" ||
-                                spanMessage.messageType === "JSON") &&
-                                spanMessage.message !== this.state.message) {
-                                message = spanMessage.message;
-                                messageType = spanMessage.messageType;
-                                rawMessageTrytes = combinedMessages;
-                                messageSpan = true;
+                                try {
+                                    const parsedStreamsV0 = parseMessage(combinedMessages, details.tx.address);
+                                    if (parsedStreamsV0.message) {
+                                        combinedMessages = parsedStreamsV0.message;
+                                        streamsV0Root = details.tx.address;
+                                    }
+                                } catch { }
+
+                                const spanMessage = TrytesHelper.decodeMessage(combinedMessages);
+
+                                if ((spanMessage.messageType === "ASCII" ||
+                                    spanMessage.messageType === "JSON") &&
+                                    spanMessage.message !== this.state.message) {
+                                    message = spanMessage.message;
+                                    messageType = spanMessage.messageType;
+                                    rawMessageTrytes = combinedMessages;
+                                    messageSpan = true;
+                                }
                             }
 
                             if (isBundleValid && isConsistent && this.state.details.confirmationState === "pending") {
@@ -834,19 +843,17 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
         const transactions = await this._tangleCacheService.getTransactions(
             this.props.match.params.network, [this.props.match.params.hash], true);
 
-        if (transactions && transactions.length > 0) {
-            if (transactions[0].confirmationState === "confirmed") {
-                if (this._timerId) {
-                    clearInterval(this._timerId);
-                    this._timerId = undefined;
-                }
-                this.setState({
-                    details: {
-                        ...transactions[0],
-                        confirmationState: "confirmed"
-                    }
-                });
+        if (transactions && transactions.length > 0 && transactions[0].confirmationState === "confirmed") {
+            if (this._timerId) {
+                clearInterval(this._timerId);
+                this._timerId = undefined;
             }
+            this.setState({
+                details: {
+                    ...transactions[0],
+                    confirmationState: "confirmed"
+                }
+            });
         }
     }
 
