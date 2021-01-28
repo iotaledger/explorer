@@ -21,6 +21,20 @@ export interface MarketsState extends CurrencyState {
     }[];
 
     /**
+     * The values for the day graph.
+     */
+    dayPrices: {
+        /**
+         * Value to display.
+         */
+        x: number;
+        /**
+         * Value to display.
+         */
+        y: number;
+    }[];
+
+    /**
      * The range value for the graph.
      */
     pricesRange?: {
@@ -38,6 +52,20 @@ export interface MarketsState extends CurrencyState {
      * The values for the graph.
      */
     volumes: {
+        /**
+         * Value to display.
+         */
+        x: number;
+        /**
+         * Value to display.
+         */
+        y: number;
+    }[];
+
+    /**
+     * The values for the graph.
+     */
+    dayVolumes: {
         /**
          * Value to display.
          */
