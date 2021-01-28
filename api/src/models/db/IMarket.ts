@@ -25,4 +25,26 @@ export interface IMarket {
          */
         v: number;
     }[];
+
+    /**
+     * Market data for the last 24 hours.
+     */
+    day: {
+        /**
+         * The timestamp.
+         */
+        t: number;
+        /**
+         * The market price.
+         */
+        p: number;
+        /**
+         * The market cap.
+         */
+        m: number;
+        /**
+         * 24h Market volume.
+         */
+        v: number;
+    }[];
 }

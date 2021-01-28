@@ -79,12 +79,12 @@ export class CurrencyService {
                 const now = new Date();
                 const nowMs = now.getTime();
 
-                // If we have no state, an update over 15 minutes old, the day has changed, or force update
+                // If we have no state, an update over 5 minutes old, the day has changed, or force update
                 if (!currentState ||
                     nowMs - lastCurrencyUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 5) ||
                     (lastCurrencyUpdate.getDate() !== now.getDate()) ||
                     force) {
-                    // Update FX rates every 4 hours
+                    // Update FX rates every 4 hours so we dont hit rate limit
                     if (nowMs - lastFxUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 240)) {
                         if ((this._config.fixerApiKey || "FIXER-API-KEY") !== "FIXER-API-KEY") {
                             log += "Updating FX Rates\n";
@@ -191,6 +191,13 @@ export class CurrencyService {
         let marketCapEUR;
         let volumeEUR;
 
+        const dayData: {
+            t: number;
+            p: number;
+            m: number;
+            v: number;
+        }[] = [];
+
         const coinGeckoClient = new CoinGeckoClient();
         if (isToday) {
             const coinMarkets = await coinGeckoClient.coinMarkets("iota", "eur");
@@ -202,6 +209,22 @@ export class CurrencyService {
             }
 
             log += `Markets ${JSON.stringify(coinMarkets)}\n`;
+
+            const coinMarketChart = await coinGeckoClient.coinMarketChartDay("iota", "eur");
+
+            if (coinMarketChart?.prices &&
+                coinMarketChart.market_caps &&
+                coinMarketChart.total_volumes) {
+                for (let i = 0; i < coinMarketChart.prices.length; i++) {
+                    dayData.push({
+                        t: coinMarketChart.prices[i][0],
+                        p: coinMarketChart.prices[i][1],
+                        m: coinMarketChart.market_caps[i][1],
+                        v: coinMarketChart.total_volumes[i][1]
+                    });
+                }
+                log += `Market Chart ${JSON.stringify(dayData)}\n`;
+            }
         } else {
             const coinHistory = await coinGeckoClient.coinsHistory("iota", date);
 
@@ -227,21 +250,35 @@ export class CurrencyService {
                 if (!market) {
                     market = {
                         currency: currency.toLowerCase(),
-                        data: []
+                        data: [],
+                        day: []
                     };
                     markets.push(market);
                 }
+
+                const conversionRate = currentState.exchangeRatesEUR[currency];
+
                 const data = {
                     d: fullDate,
-                    p: priceEUR * currentState.exchangeRatesEUR[currency],
-                    m: marketCapEUR * currentState.exchangeRatesEUR[currency],
-                    v: volumeEUR * currentState.exchangeRatesEUR[currency]
+                    p: priceEUR * conversionRate,
+                    m: marketCapEUR * conversionRate,
+                    v: volumeEUR * conversionRate
                 };
+
                 const idx = market.data.findIndex(d => d.d === fullDate);
                 if (idx >= 0) {
                     market.data[idx] = data;
                 } else {
                     market.data.push(data);
+                }
+
+                if (dayData.length > 0) {
+                    market.day = dayData.map(d => ({
+                        t: d.t,
+                        p: d.p * conversionRate,
+                        m: d.m * conversionRate,
+                        v: d.v * conversionRate
+                    }));
                 }
             }
         }

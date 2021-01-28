@@ -1,4 +1,5 @@
 import { ICoinsHistoryResponse } from "../models/clients/coinGecko/ICoinsHistoryResponse";
+import { ICoinsMarketChartResponse } from "../models/clients/coinGecko/ICoinsMarketChartResponse";
 import { ICoinsMarketsResponse } from "../models/clients/coinGecko/ICoinsMarketsResponse";
 import { FetchHelper } from "../utils/fetchHelper";
 
@@ -58,6 +59,28 @@ export class CoinGeckoClient {
                 this._endpoint,
                 `coins/markets?vs_currency=${
                     currency}&ids=${coin}&order=market_cap_desc&per_page=100&page=1&sparkline=false`,
+                "get"
+            );
+        } catch (err) {
+            console.error("Coin Gecko", err);
+        }
+
+        return response;
+    }
+
+    /**
+     * Get the market chart data.
+     * @param coin The coin to get the price for.
+     * @param currency The currency to get the price for.
+     * @returns The price.
+     */
+    public async coinMarketChartDay(coin: string, currency: string): Promise<ICoinsMarketChartResponse | undefined> {
+        let response: ICoinsMarketChartResponse | undefined;
+
+        try {
+            response = await FetchHelper.json<unknown, ICoinsMarketChartResponse>(
+                this._endpoint,
+                `coins/${coin}/market_chart?vs_currency=${currency}&days=1&interval=hourly`,
                 "get"
             );
         } catch (err) {

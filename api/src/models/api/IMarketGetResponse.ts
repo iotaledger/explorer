@@ -22,4 +22,26 @@ export interface IMarketGetResponse extends IResponse {
          */
         v: number;
     }[];
+
+    /**
+     * Market data every 5 minutes for the last day.
+     */
+    day?: {
+        /**
+         * The timestamp.
+         */
+        t: number;
+        /**
+         * The market price.
+         */
+        p: number;
+        /**
+         * The market cap.
+         */
+        m: number;
+        /**
+         * Market volume.
+         */
+        v: number;
+    }[];
 }
