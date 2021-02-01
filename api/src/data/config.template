@@ -9,5 +9,6 @@
     "allowedDomains": [
         "ALLOWED-DOMAIN"
     ],
-    "verboseLogging": VERBOSE-LOGGING
+    "verboseLogging": VERBOSE-LOGGING,
+    "privateKeyEd25519": "PRIVATE-KEY-ED25519"
 }

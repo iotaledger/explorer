@@ -21,6 +21,7 @@ jobs:
       CONFIG_DB_TABLE_PREFIX: ${{ secrets.STAGING_CONFIG_DB_TABLE_PREFIX }}
       CONFIG_ALLOWED_DOMAIN: ${{ secrets.STAGING_CONFIG_ALLOWED_DOMAIN }}
       CONFIG_VERBOSE_LOGGING: ${{ secrets.STAGING_VERBOSE_LOGGING }}
+      CONFIG_PRIVATE_KEY_ED25519: ${{ secrets.STAGING_PRIVATE_KEY_ED25519 }}
       GCP_SERVICE_ID: ${{ secrets.GCP_STAGING_SERVICE_ID }}
       GCP_PROD_SERVICE_ID: ${{ secrets.GCP_PROD_SERVICE_ID }}
       GCP_PROD_DOMAIN: ${{ secrets.GCP_PROD_DOMAIN }}
@@ -42,6 +43,7 @@ jobs:
           sed -i 's/DB-TABLE-PREFIX/${{ env.CONFIG_DB_TABLE_PREFIX }}/g' config.$CONFIG_ID.json
           sed -i 's/ALLOWED-DOMAIN/${{ env.CONFIG_ALLOWED_DOMAIN }}/g' config.$CONFIG_ID.json
           sed -i 's/VERBOSE-LOGGING/${{ env.CONFIG_VERBOSE_LOGGING }}/g' config.$CONFIG_ID.json
+          sed -i 's/PRIVATE-KEY-ED25519/${{ env.CONFIG_PRIVATE_KEY_ED25519 }}/g' config.$CONFIG_ID.json
       - name: GCP Config
         run: |
           cd api

@@ -1,6 +1,7 @@
 import { IResponse } from "./IResponse";
+import { ISignedResponse } from "./ISignedResponse";
 
-export interface IMarketGetResponse extends IResponse {
+export interface IMarketGetResponse extends IResponse, ISignedResponse {
     /**
      * Market data by date.
      */

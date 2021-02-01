@@ -1,7 +1,9 @@
+import { Converter, Ed25519 } from "@iota/iota.js";
 import path from "path";
 import { inspect } from "util";
 import { IDataResponse } from "../models/api/IDataResponse";
 import { IResponse } from "../models/api/IResponse";
+import { ISignedResponse } from "../models/api/ISignedResponse";
 import { IHttpRequest } from "../models/app/IHttpRequest";
 import { IHttpResponse } from "../models/app/IHttpResponse";
 import { IRoute } from "../models/app/IRoute";
@@ -137,6 +139,13 @@ export async function executeRoute(
     if (verboseLogging || (response?.error)) {
         console.log(`<=== duration: ${Date.now() - start}ms`);
         console.log(inspect(response, false, undefined, false));
+    }
+
+    if (route.sign && config.privateKeyEd25519 && config.privateKeyEd25519.length === 128) {
+        (response as ISignedResponse).signature =
+            Converter.bytesToHex(Ed25519.sign(
+                Converter.hexToBytes(config.privateKeyEd25519),
+                Converter.utf8ToBytes(JSON.stringify(response))));
     }
 
     if (route.dataResponse) {

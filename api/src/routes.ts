@@ -17,7 +17,7 @@ export const routes: IRoute[] = [
     },
     { path: "/init", method: "get", func: "init" },
     { path: "/networks", method: "get", folder: "networks", func: "get" },
-    { path: "/currencies", method: "get", folder: "currency", func: "get" },
+    { path: "/currencies", method: "get", folder: "currency", func: "get", sign: true },
     { path: "/transactions/:network/:hash", method: "get", folder: "og/transactions", func: "get" },
     { path: "/transactions/:network/:hash/action/:action", method: "get", folder: "og/transactions", func: "action" },
     { path: "/trytes/:network", method: "post", folder: "og/trytes", func: "post" },
@@ -25,6 +25,6 @@ export const routes: IRoute[] = [
     { path: "/search/:network/:query", method: "get", folder: "chrysalis", func: "search" },
     { path: "/message/:network/:messageId", method: "get", folder: "chrysalis/message", func: "get" },
     { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
-    { path: "/stats/:network", method: "get", folder: "stats", func: "get" },
-    { path: "/market/:currency", method: "get", folder: "market", func: "get" }
+    { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
+    { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true }
 ];
