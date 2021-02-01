@@ -51,7 +51,9 @@ class Markets extends Currency<unknown, MarketsState> {
             currencies: [],
             currency: "USD",
             prices: [],
+            dayPrices: [],
             volumes: [],
+            dayVolumes: [],
             selectedRange: "all",
             ranges: [
                 {
@@ -77,6 +79,14 @@ class Markets extends Currency<unknown, MarketsState> {
                 {
                     value: "last14days",
                     label: "Last 14 Days"
+                },
+                {
+                    value: "last7days",
+                    label: "Last 7 Days"
+                },
+                {
+                    value: "24hours",
+                    label: "24 Hours"
                 }
             ],
             marketCapCurrency: "--",
@@ -114,7 +124,10 @@ class Markets extends Currency<unknown, MarketsState> {
             axisX: {
                 type: Chartist.FixedScaleAxis,
                 divisor: 10,
-                labelInterpolationFnc: (value: number) => moment(value * 1000).format("DD MMM YY")
+                labelInterpolationFnc: (value: number) => (
+                    this.state.selectedRange === "24hours"
+                        ? moment(value * 1000).format("HH:MM")
+                        : moment(value * 1000).format("DD MMM YY"))
             },
             axisY: {
                 type: Chartist.AutoScaleAxis
@@ -127,7 +140,10 @@ class Markets extends Currency<unknown, MarketsState> {
             axisX: {
                 type: Chartist.FixedScaleAxis,
                 divisor: 10,
-                labelInterpolationFnc: (value: number) => moment(value * 1000).format("DD MMM YY")
+                labelInterpolationFnc: (value: number) => (
+                    this.state.selectedRange === "24hours"
+                        ? moment(value * 1000).format("HH:MM")
+                        : moment(value * 1000).format("DD MMM YY"))
             },
             axisY: {
                 type: Chartist.AutoScaleAxis,
@@ -342,7 +358,7 @@ class Markets extends Currency<unknown, MarketsState> {
                         currency: this.state.currency.toLowerCase()
                     });
 
-                    if (markets.data) {
+                    if (markets.data && markets.day) {
                         let maxPrice = 0;
                         let maxPriceDate = 0;
                         let minPrice = Number.MAX_VALUE;
@@ -383,6 +399,14 @@ class Markets extends Currency<unknown, MarketsState> {
                                     y: m.v
                                 }
                             )),
+                            dayPrices: markets.day.map(m => ({
+                                x: m.t / 1000,
+                                y: m.p
+                            })),
+                            dayVolumes: markets.day.map(m => ({
+                                x: m.t / 1000,
+                                y: m.v
+                            })),
                             priceAllTimeHigh:
                                 `${this._currencyService.formatCurrency(this._currencyData, maxPrice, 3, 8)
                                 } on ${DateHelper.formatNoTime(maxPriceDate)
@@ -413,7 +437,19 @@ class Markets extends Currency<unknown, MarketsState> {
      * @param range The range.
      */
     private setRange(range: string): void {
-        if (range === "last14days") {
+        if (range === "24hours") {
+            this.setState({
+                selectedRange: range,
+                pricesRange: this.state.dayPrices,
+                volumesRange: this.state.dayVolumes
+            });
+        } else if (range === "last7days") {
+            this.setState({
+                selectedRange: range,
+                pricesRange: this.state.prices.slice(-7),
+                volumesRange: this.state.volumes.slice(-7)
+            });
+        } else if (range === "last14days") {
             this.setState({
                 selectedRange: range,
                 pricesRange: this.state.prices.slice(-14),
@@ -546,7 +582,7 @@ class Markets extends Currency<unknown, MarketsState> {
                     if (hit !== undefined) {
                         toolTips[chartIndex].className = "tooltip";
                         toolTips[chartIndex].innerHTML = `${moment(this._points[chartIndex][hit].value.x * 1000)
-                            .format("LL")
+                            .format(this.state.selectedRange === "24hours" ? "HH:MM" : "LL")
                             }<br/>${this._currencyService.formatCurrency(
                                 this._currencyData,
                                 this._points[chartIndex][hit].value.y, decimalPlaces, maxDecimalPlaces)}`;

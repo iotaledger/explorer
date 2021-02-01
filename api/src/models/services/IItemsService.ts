@@ -1,4 +1,5 @@
 import { IFeedSubscriptionMessage } from "../api/IFeedSubscriptionMessage";
+import { IStatistics } from "./IStatistics";
 
 /**
  * Interface definition for an items service.
@@ -26,22 +27,5 @@ export interface IItemsService {
      * Get the current stats.
      * @returns The statistics for the network.
      */
-    getStats(): {
-        /**
-         * The items per second.
-         */
-        itemsPerSecond: number;
-        /**
-         * The confirmed items per second.
-         */
-        confirmedItemsPerSecond: number;
-        /**
-         * The confirmed rate.
-         */
-        confirmationRate: number;
-        /**
-         * The latest milestone index.
-         */
-        latestMilestoneIndex?: number;
-    };
+    getStats(): IStatistics;
 }

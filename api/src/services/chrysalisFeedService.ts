@@ -43,7 +43,7 @@ export class ChrysalisFeedService implements IFeedService {
         return this._mqttClient.milestonesLatest(async (topic, message) => {
             try {
                 const ms = await this._apiClient.milestone(message.index);
-                callback(message.index, ms.messageId, message.timestamp);
+                callback(message.index, ms.messageId, message.timestamp * 1000);
             } catch (err) {
                 console.error(err);
             }
