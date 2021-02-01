@@ -76,25 +76,30 @@ export class ChronicleClient {
                 milestones: []
             };
 
-            const req = {
-                command: "getTrytes",
-                hashes: request.hashes
-            };
+            const CHUNK_SIZE = 100;
+            const numChunks = Math.ceil(request.hashes.length / CHUNK_SIZE);
 
-            const resp = await FetchHelper.json<unknown, IGetTrytesResponse>(
-                this._endpoint,
-                "",
-                "post",
-                req,
-                headers
-            );
+            for (let i = 0; i < numChunks; i++) {
+                const req = {
+                    command: "getTrytes",
+                    hashes: request.hashes.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE)
+                };
 
-            if (resp.error) {
-                console.error("Chronicle Error", resp.error);
-                console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
-            } else {
-                response.trytes = response.trytes.concat(resp.trytes);
-                response.milestones = response.milestones.concat(resp.milestones);
+                const resp = await FetchHelper.json<unknown, IGetTrytesResponse>(
+                    this._endpoint,
+                    "",
+                    "post",
+                    req,
+                    headers
+                );
+
+                if (resp.error) {
+                    console.error("Chronicle Error", resp.error);
+                    console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
+                } else {
+                    response.trytes = response.trytes.concat(resp.trytes);
+                    response.milestones = response.milestones.concat(resp.milestones);
+                }
             }
 
             return response;
