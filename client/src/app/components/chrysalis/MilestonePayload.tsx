@@ -48,7 +48,7 @@ class MilestonePayload extends Component<MilestonePayloadProps> {
                             )
                         )}
                     </div>
-                    {this.props.payload.parents.map((parent, idx) => (
+                    {this.props.payload.parentMessageIds.map((parent, idx) => (
                         <React.Fragment key={idx}>
                             <div className="card--label">
                                 Parent Message {idx + 1}

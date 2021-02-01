@@ -347,7 +347,7 @@ export class FeedClient {
             return {
                 id: messageId,
                 value,
-                parents: message?.parents ?? [],
+                parents: message?.parentMessageIds ?? [],
                 properties,
                 payloadType
             };

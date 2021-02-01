@@ -148,7 +148,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 labelPosition="top"
                                             />
                                         </div>
-                                        {this.state.message?.parents?.map((parent, idx) => (
+                                        {this.state.message?.parentMessageIds?.map((parent, idx) => (
                                             <React.Fragment key={idx}>
                                                 <div className="card--label">
                                                     Parent Message {idx + 1}
