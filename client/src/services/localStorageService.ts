@@ -56,9 +56,9 @@ export class LocalStorageService {
                             keysToRemove.push(key);
                         }
                     }
-                    keysToRemove.forEach(key => {
+                    for (const key of keysToRemove) {
                         window.localStorage.removeItem(key);
-                    });
+                    }
                 } else {
                     window.localStorage.clear();
                 }

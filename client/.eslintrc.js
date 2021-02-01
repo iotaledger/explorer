@@ -1454,6 +1454,9 @@ module.exports = {
         "unicorn/no-array-instanceof": [
             "error"
         ],
+        "unicorn/no-array-push-push": [
+            "off"
+        ],
         "unicorn/no-console-spaces": [
             "error"
         ],
@@ -1548,7 +1551,7 @@ module.exports = {
             "error"
         ],
         "unicorn/prefer-spread": [
-            "error"
+            "off"
         ],
         "unicorn/prefer-starts-ends-with": [
             "error"
