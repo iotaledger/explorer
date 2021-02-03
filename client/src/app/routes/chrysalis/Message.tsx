@@ -11,6 +11,7 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import IndexationPayload from "../../components/chrysalis/IndexationPayload";
 import MilestonePayload from "../../components/chrysalis/MilestonePayload";
+import ReceiptPayload from "../../components/chrysalis/ReceiptPayload";
 import TransactionPayload from "../../components/chrysalis/TransactionPayload";
 import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
@@ -147,65 +148,38 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 labelPosition="top"
                                             />
                                         </div>
-                                        {this.state.message && (
-                                            <React.Fragment>
+                                        {this.state.message?.parentMessageIds?.map((parent, idx) => (
+                                            <React.Fragment key={idx}>
                                                 <div className="card--label">
-                                                    Parent Message 1
+                                                    Parent Message {idx + 1}
                                                 </div>
                                                 <div className="card--value row middle">
-                                                    {this.state.message?.parent1MessageId !== "0".repeat(64) && (
+                                                    {parent !== "0".repeat(64) && (
                                                         <React.Fragment>
                                                             <Link
                                                                 className="margin-r-t"
                                                                 to={
                                                                     `/${this.props.match.params.network
-                                                                    }/message/${this.state.message?.parent1MessageId}`
+                                                                    }/message/${parent}`
                                                                 }
                                                             >
-                                                                {this.state.message?.parent1MessageId}
+                                                                {parent}
                                                             </Link>
                                                             <MessageButton
                                                                 onClick={() => ClipboardHelper.copy(
-                                                                    this.state.message?.parent1MessageId
+                                                                    parent
                                                                 )}
                                                                 buttonType="copy"
                                                                 labelPosition="top"
                                                             />
                                                         </React.Fragment>
                                                     )}
-                                                    {this.state.message?.parent1MessageId === "0".repeat(64) && (
-                                                        <span>Genesis</span>
-                                                    )}
-                                                </div>
-                                                <div className="card--label">
-                                                    Parent Message 2
-                                                </div>
-                                                <div className="card--value row middle">
-                                                    {this.state.message?.parent2MessageId !== "0".repeat(64) && (
-                                                        <React.Fragment>
-                                                            <Link
-                                                                className="margin-r-t"
-                                                                to={
-                                                                    `/${this.props.match.params.network
-                                                                    }/message/${this.state.message?.parent2MessageId}`
-                                                                }
-                                                            >
-                                                                {this.state.message?.parent2MessageId}
-                                                            </Link>
-                                                            <MessageButton
-                                                                onClick={() => ClipboardHelper.copy(
-                                                                    this.state.message?.parent2MessageId
-                                                                )}
-                                                                buttonType="copy"
-                                                                labelPosition="top"
-                                                            />
-                                                        </React.Fragment>
-                                                    )}
-                                                    {this.state.message?.parent2MessageId === "0".repeat(64) && (
+                                                    {parent === "0".repeat(64) && (
                                                         <span>Genesis</span>
                                                     )}
                                                 </div>
                                             </React.Fragment>
+                                        )
                                         )}
                                         <div className="card--label">
                                             Nonce
@@ -259,22 +233,44 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 {this.state.message?.payload && (
                                     <React.Fragment>
                                         {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE && (
-                                            <div className="transaction-payload-wrapper">
-                                                <TransactionPayload
-                                                    network={this.props.match.params.network}
-                                                    history={this.props.history}
-                                                    payload={this.state.message.payload}
-                                                />
-                                            </div>
+                                            <React.Fragment>
+                                                <div className="transaction-payload-wrapper">
+                                                    <TransactionPayload
+                                                        network={this.props.match.params.network}
+                                                        history={this.props.history}
+                                                        payload={this.state.message.payload}
+                                                    />
+                                                </div>
+
+                                                {this.state.message.payload.essence.payload && (
+                                                    <div className="card">
+                                                        <IndexationPayload
+                                                            network={this.props.match.params.network}
+                                                            history={this.props.history}
+                                                            payload={this.state.message.payload.essence.payload}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </React.Fragment>
                                         )}
                                         {this.state.message.payload.type === MILESTONE_PAYLOAD_TYPE && (
-                                            <div className="card">
-                                                <MilestonePayload
-                                                    network={this.props.match.params.network}
-                                                    history={this.props.history}
-                                                    payload={this.state.message.payload}
-                                                />
-                                            </div>
+                                            <React.Fragment>
+                                                <div className="card">
+                                                    <MilestonePayload
+                                                        network={this.props.match.params.network}
+                                                        history={this.props.history}
+                                                        payload={this.state.message.payload}
+                                                    />
+                                                </div>
+                                                {this.state.message.payload.receipt && (
+                                                    <div className="card">
+                                                        <ReceiptPayload
+                                                            network={this.props.match.params.network}
+                                                            payload={this.state.message.payload.receipt}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </React.Fragment>
                                         )}
                                         {this.state.message.payload.type === INDEXATION_PAYLOAD_TYPE && (
                                             <div className="card">
@@ -285,17 +281,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 />
                                             </div>
                                         )}
-
-                                        {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE &&
-                                            this.state.message.payload.essence.payload && (
-                                                <div className="card">
-                                                    <IndexationPayload
-                                                        network={this.props.match.params.network}
-                                                        history={this.props.history}
-                                                        payload={this.state.message.payload.essence.payload}
-                                                    />
-                                                </div>
-                                            )}
                                     </React.Fragment>
                                 )}
                                 <div className="card margin-t-s">

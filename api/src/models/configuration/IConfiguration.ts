@@ -28,4 +28,9 @@ export interface IConfiguration {
      * Enable verbose API logging.
      */
     verboseLogging: boolean;
+
+    /**
+     * Private key for signing the api responses.
+     */
+    privateKeyEd25519?: string;
 }

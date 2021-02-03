@@ -27,6 +27,10 @@ export interface IRoute {
      */
     dataResponse?: boolean;
     /**
+     * Sign the response object.
+     */
+    sign?: boolean;
+    /**
      * Perform inline function instead of module load.
      * @param config The confiuration.
      * @param params The request parameters.

@@ -468,22 +468,19 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                         });
                         this._existingIds.push(item.id);
 
-                        if (item.parent1) {
-                            if (!this._graph.getNode(item.parent1)) {
-                                this._graph.addNode(item.parent1);
-                                this._existingIds.push(item.parent1);
+                        if (item.parents) {
+                            const addedParents: string[] = [];
+                            for (let i = 0; i < item.parents.length; i++) {
+                                if (!addedParents.includes(item.parents[i])) {
+                                    addedParents.push(item.parents[i]);
+                                    if (!this._graph.getNode(item.parents[i])) {
+                                        this._graph.addNode(item.parents[i]);
+                                        this._existingIds.push(item.parents[i]);
+                                    }
+
+                                    this._graph.addLink(item.parents[i], item.id);
+                                }
                             }
-
-                            this._graph.addLink(item.parent1, item.id);
-                        }
-
-                        if (item.parent2 && item.parent1 !== item.parent2) {
-                            if (!this._graph.getNode(item.parent2)) {
-                                this._graph.addNode(item.parent2);
-                                this._existingIds.push(item.parent2);
-                            }
-
-                            this._graph.addLink(item.parent2, item.id);
                         }
                     }
                 }

@@ -12,14 +12,9 @@ export interface IFeedItem {
     value?: number;
 
     /**
-     * The parent 1.
+     * The parents.
      */
-    parent1?: string;
-
-    /**
-     * The parent 2.
-     */
-    parent2?: string;
+    parents?: string[];
 
     /**
      * Metadata for the item.

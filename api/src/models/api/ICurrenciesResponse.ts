@@ -1,6 +1,7 @@
 import { IResponse } from "./IResponse";
+import { ISignedResponse } from "./ISignedResponse";
 
-export interface ICurrenciesResponse extends IResponse {
+export interface ICurrenciesResponse extends IResponse, ISignedResponse {
     /**
      * The time the data was last updated..
      */
