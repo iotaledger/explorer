@@ -415,6 +415,13 @@ export class TangleHelper {
                 metadata,
                 childrenMessageIds: children ? children.childrenMessageIds : undefined
             };
-        } catch { }
+        } catch (err) {
+            if (err.toString().includes("not synced")) {
+                return {
+                    error: "The node is not synced."
+                };
+            }
+            console.log(err);
+        }
     }
 }

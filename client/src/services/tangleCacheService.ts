@@ -754,6 +754,7 @@ export class TangleCacheService {
         messageId: string): Promise<{
             metadata?: IMessageMetadata;
             childrenIds?: string[];
+            error?: string;
         }> {
         const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
@@ -762,14 +763,12 @@ export class TangleCacheService {
         if (response) {
             return {
                 metadata: response.metadata,
-                childrenIds: response.childrenMessageIds
+                childrenIds: response.childrenMessageIds,
+                error: response.error
             };
         }
 
-        return {
-            metadata: undefined,
-            childrenIds: undefined
-        };
+        return { };
     }
 
     /**

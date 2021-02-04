@@ -197,10 +197,15 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         </h2>
                                     </div>
                                     <div className="card--content">
-                                        {!this.state.metadata && (
+                                        {!this.state.metadata && !this.state.metadataError && (
                                             <Spinner />
                                         )}
-                                        {this.state.metadata && (
+                                        {this.state.metadataError && (
+                                            <p className="danger">
+                                                Failed to retrieve metadata. {this.state.metadataError}
+                                            </p>
+                                        )}
+                                        {this.state.metadata && !this.state.metadataError && (
                                             <React.Fragment>
                                                 <div className="card--label">
                                                     Is Solid
@@ -364,6 +369,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
 
         this.setState({
             metadata: details?.metadata,
+            metadataError: details?.error,
             conflictReason: this.calculateConflictReason(details?.metadata),
             childrenIds: details?.childrenIds && details?.childrenIds.length > 0
                 ? details?.childrenIds : (this.state.childrenIds ?? []),

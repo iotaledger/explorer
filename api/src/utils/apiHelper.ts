@@ -133,7 +133,7 @@ export async function executeRoute(
         }
     } catch (err) {
         status = err.httpCode || status;
-        response = { error: err };
+        response = { error: err.message };
     }
 
     if (verboseLogging || (response?.error)) {
