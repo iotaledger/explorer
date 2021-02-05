@@ -4,7 +4,6 @@ import { IStatsGetResponse } from "./models/api/stats/IStatsGetResponse";
 import { ICMCQuotesLatestResponse } from "./models/ICMCQuotesLatestResponse";
 import { ICoinGeckoPriceResponse } from "./models/ICoinGeckoPriceResponse";
 import { IConfiguration } from "./models/IConfiguration";
-import { ICurrenciesResponse } from "./models/ICurrenciesResponse";
 import { INetworksResponse } from "./models/INetworksResponse";
 
 const COIN_GECKO_URL = "https://api.coingecko.com/api/v3/";
@@ -17,21 +16,9 @@ export class App {
 
     private _botClient: Client;
 
-    private _currencies: ICurrenciesResponse | undefined;
-
-    private _timeLastCurrencies: number;
-
     private _networks: INetworksResponse | undefined;
 
     private _timeLastNetworks: number;
-
-    private _cmcResponse: ICMCQuotesLatestResponse | undefined;
-
-    private _timeLastCmcResponse: number;
-
-    private _coinGeckoResponse: ICoinGeckoPriceResponse | undefined;
-
-    private _timeLastCoinGeckoResponse: number;
 
     /**
      * Create a new instance of App.
@@ -39,10 +26,7 @@ export class App {
      */
     constructor(config: IConfiguration) {
         this._config = config;
-        this._timeLastCurrencies = 0;
         this._timeLastNetworks = 0;
-        this._timeLastCmcResponse = 0;
-        this._timeLastCoinGeckoResponse = 0;
     }
 
     /**
@@ -81,16 +65,6 @@ export class App {
                         msg.content === "!market" ||
                         msg.content.startsWith("!m-") ||
                         msg.content.startsWith("!market-")) {
-                        const now = Date.now();
-                        if (!this._currencies || now - this._timeLastCurrencies > MS_30_MINUTES) {
-                            this._currencies = await FetchHelper.json<unknown, ICurrenciesResponse>(
-                                this._config.explorerEndpoint,
-                                "currencies",
-                                "get");
-                            this._timeLastCurrencies = now;
-                        }
-
-
                         embed = await this.handleMarket(msg.content);
                     } else {
                         const now = Date.now();
@@ -188,78 +162,56 @@ export class App {
      * @returns The message response.
      */
     private async handleMarket(command: string): Promise<MessageEmbed | undefined> {
-        if (this._currencies?.currencies) {
-            const parts = command.split("-");
-            let convertCurrency = "usd";
+        const parts = command.split("-");
+        let convertCurrency = "usd";
 
-            if (parts.length === 2) {
-                convertCurrency = parts[1].toLowerCase();
-            }
-
-            const convertCurrencyUpper = convertCurrency.toUpperCase();
-
-            const convertTo = this._currencies?.currencies[convertCurrencyUpper];
-
-            if (convertTo) {
-                let embed = new MessageEmbed()
-                    .setTitle(`Market ${convertCurrencyUpper}`)
-                    .setColor("#0fc1b7");
-
-                const now = Date.now();
-
-                if (!this._cmcResponse || now - this._timeLastCmcResponse > MS_30_MINUTES) {
-                    const cmcResponse = await FetchHelper.json<unknown, ICMCQuotesLatestResponse>(
-                        CMC_URL,
-                        "cryptocurrency/quotes/latest?id=1720&convert=eur",
-                        "get",
-                        undefined,
-                        { "X-CMC_PRO_API_KEY": this._config.coinMarketCapKey });
-
-                    if (cmcResponse.data?.["1720"]?.quote.EUR) {
-                        this._timeLastCmcResponse = now;
-                        this._cmcResponse = cmcResponse;
-                    } else {
-                        console.error("CMC Response", cmcResponse);
-                    }
-                }
-
-                if (this._cmcResponse) {
-                    const price = this._cmcResponse.data["1720"]?.quote.EUR.price * convertTo;
-                    const change1 = this._cmcResponse.data["1720"]?.quote.EUR.percent_change_1h;
-                    const change24 = this._cmcResponse.data["1720"]?.quote.EUR.percent_change_24h;
-                    embed = embed.addField("CoinMarketCap",
-                        this.formatFiat(price, 3, 8), true)
-                        .addField("24H Change", `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`, true)
-                        .addField("1H Change", `${change1 >= 0 ? "+" : ""}${change1.toFixed(2)}%`, true);
-                }
-
-                if (!this._cmcResponse || now - this._timeLastCoinGeckoResponse > MS_30_MINUTES) {
-                    const coinGeckoResponse = await FetchHelper.json<unknown, ICoinGeckoPriceResponse>(
-                        COIN_GECKO_URL,
-                        "simple/price?ids=iota&vs_currencies=eur&include_24hr_change=true&include_24hr_vol=true",
-                        "get");
-
-                    if (coinGeckoResponse.iota?.eur) {
-                        this._timeLastCoinGeckoResponse = now;
-                        this._coinGeckoResponse = coinGeckoResponse;
-                    } else {
-                        console.error("Coin Gecko Response", coinGeckoResponse);
-                    }
-                }
-
-                if (this._coinGeckoResponse) {
-                    const price = this._coinGeckoResponse.iota.eur * convertTo;
-                    const change24 = this._coinGeckoResponse.iota.eur_24h_change;
-                    const volume24 = this._coinGeckoResponse.iota.eur_24h_vol * convertTo;
-
-                    embed = embed
-                        .addField("CoinGecko", this.formatFiat(price, 3, 8), true)
-                        .addField("24H Change", `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`, true)
-                        .addField("24H Volume", `${volume24.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`, true);
-                }
-
-                return embed;
-            }
+        if (parts.length === 2) {
+            convertCurrency = parts[1].toLowerCase();
         }
+
+        const convertCurrencyUpper = convertCurrency.toUpperCase();
+
+        let embed = new MessageEmbed()
+            .setTitle(`Market ${convertCurrencyUpper}`)
+            .setColor("#0fc1b7");
+
+        const cmcResponse = await FetchHelper.json<unknown, ICMCQuotesLatestResponse>(
+            CMC_URL,
+            `cryptocurrency/quotes/latest?id=1720&convert=${convertCurrency}`,
+            "get",
+            undefined,
+            { "X-CMC_PRO_API_KEY": this._config.coinMarketCapKey });
+
+        if (!cmcResponse.data?.["1720"]?.quote[convertCurrencyUpper]) {
+            console.error("CMC Response", cmcResponse);
+        } else {
+            const price = cmcResponse.data["1720"]?.quote[convertCurrencyUpper].price;
+            const change1 = cmcResponse.data["1720"]?.quote[convertCurrencyUpper].percent_change_1h;
+            const change24 = cmcResponse.data["1720"]?.quote[convertCurrencyUpper].percent_change_24h;
+            embed = embed.addField("CoinMarketCap",
+                this.formatFiat(price, 3, 8), true)
+                .addField("24H Change", `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`, true)
+                .addField("1H Change", `${change1 >= 0 ? "+" : ""}${change1.toFixed(2)}%`, true);
+        }
+
+        const coinGeckoResponse = await FetchHelper.json<unknown, ICoinGeckoPriceResponse>(
+            COIN_GECKO_URL,
+            `simple/price?ids=iota&vs_currencies=${convertCurrency}&include_24hr_change=true&include_24hr_vol=true`,
+            "get");
+
+        if (!coinGeckoResponse.iota || !coinGeckoResponse.iota[convertCurrency]) {
+            console.error("Coin Gecko Response", coinGeckoResponse);
+        } else {
+            const price = coinGeckoResponse.iota[convertCurrency];
+            const change24 = coinGeckoResponse.iota[`${convertCurrency}_24h_change`];
+            const volume24 = coinGeckoResponse.iota[`${convertCurrency}_24h_vol`];
+
+            embed = embed
+                .addField("CoinGecko", this.formatFiat(price, 3, 8), true)
+                .addField("24H Change", `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`, true)
+                .addField("24H Volume", `${volume24.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`, true);
+        }
+
+        return embed;
     }
 }
