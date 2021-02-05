@@ -10,6 +10,7 @@ const COIN_GECKO_URL = "https://api.coingecko.com/api/v3/";
 const CMC_URL = "https://pro-api.coinmarketcap.com/v1/";
 
 const MS_30_MINUTES = 30 * 60 * 1000;
+const MS_30_SECONDS = 30 * 1000;
 
 const MARKET_TRIGGER = "!m";
 
@@ -22,6 +23,12 @@ export class App {
 
     private _timeLastNetworks: number;
 
+    private _coinGeckoCurrencies: string[] | undefined;
+
+    private _lastCoinGeckoCurrencies: number;
+
+    private readonly _lastReactions: { [id: string]: number };
+
     /**
      * Create a new instance of App.
      * @param config The configuration.
@@ -29,6 +36,8 @@ export class App {
     constructor(config: IConfiguration) {
         this._config = config;
         this._timeLastNetworks = 0;
+        this._lastCoinGeckoCurrencies = 0;
+        this._lastReactions = {};
     }
 
     /**
@@ -61,25 +70,32 @@ export class App {
                 if (msg.content.startsWith("!")) {
                     console.log("Bot Command", msg.content);
 
-                    let embed: MessageEmbed | undefined;
+                    const now = Date.now();
 
-                    if (msg.content === MARKET_TRIGGER ||
-                        msg.content.startsWith(`${MARKET_TRIGGER}-`)) {
-                        embed = await this.handleMarket(msg.content);
+                    if (this._lastReactions[msg.content] && now - this._lastReactions[msg.content] < MS_30_SECONDS) {
+                        await msg.react("🐌");
                     } else {
-                        const now = Date.now();
-                        if (!this._networks || now - this._timeLastNetworks > MS_30_MINUTES) {
-                            this._networks = await FetchHelper.json<unknown, INetworksResponse>(
-                                this._config.explorerEndpoint,
-                                "networks",
-                                "get");
-                            this._timeLastNetworks = now;
-                        }
+                        this._lastReactions[msg.content] = now;
 
-                        embed = await this.handleNetwork(msg.content);
-                    }
-                    if (embed) {
-                        await msg.channel.send({ embed });
+                        let embed: MessageEmbed | undefined;
+
+                        if (msg.content === MARKET_TRIGGER ||
+                            msg.content.startsWith(`${MARKET_TRIGGER}-`)) {
+                            embed = await this.handleMarket(msg.content);
+                        } else {
+                            if (!this._networks || now - this._timeLastNetworks > MS_30_MINUTES) {
+                                this._networks = await FetchHelper.json<unknown, INetworksResponse>(
+                                    this._config.explorerEndpoint,
+                                    "networks",
+                                    "get");
+                                this._timeLastNetworks = now;
+                            }
+
+                            embed = await this.handleNetwork(msg.content);
+                        }
+                        if (embed) {
+                            await msg.channel.send({ embed });
+                        }
                     }
                 }
             } catch (err) {
@@ -162,6 +178,8 @@ export class App {
      * @returns The message response.
      */
     private async handleMarket(command: string): Promise<MessageEmbed | undefined> {
+        const now = Date.now();
+
         const parts = command.split("-");
         let convertCurrency = "usd";
 
@@ -197,24 +215,36 @@ export class App {
             added = true;
         }
 
-        const coinGeckoResponse = await FetchHelper.json<unknown, ICoinGeckoPriceResponse>(
-            COIN_GECKO_URL,
-            `simple/price?ids=iota&vs_currencies=${convertCurrency}&include_24hr_change=true&include_24hr_vol=true`,
-            "get");
+        if (now - this._lastCoinGeckoCurrencies > MS_30_MINUTES) {
+            const coinGeckoCurrenciesResponse = await FetchHelper.json<unknown, string[]>(
+                COIN_GECKO_URL,
+                "simple/supported_vs_currencies",
+                "get");
 
-        if (!coinGeckoResponse.iota || !coinGeckoResponse.iota[convertCurrency]) {
-            console.error("Coin Gecko Response", coinGeckoResponse);
-        } else {
-            const price = coinGeckoResponse.iota[convertCurrency];
-            const change24 = coinGeckoResponse.iota[`${convertCurrency}_24h_change`];
-            const volume24 = coinGeckoResponse.iota[`${convertCurrency}_24h_vol`];
+            this._coinGeckoCurrencies = coinGeckoCurrenciesResponse;
+            this._lastCoinGeckoCurrencies = now;
+        }
 
-            embed = embed
-                .addField("CoinGecko", this.formatFiat(price, 3, 8), true)
-                .addField("24H Change", `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`, true)
-                .addField("24H Volume", `${volume24.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`, true);
+        if (this._coinGeckoCurrencies?.includes(convertCurrency)) {
+            const coinGeckoResponse = await FetchHelper.json<unknown, ICoinGeckoPriceResponse>(
+                COIN_GECKO_URL,
+                `simple/price?ids=iota&vs_currencies=${convertCurrency}&include_24hr_change=true&include_24hr_vol=true`,
+                "get");
 
-            added = true;
+            if (!coinGeckoResponse.iota || !coinGeckoResponse.iota[convertCurrency]) {
+                console.error("Coin Gecko Response", coinGeckoResponse);
+            } else {
+                const price = coinGeckoResponse.iota[convertCurrency];
+                const change24 = coinGeckoResponse.iota[`${convertCurrency}_24h_change`];
+                const volume24 = coinGeckoResponse.iota[`${convertCurrency}_24h_vol`];
+
+                embed = embed
+                    .addField("CoinGecko", this.formatFiat(price, 3, 8), true)
+                    .addField("24H Change", `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`, true)
+                    .addField("24H Volume", `${volume24.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`, true);
+
+                added = true;
+            }
         }
 
         if (!added) {
