@@ -146,19 +146,35 @@ export class App {
                 const res = await FetchHelper.json<unknown, IStatsGetResponse>(
                     this._config.explorerEndpoint, `stats/${foundNetwork.network}`, "get");
 
+                let color = foundNetwork.primaryColor;
+                let healthReason;
+                let health;
+
+                if (res.health === 0) {
+                    color = "#ff6755";
+                    health = "Bad";
+                    healthReason = res.healthReason;
+                } else if (res.health === 1) {
+                    color = "#ff8b5c";
+                    health = "Degraded";
+                    healthReason = res.healthReason;
+                }
+
                 const embed = new MessageEmbed()
                     .setTitle(foundNetwork.label)
-                    .setColor(foundNetwork.primaryColor)
+                    .setColor(color)
                     .addField(foundNetwork.protocolVersion === "og"
                         ? "TPS" : "MPS", res.itemsPerSecond, true)
                     .addField(foundNetwork.protocolVersion === "og"
                         ? "CTPS" : "CMPS", res.confirmedItemsPerSecond, true)
                     .addField("Confirmation", `${res.confirmationRate}%`, true)
-                    .addField("Latest Milestone Index", res.latestMilestoneIndex ?? "Unknown")
-                    .addField("Health", res.health === 0 ? "Bad" : (res.health === 1 ? "Degraded" : "Good"));
+                    .addField("Latest Milestone Index", res.latestMilestoneIndex ?? "Unknown");
 
-                if ((res.health === 1 || res.health === 2) && res.healthReason) {
-                    embed.addField("Reason", res.healthReason);
+                if (health) {
+                    embed.addField("Health", health);
+                }
+                if (healthReason) {
+                    embed.addField("Reason", healthReason);
                 }
 
                 return embed;
