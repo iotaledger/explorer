@@ -1,11 +1,11 @@
 import { Client, MessageEmbed } from "discord.js";
 import { FetchHelper } from "./fetchHelper";
+import { IStatsGetResponse } from "./models/api/stats/IStatsGetResponse";
 import { ICMCQuotesLatestResponse } from "./models/ICMCQuotesLatestResponse";
 import { ICoinGeckoPriceResponse } from "./models/ICoinGeckoPriceResponse";
 import { IConfiguration } from "./models/IConfiguration";
 import { ICurrenciesResponse } from "./models/ICurrenciesResponse";
 import { INetworksResponse } from "./models/INetworksResponse";
-import { IStatsGetResponse } from "./models/IStatsGetResponse";
 
 const COIN_GECKO_URL = "https://api.coingecko.com/api/v3/";
 const CMC_URL = "https://pro-api.coinmarketcap.com/v1/";
@@ -154,7 +154,12 @@ export class App {
                     .addField(foundNetwork.protocolVersion === "og"
                         ? "CTPS" : "CMPS", res.confirmedItemsPerSecond, true)
                     .addField("Confirmation", `${res.confirmationRate}%`, true)
-                    .addField("Latest Milestone Index", res.latestMilestoneIndex);
+                    .addField("Latest Milestone Index", res.latestMilestoneIndex ?? "Unknown")
+                    .addField("Health", res.health === 0 ? "Bad" : (res.health === 1 ? "Degraded" : "Good"));
+
+                if ((res.health === 1 || res.health === 2) && res.healthReason) {
+                    embed.addField("Reason", res.healthReason);
+                }
 
                 return embed;
             }

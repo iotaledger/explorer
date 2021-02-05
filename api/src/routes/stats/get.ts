@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IStatsGetRequest } from "../../models/api/og/IStatsGetRequest";
-import { IStatsGetResponse } from "../../models/api/og/IStatsGetResponse";
+import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
+import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { IItemsService } from "../../models/services/IItemsService";
 import { NetworkService } from "../../services/networkService";
