@@ -11,6 +11,8 @@ const CMC_URL = "https://pro-api.coinmarketcap.com/v1/";
 
 const MS_30_MINUTES = 30 * 60 * 1000;
 
+const MARKET_TRIGGER = "!m";
+
 export class App {
     private readonly _config: IConfiguration;
 
@@ -61,10 +63,8 @@ export class App {
 
                     let embed: MessageEmbed | undefined;
 
-                    if (msg.content === "!m" ||
-                        msg.content === "!market" ||
-                        msg.content.startsWith("!m-") ||
-                        msg.content.startsWith("!market-")) {
+                    if (msg.content === MARKET_TRIGGER ||
+                        msg.content.startsWith(`${MARKET_TRIGGER}-`)) {
                         embed = await this.handleMarket(msg.content);
                     } else {
                         const now = Date.now();
@@ -175,6 +175,8 @@ export class App {
             .setTitle(`Market ${convertCurrencyUpper}`)
             .setColor("#0fc1b7");
 
+        let added = false;
+
         const cmcResponse = await FetchHelper.json<unknown, ICMCQuotesLatestResponse>(
             CMC_URL,
             `cryptocurrency/quotes/latest?id=1720&convert=${convertCurrency}`,
@@ -192,6 +194,7 @@ export class App {
                 this.formatFiat(price, 3, 8), true)
                 .addField("24H Change", `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`, true)
                 .addField("1H Change", `${change1 >= 0 ? "+" : ""}${change1.toFixed(2)}%`, true);
+            added = true;
         }
 
         const coinGeckoResponse = await FetchHelper.json<unknown, ICoinGeckoPriceResponse>(
@@ -210,6 +213,15 @@ export class App {
                 .addField("CoinGecko", this.formatFiat(price, 3, 8), true)
                 .addField("24H Change", `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`, true)
                 .addField("24H Volume", `${volume24.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`, true);
+
+            added = true;
+        }
+
+        if (!added) {
+            return new MessageEmbed()
+                .setTitle("Market Unknown")
+                .setColor("#0fc1b7")
+                .addField(":cry:", "I have no data for that currency");
         }
 
         return embed;
