@@ -9,6 +9,9 @@
     "allowedDomains": [
         "ALLOWED-DOMAIN"
     ],
+    "allowedMethods": "ALLOWED-METHODS",
+    "allowedHeaders": "ALLOWED-HEADERS",
+    "routeCors": [ ROUTE-CORS ],
     "verboseLogging": VERBOSE-LOGGING,
     "privateKeyEd25519": "PRIVATE-KEY-ED25519"
 }

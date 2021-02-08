@@ -11,10 +11,18 @@ import { IConfiguration } from "./models/configuration/IConfiguration";
 import { routes } from "./routes";
 import { subscribe } from "./routes/feed/subscribe";
 import { unsubscribe } from "./routes/feed/unsubscribe";
-import { cors, executeRoute } from "./utils/apiHelper";
+import { cors, executeRoute, matchRouteUrl } from "./utils/apiHelper";
 
 const configId = process.env.CONFIG_ID || "local";
 const config: IConfiguration = require(`./data/config.${configId}.json`);
+
+const configAllowedOrigins: string[] = config.allowedDomains ?? ["*"];
+const configAllowedMethods: string =
+    !config.allowedMethods || config.allowedMethods === "ALLOWED-METHODS"
+        ? "GET, POST, OPTIONS" : config.allowedMethods;
+const configAllowedHeaders: string =
+    !config.allowedHeaders || config.allowedHeaders === "ALLOWED-HEADERS"
+        ? "Content-Type" : config.allowedHeaders;
 
 const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 4000;
 
@@ -26,12 +34,27 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(compression());
 
 app.use((req, res, next) => {
+    let allowedOrigins = configAllowedOrigins;
+    let allowedMethods = configAllowedMethods;
+    let allowedHeaders = configAllowedHeaders;
+
+    if (config.routeCors) {
+        const foundRoute = matchRouteUrl(config.routeCors.map(c => c.path), req.url);
+
+        if (foundRoute) {
+            const routeCors = config.routeCors[foundRoute.index];
+            allowedOrigins = routeCors.allowedDomains ?? allowedOrigins;
+            allowedMethods = routeCors.allowedMethods ?? allowedMethods;
+            allowedHeaders = routeCors.allowedHeaders ?? allowedHeaders;
+        }
+    }
+
     cors(
         req,
         res,
-        config.allowedDomains ? config.allowedDomains.join(",") : undefined,
-        "GET, POST, OPTIONS, PUT, PATCH, DELETE",
-        "Content-Type, Authorization");
+        allowedOrigins,
+        allowedMethods,
+        allowedHeaders);
     next();
 });
 

@@ -26,13 +26,36 @@ export function findRoute(findRoutes: IRoute[], url: string, method: string): {
      */
     params: { [id: string]: string };
 } | undefined {
+    const lowerMethod = method.toLowerCase();
+    const methodRoutes = findRoutes.filter(r => r.method === lowerMethod);
+
+    const match = matchRouteUrl(methodRoutes.map(m => m.path), url);
+
+    if (match) {
+        return {
+            route: methodRoutes[match.index],
+            params: match.params
+        };
+    }
+}
+
+/**
+ * Match a route url
+ * @param matchUrls The urls to match against.
+ * @param url The url to find.
+ * @returns The params if the item matches.
+ */
+export function matchRouteUrl(matchUrls: string[], url: string): {
+    index: number;
+    params: { [id: string]: string };
+} | undefined {
     const urlParts = url.replace(/\/$/, "").split("/");
 
-    for (const route of findRoutes) {
-        if (route.method === method) {
-            const routeParts = route.path.split("/");
-            const params: { [id: string]: string } = {};
+    for (let m = 0; m < matchUrls.length; m++) {
+        const routeParts = matchUrls[m].split("/");
+        const params: { [id: string]: string } = {};
 
+        if (routeParts.length === urlParts.length) {
             let i;
             for (i = 0; i < urlParts.length && i < routeParts.length; i++) {
                 if (routeParts[i] === urlParts[i]) {
@@ -49,10 +72,9 @@ export function findRoute(findRoutes: IRoute[], url: string, method: string): {
                     break;
                 }
             }
-
             if (i === urlParts.length) {
                 return {
-                    route,
+                    index: m,
                     params
                 };
             }

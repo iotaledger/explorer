@@ -25,6 +25,41 @@ export interface IConfiguration {
     allowedDomains: string[];
 
     /**
+     * A list of allowed methods to access the api.
+     */
+    allowedMethods?: string;
+
+    /**
+     * A list of allowed header to access the api.
+     */
+    allowedHeaders?: string;
+
+    /**
+     * Cors for specific routes
+     */
+    routeCors?: {
+        /**
+         * The route to match.
+         */
+        path: string;
+
+        /**
+         * A list of domains allowed to access the api route.
+         */
+        allowedDomains?: string[];
+
+        /**
+         * A list of allowed methods to access the api route.
+         */
+        allowedMethods?: string;
+
+        /**
+         * A list of allowed header to access the api route.
+         */
+        allowedHeaders?: string;
+    }[];
+
+    /**
      * Enable verbose API logging.
      */
     verboseLogging: boolean;
