@@ -35,7 +35,7 @@ header {
       margin: 10px 30px 10px 5px;
 
       @include phone-down {
-        margin: 10px 30px 15px 0px;
+        margin: 10px 30px 15px 0;
       }
     }
 
@@ -99,13 +99,13 @@ header {
   .tools-panel-shield {
     display: none;
     position: fixed;
+    z-index: 1;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: $gray-midnight;
     opacity: 0.1;
-    z-index: 1;
+    background-color: $gray-midnight;
 
     &.tools-panel-shield__active {
       display: block;
@@ -115,6 +115,7 @@ header {
   .tools-panel {
     display: none;
     position: fixed;
+    z-index: 5;
     top: 0;
     right: 0;
     left: 0;
@@ -125,7 +126,6 @@ header {
     background: var(--context-primary);
     color: $white;
     font-family: $metropolis;
-    z-index: 5;
 
     &.tools-panel__active {
       display: flex;

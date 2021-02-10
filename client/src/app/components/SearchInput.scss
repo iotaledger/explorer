@@ -7,34 +7,17 @@
   display: flex;
   flex: 1;
   flex-direction: row;
-  margin: 0px 20px 20px 20px;
+  margin: 0 20px 20px 20px;
   backdrop-filter: blur(1px);
-
-  &.search-input--compact {
-    margin: 0px;
-
-    .search--text-input {
-      @include font-size(12px);
-
-      height: 32px;
-      padding: 0px 12px;
-    }
-
-    .search--button {
-      @include font-size(12px);
-
-      width: 32px;
-    }
-  }
 
   .search--text-input {
     @include font-size(14px);
 
     flex: 1;
     height: 48px;
-    padding: 0px 24px;
+    padding: 0 24px;
     border: 1px solid $input-border;
-    border-radius: 6px 0px 0px 6px;
+    border-radius: 6px 0 0 6px;
     color: $gray-10;
     font-family: $inter;
 
@@ -42,7 +25,7 @@
       @include font-size(12px);
 
       height: 32px;
-      padding: 0px 12px;
+      padding: 0 12px;
     }
   }
 
@@ -51,7 +34,7 @@
 
     width: 117px;
     border: 2px solid $main-green-highlight;
-    border-radius: 0px 6px 6px 0px;
+    border-radius: 0 6px 6px 0;
     background-color: $main-green-highlight;
     color: $white;
     font-family: $inter;
@@ -64,7 +47,6 @@
       width: 64px;
     }
 
-
     &:focus {
       box-shadow: 0 0 3px 0 $white;
     }
@@ -75,6 +57,23 @@
       @include phone-down {
         opacity: 1;
       }
+    }
+  }
+
+  &.search-input--compact {
+    margin: 0;
+
+    .search--text-input {
+      @include font-size(12px);
+
+      height: 32px;
+      padding: 0 12px;
+    }
+
+    .search--button {
+      @include font-size(12px);
+
+      width: 32px;
     }
   }
 }

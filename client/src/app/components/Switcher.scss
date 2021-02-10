@@ -21,7 +21,7 @@
     display: flex;
     align-items: center;
     height: 32px;
-    padding: 0px 21px;
+    padding: 0 21px;
     border: 1px solid transparent;
     border-radius: 6px;
     outline: none;
@@ -39,7 +39,6 @@
       box-shadow: 0 0 3px 0 $main-green-highlight;
     }
 
-    // sass-lint:disable no-vendor-prefixes
     &:-moz-focusring {
       color: transparent;
       text-shadow: 0 0 0 $white;

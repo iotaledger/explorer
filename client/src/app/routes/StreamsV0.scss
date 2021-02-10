@@ -33,7 +33,6 @@
         padding-left: 0;
       }
 
-
       h1 {
         margin-bottom: 20px;
       }
@@ -60,6 +59,7 @@
 
         .item-details {
           @include font-size(14px);
+
           font-family: $metropolis;
 
           .item-details-root {

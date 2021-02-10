@@ -28,7 +28,6 @@
         }
       }
 
-
       h1 {
         margin-bottom: 20px;
       }
@@ -42,7 +41,7 @@
 
         @include tablet-down {
           margin-top: 23px;
-          margin-left: 0px;
+          margin-left: 0;
         }
       }
 
@@ -74,9 +73,8 @@
         @include desktop-down {
           flex: unset;
           width: 100%;
-          margin-right: 0px;
+          margin-right: 0;
         }
-
 
         @include tablet-down {
           .card--header__space-between {
@@ -86,11 +84,10 @@
           }
         }
 
-
         .children-container {
           max-height: 200px;
           margin: 20px 30px 30px 10px;
-          padding: 0px 0px 0px 20px;
+          padding: 0 0 0 20px;
           overflow: auto;
         }
 
@@ -102,7 +99,7 @@
         }
 
         @include tablet-down {
-          margin-right: 0px;
+          margin-right: 0;
 
           .value-buttons {
             flex-direction: column;
@@ -117,7 +114,6 @@
             }
           }
         }
-
 
         .card + .card {
           margin-top: 23px;
@@ -134,7 +130,7 @@
             margin-left: 23px;
 
             @include tablet-down {
-              margin-left: 0px;
+              margin-left: 0;
             }
           }
         }

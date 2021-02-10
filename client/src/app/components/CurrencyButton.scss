@@ -22,7 +22,7 @@
   .currency-button--value {
     @include font-size(28px);
 
-    margin: 30px 0px;
+    margin: 30px 0;
     color: $white;
     font-family: $metropolis;
     font-weight: bold;
@@ -40,6 +40,7 @@
 
     .rate--label {
       @include font-size(12px);
+
       margin-right: 10px;
       color: $white;
       font-family: $inter;
@@ -49,6 +50,7 @@
 
     .rate--value {
       @include font-size(12px);
+
       margin-left: 5px;
       color: $main-green-highlight;
       font-family: $inter;

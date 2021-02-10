@@ -5,24 +5,12 @@
   display: inline-block;
   position: relative;
 
-  &.select-wrapper--small {
-    select {
-      @include font-size(12px);
-
-      height: 32px;
-    }
-
-    img {
-      top: 12px;
-    }
-  }
-
   img {
     position: absolute;
+    z-index: 2;
     top: 16px;
     right: 18px;
     color: $gray;
-    z-index: 2;
     pointer-events: none;
   }
 
@@ -30,8 +18,8 @@
     @include font-size(14px);
 
     height: 40px;
-    margin: 0px;
-    padding: 0px 48px 0px 20px;
+    margin: 0;
+    padding: 0 48px 0 20px;
     border: 1px solid $input-border;
     border-radius: 6px;
     outline: none;
@@ -44,12 +32,10 @@
       box-shadow: 0 0 3px 0 $main-green-highlight;
     }
 
-    // sass-lint:disable no-vendor-prefixes
     &:-ms-expand {
       display: none;
     }
 
-    // sass-lint:disable no-vendor-prefixes
     &:-moz-focusring {
       color: transparent;
       text-shadow: 0 0 0 $gray-10;
@@ -64,7 +50,7 @@
       position: relative;
       min-width: 100px;
       margin-right: -1px;
-      border-radius: 6px 0px 0px 6px;
+      border-radius: 6px 0 0 6px;
 
       &:focus {
         z-index: 1;
@@ -76,14 +62,26 @@
       color: $gray-midnight;
     }
   }
+
+  &.select-wrapper--small {
+    select {
+      @include font-size(12px);
+
+      height: 32px;
+    }
+
+    img {
+      top: 12px;
+    }
+  }
 }
 
 input {
   @include font-size(14px);
 
   height: 40px;
-  margin: 0px;
-  padding: 0px 20px;
+  margin: 0;
+  padding: 0 20px;
   border: 1px solid $input-border;
   border-radius: 6px;
   outline: none;
@@ -94,7 +92,6 @@ input {
     box-shadow: 0 0 3px 0 $main-green-highlight;
   }
 
-  // sass-lint:disable no-vendor-prefixes
   &:-moz-focusring {
     color: transparent;
     text-shadow: 0 0 0 $gray-10;
@@ -102,7 +99,7 @@ input {
 
   &.input-plus {
     position: relative;
-    border-radius: 0px 6px 6px 0px;
+    border-radius: 0 6px 6px 0;
 
     &:focus {
       z-index: 1;
@@ -117,7 +114,6 @@ button {
     box-shadow: 0 0 3px 0 $main-green-highlight;
   }
 
-  // sass-lint:disable no-vendor-prefixes
   &:-moz-focusring {
     text-shadow: 0 0 0 $gray-10;
   }
@@ -125,6 +121,7 @@ button {
 
 .form-validation {
   @include font-size(12px);
+
   font-family: $metropolis;
 }
 
@@ -143,7 +140,7 @@ button {
   align-items: center;
   justify-content: center;
   height: 32px;
-  padding: 0px 21px;
+  padding: 0 21px;
   border: 1px solid $input-border;
   border-radius: 6px;
   outline: none;
@@ -155,7 +152,7 @@ button {
   &.selected {
     border-color: $main-green-highlight;
     background-color: $main-green-highlight;
-    $color: $white;
+    color: $white;
     font-weight: 600;
   }
 
@@ -168,7 +165,6 @@ button {
     box-shadow: 0 0 3px 0 $main-green-highlight;
   }
 
-  // sass-lint:disable no-vendor-prefixes
   &:-moz-focusring {
     color: transparent;
     text-shadow: 0 0 0 $white;

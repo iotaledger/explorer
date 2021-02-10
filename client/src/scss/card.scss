@@ -6,11 +6,11 @@
 .card {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   border: 1px solid $gray-noon;
   border-radius: 6px;
   background-color: $white;
   box-shadow: $box-shadow;
-  overflow: hidden;
 
   h2 {
     display: flex;
@@ -22,6 +22,85 @@
     align-items: center;
   }
 
+  input {
+    &[type='checkbox'] {
+      @include font-size(24px);
+
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      font-weight: bold;
+      vertical-align: middle;
+      appearance: none;
+
+      &:checked {
+        &::after {
+          content: '\2713';
+          position: relative;
+          bottom: 4px;
+          left: 0;
+          color: $main-green;
+        }
+      }
+    }
+  }
+
+  button {
+    @include font-size(12px);
+
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      color: $main-green-highlight;
+      text-decoration: underline;
+    }
+
+    &:focus {
+      box-shadow: none;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+  }
+
+  a {
+    @include font-size(12px);
+
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      color: $main-green-highlight;
+      text-decoration: underline;
+    }
+
+    &:focus {
+      box-shadow: none;
+    }
+
+    &:disabled,
+    &.disabled {
+      opacity: 0.3;
+      cursor: default;
+      pointer-events: none;
+    }
+  }
+
   .card--header-count {
     @include font-size(12px);
 
@@ -29,7 +108,7 @@
     align-items: center;
     height: 24px;
     margin-left: 20px;
-    padding: 0px 8px;
+    padding: 0 8px;
     border-radius: 6px;
     background-color: $gray-light;
     color: $gray;
@@ -65,7 +144,7 @@
     flex-direction: row;
     align-items: center;
     min-height: 50px;
-    margin: 20px 26px 0px 26px;
+    margin: 20px 26px 0 26px;
     padding-bottom: 14px;
     border-bottom: 1px solid $gray-noon;
 
@@ -74,14 +153,13 @@
       margin: 20px 20px 0 20px;
     }
 
-
     &.card--header__space-between {
       justify-content: space-between;
     }
 
     &.card--header-secondary {
       min-height: auto;
-      margin: 0px 0px 0px 26px;
+      margin: 0 0 0 26px;
       padding: 0;
       border: 0;
     }
@@ -116,8 +194,8 @@
     color: $gray;
     font-family: $inter;
     font-weight: bold;
-    cursor: pointer;
     text-decoration: none;
+    cursor: pointer;
 
     &:hover {
       color: $main-green-highlight;
@@ -216,19 +294,6 @@
       font-weight: normal;
     }
 
-    &.card--value__light,
-    .card--value__light {
-      color: $gray;
-    }
-
-    a, button {
-      &:hover {
-        .card--value__light {
-          color: lighten($main-green-highlight, 10%);
-        }
-      }
-    }
-
     &.card--value__large,
     .card--value__large {
       @include font-size(18px);
@@ -238,8 +303,8 @@
       min-height: 150px;
       max-height: 150px;
       padding: 10px;
-      background: $gray-noon;
       overflow: auto;
+      background: $gray-noon;
 
       &.card--value-textarea__ascii,
       &.card--value-textarea__utf8 {
@@ -250,8 +315,8 @@
       &.card--value-textarea__hex {
         max-height: 350px;
         font-family: 'Courier New', Courier, monospace;
-        white-space: pre-wrap;
         word-break: break-word;
+        white-space: pre-wrap;
       }
 
       &.card--value-textarea__json {
@@ -265,81 +330,17 @@
       }
     }
 
-    input {
-      &[type='checkbox'] {
-        @include font-size(24px);
-
-        width: 24px;
-        height: 24px;
-        padding: 0;
-        font-weight: bold;
-        vertical-align: middle;
-        appearance: none;
-
-        &:checked {
-          &::after {
-            position: relative;
-            bottom: 4px;
-            left: 0px;
-            color: $main-green;
-            content: '\2713';
-          }
-        }
-      }
-    }
-
-    button {
-      @include font-size(12px);
-
-      padding: 0;
-      border: 0;
-      background: none;
-      color: inherit;
-      font-family: inherit;
-      font-size: inherit;
-      font-weight: inherit;
-      text-align: left;
-      cursor: pointer;
-
-      &:hover {
-        color: $main-green-highlight;
-        text-decoration: underline;
-      }
-
-      &:focus {
-        box-shadow: none;
-      }
-
-      &:disabled {
-        cursor: default;
-        opacity: 0.3;
-      }
+    &.card--value__light,
+    .card--value__light {
+      color: $gray;
     }
 
     a {
-      @include font-size(12px);
-
-      color: inherit;
-      font-family: inherit;
-      font-size: inherit;
-      font-weight: inherit;
-      text-align: left;
-      text-decoration: none;
-      cursor: pointer;
-
       &:hover {
-        color: $main-green-highlight;
-        text-decoration: underline;
-      }
-
-      &:focus {
-        box-shadow: none;
-      }
-
-      &:disabled, &.disabled {
-        cursor: default;
-        opacity: 0.3;
-        pointer-events: none;
+        &.card--value__light,
+        .card--value__light {
+          color: lighten($main-green-highlight, 10%);
+        }
       }
     }
   }

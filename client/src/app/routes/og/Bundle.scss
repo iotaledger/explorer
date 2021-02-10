@@ -52,10 +52,9 @@
 
             .card + .card {
               margin-top: 23px;
-              margin-left: 0px;
+              margin-left: 0;
             }
           }
-
 
           .card--row {
             margin-bottom: 32px;
@@ -75,7 +74,7 @@
 
             @include tablet-down {
               margin-top: 23px;
-              margin-left: 0px;
+              margin-left: 0;
             }
           }
         }

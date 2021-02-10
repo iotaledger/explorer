@@ -157,7 +157,7 @@
 }
 
 .overflow-ellipsis {
-  text-overflow: ellipsis !important;
   overflow: hidden !important;
+  text-overflow: ellipsis !important;
   word-break: normal !important;
 }

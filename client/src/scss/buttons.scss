@@ -24,7 +24,6 @@ button {
     box-shadow: 0 0 3px 0 $main-green-highlight;
   }
 
-  // sass-lint:disable no-vendor-prefixes
   &:-moz-focusring {
     text-shadow: 0 0 0 $gray-10;
   }

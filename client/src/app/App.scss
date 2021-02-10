@@ -15,10 +15,11 @@
   .maintenance {
     display: flex;
     justify-content: center;
-    margin: 100px 0px;
+    margin: 100px 0;
 
     .maintenance-inner {
       @include font-size(18px);
+
       max-width: $desktop-width;
       font-family: $metropolis;
     }

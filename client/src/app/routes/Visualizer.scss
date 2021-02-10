@@ -14,14 +14,6 @@
     margin: 20px;
   }
 
-  &.dark-mode {
-    .graph-border {
-      .viva {
-        background: $gray-midnight;
-      }
-    }
-  }
-
   .graph-border {
     display: flex;
     position: relative;
@@ -29,9 +21,9 @@
     align-items: stretch;
     justify-content: stretch;
     height: 70vh;
+    overflow: hidden;
     border: 1px solid $gray-light;
     border-radius: 6px;
-    overflow: hidden;
 
     .viva {
       position: relative;
@@ -46,12 +38,20 @@
       @include font-size(12px);
 
       position: absolute;
+      z-index: 1;
       margin: 5px;
       background-color: $white;
       color: $main-green-highlight;
       font-family: $metropolis;
-      z-index: 1;
       word-break: break-all;
+    }
+  }
+
+  &.dark-mode {
+    .graph-border {
+      .viva {
+        background: $gray-midnight;
+      }
     }
   }
 
@@ -103,7 +103,7 @@
       padding: 10px 20px;
 
       .card--label {
-        margin: 6px 20px 6px 0px;
+        margin: 6px 20px 6px 0;
       }
     }
   }
@@ -115,7 +115,7 @@
     font-family: $metropolis;
 
     &.visualizer--key__value {
-      margin: 6px 12px 6px 0px;
+      margin: 6px 12px 6px 0;
       padding: 6px;
       border-radius: 6px;
       color: $white;
@@ -126,7 +126,7 @@
       }
 
       &.referenced {
-          background-color: #61e884;
+        background-color: #61e884;
       }
 
       &.included {

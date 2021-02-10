@@ -86,8 +86,14 @@ footer {
       color: $gray;
       font-family: $inter;
 
-      a {
-        color: $main-green;
+      section {
+        ul {
+          li {
+            a {
+              color: $main-green;
+            }
+          }
+        }
       }
     }
   }

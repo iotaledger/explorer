@@ -28,7 +28,6 @@
         }
       }
 
-
       h1 {
         margin-bottom: 20px;
       }
@@ -40,7 +39,7 @@
         @include desktop-down {
           flex: unset;
           width: 100%;
-          margin-right: 0px;
+          margin-right: 0;
         }
 
         .value-buttons {
@@ -61,7 +60,7 @@
 
             .col + .col {
               margin-top: 23px;
-              margin-left: 0px;
+              margin-left: 0;
             }
           }
         }
@@ -70,7 +69,7 @@
           margin-left: 23px;
 
           @include tablet-down {
-            margin-left: 0px;
+            margin-left: 0;
           }
         }
       }

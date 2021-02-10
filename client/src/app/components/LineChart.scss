@@ -1,7 +1,6 @@
 @import '../../scss/variables';
 
 .line-container {
-
   .ct-chart {
     width: 100%;
     height: 80px;
@@ -10,12 +9,11 @@
       .ct-series {
         &.ct-series-a {
           .ct-line {
-            stroke: $main-green-highlight;
             stroke-width: 2px;
+            stroke: $main-green-highlight;
           }
 
           .ct-area {
-            // sass-lint:disable url-quotes
             fill: url(#gradient-a);
             fill-opacity: 0.3;
           }

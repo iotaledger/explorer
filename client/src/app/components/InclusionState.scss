@@ -4,6 +4,7 @@
 
 .inclusion-state {
   @include font-size(12px);
+
   display: flex;
   align-items: center;
   font-family: $metropolis;
@@ -12,8 +13,8 @@
     display: flex;
     align-items: center;
     height: 24px;
-    padding: 0px 8px;
     margin-right: 10px;
+    padding: 0 8px;
     border: 0;
     border-radius: 6px;
     outline: none;
@@ -35,7 +36,7 @@
 
     &.inclusion__no-transaction {
       background-color: #17a2b8;
-      color:  $white;
+      color: $white;
     }
 
     &.inclusion__conflicting {

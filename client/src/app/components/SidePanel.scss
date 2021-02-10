@@ -14,7 +14,6 @@
     margin-top: 20px;
   }
 
-
   &.card {
     padding-bottom: 30px;
 
@@ -49,7 +48,7 @@
     }
 
     .card--sep {
-      margin: 0px 23px;
+      margin: 0 23px;
       padding: 10px 10px;
       border-bottom: 1px solid $gray-noon;
 
@@ -61,7 +60,7 @@
     .card--value {
       @include font-size(16px);
 
-      margin-bottom: 0px;
+      margin-bottom: 0;
       padding-left: 23px;
 
       &.card--value__large {
@@ -112,12 +111,11 @@
             width: 100%;
           }
 
-
+          overflow: hidden;
           color: $gray-10;
           font-family: $inter;
           text-decoration: none;
           text-overflow: ellipsis;
-          overflow: hidden;
 
           &:hover {
             text-decoration: underline;

@@ -4,11 +4,12 @@
 
 .confirmation {
   @include font-size(12px);
+
   display: flex;
   align-items: center;
   height: 24px;
   margin-left: 20px;
-  padding: 0px 8px;
+  padding: 0 8px;
   border: 0;
   border-radius: 6px;
   outline: none;

@@ -105,24 +105,23 @@
             .ct-series {
               &.ct-series-a {
                 .ct-line {
-                  stroke: $main-green-highlight;
                   stroke-width: 2px;
+                  stroke: $main-green-highlight;
                 }
 
                 .ct-point {
-                  stroke: $main-green-highlight;
                   stroke-width: 4px;
+                  stroke: $main-green-highlight;
                 }
 
                 .ct-area {
-                  // sass-lint:disable url-quotes
                   fill: url(#gradient-a);
                   fill-opacity: 0.3;
                 }
 
                 .ct-bar {
-                  stroke: $main-green;
                   stroke-width: 6px;
+                  stroke: $main-green;
                 }
               }
             }

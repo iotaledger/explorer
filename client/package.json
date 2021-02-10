@@ -34,11 +34,11 @@
     "scripts": {
         "start": "cross-env PORT=3000 craco start",
         "lint": "eslint src --ext .tsx,.ts",
+        "sass-lint": "stylelint ./src/**/*.scss",
         "build-internal": "craco build",
-        "build": "run-s lint build-internal",
+        "build": "run-s lint sass-lint build-internal",
         "test": "craco test",
-        "eject": "react-scripts eject",
-        "sass-lint": "sass-lint -v -c ./.sass-lint.yml"
+        "eject": "react-scripts eject"
     },
     "browserslist": [
         ">0.2%",
@@ -65,9 +65,15 @@
         "eslint-plugin-jsdoc": "^31.6.0",
         "eslint-plugin-react": "^7.22.0",
         "eslint-plugin-unicorn": "^27.0.0",
-        "node-sass": "^4.14.1",
         "npm-run-all": "^4.1.5",
-        "sass-lint": "^1.13.1",
+        "sass": "^1.32.6",
+        "stylelint": "^13.9.0",
+        "stylelint-config-property-sort-order-smacss": "^7.0.0",
+        "stylelint-config-recommended": "^3.0.0",
+        "stylelint-config-recommended-scss": "^4.2.0",
+        "stylelint-config-sass-guidelines": "^7.1.0",
+        "stylelint-config-standard": "^20.0.0",
+        "stylelint-scss": "^3.19.0",
         "typescript": "^4.1.3"
     }
 }

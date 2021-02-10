@@ -12,9 +12,9 @@ html {
 }
 
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 h1 {
@@ -45,7 +45,6 @@ body {
   height: 100%;
   background-color: #f6f8fc;
 
-  // sass-lint:disable no-ids
   #root {
     display: flex;
     flex-direction: column;
@@ -71,7 +70,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  border-radius: 0px;
+  border-radius: 0;
   background-color: $gray-daylight;
 }
 
@@ -81,7 +80,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 0px;
+  border-radius: 0;
   background-color: $gray-header;
 }
 
