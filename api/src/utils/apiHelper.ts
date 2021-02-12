@@ -229,21 +229,21 @@ function logParams(obj: { [id: string]: unknown }): { [id: string]: unknown } {
  * Handle cors.
  * @param req Request The request.
  * @param res Response The response.
- * @param allowOrigins The allowed origins.
+ * @param allowDomains The allowed origins.
  * @param allowMethods The allowed methods.
  * @param allowHeaders The allowed headers.
  */
 export function cors(
     req: IHttpRequest,
     res: IHttpResponse,
-    allowOrigins: string | string[] | undefined,
+    allowDomains: string | string[] | undefined,
     allowMethods: string | undefined,
     allowHeaders: string | undefined): void {
-    if (!allowOrigins || allowOrigins === "*") {
+    if (!allowDomains || allowDomains === "*") {
         res.setHeader("Access-Control-Allow-Origin", "*");
-    } else if (allowOrigins) {
+    } else if (allowDomains) {
         const requestOrigin = req.headers.origin;
-        const origins = Array.isArray(allowOrigins) ? allowOrigins : allowOrigins.split(";");
+        const origins = Array.isArray(allowDomains) ? allowDomains : allowDomains.split(";");
         let isAllowed;
         for (const origin of origins) {
             if (requestOrigin === origin || origin === "*") {
