@@ -258,9 +258,9 @@ class Markets extends Currency<unknown, MarketsState> {
                                                             key={range.value}
                                                             type="button"
                                                             className={classNames(
-                                                                "button button--small margin-r-t margin-b-t",
+                                                                "date-links margin-r-t margin-b-t",
                                                                 {
-                                                                    "button--secondary":
+                                                                    "date-links--secondary":
                                                                         this.state.selectedRange !== range.value
                                                                 }
                                                             )}

@@ -133,40 +133,42 @@ button {
   width: 100%;
 }
 
-.form-button {
-  @include font-size(12px);
+.card {
+  .form-button {
+    @include font-size(12px);
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 32px;
-  padding: 0 21px;
-  border: 1px solid $input-border;
-  border-radius: 6px;
-  outline: none;
-  background-color: transparent;
-  color: $gray-midnight;
-  font-family: $metropolis;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 21px;
+    border: 1px solid $input-border;
+    border-radius: 6px;
+    outline: none;
+    background-color: transparent;
+    color: $gray-midnight;
+    font-family: $metropolis;
+    cursor: pointer;
 
-  &.selected {
-    border-color: $main-green-highlight;
-    background-color: $main-green-highlight;
-    color: $white;
-    font-weight: 600;
-  }
+    &.selected {
+      border-color: $main-green-highlight;
+      background-color: $main-green-highlight;
+      color: $white;
+      font-weight: 600;
+    }
 
-  &:disabled {
-    opacity: 0.5;
-    pointer-events: none;
-  }
+    &:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
 
-  &:focus {
-    box-shadow: 0 0 3px 0 $main-green-highlight;
-  }
+    &:focus {
+      box-shadow: 0 0 3px 0 $main-green-highlight;
+    }
 
-  &:-moz-focusring {
-    color: transparent;
-    text-shadow: 0 0 0 $white;
+    &:-moz-focusring {
+      color: transparent;
+      text-shadow: 0 0 0 $white;
+    }
   }
 }

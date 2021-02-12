@@ -33,16 +33,4 @@ button {
     background-color: $danger;
     color: $white;
   }
-
-  &.button--secondary {
-    border-color: $dark-green;
-    background-color: $white;
-    color: $dark-green;
-  }
-
-  &.button--small {
-    @include font-size(12px);
-
-    padding: 4px 8px;
-  }
 }

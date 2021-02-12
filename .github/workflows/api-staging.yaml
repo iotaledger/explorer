@@ -2,7 +2,7 @@ name: API Build and Deploy Staging
 
 on:
   push:
-    branches: [develop,feature/chrysalis-pt2]
+    branches: [develop]
     paths:
       - "api/**"
       - ".github/workflows/api-staging.yaml"

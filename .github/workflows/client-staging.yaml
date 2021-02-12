@@ -2,7 +2,7 @@ name: Client Build and Deploy Staging
 
 on:
   push:
-    branches: [develop,feature/chrysalis-pt2]
+    branches: [develop]
     paths:
       - "client/**"
       - ".github/workflows/client-staging.yaml"

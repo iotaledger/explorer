@@ -63,6 +63,26 @@
         }
       }
 
+      .date-links {
+        @include font-size(12px);
+
+        padding: 4px 8px;
+        border: 1px solid $dark-green;
+        border-radius: 6px;
+        outline: none;
+        background: $dark-green;
+        color: $white;
+        font-family: $metropolis;
+        font-weight: bold;
+        cursor: pointer;
+
+        &.date-links--secondary {
+          border-color: $dark-green;
+          background-color: $white;
+          color: $dark-green;
+        }
+      }
+
       .line-container,
       .bar-container {
         .crosshair-h,
