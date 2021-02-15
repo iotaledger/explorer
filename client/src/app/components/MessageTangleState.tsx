@@ -1,12 +1,54 @@
 import classNames from "classnames";
-import React, { Component, ReactNode } from "react";
+import React, { ReactNode } from "react";
+import { ServiceFactory } from "../../factories/serviceFactory";
+import { DateHelper } from "../../helpers/dateHelper";
+import { TangleCacheService } from "../../services/tangleCacheService";
+import AsyncComponent from "./AsyncComponent";
 import "./MessageTangleState.scss";
 import { MessageTangleStateProps } from "./MessageTangleStateProps";
+import { MessageTangleStateState } from "./MessageTangleStateState";
 
 /**
  * Component which will display a message tangle state.
  */
-class MessageTangleState extends Component<MessageTangleStateProps> {
+class MessageTangleState extends AsyncComponent<MessageTangleStateProps, MessageTangleStateState> {
+    /**
+     * API Client for tangle requests.
+     */
+    private readonly _tangleCacheService: TangleCacheService;
+
+    /**
+     * Create a new instance of Milestone.
+     * @param props The props.
+     */
+    constructor(props: MessageTangleStateProps) {
+        super(props);
+
+        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+
+        this.state = {
+        };
+    }
+
+    /**
+     * The component mounted.
+     */
+    public async componentDidMount(): Promise<void> {
+        super.componentDidMount();
+
+        await this.updateMilestone();
+    }
+
+    /**
+     * The component was updated.
+     * @param prevProps The previous properties.
+     */
+    public async componentDidUpdate(prevProps: MessageTangleStateProps): Promise<void> {
+        if (this.props.milestoneIndex !== prevProps.milestoneIndex) {
+            await this.updateMilestone();
+        }
+    }
+
     /**
      * Render the component.
      * @returns The node to render.
@@ -33,8 +75,27 @@ class MessageTangleState extends Component<MessageTangleStateProps> {
                 {this.props.status === "milestone" &&
                     (`MS${this.props.milestoneIndex !== undefined ? ` ${this.props.milestoneIndex}` : ""}`)}
                 {this.props.status === "pending" && ("Pending")}
+
+                {this.state.timestamp}
             </div>
         );
+    }
+
+    /**
+     * Update the milestone info.
+     */
+    private async updateMilestone(): Promise<void> {
+        if (this.props.milestoneIndex) {
+            const result = await this._tangleCacheService.search(
+                this.props.network, this.props.milestoneIndex.toString());
+            if (result?.milestone) {
+                this.setState({
+                    timestamp: result.milestone.timestamp
+                        ? ` at ${DateHelper.formatShort(DateHelper.milliseconds(result?.milestone.timestamp))}`
+                        : undefined
+                });
+            }
+        }
     }
 }
 

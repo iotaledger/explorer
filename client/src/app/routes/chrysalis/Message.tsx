@@ -124,6 +124,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             General
                                         </h2>
                                         <MessageTangleState
+                                            network={this.props.match.params.network}
                                             status={this.state.messageTangleStatus}
                                             milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
                                                 this.state.metadata?.milestoneIndex}

@@ -2,6 +2,11 @@ import { MessageTangleStatus } from "../../models/messageTangleStatus";
 
 export interface MessageTangleStateProps {
     /**
+     * The network the request is for.
+     */
+    network: string;
+
+    /**
      * The tangle status.
      */
     status?: MessageTangleStatus;

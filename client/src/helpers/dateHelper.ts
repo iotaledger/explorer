@@ -31,6 +31,15 @@ export class DateHelper {
     }
 
     /**
+     * Format the date in short format.
+     * @param valueInMs The value to format in milliseconds.
+     * @returns The formated value.
+     */
+    public static formatShort(valueInMs: number): string {
+        return moment(valueInMs).format("YYYY-MM-DD HH:mm");
+    }
+
+    /**
      * Check the value is in ms if not scale accordingly.
      * @param valueInMs The value to format in milliseconds.
      * @returns The updated value.
