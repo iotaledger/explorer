@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
-import { Converter, Ed25519Address, IReferenceUnlockBlock, ISignatureUnlockBlock, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper, UTXO_INPUT_TYPE } from "@iota/iota.js";
+import { Converter, Ed25519Address, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper, UTXO_INPUT_TYPE, WriteStream } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
@@ -35,6 +36,24 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
 
         this._bechHrp = networkConfig?.bechHrp ?? "iota";
 
+        const inputs: (IUTXOInput & {
+            outputHash: string;
+            isGenesis: boolean;
+        })[] = [];
+
+        const GENESIS_HASH = "0".repeat(64);
+
+        for (const input of props.payload.essence.inputs) {
+            const isGenesis = input.transactionId === GENESIS_HASH;
+            const writeStream = new WriteStream();
+            writeStream.writeUInt16("transactionId", input.transactionOutputIndex);
+            inputs.push({
+                ...input,
+                isGenesis,
+                outputHash: input.transactionId + writeStream.finalHex()
+            });
+        }
+
         const signatureBlocks: ISignatureUnlockBlock[] = [];
         for (let i = 0; i < props.payload.unlockBlocks.length; i++) {
             if (props.payload.unlockBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE) {
@@ -61,6 +80,7 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
 
         this.state = {
             formatFull: false,
+            inputs,
             unlockAddresses
         };
     }
@@ -77,7 +97,7 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                         <h2>Inputs</h2>
                     </div>
                     <div className="card--content">
-                        {this.props.payload.essence.inputs.map((input, idx) => (
+                        {this.state.inputs.map((input, idx) => (
                             <div
                                 key={idx}
                                 className="card--inline-row"
@@ -94,8 +114,18 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                                             Transaction Id
                                         </div>
                                         <div className="card--value">
-                                            {input.transactionId !== "0".repeat(64) && input.transactionId}
-                                            {input.transactionId === "0".repeat(64) && "Genesis"}
+                                            {!input.isGenesis && (
+                                                <Link
+                                                    to={
+                                                        `/${this.props.network
+                                                        }/search/${input.outputHash}`
+                                                    }
+                                                    className="margin-r-t"
+                                                >
+                                                    {input.transactionId}
+                                                </Link>
+                                            )}
+                                            {input.isGenesis && "Genesis"}
                                         </div>
                                         <div className="card--label">
                                             Transaction Output Index
