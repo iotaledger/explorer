@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
+import { CurrencyHelper } from "../../helpers/currencyHelper";
 import Currency from "../components/Currency";
 import "./CurrencyConverter.scss";
 import { CurrencyConverterState } from "./CurrencyConverterState";
@@ -28,7 +29,7 @@ class CurrencyConverter extends Currency<unknown, CurrencyConverterState> {
         super(props);
 
         this.state = {
-            fiat: "100",
+            fiat: CurrencyHelper.formatLocale(100),
             currency: "USD",
             currencies: [],
             currencyIota: "",
@@ -167,17 +168,17 @@ class CurrencyConverter extends Currency<unknown, CurrencyConverterState> {
      * Perform fiat conversion.
      */
     private fiatConversion(): void {
-        const val = Number.parseFloat(this.state.fiat);
+        const val = CurrencyHelper.parseLocale(this.state.fiat);
         if (!Number.isNaN(val) && this._currencyData) {
             const miota = this._currencyService.convertFiatToMiota(val, this._currencyData);
 
             this.setState({
-                currencyIota: Math.round(miota * this.MULTIPLIERS.i).toFixed(0),
-                currencyKiota: (miota * this.MULTIPLIERS.k).toFixed(2),
-                currencyMiota: miota.toFixed(2),
-                currencyGiota: (miota * this.MULTIPLIERS.g).toFixed(2),
-                currencyTiota: (miota * this.MULTIPLIERS.t).toFixed(2),
-                currencyPiota: (miota * this.MULTIPLIERS.p).toFixed(2)
+                currencyIota: CurrencyHelper.formatLocale(Math.round(miota * this.MULTIPLIERS.i)),
+                currencyKiota: CurrencyHelper.formatLocale(miota * this.MULTIPLIERS.k),
+                currencyMiota: CurrencyHelper.formatLocale(miota),
+                currencyGiota: CurrencyHelper.formatLocale(miota * this.MULTIPLIERS.g),
+                currencyTiota: CurrencyHelper.formatLocale(miota * this.MULTIPLIERS.t),
+                currencyPiota: CurrencyHelper.formatLocale(miota * this.MULTIPLIERS.p)
             });
         }
     }
@@ -188,19 +189,20 @@ class CurrencyConverter extends Currency<unknown, CurrencyConverterState> {
      * @param value The value to convert.
      */
     private iotaConversion(unit: string, value: string): void {
-        const val = Number.parseFloat(value);
+        const val = CurrencyHelper.parseLocale(value);
         if (!Number.isNaN(val) && this._currencyData) {
             const miota = val / this.MULTIPLIERS[unit];
             const fiat = this._currencyService.convertMiotaToFiat(miota, this._currencyData);
 
             this.setState({
-                fiat: fiat.toFixed(2),
-                currencyIota: unit === "i" ? value : Math.round(miota * this.MULTIPLIERS.i).toFixed(0),
-                currencyKiota: unit === "k" ? value : (miota * this.MULTIPLIERS.k).toFixed(2),
-                currencyMiota: unit === "m" ? value : miota.toFixed(2),
-                currencyGiota: unit === "g" ? value : (miota * this.MULTIPLIERS.g).toFixed(2),
-                currencyTiota: unit === "t" ? value : (miota * this.MULTIPLIERS.t).toFixed(2),
-                currencyPiota: unit === "p" ? value : (miota * this.MULTIPLIERS.p).toFixed(2)
+                fiat: CurrencyHelper.formatLocale(fiat),
+                currencyIota: unit === "i"
+                    ? value : CurrencyHelper.formatLocale(Math.round(miota * this.MULTIPLIERS.i)),
+                currencyKiota: unit === "k" ? value : CurrencyHelper.formatLocale(miota * this.MULTIPLIERS.k),
+                currencyMiota: unit === "m" ? value : CurrencyHelper.formatLocale(miota),
+                currencyGiota: unit === "g" ? value : CurrencyHelper.formatLocale(miota * this.MULTIPLIERS.g),
+                currencyTiota: unit === "t" ? value : CurrencyHelper.formatLocale(miota * this.MULTIPLIERS.t),
+                currencyPiota: unit === "p" ? value : CurrencyHelper.formatLocale(miota * this.MULTIPLIERS.p)
             });
         }
     }
