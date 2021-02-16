@@ -1,5 +1,6 @@
 @import '../../scss/fonts';
 @import '../../scss/mixins';
+@import '../../scss/media-queries';
 @import '../../scss/variables';
 
 .message-tangle-state {
@@ -19,6 +20,14 @@
   font-weight: bold;
   white-space: nowrap;
   cursor: pointer;
+
+  @include tablet-down {
+    height: auto;
+    margin-top: 20px;
+    margin-left: 0;
+    padding: 8px;
+    white-space: normal;
+  }
 
   &.message-tangle-state__referenced {
     background-color: #73b183;

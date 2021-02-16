@@ -1,4 +1,5 @@
 import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, serializeMessage, TRANSACTION_PAYLOAD_TYPE, WriteStream } from "@iota/iota.js";
+import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { FaFileDownload } from "react-icons/fa";
 import { Link, RouteComponentProps } from "react-router-dom";
@@ -119,7 +120,13 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                         <div className="row top">
                             <div className="cards">
                                 <div className="card">
-                                    <div className="card--header card--header__space-between">
+                                    <div
+                                        className={classNames(
+                                            "card--header",
+                                            "card--header__space-between",
+                                            "card--header__tablet-responsive"
+                                        )}
+                                    >
                                         <h2>
                                             General
                                         </h2>
