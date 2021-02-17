@@ -8,4 +8,9 @@ export interface OutputState {
      * Is genesis output.
      */
     isGenesis: boolean;
+
+    /**
+     * Output hash to link to.
+     */
+    outputHash: string;
 }

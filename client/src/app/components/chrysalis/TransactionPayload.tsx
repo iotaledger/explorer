@@ -46,7 +46,7 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
         for (const input of props.payload.essence.inputs) {
             const isGenesis = input.transactionId === GENESIS_HASH;
             const writeStream = new WriteStream();
-            writeStream.writeUInt16("transactionId", input.transactionOutputIndex);
+            writeStream.writeUInt16("transactionOutputIndex", input.transactionOutputIndex);
             inputs.push({
                 ...input,
                 isGenesis,
@@ -113,17 +113,27 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                                         <div className="card--label">
                                             Transaction Id
                                         </div>
-                                        <div className="card--value">
+                                        <div className="card--value row middle">
                                             {!input.isGenesis && (
-                                                <Link
-                                                    to={
-                                                        `/${this.props.network
-                                                        }/search/${input.outputHash}`
-                                                    }
-                                                    className="margin-r-t"
-                                                >
-                                                    {input.transactionId}
-                                                </Link>
+                                                <React.Fragment>
+                                                    <Link
+                                                        to={
+                                                            `/${this.props.network
+                                                            }/search/${input.outputHash}`
+                                                        }
+                                                        className="margin-r-t"
+                                                    >
+                                                        {input.transactionId}
+                                                    </Link>
+                                                    <MessageButton
+                                                        onClick={() => ClipboardHelper.copy(
+                                                            input.transactionId
+                                                        )}
+                                                        buttonType="copy"
+                                                        labelPosition="top"
+                                                    />
+                                                </React.Fragment>
+
                                             )}
                                             {input.isGenesis && "Genesis"}
                                         </div>
