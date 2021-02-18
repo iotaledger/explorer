@@ -336,6 +336,10 @@
       &.card--value-textarea__tall {
         max-height: 280px;
       }
+
+      &.card--value-textarea__fit {
+        min-height: auto;
+      }
     }
 
     &.card--value__light,

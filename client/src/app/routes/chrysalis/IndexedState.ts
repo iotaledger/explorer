@@ -20,4 +20,14 @@ export interface IndexedState {
      * The content of the indexation messages.
      */
     messages?: IMessage[];
+
+    /**
+     * Hex view of index.
+     */
+    hexIndex: string;
+
+    /**
+     * UTF8 view of index.
+     */
+    utf8Index: string;
 }

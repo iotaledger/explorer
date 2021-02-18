@@ -19,25 +19,32 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
     constructor(props: IndexationPayloadProps) {
         super(props);
 
+        const utf8Index = Converter.hexToUtf8(props.payload.index);
+        const matchHexIndex = props.payload.index.match(/.{1,2}/g);
+        const hexIndex = matchHexIndex ? matchHexIndex.join(" ") : props.payload.index;
+
+        let hexData;
+        let utf8Data;
+        let jsonData;
+
         if (props.payload.data) {
-            const match = props.payload.data.match(/.{1,2}/g);
+            const matchHexData = props.payload.data.match(/.{1,2}/g);
 
-            const utf8 = Converter.hexToUtf8(props.payload.data);
-
-            let json;
+            hexData = matchHexData ? matchHexData.join(" ") : props.payload.data;
+            utf8Data = Converter.hexToUtf8(props.payload.data);
 
             try {
-                json = JSON.stringify(JSON.parse(utf8), undefined, "  ");
+                jsonData = JSON.stringify(JSON.parse(utf8Data), undefined, "  ");
             } catch { }
-
-            this.state = {
-                hex: match ? match.join(" ") : props.payload.data,
-                utf8,
-                json
-            };
-        } else {
-            this.state = {};
         }
+
+        this.state = {
+            utf8Index,
+            hexIndex,
+            utf8Data,
+            hexData,
+            jsonData
+        };
     }
 
     /**
@@ -51,51 +58,63 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                     <h2>Indexation Payload</h2>
                 </div>
                 <div className="card--content">
-                    <div className="card--label">
-                        <span className="margin-r-t">Index</span>
+                    <div className="card--label row middle">
+                        <span className="margin-r-t">Index UTF8</span>
                         <MessageButton
                             onClick={() => ClipboardHelper.copy(
-                                this.props.payload.index
+                                this.state.utf8Index
                             )}
                             buttonType="copy"
                             labelPosition="right"
                         />
                     </div>
-                    <div className="card--value row middle">
+                    <div className="card--value">
                         <Link
-                            className="margin-r-t"
                             to={
                                 `/${this.props.network
                                 }/indexed/${this.props.payload.index}`
                             }
                         >
-                            {this.props.payload.index}
+                            {this.state.utf8Index}
                         </Link>
                     </div>
-                    {!this.state.json && this.state.utf8 && (
+                    <div className="card--label row middle">
+                        <span className="margin-r-t">Index Hex</span>
+                        <MessageButton
+                            onClick={() => ClipboardHelper.copy(
+                                this.state.hexIndex.replace(/ /g, "")
+                            )}
+                            buttonType="copy"
+                            labelPosition="right"
+                        />
+                    </div>
+                    <div className="card--value card--value-textarea card--value-textarea__hex card--value-textarea__fit">
+                        {this.state.hexIndex}
+                    </div>
+                    {!this.state.jsonData && this.state.utf8Data && (
                         <React.Fragment>
                             <div className="card--label row middle">
-                                <span className="margin-r-t">Data Text</span>
+                                <span className="margin-r-t">Data UTF8</span>
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(
-                                        this.state.utf8
+                                        this.state.utf8Data
                                     )}
                                     buttonType="copy"
                                     labelPosition="right"
                                 />
                             </div>
                             <div className="card--value card--value-textarea card--value-textarea__utf8">
-                                {this.state.utf8}
+                                {this.state.utf8Data}
                             </div>
                         </React.Fragment>
                     )}
-                    {this.state.json && (
+                    {this.state.jsonData && (
                         <React.Fragment>
                             <div className="card--label row middle">
                                 <span className="margin-r-t">Data JSON</span>
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(
-                                        this.state.json
+                                        this.state.jsonData
                                     )}
                                     buttonType="copy"
                                     labelPosition="right"
@@ -104,24 +123,24 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             <div
                                 className="card--value card--value-textarea card--value-textarea__json"
                             >
-                                <JsonViewer json={this.state.json} />
+                                <JsonViewer json={this.state.jsonData} />
                             </div>
                         </React.Fragment>
                     )}
-                    {this.state.hex && (
+                    {this.state.hexData && (
                         <React.Fragment>
                             <div className="card--label row middle">
                                 <span className="margin-r-t">Data Hex</span>
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(
-                                        this.state.hex
+                                        this.state.hexData?.replace(/ /g, "")
                                     )}
                                     buttonType="copy"
                                     labelPosition="right"
                                 />
                             </div>
                             <div className="card--value card--value-textarea card--value-textarea__hex">
-                                {this.state.hex}
+                                {this.state.hexData}
                             </div>
                         </React.Fragment>
                     )}

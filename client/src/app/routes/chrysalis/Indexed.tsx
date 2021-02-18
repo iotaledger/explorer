@@ -1,3 +1,5 @@
+import { Converter } from "@iota/iota.js";
+import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -29,9 +31,15 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
+        const utf8Index = Converter.hexToUtf8(this.props.match.params.index);
+        const matchHexIndex = this.props.match.params.index.match(/.{1,2}/g);
+        const hexIndex = matchHexIndex ? matchHexIndex.join(" ") : this.props.match.params.index;
+
         this.state = {
             statusBusy: true,
-            status: "Loading indexed data..."
+            status: "Loading indexed data...",
+            utf8Index,
+            hexIndex
         };
     }
 
@@ -86,18 +94,37 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                         </h2>
                                     </div>
                                     <div className="card--content">
-                                        <div className="card--label">
-                                            Index
-                                        </div>
-                                        <div className="card--value row middle">
-                                            <span className="margin-r-t">{this.props.match.params.index}</span>
+                                        <div className="card--label row middle">
+                                            <span className="margin-r-t">Index UTF8</span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
-                                                    this.props.match.params.index
+                                                    this.state.utf8Index
                                                 )}
                                                 buttonType="copy"
-                                                labelPosition="top"
+                                                labelPosition="right"
                                             />
+                                        </div>
+                                        <div className="card--value">
+                                            {this.state.utf8Index}
+                                        </div>
+                                        <div className="card--label row middle">
+                                            <span className="margin-r-t">Index Hex</span>
+                                            <MessageButton
+                                                onClick={() => ClipboardHelper.copy(
+                                                    this.state.hexIndex.replace(/ /g, "")
+                                                )}
+                                                buttonType="copy"
+                                                labelPosition="right"
+                                            />
+                                        </div>
+                                        <div className={classNames(
+                                            "card--value",
+                                            "card--value-textarea",
+                                            "card--value-textarea__hex",
+                                            "card--value-textarea__fit"
+                                        )}
+                                        >
+                                            {this.state.hexIndex}
                                         </div>
                                     </div>
                                 </div>

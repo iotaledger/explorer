@@ -133,7 +133,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                                     </li>
                                                     <li>
                                                         <span>Indexes</span>
-                                                        <span>Maximum 64 bytes UTF-8</span>
+                                                        <span>Maximum 64 UTF-8 chars or maximum 128 hex chars</span>
                                                     </li>
                                                 </ul>
                                                 <br />
