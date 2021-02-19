@@ -1,4 +1,4 @@
-import { UnitsHelper } from "@iota/iota.js";
+import { Converter, UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -340,7 +340,25 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     {this.state.selectedFeedItem?.properties?.Index && (
                                         <React.Fragment>
                                             <div className="card--label">
-                                                Index
+                                                Index UTF8
+                                            </div>
+                                            <div className="card--value overflow-ellipsis">
+                                                <a
+                                                    className="button"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    href={
+                                                        `${window.location.origin}/${this.props.match.params.network
+                                                        }/indexed/${this.state.selectedFeedItem?.properties.Index}`
+                                                    }
+                                                >
+                                                    {Converter.hexToUtf8(
+                                                        this.state.selectedFeedItem?.properties.Index as string
+                                                    )}
+                                                </a>
+                                            </div>
+                                            <div className="card--label">
+                                                Index Hex
                                             </div>
                                             <div className="card--value overflow-ellipsis">
                                                 <a
