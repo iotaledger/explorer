@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper } from "@iota/iota.js";
+import { SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper, WriteStream } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
@@ -19,9 +19,15 @@ class Output extends Component<OutputProps, OutputState> {
     constructor(props: OutputProps) {
         super(props);
 
+        const GENESIS_HASH = "0".repeat(64);
+
+        const writeStream = new WriteStream();
+        writeStream.writeUInt16("transactionId", props.output.outputIndex);
+
         this.state = {
             formatFull: false,
-            isGenesis: props.output.messageId === "0".repeat(64)
+            isGenesis: props.output.messageId === GENESIS_HASH,
+            outputHash: props.output.transactionId + writeStream.finalHex()
         };
     }
 
@@ -74,7 +80,15 @@ class Output extends Component<OutputProps, OutputState> {
                         {!this.state.isGenesis && (
                             <React.Fragment>
                                 <span className="margin-r-t">
-                                    {this.props.output.transactionId}
+                                    <Link
+                                        to={
+                                            `/${this.props.network
+                                            }/search/${this.state.outputHash}`
+                                        }
+                                        className="margin-r-t"
+                                    >
+                                        {this.props.output.transactionId}
+                                    </Link>
                                 </span>
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(

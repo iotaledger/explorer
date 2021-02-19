@@ -24,10 +24,10 @@ export interface IndexedState {
     /**
      * Hex view of index.
      */
-    hexIndex: string;
+    hexIndex?: string;
 
     /**
      * UTF8 view of index.
      */
-    utf8Index: string;
+    utf8Index?: string;
 }

@@ -31,15 +31,9 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
-        const utf8Index = Converter.hexToUtf8(this.props.match.params.index);
-        const matchHexIndex = this.props.match.params.index.match(/.{1,2}/g);
-        const hexIndex = matchHexIndex ? matchHexIndex.join(" ") : this.props.match.params.index;
-
         this.state = {
             statusBusy: true,
-            status: "Loading indexed data...",
-            utf8Index,
-            hexIndex
+            status: "Loading indexed data..."
         };
     }
 
@@ -52,15 +46,30 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
         const result = await this._tangleCacheService.search(
             this.props.match.params.network, this.props.match.params.index);
 
-        if (result?.indexMessageIds) {
+        if (result?.indexMessageIds && result?.indexMessageType) {
             window.scrollTo({
                 left: 0,
                 top: 0,
                 behavior: "smooth"
             });
 
+            let hexIndex;
+            let utf8Index;
+            if (result.indexMessageType === "hex") {
+                hexIndex = this.props.match.params.index;
+                utf8Index = Converter.hexToUtf8(this.props.match.params.index);
+            } else {
+                hexIndex = Converter.utf8ToHex(this.props.match.params.index);
+                utf8Index = this.props.match.params.index;
+            }
+
+            const matchHexIndex = hexIndex.match(/.{1,2}/g);
+            const formattedHexIndex = matchHexIndex ? matchHexIndex.join(" ") : hexIndex;
+
             this.setState({
-                messageIds: result.indexMessageIds
+                messageIds: result.indexMessageIds,
+                utf8Index,
+                hexIndex: formattedHexIndex
             }, async () => {
                 this.setState({
                     messages: [],
@@ -111,7 +120,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                             <span className="margin-r-t">Index Hex</span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
-                                                    this.state.hexIndex.replace(/ /g, "")
+                                                    this.state.hexIndex?.replace(/ /g, "")
                                                 )}
                                                 buttonType="copy"
                                                 labelPosition="right"

@@ -385,20 +385,29 @@ export class TangleHelper {
         try {
             if (query.length > 0) {
                 let messages;
+                let indexMessageType: "utf8" | "hex" | undefined;
 
                 // If the query is between 2 and 128 hex chars assume hex encoded bytes
                 if (query.length >= 2 && query.length <= 128 && Converter.isHex(queryLower)) {
                     messages = await client.messagesFind(Converter.hexToBytes(queryLower));
+
+                    if (messages.count > 0) {
+                        indexMessageType = "hex";
+                    }
                 }
 
                 // If not already found and query less than 64 bytes assume its UTF8
-                if (!messages && query.length <= 64) {
+                if (!indexMessageType && query.length <= 64) {
                     messages = await client.messagesFind(query);
+                    if (messages.count > 0) {
+                        indexMessageType = "utf8";
+                    }
                 }
 
                 if (messages && messages.count > 0) {
                     return {
-                        indexMessageIds: messages.messageIds
+                        indexMessageIds: messages.messageIds,
+                        indexMessageType
                     };
                 }
             }

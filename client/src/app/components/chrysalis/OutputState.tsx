@@ -8,4 +8,9 @@ export interface OutputState {
      * Is genesis output.
      */
     isGenesis: boolean;
+
+    /**
+     * The output hash for transaction id.
+     */
+    outputHash: string;
 }
