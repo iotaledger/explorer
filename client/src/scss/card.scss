@@ -1,8 +1,8 @@
-@import "./scss/fonts";
-@import "./scss/layout";
-@import "./scss/media-queries";
-@import "./scss/mixins";
-@import "./scss/variables";
+@import "./fonts";
+@import "./layout";
+@import "./media-queries";
+@import "./mixins";
+@import "./variables";
 
 .card {
   display: flex;
@@ -214,7 +214,10 @@
       pointer-events: none;
     }
 
-    &.card--action-plain {
+    &.card--action-icon {
+      @include font-size(20px);
+
+      padding: 8px;
       border: 0;
     }
   }
@@ -335,6 +338,10 @@
 
       &.card--value-textarea__tall {
         max-height: 280px;
+      }
+
+      &.card--value-textarea__fit {
+        min-height: auto;
       }
     }
 

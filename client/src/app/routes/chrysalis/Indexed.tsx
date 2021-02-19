@@ -1,3 +1,5 @@
+import { Converter } from "@iota/iota.js";
+import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -44,15 +46,30 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
         const result = await this._tangleCacheService.search(
             this.props.match.params.network, this.props.match.params.index);
 
-        if (result?.indexMessageIds) {
+        if (result?.indexMessageIds && result?.indexMessageType) {
             window.scrollTo({
                 left: 0,
                 top: 0,
                 behavior: "smooth"
             });
 
+            let hexIndex;
+            let utf8Index;
+            if (result.indexMessageType === "hex") {
+                hexIndex = this.props.match.params.index;
+                utf8Index = Converter.hexToUtf8(this.props.match.params.index);
+            } else {
+                hexIndex = Converter.utf8ToHex(this.props.match.params.index);
+                utf8Index = this.props.match.params.index;
+            }
+
+            const matchHexIndex = hexIndex.match(/.{1,2}/g);
+            const formattedHexIndex = matchHexIndex ? matchHexIndex.join(" ") : hexIndex;
+
             this.setState({
-                messageIds: result.indexMessageIds
+                messageIds: result.indexMessageIds,
+                utf8Index,
+                hexIndex: formattedHexIndex
             }, async () => {
                 this.setState({
                     messages: [],
@@ -86,18 +103,37 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                         </h2>
                                     </div>
                                     <div className="card--content">
-                                        <div className="card--label">
-                                            Index
-                                        </div>
-                                        <div className="card--value row middle">
-                                            <span className="margin-r-t">{this.props.match.params.index}</span>
+                                        <div className="card--label row middle">
+                                            <span className="margin-r-t">Index UTF8</span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
-                                                    this.props.match.params.index
+                                                    this.state.utf8Index
                                                 )}
                                                 buttonType="copy"
-                                                labelPosition="top"
+                                                labelPosition="right"
                                             />
+                                        </div>
+                                        <div className="card--value">
+                                            {this.state.utf8Index}
+                                        </div>
+                                        <div className="card--label row middle">
+                                            <span className="margin-r-t">Index Hex</span>
+                                            <MessageButton
+                                                onClick={() => ClipboardHelper.copy(
+                                                    this.state.hexIndex?.replace(/ /g, "")
+                                                )}
+                                                buttonType="copy"
+                                                labelPosition="right"
+                                            />
+                                        </div>
+                                        <div className={classNames(
+                                            "card--value",
+                                            "card--value-textarea",
+                                            "card--value-textarea__hex",
+                                            "card--value-textarea__fit"
+                                        )}
+                                        >
+                                            {this.state.hexIndex}
                                         </div>
                                     </div>
                                 </div>

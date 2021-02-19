@@ -10,7 +10,7 @@ export interface OutputState {
     isGenesis: boolean;
 
     /**
-     * Output hash to link to.
+     * The output hash for transaction id.
      */
     outputHash: string;
 }

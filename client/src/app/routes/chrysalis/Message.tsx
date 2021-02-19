@@ -349,7 +349,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 <img src={chevronDownGray} alt="expand" />
                                             </div>
                                             <a
-                                                className="card--action card--action-plain"
+                                                className="card--action card--action-icon"
                                                 href={this.state.dataUrls[this.state.selectedDataUrl]}
                                                 download={DownloadHelper.filename(
                                                     this.props.match.params.messageId, this.state.selectedDataUrl)}

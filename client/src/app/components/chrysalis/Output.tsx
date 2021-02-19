@@ -19,12 +19,14 @@ class Output extends Component<OutputProps, OutputState> {
     constructor(props: OutputProps) {
         super(props);
 
+        const GENESIS_HASH = "0".repeat(64);
+
         const writeStream = new WriteStream();
         writeStream.writeUInt16("transactionId", props.output.outputIndex);
 
         this.state = {
             formatFull: false,
-            isGenesis: props.output.messageId === "0".repeat(64),
+            isGenesis: props.output.messageId === GENESIS_HASH,
             outputHash: props.output.transactionId + writeStream.finalHex()
         };
     }
