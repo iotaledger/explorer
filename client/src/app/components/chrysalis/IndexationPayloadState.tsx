@@ -10,6 +10,11 @@ export interface IndexationPayloadState {
     utf8Index: string;
 
     /**
+     * The index length in bytes.
+     */
+    indexLengthBytes: number;
+
+    /**
      * Hex view of data.
      */
     hexData?: string;
@@ -23,4 +28,9 @@ export interface IndexationPayloadState {
      * JSON view of data.
      */
     jsonData?: string;
+
+    /**
+     * The data length in bytes.
+     */
+    dataLengthBytes?: number;
 }

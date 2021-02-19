@@ -69,7 +69,8 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
             this.setState({
                 messageIds: result.indexMessageIds,
                 utf8Index,
-                hexIndex: formattedHexIndex
+                hexIndex: formattedHexIndex,
+                indexLengthBytes: hexIndex.length / 2
             }, async () => {
                 this.setState({
                     messages: [],
@@ -104,7 +105,9 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                     </div>
                                     <div className="card--content">
                                         <div className="card--label row middle">
-                                            <span className="margin-r-t">Index UTF8</span>
+                                            <span className="margin-r-t">
+                                                Index UTF8 [{this.state.indexLengthBytes}]
+                                            </span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
                                                     this.state.utf8Index
@@ -117,7 +120,9 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                             {this.state.utf8Index}
                                         </div>
                                         <div className="card--label row middle">
-                                            <span className="margin-r-t">Index Hex</span>
+                                            <span className="margin-r-t">
+                                                Index Hex [{this.state.indexLengthBytes}]
+                                            </span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
                                                     this.state.hexIndex?.replace(/ /g, "")
@@ -139,7 +144,14 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                 </div>
                                 <div className="card margin-t-s">
                                     <div className="card--header row space-between">
-                                        <h2>Indexed Messages</h2>
+                                        <div className="row middle">
+                                            <h2>Indexed Messages</h2>
+                                            {this.state.messageIds !== undefined && (
+                                                <span className="card--header-count">
+                                                    {this.state.messageIds.length}
+                                                </span>
+                                            )}
+                                        </div>
                                         {this.state.statusBusy && (<Spinner />)}
                                     </div>
 
