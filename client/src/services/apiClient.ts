@@ -1,6 +1,8 @@
 import { FetchHelper } from "../helpers/fetchHelper";
 import { IMessageDetailsRequest } from "../models/api/chrysalis/IMessageDetailsRequest";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
+import { IOutputDetailsRequest } from "../models/api/chrysalis/IOutputDetailsRequest";
+import { IOutputDetailsResponse } from "../models/api/chrysalis/IOutputDetailsResponse";
 import { ISearchRequest } from "../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
@@ -153,8 +155,20 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async messageDetails(request: IMessageDetailsRequest): Promise<IMessageDetailsResponse> {
-        return this.callApi<unknown, ISearchResponse>(
+        return this.callApi<unknown, IMessageDetailsResponse>(
             `message/${request.network}/${request.messageId}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the output details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async outputDetails(request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
+        return this.callApi<unknown, IOutputDetailsResponse>(
+            `output/${request.network}/${request.outputId}`,
             "get"
         );
     }

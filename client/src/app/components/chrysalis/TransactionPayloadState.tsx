@@ -13,6 +13,8 @@ export interface TransactionPayloadState {
     inputs: (IUTXOInput & {
         outputHash: string;
         isGenesis: boolean;
+        transactionUrl: string;
+        transactionAddress: IBech32AddressDetails;
     })[];
 
     /**

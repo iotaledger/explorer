@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { Converter, Ed25519Address, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper, UTXO_INPUT_TYPE, WriteStream } from "@iota/iota.js";
-import React, { Component, ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
@@ -8,6 +8,8 @@ import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { NameHelper } from "../../../helpers/nameHelper";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import { NetworkService } from "../../../services/networkService";
+import { TangleCacheService } from "../../../services/tangleCacheService";
+import AsyncComponent from "../AsyncComponent";
 import MessageButton from "../MessageButton";
 import Bech32Address from "./Bech32Address";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
@@ -16,7 +18,12 @@ import { TransactionPayloadState } from "./TransactionPayloadState";
 /**
  * Component which will display a transaction payload.
  */
-class TransactionPayload extends Component<TransactionPayloadProps, TransactionPayloadState> {
+class TransactionPayload extends AsyncComponent<TransactionPayloadProps, TransactionPayloadState> {
+    /**
+     * API Client for tangle requests.
+     */
+    private readonly _tangleCacheService: TangleCacheService;
+
     /**
      * The hrp of bech addresses.
      */
@@ -29,6 +36,8 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
     constructor(props: TransactionPayloadProps) {
         super(props);
 
+        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networkConfig = this.props.network
             ? networkService.get(this.props.network)
@@ -39,20 +48,11 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
         const inputs: (IUTXOInput & {
             outputHash: string;
             isGenesis: boolean;
+            transactionUrl: string;
+            transactionAddress: IBech32AddressDetails;
         })[] = [];
 
         const GENESIS_HASH = "0".repeat(64);
-
-        for (const input of props.payload.essence.inputs) {
-            const isGenesis = input.transactionId === GENESIS_HASH;
-            const writeStream = new WriteStream();
-            writeStream.writeUInt16("transactionOutputIndex", input.transactionOutputIndex);
-            inputs.push({
-                ...input,
-                isGenesis,
-                outputHash: input.transactionId + writeStream.finalHex()
-            });
-        }
 
         const signatureBlocks: ISignatureUnlockBlock[] = [];
         for (let i = 0; i < props.payload.unlockBlocks.length; i++) {
@@ -78,11 +78,54 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
             );
         }
 
+        for (let i = 0; i < props.payload.essence.inputs.length; i++) {
+            const input = props.payload.essence.inputs[i];
+            const isGenesis = input.transactionId === GENESIS_HASH;
+            const writeStream = new WriteStream();
+            writeStream.writeUInt16("transactionOutputIndex", input.transactionOutputIndex);
+            const outputHash = input.transactionId + writeStream.finalHex();
+            inputs.push({
+                ...input,
+                isGenesis,
+                outputHash,
+                transactionUrl: `/${this.props.network}/search/${outputHash}`,
+                transactionAddress: unlockAddresses[i]
+            });
+        }
+
         this.state = {
             formatFull: false,
             inputs,
             unlockAddresses
         };
+    }
+
+    /**
+     * The component mounted.
+     */
+    public async componentDidMount(): Promise<void> {
+        super.componentDidMount();
+
+        const inputs = this.state.inputs;
+
+        for (let i = 0; i < this.state.inputs.length; i++) {
+            const outputResponse = await this._tangleCacheService.outputDetails(this.props.network, this.state.inputs[i].outputHash);
+
+            if (outputResponse?.output) {
+                inputs[i].transactionAddress = Bech32AddressHelper.buildAddress(
+                    Converter.bytesToHex(
+                        new Ed25519Address(Converter.hexToBytes(outputResponse.output.output.address.address))
+                            .toAddress()
+                    ),
+                    this._bechHrp
+                );
+                inputs[i].transactionUrl = `/${this.props.network}/message/${outputResponse.output.messageId}`;
+            }
+        }
+
+        this.setState({
+            inputs
+        });
     }
 
     /**
@@ -108,7 +151,7 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                                         <Bech32Address
                                             network={this.props.network}
                                             history={this.props.history}
-                                            addressDetails={this.state.unlockAddresses[idx]}
+                                            addressDetails={input.transactionAddress}
                                         />
                                         <div className="card--label">
                                             Transaction Id
@@ -117,10 +160,7 @@ class TransactionPayload extends Component<TransactionPayloadProps, TransactionP
                                             {!input.isGenesis && (
                                                 <React.Fragment>
                                                     <Link
-                                                        to={
-                                                            `/${this.props.network
-                                                            }/search/${input.outputHash}`
-                                                        }
+                                                        to={input.transactionUrl}
                                                         className="margin-r-t"
                                                     >
                                                         {input.transactionId}

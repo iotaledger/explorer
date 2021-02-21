@@ -1,4 +1,4 @@
-import { IMessageMetadata } from "@iota/iota.js";
+import { IMessageMetadata, IOutputResponse } from "@iota/iota.js";
 import { mamFetch as mamFetchChrysalis } from "@iota/mam-chrysalis.js";
 import { mamFetch as mamFetchOg, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
@@ -745,12 +745,12 @@ export class TangleCacheService {
 
     /**
      * Get the message metadata.
-     * @param network The network to search
+     * @param networkId The network to search
      * @param messageId The message if to get the metadata for.
      * @returns The details response.
      */
     public async messageDetails(
-        network: string,
+        networkId: string,
         messageId: string): Promise<{
             metadata?: IMessageMetadata;
             childrenIds?: string[];
@@ -758,12 +758,44 @@ export class TangleCacheService {
         }> {
         const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-        const response = await apiClient.messageDetails({ network, messageId });
+        const response = await apiClient.messageDetails({ network: networkId, messageId });
 
         if (response) {
             return {
                 metadata: response.metadata,
                 childrenIds: response.childrenMessageIds,
+                error: response.error
+            };
+        }
+
+        return { };
+    }
+
+    /**
+     * Get the output details.
+     * @param networkId The network to search
+     * @param outputId The output to get the details for.
+     * @returns The details response.
+     */
+    public async outputDetails(
+        networkId: string,
+        outputId: string): Promise<{
+            output?: IOutputResponse;
+            error?: string;
+        }> {
+        const apiClient = ServiceFactory.get<ApiClient>("api-client");
+
+        const response = await apiClient.outputDetails({ network: networkId, outputId });
+
+        if (response) {
+            if (!response.output) {
+                this._chrysalisSearchCache[networkId][outputId] = {
+                    data: response.output,
+                    cached: Date.now()
+                };
+            }
+            return {
+                output: response.output,
                 error: response.error
             };
         }

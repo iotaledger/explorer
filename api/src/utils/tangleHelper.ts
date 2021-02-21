@@ -1,5 +1,5 @@
 import { composeAPI, Transaction } from "@iota/core";
-import { Bech32Helper, Converter, SingleNodeClient } from "@iota/iota.js";
+import { Bech32Helper, Converter, IOutputResponse, SingleNodeClient } from "@iota/iota.js";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
@@ -440,6 +440,21 @@ export class TangleHelper {
                 };
             }
             console.log(err);
+        }
+    }
+
+    /**
+     * Get the output details.
+     * @param network The network to find the items on.
+     * @param outputId The output id to get the details.
+     * @returns The item details.
+     */
+    public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputResponse | undefined> {
+        const client = new SingleNodeClient(network.provider);
+
+        try {
+            return await client.output(outputId);
+        } catch {
         }
     }
 }
