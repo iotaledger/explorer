@@ -17,7 +17,7 @@ export class ChrysalisFeedService implements IFeedService {
     private readonly _apiClient: IClient;
 
     /**
-     * Create a new instance of OgFeedService.
+     * Create a new instance of ChrysalisFeedService.
      * @param networkId The network id.
      * @param provider Provider for API Endpoint.
      */

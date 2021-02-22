@@ -59,7 +59,7 @@ export async function initServices(config: IConfiguration) {
         } else if (networkConfig.protocolVersion === "chrysalis" && networkConfig.feedEndpoint) {
             ServiceFactory.register(
                 `mqtt-${networkConfig.network}`, () => new MqttClient(
-                    networkConfig.feedEndpoint)
+                    networkConfig.feedEndpoint.split(";"))
             );
 
             ServiceFactory.register(
