@@ -47,7 +47,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         this._bechHrp = networkConfig?.bechHrp ?? "iot";
 
         this.state = {
-            ...Bech32AddressHelper.buildAddress(props.match.params.address, this._bechHrp),
+            ...Bech32AddressHelper.buildAddress(
+                this._bechHrp,
+                props.match.params.address
+            ),
             statusBusy: true,
             status: "Loading outputs..."
         };
@@ -71,7 +74,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
             this.setState({
                 address: result.address,
-                bech32AddressDetails: Bech32AddressHelper.buildAddress(result.address.address, this._bechHrp),
+                bech32AddressDetails: Bech32AddressHelper.buildAddress(
+                    this._bechHrp,
+                    result.address.address,
+                    result.address.addressType
+                ),
                 balance: result.address.balance,
                 outputIds: result.addressOutputIds
             }, async () => {
@@ -164,7 +171,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     </div>
                                 )}
                                 {this.state.outputs &&
-                                this.state.outputIds &&
+                                    this.state.outputIds &&
                                     this.state.outputs.length > 0 &&
                                     this.state.outputs.map((output, idx) => (
                                         <div className="card" key={idx}>

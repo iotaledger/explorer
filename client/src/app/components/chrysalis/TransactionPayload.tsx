@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Converter, Ed25519Address, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper, UTXO_INPUT_TYPE, WriteStream } from "@iota/iota.js";
+import { Converter, Ed25519Address, ED25519_ADDRESS_TYPE, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper, UTXO_INPUT_TYPE, WriteStream } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -69,11 +69,13 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
         for (let i = 0; i < signatureBlocks.length; i++) {
             unlockAddresses.push(
                 Bech32AddressHelper.buildAddress(
+                    this._bechHrp,
                     Converter.bytesToHex(
                         new Ed25519Address(Converter.hexToBytes(signatureBlocks[i].signature.publicKey))
                             .toAddress()
                     ),
-                    this._bechHrp
+                    signatureBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE
+                        ? ED25519_ADDRESS_TYPE : undefined
                 )
             );
         }
@@ -113,11 +115,9 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
 
             if (outputResponse?.output) {
                 inputs[i].transactionAddress = Bech32AddressHelper.buildAddress(
-                    Converter.bytesToHex(
-                        new Ed25519Address(Converter.hexToBytes(outputResponse.output.output.address.address))
-                            .toAddress()
-                    ),
-                    this._bechHrp
+                    this._bechHrp,
+                    outputResponse.output.output.address.address,
+                    outputResponse.output.output.address.type
                 );
                 inputs[i].transactionUrl = `/${this.props.network}/message/${outputResponse.output.messageId}`;
             }
@@ -207,7 +207,10 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             <Bech32Address
                                                 network={this.props.network}
                                                 history={this.props.history}
-                                                addressDetails={Bech32AddressHelper.buildAddress(output.address.address, this._bechHrp)}
+                                                addressDetails={Bech32AddressHelper.buildAddress(
+                                                    this._bechHrp,
+                                                    output.address.address,
+                                                    output.address.type)}
                                             />
 
                                             <div className="card--label">
