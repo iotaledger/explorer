@@ -87,6 +87,10 @@ class Markets extends Currency<unknown, MarketsState> {
                 {
                     value: "24hours",
                     label: "24 Hours"
+                },
+                {
+                    value: "1hour",
+                    label: "1 Hour"
                 }
             ],
             marketCapCurrency: "--",
@@ -125,9 +129,11 @@ class Markets extends Currency<unknown, MarketsState> {
                 type: Chartist.FixedScaleAxis,
                 divisor: 10,
                 labelInterpolationFnc: (value: number) => (
-                    this.state.selectedRange === "24hours"
-                        ? moment(value * 1000).format("HH:MM")
-                        : moment(value * 1000).format("DD MMM YY"))
+                    this.state.selectedRange === "1hour"
+                        ? moment(value * 1000).format("mm")
+                        : (this.state.selectedRange === "24hours"
+                            ? moment(value * 1000).format("HH:mm")
+                            : moment(value * 1000).format("DD MMM YY")))
             },
             axisY: {
                 type: Chartist.AutoScaleAxis
@@ -141,9 +147,11 @@ class Markets extends Currency<unknown, MarketsState> {
                 type: Chartist.FixedScaleAxis,
                 divisor: 10,
                 labelInterpolationFnc: (value: number) => (
-                    this.state.selectedRange === "24hours"
-                        ? moment(value * 1000).format("HH:MM")
-                        : moment(value * 1000).format("DD MMM YY"))
+                    this.state.selectedRange === "1hour"
+                        ? moment(value * 1000).format("mm")
+                        : (this.state.selectedRange === "24hours"
+                            ? moment(value * 1000).format("HH:mm")
+                            : moment(value * 1000).format("DD MMM YY")))
             },
             axisY: {
                 type: Chartist.AutoScaleAxis,
@@ -443,6 +451,13 @@ class Markets extends Currency<unknown, MarketsState> {
                 pricesRange: this.state.dayPrices,
                 volumesRange: this.state.dayVolumes
             });
+        } else if (range === "1hour") {
+            const hourAgo = this.state.dayPrices[this.state.dayPrices.length - 1].x - (60 * 60);
+            this.setState({
+                selectedRange: range,
+                pricesRange: this.state.dayPrices.filter(t => t.x > hourAgo),
+                volumesRange: this.state.dayVolumes.filter(t => t.x > hourAgo)
+            });
         } else if (range === "last7days") {
             this.setState({
                 selectedRange: range,
@@ -582,7 +597,8 @@ class Markets extends Currency<unknown, MarketsState> {
                     if (hit !== undefined) {
                         toolTips[chartIndex].className = "tooltip";
                         toolTips[chartIndex].innerHTML = `${moment(this._points[chartIndex][hit].value.x * 1000)
-                            .format(this.state.selectedRange === "24hours" ? "HH:MM" : "LL")
+                            .format(this.state.selectedRange === "1hour" ? "HH:mm:ss"
+                                : (this.state.selectedRange === "24hours" ? "HH:mm" : "LL"))
                             }<br/>${this._currencyService.formatCurrency(
                                 this._currencyData,
                                 this._points[chartIndex][hit].value.y, decimalPlaces, maxDecimalPlaces)}`;
