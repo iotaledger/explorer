@@ -40,6 +40,8 @@
     button {
       @include font-size(12px);
 
+      display: flex;
+      justify-content: center;
       width: 20px;
       height: 20px;
       padding: 0;
@@ -49,12 +51,17 @@
       background: none;
       color: $gray;
       font-family: $inter;
+      text-decoration: none;
       cursor: pointer;
 
       &.selected {
         border-bottom: 2px solid $main-green-highlight;
         color: $white;
         font-weight: bold;
+      }
+
+      &:hover {
+        text-decoration: none;
       }
     }
 
