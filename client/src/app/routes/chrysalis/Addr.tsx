@@ -93,8 +93,13 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                             outputs.push(outputResult);
 
                             this.setState({
-                                outputs
+                                outputs,
+                                status: `Loading outputs [${outputs.length}/${result.addressOutputIds.length}]`
                             });
+                        }
+
+                        if (!this._isMounted) {
+                            break;
                         }
                     }
                 }
@@ -155,6 +160,14 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </div>
                                             </div>
                                         )}
+                                        {this.state.status && (
+                                            <div className="middle row">
+                                                {this.state.statusBusy && (<Spinner />)}
+                                                <p className="status">
+                                                    {this.state.status}
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
@@ -179,16 +192,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             />
                                         </div>
                                     ))}
-                                {this.state.status && (
-                                    <div className="card margin-t-s">
-                                        <div className="card--content middle row">
-                                            {this.state.statusBusy && (<Spinner />)}
-                                            <p className="status">
-                                                {this.state.status}
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                             <SidePanel {...this.props} />
                         </div>
