@@ -116,10 +116,10 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
             if (outputResponse?.output) {
                 inputs[i].transactionAddress = Bech32AddressHelper.buildAddress(
                     this._bechHrp,
-                    outputResponse.output.output.address.address,
-                    outputResponse.output.output.address.type
+                    outputResponse.output.address.address,
+                    outputResponse.output.address.type
                 );
-                inputs[i].transactionUrl = `/${this.props.network}/message/${outputResponse.output.messageId}`;
+                inputs[i].transactionUrl = `/${this.props.network}/message/${outputResponse.messageId}`;
             }
         }
 

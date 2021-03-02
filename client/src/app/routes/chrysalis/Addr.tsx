@@ -86,11 +86,15 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                 if (result.addressOutputIds) {
                     for (const outputId of result.addressOutputIds) {
-                        const outputResult = await this._tangleCacheService.search(
+                        const outputResult = await this._tangleCacheService.outputDetails(
                             this.props.match.params.network, outputId);
 
-                        if (outputResult?.output) {
-                            outputs.push(outputResult?.output);
+                        if (outputResult) {
+                            outputs.push(outputResult);
+
+                            this.setState({
+                                outputs
+                            });
                         }
                     }
                 }
@@ -153,16 +157,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         )}
                                     </div>
                                 </div>
-                                {this.state.status && (
-                                    <div className="card margin-t-s">
-                                        <div className="card--content middle row">
-                                            {this.state.statusBusy && (<Spinner />)}
-                                            <p className="status">
-                                                {this.state.status}
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
                                 {this.state.outputs && this.state.outputs.length === 0 && (
                                     <div className="card">
                                         <div className="card--content">
@@ -177,6 +171,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         <div className="card" key={idx}>
                                             <Output
                                                 key={idx}
+                                                index={idx + 1}
                                                 network={this.props.match.params.network}
                                                 history={this.props.history}
                                                 id={this.state.outputIds ? this.state.outputIds[idx] : ""}
@@ -184,6 +179,16 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             />
                                         </div>
                                     ))}
+                                {this.state.status && (
+                                    <div className="card margin-t-s">
+                                        <div className="card--content middle row">
+                                            {this.state.statusBusy && (<Spinner />)}
+                                            <p className="status">
+                                                {this.state.status}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <SidePanel {...this.props} />
                         </div>

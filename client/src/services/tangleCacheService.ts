@@ -1,4 +1,4 @@
-import { IMessageMetadata, IOutputResponse } from "@iota/iota.js";
+import { IMessageMetadata, IMilestoneResponse, IOutputResponse } from "@iota/iota.js";
 import { mamFetch as mamFetchChrysalis } from "@iota/mam-chrysalis.js";
 import { mamFetch as mamFetchOg, MamMode } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
@@ -768,7 +768,7 @@ export class TangleCacheService {
             };
         }
 
-        return { };
+        return {};
     }
 
     /**
@@ -779,28 +779,46 @@ export class TangleCacheService {
      */
     public async outputDetails(
         networkId: string,
-        outputId: string): Promise<{
-            output?: IOutputResponse;
-            error?: string;
-        }> {
-        const apiClient = ServiceFactory.get<ApiClient>("api-client");
+        outputId: string): Promise<IOutputResponse | undefined> {
+        if (!this._chrysalisSearchCache[networkId][outputId]?.data?.output) {
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-        const response = await apiClient.outputDetails({ network: networkId, outputId });
+            const response = await apiClient.outputDetails({ network: networkId, outputId });
 
-        if (response) {
-            if (!response.output) {
+            if (response?.output) {
                 this._chrysalisSearchCache[networkId][outputId] = {
-                    data: response.output,
+                    data: { output: response.output },
                     cached: Date.now()
                 };
             }
-            return {
-                output: response.output,
-                error: response.error
-            };
         }
 
-        return { };
+        return this._chrysalisSearchCache[networkId][outputId]?.data?.output;
+    }
+
+    /**
+     * Get the milestone details.
+     * @param networkId The network to search
+     * @param milestoneIndex The output to get the details for.
+     * @returns The details response.
+     */
+    public async milestoneDetails(
+        networkId: string,
+        milestoneIndex: number): Promise<IMilestoneResponse | undefined> {
+        if (!this._chrysalisSearchCache[networkId][milestoneIndex]?.data?.milestone) {
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
+
+            const response = await apiClient.milestoneDetails({ network: networkId, milestoneIndex });
+
+            if (response?.milestone) {
+                this._chrysalisSearchCache[networkId][milestoneIndex] = {
+                    data: { milestone: response.milestone },
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._chrysalisSearchCache[networkId][milestoneIndex.toString()]?.data?.milestone;
     }
 
     /**

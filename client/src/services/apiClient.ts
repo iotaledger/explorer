@@ -1,6 +1,8 @@
 import { FetchHelper } from "../helpers/fetchHelper";
 import { IMessageDetailsRequest } from "../models/api/chrysalis/IMessageDetailsRequest";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
+import { IMilestoneDetailsRequest } from "../models/api/chrysalis/IMilestoneDetailsRequest";
+import { IMilestoneDetailsResponse } from "../models/api/chrysalis/IMilestoneDetailsResponse";
 import { IOutputDetailsRequest } from "../models/api/chrysalis/IOutputDetailsRequest";
 import { IOutputDetailsResponse } from "../models/api/chrysalis/IOutputDetailsResponse";
 import { ISearchRequest } from "../models/api/chrysalis/ISearchRequest";
@@ -169,6 +171,18 @@ export class ApiClient {
     public async outputDetails(request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
         return this.callApi<unknown, IOutputDetailsResponse>(
             `output/${request.network}/${request.outputId}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the milestone details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async milestoneDetails(request: IMilestoneDetailsRequest): Promise<IMilestoneDetailsResponse> {
+        return this.callApi<unknown, IMilestoneDetailsResponse>(
+            `milestone/${request.network}/${request.milestoneIndex}`,
             "get"
         );
     }

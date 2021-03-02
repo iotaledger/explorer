@@ -149,10 +149,10 @@ class Milestone extends AsyncComponent<RouteComponentProps<MilestoneRouteProps>,
      * @param updateUrl Update the url.
      */
     private async loadIndex(index: string, updateUrl: boolean): Promise<void> {
-        const result = await this._tangleCacheService.search(
-            this.props.match.params.network, index);
+        const result = await this._tangleCacheService.milestoneDetails(
+            this.props.match.params.network, Number.parseInt(index, 10));
 
-        if (result?.milestone) {
+        if (result) {
             window.scrollTo({
                 left: 0,
                 top: 0,
@@ -160,7 +160,7 @@ class Milestone extends AsyncComponent<RouteComponentProps<MilestoneRouteProps>,
             });
 
             this.setState({
-                milestone: result.milestone
+                milestone: result
             }, async () => this.checkForAdjacentMilestones());
 
             if (updateUrl) {
@@ -187,16 +187,16 @@ class Milestone extends AsyncComponent<RouteComponentProps<MilestoneRouteProps>,
             let hasPrevious = false;
 
             if (previousIndex > 0) {
-                const resultPrevious = await this._tangleCacheService.search(
-                    this.props.match.params.network, previousIndex.toString());
-                if (resultPrevious?.milestone) {
+                const resultPrevious = await this._tangleCacheService.milestoneDetails(
+                    this.props.match.params.network, previousIndex);
+                if (resultPrevious) {
                     hasPrevious = true;
                 }
             }
 
-            const resultNext = await this._tangleCacheService.search(
-                this.props.match.params.network, nextIndex.toString());
-            if (resultNext?.milestone) {
+            const resultNext = await this._tangleCacheService.milestoneDetails(
+                this.props.match.params.network, nextIndex);
+            if (resultNext) {
                 hasNext = true;
             }
 

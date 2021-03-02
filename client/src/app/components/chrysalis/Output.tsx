@@ -39,7 +39,7 @@ class Output extends Component<OutputProps, OutputState> {
         return (
             <div className="output">
                 <div className="card--header">
-                    <h2>{NameHelper.getOutputTypeName(this.props.output.output.type)}</h2>
+                    <h2>{NameHelper.getOutputTypeName(this.props.output.output.type)} {this.props.index}</h2>
                 </div>
                 <div className="card--content">
                     <div className="card--label">

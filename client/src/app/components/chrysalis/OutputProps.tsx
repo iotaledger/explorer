@@ -13,6 +13,11 @@ export interface OutputProps {
     id: string;
 
     /**
+     * The output id.
+     */
+    index: number;
+
+    /**
      * The output to display.
      */
     output: IOutputResponse;
