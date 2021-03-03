@@ -106,10 +106,10 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                         </div>
                     ))}
                     <div className="card--label">
-                        Input Transaction Milestone Hash
+                        Input Transaction Milestone Id
                     </div>
                     <div className="card--value card--value__mono">
-                        {this.props.payload.transaction.input.milestoneHash}
+                        {this.props.payload.transaction.input.milestoneId}
                     </div>
                     <div className="card--label">
                         Output Transaction Amount
