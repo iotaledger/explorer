@@ -120,6 +120,10 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                                         <span>64 Hex characters</span>
                                                     </li>
                                                     <li>
+                                                        <span>Message using Transaction Id</span>
+                                                        <span>64 Hex characters</span>
+                                                    </li>
+                                                    <li>
                                                         <span>Addresses</span>
                                                         <span>64 Hex characters or Bech32 Format</span>
                                                     </li>
