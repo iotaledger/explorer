@@ -1,3 +1,4 @@
+import { Blake2b, Converter, serializeMessage, WriteStream } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -292,6 +293,11 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     let objParam = query;
                                     if (response.message) {
                                         objType = "message";
+                                        // Recalculate the message id from the content, in case
+                                        // the lookup was a response to a transaction id lookup
+                                        const writeStream = new WriteStream();
+                                        serializeMessage(writeStream, response.message);
+                                        objParam = Converter.bytesToHex(Blake2b.sum256(writeStream.finalBytes()));
                                     } else if (response.address) {
                                         objType = "addr";
                                     } else if (response.indexMessageIds) {
