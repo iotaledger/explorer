@@ -35,4 +35,9 @@ export interface IndexedState {
      * The index length in bytes.
      */
     indexLengthBytes?: number;
+
+    /**
+     * Display advanced mode.
+     */
+     advancedMode: boolean;
 }

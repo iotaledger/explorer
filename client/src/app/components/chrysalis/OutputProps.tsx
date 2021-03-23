@@ -26,4 +26,9 @@ export interface OutputProps {
      * History for navigation.
      */
     history: H.History;
+
+    /**
+     * Display advanced mode.
+     */
+     advancedMode: boolean;
 }

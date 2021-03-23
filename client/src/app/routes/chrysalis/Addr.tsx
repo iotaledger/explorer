@@ -4,6 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { NetworkService } from "../../../services/networkService";
+import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
@@ -11,6 +12,7 @@ import Output from "../../components/chrysalis/Output";
 import CurrencyButton from "../../components/CurrencyButton";
 import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
+import ToolsPanel from "../../components/ToolsPanel";
 import ValueButton from "../../components/ValueButton";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
@@ -26,6 +28,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     private readonly _tangleCacheService: TangleCacheService;
 
     /**
+     * Settings service.
+     */
+    private readonly _settingsService: SettingsService;
+
+    /**
      * The hrp of bech addresses.
      */
     private readonly _bechHrp: string;
@@ -38,6 +45,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networkConfig = this.props.match.params.network
@@ -52,7 +60,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 props.match.params.address
             ),
             statusBusy: true,
-            status: "Loading outputs..."
+            status: "Loading outputs...",
+            advancedMode: this._settingsService.get().advancedMode ?? false
         };
     }
 
@@ -136,7 +145,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </h2>
                                     </div>
                                     <div className="card--content">
-                                        <Bech32Address addressDetails={this.state.bech32AddressDetails} />
+                                        <Bech32Address
+                                            addressDetails={this.state.bech32AddressDetails}
+                                            advancedMode={this.state.advancedMode}
+                                        />
                                         {this.state.balance !== undefined && this.state.balance !== 0 && (
                                             <div className="row fill margin-t-s margin-b-s value-buttons">
                                                 <div className="col">
@@ -189,11 +201,33 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 history={this.props.history}
                                                 id={this.state.outputIds ? this.state.outputIds[idx] : ""}
                                                 output={output}
+                                                advancedMode={this.state.advancedMode}
                                             />
                                         </div>
                                     ))}
                             </div>
-                            <SidePanel {...this.props} />
+                            <div className="side-panel-container">
+                                <SidePanel {...this.props} />
+                                <ToolsPanel>
+                                    <div className="card--section">
+                                        <div className="card--label margin-t-t">
+                                            <span>Advanced View</span>
+                                            <input
+                                                type="checkbox"
+                                                checked={this.state.advancedMode}
+                                                className="margin-l-t"
+                                                onChange={e => this.setState(
+                                                    {
+                                                        advancedMode: e.target.checked
+                                                    },
+                                                    () => this._settingsService.saveSingle(
+                                                        "advancedMode",
+                                                        this.state.advancedMode))}
+                                            />
+                                        </div>
+                                    </div>
+                                </ToolsPanel>
+                            </div>
                         </div>
                     </div>
                 </div>

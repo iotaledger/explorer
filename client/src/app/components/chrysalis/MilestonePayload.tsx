@@ -48,61 +48,65 @@ class MilestonePayload extends Component<MilestonePayloadProps> {
                             )
                         )}
                     </div>
-                    {this.props.payload.parentMessageIds.map((parent, idx) => (
-                        <React.Fragment key={idx}>
-                            <div className="card--label">
-                                Parent Message {idx + 1}
-                            </div>
-                            <div className="card--value row middle">
-                                <Link
-                                    className="margin-r-t"
-                                    to={
-                                        `/${this.props.network
-                                        }/message/${parent}`
-                                    }
-                                >
-                                    {parent}
-                                </Link>
-                                <MessageButton
-                                    onClick={() => ClipboardHelper.copy(
-                                        parent
-                                    )}
-                                    buttonType="copy"
-                                    labelPosition="top"
-                                />
-                            </div>
-                        </React.Fragment>
-                    ))}
-                    <div className="card--label">
-                        Inclusion Merkle Proof
-                    </div>
-                    <div className="card--value">
-                        {this.props.payload.inclusionMerkleProof}
-                    </div>
-                    {this.props.payload.publicKeys && (
+                    {this.props.advancedMode && (
                         <React.Fragment>
+                            {this.props.payload.parentMessageIds.map((parent, idx) => (
+                                <React.Fragment key={idx}>
+                                    <div className="card--label">
+                                        Parent Message {idx + 1}
+                                    </div>
+                                    <div className="card--value row middle">
+                                        <Link
+                                            className="margin-r-t"
+                                            to={
+                                                `/${this.props.network
+                                                }/message/${parent}`
+                                            }
+                                        >
+                                            {parent}
+                                        </Link>
+                                        <MessageButton
+                                            onClick={() => ClipboardHelper.copy(
+                                                parent
+                                            )}
+                                            buttonType="copy"
+                                            labelPosition="top"
+                                        />
+                                    </div>
+                                </React.Fragment>
+                            ))}
                             <div className="card--label">
-                                Public Keys
+                                Inclusion Merkle Proof
                             </div>
                             <div className="card--value">
-                                {this.props.payload.publicKeys?.map(pubKey => (
-                                    <div key={pubKey} className="margin-b-s">
-                                        {pubKey}
+                                {this.props.payload.inclusionMerkleProof}
+                            </div>
+                            {this.props.payload.publicKeys && (
+                                <React.Fragment>
+                                    <div className="card--label">
+                                        Public Keys
+                                    </div>
+                                    <div className="card--value">
+                                        {this.props.payload.publicKeys?.map(pubKey => (
+                                            <div key={pubKey} className="margin-b-s">
+                                                {pubKey}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </React.Fragment>
+                            )}
+                            <div className="card--label">
+                                Signatures
+                            </div>
+                            <div className="card--value">
+                                {this.props.payload.signatures.map(sig => (
+                                    <div key={sig} className="margin-b-s">
+                                        {sig}
                                     </div>
                                 ))}
                             </div>
                         </React.Fragment>
                     )}
-                    <div className="card--label">
-                        Signatures
-                    </div>
-                    <div className="card--value">
-                        {this.props.payload.signatures.map(sig => (
-                            <div key={sig} className="margin-b-s">
-                                {sig}
-                            </div>
-                        ))}
-                    </div>
                 </div>
             </div>
         );

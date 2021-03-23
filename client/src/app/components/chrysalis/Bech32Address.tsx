@@ -28,9 +28,11 @@ class Bech32Address extends Component<Bech32AddressProps> {
             <div className="bech32-address">
                 {this.props.addressDetails?.bech32 && (
                     <React.Fragment>
-                        <div className="card--label">
-                            Address
-                        </div>
+                        {!this.props.hideLabel && (
+                            <div className="card--label">
+                                Address
+                            </div>
+                        )}
                         <div className="card--value row middle">
                             {this.props.history && (
                                 <button
@@ -54,7 +56,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                         </div>
                     </React.Fragment>
                 )}
-                {this.props.addressDetails?.typeLabel && this.props.addressDetails?.hex && (
+                {this.props.advancedMode && this.props.addressDetails?.typeLabel && this.props.addressDetails?.hex && (
                     <React.Fragment>
                         <div className="card--label">
                             {this.props.addressDetails.typeLabel} Address

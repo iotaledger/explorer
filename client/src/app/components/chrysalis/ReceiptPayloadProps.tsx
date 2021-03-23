@@ -10,4 +10,9 @@ export interface ReceiptPayloadProps {
      * The receipt payload.
      */
     payload: IReceiptPayload;
+
+    /**
+     * Display advanced mode.
+     */
+     advancedMode: boolean;
 }

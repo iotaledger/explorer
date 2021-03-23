@@ -36,4 +36,9 @@ export interface AddrState {
      * The outputs for the address.
      */
     outputs?: IOutputResponse[];
+
+    /**
+     * Display advanced mode.
+     */
+     advancedMode: boolean;
 }

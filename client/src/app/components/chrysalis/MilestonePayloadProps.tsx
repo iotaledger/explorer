@@ -16,4 +16,9 @@ export interface MilestonePayloadProps {
      * History for navigation.
      */
     history: H.History;
+
+    /**
+     * Display advanced mode.
+     */
+    advancedMode: boolean;
 }

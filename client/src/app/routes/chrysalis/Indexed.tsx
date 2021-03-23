@@ -4,11 +4,13 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import MessageButton from "../../components/MessageButton";
 import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
+import ToolsPanel from "../../components/ToolsPanel";
 import "./Indexed.scss";
 import { IndexedRouteProps } from "./IndexedRouteProps";
 import { IndexedState } from "./IndexedState";
@@ -23,6 +25,11 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
     private readonly _tangleCacheService: TangleCacheService;
 
     /**
+     * Settings service.
+     */
+    private readonly _settingsService: SettingsService;
+
+    /**
      * Create a new instance of Indexed.
      * @param props The props.
      */
@@ -30,10 +37,12 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         this.state = {
             statusBusy: true,
-            status: "Loading indexed data..."
+            status: "Loading indexed data...",
+            advancedMode: this._settingsService.get().advancedMode ?? false
         };
     }
 
@@ -106,7 +115,8 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                     <div className="card--content">
                                         <div className="card--label row middle">
                                             <span className="margin-r-t">
-                                                Index UTF8 [{this.state.indexLengthBytes}]
+                                                Index {this.state.advancedMode
+                                                    ? "UTF8 [{this.state.indexLengthBytes}]" : ""}
                                             </span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
@@ -119,27 +129,31 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                         <div className="card--value">
                                             {this.state.utf8Index}
                                         </div>
-                                        <div className="card--label row middle">
-                                            <span className="margin-r-t">
-                                                Index Hex [{this.state.indexLengthBytes}]
-                                            </span>
-                                            <MessageButton
-                                                onClick={() => ClipboardHelper.copy(
-                                                    this.state.hexIndex?.replace(/ /g, "")
+                                        {this.state.advancedMode && (
+                                            <React.Fragment>
+                                                <div className="card--label row middle">
+                                                    <span className="margin-r-t">
+                                                        Index Hex [{this.state.indexLengthBytes}]
+                                                    </span>
+                                                    <MessageButton
+                                                        onClick={() => ClipboardHelper.copy(
+                                                            this.state.hexIndex?.replace(/ /g, "")
+                                                        )}
+                                                        buttonType="copy"
+                                                        labelPosition="right"
+                                                    />
+                                                </div>
+                                                <div className={classNames(
+                                                    "card--value",
+                                                    "card--value-textarea",
+                                                    "card--value-textarea__hex",
+                                                    "card--value-textarea__fit"
                                                 )}
-                                                buttonType="copy"
-                                                labelPosition="right"
-                                            />
-                                        </div>
-                                        <div className={classNames(
-                                            "card--value",
-                                            "card--value-textarea",
-                                            "card--value-textarea__hex",
-                                            "card--value-textarea__fit"
+                                                >
+                                                    {this.state.hexIndex}
+                                                </div>
+                                            </React.Fragment>
                                         )}
-                                        >
-                                            {this.state.hexIndex}
-                                        </div>
                                     </div>
                                 </div>
                                 <div className="card margin-t-s">
@@ -181,7 +195,28 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                     </div>
                                 </div>
                             </div>
-                            <SidePanel {...this.props} />
+                            <div className="side-panel-container">
+                                <SidePanel {...this.props} />
+                                <ToolsPanel>
+                                    <div className="card--section">
+                                        <div className="card--label margin-t-t">
+                                            <span>Advanced View</span>
+                                            <input
+                                                type="checkbox"
+                                                checked={this.state.advancedMode}
+                                                className="margin-l-t"
+                                                onChange={e => this.setState(
+                                                    {
+                                                        advancedMode: e.target.checked
+                                                    },
+                                                    () => this._settingsService.saveSingle(
+                                                        "advancedMode",
+                                                        this.state.advancedMode))}
+                                            />
+                                        </div>
+                                    </div>
+                                </ToolsPanel>
+                            </div>
                         </div>
                     </div>
                 </div>

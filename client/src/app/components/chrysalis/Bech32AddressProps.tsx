@@ -16,4 +16,14 @@ export interface Bech32AddressProps {
      * The address details.
      */
     addressDetails?: IBech32AddressDetails;
+
+    /**
+     * Display advanced mode.
+     */
+     advancedMode: boolean;
+
+    /**
+     * Hide the label.
+     */
+     hideLabel?: boolean;
 }

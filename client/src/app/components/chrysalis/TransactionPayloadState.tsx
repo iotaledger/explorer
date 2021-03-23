@@ -18,6 +18,17 @@ export interface TransactionPayloadState {
     })[];
 
     /**
+     * The outputs.
+     */
+    outputs: {
+        index: number;
+        type: number;
+        address: IBech32AddressDetails;
+        amount: number;
+        isRemainder: boolean;
+    }[];
+
+    /**
      * The unlock addresses for the transactions.
      */
     unlockAddresses: IBech32AddressDetails[];

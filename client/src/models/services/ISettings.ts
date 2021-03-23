@@ -29,6 +29,11 @@ export interface ISettings extends ICurrencySettings {
      * Display visualization in dark mode.
      */
     darkMode?: boolean;
+
+    /**
+     * Show the advanced display.
+     */
+    advancedMode?: boolean;
 }
 
 export type SettingsKeys = keyof ISettings;

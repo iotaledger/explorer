@@ -8,6 +8,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../../helpers/downloadHelper";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
+import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import IndexationPayload from "../../components/chrysalis/IndexationPayload";
@@ -34,6 +35,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
     private readonly _tangleCacheService: TangleCacheService;
 
     /**
+     * Settings service.
+     */
+    private readonly _settingsService: SettingsService;
+
+    /**
      * Timer to check to state update.
      */
     private _timerId?: NodeJS.Timer;
@@ -46,12 +52,14 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         this.state = {
             messageTangleStatus: "pending",
             childrenBusy: true,
             dataUrls: {},
-            selectedDataUrl: "json"
+            selectedDataUrl: "json",
+            advancedMode: this._settingsService.get().advancedMode ?? false
         };
     }
 
@@ -156,73 +164,52 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 labelPosition="top"
                                             />
                                         </div>
-                                        {this.state.message?.parentMessageIds?.map((parent, idx) => (
-                                            <React.Fragment key={idx}>
-                                                <div className="card--label">
-                                                    Parent Message {idx + 1}
-                                                </div>
-                                                <div className="card--value row middle">
-                                                    {parent !== "0".repeat(64) && (
-                                                        <React.Fragment>
-                                                            <Link
-                                                                className="margin-r-t"
-                                                                to={
-                                                                    `/${this.props.match.params.network
-                                                                    }/message/${parent}`
-                                                                }
-                                                            >
-                                                                {parent}
-                                                            </Link>
-                                                            <MessageButton
-                                                                onClick={() => ClipboardHelper.copy(
-                                                                    parent
-                                                                )}
-                                                                buttonType="copy"
-                                                                labelPosition="top"
-                                                            />
-                                                        </React.Fragment>
-                                                    )}
-                                                    {parent === "0".repeat(64) && (
-                                                        <span>Genesis</span>
-                                                    )}
-                                                </div>
-                                            </React.Fragment>
-                                        )
-                                        )}
-                                        <div className="card--label">
-                                            Nonce
-                                        </div>
-                                        <div className="card--value row middle">
-                                            <span className="margin-r-t">{this.state.message?.nonce}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="card">
-                                    <div className="card--header card--header__space-between">
-                                        <h2>
-                                            Metadata
-                                        </h2>
-                                    </div>
-                                    <div className="card--content">
-                                        {!this.state.metadata && !this.state.metadataError && (
-                                            <Spinner />
-                                        )}
-                                        {this.state.metadataError && (
-                                            <p className="danger">
-                                                Failed to retrieve metadata. {this.state.metadataError}
-                                            </p>
-                                        )}
-                                        {this.state.metadata && !this.state.metadataError && (
+                                        {this.state.advancedMode &&
+                                            this.state.message?.parentMessageIds?.map((parent, idx) => (
+                                                <React.Fragment key={idx}>
+                                                    <div className="card--label">
+                                                        Parent Message {idx + 1}
+                                                    </div>
+                                                    <div className="card--value row middle">
+                                                        {parent !== "0".repeat(64) && (
+                                                            <React.Fragment>
+                                                                <Link
+                                                                    className="margin-r-t"
+                                                                    to={
+                                                                        `/${this.props.match.params.network
+                                                                        }/message/${parent}`
+                                                                    }
+                                                                >
+                                                                    {parent}
+                                                                </Link>
+                                                                <MessageButton
+                                                                    onClick={() => ClipboardHelper.copy(
+                                                                        parent
+                                                                    )}
+                                                                    buttonType="copy"
+                                                                    labelPosition="top"
+                                                                />
+                                                            </React.Fragment>
+                                                        )}
+                                                        {parent === "0".repeat(64) && (
+                                                            <span>Genesis</span>
+                                                        )}
+                                                    </div>
+                                                </React.Fragment>
+                                            )
+                                            )}
+                                        {this.state.advancedMode && (
                                             <React.Fragment>
                                                 <div className="card--label">
-                                                    Is Solid
+                                                    Nonce
                                                 </div>
                                                 <div className="card--value row middle">
-                                                    <span className="margin-r-t">
-                                                        {this.state.metadata?.isSolid ? "Yes" : "No"}
-                                                    </span>
+                                                    <span className="margin-r-t">{this.state.message?.nonce}</span>
                                                 </div>
+                                            </React.Fragment>
+                                        )}
+                                        {!this.state.advancedMode && (
+                                            <React.Fragment>
                                                 <div className="card--label">
                                                     Ledger Inclusion
                                                 </div>
@@ -243,6 +230,56 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         )}
                                     </div>
                                 </div>
+
+                                {this.state.advancedMode && (
+                                    <div className="card">
+                                        <div className="card--header card--header__space-between">
+                                            <h2>
+                                                Metadata
+                                            </h2>
+                                        </div>
+                                        <div className="card--content">
+                                            {!this.state.metadata && !this.state.metadataError && (
+                                                <Spinner />
+                                            )}
+                                            {this.state.metadataError && (
+                                                <p className="danger">
+                                                    Failed to retrieve metadata. {this.state.metadataError}
+                                                </p>
+                                            )}
+                                            {this.state.metadata && !this.state.metadataError && (
+                                                <React.Fragment>
+                                                    <div className="card--label">
+                                                        Is Solid
+                                                    </div>
+                                                    <div className="card--value row middle">
+                                                        <span className="margin-r-t">
+                                                            {this.state.metadata?.isSolid ? "Yes" : "No"}
+                                                        </span>
+                                                    </div>
+                                                    <div className="card--label">
+                                                        Ledger Inclusion
+                                                    </div>
+                                                    <div className="card--value row middle">
+                                                        <InclusionState
+                                                            state={this.state.metadata?.ledgerInclusionState}
+                                                        />
+                                                    </div>
+                                                    {this.state.conflictReason && (
+                                                        <React.Fragment>
+                                                            <div className="card--label">
+                                                                Conflict Reason
+                                                            </div>
+                                                            <div className="card--value">
+                                                                {this.state.conflictReason}
+                                                            </div>
+                                                        </React.Fragment>
+                                                    )}
+                                                </React.Fragment>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                                 {this.state.message?.payload && (
                                     <React.Fragment>
                                         {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE && (
@@ -252,6 +289,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                         network={this.props.match.params.network}
                                                         history={this.props.history}
                                                         payload={this.state.message.payload}
+                                                        advancedMode={this.state.advancedMode}
                                                     />
                                                 </div>
 
@@ -261,6 +299,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                             network={this.props.match.params.network}
                                                             history={this.props.history}
                                                             payload={this.state.message.payload.essence.payload}
+                                                            advancedMode={this.state.advancedMode}
                                                         />
                                                     </div>
                                                 )}
@@ -273,6 +312,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                         network={this.props.match.params.network}
                                                         history={this.props.history}
                                                         payload={this.state.message.payload}
+                                                        advancedMode={this.state.advancedMode}
                                                     />
                                                 </div>
                                                 {this.state.message.payload.receipt && (
@@ -280,6 +320,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                         <ReceiptPayload
                                                             network={this.props.match.params.network}
                                                             payload={this.state.message.payload.receipt}
+                                                            advancedMode={this.state.advancedMode}
                                                         />
                                                     </div>
                                                 )}
@@ -291,46 +332,65 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                     network={this.props.match.params.network}
                                                     history={this.props.history}
                                                     payload={this.state.message.payload}
+                                                    advancedMode={this.state.advancedMode}
                                                 />
                                             </div>
                                         )}
                                     </React.Fragment>
                                 )}
-                                <div className="card margin-t-s">
-                                    <div className="card--header">
-                                        <h2>Child Messages</h2>
-                                        {this.state.childrenIds !== undefined && (
-                                            <span className="card--header-count">
-                                                {this.state.childrenIds.length}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <div className="card--content children-container">
-                                        {this.state.childrenBusy && (<Spinner />)}
-                                        {this.state.childrenIds?.map(childId => (
-                                            <div className="card--value" key={childId}>
-                                                <Link
-                                                    to={
-                                                        `/${this.props.match.params.network
-                                                        }/message/${childId}`
-                                                    }
-                                                >
-                                                    {childId}
-                                                </Link>
-                                            </div>
-                                        ))}
-                                        {!this.state.childrenBusy &&
-                                            this.state.childrenIds &&
-                                            this.state.childrenIds.length === 0 && (
-                                                <p>There are no children for this message.</p>
+                                {this.state.advancedMode && (
+                                    <div className="card margin-t-s">
+                                        <div className="card--header">
+                                            <h2>Child Messages</h2>
+                                            {this.state.childrenIds !== undefined && (
+                                                <span className="card--header-count">
+                                                    {this.state.childrenIds.length}
+                                                </span>
                                             )}
+                                        </div>
+                                        <div className="card--content children-container">
+                                            {this.state.childrenBusy && (<Spinner />)}
+                                            {this.state.childrenIds?.map(childId => (
+                                                <div className="card--value" key={childId}>
+                                                    <Link
+                                                        to={
+                                                            `/${this.props.match.params.network
+                                                            }/message/${childId}`
+                                                        }
+                                                    >
+                                                        {childId}
+                                                    </Link>
+                                                </div>
+                                            ))}
+                                            {!this.state.childrenBusy &&
+                                                this.state.childrenIds &&
+                                                this.state.childrenIds.length === 0 && (
+                                                    <p>There are no children for this message.</p>
+                                                )}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
+
                             <div className="side-panel-container">
                                 <SidePanel {...this.props} />
                                 <ToolsPanel>
                                     <div className="card--section">
+                                        <div className="card--label margin-t-t margin-b-t">
+                                            <span>Advanced View</span>
+                                            <input
+                                                type="checkbox"
+                                                checked={this.state.advancedMode}
+                                                className="margin-l-t"
+                                                onChange={e => this.setState(
+                                                    {
+                                                        advancedMode: e.target.checked
+                                                    },
+                                                    () => this._settingsService.saveSingle(
+                                                        "advancedMode",
+                                                        this.state.advancedMode))}
+                                            />
+                                        </div>
                                         <div className="card--label card--label__underline">
                                             Export Message
                                         </div>

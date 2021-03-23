@@ -48,4 +48,9 @@ export interface MessageState {
      * The selected data url.
      */
     selectedDataUrl: string;
+
+    /**
+     * Display advanced mode.
+     */
+    advancedMode: boolean;
 }

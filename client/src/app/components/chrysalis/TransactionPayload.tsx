@@ -95,9 +95,32 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
             });
         }
 
+        const outputs = [];
+        let remainderIndex = 1000;
+        for (let i = 0; i < props.payload.essence.outputs.length; i++) {
+            if (props.payload.essence.outputs[i].type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
+                props.payload.essence.outputs[i].type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) {
+                const address = Bech32AddressHelper.buildAddress(
+                    this._bechHrp,
+                    props.payload.essence.outputs[i].address.address,
+                    props.payload.essence.outputs[i].address.type);
+                const isRemainder = inputs.some(input => input.transactionAddress.bech32 === address.bech32);
+                outputs.push({
+                    index: isRemainder ? (remainderIndex++) + i : i,
+                    type: props.payload.essence.outputs[i].type,
+                    address,
+                    amount: props.payload.essence.outputs[i].amount,
+                    isRemainder
+                });
+            }
+        }
+
+        outputs.sort((a, b) => a.index - b.index);
+
         this.state = {
             formatFull: false,
             inputs,
+            outputs,
             unlockAddresses
         };
     }
@@ -133,7 +156,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      * @returns The node to render.
      */
     public render(): ReactNode {
-        return (
+        return this.props.advancedMode ? (
             <div className="transaction-payload">
                 <div className="card">
                     <div className="card--header">
@@ -152,6 +175,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             network={this.props.network}
                                             history={this.props.history}
                                             addressDetails={input.transactionAddress}
+                                            advancedMode={this.props.advancedMode}
                                         />
                                         <div className="card--label">
                                             Transaction Id
@@ -195,22 +219,22 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         <h2>Outputs</h2>
                     </div>
                     <div className="card--content">
-                        {this.props.payload.essence.outputs.map((output, idx) => (
+                        {this.state.outputs.map((output, idx) => (
                             <div
                                 key={idx}
                                 className="card--inline-row"
                             >
-                                <h3 className="margin-b-t">{NameHelper.getOutputTypeName(output.type)} {idx}</h3>
+                                {this.props.advancedMode && (
+                                    <h3 className="margin-b-t">{NameHelper.getOutputTypeName(output.type)} {idx}</h3>
+                                )}
                                 {(output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
                                     output.type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) && (
                                         <React.Fragment>
                                             <Bech32Address
                                                 network={this.props.network}
                                                 history={this.props.history}
-                                                addressDetails={Bech32AddressHelper.buildAddress(
-                                                    this._bechHrp,
-                                                    output.address.address,
-                                                    output.address.type)}
+                                                addressDetails={output.address}
+                                                advancedMode={this.props.advancedMode}
                                             />
 
                                             <div className="card--label">
@@ -271,6 +295,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             network={this.props.network}
                                             history={this.props.history}
                                             addressDetails={this.state.unlockAddresses[idx]}
+                                            advancedMode={this.props.advancedMode}
                                         />
                                     </React.Fragment>
                                 )}
@@ -289,6 +314,62 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                     </div>
                 </div>
             </div>
+        ) : (
+            <div className="row fill top transaction-simple">
+                <div className="card col fill">
+                    <div className="card--header">
+                        <h2>Inputs</h2>
+                    </div>
+                    <div className="card--content">
+                        {this.state.inputs.map((input, idx) => (
+                            <div key={idx}>
+                                <Bech32Address
+                                    network={this.props.network}
+                                    history={this.props.history}
+                                    addressDetails={input.transactionAddress}
+                                    advancedMode={this.props.advancedMode}
+                                    hideLabel={true}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="card col fill">
+                    <div className="card--header">
+                        <h2>Outputs</h2>
+                    </div>
+                    <div className="card--content">
+                        {this.state.outputs.map((output, idx) => (
+                            <div key={idx}>
+                                <Bech32Address
+                                    network={this.props.network}
+                                    history={this.props.history}
+                                    addressDetails={output.address}
+                                    advancedMode={this.props.advancedMode}
+                                    hideLabel={true}
+                                />
+                                <div className="card--value row">
+                                    <div className="card--label margin-r-s">
+                                        {output.isRemainder ? "Remainder" : "Amount"}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => this.setState(
+                                            {
+                                                formatFull: !this.state.formatFull
+                                            }
+                                        )}
+                                    >
+                                        {this.state.formatFull
+                                            ? `${output.amount} i`
+                                            : UnitsHelper.formatBest(output.amount)}
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div >
         );
     }
 }

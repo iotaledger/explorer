@@ -84,6 +84,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                                             f.address.type
                                         )
                                     }
+                                    advancedMode={this.props.advancedMode}
                                 />
                             </div>
                             <div className="card--label">

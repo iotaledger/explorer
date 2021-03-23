@@ -47,6 +47,13 @@
         margin-top: 23px;
       }
 
+      .transaction-simple {
+        .card + .card {
+          margin-top: 0;
+          margin-left: 23px;
+        }
+      }
+
       .transaction-payload-wrapper {
         margin-top: 23px;
         margin-bottom: 23px;

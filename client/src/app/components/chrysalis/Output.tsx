@@ -39,7 +39,7 @@ class Output extends Component<OutputProps, OutputState> {
         return (
             <div className="output">
                 <div className="card--header">
-                    <h2>{NameHelper.getOutputTypeName(this.props.output.output.type)} {this.props.index}</h2>
+                    <h2>{this.props.advancedMode ? NameHelper.getOutputTypeName(this.props.output.output.type) : "Output"} {this.props.index}</h2>
                 </div>
                 <div className="card--content">
                     <div className="card--label">
@@ -70,48 +70,52 @@ class Output extends Component<OutputProps, OutputState> {
                             </React.Fragment>
                         )}
                     </div>
-                    <div className="card--label">
-                        Transaction Id
-                    </div>
-                    <div className="card--value row middle">
-                        {this.state.isGenesis && (
-                            <span>Genesis</span>
-                        )}
-                        {!this.state.isGenesis && (
-                            <React.Fragment>
-                                <span className="margin-r-t">
-                                    <Link
-                                        to={
-                                            `/${this.props.network
-                                            }/search/${this.state.outputHash}`
-                                        }
-                                        className="margin-r-t"
-                                    >
-                                        {this.props.output.transactionId}
-                                    </Link>
-                                </span>
-                                <MessageButton
-                                    onClick={() => ClipboardHelper.copy(
-                                        this.props.output.transactionId
-                                    )}
-                                    buttonType="copy"
-                                    labelPosition="top"
-                                />
-                            </React.Fragment>
-                        )}
-                    </div>
-                    <div className="card--label">
-                        Index
-                    </div>
-                    <div className="card--value">
-                        {this.props.output.outputIndex}
-                    </div>
-                    <div className="card--label">
-                        Is Spent
-                    </div>
-                    <div className="card--value">
-                        {this.props.output.isSpent ? "Yes" : "No"}
-                    </div>
+                    {this.props.advancedMode && (
+                        <React.Fragment>
+                            <div className="card--label">
+                                Transaction Id
+                            </div>
+                            <div className="card--value row middle">
+                                {this.state.isGenesis && (
+                                    <span>Genesis</span>
+                                )}
+                                {!this.state.isGenesis && (
+                                    <React.Fragment>
+                                        <span className="margin-r-t">
+                                            <Link
+                                                to={
+                                                    `/${this.props.network
+                                                    }/search/${this.state.outputHash}`
+                                                }
+                                                className="margin-r-t"
+                                            >
+                                                {this.props.output.transactionId}
+                                            </Link>
+                                        </span>
+                                        <MessageButton
+                                            onClick={() => ClipboardHelper.copy(
+                                                this.props.output.transactionId
+                                            )}
+                                            buttonType="copy"
+                                            labelPosition="top"
+                                        />
+                                    </React.Fragment>
+                                )}
+                            </div>
+                            <div className="card--label">
+                                Index
+                            </div>
+                            <div className="card--value">
+                                {this.props.output.outputIndex}
+                            </div>
+                            <div className="card--label">
+                                Is Spent
+                            </div>
+                            <div className="card--value">
+                                {this.props.output.isSpent ? "Yes" : "No"}
+                            </div>
+                        </React.Fragment>
+                    )}
                     {(this.props.output.output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
                         this.props.output.output.type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) && (
                             <React.Fragment>

@@ -57,11 +57,11 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
         return (
             <div className="indexation-payload">
                 <div className="card--header">
-                    <h2>Indexation Payload</h2>
+                    <h2>{this.props.advancedMode ? "Indexation Payload" : "Data"}</h2>
                 </div>
                 <div className="card--content">
                     <div className="card--label row middle">
-                        <span className="margin-r-t">Index UTF8 [{this.state.indexLengthBytes}]</span>
+                        <span className="margin-r-t">Index {this.props.advancedMode ? `UTF8 [${this.state.indexLengthBytes}]` : ""}</span>
                         <MessageButton
                             onClick={() => ClipboardHelper.copy(
                                 this.state.utf8Index
@@ -80,23 +80,28 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             {this.state.utf8Index}
                         </Link>
                     </div>
-                    <div className="card--label row middle">
-                        <span className="margin-r-t">Index Hex [{this.state.indexLengthBytes}]</span>
-                        <MessageButton
-                            onClick={() => ClipboardHelper.copy(
-                                this.state.hexIndex.replace(/ /g, "")
-                            )}
-                            buttonType="copy"
-                            labelPosition="right"
-                        />
-                    </div>
-                    <div className="card--value card--value-textarea card--value-textarea__hex card--value-textarea__fit">
-                        {this.state.hexIndex}
-                    </div>
-                    {!this.state.jsonData && this.state.utf8Data && (
+                    {this.props.advancedMode && (
                         <React.Fragment>
                             <div className="card--label row middle">
-                                <span className="margin-r-t">Data UTF8 [{this.state.dataLengthBytes}]</span>
+                                <span className="margin-r-t">Index Hex [{this.state.indexLengthBytes}]</span>
+                                <MessageButton
+                                    onClick={() => ClipboardHelper.copy(
+                                        this.state.hexIndex.replace(/ /g, "")
+                                    )}
+                                    buttonType="copy"
+                                    labelPosition="right"
+                                />
+                            </div>
+                            <div className="card--value card--value-textarea card--value-textarea__hex card--value-textarea__fit">
+                                {this.state.hexIndex}
+                            </div>
+
+                        </React.Fragment>
+                    )}
+                    {(!this.props.advancedMode || !this.state.jsonData) && this.state.utf8Data && (
+                        <React.Fragment>
+                            <div className="card--label row middle">
+                                <span className="margin-r-t">{this.props.advancedMode ? `Data UTF8 [${this.state.dataLengthBytes}]` : "Content"}</span>
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(
                                         this.state.utf8Data
@@ -110,7 +115,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             </div>
                         </React.Fragment>
                     )}
-                    {this.state.jsonData && (
+                    {this.props.advancedMode && this.state.jsonData && (
                         <React.Fragment>
                             <div className="card--label row middle">
                                 <span className="margin-r-t">Data JSON</span>
@@ -129,7 +134,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             </div>
                         </React.Fragment>
                     )}
-                    {this.state.hexData && (
+                    {this.props.advancedMode && this.state.hexData && (
                         <React.Fragment>
                             <div className="card--label row middle">
                                 <span className="margin-r-t">Data Hex [{this.state.dataLengthBytes}]</span>
@@ -145,6 +150,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                                 {this.state.hexData}
                             </div>
                         </React.Fragment>
+
                     )}
                 </div>
             </div>
