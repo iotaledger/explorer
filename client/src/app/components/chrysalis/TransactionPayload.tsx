@@ -340,7 +340,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                     </div>
                     <div className="card--content">
                         {this.state.outputs.map((output, idx) => (
-                            <div key={idx}>
+                            <div key={idx} className="margin-b-m">
                                 <Bech32Address
                                     network={this.props.network}
                                     history={this.props.history}
@@ -349,7 +349,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                     hideLabel={true}
                                 />
                                 <div className="card--value row">
-                                    <div className="card--label margin-r-s">
+                                    <div className="card--label card--label__no-height margin-r-s">
                                         {output.isRemainder ? "Remainder" : "Amount"}
                                     </div>
                                     <button
