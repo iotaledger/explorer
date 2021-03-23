@@ -275,6 +275,10 @@
     &.card--label__no-case {
       text-transform: none;
     }
+
+    &.card--label__no-height {
+      height: auto;
+    }
   }
 
   .card--value {
@@ -290,6 +294,10 @@
 
       color: $main-green;
       font-weight: bold;
+    }
+
+    &.card--value__no-margin {
+      margin-bottom: 0;
     }
 
     .card--value__secondary {

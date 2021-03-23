@@ -1,8 +1,9 @@
-import { IOutputResponse } from "@iota/iota.js";
+import { IOutputResponse, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
@@ -10,6 +11,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import Output from "../../components/chrysalis/Output";
 import CurrencyButton from "../../components/CurrencyButton";
+import MessageButton from "../../components/MessageButton";
 import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
 import ToolsPanel from "../../components/ToolsPanel";
@@ -54,14 +56,17 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
         this._bechHrp = networkConfig?.bechHrp ?? "iot";
 
+        const isAdvanced = this._settingsService.get().advancedMode ?? false;
+
         this.state = {
             ...Bech32AddressHelper.buildAddress(
                 this._bechHrp,
                 props.match.params.address
             ),
+            formatFull: false,
             statusBusy: true,
-            status: "Loading outputs...",
-            advancedMode: this._settingsService.get().advancedMode ?? false
+            status: `Loading ${isAdvanced ? "outputs" : "balances"}...`,
+            advancedMode: isAdvanced
         };
     }
 
@@ -103,7 +108,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                             this.setState({
                                 outputs,
-                                status: `Loading outputs [${outputs.length}/${result.addressOutputIds.length}]`
+                                status: `Loading ${this.state.advancedMode
+                                    ? "Outputs" : "Balances"} [${outputs.length}/${result.addressOutputIds.length}]`
                             });
                         }
 
@@ -185,11 +191,15 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 {this.state.outputs && this.state.outputs.length === 0 && (
                                     <div className="card">
                                         <div className="card--content">
-                                            <p>There are no outputs for this address.</p>
+                                            <p>
+                                                There are no {this.state.advancedMode
+                                                    ? "outputs" : "balances"} for this address.
+                                            </p>
                                         </div>
                                     </div>
                                 )}
-                                {this.state.outputs &&
+                                {this.state.advancedMode &&
+                                    this.state.outputs &&
                                     this.state.outputIds &&
                                     this.state.outputs.length > 0 &&
                                     this.state.outputs.map((output, idx) => (
@@ -205,6 +215,72 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             />
                                         </div>
                                     ))}
+                                {!this.state.advancedMode &&
+                                    this.state.outputs &&
+                                    this.state.outputIds &&
+                                    this.state.outputs.length > 0 && (
+                                        <div className="card">
+                                            <div className="card--header card--header__space-between">
+                                                <h2>
+                                                    Balances
+                                                </h2>
+                                            </div>
+                                            <div className="card--content">
+                                                {this.state.outputs.map((output, idx) => (
+                                                    <div key={idx} className="margin-b-m">
+                                                        <div className="card--value row middle">
+                                                            <div
+                                                                className="
+                                                                card--label card--label__no-height margin-r-s"
+                                                            >
+                                                                Message
+                                                            </div>
+                                                            <span className="card--value card--value__no-margin">
+                                                                <Link
+                                                                    to={
+                                                                        `/${this.props.match.params.network
+                                                                        }/message/${output.messageId}`
+                                                                    }
+                                                                    className="margin-r-t"
+                                                                >
+                                                                    {output.messageId}
+                                                                </Link>
+                                                            </span>
+                                                            <MessageButton
+                                                                onClick={() => ClipboardHelper.copy(
+                                                                    output.messageId
+                                                                )}
+                                                                buttonType="copy"
+                                                                labelPosition="top"
+                                                            />
+                                                        </div>
+                                                        <div className="card--value row middle">
+                                                            <div
+                                                                className="
+                                                                card--label card--label__no-height margin-r-s"
+                                                            >
+                                                                Amount
+                                                            </div>
+                                                            <span className="card--value card--value__no-margin">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => this.setState(
+                                                                        {
+                                                                            formatFull: !this.state.formatFull
+                                                                        }
+                                                                    )}
+                                                                >
+                                                                    {this.state.formatFull
+                                                                        ? `${output.output.amount} i`
+                                                                        : UnitsHelper.formatBest(output.output.amount)}
+                                                                </button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                             </div>
                             <div className="side-panel-container">
                                 <SidePanel {...this.props} />

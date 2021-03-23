@@ -315,7 +315,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                 </div>
             </div>
         ) : (
-            <div className="row fill top transaction-simple">
+            <div className="row row--tablet-responsive fill top transaction-simple">
                 <div className="card col fill">
                     <div className="card--header">
                         <h2>Inputs</h2>

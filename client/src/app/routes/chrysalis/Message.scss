@@ -52,6 +52,13 @@
           margin-top: 0;
           margin-left: 23px;
         }
+
+        @include tablet-down {
+          .card + .card {
+            margin-top: 23px;
+            margin-left: 0;
+          }
+        }
       }
 
       .transaction-payload-wrapper {

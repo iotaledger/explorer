@@ -40,5 +40,10 @@ export interface AddrState {
     /**
      * Display advanced mode.
      */
-     advancedMode: boolean;
+    advancedMode: boolean;
+
+    /**
+     * Format the amount in full.
+     */
+    formatFull: boolean;
 }
