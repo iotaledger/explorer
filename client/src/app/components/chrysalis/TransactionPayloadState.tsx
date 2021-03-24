@@ -29,6 +29,11 @@ export interface TransactionPayloadState {
     }[];
 
     /**
+     * The total of the transfer excluding remainders.
+     */
+    transferTotal: number;
+
+    /**
      * The unlock addresses for the transactions.
      */
     unlockAddresses: IBech32AddressDetails[];

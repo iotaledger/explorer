@@ -10,7 +10,9 @@ import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import { NetworkService } from "../../../services/networkService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../AsyncComponent";
+import CurrencyButton from "../CurrencyButton";
 import MessageButton from "../MessageButton";
+import ValueButton from "../ValueButton";
 import Bech32Address from "./Bech32Address";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
 import { TransactionPayloadState } from "./TransactionPayloadState";
@@ -97,6 +99,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
 
         const outputs = [];
         let remainderIndex = 1000;
+        let transferTotal = 0;
         for (let i = 0; i < props.payload.essence.outputs.length; i++) {
             if (props.payload.essence.outputs[i].type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
                 props.payload.essence.outputs[i].type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) {
@@ -112,6 +115,9 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                     amount: props.payload.essence.outputs[i].amount,
                     isRemainder
                 });
+                if (!isRemainder) {
+                    transferTotal += props.payload.essence.outputs[i].amount;
+                }
             }
         }
 
@@ -121,7 +127,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
             formatFull: false,
             inputs,
             outputs,
-            unlockAddresses
+            unlockAddresses,
+            transferTotal
         };
     }
 
@@ -315,61 +322,82 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                 </div>
             </div>
         ) : (
-            <div className="row row--tablet-responsive fill top transaction-simple">
-                <div className="card col fill">
-                    <div className="card--header">
-                        <h2>Inputs</h2>
-                    </div>
-                    <div className="card--content">
-                        {this.state.inputs.map((input, idx) => (
-                            <div key={idx}>
-                                <Bech32Address
-                                    network={this.props.network}
-                                    history={this.props.history}
-                                    addressDetails={input.transactionAddress}
-                                    advancedMode={this.props.advancedMode}
-                                    hideLabel={true}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div className="card col fill">
-                    <div className="card--header">
-                        <h2>Outputs</h2>
-                    </div>
-                    <div className="card--content">
-                        {this.state.outputs.map((output, idx) => (
-                            <div key={idx} className="margin-b-m">
-                                <Bech32Address
-                                    network={this.props.network}
-                                    history={this.props.history}
-                                    addressDetails={output.address}
-                                    advancedMode={this.props.advancedMode}
-                                    hideLabel={true}
-                                />
-                                <div className="card--value row">
-                                    <div className="card--label card--label__no-height margin-r-s">
-                                        {output.isRemainder ? "Remainder" : "Amount"}
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => this.setState(
-                                            {
-                                                formatFull: !this.state.formatFull
-                                            }
-                                        )}
-                                    >
-                                        {this.state.formatFull
-                                            ? `${output.amount} i`
-                                            : UnitsHelper.formatBest(output.amount)}
-                                    </button>
+            <React.Fragment>
+                {this.state.transferTotal !== 0 && (
+                    <div className="card margin-b-s">
+                        <div className="card--content">
+                            <div className="row fill margin-t-s margin-b-s value-buttons">
+                                <div className="col">
+                                    <ValueButton value={this.state.transferTotal} />
+                                </div>
+                                <div className="col">
+                                    <CurrencyButton
+                                        marketsRoute={
+                                            `/${this.props.network}/markets`
+                                        }
+                                        value={this.state.transferTotal}
+                                    />
                                 </div>
                             </div>
-                        ))}
+                        </div>
                     </div>
-                </div>
-            </div >
+                )}
+                <div className="row row--tablet-responsive fill stretch transaction-simple">
+                    <div className="card col fill">
+                        <div className="card--header">
+                            <h2>From</h2>
+                        </div>
+                        <div className="card--content">
+                            {this.state.inputs.map((input, idx) => (
+                                <div key={idx}>
+                                    <Bech32Address
+                                        network={this.props.network}
+                                        history={this.props.history}
+                                        addressDetails={input.transactionAddress}
+                                        advancedMode={this.props.advancedMode}
+                                        hideLabel={true}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="card col fill">
+                        <div className="card--header">
+                            <h2>To</h2>
+                        </div>
+                        <div className="card--content">
+                            {this.state.outputs.map((output, idx) => (
+                                <div key={idx} className="margin-b-m">
+                                    <Bech32Address
+                                        network={this.props.network}
+                                        history={this.props.history}
+                                        addressDetails={output.address}
+                                        advancedMode={this.props.advancedMode}
+                                        hideLabel={true}
+                                    />
+                                    <div className="card--value row">
+                                        <div className="card--label card--label__no-height margin-r-s">
+                                            {output.isRemainder ? "Remainder" : "Amount"}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => this.setState(
+                                                {
+                                                    formatFull: !this.state.formatFull
+                                                }
+                                            )}
+                                        >
+                                            {this.state.formatFull
+                                                ? `${output.amount} i`
+                                                : UnitsHelper.formatBest(output.amount)}
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div >
+            </React.Fragment>
         );
     }
 }

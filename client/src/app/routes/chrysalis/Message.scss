@@ -66,6 +66,39 @@
         margin-bottom: 23px;
       }
 
+      @include desktop-down {
+        flex: unset;
+        width: 100%;
+        margin-right: 0;
+      }
+
+      .value-buttons {
+        .col {
+          flex: 1;
+          width: auto;
+        }
+
+        .col + .col {
+          margin-left: 24px;
+        }
+      }
+
+      @include desktop-down {
+        .value-buttons {
+          flex-direction: column;
+
+          .col {
+            flex: unset;
+            width: 100%;
+          }
+
+          .col + .col {
+            margin-top: 23px;
+            margin-left: 0;
+          }
+        }
+      }
+
       .side-panel-container {
         display: flex;
         flex-direction: column;
