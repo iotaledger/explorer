@@ -21,6 +21,8 @@ export async function get(config: IConfiguration): Promise<INetworkGetResponse> 
                 // We don't want to make these public
                 delete copy.permaNodeEndpoint;
                 delete copy.feedEndpoint;
+                delete copy.user;
+                delete copy.password;
                 delete copy.mwm;
                 delete copy.depth;
                 delete copy.provider;

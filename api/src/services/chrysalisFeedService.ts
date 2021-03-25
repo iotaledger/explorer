@@ -1,4 +1,4 @@
-import { IClient, IMqttClient, SingleNodeClient } from "@iota/iota.js";
+import { IMqttClient, SingleNodeClient } from "@iota/iota.js";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IFeedService } from "../models/services/IFeedService";
 
@@ -12,18 +12,32 @@ export class ChrysalisFeedService implements IFeedService {
     private readonly _mqttClient: IMqttClient;
 
     /**
-     * API Client.
+     * The endpoint for performing communications.
      */
-    private readonly _apiClient: IClient;
+    private readonly _endpoint: string;
+
+    /**
+     * The user for performing communications.
+     */
+    private readonly _user?: string;
+
+    /**
+     * The password for performing communications.
+     */
+    private readonly _password?: string;
 
     /**
      * Create a new instance of ChrysalisFeedService.
      * @param networkId The network id.
-     * @param provider Provider for API Endpoint.
+     * @param endpoint The endpoint for the api.
+     * @param user The user for the api.
+     * @param password The password for the api.
      */
-    constructor(networkId: string, provider: string) {
+    constructor(networkId: string, endpoint: string, user?: string, password?: string) {
         this._mqttClient = ServiceFactory.get<IMqttClient>(`mqtt-${networkId}`);
-        this._apiClient = new SingleNodeClient(provider);
+        this._endpoint = endpoint;
+        this._user = user;
+        this._password = password;
 
         this._mqttClient.statusChanged(data => console.log("Status", data));
     }
@@ -42,7 +56,11 @@ export class ChrysalisFeedService implements IFeedService {
     public subscribeMilestones(callback: (milestone: number, id: string, timestamp: number) => void): string {
         return this._mqttClient.milestonesLatest(async (topic, message) => {
             try {
-                const ms = await this._apiClient.milestone(message.index);
+                const apiClient = new SingleNodeClient(this._endpoint, {
+                    userName: this._user,
+                    password: this._password
+                });
+                const ms = await apiClient.milestone(message.index);
                 callback(message.index, ms.messageId, message.timestamp * 1000);
             } catch (err) {
                 console.error(err);

@@ -43,7 +43,7 @@ export class TangleHelper {
         };
 
         try {
-            const hornetClient = new HornetClient(network.provider);
+            const hornetClient = new HornetClient(network.provider, network.user, network.password);
 
             const response = await hornetClient.findTransactions({
                 ...findReq,
@@ -164,7 +164,9 @@ export class TangleHelper {
 
             if (missingTrytes.length > 0) {
                 const api = composeAPI({
-                    provider: network.provider
+                    provider: network.provider,
+                    user: network.user,
+                    password: network.password
                 });
 
                 const response = await api.getTrytes(missingTrytes.map(a => a.hash));
@@ -183,7 +185,9 @@ export class TangleHelper {
 
             if (missingState.length > 0) {
                 const api = composeAPI({
-                    provider: network.provider
+                    provider: network.provider,
+                    user: network.user,
+                    password: network.password
                 });
 
                 const statesResponse = await api.getInclusionStates(missingState.map(a => a.hash));
@@ -214,7 +218,9 @@ export class TangleHelper {
         tailHash: string): Promise<boolean> {
         try {
             const api = composeAPI({
-                provider: network.provider
+                provider: network.provider,
+                user: network.user,
+                password: network.password
             });
 
             const result = await api.isPromotable(
@@ -237,7 +243,9 @@ export class TangleHelper {
         tailHash: string): Promise<string | undefined> {
         try {
             const api = composeAPI({
-                provider: network.provider
+                provider: network.provider,
+                user: network.user,
+                password: network.password
             });
 
             const response = await api.promoteTransaction(
@@ -266,7 +274,9 @@ export class TangleHelper {
         tailHash: string): Promise<string | undefined> {
         try {
             const api = composeAPI({
-                provider: network.provider
+                provider: network.provider,
+                user: network.user,
+                password: network.password
             });
 
             const response = await api.replayBundle(
@@ -293,7 +303,9 @@ export class TangleHelper {
         addressHash: string): Promise<number> {
         try {
             const api = composeAPI({
-                provider: network.provider
+                provider: network.provider,
+                user: network.user,
+                password: network.password
             });
 
             const response = await api.getBalances([addressHash]);
@@ -314,7 +326,10 @@ export class TangleHelper {
      * @returns The item found.
      */
     public static async search(network: INetwork, query: string): Promise<ISearchResponse> {
-        const client = new SingleNodeClient(network.provider);
+        const client = new SingleNodeClient(network.provider, {
+            userName: network.user,
+            password: network.password
+        });
         const queryLower = query.toLowerCase();
 
         try {
@@ -432,7 +447,10 @@ export class TangleHelper {
      * @returns The item details.
      */
     public static async messageDetails(network: INetwork, messageId: string): Promise<IMessageDetailsResponse> {
-        const client = new SingleNodeClient(network.provider);
+        const client = new SingleNodeClient(network.provider, {
+            userName: network.user,
+            password: network.password
+        });
 
         try {
             const metadata = await client.messageMetadata(messageId);
@@ -459,7 +477,10 @@ export class TangleHelper {
      * @returns The item details.
      */
     public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputResponse | undefined> {
-        const client = new SingleNodeClient(network.provider);
+        const client = new SingleNodeClient(network.provider, {
+            userName: network.user,
+            password: network.password
+        });
 
         try {
             return await client.output(outputId);
@@ -475,7 +496,10 @@ export class TangleHelper {
      */
     public static async milestoneDetails(
         network: INetwork, milestoneIndex: number): Promise<IMilestoneResponse | undefined> {
-        const client = new SingleNodeClient(network.provider);
+        const client = new SingleNodeClient(network.provider, {
+            userName: network.user,
+            password: network.password
+        });
 
         try {
             return await client.milestone(milestoneIndex);

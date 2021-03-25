@@ -30,6 +30,16 @@ export interface INetwork {
     provider?: string;
 
     /**
+     * The username for the endpoint.
+     */
+    user?: string;
+
+    /**
+     * The password for the endpoint.
+     */
+    password?: string;
+
+    /**
      * Depth for attaches.
      */
     depth?: number;

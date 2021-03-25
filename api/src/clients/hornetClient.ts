@@ -14,11 +14,25 @@ export class HornetClient {
     private readonly _endpoint: string;
 
     /**
+     * The user for performing communications.
+     */
+    private readonly _user?: string;
+
+    /**
+     * The password for performing communications.
+     */
+    private readonly _password?: string;
+
+    /**
      * Create a new instance of HornetClient.
      * @param endpoint The endpoint for the api.
+     * @param user The user for the api.
+     * @param password The password for the api.
      */
-    constructor(endpoint: string) {
+    constructor(endpoint: string, user?: string, password?: string) {
         this._endpoint = endpoint;
+        this._user = user;
+        this._password = password;
     }
 
     /**
@@ -38,9 +52,13 @@ export class HornetClient {
                 command: "findTransactions",
                 ...request
             };
-            const headers = {
+            const headers: { [id: string]: string } = {
                 "X-IOTA-API-Version": "1"
             };
+            if (this._user && this._password) {
+                const userPass = Buffer.from(`${this._user}:${this._password}`).toString("base64");
+                headers.Authorization = `Basic ${userPass}`;
+            }
             const response = await FetchHelper.json<IFindTransactionsRequest, IFindTransactionsResponse>(
                 this._endpoint,
                 "",
@@ -67,9 +85,13 @@ export class HornetClient {
      */
     public async getTrytes(request: IGetTrytesRequest): Promise<IGetTrytesResponse | undefined> {
         try {
-            const headers = {
+            const headers: { [id: string]: string } = {
                 "X-IOTA-API-Version": "1"
             };
+            if (this._user && this._password) {
+                const userPass = Buffer.from(`${this._user}:${this._password}`).toString("base64");
+                headers.Authorization = `Basic ${userPass}`;
+            }
 
             const req = {
                 command: "getTrytes",

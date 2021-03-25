@@ -64,7 +64,7 @@ export async function initServices(config: IConfiguration) {
 
             ServiceFactory.register(
                 `feed-${networkConfig.network}`, () => new ChrysalisFeedService(
-                    networkConfig.network, networkConfig.provider)
+                    networkConfig.network, networkConfig.provider, networkConfig.user, networkConfig.password)
             );
 
             ServiceFactory.register(
