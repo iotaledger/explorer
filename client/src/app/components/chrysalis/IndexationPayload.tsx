@@ -98,7 +98,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
 
                         </React.Fragment>
                     )}
-                    {(!this.props.advancedMode || !this.state.jsonData) && this.state.utf8Data && (
+                    {!this.state.jsonData && this.state.utf8Data && (
                         <React.Fragment>
                             <div className="card--label row middle">
                                 <span className="margin-r-t">{this.props.advancedMode ? `Data UTF8 [${this.state.dataLengthBytes}]` : "Content"}</span>
@@ -115,7 +115,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             </div>
                         </React.Fragment>
                     )}
-                    {this.props.advancedMode && this.state.jsonData && (
+                    {this.state.jsonData && (
                         <React.Fragment>
                             <div className="card--label row middle">
                                 <span className="margin-r-t">Data JSON</span>
@@ -150,7 +150,6 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                                 {this.state.hexData}
                             </div>
                         </React.Fragment>
-
                     )}
                 </div>
             </div>
