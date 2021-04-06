@@ -9,8 +9,8 @@
     },
     "license": "Apache-2.0",
     "dependencies": {
-        "@iota/iota.js": "github:iotaledger/iota.js#522956f1028f919b3051dcfc99e9f72e0fcf4ba5",
-        "@iota/mam-chrysalis.js": "github:iotaledger/mam.js#3e23153ea1c2323e01414bdab7c3a1965b63dc4d",
+        "@iota/iota.js": "github:iotaledger/iota.js#96604c3c0019f2e1f932d46de7bcfb4a386451ee",
+        "@iota/mam-chrysalis.js": "github:iotaledger/mam.js#af4838a215eb943e5c87cd7fc3da818963168c42",
         "@iota/mam.js": "^1.0.0-beta.7",
         "bluebird": "^3.7.2",
         "chartist": "^0.11.4",
