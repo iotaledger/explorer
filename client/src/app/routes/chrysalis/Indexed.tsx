@@ -116,7 +116,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                         <div className="card--label row middle">
                                             <span className="margin-r-t">
                                                 Index {this.state.advancedMode
-                                                    ? "UTF8 [{this.state.indexLengthBytes}]" : ""}
+                                                    ? `UTF8 [${this.state.indexLengthBytes}]` : ""}
                                             </span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
