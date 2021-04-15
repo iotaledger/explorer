@@ -27,5 +27,5 @@ export async function search(
         return {};
     }
 
-    return TangleHelper.search(networkConfig, request.query);
+    return TangleHelper.search(networkConfig, request.query, request.cursor);
 }

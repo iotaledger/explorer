@@ -94,7 +94,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                     result.address.addressType
                 ),
                 balance: result.address.balance,
-                outputIds: result.addressOutputIds
+                outputIds: result.addressOutputIds,
+                historicOutputIds: result.historicAddressOutputIds
             }, async () => {
                 const outputs: IOutputResponse[] = [];
 
@@ -119,8 +120,33 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                     }
                 }
 
+                const historicOutputs: IOutputResponse[] = [];
+
+                if (result.historicAddressOutputIds) {
+                    for (const outputId of result.historicAddressOutputIds) {
+                        const outputResult = await this._tangleCacheService.outputDetails(
+                            this.props.match.params.network, outputId);
+
+                        if (outputResult) {
+                            historicOutputs.push(outputResult);
+
+                            this.setState({
+                                historicOutputs,
+                                status: `Loading ${this.state.advancedMode
+                                    ? "Historic Outputs" : "Historic Balances"} [${
+                                        historicOutputs.length}/${result.historicAddressOutputIds.length}]`
+                            });
+                        }
+
+                        if (!this._isMounted) {
+                            break;
+                        }
+                    }
+                }
+
                 this.setState({
                     outputs,
+                    historicOutputs,
                     status: "",
                     statusBusy: false
                 });
@@ -227,6 +253,96 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             </div>
                                             <div className="card--content">
                                                 {this.state.outputs.map((output, idx) => (
+                                                    <div key={idx} className="margin-b-m">
+                                                        <div className="card--value row middle">
+                                                            <div
+                                                                className="
+                                                                card--label card--label__no-height margin-r-s"
+                                                            >
+                                                                Message
+                                                            </div>
+                                                            <span className="card--value card--value__no-margin">
+                                                                <Link
+                                                                    to={
+                                                                        `/${this.props.match.params.network
+                                                                        }/message/${output.messageId}`
+                                                                    }
+                                                                    className="margin-r-t"
+                                                                >
+                                                                    {output.messageId}
+                                                                </Link>
+                                                            </span>
+                                                            <MessageButton
+                                                                onClick={() => ClipboardHelper.copy(
+                                                                    output.messageId
+                                                                )}
+                                                                buttonType="copy"
+                                                                labelPosition="top"
+                                                            />
+                                                        </div>
+                                                        <div className="card--value row middle">
+                                                            <div
+                                                                className="
+                                                                card--label card--label__no-height margin-r-s"
+                                                            >
+                                                                Amount
+                                                            </div>
+                                                            <span className="card--value card--value__no-margin">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => this.setState(
+                                                                        {
+                                                                            formatFull: !this.state.formatFull
+                                                                        }
+                                                                    )}
+                                                                >
+                                                                    {this.state.formatFull
+                                                                        ? `${output.output.amount} i`
+                                                                        : UnitsHelper.formatBest(output.output.amount)}
+                                                                </button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                {this.state.advancedMode &&
+                                    this.state.historicOutputs &&
+                                    this.state.historicOutputIds &&
+                                    this.state.historicOutputs.length > 0 && (
+                                        <React.Fragment>
+                                            <h2 className="margin-t-s margin-b-s">
+                                                Historic Outputs
+                                            </h2>
+                                            {this.state.historicOutputs.map((output, idx) => (
+                                                <div className="card card__secondary" key={idx}>
+                                                    <Output
+                                                        key={idx}
+                                                        index={idx + 1}
+                                                        network={this.props.match.params.network}
+                                                        history={this.props.history}
+                                                        id={this.state.historicOutputIds
+                                                            ? this.state.historicOutputIds[idx] : ""}
+                                                        output={output}
+                                                        advancedMode={this.state.advancedMode}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </React.Fragment>
+                                    )}
+                                {!this.state.advancedMode &&
+                                    this.state.historicOutputs &&
+                                    this.state.historicOutputIds &&
+                                    this.state.historicOutputs.length > 0 && (
+                                        <div className="card card__secondary">
+                                            <div className="card--header card--header__space-between">
+                                                <h2>
+                                                    Historic Balances
+                                                </h2>
+                                            </div>
+                                            <div className="card--content">
+                                                {this.state.historicOutputs.map((output, idx) => (
                                                     <div key={idx} className="margin-b-m">
                                                         <div className="card--value row middle">
                                                             <div

@@ -13,6 +13,10 @@
   background-color: $white;
   box-shadow: $box-shadow;
 
+  &.card__secondary {
+    background-color: #fcfcfc;
+  }
+
   h2 {
     display: flex;
     align-items: center;

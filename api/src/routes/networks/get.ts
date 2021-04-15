@@ -16,18 +16,23 @@ export async function get(config: IConfiguration): Promise<INetworkGetResponse> 
     return {
         networks: all
             // Only return networks that are not hidden
-            .filter(n => !n.isHidden).map(n => {
-                const copy = { ...n };
-                // We don't want to make these public
-                delete copy.permaNodeEndpoint;
-                delete copy.feedEndpoint;
-                delete copy.user;
-                delete copy.password;
-                delete copy.mwm;
-                delete copy.depth;
-                delete copy.provider;
-                return copy;
+            // and copy the fields needed by the client
+            // as we don't want to expose all the information
+            .filter(n => !n.isHidden).map(n => ({
+                network: n.network,
+                label: n.label,
+                protocolVersion: n.protocolVersion,
+                coordinatorAddress: n.coordinatorAddress,
+                coordinatorSecurityLevel: n.coordinatorSecurityLevel,
+                primaryColor: n.primaryColor,
+                secondaryColor: n.secondaryColor,
+                isEnabled: n.isEnabled,
+                showMarket: n.showMarket,
+                order: n.order,
+                description: n.description,
+                bechHrp: n.bechHrp
             })
+            )
             .sort((a, b) => a.order - b.order)
     };
 }

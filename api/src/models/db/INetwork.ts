@@ -55,6 +55,16 @@ export interface INetwork {
     permaNodeEndpoint?: string;
 
     /**
+     * The permanode endpoint user.
+     */
+    permaNodeEndpointUser?: string;
+
+    /**
+     * The permanode endpoint password.
+     */
+    permaNodeEndpointPassword?: string;
+
+    /**
      * The feed to communicate with.
      */
     feedEndpoint?: string;

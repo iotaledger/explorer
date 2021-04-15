@@ -1,5 +1,5 @@
 import { composeAPI, Transaction } from "@iota/core";
-import { Bech32Helper, Converter, IMilestoneResponse, IOutputResponse, SingleNodeClient } from "@iota/iota.js";
+import { Bech32Helper, Converter, ED25519_ADDRESS_TYPE, IAddressOutputsResponse, IMilestoneResponse, IOutputResponse, SingleNodeClient } from "@iota/iota.js";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
@@ -323,14 +323,69 @@ export class TangleHelper {
      * Find item on the chrysalis network.
      * @param network The network to find the items on.
      * @param query The query to use for finding items.
+     * @param cursor A cursor if are requesting subsequent pages.
      * @returns The item found.
      */
-    public static async search(network: INetwork, query: string): Promise<ISearchResponse> {
-        const client = new SingleNodeClient(network.provider, {
-            userName: network.user,
-            password: network.password
+    public static async search(network: INetwork, query: string, cursor?: string): Promise<ISearchResponse> {
+        // If we have a cursor this must be next page of permanode, so don't do the node lookup
+        let nodeResult = cursor ? {} : await TangleHelper.searchApi(
+            network.provider, network.user, network.password, false, network.bechHrp, query);
+
+        // If there were no results from regular node and we have a permanode
+        // or if there were output ids get any additional historic ones
+        if (network.permaNodeEndpoint &&
+            (Object.keys(nodeResult).length === 0 || nodeResult.addressOutputIds || nodeResult.indexMessageIds)) {
+            const permaResult = await TangleHelper.searchApi(
+                network.permaNodeEndpoint,
+                network.permaNodeEndpointUser,
+                network.permaNodeEndpointPassword,
+                true,
+                network.bechHrp,
+                query);
+
+            if (nodeResult.addressOutputIds) {
+                if (permaResult.addressOutputIds) {
+                    nodeResult.historicAddressOutputIds =
+                        permaResult.addressOutputIds.filter(a => !nodeResult.addressOutputIds.includes(a));
+                    nodeResult.cursor = permaResult.cursor;
+                }
+            } else if (nodeResult.indexMessageIds) {
+                if (permaResult.indexMessageIds) {
+                    nodeResult.indexMessageIds = nodeResult.indexMessageIds.concat(
+                        permaResult.indexMessageIds.filter(a => !nodeResult.indexMessageIds.includes(a)));
+                    nodeResult.cursor = permaResult.cursor;
+                }
+            } else {
+                nodeResult = permaResult;
+            }
+        }
+
+        return nodeResult;
+    }
+
+    /**
+     * Find item on the chrysalis network.
+     * @param provider The provider for the REST API.
+     * @param user The user for the for the REST API.
+     * @param password The password for the REST API.
+     * @param isPermanode Is this a permanode endpoint.
+     * @param bechHrp The bech32 hrp for the network.
+     * @param query The query to use for finding items.
+     * @returns The item found.
+     */
+    public static async searchApi(
+        provider: string,
+        user: string | undefined,
+        password: string | undefined,
+        isPermanode: boolean,
+        bechHrp: string,
+        query: string): Promise<ISearchResponse> {
+        const client = new SingleNodeClient(provider, {
+            userName: user,
+            password,
+            basePath: isPermanode ? "/" : undefined
         });
-        const queryLower = query.toLowerCase();
+        let queryLower = query.toLowerCase();
 
         try {
             // If the query is an integer then lookup a milestone
@@ -341,32 +396,49 @@ export class TangleHelper {
                     milestone
                 };
             }
-        } catch { }
+        } catch {
+        }
 
         try {
             // If the query is bech format lookup address
-            if (Bech32Helper.matches(queryLower, network.bechHrp)) {
-                const address = await client.address(queryLower);
-                if (address) {
-                    const addressOutputs = await client.addressOutputs(queryLower);
+            if (Bech32Helper.matches(queryLower, bechHrp)) {
+                // Permanode doesn't support the bech32 address endpoint so convert
+                // the query to ed25519 format if thats what the type is
+                // it will then be tried using the ed25519 address/outputs endpoint
+                // later in this process
+                if (isPermanode) {
+                    const converted = Bech32Helper.fromBech32(queryLower, bechHrp);
+                    if (converted.addressType === ED25519_ADDRESS_TYPE) {
+                        queryLower = Converter.bytesToHex(converted.addressBytes);
+                    }
+                } else {
+                    const address = await client.address(queryLower);
+                    if (address) {
+                        const addressOutputs = await client.addressOutputs(queryLower);
 
-                    return {
-                        address,
-                        addressOutputIds: addressOutputs.outputIds
-                    };
+                        return {
+                            address,
+                            addressOutputIds: addressOutputs.outputIds
+                        };
+                    }
                 }
             }
-        } catch { }
+        } catch {
+        }
 
         // If the query is 64 bytes hex, try and look for a message
         if (Converter.isHex(queryLower) && queryLower.length === 64) {
             try {
                 const message = await client.message(queryLower);
 
-                return {
-                    message
-                };
-            } catch { }
+                if (Object.keys(message).length > 0) {
+                    return {
+                        message
+                    };
+                }
+            } catch (err) {
+                console.error(err);
+            }
 
             // If the query is 64 bytes hex, try and look for a transaction included message
             try {
@@ -375,7 +447,8 @@ export class TangleHelper {
                 return {
                     message
                 };
-            } catch { }
+            } catch {
+            }
         }
 
         try {
@@ -387,24 +460,40 @@ export class TangleHelper {
                     output
                 };
             }
-        } catch { }
+        } catch {
+        }
 
         try {
             // If the query is bech format lookup address
             if (Converter.isHex(queryLower) && queryLower.length === 64) {
                 // We have 64 characters hex so could possible be a raw ed25519 address
-                const address = await client.addressEd25519(queryLower);
+
+                // Permanode does not support the address/ed25519 endpoint
+                // as it does not maintain utxo state, so we create a dummy
+                // for permanode, but we can still get outputs for the address
+                const address = isPermanode ? {
+                        addressType: ED25519_ADDRESS_TYPE,
+                        address: queryLower,
+                        balance: 0,
+                        dustAllowed: false
+                    } : await client.addressEd25519(queryLower);
 
                 const addressOutputs = await client.addressEd25519Outputs(queryLower);
 
                 if (addressOutputs.count > 0) {
                     return {
                         address,
-                        addressOutputIds: addressOutputs.outputIds
+                        addressOutputIds: addressOutputs.outputIds,
+                        cursor: (addressOutputs as (IAddressOutputsResponse & {
+                            state?: {
+                                pagingState: string;
+                            };
+                        })).state?.pagingState
                     };
                 }
             }
-        } catch { }
+        } catch {
+        }
 
         try {
             if (query.length > 0) {
@@ -431,11 +520,13 @@ export class TangleHelper {
                 if (messages && messages.count > 0) {
                     return {
                         indexMessageIds: messages.messageIds,
-                        indexMessageType
+                        indexMessageType,
+                        cursor: messages.state?.pagingState
                     };
                 }
             }
-        } catch { }
+        } catch {
+        }
 
         return {};
     }
@@ -447,12 +538,12 @@ export class TangleHelper {
      * @returns The item details.
      */
     public static async messageDetails(network: INetwork, messageId: string): Promise<IMessageDetailsResponse> {
-        const client = new SingleNodeClient(network.provider, {
-            userName: network.user,
-            password: network.password
-        });
-
         try {
+            const client = new SingleNodeClient(network.provider, {
+                userName: network.user,
+                password: network.password
+            });
+
             const metadata = await client.messageMetadata(messageId);
             const children = await client.messageChildren(messageId);
 
@@ -460,13 +551,26 @@ export class TangleHelper {
                 metadata,
                 childrenMessageIds: children ? children.childrenMessageIds : undefined
             };
-        } catch (err) {
-            if (err.toString().includes("not synced")) {
+        } catch {
+        }
+
+        if (network.permaNodeEndpoint) {
+            try {
+                const client = new SingleNodeClient(network.permaNodeEndpoint, {
+                    userName: network.permaNodeEndpointUser,
+                    password: network.permaNodeEndpointPassword,
+                    basePath: "/"
+                });
+
+                const metadata = await client.messageMetadata(messageId);
+                const children = await client.messageChildren(messageId);
+
                 return {
-                    error: "The node is not synced."
+                    metadata,
+                    childrenMessageIds: children ? children.childrenMessageIds : undefined
                 };
+            } catch {
             }
-            console.log(err);
         }
     }
 
@@ -477,14 +581,25 @@ export class TangleHelper {
      * @returns The item details.
      */
     public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputResponse | undefined> {
-        const client = new SingleNodeClient(network.provider, {
-            userName: network.user,
-            password: network.password
-        });
-
         try {
+            const client = new SingleNodeClient(network.provider, {
+                userName: network.user,
+                password: network.password
+            });
             return await client.output(outputId);
         } catch {
+        }
+
+        if (network.permaNodeEndpoint) {
+            try {
+                const client = new SingleNodeClient(network.permaNodeEndpoint, {
+                    userName: network.permaNodeEndpointUser,
+                    password: network.permaNodeEndpointPassword,
+                    basePath: "/"
+                });
+                return await client.output(outputId);
+            } catch {
+            }
         }
     }
 
@@ -496,14 +611,25 @@ export class TangleHelper {
      */
     public static async milestoneDetails(
         network: INetwork, milestoneIndex: number): Promise<IMilestoneResponse | undefined> {
-        const client = new SingleNodeClient(network.provider, {
-            userName: network.user,
-            password: network.password
-        });
-
         try {
+            const client = new SingleNodeClient(network.provider, {
+                userName: network.user,
+                password: network.password
+            });
             return await client.milestone(milestoneIndex);
         } catch {
+        }
+
+        if (network.permaNodeEndpoint) {
+            try {
+                const client = new SingleNodeClient(network.permaNodeEndpoint, {
+                    userName: network.permaNodeEndpointUser,
+                    password: network.permaNodeEndpointPassword,
+                    basePath: "/"
+                });
+                return await client.milestone(milestoneIndex);
+            } catch {
+            }
         }
     }
 }

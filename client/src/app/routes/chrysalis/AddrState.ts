@@ -38,6 +38,16 @@ export interface AddrState {
     outputs?: IOutputResponse[];
 
     /**
+     * The historic output ids for the address.
+     */
+    historicOutputIds?: string[];
+
+    /**
+     * The historic outputs for the address.
+     */
+    historicOutputs?: IOutputResponse[];
+
+    /**
      * Display advanced mode.
      */
     advancedMode: boolean;

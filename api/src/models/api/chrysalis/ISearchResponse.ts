@@ -28,6 +28,11 @@ export interface ISearchResponse extends IResponse {
     addressOutputIds?: string[];
 
     /**
+     * Historic output ids when address was found from permanode.
+     */
+    historicAddressOutputIds?: string[];
+
+    /**
      * Output if it was found (message will also be populated).
      */
     output?: IOutputResponse;
@@ -36,4 +41,9 @@ export interface ISearchResponse extends IResponse {
      * Milestone if it was found.
      */
     milestone?: IMilestoneResponse;
+
+    /**
+     * Cursor to use for subsequent requests.
+     */
+    cursor?: string;
 }
