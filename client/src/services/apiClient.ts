@@ -146,7 +146,7 @@ export class ApiClient {
      */
     public async search(request: ISearchRequest): Promise<ISearchResponse> {
         return this.callApi<unknown, ISearchResponse>(
-            `search/${request.network}/${request.query}`,
+            `search/${request.network}/${request.query}${request.cursor ? `?cursor=${request.cursor}` : ""}`,
             "get"
         );
     }
