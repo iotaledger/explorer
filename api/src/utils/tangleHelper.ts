@@ -438,8 +438,7 @@ export class TangleHelper {
                         message
                     };
                 }
-            } catch (err) {
-                console.error(err);
+            } catch {
             }
 
             // If the query is 64 bytes hex, try and look for a transaction included message
