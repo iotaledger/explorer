@@ -521,7 +521,7 @@ export class TangleHelper {
                 if (!indexMessageType && query.length <= 64) {
                     messages = await client.fetchJson<never, IMessagesResponse & { state?: string }>(
                         "get",
-                        `messages?index=${Converter.utf8ToHex(queryLower)}${cursorParam}`);
+                        `messages?index=${Converter.utf8ToHex(query)}${cursorParam}`);
 
                     if (messages.count > 0) {
                         indexMessageType = "utf8";
