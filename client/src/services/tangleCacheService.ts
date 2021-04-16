@@ -717,15 +717,18 @@ export class TangleCacheService {
      * Search for items on the network.
      * @param networkId The network to search
      * @param query The query to searh for.
+     * @param cursor The cursor for next chunk of data.
      * @returns The search response.
      */
-    public async search(networkId: string, query: string): Promise<ISearchResponse | undefined> {
-        if (!this._chrysalisSearchCache[networkId][query]) {
+    public async search(networkId: string, query: string, cursor?: string): Promise<ISearchResponse | undefined> {
+        const fullQuery = query + (cursor ?? "");
+        if (!this._chrysalisSearchCache[networkId][fullQuery]) {
             const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
             const response = await apiClient.search({
                 network: networkId,
-                query
+                query,
+                cursor
             });
 
             if (response.address ||
@@ -734,14 +737,14 @@ export class TangleCacheService {
                 response.milestone ||
                 response.output ||
                 response.addressOutputIds) {
-                this._chrysalisSearchCache[networkId][query] = {
+                this._chrysalisSearchCache[networkId][fullQuery] = {
                     data: response,
                     cached: Date.now()
                 };
             }
         }
 
-        return this._chrysalisSearchCache[networkId][query]?.data;
+        return this._chrysalisSearchCache[networkId][fullQuery]?.data;
     }
 
     /**

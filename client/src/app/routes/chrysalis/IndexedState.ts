@@ -1,5 +1,3 @@
-import { IMessage } from "@iota/iota.js";
-
 export interface IndexedState {
     /**
      * Is the component status busy.
@@ -15,11 +13,6 @@ export interface IndexedState {
      * The ids of the indexation messages.
      */
     messageIds?: string[];
-
-    /**
-     * The content of the indexation messages.
-     */
-    messages?: IMessage[];
 
     /**
      * Hex view of index.
@@ -40,4 +33,9 @@ export interface IndexedState {
      * Display advanced mode.
      */
      advancedMode: boolean;
+
+     /**
+      * Cursor for next chunk of data.
+      */
+     cursor?: string;
 }

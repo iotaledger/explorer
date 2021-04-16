@@ -1,5 +1,5 @@
 import { composeAPI, Transaction } from "@iota/core";
-import { Bech32Helper, Converter, ED25519_ADDRESS_TYPE, IAddressOutputsResponse, IMilestoneResponse, IOutputResponse, SingleNodeClient } from "@iota/iota.js";
+import { Bech32Helper, Converter, ED25519_ADDRESS_TYPE, IAddressOutputsResponse, IMessagesResponse, IMilestoneResponse, IOutputResponse, SingleNodeClient } from "@iota/iota.js";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
@@ -371,6 +371,7 @@ export class TangleHelper {
      * @param isPermanode Is this a permanode endpoint.
      * @param bechHrp The bech32 hrp for the network.
      * @param query The query to use for finding items.
+     * @param cursor Cursor data to send with the request.
      * @returns The item found.
      */
     public static async searchApi(
@@ -379,7 +380,8 @@ export class TangleHelper {
         password: string | undefined,
         isPermanode: boolean,
         bechHrp: string,
-        query: string): Promise<ISearchResponse> {
+        query: string,
+        cursor?: string): Promise<ISearchResponse> {
         const client = new SingleNodeClient(provider, {
             userName: user,
             password,
@@ -472,23 +474,23 @@ export class TangleHelper {
                 // as it does not maintain utxo state, so we create a dummy
                 // for permanode, but we can still get outputs for the address
                 const address = isPermanode ? {
-                        addressType: ED25519_ADDRESS_TYPE,
-                        address: queryLower,
-                        balance: 0,
-                        dustAllowed: false
-                    } : await client.addressEd25519(queryLower);
+                    addressType: ED25519_ADDRESS_TYPE,
+                    address: queryLower,
+                    balance: 0,
+                    dustAllowed: false
+                } : await client.addressEd25519(queryLower);
 
                 const addressOutputs = await client.addressEd25519Outputs(queryLower);
 
                 if (addressOutputs.count > 0) {
+                    const state = (addressOutputs as (IAddressOutputsResponse & {
+                        state?: unknown;
+                    })).state;
+
                     return {
                         address,
                         addressOutputIds: addressOutputs.outputIds,
-                        cursor: (addressOutputs as (IAddressOutputsResponse & {
-                            state?: {
-                                pagingState: string;
-                            };
-                        })).state?.pagingState
+                        cursor: state ? Converter.utf8ToHex(JSON.stringify(state)) : undefined
                     };
                 }
             }
@@ -497,12 +499,19 @@ export class TangleHelper {
 
         try {
             if (query.length > 0) {
-                let messages;
+                let messages: IMessagesResponse & { state?: string };
                 let indexMessageType: "utf8" | "hex" | undefined;
+                let cursorParam = "";
+
+                if (cursor) {
+                    cursorParam = `&state=${cursor}`;
+                }
 
                 // If the query is between 2 and 128 hex chars assume hex encoded bytes
                 if (query.length >= 2 && query.length <= 128 && Converter.isHex(queryLower)) {
-                    messages = await client.messagesFind(Converter.hexToBytes(queryLower));
+                    messages = await client.fetchJson<never, IMessagesResponse & { state?: string }>(
+                        "get",
+                        `messages?index=${queryLower}${cursorParam}`);
 
                     if (messages.count > 0) {
                         indexMessageType = "hex";
@@ -511,7 +520,10 @@ export class TangleHelper {
 
                 // If not already found and query less than 64 bytes assume its UTF8
                 if (!indexMessageType && query.length <= 64) {
-                    messages = await client.messagesFind(query);
+                    messages = await client.fetchJson<never, IMessagesResponse & { state?: string }>(
+                        "get",
+                        `messages?index=${Converter.utf8ToHex(queryLower)}${cursorParam}`);
+
                     if (messages.count > 0) {
                         indexMessageType = "utf8";
                     }
@@ -521,7 +533,7 @@ export class TangleHelper {
                     return {
                         indexMessageIds: messages.messageIds,
                         indexMessageType,
-                        cursor: messages.state?.pagingState
+                        cursor: messages.state
                     };
                 }
             }

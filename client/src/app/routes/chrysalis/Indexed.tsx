@@ -79,13 +79,10 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                 messageIds: result.indexMessageIds,
                 utf8Index,
                 hexIndex: formattedHexIndex,
-                indexLengthBytes: hexIndex.length / 2
-            }, async () => {
-                this.setState({
-                    messages: [],
-                    status: "",
-                    statusBusy: false
-                });
+                indexLengthBytes: hexIndex.length / 2,
+                cursor: result.cursor,
+                status: "",
+                statusBusy: false
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.index}`);
@@ -166,10 +163,17 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                                 </span>
                                             )}
                                         </div>
-                                        {this.state.statusBusy && (<Spinner />)}
+                                        {this.state.statusBusy && (<Spinner compact />)}
                                     </div>
 
-                                    <div className="card--content">
+                                    <div
+                                        className={classNames("card--content card__scroll-limit", {
+                                            "card__scroll-limit__disabled": this.state.statusBusy
+                                        })}
+                                    >
+                                        {this.state.status && (
+                                            <p>{this.state.status}</p>
+                                        )}
                                         {this.state.messageIds && this.state.messageIds.length === 0 && (
                                             <div className="card--value">
                                                 There are no messages for this index.
@@ -193,6 +197,27 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                                 </div>
                                             ))}
                                     </div>
+
+                                    {this.state.cursor && (
+                                        <div className="flex row margin-t-m margin-b-m margin-l-m">
+                                            <button
+                                                type="button"
+                                                onClick={() => this.loadNextChunk(true)}
+                                                className="form-button margin-r-s"
+                                                disabled={this.state.statusBusy}
+                                            >
+                                                Load more
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => this.loadNextChunk(false)}
+                                                className="form-button"
+                                                disabled={this.state.statusBusy}
+                                            >
+                                                Reset
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="side-panel-container">
@@ -222,6 +247,29 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                 </div>
             </div >
         );
+    }
+
+    /**
+     * Load the next chunk of data.
+     * @param useCursor Use the cursor to load chunk.
+     */
+    private loadNextChunk(useCursor: boolean): void {
+        this.setState({
+            statusBusy: true
+        }, async () => {
+            const result = await this._tangleCacheService.search(
+                this.props.match.params.network,
+                this.props.match.params.index,
+                useCursor ? this.state.cursor : undefined
+            );
+
+            this.setState({
+                statusBusy: false,
+                status: "",
+                messageIds: result?.indexMessageIds,
+                cursor: result?.cursor
+            });
+        });
     }
 }
 

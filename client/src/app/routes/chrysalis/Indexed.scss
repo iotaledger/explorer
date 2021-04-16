@@ -49,6 +49,17 @@
             margin-left: 0;
           }
         }
+
+        .card--content {
+          &.card__scroll-limit {
+            max-height: 550px;
+            overflow-y: auto;
+
+            &.card__scroll-limit__disabled {
+              opacity: 0.5;
+            }
+          }
+        }
       }
 
       .card + .card {
