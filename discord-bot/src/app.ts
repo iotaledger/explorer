@@ -35,6 +35,14 @@ export class App {
 
     private readonly _lastReactions: { [id: string]: number };
 
+    private _lastChrysalisStats: {
+        day: string;
+        migrationAddresses: string;
+        lockedTokens: string;
+        migratedTokens: string;
+        lastUpdated: string;
+    }[];
+
     /**
      * Create a new instance of App.
      * @param config The configuration.
@@ -47,6 +55,7 @@ export class App {
         this._lastCoinGeckoCurrencies = 0;
         this._coinGeckoCurrencies = [];
         this._lastReactions = {};
+        this._lastChrysalisStats = [];
     }
 
     /**
@@ -82,7 +91,14 @@ export class App {
                     const now = Date.now();
 
                     if (this._lastReactions[msg.content] && now - this._lastReactions[msg.content] < MS_30_SECONDS) {
-                        await msg.react("🐌");
+                        if (msg.content === CHRYSALIS_TRIGGER) {
+                            const embed = await this.handleChrysalisStats();
+                            if (embed) {
+                                await msg.channel.send({ embed });
+                            }
+                        } else {
+                            await msg.react("🐌");
+                        }
                     } else {
                         this._lastReactions[msg.content] = now;
 
@@ -304,12 +320,6 @@ export class App {
      * @returns The message response.
      */
     private async handleChrysalis(): Promise<MessageEmbed | undefined> {
-        const embed = new MessageEmbed()
-            .setTitle("Chrysalis Migration")
-            .setColor("#0fc1b7");
-
-        const MAX_TOKENS = 2779530283000000;
-
         const response = await FetchHelper.json<unknown, [{
             day: string;
             migrationAddresses: string;
@@ -323,10 +333,27 @@ export class App {
         );
 
         if (Array.isArray(response)) {
+            this._lastChrysalisStats = response;
+            return this.handleChrysalisStats();
+        }
+    }
+
+    /**
+     * Handle the market commands.
+     * @returns The message response.
+     */
+    private async handleChrysalisStats(): Promise<MessageEmbed | undefined> {
+        const embed = new MessageEmbed()
+            .setTitle("Chrysalis Migration")
+            .setColor("#0fc1b7");
+
+        const MAX_TOKENS = 2779530283000000;
+
+        if (Array.isArray(this._lastChrysalisStats)) {
             let totalLocked = 0;
             let totalAddresses = 0;
 
-            for (const day of response) {
+            for (const day of this._lastChrysalisStats) {
                 totalLocked += Number.parseInt(day.lockedTokens, 10);
                 totalAddresses += Number.parseInt(day.migrationAddresses, 10);
             }
