@@ -8,11 +8,13 @@ import { INetworksResponse } from "./models/INetworksResponse";
 
 const COIN_GECKO_URL = "https://api.coingecko.com/api/v3/";
 const CMC_URL = "https://pro-api.coinmarketcap.com/v1/";
+const CHRYSALIS_STATUS = "https://chrysalis.iota.org/api/tokens";
 
 const MS_30_MINUTES = 30 * 60 * 1000;
 const MS_30_SECONDS = 30 * 1000;
 
 const MARKET_TRIGGER = "!m";
+const CHRYSALIS_TRIGGER = "!c-status";
 
 export class App {
     private readonly _config: IConfiguration;
@@ -89,6 +91,8 @@ export class App {
                         if (msg.content === MARKET_TRIGGER ||
                             msg.content.startsWith(`${MARKET_TRIGGER}-`)) {
                             embed = await this.handleMarket(msg.content);
+                        } else if (msg.content === CHRYSALIS_TRIGGER) {
+                            embed = await this.handleChrysalis();
                         } else {
                             if (!this._networks || now - this._timeLastNetworks > MS_30_MINUTES) {
                                 this._networks = await FetchHelper.json<unknown, INetworksResponse>(
@@ -292,6 +296,44 @@ export class App {
                 .addField(":cry:", "I have no data for that currency");
         }
 
+        return embed;
+    }
+
+    /**
+     * Handle the market commands.
+     * @returns The message response.
+     */
+    private async handleChrysalis(): Promise<MessageEmbed | undefined> {
+        const embed = new MessageEmbed()
+            .setTitle("Chrysalis Migration")
+            .setColor("#0fc1b7");
+
+        const MAX_TOKENS = 2779530283000000;
+
+        const response = await FetchHelper.json<unknown, [{
+            day: string;
+            migrationAddresses: string;
+            lockedTokens: string;
+            migratedTokens: string;
+            lastUpdated: string;
+        }]>(
+            CHRYSALIS_STATUS,
+            "",
+            "get"
+        );
+
+        if (Array.isArray(response)) {
+            let totalLocked = 0;
+            let totalAddresses = 0;
+
+            for (const day of response) {
+                totalLocked += Number.parseInt(day.lockedTokens, 10);
+                totalAddresses += Number.parseInt(day.migrationAddresses, 10);
+            }
+            embed.addField("Locked Tokens", `${(totalLocked / MAX_TOKENS * 100).toFixed(2)} %`);
+            embed.addField("Amount Locked Tokens", `${(totalLocked / 1000000000000).toFixed(2)} Ti`);
+            embed.addField("Addresses Locked", totalAddresses);
+        }
         return embed;
     }
 }
