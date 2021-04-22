@@ -349,14 +349,10 @@ export class App {
 
         const MAX_TOKENS = 2779530283000000;
 
-        if (Array.isArray(this._lastChrysalisStats)) {
-            let totalLocked = 0;
-            let totalAddresses = 0;
+        if (Array.isArray(this._lastChrysalisStats) && this._lastChrysalisStats.length > 0) {
+            const totalLocked = Number.parseInt(this._lastChrysalisStats[0].lockedTokens, 10);
+            const totalAddresses = Number.parseInt(this._lastChrysalisStats[0].migrationAddresses, 10);
 
-            for (const day of this._lastChrysalisStats) {
-                totalLocked += Number.parseInt(day.lockedTokens, 10);
-                totalAddresses += Number.parseInt(day.migrationAddresses, 10);
-            }
             embed.addField("Locked Tokens", `${(totalLocked / MAX_TOKENS * 100).toFixed(2)} %`);
             embed.addField("Amount Locked Tokens", `${(totalLocked / 1000000000000).toFixed(2)} Ti`);
             embed.addField("Addresses Locked", totalAddresses);
