@@ -1,5 +1,5 @@
 import { composeAPI, Transaction } from "@iota/core";
-import { Bech32Helper, Converter, ED25519_ADDRESS_TYPE, IAddressOutputsResponse, IMessagesResponse, IMilestoneResponse, IOutputResponse, SingleNodeClient } from "@iota/iota.js";
+import { Bech32Helper, Blake2b, Converter, ED25519_ADDRESS_TYPE, IAddressOutputsResponse, IMessagesResponse, IMilestoneResponse, IOutputResponse, serializeMessage, SingleNodeClient, WriteStream } from "@iota/iota.js";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
@@ -445,9 +445,16 @@ export class TangleHelper {
             try {
                 const message = await client.transactionIncludedMessage(queryLower);
 
-                return {
-                    message
-                };
+                if (Object.keys(message).length > 0) {
+                    const writeStream = new WriteStream();
+                    serializeMessage(writeStream, message);
+                    const includedMessageId = Converter.bytesToHex(Blake2b.sum256(writeStream.finalBytes()));
+
+                    return {
+                        message,
+                        includedMessageId
+                    };
+                }
             } catch {
             }
         }

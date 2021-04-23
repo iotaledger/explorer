@@ -43,6 +43,11 @@ export interface ISearchResponse extends IResponse {
     milestone?: IMilestoneResponse;
 
     /**
+     * The included message id.
+     */
+    includedMessageId?: string;
+
+    /**
      * Cursor to use for subsequent requests.
      */
     cursor?: string;

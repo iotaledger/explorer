@@ -91,6 +91,8 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
             };
 
             this.setState({
+                paramMessageId: this.props.match.params.messageId,
+                actualMessageId: result.includedMessageId ?? this.props.match.params.messageId,
                 message: result.message,
                 dataUrls
             }, async () => {
@@ -155,15 +157,32 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             Message Id
                                         </div>
                                         <div className="card--value row middle">
-                                            <span className="margin-r-t">{this.props.match.params.messageId}</span>
+                                            <span className="margin-r-t">{this.state.actualMessageId}</span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
-                                                    this.props.match.params.messageId
+                                                    this.state.actualMessageId
                                                 )}
                                                 buttonType="copy"
                                                 labelPosition="top"
                                             />
                                         </div>
+                                        {this.state.paramMessageId !== this.state.actualMessageId && (
+                                            <React.Fragment>
+                                                <div className="card--label">
+                                                    Included Message Id
+                                                </div>
+                                                <div className="card--value row middle">
+                                                    <span className="margin-r-t">{this.state.paramMessageId}</span>
+                                                    <MessageButton
+                                                        onClick={() => ClipboardHelper.copy(
+                                                            this.state.paramMessageId
+                                                        )}
+                                                        buttonType="copy"
+                                                        labelPosition="top"
+                                                    />
+                                                </div>
+                                            </React.Fragment>
+                                        )}
                                         {this.state.advancedMode &&
                                             this.state.message?.parentMessageIds?.map((parent, idx) => (
                                                 <React.Fragment key={idx}>
@@ -412,7 +431,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 className="card--action card--action-icon"
                                                 href={this.state.dataUrls[this.state.selectedDataUrl]}
                                                 download={DownloadHelper.filename(
-                                                    this.props.match.params.messageId, this.state.selectedDataUrl)}
+                                                    this.state.actualMessageId ?? "", this.state.selectedDataUrl)}
                                                 role="button"
                                             >
                                                 <FaFileDownload />
@@ -433,7 +452,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
      */
     private async updateMessageDetails(): Promise<void> {
         const details = await this._tangleCacheService.messageDetails(
-            this.props.match.params.network, this.props.match.params.messageId);
+            this.props.match.params.network, this.state.actualMessageId ?? "");
 
         this.setState({
             metadata: details?.metadata,
