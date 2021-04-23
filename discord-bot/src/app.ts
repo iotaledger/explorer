@@ -35,6 +35,8 @@ export class App {
 
     private readonly _lastReactions: { [id: string]: number };
 
+    private _lastPrice: number;
+
     private _lastChrysalisStats: {
         day: string;
         migrationAddresses: string;
@@ -55,6 +57,7 @@ export class App {
         this._lastCoinGeckoCurrencies = 0;
         this._coinGeckoCurrencies = [];
         this._lastReactions = {};
+        this._lastPrice = 0;
         this._lastChrysalisStats = [];
     }
 
@@ -262,11 +265,11 @@ export class App {
             if (!cmcResponse.data?.["1720"]?.quote[convertCurrencyUpper]) {
                 console.error("CMC Response", cmcResponse);
             } else {
-                const price = cmcResponse.data["1720"]?.quote[convertCurrencyUpper].price;
+                this._lastPrice = cmcResponse.data["1720"]?.quote[convertCurrencyUpper].price;
                 const change1 = cmcResponse.data["1720"]?.quote[convertCurrencyUpper].percent_change_1h;
                 const change24 = cmcResponse.data["1720"]?.quote[convertCurrencyUpper].percent_change_24h;
                 embed = embed.addField("CoinMarketCap",
-                    this.formatFiat(price, 3, 8), true)
+                    this.formatFiat(this._lastPrice, 3, 8), true)
                     .addField("24H Change", `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`, true)
                     .addField("1H Change", `${change1 >= 0 ? "+" : ""}${change1.toFixed(2)}%`, true);
                 added = true;
@@ -355,6 +358,16 @@ export class App {
 
             embed.addField("Locked Tokens", `${(totalLocked / MAX_TOKENS * 100).toFixed(2)} %`);
             embed.addField("Amount Locked Tokens", `${(totalLocked / 1000000000000).toFixed(2)} Ti`);
+
+            if (this._lastPrice !== 0) {
+                // eslint-disable-next-line new-cap
+                const cur = Intl.NumberFormat("en", {
+                    style: "currency",
+                    currency: "USD"
+                }).format((totalLocked / 1000000) * this._lastPrice);
+                embed.addField("Value Locked", cur);
+            }
+
             embed.addField("Addresses Locked", totalAddresses);
         }
         return embed;
