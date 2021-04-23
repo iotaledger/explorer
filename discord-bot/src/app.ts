@@ -10,7 +10,7 @@ const COIN_GECKO_URL = "https://api.coingecko.com/api/v3/";
 const CMC_URL = "https://pro-api.coinmarketcap.com/v1/";
 const CHRYSALIS_STATUS = "https://chrysalis.iota.org/api/tokens";
 
-const MS_30_MINUTES = 30 * 60 * 1000;
+const MS_60_MINUTES = 60 * 60 * 1000;
 const MS_30_SECONDS = 30 * 1000;
 
 const MARKET_TRIGGER = "!m";
@@ -35,7 +35,9 @@ export class App {
 
     private readonly _lastReactions: { [id: string]: number };
 
-    private _lastPrice: number;
+    private _lastUsdTime: number;
+
+    private _lastUsdPrice: number;
 
     private _lastChrysalisStats: {
         day: string;
@@ -57,8 +59,9 @@ export class App {
         this._lastCoinGeckoCurrencies = 0;
         this._coinGeckoCurrencies = [];
         this._lastReactions = {};
-        this._lastPrice = 0;
         this._lastChrysalisStats = [];
+        this._lastUsdPrice = 0;
+        this._lastUsdTime = 0;
     }
 
     /**
@@ -113,7 +116,7 @@ export class App {
                         } else if (msg.content === CHRYSALIS_TRIGGER) {
                             embed = await this.handleChrysalis();
                         } else {
-                            if (!this._networks || now - this._timeLastNetworks > MS_30_MINUTES) {
+                            if (!this._networks || now - this._timeLastNetworks > MS_60_MINUTES) {
                                 this._networks = await FetchHelper.json<unknown, INetworksResponse>(
                                     this._config.explorerEndpoint,
                                     "networks",
@@ -208,8 +211,6 @@ export class App {
      * @returns The message response.
      */
     private async handleMarket(command: string): Promise<MessageEmbed | undefined> {
-        const now = Date.now();
-
         const parts = command.split("-");
         let convertCurrency = "usd";
 
@@ -225,66 +226,32 @@ export class App {
 
         let added = false;
 
-        if (now - this._lastCoinMarketCapCurrencies > MS_30_MINUTES) {
-            const response = await FetchHelper.json<unknown, { data?: { symbol: string }[] }>(
-                CMC_URL,
-                "cryptocurrency/map",
-                "get",
-                undefined,
-                { "X-CMC_PRO_API_KEY": this._config.coinMarketCapKey }
-            );
-
-            if (response?.data) {
-                this._coinMarketCapCurrencies = response?.data.map(d => d.symbol.toLowerCase());
-            }
-
-            const response2 = await FetchHelper.json<unknown, { data?: { symbol: string }[] }>(
-                CMC_URL,
-                "fiat/map",
-                "get",
-                undefined,
-                { "X-CMC_PRO_API_KEY": this._config.coinMarketCapKey }
-            );
-
-            if (response2?.data) {
-                this._coinMarketCapCurrencies =
-                    this._coinMarketCapCurrencies.concat(response2?.data.map(d => d.symbol.toLowerCase()));
-            }
-
-            this._lastCoinMarketCapCurrencies = now;
-        }
+        await this.updateCmcCurrencies();
 
         if (this._coinMarketCapCurrencies.includes(convertCurrency)) {
-            const cmcResponse = await FetchHelper.json<unknown, ICMCQuotesLatestResponse>(
-                CMC_URL,
-                `cryptocurrency/quotes/latest?id=1720&convert=${convertCurrency}`,
-                "get",
-                undefined,
-                { "X-CMC_PRO_API_KEY": this._config.coinMarketCapKey });
+            const cmcResponse = await this.updateCmcQuotes(convertCurrency);
 
             if (!cmcResponse.data?.["1720"]?.quote[convertCurrencyUpper]) {
                 console.error("CMC Response", cmcResponse);
             } else {
-                this._lastPrice = cmcResponse.data["1720"]?.quote[convertCurrencyUpper].price;
+                const price = cmcResponse.data["1720"]?.quote[convertCurrencyUpper].price;
                 const change1 = cmcResponse.data["1720"]?.quote[convertCurrencyUpper].percent_change_1h;
                 const change24 = cmcResponse.data["1720"]?.quote[convertCurrencyUpper].percent_change_24h;
+
+                if (convertCurrencyUpper === "USD") {
+                    this._lastUsdPrice = price;
+                }
+
+
                 embed = embed.addField("CoinMarketCap",
-                    this.formatFiat(this._lastPrice, 3, 8), true)
+                    this.formatFiat(price, 3, 8), true)
                     .addField("24H Change", `${change24 >= 0 ? "+" : ""}${change24.toFixed(2)}%`, true)
                     .addField("1H Change", `${change1 >= 0 ? "+" : ""}${change1.toFixed(2)}%`, true);
                 added = true;
             }
         }
 
-        if (now - this._lastCoinGeckoCurrencies > MS_30_MINUTES) {
-            const coinGeckoCurrenciesResponse = await FetchHelper.json<unknown, string[]>(
-                COIN_GECKO_URL,
-                "simple/supported_vs_currencies",
-                "get");
-
-            this._coinGeckoCurrencies = coinGeckoCurrenciesResponse;
-            this._lastCoinGeckoCurrencies = now;
-        }
+        await this.updateCoinGeckoCurrencies();
 
         if (this._coinGeckoCurrencies.includes(convertCurrency)) {
             const coinGeckoResponse = await FetchHelper.json<unknown, ICoinGeckoPriceResponse>(
@@ -316,6 +283,72 @@ export class App {
         }
 
         return embed;
+    }
+
+    /**
+     * Update the CoinMarketCap data
+     */
+    private async updateCmcCurrencies(): Promise<void> {
+        const now = Date.now();
+        if (now - this._lastCoinMarketCapCurrencies > MS_60_MINUTES) {
+            const response = await FetchHelper.json<unknown, { data?: { symbol: string }[] }>(
+                CMC_URL,
+                "cryptocurrency/map",
+                "get",
+                undefined,
+                { "X-CMC_PRO_API_KEY": this._config.coinMarketCapKey }
+            );
+
+            if (response?.data) {
+                this._coinMarketCapCurrencies = response?.data.map(d => d.symbol.toLowerCase());
+            }
+
+            const response2 = await FetchHelper.json<unknown, { data?: { symbol: string }[] }>(
+                CMC_URL,
+                "fiat/map",
+                "get",
+                undefined,
+                { "X-CMC_PRO_API_KEY": this._config.coinMarketCapKey }
+            );
+
+            if (response2?.data) {
+                this._coinMarketCapCurrencies =
+                    this._coinMarketCapCurrencies.concat(response2?.data.map(d => d.symbol.toLowerCase()));
+            }
+
+            this._lastCoinMarketCapCurrencies = now;
+        }
+    }
+
+    /**
+     * Update the quote data for the currency.
+     * @param currency The currency to retrieve.
+     * @returns The quote data.
+     */
+    private async updateCmcQuotes(currency: string): Promise<ICMCQuotesLatestResponse> {
+        return FetchHelper.json<unknown, ICMCQuotesLatestResponse>(
+            CMC_URL,
+            `cryptocurrency/quotes/latest?id=1720&convert=${currency}`,
+            "get",
+            undefined,
+            { "X-CMC_PRO_API_KEY": this._config.coinMarketCapKey });
+    }
+
+    /**
+     * Update the CoinGecko data.
+     */
+    private async updateCoinGeckoCurrencies(): Promise<void> {
+        const now = Date.now();
+
+        if (now - this._lastCoinGeckoCurrencies > MS_60_MINUTES) {
+            const coinGeckoCurrenciesResponse = await FetchHelper.json<unknown, string[]>(
+                COIN_GECKO_URL,
+                "simple/supported_vs_currencies",
+                "get");
+
+            this._coinGeckoCurrencies = coinGeckoCurrenciesResponse;
+            this._lastCoinGeckoCurrencies = now;
+        }
     }
 
     /**
@@ -359,12 +392,18 @@ export class App {
             embed.addField("Locked Tokens", `${(totalLocked / MAX_TOKENS * 100).toFixed(2)} %`);
             embed.addField("Amount Locked Tokens", `${(totalLocked / 1000000000000).toFixed(2)} Ti`);
 
-            if (this._lastPrice !== 0) {
+            if (this._lastUsdPrice === 0 || Date.now() - this._lastUsdTime > MS_30_SECONDS) {
+                const quotes = await this.updateCmcQuotes("usd");
+                this._lastUsdPrice = quotes.data["1720"]?.quote.USD.price;
+                this._lastUsdTime = Date.now();
+            }
+
+            if (this._lastUsdPrice !== 0) {
                 // eslint-disable-next-line new-cap
                 const cur = Intl.NumberFormat("en", {
                     style: "currency",
                     currency: "USD"
-                }).format((totalLocked / 1000000) * this._lastPrice);
+                }).format((totalLocked / 1000000) * this._lastUsdPrice);
                 embed.addField("Value Locked", cur);
             }
 
