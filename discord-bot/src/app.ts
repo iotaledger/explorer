@@ -369,7 +369,7 @@ export class App {
         );
 
         if (Array.isArray(response)) {
-            this._lastChrysalisStats = response;
+            this._lastChrysalisStats = response.sort((a, b) => b.day.localeCompare(a.day));
             return this.handleChrysalisStats();
         }
     }
