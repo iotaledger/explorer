@@ -1,7 +1,7 @@
 import isBundle from "@iota/bundle-validator";
 import { addChecksum } from "@iota/checksum";
 import { trytesToTrits, value } from "@iota/converter";
-import { parseMessage } from "@iota/mam.js";
+import { parseMessage } from "@iota/mam-legacy";
 import { asTransactionTrytes } from "@iota/transaction-converter";
 import classNames from "classnames";
 import React, { ReactNode } from "react";

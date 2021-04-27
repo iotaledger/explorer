@@ -1,4 +1,4 @@
-import { MamMode } from "@iota/mam.js";
+import { MamMode } from "@iota/mam-legacy";
 
 export interface StreamsV0RouteProps {
     /**

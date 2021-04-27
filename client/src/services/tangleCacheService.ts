@@ -1,6 +1,6 @@
 import { IMessageMetadata, IMilestoneResponse, IOutputResponse } from "@iota/iota.js";
-import { mamFetch as mamFetchChrysalis } from "@iota/mam-chrysalis.js";
-import { mamFetch as mamFetchOg, MamMode } from "@iota/mam.js";
+import { mamFetch as mamFetchOg, MamMode } from "@iota/mam-legacy";
+import { mamFetch as mamFetchChrysalis } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
