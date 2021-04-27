@@ -24,7 +24,7 @@
         "react-router-dom": "^5.2.0",
         "react-scripts": "^4.0.3",
         "react-sizeme": "^3.0.1",
-        "socket.io-client": "^3.1.2",
+        "socket.io-client": "^4.0.0",
         "universal-cookie": "^4.0.4",
         "vivagraphjs": "^0.12.0"
     },
