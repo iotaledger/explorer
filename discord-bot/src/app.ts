@@ -106,8 +106,6 @@ export class App {
                             await msg.react("🐌");
                         }
                     } else {
-                        this._lastReactions[msg.content] = now;
-
                         let embed: MessageEmbed | undefined;
 
                         if (msg.content === MARKET_TRIGGER ||
@@ -127,6 +125,8 @@ export class App {
                             embed = await this.handleNetwork(msg.content);
                         }
                         if (embed) {
+                            this._lastReactions[msg.content] = now;
+
                             await msg.channel.send({ embed });
                         }
                     }
