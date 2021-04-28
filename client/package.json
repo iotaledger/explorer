@@ -9,9 +9,9 @@
     },
     "license": "Apache-2.0",
     "dependencies": {
-        "@iota/iota.js": "github:iotaledger/iota.js#2dad22c0484f60d0278b5c7ad6caa630e970e918",
+        "@iota/iota.js": "^1.5.0",
         "@iota/mam-legacy": "github:iotaledger/mam.js#fddc95f60539b9a31a4db1b5b56e0dedb8994883",
-        "@iota/mam.js": "github:iotaledger/mam.js#f5d4cb4502c7c6a11868ca5e3eedcc5db3bcd929",
+        "@iota/mam.js": "^1.5.0",
         "bluebird": "^3.7.2",
         "chartist": "^0.11.4",
         "chartist-plugin-tooltips-updated": "^0.1.4",
