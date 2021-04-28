@@ -59,7 +59,7 @@ jobs:
           sed -i 's/%GCP-STAGING-SERVICE-ID%/${{ env.GCP_STAGING_SERVICE_ID }}/g' dispatch.yaml
           sed -i 's/%GCP-BOT-PROD-DOMAIN%/${{ env.GCP_BOT_PROD_DOMAIN }}/g' dispatch.yaml
           sed -i 's/%GCP-BOT-PROD-SERVICE-ID%/${{ env.GCP_BOT_PROD_SERVICE_ID }}/g' dispatch.yaml
-      - uses: google-github-actions/setup-gcloud
+      - uses: google-github-actions/setup-gcloud@596a625120b91c996fbb7e49f6110e31d0a182d0
         with:
           version: latest
           project_id: ${{ secrets.GCP_PROJECT_ID }}
