@@ -1252,8 +1252,14 @@ module.exports = {
         "unicorn/prefer-negative-index": [
             "error"
         ],
+        "unicorn/prefer-module": [
+            "off"
+        ],
         "unicorn/prefer-node-append": [
             "error"
+        ],
+        "unicorn/prefer-node-protocol": [
+            "off"
         ],
         "unicorn/prefer-node-remove": [
             "error"
@@ -1284,6 +1290,9 @@ module.exports = {
         ],
         "unicorn/prefer-string-slice": [
             "error"
+        ],
+        "unicorn/prefer-switch": [
+            "off"
         ],
         "unicorn/prefer-text-content": [
             "error"
