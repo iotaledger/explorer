@@ -16,6 +16,9 @@ export async function get(
     config: IConfiguration,
     request: IStatsGetRequest
 ): Promise<IStatsGetResponse> {
+    if (request.network === "chrysalis") {
+        request.network = "mainnet";
+    }
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = (await networkService.networks()).map(n => n.network);
     ValidationHelper.oneOf(request.network, networks, "network");
