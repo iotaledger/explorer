@@ -19,4 +19,4 @@ EXPOSE 4000
 
 USER node
 # Serve the prod build from the dist folder
-CMD ["node", "./dist/index"]
+CMD ["node", "dist/index"]
