@@ -32,7 +32,8 @@ export class ValidationHelper {
      */
     public static oneOf(val: unknown, options: unknown[], name: string): void {
         if (!options.includes(val)) {
-            throw new Error(`The parameter '${name}' has an invalid value.`);
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
+            throw new Error(`The parameter '${name}' has an invalid value ${val}.`);
         }
     }
 
