@@ -6,8 +6,8 @@ network:
   session_affinity: true
 
 automatic_scaling:
-  min_instances: 1
-  max_instances: 4
+  min_num_instances: 1
+  max_num_instances: 4
 
 resources:
   cpu: 1
