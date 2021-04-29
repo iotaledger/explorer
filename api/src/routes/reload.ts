@@ -11,7 +11,6 @@ export async function reload(config: IConfiguration): Promise<string[]> {
     let log = "Reloading\n";
 
     try {
-
         const networkService = ServiceFactory.get<NetworkService>("network");
         await networkService.buildCache();
     } catch (err) {
