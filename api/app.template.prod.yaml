@@ -9,9 +9,9 @@ manual_scaling:
   instances: 1
 
 resources:
-  cpu: 16
-  memory_gb: 32
-  disk_size_gb: 40
+  cpu: 8
+  memory_gb: 24
+  disk_size_gb: 20
 
 handlers:
   - url: /(.*)
