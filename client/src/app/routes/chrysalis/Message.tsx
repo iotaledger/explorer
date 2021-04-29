@@ -341,6 +341,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                     <div className="card">
                                                         <ReceiptPayload
                                                             network={this.props.match.params.network}
+                                                            history={this.props.history}
                                                             payload={this.state.message.payload.receipt}
                                                             advancedMode={this.state.advancedMode}
                                                         />
