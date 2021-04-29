@@ -245,8 +245,8 @@ export abstract class ItemServiceBase implements IItemsService {
     private async updateSubscriptions(singleSubscriberId?: string): Promise<void> {
         const now = Date.now();
 
-        if ((this._items && this._items.length > 0) ||
-            (this._itemMetadata && Object.keys(this._itemMetadata).length > 0) ||
+        if (Object.keys(this._items).length > 0 ||
+            Object.keys(this._itemMetadata).length > 0 ||
             singleSubscriberId) {
             let subs: {
                 [id: string]: (data: IFeedSubscriptionMessage) => Promise<void>;
@@ -274,9 +274,7 @@ export abstract class ItemServiceBase implements IItemsService {
                     ips
                 };
 
-                if (subs[subscriptionId]) {
-                    await subs[subscriptionId](data);
-                }
+                await subs[subscriptionId](data);
             }
 
             if (!singleSubscriberId) {

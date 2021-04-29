@@ -113,9 +113,4 @@ export interface INetwork {
      * The ordering for the networks.
      */
     order: number;
-
-    /**
-     * Disable subscriptions.
-     */
-    disableSubscriptions?: boolean;
 }

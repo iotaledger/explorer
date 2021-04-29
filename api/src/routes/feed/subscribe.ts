@@ -26,27 +26,18 @@ export async function subscribe(
         const networks = (await networkService.networks()).map(n => n.network);
         ValidationHelper.oneOf(request.network, networks, "network");
 
-        const network = await networkService.get(request.network);
+        const itemsService = ServiceFactory.get<IItemsService>(`items-${request.network}`);
 
-        if (!network?.disableSubscriptions) {
-            const itemsService = ServiceFactory.get<IItemsService>(`items-${request.network}`);
-
-            if (itemsService) {
-                itemsService.subscribe(socket.id, async data => {
-                    socket.emit("transactions", data);
-                });
-            }
-
-            response = {
-                subscriptionId: socket.id,
-                network: request.network
-            };
-        } else {
-            response = {
-                subscriptionId: socket.id,
-                network: request.network
-            };
+        if (itemsService) {
+            itemsService.subscribe(socket.id, async data => {
+                socket.emit("transactions", data);
+            });
         }
+
+        response = {
+            subscriptionId: socket.id,
+            network: request.network
+        };
     } catch (err) {
         response = {
             error: err.toString()
