@@ -90,6 +90,9 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 hex: DownloadHelper.createHexDataUrl(finalBytes)
             };
 
+            window.history.replaceState(undefined, window.document.title, `/${this.props.match.params.network
+                }/message/${result.includedMessageId ?? this.props.match.params.messageId}`);
+
             this.setState({
                 paramMessageId: this.props.match.params.messageId,
                 actualMessageId: result.includedMessageId ?? this.props.match.params.messageId,
@@ -169,9 +172,9 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         {this.state.paramMessageId !== this.state.actualMessageId && (
                                             <React.Fragment>
                                                 <div className="card--label">
-                                                    Included Message Id
+                                                    Transaction Id
                                                 </div>
-                                                <div className="card--value row middle">
+                                                <div className="card--value card--value__secondary row middle">
                                                     <span className="margin-r-t">{this.state.paramMessageId}</span>
                                                     <MessageButton
                                                         onClick={() => ClipboardHelper.copy(
@@ -338,6 +341,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                     <div className="card">
                                                         <ReceiptPayload
                                                             network={this.props.match.params.network}
+                                                            history={this.props.history}
                                                             payload={this.state.message.payload.receipt}
                                                             advancedMode={this.state.advancedMode}
                                                         />

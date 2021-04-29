@@ -1,4 +1,5 @@
 import { IReceiptPayload } from "@iota/iota.js";
+import * as H from "history";
 
 export interface ReceiptPayloadProps {
     /**
@@ -14,5 +15,10 @@ export interface ReceiptPayloadProps {
     /**
      * Display advanced mode.
      */
-     advancedMode: boolean;
+    advancedMode: boolean;
+
+    /**
+     * History for navigation.
+     */
+    history?: H.History;
 }

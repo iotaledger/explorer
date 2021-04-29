@@ -3,7 +3,6 @@ import { UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
-import { DateHelper } from "../../../helpers/dateHelper";
 import { NetworkService } from "../../../services/networkService";
 import Bech32Address from "./Bech32Address";
 import { ReceiptPayloadProps } from "./ReceiptPayloadProps";
@@ -52,13 +51,15 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                         Migrated At
                     </div>
                     <div className="card--value">
-                        {DateHelper.format(DateHelper.milliseconds(this.props.payload.migratedAt))}
+                        {this.props.payload.migratedAt}
                     </div>
                     <div className="card--label">
                         Final
                     </div>
                     <div className="card--value">
-                        {this.props.payload.final}
+                        <div className="margin-b-m">
+                            {this.props.payload.final ? "Yes" : "No"}
+                        </div>
                     </div>
                     {this.props.payload.funds.map((f, idx) => (
                         <div
@@ -72,9 +73,6 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                             <div className="card--value card--value__mono">
                                 {f.tailTransactionHash}
                             </div>
-                            <div className="card--label">
-                                Address
-                            </div>
                             <div className="card--value card--value__mono">
                                 <Bech32Address
                                     addressDetails={
@@ -85,10 +83,12 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                                         )
                                     }
                                     advancedMode={this.props.advancedMode}
+                                    history={this.props.history}
+                                    network={this.props.network}
                                 />
                             </div>
                             <div className="card--label">
-                                Despoit
+                                Deposit
                             </div>
                             <div className="card--value card--value__mono">
                                 <button
