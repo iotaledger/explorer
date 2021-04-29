@@ -6,7 +6,7 @@ network:
   session_affinity: true
 
 manual_scaling:
-  instances: 1
+  instances: 2
 
 resources:
   cpu: 8

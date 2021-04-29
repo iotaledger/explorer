@@ -274,7 +274,9 @@ export abstract class ItemServiceBase implements IItemsService {
                     ips
                 };
 
-                await subs[subscriptionId](data);
+                try {
+                    await subs[subscriptionId](data);
+                } catch {}
             }
 
             if (!singleSubscriberId) {
