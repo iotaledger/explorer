@@ -14,10 +14,9 @@ RUN echo "CONFIG_ID=$CONFIG_ID"
 # Running required steps to prepare the api prod build
 RUN npm install
 RUN npm run build
-RUN npm install pm2 -g
 
 EXPOSE 4000
 
 USER node
 # Serve the prod build from the dist folder
-CMD ["pm2", "start", "cluster.json"]
+CMD ["node", "dist/index"]
