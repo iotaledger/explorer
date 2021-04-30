@@ -113,7 +113,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                         {this.props.payload.transaction.input.milestoneId}
                     </div>
                     <div className="card--label">
-                        Output Transaction Amount
+                        Output Transaction Amount to Treasury
                     </div>
                     <div className="card--value card--value__mono">
                         <button

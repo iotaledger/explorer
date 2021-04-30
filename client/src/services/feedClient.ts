@@ -52,31 +52,6 @@ export class FeedClient {
     private _existingIds: string[];
 
     /**
-     * The ips.
-     */
-    private _ips: {
-        /**
-         * The start timestamp for the ips.
-         */
-        start: number;
-
-        /**
-         * The end timestamp for the ips.
-         */
-        end: number;
-
-        /**
-         * The ips counts.
-         */
-        itemCount: number[];
-
-        /**
-         * The confirmed ips counts.
-         */
-        confirmedItemCount: number[];
-    };
-
-    /**
      * The subscription id.
      */
     private _subscriptionId?: string;
@@ -111,13 +86,6 @@ export class FeedClient {
 
         this._items = [];
         this._existingIds = [];
-        this._ips = {
-            start: 0,
-            end: 0,
-            itemCount: [],
-            confirmedItemCount: []
-        };
-
         this._subscribers = {};
     }
 
@@ -144,8 +112,6 @@ export class FeedClient {
                 });
                 this._socket.on("transactions", async (subscriptionMessage: IFeedSubscriptionMessage) => {
                     if (subscriptionMessage.subscriptionId === this._subscriptionId) {
-                        this._ips = subscriptionMessage.ips;
-
                         if (subscriptionMessage.itemsMetadata) {
                             for (const metadataId in subscriptionMessage.itemsMetadata) {
                                 const existing = this._items.find(c => c.id === metadataId);
@@ -248,58 +214,6 @@ export class FeedClient {
      */
     public getItems(): IFeedItem[] {
         return this._items.slice();
-    }
-
-    /**
-     * Get the items per second history array.
-     * @returns The ips.
-     */
-    public getIpsHistory(): number[] {
-        return this._ips.itemCount.slice();
-    }
-
-    /**
-     * Calculate the ips.
-     * @returns The ips.
-     */
-    public getIitemPerSecond(): {
-        /**
-         * Items per second.
-         */
-        itemsPerSecond: number;
-        /**
-         * Confirmed per second.
-         */
-        confirmedPerSecond: number;
-    } {
-        let itemsPerSecond = -1;
-        let confirmedPerSecond = -1;
-
-        const ips = this._ips;
-        if (ips) {
-            const spanS = (this._ips.end - this._ips.start) / 1000;
-            if (spanS > 0) {
-                if (ips.itemCount.length > 0) {
-                    let ipsTotal = 0;
-                    for (const i of ips.itemCount) {
-                        ipsTotal += i;
-                    }
-                    itemsPerSecond = ipsTotal / spanS;
-                }
-                if (ips.confirmedItemCount.length > 0) {
-                    let cipsTotal = 0;
-                    for (const i of ips.confirmedItemCount) {
-                        cipsTotal += i;
-                    }
-
-                    confirmedPerSecond = cipsTotal / spanS;
-                }
-            }
-        }
-        return {
-            itemsPerSecond,
-            confirmedPerSecond
-        };
     }
 
     /**

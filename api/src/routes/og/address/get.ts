@@ -17,11 +17,11 @@ export async function get(
     request: IAddressGetRequest
 ): Promise<IAddressGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = (await networkService.networks()).map(n => n.network);
+    const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
     ValidationHelper.string(request.hash, "hash");
 
-    const networkConfig = await networkService.get(request.network);
+    const networkConfig = networkService.get(request.network);
 
     if (networkConfig.protocolVersion !== "og") {
         return {};

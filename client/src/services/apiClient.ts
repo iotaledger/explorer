@@ -22,6 +22,8 @@ import { ITransactionsGetRequest } from "../models/api/og/ITransactionsGetReques
 import { ITransactionsGetResponse } from "../models/api/og/ITransactionsGetResponse";
 import { ITrytesRetrieveRequest } from "../models/api/og/ITrytesRetrieveRequest";
 import { ITrytesRetrieveResponse } from "../models/api/og/ITrytesRetrieveResponse";
+import { IStatsGetRequest } from "../models/api/stats/IStatsGetRequest";
+import { IStatsGetResponse } from "../models/api/stats/IStatsGetResponse";
 
 /**
  * Class to handle api communications.
@@ -183,6 +185,18 @@ export class ApiClient {
     public async milestoneDetails(request: IMilestoneDetailsRequest): Promise<IMilestoneDetailsResponse> {
         return this.callApi<unknown, IMilestoneDetailsResponse>(
             `milestone/${request.network}/${request.milestoneIndex}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the stats.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
+        return this.callApi<unknown, IStatsGetResponse>(
+            `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
             "get"
         );
     }

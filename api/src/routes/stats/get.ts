@@ -2,7 +2,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
-import { IItemsService } from "../../models/services/IItemsService";
+import { IStatsService } from "../../models/services/IStatsService";
 import { NetworkService } from "../../services/networkService";
 import { ValidationHelper } from "../../utils/validationHelper";
 
@@ -20,12 +20,17 @@ export async function get(
         request.network = "mainnet";
     }
     const networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = (await networkService.networks()).map(n => n.network);
+    const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
 
-    const itemsService = ServiceFactory.get<IItemsService>(`items-${request.network}`);
+    const statsService = ServiceFactory.get<IStatsService>(`stats-${request.network}`);
 
-    const stats = itemsService.getStats();
+    const stats = statsService.getStats();
+    let itemsPerSecondHistory;
+
+    if (request.includeHistory) {
+        itemsPerSecondHistory = statsService.getItemsPerSecondHistory();
+    }
 
     if (stats) {
         const timeSinceLastMsInMinutes = (Date.now() - stats.latestMilestoneIndexTime) / 60000;
@@ -41,7 +46,8 @@ export async function get(
         return {
             ...stats,
             health,
-            healthReason
+            healthReason,
+            itemsPerSecondHistory
         };
     }
 

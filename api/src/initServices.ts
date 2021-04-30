@@ -11,12 +11,14 @@ import { IItemsService } from "./models/services/IItemsService";
 import { AmazonDynamoDbService } from "./services/amazonDynamoDbService";
 import { ChrysalisFeedService } from "./services/chrysalisFeedService";
 import { ChrysalisItemsService } from "./services/chrysalisItemsService";
+import { ChrysalisStatsService } from "./services/chrysalisStatsService";
 import { CurrencyService } from "./services/currencyService";
 import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesService } from "./services/milestonesService";
 import { NetworkService } from "./services/networkService";
 import { OgFeedService } from "./services/ogFeedService";
 import { OgItemsService } from "./services/ogItemsService";
+import { OgStatsService } from "./services/ogStatsService";
 import { ZmqService } from "./services/zmqService";
 
 /**
@@ -31,7 +33,7 @@ export async function initServices(config: IConfiguration) {
 
     await networkService.buildCache();
 
-    const networks = await networkService.networks();
+    const networks = networkService.networks();
 
     const enabledNetworks = networks.filter(v => v.isEnabled);
 
@@ -55,6 +57,10 @@ export async function initServices(config: IConfiguration) {
                 ServiceFactory.register(
                     `items-${networkConfig.network}`,
                     () => new OgItemsService(networkConfig.network));
+
+                ServiceFactory.register(
+                    `stats-${networkConfig.network}`,
+                    () => new OgStatsService(networkConfig));
             }
         } else if (networkConfig.protocolVersion === "chrysalis" && networkConfig.feedEndpoint) {
             ServiceFactory.register(
@@ -70,6 +76,10 @@ export async function initServices(config: IConfiguration) {
             ServiceFactory.register(
                 `items-${networkConfig.network}`,
                 () => new ChrysalisItemsService(networkConfig.network));
+
+            ServiceFactory.register(
+                `stats-${networkConfig.network}`,
+                () => new ChrysalisStatsService(networkConfig));
         }
 
         if ((networkConfig.protocolVersion === "og" || networkConfig.protocolVersion === "chrysalis") &&
@@ -113,6 +123,7 @@ export async function initServices(config: IConfiguration) {
     }
 
     const update = async () => {
+        await networkService.buildCache();
         const currencyService = new CurrencyService(config);
         const log = await currencyService.update();
         console.log(log);

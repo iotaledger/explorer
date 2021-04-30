@@ -240,7 +240,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 {this.state.itemsPerSecond} / {this.state.confirmedItemsPerSecond}
                             </div>
                             <div className="card--label">
-                                Confirmation Rate
+                                {this._networkConfig?.protocolVersion === "chrysalis"
+                                    ? "Referenced Rate" : "Confirmation Rate"}
                             </div>
                             <div className="card--value">
                                 {this.state.confirmedItemsPerSecondPercent}

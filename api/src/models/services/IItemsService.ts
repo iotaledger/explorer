@@ -1,5 +1,4 @@
 import { IFeedSubscriptionMessage } from "../api/IFeedSubscriptionMessage";
-import { IStatistics } from "./IStatistics";
 
 /**
  * Interface definition for an items service.
@@ -22,10 +21,4 @@ export interface IItemsService {
      * @param subscriptionId The id to unsubscribe.
      */
     unsubscribe(subscriptionId: string): void;
-
-    /**
-     * Get the current stats.
-     * @returns The statistics for the network.
-     */
-    getStats(): IStatistics;
 }

@@ -17,6 +17,11 @@ export class NetworkService {
     private _cache: { [network: string]: INetwork };
 
     /**
+     * Cache of the network names.
+     */
+    private _cacheNames: string[];
+
+    /**
      * Create a new instance of NetworkService.
      */
     constructor() {
@@ -28,10 +33,21 @@ export class NetworkService {
      * Initialise the local cache.
      */
     public async buildCache(): Promise<void> {
-        const networks = await this._networkStorageService.getAll();
+        try {
+            const networks = await this._networkStorageService.getAll();
 
-        for (const network of networks.sort((a, b) => a.order - b.order)) {
-            this._cache[network.network] = network;
+            const newCache = {};
+
+            for (const network of networks.sort((a, b) => a.order - b.order)) {
+                newCache[network.network] = network;
+            }
+
+            if (Object.keys(newCache).length > 0) {
+                this._cache = newCache;
+                this._cacheNames = Object.values(this._cache).map(n => n.network);
+            }
+        } catch (err) {
+            console.error(err);
         }
     }
 
@@ -40,7 +56,7 @@ export class NetworkService {
      * @param network The name of the network.
      * @returns The network if it exists.
      */
-    public async get(network: string): Promise<INetwork | undefined> {
+    public get(network: string): INetwork | undefined {
         return this._cache?.[network];
     }
 
@@ -48,7 +64,15 @@ export class NetworkService {
      * Get the list of all networks.
      * @returns All of the networks.
      */
-    public async networks(): Promise<INetwork[]> {
+    public networks(): INetwork[] {
         return Object.values(this._cache);
+    }
+
+    /**
+     * Get the list of all networks.
+     * @returns All of the networks.
+     */
+    public networkNames(): string[] {
+        return this._cacheNames;
     }
 }

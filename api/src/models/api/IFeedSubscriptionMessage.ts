@@ -17,29 +17,4 @@ export interface IFeedSubscriptionMessage {
     itemsMetadata: {
         [id: string]: IFeedItemMetadata;
     };
-
-    /**
-     * The ips data.
-     */
-    ips: {
-        /**
-         * The start timestamp for the ips.
-         */
-        start: number;
-
-        /**
-         * The end timestamp for the ips.
-         */
-        end: number;
-
-        /**
-         * The item counts.
-         */
-        itemCount: number[];
-
-        /**
-         * The confirmed item counts.
-         */
-        confirmedItemCount: number[];
-    };
 }

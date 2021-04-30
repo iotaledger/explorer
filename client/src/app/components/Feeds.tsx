@@ -3,6 +3,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedItemMetadata } from "../../models/api/IFeedItemMetadata";
 import { INetwork } from "../../models/db/INetwork";
 import { IFeedItem } from "../../models/IFeedItem";
+import { ApiClient } from "../../services/apiClient";
 import { FeedClient } from "../../services/feedClient";
 import { MilestonesClient } from "../../services/milestonesClient";
 import { NetworkService } from "../../services/networkService";
@@ -17,6 +18,11 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * Feed client.
      */
     protected _feedClient?: FeedClient;
+
+    /**
+     * Api client.
+     */
+    protected _apiClient?: ApiClient;
 
     /**
      * Milestones client.
@@ -124,23 +130,22 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             {
                 itemsPerSecond: "--"
             },
-            () => {
+            async () => {
                 this._feedClient = ServiceFactory.get<FeedClient>(
                     `feed-${this.props.match.params.network}`);
 
                 if (this._feedClient) {
                     this._itemSubscriptionId = this._feedClient.subscribe(
-                        (updatedItems, metadata) => {
+                        async (updatedItems, metadata) => {
                             if (this._isMounted) {
-                                this.updateItems(updatedItems, metadata);
-                                this.updateTps();
+                                await this.updateItems(updatedItems, metadata);
                             }
                         }
                     );
 
-                    this.updateItems(this._feedClient.getItems(), {});
-                    this.updateTps();
-                    this._timerId = setInterval(() => this.updateTps(), 2000);
+                    await this.updateItems(this._feedClient.getItems(), {});
+                    await this.updateTps();
+                    this._timerId = setInterval(async () => this.updateTps(), 2000);
                 }
             });
     }
@@ -168,32 +173,32 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * @param newItems Just the new items.
      * @param metaData New confirmed items.
      */
-    private updateItems(newItems: IFeedItem[], metaData: { [id: string]: IFeedItemMetadata }): void {
-        if (this._isMounted && this._feedClient) {
-            const ipsHistory = this._feedClient.getIpsHistory();
-
-            this.setState({
-                // Increase values by +100 to add more area under the graph
-                itemsPerSecondHistory: ipsHistory.reverse().map(v => v + 100)
-            }, () => {
-                this.itemsUpdated(newItems);
-                this.metadataUpdated(metaData);
-            });
-        }
+    private async updateItems(newItems: IFeedItem[], metaData: { [id: string]: IFeedItemMetadata }): Promise<void> {
+        this.itemsUpdated(newItems);
+        this.metadataUpdated(metaData);
     }
 
     /**
      * Update the transaction tps.
      */
-    private updateTps(): void {
-        if (this._isMounted && this._feedClient) {
-            const ips = this._feedClient.getIitemPerSecond();
+    private async updateTps(): Promise<void> {
+        if (this._isMounted && this._apiClient && this._networkConfig) {
+            const ips = await this._apiClient.stats({
+                network: this._networkConfig.network,
+                includeHistory: true
+            });
+
+            const itemsPerSecond = ips.itemsPerSecond ?? 0;
+            const confirmedItemsPerSecond = ips.confirmedItemsPerSecond ?? 0;
+            const confirmedRate = ips.confirmationRate ?? 0;
 
             this.setState({
-                itemsPerSecond: ips.itemsPerSecond >= 0 ? ips.itemsPerSecond.toFixed(2) : "--",
-                confirmedItemsPerSecond: ips.confirmedPerSecond >= 0 ? ips.confirmedPerSecond.toFixed(2) : "--",
-                confirmedItemsPerSecondPercent: ips.itemsPerSecond > 0
-                    ? `${(ips.confirmedPerSecond / ips.itemsPerSecond * 100).toFixed(2)}%` : "--"
+                itemsPerSecond: itemsPerSecond >= 0 ? itemsPerSecond.toFixed(2) : "--",
+                confirmedItemsPerSecond: confirmedItemsPerSecond >= 0 ? confirmedItemsPerSecond.toFixed(2) : "--",
+                confirmedItemsPerSecondPercent: confirmedRate > 0
+                    ? `${confirmedRate.toFixed(2)}%` : "--",
+                // Increase values by +100 to add more area under the graph
+                itemsPerSecondHistory: (ips.itemsPerSecondHistory ?? []).map(v => v + 100)
             });
         }
     }
@@ -261,6 +266,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             ? networkService.get(this.props.match.params.network)
             : undefined;
 
+        this._apiClient = ServiceFactory.get<ApiClient>("api-client");
         this.buildItems();
         this.buildMilestones();
     }

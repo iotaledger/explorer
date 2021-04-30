@@ -119,7 +119,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                             </span>
                                             <span className="info-box--action info-box--action__labelvalue">
                                                 <span className="info-box--action__label margin-l-t margin-r-t">
-                                                    Confirmation Rate:
+                                                    {this._networkConfig?.protocolVersion === "chrysalis"
+                                                        ? "Referenced Rate:" : "Confirmation Rate:"}
                                                 </span>
                                                 <span className="info-box--action__value margin-r-t">
                                                     {this.state.confirmedItemsPerSecondPercent}
