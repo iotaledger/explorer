@@ -1,11 +1,11 @@
-name: API Build and Deploy Staging
+name: Feed API Build and Deploy Staging
 
 on:
   push:
     branches: [develop]
     paths:
       - "api/**"
-      - ".github/workflows/api-staging.yaml"
+      - ".github/workflows/api-feed-staging.yaml"
 
 jobs:
   build:

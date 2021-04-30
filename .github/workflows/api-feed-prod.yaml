@@ -1,11 +1,11 @@
-name: API Build and Deploy Production
+name: Feed API Build and Deploy Production
 
 on:
   push:
     branches: [master]
     paths:
       - "api/**"
-      - ".github/workflows/api-prod.yaml"
+      - ".github/workflows/api-feed-prod.yaml"
 
 jobs:
   build:
