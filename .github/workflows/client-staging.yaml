@@ -31,7 +31,6 @@ jobs:
           cd client/src/assets/config/
           mv config.template config.$CONFIG_ID.json
           sed -i "s/API-ENDPOINT/${{ env.CONFIG_API_ENDPOINT }}/g" config.$CONFIG_ID.json
-          sed -i "s/FEED-ENDPOINT/${{ env.CONFIG_FEED_ENDPOINT }}/g" config.$CONFIG_ID.json
           sed -i "s/GOOGLE-ANALYTICS-ID/${{ env.CONFIG_GOOGLE_ANALYTICS_ID }}/g" config.$CONFIG_ID.json
       - name: Use Node.js 12.x
         uses: actions/setup-node@v1

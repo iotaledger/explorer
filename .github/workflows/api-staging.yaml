@@ -51,7 +51,6 @@ jobs:
           sed -i 's/ROUTE-CORS/${{ env.CONFIG_ROUTE_CORS }}/g' config.$CONFIG_ID.json
           sed -i 's/VERBOSE-LOGGING/${{ env.CONFIG_VERBOSE_LOGGING }}/g' config.$CONFIG_ID.json
           sed -i 's/PRIVATE-KEY-ED25519/${{ env.CONFIG_PRIVATE_KEY_ED25519 }}/g' config.$CONFIG_ID.json
-          sed -i 's/ITEMS-FEED-API-URL/${{ env.CONFIG_ITEMS_FEED_API_URL }}/g' config.$CONFIG_ID.json
       - name: GCP Config
         run: |
           cd api
