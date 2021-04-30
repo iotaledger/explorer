@@ -181,7 +181,8 @@ export class App {
                         ? "TPS" : "MPS", status.itemsPerSecond, true)
                     .addField(status.protocol === "og"
                         ? "CTPS" : "CMPS", status.confirmedItemsPerSecond, true)
-                    .addField("Confirmation", `${status.confirmationRate.toFixed(1)}%`, true)
+                    .addField(status.protocol === "og" ? "Confirmation Rate" : "Referenced Rate",
+                        `${status.confirmationRate.toFixed(1)}%`, true)
                     .addField("Latest Milestone Index", status.latestMilestoneIndex ?? "Unknown");
 
                 if (health) {
