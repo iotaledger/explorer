@@ -1,5 +1,6 @@
 import { Client, MessageEmbed } from "discord.js";
 import { FetchHelper } from "./fetchHelper";
+import { INodeInfo } from "./models/api/chrysalis/INodeInfo";
 import { IStatsGetResponse } from "./models/api/stats/IStatsGetResponse";
 import { ICMCQuotesLatestResponse } from "./models/ICMCQuotesLatestResponse";
 import { ICoinGeckoPriceResponse } from "./models/ICoinGeckoPriceResponse";
@@ -21,7 +22,7 @@ export class App {
 
     private _botClient: Client;
 
-    private _networks: INetworksResponse | undefined;
+    private _explorerNetworks: INetworksResponse | undefined;
 
     private _timeLastNetworks: number;
 
@@ -114,14 +115,6 @@ export class App {
                         } else if (msg.content === CHRYSALIS_TRIGGER) {
                             embed = await this.handleChrysalis();
                         } else {
-                            if (!this._networks || now - this._timeLastNetworks > MS_60_MINUTES) {
-                                this._networks = await FetchHelper.json<unknown, INetworksResponse>(
-                                    this._config.explorerEndpoint,
-                                    "networks",
-                                    "get");
-                                this._timeLastNetworks = now;
-                            }
-
                             embed = await this.handleNetwork(msg.content);
                         }
                         if (embed) {
@@ -161,37 +154,35 @@ export class App {
      * @returns The message response.
      */
     private async handleNetwork(command: string): Promise<MessageEmbed | undefined> {
-        if (this._networks?.networks) {
-            const foundNetwork = this._networks?.networks.find(
-                n => `!${n.network}` === command && n.isEnabled && !n.isHidden);
+        if (command.startsWith("!")) {
+            const network = command.slice(1);
 
-            if (foundNetwork) {
-                const res = await FetchHelper.json<unknown, IStatsGetResponse>(
-                    this._config.explorerEndpoint, `stats/${foundNetwork.network}`, "get");
+            const status = await this.fetchNetworkData(network);
 
-                let color = foundNetwork.primaryColor;
+            if (status) {
+                let color = status.color;
                 let healthReason;
                 let health;
 
-                if (res.health === 0) {
+                if (status.health === 0) {
                     color = "#ff6755";
                     health = "Bad";
-                    healthReason = res.healthReason;
-                } else if (res.health === 1) {
+                    healthReason = status.healthReason;
+                } else if (status.health === 1) {
                     color = "#ff8b5c";
                     health = "Degraded";
-                    healthReason = res.healthReason;
+                    healthReason = status.healthReason;
                 }
 
                 const embed = new MessageEmbed()
-                    .setTitle(foundNetwork.label)
+                    .setTitle(status.label)
                     .setColor(color)
-                    .addField(foundNetwork.protocolVersion === "og"
-                        ? "TPS" : "MPS", res.itemsPerSecond, true)
-                    .addField(foundNetwork.protocolVersion === "og"
-                        ? "CTPS" : "CMPS", res.confirmedItemsPerSecond, true)
-                    .addField("Confirmation", `${res.confirmationRate}%`, true)
-                    .addField("Latest Milestone Index", res.latestMilestoneIndex ?? "Unknown");
+                    .addField(status.protocol === "og"
+                        ? "TPS" : "MPS", status.itemsPerSecond, true)
+                    .addField(status.protocol === "og"
+                        ? "CTPS" : "CMPS", status.confirmedItemsPerSecond, true)
+                    .addField("Confirmation", `${status.confirmationRate.toFixed(1)}%`, true)
+                    .addField("Latest Milestone Index", status.latestMilestoneIndex ?? "Unknown");
 
                 if (health) {
                     embed.addField("Health", health);
@@ -201,6 +192,82 @@ export class App {
                 }
 
                 return embed;
+            }
+        }
+    }
+
+    /**
+     * Fetch the status for a network.
+     * @param network The network to process.
+     * @returns The status for the network.
+     */
+    private async fetchNetworkData(network: string): Promise<{
+        health?: number;
+        healthReason?: string;
+        itemsPerSecond?: number;
+        confirmedItemsPerSecond?: number;
+        confirmationRate?: number;
+        latestMilestoneIndex?: number;
+        label: string;
+        protocol: string;
+        color: string;
+    } | undefined> {
+        const now = Date.now();
+
+        // If we are using explorer for status endpoints, grab a cached list of the networks
+        if (this._config.explorerEndpoint &&
+            (!this._explorerNetworks || now - this._timeLastNetworks > MS_60_MINUTES)) {
+            this._explorerNetworks = await FetchHelper.json<unknown, INetworksResponse>(
+                this._config.explorerEndpoint,
+                "networks",
+                "get");
+            this._timeLastNetworks = now;
+        }
+
+        if (this._explorerNetworks?.networks) {
+            const foundNetwork = this._explorerNetworks?.networks.find(
+                n => n.network === network && n.isEnabled && !n.isHidden);
+
+            if (foundNetwork) {
+                const res = await FetchHelper.json<unknown, IStatsGetResponse>(
+                    this._config.explorerEndpoint, `stats/${foundNetwork.network}`, "get");
+
+                return {
+                    ...res,
+                    label: foundNetwork.label,
+                    protocol: foundNetwork.protocolVersion,
+                    color: foundNetwork.primaryColor
+                };
+            }
+        } else if (this._config.chrysalisStatusEndpoints) {
+            const statusEndpoint = this._config.chrysalisStatusEndpoints[network];
+
+            if (statusEndpoint) {
+                const res = await FetchHelper.json<unknown, { data: INodeInfo }>(
+                    statusEndpoint.url, "api/v1/info", "get");
+
+                const timeSinceLastMsInMinutes = (Date.now() - (res.data.latestMilestoneTimestamp * 1000)) / 60000;
+                let health = 0;
+                let healthReason = "No milestone within 5 minutes";
+                if (timeSinceLastMsInMinutes < 2) {
+                    health = 2;
+                    healthReason = "OK";
+                } else if (timeSinceLastMsInMinutes < 5) {
+                    health = 1;
+                    healthReason = "No milestone within 2 minutes";
+                }
+
+                return {
+                    health,
+                    healthReason,
+                    itemsPerSecond: res.data.messagesPerSecond,
+                    confirmedItemsPerSecond: res.data.referencedMessagesPerSecond,
+                    confirmationRate: res.data.referencedRate,
+                    latestMilestoneIndex: res.data.latestMilestoneIndex,
+                    label: statusEndpoint.label,
+                    protocol: "chrysalis",
+                    color: statusEndpoint.color
+                };
             }
         }
     }

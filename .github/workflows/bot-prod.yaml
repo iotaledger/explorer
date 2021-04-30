@@ -14,9 +14,7 @@ jobs:
     env:
       # Build specific env vars
       CONFIG_ID: prod
-      CONFIG_EXPLORER_ENDPOINT: ${{ secrets.PROD_CONFIG_EXPLORER_ENDPOINT }}
-      CONFIG_DISCORD_TOKEN: ${{ secrets.PROD_CONFIG_DISCORD_TOKEN }}
-      CONFIG_COIN_MARKET_CAP_KEY: ${{ secrets.PROD_COIN_MARKET_CAP_KEY }}
+      BOT_CONFIG_JSON: ${{ secrets.PROD_BOT_CONFIG_JSON }}
       GCP_SERVICE_ID: ${{ secrets.GCP_BOT_PROD_SERVICE_ID }}
       GCP_PROD_SERVICE_ID: ${{ secrets.GCP_PROD_SERVICE_ID }}
       GCP_PROD_DOMAIN: ${{ secrets.GCP_PROD_DOMAIN }}
@@ -30,10 +28,7 @@ jobs:
       - name: Bot Config
         run: |
           cd discord-bot/src/data/
-          mv config.template config.$CONFIG_ID.json
-          sed -i 's/EXPLORER-ENDPOINT/${{ env.CONFIG_EXPLORER_ENDPOINT }}/g' config.$CONFIG_ID.json
-          sed -i 's/DISCORD-TOKEN/${{ env.CONFIG_DISCORD_TOKEN }}/g' config.$CONFIG_ID.json
-          sed -i 's/COIN-MARKET-CAP-KEY/${{ env.CONFIG_COIN_MARKET_CAP_KEY }}/g' config.$CONFIG_ID.json
+          echo ${{ env.BOT_CONFIG_JSON }} > config.$CONFIG_ID.json
       - name: GCP Config
         run: |
           cd discord-bot
