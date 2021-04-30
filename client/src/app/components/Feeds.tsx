@@ -194,7 +194,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                 console.error(err);
             })
             .finally(() => {
-                this._timerId = setTimeout(async () => this.updateTps(), 2000);
+                this._timerId = setTimeout(async () => this.updateTps(), 4000);
             });
         }
     }
@@ -264,7 +264,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         this.buildItems();
         this.buildMilestones();
 
-        this._timerId = setTimeout(async () => this.updateTps(), 2000);
+        this._timerId = setTimeout(async () => this.updateTps(), 4000);
     }
 }
 
