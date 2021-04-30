@@ -9,8 +9,8 @@ manual_scaling:
   instances: 1
 
 resources:
-  cpu: 4
-  memory_gb: 16
+  cpu: 8
+  memory_gb: 24
   disk_size_gb: 20
 
 handlers:
