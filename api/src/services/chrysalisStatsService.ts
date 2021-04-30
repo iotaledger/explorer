@@ -12,6 +12,7 @@ export class ChrysalisStatsService extends BaseStatsService {
         try {
             const client = new SingleNodeClient(this._networkConfiguration.provider);
             const info = await client.info();
+
             if (info) {
                 this._statistics.push({
                     itemsPerSecond: info.messagesPerSecond,
