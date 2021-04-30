@@ -11,7 +11,7 @@ automatic_scaling:
   cool_down_period_sec: 180
   cpu_utilization:
     target_utilization: 0.6
-  target_concurrent_requests: 50
+  target_concurrent_requests: 80
 
 resources:
   cpu: 2
