@@ -18,6 +18,7 @@ import { MilestonesService } from "./services/milestonesService";
 import { NetworkService } from "./services/networkService";
 import { OgFeedService } from "./services/ogFeedService";
 import { OgItemsService } from "./services/ogItemsService";
+import { OgStatsRemoteService } from "./services/ogStatsRemoteService";
 import { OgStatsService } from "./services/ogStatsService";
 import { ZmqService } from "./services/zmqService";
 
@@ -54,13 +55,19 @@ export async function initServices(config: IConfiguration) {
                         networkConfig.network, networkConfig.coordinatorAddress)
                 );
 
-                ServiceFactory.register(
-                    `items-${networkConfig.network}`,
-                    () => new OgItemsService(networkConfig.network));
+                if (!config.itemsFeedApiUrl) {
+                    ServiceFactory.register(
+                        `items-${networkConfig.network}`,
+                        () => new OgItemsService(networkConfig.network));
 
-                ServiceFactory.register(
-                    `stats-${networkConfig.network}`,
-                    () => new OgStatsService(networkConfig));
+                    ServiceFactory.register(
+                        `stats-${networkConfig.network}`,
+                        () => new OgStatsService(networkConfig));
+                } else {
+                    ServiceFactory.register(
+                        `stats-${networkConfig.network}`,
+                        () => new OgStatsRemoteService(networkConfig, config.itemsFeedApiUrl));
+                }
             }
         } else if (networkConfig.protocolVersion === "chrysalis" && networkConfig.feedEndpoint) {
             ServiceFactory.register(
@@ -73,9 +80,11 @@ export async function initServices(config: IConfiguration) {
                     networkConfig.network, networkConfig.provider, networkConfig.user, networkConfig.password)
             );
 
-            ServiceFactory.register(
-                `items-${networkConfig.network}`,
-                () => new ChrysalisItemsService(networkConfig.network));
+            if (!config.itemsFeedApiUrl) {
+                ServiceFactory.register(
+                    `items-${networkConfig.network}`,
+                    () => new ChrysalisItemsService(networkConfig.network));
+            }
 
             ServiceFactory.register(
                 `stats-${networkConfig.network}`,

@@ -19,7 +19,8 @@ You can configure the application to store data either in Amazon DynamoDB `dynam
     "allowedDomains": [                              /* A list of domains for the cors allow-origin */
         "https://www.mydomain.com"
     ],
-    "verboseLogging": false                         /* Set to true for the API to log all its request/responses */
+    "verboseLogging": false,                         /* Set to true for the API to log all its request/responses */
+    "itemsFeedApiUrl": "https://feeds-api.my-domain.com"  /* Optional, if you have offloaded live feeds to a secondary API instance set this field  */
 }
 ```
 

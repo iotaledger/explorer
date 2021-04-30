@@ -10,5 +10,6 @@ application-data
 
 config.dev.json
 config.local.json
+config.local.feed.json
 config.staging.json
 config.prod.json

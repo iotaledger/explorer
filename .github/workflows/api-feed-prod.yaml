@@ -1,11 +1,11 @@
-name: Bot Build and Deploy Production
+name: API Build and Deploy Production
 
 on:
   push:
     branches: [master]
     paths:
-      - "discord-bot/**"
-      - ".github/workflows/bot-prod.yaml"
+      - "api/**"
+      - ".github/workflows/api-prod.yaml"
 
 jobs:
   build:
@@ -14,8 +14,17 @@ jobs:
     env:
       # Build specific env vars
       CONFIG_ID: prod
-      BOT_CONFIG_JSON: ${{ secrets.PROD_BOT_CONFIG_JSON }}
-      GCP_SERVICE_ID: ${{ secrets.GCP_BOT_PROD_SERVICE_ID }}
+      CONFIG_FIXER_API_KEY: ${{ secrets.PROD_CONFIG_FIXER_API_KEY }}
+      CONFIG_DB_AWS_REGION: ${{ secrets.PROD_CONFIG_DB_AWS_REGION }}
+      CONFIG_DB_AWS_ACCESS_KEY_ID: ${{ secrets.PROD_CONFIG_DB_AWS_ACCESS_KEY_ID }}
+      CONFIG_DB_AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_CONFIG_DB_AWS_SECRET_ACCESS_KEY }}
+      CONFIG_DB_TABLE_PREFIX: ${{ secrets.PROD_CONFIG_DB_TABLE_PREFIX }}
+      CONFIG_ALLOWED_DOMAIN: ${{ secrets.PROD_CONFIG_ALLOWED_DOMAIN }}
+      CONFIG_ROUTE_CORS: ${{ secrets.PROD_CONFIG_ROUTE_CORS }}
+      CONFIG_VERBOSE_LOGGING: ${{ secrets.PROD_VERBOSE_LOGGING }}
+      CONFIG_PRIVATE_KEY_ED25519: ${{ secrets.PROD_PRIVATE_KEY_ED25519 }}
+      CONFIG_ITEMS_FEED_API_URL: ${{ secrets.PROD_CONFIG_FEED_ENDPOINT }}
+      GCP_SERVICE_ID: ${{ secrets.GCP_PROD_SERVICE_ID }}
       GCP_PROD_SERVICE_ID: ${{ secrets.GCP_PROD_SERVICE_ID }}
       GCP_PROD_DOMAIN: ${{ secrets.GCP_PROD_DOMAIN }}
       GCP_STAGING_SERVICE_ID: ${{ secrets.GCP_STAGING_SERVICE_ID }}
@@ -29,17 +38,27 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Bot Config
+      - name: API Config
         run: |
-          cd discord-bot/src/data/
-          echo ${{ env.BOT_CONFIG_JSON }} > config.$CONFIG_ID.json
+          cd api/src/data/
+          mv config.template config.$CONFIG_ID.json
+          sed -i 's/FIXER-API-KEY/${{ env.CONFIG_FIXER_API_KEY }}/g' config.$CONFIG_ID.json
+          sed -i 's/DB-AWS-REGION/${{ env.CONFIG_DB_AWS_REGION }}/g' config.$CONFIG_ID.json
+          sed -i 's/DB-AWS-ACCESS-KEY-ID/${{ env.CONFIG_DB_AWS_ACCESS_KEY_ID }}/g' config.$CONFIG_ID.json
+          sed -i 's/DB-AWS-SECRET-ACCESS-KEY/${{ env.CONFIG_DB_AWS_SECRET_ACCESS_KEY }}/g' config.$CONFIG_ID.json
+          sed -i 's/DB-TABLE-PREFIX/${{ env.CONFIG_DB_TABLE_PREFIX }}/g' config.$CONFIG_ID.json
+          sed -i 's/ALLOWED-DOMAIN/${{ env.CONFIG_ALLOWED_DOMAIN }}/g' config.$CONFIG_ID.json
+          sed -i 's/ROUTE-CORS/${{ env.CONFIG_ROUTE_CORS }}/g' config.$CONFIG_ID.json
+          sed -i 's/VERBOSE-LOGGING/${{ env.CONFIG_VERBOSE_LOGGING }}/g' config.$CONFIG_ID.json
+          sed -i 's/PRIVATE-KEY-ED25519/${{ env.CONFIG_PRIVATE_KEY_ED25519 }}/g' config.$CONFIG_ID.json
+          sed -i 's/ITEMS-FEED-API-URL/${{ env.CONFIG_ITEMS_FEED_API_URL }}/g' config.$CONFIG_ID.json
       - name: GCP Config
         run: |
-          cd discord-bot
+          cd api
           mv app.template.prod.yaml app.yaml
           sed -i 's/%SERVICE-ID%/${{ env.GCP_SERVICE_ID }}/g' app.yaml
           sed -i 's/%CONFIG-ID%/${{ env.CONFIG_ID }}/g' app.yaml
-          mv dispatch.template.prod.yaml dispatch.yaml
+          mv dispatch.template.yaml dispatch.yaml
           sed -i 's/%GCP-PROD-DOMAIN%/${{ env.GCP_PROD_DOMAIN }}/g' dispatch.yaml
           sed -i 's/%GCP-PROD-SERVICE-ID%/${{ env.GCP_PROD_SERVICE_ID }}/g' dispatch.yaml
           sed -i 's/%GCP-STAGING-DOMAIN%/${{ env.GCP_STAGING_DOMAIN }}/g' dispatch.yaml
@@ -58,7 +77,5 @@ jobs:
           export_default_credentials: true
       - name: Deploy
         run: |
-          cd discord-bot
-          npm install
-          npm run build
+          cd api
           gcloud app deploy app.yaml dispatch.yaml --quiet

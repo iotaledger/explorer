@@ -16,6 +16,10 @@ import { cors, executeRoute, matchRouteUrl } from "./utils/apiHelper";
 const configId = process.env.CONFIG_ID || "local";
 const config: IConfiguration = require(`./data/config.${configId}.json`);
 
+if (config.itemsFeedApiUrl === "ITEMS-FEED-API-URL") {
+    config.itemsFeedApiUrl = undefined;
+}
+
 const configAllowedDomains: string[] | undefined = config.allowedDomains;
 const configAllowedMethods: string | undefined =
     !config.allowedMethods || config.allowedMethods === "ALLOWED-METHODS"

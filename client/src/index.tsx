@@ -21,6 +21,10 @@ import { TangleCacheService } from "./services/tangleCacheService";
 const configId = process.env.REACT_APP_CONFIG_ID ?? "local";
 const config: IConfiguration = require(`./assets/config/config.${configId}.json`);
 
+if (config.feedEndpoint === "FEED-ENDPOINT") {
+    config.feedEndpoint = undefined;
+}
+
 initialiseServices().then(() => {
     ReactDOM.render(
         (
@@ -65,7 +69,7 @@ async function initialiseServices(): Promise<void> {
         for (const netConfig of networks) {
             ServiceFactory.register(
                 `feed-${netConfig.network}`,
-                serviceName => new FeedClient(config.apiEndpoint, serviceName.slice(5))
+                serviceName => new FeedClient(config.feedEndpoint ?? config.apiEndpoint, serviceName.slice(5))
             );
 
             ServiceFactory.register(
