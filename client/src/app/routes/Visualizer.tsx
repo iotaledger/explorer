@@ -161,7 +161,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * The component mounted.
      */
     public async componentDidMount(): Promise<void> {
-        super.componentDidMount();
+        await super.componentDidMount();
 
         window.addEventListener("resize", this._resize);
 
