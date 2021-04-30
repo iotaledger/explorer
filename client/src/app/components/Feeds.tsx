@@ -55,7 +55,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
-        await this.initNetworkServices();
+        this.initNetworkServices();
     }
 
     /**
@@ -125,17 +125,17 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Build the feeds for transactions.
      */
-    private async buildItems(): Promise<void> {
+    private buildItems(): void {
         if (this._feedClient) {
             this._itemSubscriptionId = this._feedClient.subscribe(
-                async (updatedItems, metadata) => {
+                (updatedItems, metadata) => {
                     if (this._isMounted) {
-                        await this.updateItems(updatedItems, metadata);
+                        this.updateItems(updatedItems, metadata);
                     }
                 }
             );
 
-            await this.updateItems(this._feedClient.getItems(), {});
+            this.updateItems(this._feedClient.getItems(), {});
         }
     }
 
@@ -162,7 +162,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * @param newItems Just the new items.
      * @param metaData New confirmed items.
      */
-    private async updateItems(newItems: IFeedItem[], metaData: { [id: string]: IFeedItemMetadata }): Promise<void> {
+    private updateItems(newItems: IFeedItem[], metaData: { [id: string]: IFeedItemMetadata }): void {
         this.itemsUpdated(newItems);
         this.metadataUpdated(metaData);
     }
@@ -170,24 +170,25 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Update the transaction tps.
      */
-    private async updateTps(): Promise<void> {
+    private updateTps(): void {
         if (this._isMounted && this._apiClient && this._networkConfig) {
-            const ips = await this._apiClient.stats({
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            this._apiClient.stats({
                 network: this._networkConfig.network,
                 includeHistory: true
-            });
+            }).then(ips => {
+                const itemsPerSecond = ips.itemsPerSecond ?? 0;
+                const confirmedItemsPerSecond = ips.confirmedItemsPerSecond ?? 0;
+                const confirmedRate = ips.confirmationRate ?? 0;
 
-            const itemsPerSecond = ips.itemsPerSecond ?? 0;
-            const confirmedItemsPerSecond = ips.confirmedItemsPerSecond ?? 0;
-            const confirmedRate = ips.confirmationRate ?? 0;
-
-            this.setState({
-                itemsPerSecond: itemsPerSecond >= 0 ? itemsPerSecond.toFixed(2) : "--",
-                confirmedItemsPerSecond: confirmedItemsPerSecond >= 0 ? confirmedItemsPerSecond.toFixed(2) : "--",
-                confirmedItemsPerSecondPercent: confirmedRate > 0
-                    ? `${confirmedRate.toFixed(2)}%` : "--",
-                // Increase values by +100 to add more area under the graph
-                itemsPerSecondHistory: (ips.itemsPerSecondHistory ?? []).map(v => v + 100)
+                this.setState({
+                    itemsPerSecond: itemsPerSecond >= 0 ? itemsPerSecond.toFixed(2) : "--",
+                    confirmedItemsPerSecond: confirmedItemsPerSecond >= 0 ? confirmedItemsPerSecond.toFixed(2) : "--",
+                    confirmedItemsPerSecondPercent: confirmedRate > 0
+                        ? `${confirmedRate.toFixed(2)}%` : "--",
+                    // Increase values by +100 to add more area under the graph
+                    itemsPerSecondHistory: (ips.itemsPerSecondHistory ?? []).map(v => v + 100)
+                });
             });
         }
     }
@@ -195,7 +196,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Build the milestones for the network.
      */
-    private async buildMilestones(): Promise<void> {
+    private buildMilestones(): void {
         if (this._milestonesClient) {
             this._miSubscriptionId = this._milestonesClient.subscribe(
                 () => {
@@ -240,7 +241,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Initialise the services for the network.
      */
-    private async initNetworkServices(): Promise<void> {
+    private initNetworkServices(): void {
         const networkService = ServiceFactory.get<NetworkService>("network");
         this._networkConfig = this.props.match.params.network
             ? networkService.get(this.props.match.params.network)
@@ -253,9 +254,9 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             `feed-${this.props.match.params.network}`);
 
 
-        await this.updateTps();
-        await this.buildItems();
-        await this.buildMilestones();
+        this.updateTps();
+        this.buildItems();
+        this.buildMilestones();
 
         this._timerId = setInterval(async () => this.updateTps(), 2000);
     }
