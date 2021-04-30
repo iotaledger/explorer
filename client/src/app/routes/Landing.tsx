@@ -62,8 +62,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
     /**
      * The component mounted.
      */
-    public componentDidMount(): void {
-        super.componentDidMount();
+    public async componentDidMount(): Promise<void> {
+        await super.componentDidMount();
 
         const settings = this._settingsService.get();
 

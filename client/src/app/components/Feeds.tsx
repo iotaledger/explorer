@@ -52,10 +52,10 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * The component mounted.
      */
-    public componentDidMount(): void {
+    public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
-        this.initNetworkServices();
+        await this.initNetworkServices();
     }
 
     /**
@@ -63,7 +63,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * @param prevProps The previous properties.
      * @param prevState The previous state.
      */
-    public componentDidUpdate(prevProps: P, prevState: S): void {
+    public async componentDidUpdate(prevProps: P, prevState: S): Promise<void> {
         if (super.componentDidUpdate) {
             super.componentDidUpdate(prevProps, prevState);
         }
@@ -72,7 +72,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             this.closeItems();
             this.closeMilestones();
 
-            this.initNetworkServices();
+            await this.initNetworkServices();
         }
     }
 
@@ -125,29 +125,18 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Build the feeds for transactions.
      */
-    private buildItems(): void {
-        this.setState(
-            {
-                itemsPerSecond: "--"
-            },
-            async () => {
-                this._feedClient = ServiceFactory.get<FeedClient>(
-                    `feed-${this.props.match.params.network}`);
-
-                if (this._feedClient) {
-                    this._itemSubscriptionId = this._feedClient.subscribe(
-                        async (updatedItems, metadata) => {
-                            if (this._isMounted) {
-                                await this.updateItems(updatedItems, metadata);
-                            }
-                        }
-                    );
-
-                    await this.updateItems(this._feedClient.getItems(), {});
-                    await this.updateTps();
-                    this._timerId = setInterval(async () => this.updateTps(), 2000);
+    private async buildItems(): Promise<void> {
+        if (this._feedClient) {
+            this._itemSubscriptionId = this._feedClient.subscribe(
+                async (updatedItems, metadata) => {
+                    if (this._isMounted) {
+                        await this.updateItems(updatedItems, metadata);
+                    }
                 }
-            });
+            );
+
+            await this.updateItems(this._feedClient.getItems(), {});
+        }
     }
 
     /**
@@ -206,27 +195,18 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Build the milestones for the network.
      */
-    private buildMilestones(): void {
-        this.setState(
-            {
-                milestones: []
-            },
-            () => {
-                this._milestonesClient = ServiceFactory.get<MilestonesClient>(
-                    `milestones-${this.props.match.params.network}`);
-
-                if (this._milestonesClient) {
-                    this._miSubscriptionId = this._milestonesClient.subscribe(
-                        () => {
-                            if (this._isMounted) {
-                                this.updateMilestones();
-                            }
-                        }
-                    );
-
-                    this.updateMilestones();
+    private async buildMilestones(): Promise<void> {
+        if (this._milestonesClient) {
+            this._miSubscriptionId = this._milestonesClient.subscribe(
+                () => {
+                    if (this._isMounted) {
+                        this.updateMilestones();
+                    }
                 }
-            });
+            );
+
+            this.updateMilestones();
+        }
     }
 
     /**
@@ -260,15 +240,24 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Initialise the services for the network.
      */
-    private initNetworkServices(): void {
+    private async initNetworkServices(): Promise<void> {
         const networkService = ServiceFactory.get<NetworkService>("network");
         this._networkConfig = this.props.match.params.network
             ? networkService.get(this.props.match.params.network)
             : undefined;
 
         this._apiClient = ServiceFactory.get<ApiClient>("api-client");
-        this.buildItems();
-        this.buildMilestones();
+        this._milestonesClient = ServiceFactory.get<MilestonesClient>(
+            `milestones-${this.props.match.params.network}`);
+        this._feedClient = ServiceFactory.get<FeedClient>(
+            `feed-${this.props.match.params.network}`);
+
+
+        await this.updateTps();
+        await this.buildItems();
+        await this.buildMilestones();
+
+        this._timerId = setInterval(async () => this.updateTps(), 2000);
     }
 }
 
