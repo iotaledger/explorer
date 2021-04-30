@@ -23,6 +23,7 @@ jobs:
       CONFIG_ROUTE_CORS: ${{ secrets.PROD_CONFIG_ROUTE_CORS }}
       CONFIG_VERBOSE_LOGGING: ${{ secrets.PROD_VERBOSE_LOGGING }}
       CONFIG_PRIVATE_KEY_ED25519: ${{ secrets.PROD_PRIVATE_KEY_ED25519 }}
+      CONFIG_ITEMS_FEED_API_URL: ${{ secrets.PROD_CONFIG_FEED_ENDPOINT }}
       GCP_SERVICE_ID: ${{ secrets.GCP_PROD_SERVICE_ID }}
       GCP_PROD_SERVICE_ID: ${{ secrets.GCP_PROD_SERVICE_ID }}
       GCP_PROD_DOMAIN: ${{ secrets.GCP_PROD_DOMAIN }}
@@ -50,6 +51,7 @@ jobs:
           sed -i 's/ROUTE-CORS/${{ env.CONFIG_ROUTE_CORS }}/g' config.$CONFIG_ID.json
           sed -i 's/VERBOSE-LOGGING/${{ env.CONFIG_VERBOSE_LOGGING }}/g' config.$CONFIG_ID.json
           sed -i 's/PRIVATE-KEY-ED25519/${{ env.CONFIG_PRIVATE_KEY_ED25519 }}/g' config.$CONFIG_ID.json
+          sed -i 's/ITEMS-FEED-API-URL/${{ env.CONFIG_ITEMS_FEED_API_URL }}/g' config.$CONFIG_ID.json
       - name: GCP Config
         run: |
           cd api
