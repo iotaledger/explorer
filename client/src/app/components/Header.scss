@@ -22,6 +22,10 @@ header {
       margin-right: 40px;
     }
 
+    @include phone-down {
+      margin-right: 0px;
+    }
+
     a {
       margin-right: 30px;
       outline: none;
