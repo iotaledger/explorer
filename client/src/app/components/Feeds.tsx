@@ -63,7 +63,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * @param prevProps The previous properties.
      * @param prevState The previous state.
      */
-    public async componentDidUpdate(prevProps: P, prevState: S): Promise<void> {
+    public componentDidUpdate(prevProps: P, prevState: S): void {
         if (super.componentDidUpdate) {
             super.componentDidUpdate(prevProps, prevState);
         }
@@ -72,7 +72,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             this.closeItems();
             this.closeMilestones();
 
-            await this.initNetworkServices();
+            this.initNetworkServices();
         }
     }
 
