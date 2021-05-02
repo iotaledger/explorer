@@ -454,11 +454,11 @@ export class App {
         const MAX_TOKENS = 2779530283000000;
 
         if (Array.isArray(this._lastChrysalisStats) && this._lastChrysalisStats.length > 0) {
-            const totalLocked = Number.parseInt(this._lastChrysalisStats[0].lockedTokens, 10);
+            const totalMigrated = Number.parseInt(this._lastChrysalisStats[0].migratedTokens, 10);
             const totalAddresses = Number.parseInt(this._lastChrysalisStats[0].migrationAddresses, 10);
 
-            embed.addField("Locked Tokens", `${(totalLocked / MAX_TOKENS * 100).toFixed(2)} %`);
-            embed.addField("Amount Locked Tokens", `${(totalLocked / 1000000000000).toFixed(2)} Ti`);
+            embed.addField("Migrated Tokens", `${(totalMigrated / MAX_TOKENS * 100).toFixed(2)} %`);
+            embed.addField("Amount Migrated Tokens", `${(totalMigrated / 1000000000000).toFixed(2)} Ti`);
 
             if (this._lastUsdPrice === 0 || Date.now() - this._lastUsdTime > MS_30_SECONDS) {
                 const quotes = await this.updateCmcQuotes("usd");
@@ -471,11 +471,11 @@ export class App {
                 const cur = Intl.NumberFormat("en", {
                     style: "currency",
                     currency: "USD"
-                }).format((totalLocked / 1000000) * this._lastUsdPrice);
-                embed.addField("Value Locked", cur);
+                }).format((totalMigrated / 1000000) * this._lastUsdPrice);
+                embed.addField("Value Migrated", cur);
             }
 
-            embed.addField("Addresses Locked", totalAddresses);
+            embed.addField("Addresses Migrated", totalAddresses);
         }
         return embed;
     }
