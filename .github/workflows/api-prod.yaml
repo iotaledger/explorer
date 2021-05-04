@@ -74,7 +74,11 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
-      - name: Deploy
-        run: |
-          cd api
-          gcloud app deploy app.yaml dispatch.yaml --quiet
+      - name: Deploy to App Engine
+        uses: google-github-actions/deploy-appengine@v0.3.1
+        with:
+          working_directory: api
+          deliverables: app.yaml dispatch.yaml
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          promote: false
+          version: v1
