@@ -18,7 +18,6 @@ import { MilestonesService } from "./services/milestonesService";
 import { NetworkService } from "./services/networkService";
 import { OgFeedService } from "./services/ogFeedService";
 import { OgItemsService } from "./services/ogItemsService";
-import { OgStatsRemoteService } from "./services/ogStatsRemoteService";
 import { OgStatsService } from "./services/ogStatsService";
 import { ZmqService } from "./services/zmqService";
 

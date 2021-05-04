@@ -23,7 +23,7 @@ header {
     }
 
     @include phone-down {
-      margin-right: 0px;
+      margin-right: 0;
     }
 
     a {
