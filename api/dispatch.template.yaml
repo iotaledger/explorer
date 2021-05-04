@@ -3,9 +3,5 @@ dispatch:
     service: %GCP-PROD-SERVICE-ID%
   - url: "%GCP-STAGING-DOMAIN%/*"
     service: %GCP-STAGING-SERVICE-ID%
-  - url: "%GCP-PROD-FEED-DOMAIN%/*"
-    service: %GCP-PROD-FEED-SERVICE-ID%
-  - url: "%GCP-STAGING-FEED-DOMAIN%/*"
-    service: %GCP-STAGING-FEED-SERVICE-ID%
   - url: "%GCP-BOT-PROD-DOMAIN%/*"
     service: %GCP-BOT-PROD-SERVICE-ID%

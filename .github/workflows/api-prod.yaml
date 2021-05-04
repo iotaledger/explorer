@@ -62,10 +62,6 @@ jobs:
           sed -i 's/%GCP-PROD-SERVICE-ID%/${{ env.GCP_PROD_SERVICE_ID }}/g' dispatch.yaml
           sed -i 's/%GCP-STAGING-DOMAIN%/${{ env.GCP_STAGING_DOMAIN }}/g' dispatch.yaml
           sed -i 's/%GCP-STAGING-SERVICE-ID%/${{ env.GCP_STAGING_SERVICE_ID }}/g' dispatch.yaml
-          sed -i 's/%GCP-PROD-FEED-DOMAIN%/${{ env.GCP_PROD_FEED_DOMAIN }}/g' dispatch.yaml
-          sed -i 's/%GCP-PROD-FEED-SERVICE-ID%/${{ env.GCP_PROD_FEED_SERVICE_ID }}/g' dispatch.yaml
-          sed -i 's/%GCP-STAGING-FEED-DOMAIN%/${{ env.GCP_STAGING_FEED_DOMAIN }}/g' dispatch.yaml
-          sed -i 's/%GCP-STAGING-FEED-SERVICE-ID%/${{ env.GCP_STAGING_FEED_SERVICE_ID }}/g' dispatch.yaml
           sed -i 's/%GCP-BOT-PROD-DOMAIN%/${{ env.GCP_BOT_PROD_DOMAIN }}/g' dispatch.yaml
           sed -i 's/%GCP-BOT-PROD-SERVICE-ID%/${{ env.GCP_BOT_PROD_SERVICE_ID }}/g' dispatch.yaml
       - uses: google-github-actions/setup-gcloud@596a625120b91c996fbb7e49f6110e31d0a182d0
