@@ -34,7 +34,7 @@ Please report any issues in our [issue tracker](https://github.com/iotaledger/ex
 
 ## Prerequisites
 
-To deploy your own version of the Tangle Explorer website, you need to have at least [version 10 of Node.js](https://nodejs.org/en/download/) installed on your device.
+To deploy your own version of the Tangle Explorer website, you need to have at least [version 14 of Node.js](https://nodejs.org/en/download/) installed on your device.
 
 To check if you have Node.js installed, run the following command:
 
@@ -56,4 +56,4 @@ See our [contributing guidelines](.github/CONTRIBUTING.md) for more information.
 
 ## Joining the discussion
 
-If you want to get involved in the community, need help with getting set up, have any issues or just want to discuss IOTA, Distributed Registry Technology (DRT), and IoT with other people, feel free to join our [Discord](https://discord.iota.org/).
+If you want to get involved in the community, need help with getting set up, have any issues or just want to discuss IOTA, feel free to join our [Discord](https://discord.iota.org/).
