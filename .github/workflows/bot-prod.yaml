@@ -63,5 +63,5 @@ jobs:
           export_default_credentials: true
       - name: Deploy
         run: |
-          cd api
+          cd discord-bot
           gcloud app deploy app.yaml dispatch.yaml --quiet
