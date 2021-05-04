@@ -65,11 +65,6 @@ export interface INetwork {
     permaNodeEndpointPassword?: string;
 
     /**
-     * The feed to communicate with.
-     */
-    feedEndpoint?: string;
-
-    /**
      * The address of the coordinator.
      */
     coordinatorAddress?: string;

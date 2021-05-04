@@ -1,5 +1,4 @@
 {
     "apiEndpoint": "API-ENDPOINT",
-    "feedEndpoint": "FEED-ENDPOINT",
     "googleAnalyticsId": "GOOGLE-ANALYTICS-ID"
 }

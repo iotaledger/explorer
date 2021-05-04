@@ -6,11 +6,6 @@ export interface IConfiguration {
     apiEndpoint: string;
 
     /**
-     * The feed api endpoint for the client.
-     */
-    feedEndpoint?: string;
-
-    /**
      * The google analytics id.
      */
     googleAnalyticsId: string;

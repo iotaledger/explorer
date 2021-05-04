@@ -68,9 +68,4 @@ export interface IConfiguration {
      * Private key for signing the api responses.
      */
     privateKeyEd25519?: string;
-
-    /**
-     * Get feed data from a secondary api instance.
-     */
-    itemsFeedApiUrl?: string;
 }

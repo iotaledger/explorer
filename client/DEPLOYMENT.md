@@ -7,7 +7,6 @@ You should copy `./src/assets/config/config.template` to `./src/assets/config/co
 ```js
 {
     "apiEndpoint": "ENDPOINT",                    /* The URL of the api endpoint e.g. https://api.my-domain.com */
-    "feedEndpoint": "ENDPOINT",                   /* The URL of an optional secondary endpoint to use for just the feeds e.g. https://feeds-api.my-domain.com */
     "googleAnalyticsId": "GOOGLE-ANALYTICS-ID"    /* Optional, google analytics id */
 }
 ```

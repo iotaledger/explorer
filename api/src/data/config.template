@@ -13,6 +13,5 @@
     "allowedHeaders": "ALLOWED-HEADERS",
     "routeCors": [ ROUTE-CORS ],
     "verboseLogging": VERBOSE-LOGGING,
-    "privateKeyEd25519": "PRIVATE-KEY-ED25519",
-    "itemsFeedApiUrl": "ITEMS-FEED-API-URL"
+    "privateKeyEd25519": "PRIVATE-KEY-ED25519"
 }

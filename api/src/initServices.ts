@@ -55,19 +55,13 @@ export async function initServices(config: IConfiguration) {
                         networkConfig.network, networkConfig.coordinatorAddress)
                 );
 
-                if (!config.itemsFeedApiUrl) {
-                    ServiceFactory.register(
-                        `items-${networkConfig.network}`,
-                        () => new OgItemsService(networkConfig.network));
+                ServiceFactory.register(
+                    `items-${networkConfig.network}`,
+                    () => new OgItemsService(networkConfig.network));
 
-                    ServiceFactory.register(
-                        `stats-${networkConfig.network}`,
-                        () => new OgStatsService(networkConfig));
-                } else {
-                    ServiceFactory.register(
-                        `stats-${networkConfig.network}`,
-                        () => new OgStatsRemoteService(networkConfig, config.itemsFeedApiUrl));
-                }
+                ServiceFactory.register(
+                    `stats-${networkConfig.network}`,
+                    () => new OgStatsService(networkConfig));
             }
         } else if (networkConfig.protocolVersion === "chrysalis" && networkConfig.feedEndpoint) {
             ServiceFactory.register(
@@ -80,11 +74,9 @@ export async function initServices(config: IConfiguration) {
                     networkConfig.network, networkConfig.provider, networkConfig.user, networkConfig.password)
             );
 
-            if (!config.itemsFeedApiUrl) {
-                ServiceFactory.register(
-                    `items-${networkConfig.network}`,
-                    () => new ChrysalisItemsService(networkConfig.network));
-            }
+            ServiceFactory.register(
+                `items-${networkConfig.network}`,
+                () => new ChrysalisItemsService(networkConfig.network));
 
             ServiceFactory.register(
                 `stats-${networkConfig.network}`,
