@@ -1,6 +1,6 @@
 import { Blake2b, Converter, deserializeMessage, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, ReadStream, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
 import { asTransactionObject } from "@iota/transaction-converter";
-import SocketIOClient from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { IFeedItemMetadata } from "../models/api/IFeedItemMetadata";
@@ -39,7 +39,7 @@ export class FeedClient {
     /**
      * The web socket to communicate on.
      */
-    private readonly _socket: SocketIOClient.Socket;
+    private readonly _socket: Socket;
 
     /**
      * The latest items.
@@ -77,7 +77,7 @@ export class FeedClient {
 
         // Use websocket by default
         // eslint-disable-next-line new-cap
-        this._socket = SocketIOClient(this._endpoint, { upgrade: true, transports: ["websocket"] });
+        this._socket = io(this._endpoint, { upgrade: true, transports: ["websocket"] });
 
         // If reconnect fails then also try polling mode.
         this._socket.on("reconnect_attempt", () => {

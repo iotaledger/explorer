@@ -1505,6 +1505,9 @@ module.exports = {
         "unicorn/number-literal-case": [
             "error"
         ],
+        "unicorn/numeric-separators-style": [
+            "off"
+        ],
         "unicorn/prefer-add-event-listener": [
             "error"
         ],

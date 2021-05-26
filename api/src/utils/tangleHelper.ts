@@ -483,7 +483,8 @@ export class TangleHelper {
                     addressType: ED25519_ADDRESS_TYPE,
                     address: queryLower,
                     balance: 0,
-                    dustAllowed: false
+                    dustAllowed: false,
+                    ledgerIndex: 0
                 } : await client.addressEd25519(queryLower);
 
                 const addressOutputs = await client.addressEd25519Outputs(queryLower);
