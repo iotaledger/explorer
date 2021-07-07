@@ -14,9 +14,8 @@ RUN npm install -g npm
 ARG CONFIG_ID
 RUN echo "CONFIG_ID=$CONFIG_ID"
 
-# Running required steps to prepare the api prod build
-RUN npm install
-RUN npm run build
+# Install all the packages for the workspaces
+RUN npm install --only=prod
 
 EXPOSE 4000
 
