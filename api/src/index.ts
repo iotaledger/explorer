@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
-import bodyParser from "body-parser";
 import compression from "compression";
 import express, { Application } from "express";
 import { Server } from "http";
@@ -28,8 +27,8 @@ const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 4000;
 
 const app: Application = express();
 
-app.use(bodyParser.json({ limit: "10mb" }));
-app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 app.use(compression());
 

@@ -32,10 +32,12 @@ jobs:
           mv config.template config.$CONFIG_ID.json
           sed -i "s/API-ENDPOINT/${{ env.CONFIG_API_ENDPOINT }}/g" config.$CONFIG_ID.json
           sed -i "s/GOOGLE-ANALYTICS-ID/${{ env.CONFIG_GOOGLE_ANALYTICS_ID }}/g" config.$CONFIG_ID.json
-      - name: Use Node.js 12.x
+      - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:
-          node-version: "12"
+          node-version: "14"
+      - name: npm 7
+        run: npm install -g npm@7
       - name: Client Deploy
         run: |
           npx vercel --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_SCOPE }} --force -m githubCommitSha=${{ github.sha }} --build-env REACT_APP_CONFIG_ID=$CONFIG_ID

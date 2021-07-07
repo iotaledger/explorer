@@ -119,7 +119,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
             }[] = [];
 
             for (let i = 0; i < bundleGroupsPlain.length; i++) {
-                const isMissing = bundleGroupsPlain[i].filter(t => t.isEmpty).length > 0;
+                const isMissing = bundleGroupsPlain[i].some(t => t.isEmpty);
 
                 if (!isMissing) {
                     let total = 0;
@@ -144,7 +144,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                     const outputAddresses = new Set(bundleGroupsPlain[i]
                         .filter(t => t.tx.value > 0).map(t => t.tx.address));
 
-                    if (inputAddresses.size === 0 && inputAddresses.size === 0) {
+                    if (inputAddresses.size === 0) {
                         inputAddresses = new Set(bundleGroupsPlain[i].map(t => t.tx.address));
                     }
 

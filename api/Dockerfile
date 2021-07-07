@@ -1,4 +1,4 @@
-FROM node:12.14.1-alpine3.11
+FROM node:14-alpine3.13
 RUN apk --no-cache add git
 
 # Working DIR
@@ -6,6 +6,9 @@ WORKDIR /usr/src/app
 
 # Copy everything from current Folder
 COPY . ./
+
+# Update NPM
+RUN npm install -g npm
 
 # Set the env variables
 ARG CONFIG_ID

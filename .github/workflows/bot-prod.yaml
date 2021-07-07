@@ -46,6 +46,12 @@ jobs:
           sed -i 's/%GCP-STAGING-SERVICE-ID%/${{ env.GCP_STAGING_SERVICE_ID }}/g' dispatch.yaml
           sed -i 's/%GCP-BOT-PROD-DOMAIN%/${{ env.GCP_BOT_PROD_DOMAIN }}/g' dispatch.yaml
           sed -i 's/%GCP-BOT-PROD-SERVICE-ID%/${{ env.GCP_BOT_PROD_SERVICE_ID }}/g' dispatch.yaml
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+      - name: npm 7
+        run: npm install -g npm@7
       - name: Deploy
         run: |
           cd discord-bot
