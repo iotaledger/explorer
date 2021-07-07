@@ -7,6 +7,10 @@ on:
       - "api/**"
       - ".github/workflows/api-staging.yaml"
 
+concurrency: 
+  group: api-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -8,6 +8,10 @@ on:
       - "client/**"
       - ".github/workflows/build.yaml"
 
+concurrency: 
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest

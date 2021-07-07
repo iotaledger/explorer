@@ -7,6 +7,10 @@ on:
       - "client/**"
       - ".github/workflows/client-staging.yaml"
 
+concurrency: 
+  group: client-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
