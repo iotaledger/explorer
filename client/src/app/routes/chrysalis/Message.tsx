@@ -100,8 +100,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
             }, async () => {
                 await this.updateMessageDetails();
             });
-            console.log(result?.message?.payload?.type);
-            console.log(result?.message);
         } else {
             this.props.history.replace(`/${this.props.match.params.network
                 }/search/${this.props.match.params.messageId}`);
