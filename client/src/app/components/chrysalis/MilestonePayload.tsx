@@ -1,9 +1,6 @@
 /* eslint-disable max-len */
 import React, { Component, ReactNode } from "react";
-import { Link } from "react-router-dom";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
-import MessageButton from "../MessageButton";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 
 /**
@@ -50,31 +47,6 @@ class MilestonePayload extends Component<MilestonePayloadProps> {
                     </div>
                     {this.props.advancedMode && (
                         <React.Fragment>
-                            {this.props.payload.parentMessageIds.map((parent, idx) => (
-                                <React.Fragment key={idx}>
-                                    <div className="card--label">
-                                        Parent Message {idx + 1}
-                                    </div>
-                                    <div className="card--value row middle">
-                                        <Link
-                                            className="margin-r-t"
-                                            to={
-                                                `/${this.props.network
-                                                }/message/${parent}`
-                                            }
-                                        >
-                                            {parent}
-                                        </Link>
-                                        <MessageButton
-                                            onClick={() => ClipboardHelper.copy(
-                                                parent
-                                            )}
-                                            buttonType="copy"
-                                            labelPosition="top"
-                                        />
-                                    </div>
-                                </React.Fragment>
-                            ))}
                             <div className="card--label">
                                 Inclusion Merkle Proof
                             </div>
