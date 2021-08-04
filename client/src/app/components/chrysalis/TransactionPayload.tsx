@@ -167,9 +167,10 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
             <div className="transaction-payload">
                 <div className="card">
                     <div className="card--header">
-                        <h2>Inputs</h2>
+                        <h2>Transaction Payload  -- {this.state.transferTotal} i</h2>
                     </div>
                     <div className="card--content">
+                        <h3>From</h3>
                         {this.state.inputs.map((input, idx) => (
                             <div
                                 key={idx}
@@ -218,61 +219,6 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 )}
                             </div>
                         ))}
-                    </div>
-                </div>
-
-                <div className="card">
-                    <div className="card--header">
-                        <h2>Outputs</h2>
-                    </div>
-                    <div className="card--content">
-                        {this.state.outputs.map((output, idx) => (
-                            <div
-                                key={idx}
-                                className="card--inline-row"
-                            >
-                                {this.props.advancedMode && (
-                                    <h3 className="margin-b-t">{NameHelper.getOutputTypeName(output.type)} {idx}</h3>
-                                )}
-                                {(output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
-                                    output.type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) && (
-                                        <React.Fragment>
-                                            <Bech32Address
-                                                network={this.props.network}
-                                                history={this.props.history}
-                                                addressDetails={output.address}
-                                                advancedMode={this.props.advancedMode}
-                                            />
-
-                                            <div className="card--label">
-                                                Amount
-                                            </div>
-                                            <div className="card--value">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => this.setState(
-                                                        {
-                                                            formatFull: !this.state.formatFull
-                                                        }
-                                                    )}
-                                                >
-                                                    {this.state.formatFull
-                                                        ? `${output.amount} i`
-                                                        : UnitsHelper.formatBest(output.amount)}
-                                                </button>
-                                            </div>
-                                        </React.Fragment>
-                                    )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="card">
-                    <div className="card--header">
-                        <h2>Unlock Blocks</h2>
-                    </div>
-                    <div className="card--content">
                         {this.props.payload.unlockBlocks.map((unlockBlock, idx) => (
                             <div
                                 key={idx}
@@ -316,6 +262,48 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         </div>
                                     </React.Fragment>
                                 )}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="card--content">
+                        <h3>To</h3>
+                        {this.state.outputs.map((output, idx) => (
+                            <div
+                                key={idx}
+                                className="card--inline-row"
+                            >
+                                {this.props.advancedMode && (
+                                    <h3 className="margin-b-t">{NameHelper.getOutputTypeName(output.type)} {idx}</h3>
+                                )}
+                                {(output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
+                                    output.type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) && (
+                                        <React.Fragment>
+                                            <Bech32Address
+                                                network={this.props.network}
+                                                history={this.props.history}
+                                                addressDetails={output.address}
+                                                advancedMode={this.props.advancedMode}
+                                            />
+
+                                            <div className="card--label">
+                                                Amount
+                                            </div>
+                                            <div className="card--value">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => this.setState(
+                                                        {
+                                                            formatFull: !this.state.formatFull
+                                                        }
+                                                    )}
+                                                >
+                                                    {this.state.formatFull
+                                                        ? `${output.amount} i`
+                                                        : UnitsHelper.formatBest(output.amount)}
+                                                </button>
+                                            </div>
+                                        </React.Fragment>
+                                    )}
                             </div>
                         ))}
                     </div>
