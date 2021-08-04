@@ -25,6 +25,8 @@ import { MessageRouteProps } from "./routes/chrysalis/MessageRouteProps";
 import Milestone from "./routes/chrysalis/Milestone";
 import { MilestoneRouteProps } from "./routes/chrysalis/MilestoneRouteProps";
 import CurrencyConverter from "./routes/CurrencyConverter";
+import IdentityResolver from "./routes/IdentityResolver";
+import { IdentityResolverProps } from "./routes/IdentityResolverProps";
 import Landing from "./routes/Landing";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
@@ -153,6 +155,11 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             label: "Currency Converter",
                             url: `/${this.state.networkId}/currency-converter/`,
                             icon: <CurrencyConverterIcon />
+                        },
+                        {
+                            label: "Identity Resolver",
+                            url: `/${this.state.networkId}/identity-resolver/`,
+                            icon: <CurrencyConverterIcon />
                         }
                     ] : []}
                 />
@@ -183,6 +190,13 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                                 component={() =>
                                                 (
                                                     <CurrencyConverter />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/identity-resolver/:did?"
+                                                component={(props: RouteComponentProps<IdentityResolverProps>) =>
+                                                (
+                                                    <IdentityResolver {...props} />
                                                 )}
                                             />
                                             <Route

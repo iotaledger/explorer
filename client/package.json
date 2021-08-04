@@ -9,6 +9,7 @@
     },
     "license": "Apache-2.0",
     "dependencies": {
+        "@iota/identity-wasm": "^0.3.4",
         "@iota/iota.js": "^1.6.0",
         "@iota/mam-legacy": "github:iotaledger/mam.js#fddc95f60539b9a31a4db1b5b56e0dedb8994883",
         "@iota/mam.js": "^1.5.0",
