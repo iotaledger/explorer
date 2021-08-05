@@ -1,12 +1,21 @@
 /* eslint-disable max-len */
-import React, { Component, ReactNode } from "react";
+import React, { ReactNode } from "react";
+import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
+import { TangleCacheService } from "../../../services/tangleCacheService";
+import AsyncComponent from "../../components/AsyncComponent";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
+import { MilestonePayloadState } from "./MilestonePayloadState";
 
 /**
  * Component which will display a milestone payload.
  */
-class MilestonePayload extends Component<MilestonePayloadProps> {
+class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePayloadState> {
+    /**
+     * API Client for tangle requests.
+     */
+    private readonly _tangleCacheService: TangleCacheService;
+
     /**
      * Create a new instance of MilestonePayload.
      * @param props The props.
@@ -14,8 +23,24 @@ class MilestonePayload extends Component<MilestonePayloadProps> {
     constructor(props: MilestonePayloadProps) {
         super(props);
 
+        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+
+
         this.state = {
+            nextIndex: -1,
+            previousIndex: -1,
+            hasPrevious: false,
+            hasNext: false
         };
+    }
+
+    /**
+    * The component mounted.
+    */
+    public async componentDidMount(): Promise<void> {
+        super.componentDidMount();
+
+        await this.loadIndex(this.props.payload.index.toString(), false);
     }
 
     /**
@@ -93,11 +118,104 @@ class MilestonePayload extends Component<MilestonePayloadProps> {
                                     </div>
                                 ))}
                             </div>
+                            {(this.state.hasPrevious || this.state.hasNext) && (
+                                <React.Fragment>
+                                    <div className="card--label">
+                                        Actions
+                                    </div>
+                                    <div className="row middle">
+                                        <button
+                                            disabled={!this.state.hasPrevious}
+                                            type="button"
+                                            onClick={async () =>
+                                                this.loadIndex(this.state.previousIndex.toString(), true)}
+                                            className="card--action margin-r-t"
+                                        >
+                                            Previous Milestone
+                                        </button>
+                                        <button
+                                            disabled={!this.state.hasNext}
+                                            type="button"
+                                            onClick={async () =>
+                                                this.loadIndex(this.state.nextIndex.toString(), true)}
+                                            className="card--action margin-r-t"
+                                        >
+                                            Next Milestone
+                                        </button>
+                                    </div>
+                                </React.Fragment>
+                            )}
                         </React.Fragment>
                     )}
                 </div>
             </div>
         );
+    }
+
+    /**
+     * Load the milestone with the given index.
+     * @param index The index to load.
+     * @param updateUrl Update the url.
+     */
+    private async loadIndex(index: string, updateUrl: boolean): Promise<void> {
+        const result = await this._tangleCacheService.milestoneDetails(
+            this.props.network, Number.parseInt(index, 10));
+
+        if (result) {
+            window.scrollTo({
+                left: 0,
+                top: 0,
+                behavior: "smooth"
+            });
+
+            this.setState({
+                milestone: result
+            }, async () => this.checkForAdjacentMilestones());
+
+            if (updateUrl) {
+                window.location.href = `/${this.props.network}/message/${this.state.milestone?.messageId}`;
+            }
+        } else {
+            this.props.history.replace(`/${this.props.network
+                }/search/${index}`);
+        }
+    }
+
+    /**
+     * Check for the previous and next milestones.
+     */
+    private async checkForAdjacentMilestones(): Promise<void> {
+        if (this.state.milestone) {
+            const nextIndex = this.state.milestone.index + 1;
+            const previousIndex = this.state.milestone.index - 1;
+            let hasNext = false;
+            let hasPrevious = false;
+
+            if (previousIndex > 0) {
+                const resultPrevious = await this._tangleCacheService.milestoneDetails(
+                    this.props.network, previousIndex);
+                if (resultPrevious) {
+                    hasPrevious = true;
+                }
+            }
+
+            const resultNext = await this._tangleCacheService.milestoneDetails(
+                this.props.network, nextIndex);
+            if (resultNext) {
+                hasNext = true;
+            }
+
+            this.setState({
+                previousIndex,
+                nextIndex,
+                hasPrevious,
+                hasNext
+            });
+
+            if (!hasNext) {
+                setTimeout(async () => this.checkForAdjacentMilestones(), 5000);
+            }
+        }
     }
 }
 
