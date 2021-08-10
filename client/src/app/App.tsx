@@ -2,6 +2,7 @@ import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { ReactComponent as CurrencyConverterIcon } from "../assets/currency-converter.svg";
 import { ReactComponent as ExplorerIcon } from "../assets/explorer.svg";
+import { ReactComponent as IdentityIcon } from "../assets/identity-icon.svg";
 import { ReactComponent as MarketsIcon } from "../assets/markets.svg";
 import { ReactComponent as StreamsIcon } from "../assets/streams.svg";
 import { ReactComponent as VisualizerIcon } from "../assets/visualizer.svg";
@@ -121,6 +122,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                         switcher}
                     search={this.props.match.params.action &&
                         this.props.match.params.action !== "streams" &&
+                        this.props.match.params.action !== "identity-resolver" &&
                         this.props.match.params.action !== "visualizer" &&
                         this.props.match.params.action !== "markets" &&
                         this.props.match.params.action !== "currency-converter" && (
@@ -159,7 +161,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                         {
                             label: "Identity Resolver",
                             url: `/${this.state.networkId}/identity-resolver/`,
-                            icon: <CurrencyConverterIcon />
+                            icon: <IdentityIcon />
                         }
                     ] : []}
                 />

@@ -9,7 +9,7 @@
     },
     "license": "Apache-2.0",
     "dependencies": {
-        "@iota/identity-wasm": "^0.3.4",
+        "@iota/identity-wasm": "^0.3.5",
         "@iota/iota.js": "^1.6.0",
         "@iota/mam-legacy": "github:iotaledger/mam.js#fddc95f60539b9a31a4db1b5b56e0dedb8994883",
         "@iota/mam.js": "^1.5.0",
@@ -33,10 +33,11 @@
         "node": ">=14"
     },
     "scripts": {
-        "start": "cross-env PORT=3000 craco start",
+        "copy-identity-wasm-file": "copyfiles -E -u 4 ./node_modules/@iota/identity-wasm/web/identity_wasm_bg.wasm ./public",
+        "start": "npm run copy-identity-wasm-file && cross-env PORT=3000 craco start",
         "lint": "eslint src --ext .tsx,.ts",
         "sass-lint": "stylelint ./src/**/*.scss",
-        "build-internal": "craco build",
+        "build-internal": "npm run copy-identity-wasm-file && craco build",
         "build": "run-s lint sass-lint build-internal",
         "test": "craco test",
         "eject": "react-scripts eject"
@@ -60,6 +61,7 @@
         "@types/socket.io-client": "^3.0.0",
         "@typescript-eslint/eslint-plugin": "^4.28.2",
         "@typescript-eslint/parser": "^4.28.2",
+        "copyfiles": "^2.4.1",
         "cross-env": "^7.0.3",
         "eslint": "^7.30.0",
         "eslint-plugin-import": "^2.23.4",

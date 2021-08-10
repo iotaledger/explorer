@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import { FaSearch } from "react-icons/fa";
 import AsyncComponent from "../AsyncComponent";
 import "./IdentitySearchInput.scss";
 import { IdentitySearchInputProps } from "./IdentitySearchInputProps";
@@ -29,19 +28,26 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
      */
     public render(): ReactNode {
         return (
-            <div
-                className={classNames("identity-search-input", {
-                    "identity-search-input--compact": this.props.compact,
-                })}
-            >
+            <div className={classNames("identity-search-input")}>
                 <input
                     className="identity-search--text-input"
                     type="text"
-                    autoFocus={!this.props.compact}
                     value={this.state.query}
+                    onChange={(e) =>
+                        this.setState({
+                            query: e.target.value,
+                            isValid: this.isValid(e.target.value),
+                        })
+                    }
                 />
-                <button className="identity-search--button" type="submit" onClick={() => this.doSearch()}>
-                    {this.props.compact ? <FaSearch /> : "Search"}
+
+                <button
+                    className="identity-search--button"
+                    type="submit"
+                    onClick={() => this.doSearch()}
+                    disabled={!this.state.isValid}
+                >
+                    Search
                 </button>
             </div>
         );
@@ -53,6 +59,14 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
      * @returns True if the query is valid.
      */
     private isValid(query?: string): boolean {
+        if (!query) {
+            return false;
+        }
+
+        if (!query.startsWith("did:iota:")) {
+            return false;
+        }
+
         return true;
     }
 

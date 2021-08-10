@@ -54,7 +54,7 @@
     }
 
     &:disabled {
-      opacity: 0.8;
+      opacity: 0.5;
 
       @include phone-down {
         opacity: 1;
