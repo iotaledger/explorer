@@ -32,7 +32,7 @@
         margin-bottom: 20px;
       }
 
-      .cards {
+      .sections {
         flex: 1;
         margin-right: 24px;
 
@@ -43,18 +43,18 @@
         }
       }
 
-      .card + .card {
+      .section + .section {
         margin-top: 23px;
       }
 
       .transaction-simple {
-        .card + .card {
+        .section + .section {
           margin-top: 0;
           margin-left: 23px;
         }
 
         @include tablet-down {
-          .card + .card {
+          .section + .section {
             margin-top: 23px;
             margin-left: 0;
           }

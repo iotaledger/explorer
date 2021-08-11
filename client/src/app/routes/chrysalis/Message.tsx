@@ -129,14 +129,14 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                         <h1>
                             Message
                         </h1>
-                        <div className="row top">
-                            <div className="cards">
-                                <div className="card">
+                        <div className="top">
+                            <div className="sections">
+                                <div className="section">
                                     <div
                                         className={classNames(
-                                            "card--header",
-                                            "card--header__space-between",
-                                            "card--header__tablet-responsive"
+                                            "section--header",
+                                            "section--header__space-between",
+                                            "section--header__tablet-responsive"
                                         )}
                                     >
                                         <h2>
@@ -157,11 +157,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             {this.state.messageTangleStatus !== "pending" ? "Confirmed" : "Pending"}
                                         </div>
                                     </div>
-                                    <div className="card--content">
-                                        <div className="card--label">
+                                    <div className="section--content">
+                                        <div className="section--label">
                                             Message Id
                                         </div>
-                                        <div className="card--value row middle">
+                                        <div className="section--value row middle">
                                             <span className="margin-r-t">{this.state.actualMessageId}</span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
@@ -173,10 +173,10 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         </div>
                                         {this.state.paramMessageId !== this.state.actualMessageId && (
                                             <React.Fragment>
-                                                <div className="card--label">
+                                                <div className="section--label">
                                                     Transaction Id
                                                 </div>
-                                                <div className="card--value card--value__secondary row middle">
+                                                <div className="section--value section--value__secondary row middle">
                                                     <span className="margin-r-t">{this.state.paramMessageId}</span>
                                                     <MessageButton
                                                         onClick={() => ClipboardHelper.copy(
@@ -188,18 +188,18 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 </div>
                                             </React.Fragment>
                                         )}
-                                        <div className="card--label">
+                                        <div className="section--label">
                                             Payload Type
                                         </div>
-                                        <div className="card--value row middle">
+                                        <div className="section--value row middle">
                                             {this.state.message?.payload?.type}
                                         </div>
                                         {this.state.advancedMode && (
                                             <React.Fragment>
-                                                <div className="card--label">
+                                                <div className="section--label">
                                                     Nonce
                                                 </div>
-                                                <div className="card--value row middle">
+                                                <div className="section--value row middle">
                                                     <span className="margin-r-t">{this.state.message?.nonce}</span>
                                                 </div>
                                             </React.Fragment>
@@ -208,13 +208,13 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 </div>
 
                                 {this.state.advancedMode && (
-                                    <div className="card">
-                                        <div className="card--header card--header__space-between">
+                                    <div className="section">
+                                        <div className="section--header section--header__space-between">
                                             <h2>
                                                 Metadata
                                             </h2>
                                         </div>
-                                        <div className="card--content">
+                                        <div className="section--content">
                                             {!this.state.metadata && !this.state.metadataError && (
                                                 <Spinner />
                                             )}
@@ -225,28 +225,28 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             )}
                                             {this.state.metadata && !this.state.metadataError && (
                                                 <React.Fragment>
-                                                    <div className="card--label">
+                                                    <div className="section--label">
                                                         Is Solid
                                                     </div>
-                                                    <div className="card--value row middle">
+                                                    <div className="section--value row middle">
                                                         <span className="margin-r-t">
                                                             {this.state.metadata?.isSolid ? "Yes" : "No"}
                                                         </span>
                                                     </div>
-                                                    <div className="card--label">
+                                                    <div className="section--label">
                                                         Ledger Inclusion
                                                     </div>
-                                                    <div className="card--value row middle">
+                                                    <div className="section--value row middle">
                                                         <InclusionState
                                                             state={this.state.metadata?.ledgerInclusionState}
                                                         />
                                                     </div>
                                                     {this.state.conflictReason && (
                                                         <React.Fragment>
-                                                            <div className="card--label">
+                                                            <div className="section--label">
                                                                 Conflict Reason
                                                             </div>
-                                                            <div className="card--value">
+                                                            <div className="section--value">
                                                                 {this.state.conflictReason}
                                                             </div>
                                                         </React.Fragment>
@@ -270,7 +270,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 </div>
 
                                                 {this.state.message.payload.essence.payload && (
-                                                    <div className="card">
+                                                    <div className="section">
                                                         <IndexationPayload
                                                             network={this.props.match.params.network}
                                                             history={this.props.history}
@@ -283,7 +283,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         )}
                                         {this.state.message.payload.type === MILESTONE_PAYLOAD_TYPE && (
                                             <React.Fragment>
-                                                <div className="card">
+                                                <div className="section">
                                                     <MilestonePayload
                                                         network={this.props.match.params.network}
                                                         history={this.props.history}
@@ -292,7 +292,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                     />
                                                 </div>
                                                 {this.state.message.payload.receipt && (
-                                                    <div className="card">
+                                                    <div className="section">
                                                         <ReceiptPayload
                                                             network={this.props.match.params.network}
                                                             history={this.props.history}
@@ -304,7 +304,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             </React.Fragment>
                                         )}
                                         {this.state.message.payload.type === INDEXATION_PAYLOAD_TYPE && (
-                                            <div className="card">
+                                            <div className="section">
                                                 <IndexationPayload
                                                     network={this.props.match.params.network}
                                                     history={this.props.history}
@@ -315,15 +315,15 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         )}
                                     </React.Fragment>
                                 )}
-                                <div className="card margin-t-s">
-                                    <div className="card--header">
+                                <div className="section margin-t-s">
+                                    <div className="section--header">
                                         <h2>Messages Tree</h2>
                                     </div>
-                                    <div className="card--content children-container">
+                                    <div className="section--content children-container">
                                         <span>Childs</span>
                                         {this.state.childrenBusy && (<Spinner />)}
                                         {this.state.childrenIds?.map(childId => (
-                                            <div className="card--value" key={childId}>
+                                            <div className="section--value" key={childId}>
                                                 <Link
                                                     to={
                                                         `/${this.props.match.params.network
@@ -337,10 +337,10 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         <span>Parents</span>
                                         {this.state.message?.parentMessageIds?.map((parent, idx) => (
                                             <React.Fragment key={idx}>
-                                                <div className="card--label">
+                                                <div className="section--label">
                                                     Parent Message {idx + 1}
                                                 </div>
-                                                <div className="card--value row middle">
+                                                <div className="section--value row middle">
                                                     {parent !== "0".repeat(64) && (
                                                         <React.Fragment>
                                                             <Link
@@ -376,12 +376,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     </div>
                                 </div>
                             </div>
-
                             <div className="side-panel-container">
                                 {/* <SidePanel {...this.props} />  */}
                                 <ToolsPanel>
-                                    <div className="card--section">
-                                        <div className="card--label margin-t-t margin-b-t">
+                                    <div className="section--section">
+                                        <div className="section--label margin-t-t margin-b-t">
                                             <span>Advanced View</span>
                                             <input
                                                 type="checkbox"
@@ -396,10 +395,10 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                         this.state.advancedMode))}
                                             />
                                         </div>
-                                        <div className="card--label card--label__underline">
+                                        <div className="section--label section--label__underline">
                                             Export Message
                                         </div>
-                                        <div className="card--value row">
+                                        <div className="section--value row">
                                             <div className="select-wrapper">
                                                 <select
                                                     value={this.state.selectedDataUrl}
@@ -414,7 +413,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 <img src={chevronDownGray} alt="expand" />
                                             </div>
                                             <a
-                                                className="card--action card--action-icon"
+                                                className="section--action section--action-icon"
                                                 href={this.state.dataUrls[this.state.selectedDataUrl]}
                                                 download={DownloadHelper.filename(
                                                     this.state.actualMessageId ?? "", this.state.selectedDataUrl)}

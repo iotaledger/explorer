@@ -56,11 +56,11 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
     public render(): ReactNode {
         return (
             <div className="indexation-payload">
-                <div className="card--header">
+                <div className="section--header">
                     <h2>Indexation Payload</h2>
                 </div>
-                <div className="card--content">
-                    <div className="card--label row middle">
+                <div className="section--content">
+                    <div className="section--label row middle">
                         <span className="margin-r-t">Index {this.props.advancedMode ? `UTF8 [${this.state.indexLengthBytes}]` : ""}</span>
                         <MessageButton
                             onClick={() => ClipboardHelper.copy(
@@ -70,7 +70,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             labelPosition="right"
                         />
                     </div>
-                    <div className="card--value">
+                    <div className="section--value">
                         <Link
                             to={
                                 `/${this.props.network
@@ -80,7 +80,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             {this.state.utf8Index}
                         </Link>
                     </div>
-                    <div className="card--label row middle">
+                    <div className="section--label row middle">
                         <span className="margin-r-t">Index Hex [{this.state.indexLengthBytes}]</span>
                         <MessageButton
                             onClick={() => ClipboardHelper.copy(
@@ -90,14 +90,14 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             labelPosition="right"
                         />
                     </div>
-                    <div className="card--value card--value-textarea card--value-textarea__hex card--value-textarea__fit">
+                    <div className="section--value section--value-textarea section--value-textarea__hex section--value-textarea__fit">
                         {this.state.hexIndex}
                     </div>
 
 
                     {!this.state.jsonData && this.state.utf8Data && (
                         <React.Fragment>
-                            <div className="card--label row middle">
+                            <div className="section--label row middle">
                                 <span className="margin-r-t">{this.props.advancedMode ? `Data UTF8 [${this.state.dataLengthBytes}]` : "Data"}</span>
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(
@@ -107,14 +107,14 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                                     labelPosition="right"
                                 />
                             </div>
-                            <div className="card--value card--value-textarea card--value-textarea__utf8">
+                            <div className="section--value section--value-textarea section--value-textarea__utf8">
                                 {this.state.utf8Data}
                             </div>
                         </React.Fragment>
                     )}
                     {this.state.jsonData && (
                         <React.Fragment>
-                            <div className="card--label row middle">
+                            <div className="section--label row middle">
                                 <span className="margin-r-t">Data JSON</span>
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(
@@ -125,7 +125,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                                 />
                             </div>
                             <div
-                                className="card--value card--value-textarea card--value-textarea__json"
+                                className="section--value section--value-textarea section--value-textarea__json"
                             >
                                 <JsonViewer json={this.state.jsonData} />
                             </div>
@@ -133,7 +133,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                     )}
                     {this.state.hexData && (
                         <React.Fragment>
-                            <div className="card--label row middle">
+                            <div className="section--label row middle">
                                 <span className="margin-r-t">Data Hex [{this.state.dataLengthBytes}]</span>
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(
@@ -143,7 +143,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                                     labelPosition="right"
                                 />
                             </div>
-                            <div className="card--value card--value-textarea card--value-textarea__hex">
+                            <div className="section--value section--value-textarea section--value-textarea__hex">
                                 {this.state.hexData}
                             </div>
                         </React.Fragment>
