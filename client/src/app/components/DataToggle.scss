@@ -1,0 +1,14 @@
+.data-toggle {
+    display: flex;
+    .data-toggle--content {
+        width: 80%;
+    }
+    .data-toggle--tabs {
+        width: 20%;
+        display: flex;
+        justify-content: flex-end;
+        .data-toggle--tab {
+            margin: 0 12px;
+        }
+    }
+}

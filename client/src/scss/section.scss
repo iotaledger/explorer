@@ -7,6 +7,8 @@
 .section {
   display: flex;
   flex-direction: column;
+  border-bottom: 1px solid $gray-3;
+  padding: 25px 0px 16px 0;
 
   &.section__secondary {
     background-color: #fcfcfc;
@@ -23,7 +25,7 @@
   }
 
   input {
-    &[type="checkbox"] {
+    &[type='checkbox'] {
       @include font-size(24px);
 
       width: 24px;
@@ -35,7 +37,7 @@
 
       &:checked {
         &::after {
-          content: "\2713";
+          content: '\2713';
           position: relative;
           bottom: 4px;
           left: 0;
@@ -144,13 +146,12 @@
     flex-direction: row;
     align-items: center;
     min-height: 50px;
-    margin: 20px 26px 0 26px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid $gray-noon;
+    // margin: 20px 26px 0 26px;
+    padding-bottom: 32px;
+    // border-bottom: 1px solid $gray-noon;
 
     @include phone-down {
       min-height: unset;
-      margin: 20px 20px 0 20px;
     }
 
     &.section--header__space-between {
@@ -177,14 +178,6 @@
 
     color: $gray;
     font-family: $metropolis;
-  }
-
-  .section--content {
-    padding: 20px 30px;
-
-    @include phone-down {
-      padding: 15px 20px;
-    }
   }
 
   .section--inline-row + .section--inline-row {
@@ -240,10 +233,10 @@
     display: flex;
     align-items: center;
     height: 32px;
-    color: $gray-header;
-    font-family: $metropolis;
-    font-weight: bold;
-    text-transform: uppercase;
+    color: $gray-6;
+    font-family: $inter;
+    font-weight: 500;
+    letter-spacing: 0.5px;
     white-space: nowrap;
 
     button,
@@ -281,12 +274,23 @@
   }
 
   .section--value {
-    @include font-size(12px);
+    @include font-size(14px);
 
-    margin-bottom: 12px;
-    color: $gray-10;
+    margin-bottom: 26px;
+    color: $gray-9;
+    letter-spacing: 0.5px;
     font-family: $inter;
     word-break: break-all;
+
+    &.section--value__code {
+      @include font-size(14px);
+
+      font-family: $ibm-plex-mono;
+      font-weight: normal;
+      line-height: 20px;
+      letter-spacing: 0.02em;
+      color: $blue-5;
+    }
 
     &.section--value__highlight {
       @include font-size(12px);
@@ -333,14 +337,14 @@
 
       &.section--value-textarea__hex {
         max-height: 350px;
-        font-family: "Courier New", Courier, monospace;
+        font-family: 'Courier New', Courier, monospace;
         word-break: break-word;
         white-space: pre-wrap;
       }
 
       &.section--value-textarea__json {
         max-height: 350px;
-        font-family: "Courier New", Courier, monospace;
+        font-family: 'Courier New', Courier, monospace;
         white-space: pre-wrap;
       }
 

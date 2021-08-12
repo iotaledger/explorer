@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import JsonViewer from "../JsonViewer";
 import MessageButton from "../MessageButton";
+import DataToggle from "./../DataToggle";
 import { IndexationPayloadProps } from "./IndexationPayloadProps";
 import { IndexationPayloadState } from "./IndexationPayloadState";
 
@@ -61,93 +62,15 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                 </div>
                 <div className="section--content">
                     <div className="section--label row middle">
-                        <span className="margin-r-t">Index {this.props.advancedMode ? `UTF8 [${this.state.indexLengthBytes}]` : ""}</span>
-                        <MessageButton
-                            onClick={() => ClipboardHelper.copy(
-                                this.state.utf8Index
-                            )}
-                            buttonType="copy"
-                            labelPosition="right"
-                        />
+                        <span className="margin-r-t">Index</span>
                     </div>
-                    <div className="section--value">
-                        <Link
-                            to={
-                                `/${this.props.network
-                                }/indexed/${this.props.payload.index}`
-                            }
-                        >
-                            {this.state.utf8Index}
-                        </Link>
-                    </div>
+                    <DataToggle options={[{ label: "Text", content: this.state.utf8Index, link: `/${this.props.network}/indexed/${this.props.payload.index}` }, { label: "Hex", content: this.state.hexIndex }]} />
                     <div className="section--label row middle">
-                        <span className="margin-r-t">Index Hex [{this.state.indexLengthBytes}]</span>
-                        <MessageButton
-                            onClick={() => ClipboardHelper.copy(
-                                this.state.hexIndex.replace(/ /g, "")
-                            )}
-                            buttonType="copy"
-                            labelPosition="right"
-                        />
+                        <span className="margin-r-t">Data</span>
                     </div>
-                    <div className="section--value section--value-textarea section--value-textarea__hex section--value-textarea__fit">
-                        {this.state.hexIndex}
-                    </div>
-
-
-                    {!this.state.jsonData && this.state.utf8Data && (
-                        <React.Fragment>
-                            <div className="section--label row middle">
-                                <span className="margin-r-t">{this.props.advancedMode ? `Data UTF8 [${this.state.dataLengthBytes}]` : "Data"}</span>
-                                <MessageButton
-                                    onClick={() => ClipboardHelper.copy(
-                                        this.state.utf8Data
-                                    )}
-                                    buttonType="copy"
-                                    labelPosition="right"
-                                />
-                            </div>
-                            <div className="section--value section--value-textarea section--value-textarea__utf8">
-                                {this.state.utf8Data}
-                            </div>
-                        </React.Fragment>
-                    )}
-                    {this.state.jsonData && (
-                        <React.Fragment>
-                            <div className="section--label row middle">
-                                <span className="margin-r-t">Data JSON</span>
-                                <MessageButton
-                                    onClick={() => ClipboardHelper.copy(
-                                        this.state.jsonData
-                                    )}
-                                    buttonType="copy"
-                                    labelPosition="right"
-                                />
-                            </div>
-                            <div
-                                className="section--value section--value-textarea section--value-textarea__json"
-                            >
-                                <JsonViewer json={this.state.jsonData} />
-                            </div>
-                        </React.Fragment>
-                    )}
-                    {this.state.hexData && (
-                        <React.Fragment>
-                            <div className="section--label row middle">
-                                <span className="margin-r-t">Data Hex [{this.state.dataLengthBytes}]</span>
-                                <MessageButton
-                                    onClick={() => ClipboardHelper.copy(
-                                        this.state.hexData?.replace(/ /g, "")
-                                    )}
-                                    buttonType="copy"
-                                    labelPosition="right"
-                                />
-                            </div>
-                            <div className="section--value section--value-textarea section--value-textarea__hex">
-                                {this.state.hexData}
-                            </div>
-                        </React.Fragment>
-                    )}
+                    <DataToggle
+                        options={[{ label: "Text", content: this.state.jsonData ? this.state.jsonData : this.state.utf8Data, isJson: this.state.jsonData !== undefined }, { label: "Hex", content: this.state.hexData }]}
+                    />
                 </div>
             </div>
         );

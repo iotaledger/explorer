@@ -29,11 +29,10 @@ h1 {
 h2 {
   @include font-size(20px, 24px);
 
-  color: $black;
+  color: $gray-9;
   font-family: $metropolis;
   font-weight: bold;
   letter-spacing: 0.02em;
-  
 }
 
 h3 {

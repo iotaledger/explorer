@@ -153,16 +153,15 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                     }/search/${this.state.metadata?.referencedByMilestoneIndex}`)
                                                 : undefined}
                                         />
-                                        <div>
-                                            {this.state.messageTangleStatus !== "pending" ? "Confirmed" : "Pending"}
-                                        </div>
                                     </div>
                                     <div className="section--content">
                                         <div className="section--label">
-                                            Message Id
+                                            Message ID
                                         </div>
-                                        <div className="section--value row middle">
-                                            <span className="margin-r-t">{this.state.actualMessageId}</span>
+                                        <div className="section--value section--value__code row middle">
+                                            <span className="margin-r-t">
+                                                {this.state.actualMessageId}
+                                            </span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(
                                                     this.state.actualMessageId
@@ -192,7 +191,9 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             Payload Type
                                         </div>
                                         <div className="section--value row middle">
-                                            {this.state.message?.payload?.type}
+                                            {this.state.message?.payload?.type === 0 && ("Transaction")}
+                                            {this.state.message?.payload?.type === 1 && ("Milestone")}
+                                            {this.state.message?.payload?.type === 2 && ("Index")}
                                         </div>
                                         {this.state.advancedMode && (
                                             <React.Fragment>
@@ -207,55 +208,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     </div>
                                 </div>
 
-                                {this.state.advancedMode && (
-                                    <div className="section">
-                                        <div className="section--header section--header__space-between">
-                                            <h2>
-                                                Metadata
-                                            </h2>
-                                        </div>
-                                        <div className="section--content">
-                                            {!this.state.metadata && !this.state.metadataError && (
-                                                <Spinner />
-                                            )}
-                                            {this.state.metadataError && (
-                                                <p className="danger">
-                                                    Failed to retrieve metadata. {this.state.metadataError}
-                                                </p>
-                                            )}
-                                            {this.state.metadata && !this.state.metadataError && (
-                                                <React.Fragment>
-                                                    <div className="section--label">
-                                                        Is Solid
-                                                    </div>
-                                                    <div className="section--value row middle">
-                                                        <span className="margin-r-t">
-                                                            {this.state.metadata?.isSolid ? "Yes" : "No"}
-                                                        </span>
-                                                    </div>
-                                                    <div className="section--label">
-                                                        Ledger Inclusion
-                                                    </div>
-                                                    <div className="section--value row middle">
-                                                        <InclusionState
-                                                            state={this.state.metadata?.ledgerInclusionState}
-                                                        />
-                                                    </div>
-                                                    {this.state.conflictReason && (
-                                                        <React.Fragment>
-                                                            <div className="section--label">
-                                                                Conflict Reason
-                                                            </div>
-                                                            <div className="section--value">
-                                                                {this.state.conflictReason}
-                                                            </div>
-                                                        </React.Fragment>
-                                                    )}
-                                                </React.Fragment>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
+
                                 {this.state.message?.payload && (
                                     <React.Fragment>
                                         {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE && (
@@ -315,6 +268,55 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         )}
                                     </React.Fragment>
                                 )}
+                                {this.state.advancedMode && (
+                                    <div className="section">
+                                        <div className="section--header section--header__space-between">
+                                            <h2>
+                                                Metadata
+                                            </h2>
+                                        </div>
+                                        <div className="section--content">
+                                            {!this.state.metadata && !this.state.metadataError && (
+                                                <Spinner />
+                                            )}
+                                            {this.state.metadataError && (
+                                                <p className="danger">
+                                                    Failed to retrieve metadata. {this.state.metadataError}
+                                                </p>
+                                            )}
+                                            {this.state.metadata && !this.state.metadataError && (
+                                                <React.Fragment>
+                                                    <div className="section--label">
+                                                        Is Solid
+                                                    </div>
+                                                    <div className="section--value row middle">
+                                                        <span className="margin-r-t">
+                                                            {this.state.metadata?.isSolid ? "Yes" : "No"}
+                                                        </span>
+                                                    </div>
+                                                    <div className="section--label">
+                                                        Ledger Inclusion
+                                                    </div>
+                                                    <div className="section--value row middle">
+                                                        <InclusionState
+                                                            state={this.state.metadata?.ledgerInclusionState}
+                                                        />
+                                                    </div>
+                                                    {this.state.conflictReason && (
+                                                        <React.Fragment>
+                                                            <div className="section--label">
+                                                                Conflict Reason
+                                                            </div>
+                                                            <div className="section--value">
+                                                                {this.state.conflictReason}
+                                                            </div>
+                                                        </React.Fragment>
+                                                    )}
+                                                </React.Fragment>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="section margin-t-s">
                                     <div className="section--header">
                                         <h2>Messages Tree</h2>
@@ -370,7 +372,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         )}
                                         <div>Myself:</div>
                                         <div>
-                                            {this.state.actualMessageId}
+                                            {/* {this.state.actualMessageId} */}
                                         </div>
 
                                     </div>
