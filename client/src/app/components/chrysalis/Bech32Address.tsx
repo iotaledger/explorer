@@ -42,17 +42,17 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                         `/${this.props.network
                                         }/addr/${this.props.addressDetails?.bech32}`)}
                                 >
-                                    {this.props.addressDetails.bech32}
+                                    {`${this.props.addressDetails.bech32.slice(0, 7)}...${this.props.addressDetails.bech32.slice(-7)} `}
                                 </button>
                             )}
                             {!this.props.history && (
                                 <span className="margin-r-t">{this.props.addressDetails.bech32}</span>
                             )}
-                            <MessageButton
+                            {/* <MessageButton
                                 onClick={() => ClipboardHelper.copy(this.props.addressDetails?.bech32)}
                                 buttonType="copy"
                                 labelPosition="top"
-                            />
+                            /> */}
                         </div>
                     </React.Fragment>
                 )}

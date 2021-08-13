@@ -229,7 +229,13 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 {this.state.message?.payload && (
                                     <React.Fragment>
                                         {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE && (
-                                            <React.Fragment>
+                                            <div className="section">
+                                                <div className="section--header">
+                                                    <h2>
+                                                        Transaction Payload
+                                                    </h2>
+                                                </div>
+
                                                 <div className="transaction-payload-wrapper">
                                                     <TransactionPayload
                                                         network={this.props.match.params.network}
@@ -249,7 +255,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                         />
                                                     </div>
                                                 )}
-                                            </React.Fragment>
+                                            </div>
                                         )}
                                         {this.state.message.payload.type === MILESTONE_PAYLOAD_TYPE && (
                                             <React.Fragment>

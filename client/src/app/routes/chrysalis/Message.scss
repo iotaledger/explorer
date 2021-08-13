@@ -124,13 +124,19 @@
       }
 
       .transaction-simple {
-        .section + .section {
+        .section + .section,
+        .card + .card {
+          margin-top: 0;
+          margin-left: 23px;
+        }
+        .card + .card {
           margin-top: 0;
           margin-left: 23px;
         }
 
         @include tablet-down {
-          .section + .section {
+          .section + .section,
+          .card + .card {
             margin-top: 23px;
             margin-left: 0;
           }
@@ -138,7 +144,6 @@
       }
 
       .transaction-payload-wrapper {
-        margin-top: 23px;
         margin-bottom: 23px;
       }
 

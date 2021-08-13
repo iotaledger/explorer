@@ -15,6 +15,8 @@ export interface TransactionPayloadState {
         isGenesis: boolean;
         transactionUrl: string;
         transactionAddress: IBech32AddressDetails;
+        signature: string;
+        publicKey: string;
     })[];
 
     /**
@@ -37,4 +39,9 @@ export interface TransactionPayloadState {
      * The unlock addresses for the transactions.
      */
     unlockAddresses: IBech32AddressDetails[];
+
+    /**
+     * Shows details of the specified input id
+     */
+    showDetails: number;
 }

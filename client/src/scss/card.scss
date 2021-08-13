@@ -8,10 +8,9 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid $gray-noon;
+  border: 1px solid $gray-3;
   border-radius: 6px;
   background-color: $white;
-  box-shadow: $box-shadow;
 
   &.card__secondary {
     background-color: #fcfcfc;
@@ -28,7 +27,7 @@
   }
 
   input {
-    &[type="checkbox"] {
+    &[type='checkbox'] {
       @include font-size(24px);
 
       width: 24px;
@@ -40,7 +39,7 @@
 
       &:checked {
         &::after {
-          content: "\2713";
+          content: '\2713';
           position: relative;
           bottom: 4px;
           left: 0;
@@ -151,7 +150,10 @@
     min-height: 50px;
     margin: 20px 26px 0 26px;
     padding-bottom: 14px;
-    border-bottom: 1px solid $gray-noon;
+
+    .card--header__title {
+      @include font-size(14px, 21px);
+    }
 
     @include phone-down {
       min-height: unset;
@@ -185,10 +187,30 @@
   }
 
   .card--content {
-    padding: 20px 30px;
+    padding: 0px 30px 20px;
+
+    .card--content__flex_between {
+      display: flex;
+      justify-content: space-between;
+    }
 
     @include phone-down {
       padding: 15px 20px;
+    }
+    .card--content__input {
+      display: flex;
+
+      .card--content__input--dropdown {
+        cursor: pointer;
+
+        svg {
+          transition: transform 0.25s ease;
+        }
+
+        &.opened > svg {
+          transform: rotate(90deg);
+        }
+      }
     }
   }
 
@@ -245,10 +267,10 @@
     display: flex;
     align-items: center;
     height: 32px;
-    color: $gray-header;
-    font-family: $metropolis;
-    font-weight: bold;
-    text-transform: uppercase;
+    color: $gray-6;
+    font-family: $inter;
+    font-weight: 500;
+    letter-spacing: 0.5px;
     white-space: nowrap;
 
     button,
@@ -286,12 +308,17 @@
   }
 
   .card--value {
-    @include font-size(12px);
+    @include font-size(14px, 20px);
 
+    font-family: $ibm-plex-mono;
     margin-bottom: 12px;
     color: $gray-10;
-    font-family: $inter;
     word-break: break-all;
+
+    a,
+    button {
+      color: $blue-5;
+    }
 
     &.card--value__highlight {
       @include font-size(12px);
@@ -338,14 +365,14 @@
 
       &.card--value-textarea__hex {
         max-height: 350px;
-        font-family: "Courier New", Courier, monospace;
+        font-family: 'Courier New', Courier, monospace;
         word-break: break-word;
         white-space: pre-wrap;
       }
 
       &.card--value-textarea__json {
         max-height: 350px;
-        font-family: "Courier New", Courier, monospace;
+        font-family: 'Courier New', Courier, monospace;
         white-space: pre-wrap;
       }
 

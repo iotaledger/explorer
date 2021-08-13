@@ -1,21 +1,19 @@
 /* eslint-disable max-len */
-import { Converter, Ed25519Address, ED25519_ADDRESS_TYPE, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper, UTXO_INPUT_TYPE, WriteStream } from "@iota/iota.js";
+import { Converter, Ed25519Address, ED25519_ADDRESS_TYPE, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper, WriteStream } from "@iota/iota.js";
+import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { NameHelper } from "../../../helpers/nameHelper";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import { NetworkService } from "../../../services/networkService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../AsyncComponent";
-import CurrencyButton from "../CurrencyButton";
-import MessageButton from "../MessageButton";
-import ValueButton from "../ValueButton";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Bech32Address from "./Bech32Address";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
 import { TransactionPayloadState } from "./TransactionPayloadState";
+
 
 /**
  * Component which will display a transaction payload.
@@ -52,6 +50,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
             isGenesis: boolean;
             transactionUrl: string;
             transactionAddress: IBech32AddressDetails;
+            signature: string;
+            publicKey: string;
         })[] = [];
 
         const GENESIS_HASH = "0".repeat(64);
@@ -93,7 +93,9 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                 isGenesis,
                 outputHash,
                 transactionUrl: `/${this.props.network}/search/${outputHash}`,
-                transactionAddress: unlockAddresses[i]
+                transactionAddress: unlockAddresses[i],
+                signature: signatureBlocks[i].signature.signature,
+                publicKey: signatureBlocks[i].signature.publicKey
             });
         }
 
@@ -128,7 +130,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
             inputs,
             outputs,
             unlockAddresses,
-            transferTotal
+            transferTotal,
+            showDetails: -1
         };
     }
 
@@ -163,155 +166,9 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      * @returns The node to render.
      */
     public render(): ReactNode {
-        return this.props.advancedMode ? (
-            <div className="transaction-payload">
-                <div className="card">
-                    <div className="card--header">
-                        <h2>Transaction Payload  -- {this.state.transferTotal} i</h2>
-                    </div>
-                    <div className="card--content">
-                        <h3>From</h3>
-                        {this.state.inputs.map((input, idx) => (
-                            <div
-                                key={idx}
-                                className="card--inline-row"
-                            >
-                                <h3 className="margin-b-t">{NameHelper.getInputTypeName(input.type)} {idx}</h3>
-                                {input.type === UTXO_INPUT_TYPE && (
-                                    <React.Fragment>
-                                        <Bech32Address
-                                            network={this.props.network}
-                                            history={this.props.history}
-                                            addressDetails={input.transactionAddress}
-                                            advancedMode={this.props.advancedMode}
-                                        />
-                                        <div className="card--label">
-                                            Transaction Id
-                                        </div>
-                                        <div className="card--value row middle">
-                                            {!input.isGenesis && (
-                                                <React.Fragment>
-                                                    <Link
-                                                        to={input.transactionUrl}
-                                                        className="margin-r-t"
-                                                    >
-                                                        {input.transactionId}
-                                                    </Link>
-                                                    <MessageButton
-                                                        onClick={() => ClipboardHelper.copy(
-                                                            input.transactionId
-                                                        )}
-                                                        buttonType="copy"
-                                                        labelPosition="top"
-                                                    />
-                                                </React.Fragment>
-
-                                            )}
-                                            {input.isGenesis && "Genesis"}
-                                        </div>
-                                        <div className="card--label">
-                                            Transaction Output Index
-                                        </div>
-                                        <div className="card--value">
-                                            {input.transactionOutputIndex}
-                                        </div>
-                                    </React.Fragment>
-                                )}
-                            </div>
-                        ))}
-                        {this.props.payload.unlockBlocks.map((unlockBlock, idx) => (
-                            <div
-                                key={idx}
-                                className="card--inline-row"
-                            >
-                                <h3 className="margin-b-t">{NameHelper.getUnlockBlockTypeName(unlockBlock.type)} {idx}</h3>
-                                {unlockBlock.type === SIGNATURE_UNLOCK_BLOCK_TYPE && (
-                                    <React.Fragment>
-                                        <div className="card--label">
-                                            Public Key
-                                        </div>
-                                        <div className="card--value row middle">
-                                            <span className="margin-r-t">{unlockBlock.signature.publicKey}</span>
-                                            <MessageButton
-                                                onClick={() => ClipboardHelper.copy(unlockBlock.signature.publicKey)}
-                                                buttonType="copy"
-                                                labelPosition="top"
-                                            />
-                                        </div>
-                                        <div className="card--label">
-                                            Signature
-                                        </div>
-                                        <div className="card--value">
-                                            {unlockBlock.signature.signature}
-                                        </div>
-                                        <Bech32Address
-                                            network={this.props.network}
-                                            history={this.props.history}
-                                            addressDetails={this.state.unlockAddresses[idx]}
-                                            advancedMode={this.props.advancedMode}
-                                        />
-                                    </React.Fragment>
-                                )}
-                                {unlockBlock.type === REFERENCE_UNLOCK_BLOCK_TYPE && (
-                                    <React.Fragment>
-                                        <div className="card--label">
-                                            Reference
-                                        </div>
-                                        <div className="card--value">
-                                            {unlockBlock.reference}
-                                        </div>
-                                    </React.Fragment>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                    <div className="card--content">
-                        <h3>To</h3>
-                        {this.state.outputs.map((output, idx) => (
-                            <div
-                                key={idx}
-                                className="card--inline-row"
-                            >
-                                {this.props.advancedMode && (
-                                    <h3 className="margin-b-t">{NameHelper.getOutputTypeName(output.type)} {idx}</h3>
-                                )}
-                                {(output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
-                                    output.type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) && (
-                                        <React.Fragment>
-                                            <Bech32Address
-                                                network={this.props.network}
-                                                history={this.props.history}
-                                                addressDetails={output.address}
-                                                advancedMode={this.props.advancedMode}
-                                            />
-
-                                            <div className="card--label">
-                                                Amount
-                                            </div>
-                                            <div className="card--value">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => this.setState(
-                                                        {
-                                                            formatFull: !this.state.formatFull
-                                                        }
-                                                    )}
-                                                >
-                                                    {this.state.formatFull
-                                                        ? `${output.amount} i`
-                                                        : UnitsHelper.formatBest(output.amount)}
-                                                </button>
-                                            </div>
-                                        </React.Fragment>
-                                    )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        ) : (
+        return (
             <React.Fragment>
-                {this.state.transferTotal !== 0 && (
+                {/* {this.state.transferTotal !== 0 && (
                     <div className="card margin-b-s">
                         <div className="card--content">
                             <div className="row fill margin-t-s margin-b-s value-buttons">
@@ -326,48 +183,75 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         value={this.state.transferTotal}
                                     />
                                 </div>
+                                BALANCE: {UnitsHelper.formatUnits(this.state.transferTotal, UnitsHelper.calculateBest(this.state.transferTotal))}
                             </div>
                         </div>
                     </div>
-                )}
+                )} */}
                 <div className="row row--tablet-responsive fill stretch transaction-simple">
                     <div className="card col fill">
                         <div className="card--header">
-                            <h2>From</h2>
+                            <h2 className="card--header__title">From</h2>
                         </div>
                         <div className="card--content">
                             {this.state.inputs.map((input, idx) => (
-                                <div key={idx}>
-                                    <Bech32Address
-                                        network={this.props.network}
-                                        history={this.props.history}
-                                        addressDetails={input.transactionAddress}
-                                        advancedMode={this.props.advancedMode}
-                                        hideLabel={true}
-                                    />
-                                </div>
+                                <React.Fragment key={idx}>
+                                    <div
+                                        className="card--content__input"
+                                        onClick={() => this.setState({ showDetails: this.state.showDetails === idx ? -1 : idx })}
+                                    >
+                                        <div className={classNames("margin-r-t", "card--content__input--dropdown", { opened: this.state.showDetails === idx })}>
+                                            <DropdownIcon />
+                                        </div>
+                                        <Bech32Address
+                                            network={this.props.network}
+                                            history={this.props.history}
+                                            addressDetails={input.transactionAddress}
+                                            advancedMode={false}
+                                            hideLabel={true}
+                                        />
+                                    </div>
+                                    {this.state.showDetails === idx
+                                        ? (
+                                            <React.Fragment>
+                                                <div className="card--label"> Message id</div>
+                                                <div className="card--value">
+                                                    <Link
+                                                        to={input.transactionUrl}
+                                                        className="margin-r-t"
+                                                    >
+                                                        {input.transactionId}
+                                                    </Link>
+                                                </div>
+                                                <div className="card--label"> Signature</div>
+                                                <div className="card--value">{input.signature}</div>
+                                                <div className="card--label"> Public Key</div>
+                                                <div className="card--value">{input.publicKey}</div>
+                                            </React.Fragment>) : ""}
+                                </React.Fragment>
                             ))}
                         </div>
                     </div>
                     <div className="card col fill">
                         <div className="card--header">
-                            <h2>To</h2>
+                            <h2 className="card--header__title">To</h2>
                         </div>
                         <div className="card--content">
                             {this.state.outputs.map((output, idx) => (
-                                <div key={idx} className="margin-b-m">
+                                <div key={idx} className="card--content__flex_between">
                                     <Bech32Address
                                         network={this.props.network}
                                         history={this.props.history}
                                         addressDetails={output.address}
-                                        advancedMode={this.props.advancedMode}
+                                        advancedMode={false}
                                         hideLabel={true}
                                     />
-                                    <div className="card--value row">
-                                        <div className="card--label card--label__no-height margin-r-s">
+                                    <div className="card--value">
+                                        {UnitsHelper.formatBest(output.amount)}
+                                        {/* <div className="card--label card--label__no-height margin-r-s">
                                             {output.isRemainder ? "Remainder" : "Amount"}
-                                        </div>
-                                        <button
+                                        </div> */}
+                                        {/* <button
                                             type="button"
                                             onClick={() => this.setState(
                                                 {
@@ -378,14 +262,14 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             {this.state.formatFull
                                                 ? `${output.amount} i`
                                                 : UnitsHelper.formatBest(output.amount)}
-                                        </button>
+                                        </button> */}
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div >
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 }
