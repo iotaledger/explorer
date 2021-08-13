@@ -61,14 +61,14 @@ class MessageTangleState extends AsyncComponent<MessageTangleStateProps, Message
 
                         {this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
                             ? (
-                                <div>Referenced by
+                                <div>
+                                    Referenced by {" "}
                                     <span
                                         className="message-tangle-reference__link"
                                         onClick={this.props.onClick}
-                                    >
-                                        &nbsp;Milestone&nbsp;
+                                    >Milestone
                                     </span>
-                                    {this.props.milestoneIndex} {this.state.timestamp}
+                                    {" "} {this.props.milestoneIndex} {this.state.timestamp}
                                 </div>
                             ) : ""}
                     </div>}

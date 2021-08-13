@@ -35,8 +35,8 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
     }
 
     /**
-    * The component mounted.
-    */
+     * The component mounted.
+     */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 

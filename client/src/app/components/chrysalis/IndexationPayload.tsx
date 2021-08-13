@@ -1,10 +1,6 @@
 /* eslint-disable max-len */
 import { Converter } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
-import { Link } from "react-router-dom";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import JsonViewer from "../JsonViewer";
-import MessageButton from "../MessageButton";
 import DataToggle from "./../DataToggle";
 import { IndexationPayloadProps } from "./IndexationPayloadProps";
 import { IndexationPayloadState } from "./IndexationPayloadState";
@@ -42,11 +38,9 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
         this.state = {
             utf8Index,
             hexIndex,
-            indexLengthBytes: props.payload.index.length / 2,
             utf8Data,
             hexData,
-            jsonData,
-            dataLengthBytes: props.payload.data ? props.payload.data.length / 2 : 0
+            jsonData
         };
     }
 
@@ -64,12 +58,12 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                     <div className="section--label row middle">
                         <span className="margin-r-t">Index</span>
                     </div>
-                    <DataToggle options={[{ label: "Text", content: this.state.utf8Index, link: `/${this.props.network}/indexed/${this.props.payload.index}` }, { label: "Hex", content: this.state.hexIndex }]} />
+                    <DataToggle options={[{ label: "Text", content: this.state.utf8Index, link: `/${this.props.network}/indexed/${this.props.payload.index}` }, { label: "HEX", content: this.state.hexIndex }]} />
                     <div className="section--label row middle">
                         <span className="margin-r-t">Data</span>
                     </div>
                     <DataToggle
-                        options={[{ label: "Text", content: this.state.jsonData ? this.state.jsonData : this.state.utf8Data, isJson: this.state.jsonData !== undefined }, { label: "Hex", content: this.state.hexData }]}
+                        options={[{ label: "Text", content: this.state.jsonData ? this.state.jsonData : this.state.utf8Data, isJson: this.state.jsonData !== undefined }, { label: "HEX", content: this.state.hexData }]}
                     />
                 </div>
             </div>

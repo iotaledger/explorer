@@ -1,7 +1,8 @@
+import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
+import "./DataToggle.scss";
 import { DataToggleProps } from "./DataToggleProps";
 import { DataToggleState } from "./DataToggleState";
-import "./DataToggle.scss";
 import JsonViewer from "./JsonViewer";
 
 /**
@@ -42,7 +43,9 @@ class DataToggle extends Component<DataToggleProps, DataToggleState> {
                     {this.props.options.map((option, index) => (
                         <div
                             key={option.label}
-                            className="data-toggle--tab"
+                            className={classNames(
+                                "data-toggle--tab",
+                                { "data-toggle--tab__active": this.state.activeTab === index })}
                             onClick={() => this.setState({ activeTab: index })}
                         >
                             {option.label}

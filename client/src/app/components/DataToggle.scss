@@ -1,14 +1,41 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+
 .data-toggle {
+    @include font-size(14px, 21px);
+
+    font-family: $inter;
+    min-height: 56px;
+    background: $gray-noon;
+    border-radius: 6px;
+    color: $gray-9;
     display: flex;
-    .data-toggle--content {
-        width: 80%;
-    }
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+
     .data-toggle--tabs {
-        width: 20%;
         display: flex;
         justify-content: flex-end;
+        align-self: flex-start;
+        margin-left: 16px;
+
         .data-toggle--tab {
-            margin: 0 12px;
+            margin: 0 2px;
+            padding: 2px 12px;
+            color: $gray-7;
+            cursor: pointer;
+
+            &.data-toggle--tab__active {
+                font-weight: 700;
+                background: $gray-7;
+                border-radius: 12px;
+                color: $white;
+            }
         }
     }
 }
