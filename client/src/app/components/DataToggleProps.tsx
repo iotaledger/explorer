@@ -17,7 +17,7 @@ export interface DataToggleProps {
         /**
          * The content to be displayed.
          */
-        content: string;
+        content?: string;
 
         /**
          * The link url.
