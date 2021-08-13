@@ -7,6 +7,80 @@
   display: flex;
   flex-direction: column;
 
+  .message--header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .message--header__switch {
+      display: flex;
+      align-items: center;
+
+      & > span {
+        @include font-size(12px, 18px);
+
+        font-family: $inter;
+        font-weight: 500;
+        color: $gray-6;
+        margin-right: 16px;
+      }
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 32px;
+        height: 20px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: $gray-4;
+        transition: 0.4s;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: '';
+        height: 15px;
+        width: 15px;
+        left: 2.5px;
+        bottom: 2.5px;
+        background-color: white;
+        transition: 0.4s;
+      }
+
+      input:checked + .slider {
+        background-color: $green-6;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px $green-6;
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(12px);
+      }
+
+      .slider.round {
+        border-radius: 16px;
+      }
+
+      .slider.round:before {
+        border-radius: 50%;
+      }
+    }
+  }
+
   .wrapper {
     display: flex;
     justify-content: center;
@@ -32,7 +106,7 @@
         }
       }
 
-      h1 {
+      .message--header {
         margin-bottom: 20px;
       }
 

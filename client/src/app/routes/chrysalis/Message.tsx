@@ -1,9 +1,7 @@
 import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, serializeMessage, TRANSACTION_PAYLOAD_TYPE, WriteStream } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import { FaFileDownload } from "react-icons/fa";
-import { Link, RouteComponentProps } from "react-router-dom";
-import chevronDownGray from "../../../assets/chevron-down-gray.svg";
+import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../../helpers/downloadHelper";
@@ -19,7 +17,6 @@ import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
 import MessageTangleState from "../../components/MessageTangleState";
 import Spinner from "../../components/Spinner";
-import ToolsPanel from "../../components/ToolsPanel";
 import "./Message.scss";
 import { MessageRouteProps } from "./MessageRouteProps";
 import { MessageState } from "./MessageState";
@@ -126,9 +123,29 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
             <div className="message">
                 <div className="wrapper">
                     <div className="inner">
-                        <h1>
-                            Message
-                        </h1>
+                        <div className="message--header">
+                            <h1>
+                                Message
+                            </h1>
+                            <div className="message--header__switch">
+                                <span>Advanced View</span>
+                                <label className="switch">
+                                    <input
+                                        type="checkbox"
+                                        className="margin-l-t"
+                                        checked={this.state.advancedMode}
+                                        onChange={e => this.setState(
+                                            {
+                                                advancedMode: e.target.checked
+                                            },
+                                            () => this._settingsService.saveSingle(
+                                                "advancedMode",
+                                                this.state.advancedMode))}
+                                    />
+                                    <span className="slider round" />
+                                </label>
+                            </div>
+                        </div>
                         <div className="top">
                             <div className="sections">
                                 <div className="section">
@@ -317,13 +334,14 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         </div>
                                     </div>
                                 )}
+
                                 <div className="section margin-t-s">
                                     <div className="section--header">
                                         <h2>Messages Tree</h2>
                                     </div>
                                     <div className="section--content children-container">
-                                        <span>Childs</span>
-                                        {this.state.childrenBusy && (<Spinner />)}
+                                        <span>In progress...</span>
+                                        {/* {this.state.childrenBusy && (<Spinner />)}
                                         {this.state.childrenIds?.map(childId => (
                                             <div className="section--value" key={childId}>
                                                 <Link
@@ -372,60 +390,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         )}
                                         <div>Myself:</div>
                                         <div>
-                                            {/* {this.state.actualMessageId} */}
-                                        </div>
+                                            {this.state.actualMessageId}
+                                        </div> */}
 
                                     </div>
                                 </div>
-                            </div>
-                            <div className="side-panel-container">
-                                {/* <SidePanel {...this.props} />  */}
-                                <ToolsPanel>
-                                    <div className="section--section">
-                                        <div className="section--label margin-t-t margin-b-t">
-                                            <span>Advanced View</span>
-                                            <input
-                                                type="checkbox"
-                                                checked={this.state.advancedMode}
-                                                className="margin-l-t"
-                                                onChange={e => this.setState(
-                                                    {
-                                                        advancedMode: e.target.checked
-                                                    },
-                                                    () => this._settingsService.saveSingle(
-                                                        "advancedMode",
-                                                        this.state.advancedMode))}
-                                            />
-                                        </div>
-                                        <div className="section--label section--label__underline">
-                                            Export Message
-                                        </div>
-                                        <div className="section--value row">
-                                            <div className="select-wrapper">
-                                                <select
-                                                    value={this.state.selectedDataUrl}
-                                                    onChange={e => this.setState(
-                                                        { selectedDataUrl: e.target.value })}
-                                                >
-                                                    <option value="json">JSON</option>
-                                                    <option value="bin">Binary</option>
-                                                    <option value="hex">Hex</option>
-                                                    <option value="base64">Base64</option>
-                                                </select>
-                                                <img src={chevronDownGray} alt="expand" />
-                                            </div>
-                                            <a
-                                                className="section--action section--action-icon"
-                                                href={this.state.dataUrls[this.state.selectedDataUrl]}
-                                                download={DownloadHelper.filename(
-                                                    this.state.actualMessageId ?? "", this.state.selectedDataUrl)}
-                                                role="button"
-                                            >
-                                                <FaFileDownload />
-                                            </a>
-                                        </div>
-                                    </div>
-                                </ToolsPanel>
                             </div>
                         </div>
                     </div>
