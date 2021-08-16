@@ -52,19 +52,12 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
-        const networkService = ServiceFactory.get<NetworkService>("network");
-        const networks = networkService.networks();
-
-        const network = networks.filter((n) => n.network === this.props.match.params.network);
-
-        this.setState({
-            didExample: network[0].didExample
-        });
-
+        this.setDidExample();
 
         if (!this.state.did) {
             return;
         }
+
         const res = await ServiceFactory.get<IdentityService>("identity").resolveIdentity(
             this.state.did,
             this.props.match.params.network
@@ -144,10 +137,19 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                         </div>
 
                                         {this.state.didExample && (
-                                            <div> {this.state.didExample} </div>
+                                            <div
+                                                className="example-did"
+                                                onClick={() => {
+                                                    this.props.history.push(
+                                                        // eslint-disable-next-line max-len
+                                                        `/${this.props.match.params.network}/identity-resolver/${this.state.didExample}`
+                                                    );
+                                                }}
+                                            >
+                                                <p> DID Example </p>
+                                            </div>
                                         )}
                                     </div>
-                                    
                                 )}
                                 {this.state.did && (
                                     <div>
@@ -248,7 +250,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                             >
                                                                 <JsonViewer
                                                                     json={JSON.stringify(
-                                                                        this.state.resolvedIdentity,
+                                                                        this.state.resolvedIdentity.document,
                                                                         null,
                                                                         4
                                                                     )}
@@ -309,6 +311,17 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
         }
 
         return messageTangleStatus;
+    }
+
+    private setDidExample() {
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        const networks = networkService.networks();
+
+        const network = networks.find((n) => n.network === this.props.match.params.network);
+
+        this.setState({
+            didExample: network?.didExample
+        });
     }
 }
 

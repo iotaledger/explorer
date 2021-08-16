@@ -108,4 +108,9 @@ export interface INetwork {
      * The ordering for the networks.
      */
     order: number;
+
+    /**
+     * 
+     */
+    didExample?: string;
 }

@@ -115,4 +115,19 @@
         
         line-height: 1.6;
     }
+
+    .example-did{
+        background-color: $white;
+        border-radius: 20px;
+        padding: 8px 15px;
+        margin: 15px 0px !important;
+        display: inline-block;
+        box-shadow: $box-shadow;
+        p{
+            color: $gray-header !important;
+        }
+        &:hover{
+            cursor: pointer;
+        }
+    }
 }
