@@ -2,10 +2,10 @@ export interface IdentitySearchInputState {
     /**
      * The search text.
      */
-    query: string;
+    did: string;
 
     /**
-     * Is the content valid.
+     * Is the DID valid.
      */
     isValid: boolean;
 

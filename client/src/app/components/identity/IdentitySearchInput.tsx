@@ -17,7 +17,7 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
         super(props);
 
         this.state = {
-            query: "",
+            did: "",
             isValid: false,
             networkMismatch: false
         };
@@ -34,10 +34,10 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
                     <input
                         className="identity-search--text-input"
                         type="text"
-                        value={this.state.query}
+                        value={this.state.did}
                         onChange={(e) =>
                             this.setState({
-                                query: e.target.value,
+                                did: e.target.value,
                                 isValid: this.isValid(e.target.value),
                                 networkMismatch: this.didContainsWrongNetwork(e.target.value, this.props.network)
                             })
@@ -59,16 +59,16 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
     }
 
     /**
-     * Is the query valid.
-     * @param query The query to check.
-     * @returns True if the query is valid.
+     * Is the DID valid.
+     * @param did The DID to check.
+     * @returns True if the DID is valid.
      */
-    private isValid(query?: string): boolean {
-        if (!query) {
+    private isValid(did?: string): boolean {
+        if (!did) {
             return false;
         }
 
-        if (!query.startsWith("did:iota:")) {
+        if (!did.startsWith("did:iota:")) {
             return false;
         }
 
@@ -79,7 +79,7 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
      * Perform the search.
      */
     private doSearch(): void {
-        this.props.onSearch(this.state.query);
+        this.props.onSearch(this.state.did);
     }
 
     private didContainsWrongNetwork(did: string, network: string): boolean {

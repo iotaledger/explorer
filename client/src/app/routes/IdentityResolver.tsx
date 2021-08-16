@@ -1,11 +1,14 @@
 import { IMessageMetadata } from "@iota/iota.js";
 import React, { ReactNode } from "react";
+import { HiDownload } from "react-icons/hi";
 import { RouteComponentProps } from "react-router-dom";
 import { ReactComponent as IdentityIcon } from "../../assets/identity-icon-hex.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
+import { DownloadHelper } from "../../helpers/downloadHelper";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
 import { IdentityService } from "../../services/identityService";
+import { NetworkService } from "../../services/networkService";
 import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
@@ -16,10 +19,8 @@ import MessageTangleState from "../components/MessageTangleState";
 import Spinner from "../components/Spinner";
 import { IdentityResolverProps } from "./IdentityResolverProps";
 import { IdentityResolverState } from "./IdentityResolverState";
+
 import "./IdentityResolver.scss";
-import { HiDownload } from "react-icons/hi";
-import { DownloadHelper } from "../../helpers/downloadHelper";
-import { NetworkService } from "../../services/networkService";
 
 class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolverProps>, IdentityResolverState> {
     /**
