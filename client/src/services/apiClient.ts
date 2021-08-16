@@ -8,6 +8,8 @@ import { IOutputDetailsResponse } from "../models/api/chrysalis/IOutputDetailsRe
 import { ISearchRequest } from "../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
+import { IIdentityDidResolveRequest } from "../models/api/IIdentityDidResolveRequest";
+import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
 import { IMarketGetRequest } from "../models/api/IMarketGetRequest";
 import { IMarketGetResponse } from "../models/api/IMarketGetResponse";
 import { IMilestonesGetRequest } from "../models/api/IMilestonesGetRequest";
@@ -200,6 +202,19 @@ export class ApiClient {
             "get"
         );
     }
+
+    /**
+     * Get the message details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+     public async didDocument(request: IIdentityDidResolveRequest): Promise<IIdentityDidResolveResponse> {
+        return this.callApi<unknown, IIdentityDidResolveResponse>(
+            `did/${request.network}/${request.did}`,
+            "get"
+        );
+    }
+
 
     /**
      * Perform a request to get the networks.

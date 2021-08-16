@@ -3,7 +3,7 @@
 @import "../../scss/media-queries";
 @import "../../scss/variables";
 
-.streams-v0 {
+.identity {
     display: flex;
     flex-direction: column;
 
@@ -70,34 +70,49 @@
         }
     }
 
-    .identity-json-container {
-        background-color: $gray-daylight;
-        padding: 20px;
-    }
-
     .did-error {
-        // width: 100%;
+        width: 100%;
         height: 300px;
 
         display: flex;
         flex-direction: column;
         justify-content: center;
-        
+
         p {
-          text-align: center  ;
+            text-align: center;
             color: $danger !important;
         }
     }
 
-    .identity-title{
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      margin-bottom: 20px;
+    .identity-title {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 20px;
 
-      h1{
-        margin: 0px 0px 0px 10px !important;
-      }
-      
+        h1 {
+            margin: 0px 0px 0px 10px !important;
+        }
+    }
+
+    .identity-json-header {
+        width: 100%;
+        background-color: $gray-light;
+        padding: 10px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        a{
+            color: $gray;
+        }
+    }
+
+    .tool-description{
+        font-size: 1em !important;
+        color: $gray !important;
+        margin: 30px 0px;
+        
+        line-height: 1.6;
     }
 }

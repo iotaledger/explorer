@@ -4,5 +4,8 @@ export interface IdentityResolverProps {
      */
     network: string;
 
+    /**
+     * The DID to be resoloved/debugged
+     */
     did?: string;
 }

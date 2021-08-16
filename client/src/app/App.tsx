@@ -84,6 +84,8 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
         this.setNetwork(this.props.match.params.network, false);
     }
 
+
+
     /**
      * Render the component.
      * @returns The node to render.
@@ -99,13 +101,21 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                 }))}
                 value={this.state.networkId}
                 onChange={value => {
-                    this.props.history.push(
-                        this.props.match.params.action === "streams"
-                            ? `/${value}/streams/0/`
-                            : (this.props.match.params.action === "visualizer"
-                                ? `/${value}/visualizer/`
-                                : `/${value}`)
-                    );
+                    let path = `/${value}`;
+
+                    if (this.props.match.params.action === "streams") {
+                        path = `/${value}/streams/0/`;
+                    }
+
+                    if (this.props.match.params.action === "visualizer") {
+                        path = `/${value}/visualizer/`;
+                    }
+
+                    if (this.props.match.params.action === "identity-resolver") {
+                        path = `/${value}/identity-resolver/`;
+                    }
+
+                    this.props.history.push(path);
                 }}
             />
         );
@@ -344,6 +354,10 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             .concat({
                                 label: "Currency Converter",
                                 url: `${this.state.networkId}/currency-converter/`
+                            })
+                            .concat({
+                                label: "Identity Resolver",
+                                url: `${this.state.networkId}/identity-resolver/`
                             }) : [
                                 {
                                     label: "Maintenance Mode",

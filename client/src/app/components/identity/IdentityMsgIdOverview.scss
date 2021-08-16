@@ -1,0 +1,25 @@
+@import '../../../scss/fonts';
+@import '../../../scss/mixins';
+@import '../../../scss/variables';
+
+
+.msg-id-overview{
+    background-color: $white;
+    border-radius: 6px;
+    padding: 3px 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+
+    &.pointer{
+        &:hover{
+            cursor: pointer;
+        }
+    }
+
+    svg{
+        margin-right: 10px;
+    }
+}

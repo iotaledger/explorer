@@ -1,60 +1,102 @@
+import { IMessageMetadata } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ReactComponent as IdentityIcon } from "../../assets/identity-icon-hex.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
+import { MessageTangleStatus } from "../../models/messageTangleStatus";
 import { IdentityService } from "../../services/identityService";
+import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
+import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
 import JsonViewer from "../components/JsonViewer";
 import MessageButton from "../components/MessageButton";
+import MessageTangleState from "../components/MessageTangleState";
 import Spinner from "../components/Spinner";
-
 import { IdentityResolverProps } from "./IdentityResolverProps";
 import { IdentityResolverState } from "./IdentityResolverState";
-
 import "./IdentityResolver.scss";
+import { HiDownload } from "react-icons/hi";
+import { DownloadHelper } from "../../helpers/downloadHelper";
+import { NetworkService } from "../../services/networkService";
 
-class IdentityResolver extends AsyncComponent<
-    RouteComponentProps<IdentityResolverProps>,
-    IdentityResolverState
-> {
+class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolverProps>, IdentityResolverState> {
+    /**
+     * Timer to check to state update.
+     */
+    private _timerId?: NodeJS.Timer;
+
+    /**
+     * API Client for tangle requests.
+     */
+    private readonly _tangleCacheService: TangleCacheService;
+
     constructor(props: RouteComponentProps<IdentityResolverProps>) {
         super(props);
-        console.log(props);
+
+        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
         this.state = {
             identityResolved: false,
-            resolvedIdentity: "",
+            resolvedIdentity: undefined,
             did: props.match.params.did,
             error: false,
             errorMessage: "",
+            metadata: undefined,
+            messageTangleStatus: "pending",
+            didExample: undefined
         };
     }
 
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        const networks = networkService.networks();
+
+        const network = networks.filter((n) => n.network === this.props.match.params.network);
+
+        this.setState({
+            didExample: network[0].didExample
+        });
+
+
         if (!this.state.did) {
             return;
         }
-        let res;
-        try {
-            res = await ServiceFactory.get<IdentityService>("identity").resolveIdentity(this.state.did);
-            console.log(res);
-            this.setState({
-                resolvedIdentity: res,
-                identityResolved: true,
-            });
-            this.setState({
-                resolvedIdentity: res,
-                identityResolved: true,
-            });
-        } catch (e) {
+        const res = await ServiceFactory.get<IdentityService>("identity").resolveIdentity(
+            this.state.did,
+            this.props.match.params.network
+        );
+
+        if (typeof res.error === "object") {
+            res.error = JSON.stringify(res.error);
+        }
+        if (res.error) {
             this.setState({
                 error: true,
-                errorMessage: e,
+                errorMessage: res.error
             });
+            return;
+        }
+
+        this.setState({
+            resolvedIdentity: res,
+            identityResolved: true
+        });
+
+        await this.updateMessageDetails(res.messageId ?? "");
+    }
+
+    /**
+     * The component will unmount so update flag.
+     */
+    public componentWillUnmount(): void {
+        super.componentWillUnmount();
+        if (this._timerId) {
+            clearTimeout(this._timerId);
+            this._timerId = undefined;
         }
     }
 
@@ -64,7 +106,7 @@ class IdentityResolver extends AsyncComponent<
      */
     public render(): ReactNode {
         return (
-            <div className="streams-v0">
+            <div className="identity">
                 <div className="wrapper">
                     <div className="inner">
                         <div className="row">
@@ -74,6 +116,15 @@ class IdentityResolver extends AsyncComponent<
                                         <div className="identity-title">
                                             <IdentityIcon />
                                             <h1>Identity Resolver</h1>
+                                        </div>
+
+                                        <div>
+                                            <p className="tool-description">
+                                                The Identity Resolver is a tool for resolving Decentralized Identifiers
+                                                (DIDs) into their associated DID Document, by retrieving the information
+                                                from an IOTA Tangle. The tool has debugging capabilities to view the
+                                                entire history of a DID Document, including invalid DID messages.
+                                            </p>
                                         </div>
                                         <div className="card">
                                             <div className="card--header card--header__space-between">
@@ -86,32 +137,56 @@ class IdentityResolver extends AsyncComponent<
                                                         onSearch={(e) => {
                                                             this.props.history.push(e);
                                                         }}
+                                                        network={this.props.match.params.network}
                                                     />
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {this.state.didExample && (
+                                            <div> {this.state.didExample} </div>
+                                        )}
                                     </div>
+                                    
                                 )}
                                 {this.state.did && (
                                     <div>
-                                        <h1>Desentralized Identifier</h1>
+                                        <div className="identity-title">
+                                            <IdentityIcon />
+                                            <h1>Identity Resolver</h1>
+                                        </div>
 
                                         <div className="card margin-b-s">
                                             <div className="card--header card--header__space-between">
                                                 <h2>General</h2>
+                                                {!this.state.error && (
+                                                    <MessageTangleState
+                                                        network={this.props.match.params.network}
+                                                        status={this.state.messageTangleStatus}
+                                                        milestoneIndex={
+                                                            this.state.metadata?.referencedByMilestoneIndex ??
+                                                            this.state.metadata?.milestoneIndex
+                                                        }
+                                                        onClick={
+                                                            this.state.metadata?.referencedByMilestoneIndex
+                                                                ? () =>
+                                                                      this.props.history.push(
+                                                                          // eslint-disable-next-line max-len
+                                                                          `/${this.props.match.params.network}/search/${this.state.metadata?.referencedByMilestoneIndex}`
+                                                                      )
+                                                                : undefined
+                                                        }
+                                                    />
+                                                )}
                                             </div>
                                             <div className="card--content">
                                                 <div className="row middle margin-b-s row--tablet-responsive">
                                                     <div className="card--value card--value--textarea">
-                                                        <div className="card--label form-label-width">
-                                                            DID
-                                                        </div>
+                                                        <div className="card--label form-label-width">DID</div>
                                                         <div className="row ">
                                                             <div className="margin-r-t">{this.state.did}</div>
                                                             <MessageButton
-                                                                onClick={() =>
-                                                                    ClipboardHelper.copy(this.state.did)
-                                                                }
+                                                                onClick={() => ClipboardHelper.copy(this.state.did)}
                                                                 buttonType="copy"
                                                                 labelPosition="top"
                                                             />
@@ -124,16 +199,61 @@ class IdentityResolver extends AsyncComponent<
                                         <div className="card">
                                             <div className="card--header card--header">
                                                 <h2>Content</h2>
-                                                {!this.state.identityResolved && !this.state.error && (
-                                                    <Spinner />
-                                                )}
                                             </div>
 
                                             <div className="card--content">
                                                 <div className="row middle margin-b-s row--tablet-responsive">
-                                                    {this.state.resolvedIdentity !== "" && (
-                                                        <div className="identity-json-container">
-                                                            <JsonViewer json={this.state.resolvedIdentity} />
+                                                    {!this.state.identityResolved && !this.state.error && (
+                                                        <React.Fragment>
+                                                            <h3 className="margin-r-s">Resolving DID ...</h3>
+                                                            <Spinner />
+                                                        </React.Fragment>
+                                                    )}
+
+                                                    {this.state.resolvedIdentity && (
+                                                        <div>
+                                                            <div className="identity-json-header">
+                                                                <div>
+                                                                    <IdentityMessageIdOverview
+                                                                        messageId={
+                                                                            this.state.resolvedIdentity.messageId
+                                                                        }
+                                                                        onClick={() => {
+                                                                            this.props.history.push(
+                                                                                // eslint-disable-next-line max-len
+                                                                                `/${this.props.match.params.network}/message/${this.state.resolvedIdentity?.messageId}`
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                </div>
+
+                                                                <a
+                                                                    href={DownloadHelper.createJsonDataUrl(
+                                                                        this.state.resolvedIdentity.document
+                                                                    )}
+                                                                    download={DownloadHelper.filename(
+                                                                        this.state.resolvedIdentity.messageId ?? "did",
+                                                                        "json"
+                                                                    )}
+                                                                    role="button"
+                                                                >
+                                                                    <HiDownload />
+                                                                </a>
+                                                            </div>
+                                                            <div
+                                                                className="
+                                                            card--value
+                                                            card--value-textarea
+                                                            card--value-textarea__json"
+                                                            >
+                                                                <JsonViewer
+                                                                    json={JSON.stringify(
+                                                                        this.state.resolvedIdentity,
+                                                                        null,
+                                                                        4
+                                                                    )}
+                                                                />
+                                                            </div>
                                                         </div>
                                                     )}
                                                     {this.state.error && (
@@ -153,6 +273,42 @@ class IdentityResolver extends AsyncComponent<
                 </div>
             </div>
         );
+    }
+
+    private async updateMessageDetails(msgId: string): Promise<void> {
+        const details = await this._tangleCacheService.messageDetails(this.props.match.params.network, msgId);
+
+        this.setState({
+            metadata: details?.metadata,
+            messageTangleStatus: this.calculateStatus(details?.metadata)
+        });
+
+        if (!details?.metadata?.referencedByMilestoneIndex) {
+            this._timerId = setTimeout(async () => {
+                await this.updateMessageDetails(msgId);
+            }, 10000);
+        }
+    }
+
+    /**
+     * Calculate the status for the message.
+     * @param metadata The metadata to calculate the status from.
+     * @returns The message status.
+     */
+    private calculateStatus(metadata?: IMessageMetadata): MessageTangleStatus {
+        let messageTangleStatus: MessageTangleStatus = "unknown";
+
+        if (metadata) {
+            if (metadata.milestoneIndex) {
+                messageTangleStatus = "milestone";
+            } else if (metadata.referencedByMilestoneIndex) {
+                messageTangleStatus = "referenced";
+            } else {
+                messageTangleStatus = "pending";
+            }
+        }
+
+        return messageTangleStatus;
     }
 }
 

@@ -19,6 +19,7 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
         this.state = {
             query: "",
             isValid: false,
+            networkMismatch: false
         };
     }
 
@@ -28,27 +29,31 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
      */
     public render(): ReactNode {
         return (
-            <div className={classNames("identity-search-input")}>
-                <input
-                    className="identity-search--text-input"
-                    type="text"
-                    value={this.state.query}
-                    onChange={(e) =>
-                        this.setState({
-                            query: e.target.value,
-                            isValid: this.isValid(e.target.value),
-                        })
-                    }
-                />
+            <div className="identity-search-input">
+                <div>
+                    <input
+                        className="identity-search--text-input"
+                        type="text"
+                        value={this.state.query}
+                        onChange={(e) =>
+                            this.setState({
+                                query: e.target.value,
+                                isValid: this.isValid(e.target.value),
+                                networkMismatch: this.didContainsWrongNetwork(e.target.value, this.props.network)
+                            })
+                        }
+                    />
 
-                <button
-                    className="identity-search--button"
-                    type="submit"
-                    onClick={() => this.doSearch()}
-                    disabled={!this.state.isValid}
-                >
-                    Search
-                </button>
+                    <button
+                        className="identity-search--button"
+                        type="submit"
+                        onClick={() => this.doSearch()}
+                        disabled={!this.state.isValid}
+                    >
+                        Search
+                    </button>
+                </div>
+                {this.state.networkMismatch && <p>Selected Network does not match DID Network</p>}
             </div>
         );
     }
@@ -75,6 +80,21 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
      */
     private doSearch(): void {
         this.props.onSearch(this.state.query);
+    }
+
+    private didContainsWrongNetwork(did: string, network: string): boolean {
+        const colonCountInDid = did.split(":").length - 1;
+
+        if (colonCountInDid !== 3) {
+            return false;
+        }
+
+        const networkNameInDid = did.split(":")[2];
+
+        if (networkNameInDid !== network) {
+            return true;
+        }
+        return false;
     }
 }
 
