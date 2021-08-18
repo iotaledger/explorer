@@ -103,31 +103,43 @@
         flex-direction: row;
         justify-content: space-between;
 
-        a{
+        a {
             color: $gray;
         }
     }
 
-    .tool-description{
+    .tool-description {
         font-size: 1em !important;
         color: $gray !important;
         margin: 30px 0px;
-        
+
         line-height: 1.6;
     }
 
-    .example-did{
+    .example-did {
         background-color: $white;
         border-radius: 20px;
         padding: 8px 15px;
         margin: 15px 0px !important;
         display: inline-block;
         box-shadow: $box-shadow;
-        p{
+        p {
             color: $gray-header !important;
         }
-        &:hover{
+        &:hover {
             cursor: pointer;
+        }
+    }
+
+    .search-compact {
+        width: 40%;
+        margin: 13px 0px 30px 0px;
+
+        @include desktop-down{
+            width: 100%;
+        }
+        @include phone-down {
+            width: 100%;
         }
     }
 }

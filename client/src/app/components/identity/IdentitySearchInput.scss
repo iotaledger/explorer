@@ -4,7 +4,7 @@
 @import "../../../scss/variables";
 
 .identity-search-input {
-  width: 100%;
+    width: 100%;
     div {
         display: flex;
         flex: 1;
@@ -68,26 +68,25 @@
             color: $white;
         }
 
-        &.identity-search-input--compact {
-            margin: 0;
+    }
+    &.identity-search-input--compact {
 
-            .identity-search--text-input {
-                @include font-size(12px);
+        .identity-search--text-input {
+            @include font-size(12px);
 
-                height: 32px;
-                padding: 0 12px;
-            }
+            height: 38px;
+            padding: 0 12px;
+        }
 
-            .identity-search--button {
-                @include font-size(12px);
-
-                width: 32px;
-            }
+        .identity-search--button {
+            @include font-size(12px);
+            width: 38px;
         }
     }
-    p{
-      position: absolute;
-      margin: 10px 0px !important;
-      color: $warning !important;
+    p {
+        position: absolute;
+        margin: 10px 0px !important;
+        color: $warning !important;
     }
+
 }

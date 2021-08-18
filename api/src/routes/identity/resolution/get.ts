@@ -21,7 +21,8 @@ export async function get(config: IConfiguration, request: IIdentityDidResolveRe
     const networkConfig = networkService.get(request.network);
 
     if (networkConfig.protocolVersion !== "chrysalis") {
-        return { error: "Network is not supported" };
+        // eslint-disable-next-line max-len
+        return { error: "Network is not supported. IOTA Identity only supports chrysalis phase 2 networks, such as the IOTA main network. " };
     }
 
     const providerUrl = networkConfig.provider;
@@ -53,6 +54,22 @@ async function resolveIdentity(
 
         return { document: res.document, messageId: res.messageId };
     } catch (e) {
-        return { error: e as string };
+        return { error: improveErrorMessage(e as string) };
     }
+}
+/**
+ * @param  {string} errorMessage The error message to be improved
+ * @returns an improved error message if possible, otherwise same error message
+ */
+function improveErrorMessage(errorMessage: string): string {
+    if (errorMessage === "Chain Error: Invalid Root Document") {
+        return "Chain Error: Invalid Root Document. No valid document can be resolved at the index of the DID.";
+    }
+
+    if (errorMessage === "Invalid Method Id") {
+        // eslint-disable-next-line max-len
+        return "Invalid Method Id. The provided DID is invalid. A valid DID starts with “did:iota:” followed by an index.";
+    }
+
+    return errorMessage;
 }

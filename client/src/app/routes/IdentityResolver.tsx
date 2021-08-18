@@ -1,5 +1,5 @@
 import { IMessageMetadata } from "@iota/iota.js";
-import React, { ReactNode } from "react";
+import React, { Fragment, ReactNode } from "react";
 import { HiDownload } from "react-icons/hi";
 import { RouteComponentProps } from "react-router-dom";
 import { ReactComponent as IdentityIcon } from "../../assets/identity-icon-hex.svg";
@@ -13,6 +13,7 @@ import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
+import IdentityTree from "../components/identity/tree/IdentityTree";
 import JsonViewer from "../components/JsonViewer";
 import MessageButton from "../components/MessageButton";
 import MessageTangleState from "../components/MessageTangleState";
@@ -128,6 +129,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                 <div className="row middle margin-b-s row--tablet-responsive">
                                                     <div className="card--label form-label-width">DID</div>
                                                     <IdentitySearchInput
+                                                        compact={false}
                                                         onSearch={(e) => {
                                                             this.props.history.push(e);
                                                         }}
@@ -154,13 +156,29 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                 )}
                                 {this.state.did && (
                                     <div>
-                                        <div className="identity-title">
-                                            <IdentityIcon />
-                                            <h1>Identity Resolver</h1>
+                                        <div className="row space-between wrap  ">
+                                            <div className="identity-title">
+                                                <IdentityIcon />
+                                                <h1>Identity Resolver</h1>
+                                            </div>
+                                            <div className="search-compact">
+                                                <IdentitySearchInput
+                                                    did=""
+                                                    compact={true}
+                                                    onSearch={(e) => {
+                                                        this.props.history.push(e);
+                                                    }}
+                                                    network={this.props.match.params.network}
+                                                />
+                                            </div>
                                         </div>
-
                                         <div className="card margin-b-s">
-                                            <div className="card--header card--header__space-between">
+                                            <div
+                                                className="card--header
+                                            card--header__space-between
+                                            card--header__tablet-responsive
+                                            "
+                                            >
                                                 <h2>General</h2>
                                                 {!this.state.error && (
                                                     <MessageTangleState
@@ -194,6 +212,24 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                                 labelPosition="top"
                                                             />
                                                         </div>
+                                                        {this.state.resolvedIdentity && !this.state.error && (
+                                                            <Fragment>
+                                                                <div className="card--label">Latest Message Id</div>
+                                                                <div className="card--value row middle">
+                                                                    <div className="margin-r-t">
+                                                                        {this.state.resolvedIdentity?.messageId}
+                                                                    </div>
+                                                                    <MessageButton
+                                                                        onClick={() =>
+                                                                            ClipboardHelper.copy(
+                                                                                this.state.resolvedIdentity?.messageId
+                                                                            )}
+                                                                        buttonType="copy"
+                                                                        labelPosition="top"
+                                                                    />
+                                                                </div>
+                                                            </Fragment>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
