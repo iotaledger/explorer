@@ -1,0 +1,23 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.load-history {
+    background-color: $white !important;
+    color: $gray;
+    padding: 10px 50px;
+    margin: 30px 0px;
+    border: 0px;
+    width: 100%;
+}
+
+.history-content {
+    margin: 30px 0px;
+
+}
+
+.tree{
+    height: 100%;
+    margin-left: 0 !important;
+}

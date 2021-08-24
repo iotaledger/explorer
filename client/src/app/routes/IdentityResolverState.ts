@@ -9,6 +9,9 @@ export interface IdentityResolverState {
     error: boolean;
     errorMessage: string;
 
+    resolvedHistory?: unknown;
+    
+    historyError?: boolean;
 
     /**
      * Metadata of last message.

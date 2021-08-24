@@ -13,7 +13,7 @@ import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
-import IdentityTree from "../components/identity/tree/IdentityTree";
+import IdentityHistory from "../components/identity/IdentityHistory";
 import JsonViewer from "../components/JsonViewer";
 import MessageButton from "../components/MessageButton";
 import MessageTangleState from "../components/MessageTangleState";
@@ -47,7 +47,9 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
             errorMessage: "",
             metadata: undefined,
             messageTangleStatus: "pending",
-            didExample: undefined
+            didExample: undefined,
+            resolvedHistory: undefined,
+            historyError: false
         };
     }
 
@@ -68,6 +70,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
         if (typeof res.error === "object") {
             res.error = JSON.stringify(res.error);
         }
+
         if (res.error) {
             this.setState({
                 error: true,
@@ -223,7 +226,8 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                                         onClick={() =>
                                                                             ClipboardHelper.copy(
                                                                                 this.state.resolvedIdentity?.messageId
-                                                                            )}
+                                                                            )
+                                                                        }
                                                                         buttonType="copy"
                                                                         labelPosition="top"
                                                                     />
@@ -239,7 +243,6 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                             <div className="card--header card--header">
                                                 <h2>Content</h2>
                                             </div>
-
                                             <div className="card--content">
                                                 <div className="row middle margin-b-s row--tablet-responsive">
                                                     {!this.state.identityResolved && !this.state.error && (
@@ -304,6 +307,13 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {this.state.identityResolved && (
+                                            <IdentityHistory
+                                                network={this.props.match.params.network}
+                                                did={this.state.did}
+                                            />
+                                        )}
                                     </div>
                                 )}
                             </div>

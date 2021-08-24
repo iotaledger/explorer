@@ -1,3 +1,4 @@
+import { IIdentityDIDHistoryResponse } from './../models/api/IIdentityDIDHistoryResponse';
 import { FetchHelper } from "../helpers/fetchHelper";
 import { IMessageDetailsRequest } from "../models/api/chrysalis/IMessageDetailsRequest";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
@@ -8,6 +9,7 @@ import { IOutputDetailsResponse } from "../models/api/chrysalis/IOutputDetailsRe
 import { ISearchRequest } from "../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
+import { IIdentityDIDHistoryRequest } from "../models/api/IIdentityDIDHistoryRequest";
 import { IIdentityDidResolveRequest } from "../models/api/IIdentityDidResolveRequest";
 import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
 import { IMarketGetRequest } from "../models/api/IMarketGetRequest";
@@ -215,6 +217,17 @@ export class ApiClient {
         );
     }
 
+        /**
+     * Get the hitstory of a DID.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+         public async didHistory(request: IIdentityDIDHistoryRequest): Promise<IIdentityDIDHistoryResponse> {
+            return this.callApi<unknown, IIdentityDidResolveResponse>(
+                `did-history/${request.network}/${request.did}`,
+                "get"
+            );
+        }
 
     /**
      * Perform a request to get the networks.

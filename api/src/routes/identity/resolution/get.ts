@@ -52,7 +52,7 @@ async function resolveIdentity(
 
         const res = await client.resolve(did);
 
-        return { document: res.document, messageId: res.messageId };
+        return { document: res.toJSON(), messageId: res.messageId };
     } catch (e) {
         return { error: improveErrorMessage(e as string) };
     }
