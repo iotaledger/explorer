@@ -52,7 +52,7 @@ npm run start
 
 ## Deploy
 
-Once the API is running you need to initialise the storage by visiting http://localhost:3000/init or wherever you have deployed the API.
+Once the API is running you need to initialise the storage by visiting <http://localhost:4000/init> or wherever you have deployed the API.
 
 You will need at least one network configured, if you have configured to use local storage folder e.g. `../.local-storage/` you can create a network record in a .json file there.
 

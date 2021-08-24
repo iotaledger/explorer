@@ -1,5 +1,5 @@
-FROM node:14-alpine3.13
-RUN apk --no-cache add git
+FROM node:14-alpine3.13 AS build
+RUN apk --no-cache add git curl python3 build-base cmake
 
 # Working DIR
 WORKDIR /usr/src/app
@@ -14,8 +14,16 @@ RUN npm install -g npm
 ARG CONFIG_ID
 RUN echo "CONFIG_ID=$CONFIG_ID"
 
-# Install all the packages for the workspaces
-RUN npm install --only=prod
+# Install all packages necessary for compilation, then remove the devDependencies
+RUN npm install && npm run build-config && npm run build-compile && npm prune --production
+
+FROM node:14-alpine3.13
+
+WORKDIR /usr/src/app
+
+RUN apk --no-cache add git
+
+COPY --from=build /usr/src/app .
 
 EXPOSE 4000
 
