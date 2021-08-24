@@ -84,8 +84,6 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
         this.setNetwork(this.props.match.params.network, false);
     }
 
-
-
     /**
      * Render the component.
      * @returns The node to render.

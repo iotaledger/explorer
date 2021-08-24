@@ -129,7 +129,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                     <div className="card--label form-label-width">DID</div>
                                                     <IdentitySearchInput
                                                         compact={false}
-                                                        onSearch={(e) => {
+                                                        onSearch={e => {
                                                             this.props.history.push(e);
                                                         }}
                                                         network={this.props.match.params.network}
@@ -163,7 +163,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                             <div className="search-compact">
                                                 <IdentitySearchInput
                                                     compact={true}
-                                                    onSearch={(e) => {
+                                                    onSearch={e => {
                                                         this.props.history.push(e);
                                                     }}
                                                     network={this.props.match.params.network}
@@ -352,7 +352,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networks = networkService.networks();
 
-        const network = networks.find((n) => n.network === this.props.match.params.network);
+        const network = networks.find(n => n.network === this.props.match.params.network);
 
         this.setState({
             didExample: network?.didExample
