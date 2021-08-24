@@ -13,7 +13,6 @@ import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
-import IdentityTree from "../components/identity/tree/IdentityTree";
 import JsonViewer from "../components/JsonViewer";
 import MessageButton from "../components/MessageButton";
 import MessageTangleState from "../components/MessageTangleState";
@@ -40,7 +39,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
         this.state = {
-            identityResolved: false,
+            isIdentityResolved: false,
             resolvedIdentity: undefined,
             did: props.match.params.did,
             error: false,
@@ -78,7 +77,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
 
         this.setState({
             resolvedIdentity: res,
-            identityResolved: true
+            isIdentityResolved: true
         });
 
         await this.updateMessageDetails(res.messageId ?? "");
@@ -163,7 +162,6 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                             </div>
                                             <div className="search-compact">
                                                 <IdentitySearchInput
-                                                    did=""
                                                     compact={true}
                                                     onSearch={(e) => {
                                                         this.props.history.push(e);
@@ -242,7 +240,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
 
                                             <div className="card--content">
                                                 <div className="row middle margin-b-s row--tablet-responsive">
-                                                    {!this.state.identityResolved && !this.state.error && (
+                                                    {!this.state.isIdentityResolved && !this.state.error && (
                                                         <React.Fragment>
                                                             <h3 className="margin-r-s">Resolving DID ...</h3>
                                                             <Spinner />

@@ -18,8 +18,8 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
         super(props);
 
         this.state = {
-            did: this.props.did ?? "",
-            isValid: this.isValid(this.props.did),
+            did: "",
+            isValid: false,
             networkMismatch: false
         };
     }
