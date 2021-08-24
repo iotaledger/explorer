@@ -178,12 +178,14 @@ export class App {
                     .setTitle(status.label)
                     .setColor(color)
                     .addField(status.protocol === "og"
-                        ? "TPS" : "MPS", status.itemsPerSecond, true)
+                        ? "TPS" : "MPS", status.itemsPerSecond.toString(), true)
                     .addField(status.protocol === "og"
-                        ? "CTPS" : "CMPS", status.confirmedItemsPerSecond, true)
+                        ? "CTPS" : "CMPS", status.confirmedItemsPerSecond.toString(), true)
                     .addField(status.protocol === "og" ? "Confirmation Rate" : "Referenced Rate",
                         `${status.confirmationRate.toFixed(1)}%`, true)
-                    .addField("Latest Milestone Index", status.latestMilestoneIndex ?? "Unknown");
+                    .addField(
+                        "Latest Milestone Index",
+                        status.latestMilestoneIndex ? status.latestMilestoneIndex.toString() : "Unknown");
 
                 if (health) {
                     embed.addField("Health", health);
@@ -475,7 +477,7 @@ export class App {
                 embed.addField("Value Migrated", cur);
             }
 
-            embed.addField("Addresses Migrated", totalAddresses);
+            embed.addField("Addresses Migrated", totalAddresses.toString());
         }
         return embed;
     }
