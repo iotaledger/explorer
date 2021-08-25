@@ -140,38 +140,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                 protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
                             />
                         )}
-                    tools={this.state.networks.length > 0 ? [
-                        {
-                            label: "Explorer",
-                            url: `/${this.state.networkId}/`,
-                            icon: <ExplorerIcon />
-                        },
-                        {
-                            label: "Streams v0",
-                            url: `/${this.state.networkId}/streams/0/`,
-                            icon: <StreamsIcon />
-                        },
-                        {
-                            label: "Visualizer",
-                            url: `/${this.state.networkId}/visualizer/`,
-                            icon: <VisualizerIcon />
-                        },
-                        {
-                            label: "Markets",
-                            url: `/${this.state.networkId}/markets/`,
-                            icon: <MarketsIcon />
-                        },
-                        {
-                            label: "Currency Converter",
-                            url: `/${this.state.networkId}/currency-converter/`,
-                            icon: <CurrencyConverterIcon />
-                        },
-                        {
-                            label: "Identity Resolver",
-                            url: `/${this.state.networkId}/identity-resolver/`,
-                            icon: <IdentityIcon />
-                        }
-                    ] : []}
+                    tools={this.getTools()}
                 />
                 <div className="content">
                     {this.state.networks.length > 0
@@ -330,43 +299,107 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                         )}
                 </div>
                 <Footer
-                    dynamic={
-                        this.state.networks.length > 0 ? this.state.networks
-                            .filter(network => network.isEnabled)
-                            .map(n => ({
-                                label: n.label,
-                                url: n.network
-                            }))
-                            .concat({
-                                label: "Streams v0",
-                                url: `${this.state.networkId}/streams/0/`
-                            })
-                            .concat({
-                                label: "Visualizer",
-                                url: `${this.state.networkId}/visualizer/`
-                            })
-                            .concat({
-                                label: "Markets",
-                                url: `${this.state.networkId}/markets/`
-                            })
-                            .concat({
-                                label: "Currency Converter",
-                                url: `${this.state.networkId}/currency-converter/`
-                            })
-                            .concat({
-                                label: "Identity Resolver",
-                                url: `${this.state.networkId}/identity-resolver/`
-                            }) : [
-                                {
-                                    label: "Maintenance Mode",
-                                    url: ""
-                                }
-                            ]
-                    }
+                    dynamic={this.getFooterItems()}
                 />
                 <Disclaimer />
             </div>
         );
+    }
+
+
+    /**
+     * create a tools list. Excludes Identity Resolver if network is not supported.
+     * @returns array of tools
+     */
+    private getTools() {
+        let tools: {label: string; url: string; icon: JSX.Element}[] = [];
+
+        if (this.state.networks.length > 0) {
+            tools = [
+            {
+                label: "Explorer",
+                url: `/${this.state.networkId}/`,
+                icon: <ExplorerIcon />
+            },
+            {
+                label: "Streams v0",
+                url: `/${this.state.networkId}/streams/0/`,
+                icon: <StreamsIcon />
+            },
+            {
+                label: "Visualizer",
+                url: `/${this.state.networkId}/visualizer/`,
+                icon: <VisualizerIcon />
+            },
+            {
+                label: "Markets",
+                url: `/${this.state.networkId}/markets/`,
+                icon: <MarketsIcon />
+            },
+            {
+                label: "Currency Converter",
+                url: `/${this.state.networkId}/currency-converter/`,
+                icon: <CurrencyConverterIcon />
+            }
+        ];
+
+        if (this.state.networkConfig?.protocolVersion === "chrysalis") {
+            tools.push(
+            {
+                label: "Identity Resolver",
+                url: `/${this.state.networkId}/identity-resolver/`,
+                icon: <IdentityIcon />
+            });
+        }
+        }
+        return tools;
+    }
+
+    /**
+     * Creates footer items. Excludes the Identity Resolver if the network is not supported.
+     * @returns Array of footer items
+     */
+    private getFooterItems() {
+        if (this.state.networks.length > 0) {
+            const footerArray = this.state.networks
+                .filter(network => network.isEnabled)
+                .map(n => ({
+                    label: n.label,
+                    url: n.network
+                }))
+                .concat({
+                    label: "Streams v0",
+                    url: `${this.state.networkId}/streams/0/`
+                })
+                .concat({
+                    label: "Visualizer",
+                    url: `${this.state.networkId}/visualizer/`
+                })
+                .concat({
+                    label: "Markets",
+                    url: `${this.state.networkId}/markets/`
+                })
+                .concat({
+                    label: "Currency Converter",
+                    url: `${this.state.networkId}/currency-converter/`
+                });
+
+                if (this.state.networkConfig?.protocolVersion === "chrysalis") {
+                    footerArray.push({
+                        label: "Identity Resolver",
+                        url: `${this.state.networkId}/identity-resolver/`
+                    });
+                }
+
+                return footerArray;
+        }
+
+        return [
+            {
+                label: "Maintenance Mode",
+                url: ""
+            }
+        ];
     }
 
     /**
@@ -382,12 +415,13 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
         }
         const hasChanged = network !== this.state.networkId;
         if (hasChanged) {
+            const config = this.state.networks.find(n => n.network === network);
             this.setState(
                 {
-                    networkId: network ?? ""
+                    networkId: network ?? "",
+                    networkConfig: config
                 },
                 () => {
-                    const config = this.state.networks.find(n => n.network === network);
                     if (config?.primaryColor && config.secondaryColor) {
                         PaletteHelper.setPalette(config.primaryColor, config.secondaryColor);
                     }

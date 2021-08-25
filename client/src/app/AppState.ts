@@ -10,4 +10,10 @@ export interface AppState {
      * The networks.
      */
     networks: INetwork[];
+
+
+    /**
+     * config of current network
+     */
+    networkConfig?: INetwork;
 }
