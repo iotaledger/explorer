@@ -20,7 +20,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Maximum number of items.
      */
-    private static readonly MAX_ITEMS: number = 5000;
+    private static readonly MAX_ITEMS: number = 7500;
 
     /**
      * Edge colour default.
