@@ -9,7 +9,7 @@ export class FoundationDataHelper {
     /**
      * The location of the foundation data.
      */
-    public static FOUNDATION_DATA_URL: string = "https://webassets.iota.org/data/foundation.json";
+    public static FOUNDATION_DATA_URL: string = "https://explorer.tanglebay.com/assets/footer.json";
 
     /**
      * Cached version of the data.
