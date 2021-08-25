@@ -43,7 +43,7 @@ class Disclaimer extends Component<unknown, DisclaimerState> {
                 <span className="margin-r-s">
                     <span className="margin-r-s">This website uses cookies to ensure you get the best experience.</span>
                     <a
-                        href="https://www.iota.org/privacy-policy"
+                        href="https://tanglebay.com/privacy-policy/"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
