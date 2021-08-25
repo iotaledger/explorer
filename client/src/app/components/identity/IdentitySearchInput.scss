@@ -66,6 +66,13 @@
     color: $white;
   }
 
+  p {
+    position: absolute;
+    top: 45px;
+    margin: 10px 0 !important;
+    color: $warning !important;
+  }
+
   &.identity-search-input--compact {
     .identity-search--text-input {
       @include font-size(12px);
@@ -79,11 +86,12 @@
 
       width: 38px;
     }
-  }
 
-  p {
-    position: absolute;
-    margin: 10px 0 !important;
-    color: $warning !important;
+    p {
+      position: absolute;
+      top: 35px;
+      margin: 10px 0 !important;
+      color: $warning !important;
+    }
   }
 }

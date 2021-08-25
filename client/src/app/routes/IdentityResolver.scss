@@ -31,6 +31,23 @@
     }
   }
 
+  .example-did {
+    display: inline-block;
+    margin: 15px 0 !important;
+    padding: 8px 15px;
+    border-radius: 20px;
+    background-color: $white;
+    box-shadow: $box-shadow;
+
+    p {
+      color: $gray-header !important;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
   .wrapper {
     display: flex;
     justify-content: center;
@@ -102,7 +119,7 @@
     padding: 10px;
     background-color: $gray-light;
 
-    &a {
+    a {
       color: $gray;
     }
   }
@@ -112,23 +129,6 @@
     color: $gray !important;
     font-size: 1em !important;
     line-height: 1.6;
-  }
-
-  .example-did {
-    display: inline-block;
-    margin: 15px 0 !important;
-    padding: 8px 15px;
-    border-radius: 20px;
-    background-color: $white;
-    box-shadow: $box-shadow;
-
-    &p {
-      color: $gray-header !important;
-    }
-
-    &:hover {
-      cursor: pointer;
-    }
   }
 
   .search-compact {
