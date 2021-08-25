@@ -1,10 +1,10 @@
-import React, { Component, ReactNode } from "react";
+import React, { Component, Fragment, ReactNode } from "react";
 import { IdentityMsgStatusIconProps } from "./IdentityMsgStatusIconProps";
 
 export default class IdentityMsgStatusIcon extends Component<IdentityMsgStatusIconProps> {
     public render(): ReactNode {
         return (
-            <div>
+            <Fragment>
                 {this.props.status === "integration" && (
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 6L6 0L0 6L6 12L12 6Z" fill="#14CABF" />
@@ -34,7 +34,7 @@ export default class IdentityMsgStatusIcon extends Component<IdentityMsgStatusIc
                         <circle cx="33.0556" cy="6.05556" r="5.05556" fill="#6464FF" />
                     </svg>
                 )}
-            </div>
+            </Fragment>
         );
     }
 }
