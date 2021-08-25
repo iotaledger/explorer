@@ -15,7 +15,7 @@ const MS_60_MINUTES = 60 * 60 * 1000;
 const MS_30_SECONDS = 30 * 1000;
 
 const MARKET_TRIGGER = "!m";
-const CHRYSALIS_TRIGGER = "!c-status";
+const CHRYSALIS_TRIGGER = "!migration";
 
 export class App {
     private readonly _config: IConfiguration;
@@ -178,14 +178,12 @@ export class App {
                     .setTitle(status.label)
                     .setColor(color)
                     .addField(status.protocol === "og"
-                        ? "TPS" : "MPS", status.itemsPerSecond.toString(), true)
+                        ? "TPS" : "MPS", status.itemsPerSecond, true)
                     .addField(status.protocol === "og"
-                        ? "CTPS" : "CMPS", status.confirmedItemsPerSecond.toString(), true)
+                        ? "CTPS" : "CMPS", status.confirmedItemsPerSecond, true)
                     .addField(status.protocol === "og" ? "Confirmation Rate" : "Referenced Rate",
                         `${status.confirmationRate.toFixed(1)}%`, true)
-                    .addField(
-                        "Latest Milestone Index",
-                        status.latestMilestoneIndex ? status.latestMilestoneIndex.toString() : "Unknown");
+                    .addField("Latest Milestone Index", status.latestMilestoneIndex ?? "Unknown");
 
                 if (health) {
                     embed.addField("Health", health);
@@ -477,7 +475,7 @@ export class App {
                 embed.addField("Value Migrated", cur);
             }
 
-            embed.addField("Addresses Migrated", totalAddresses.toString());
+            embed.addField("Addresses Migrated", totalAddresses);
         }
         return embed;
     }
