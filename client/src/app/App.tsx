@@ -2,6 +2,7 @@ import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { ReactComponent as CurrencyConverterIcon } from "../assets/currency-converter.svg";
 import { ReactComponent as ExplorerIcon } from "../assets/explorer.svg";
+import { ReactComponent as IdentityIcon } from "../assets/identity-icon.svg";
 import { ReactComponent as MarketsIcon } from "../assets/markets.svg";
 import { ReactComponent as StreamsIcon } from "../assets/streams.svg";
 import { ReactComponent as VisualizerIcon } from "../assets/visualizer.svg";
@@ -25,6 +26,8 @@ import { MessageRouteProps } from "./routes/chrysalis/MessageRouteProps";
 import Milestone from "./routes/chrysalis/Milestone";
 import { MilestoneRouteProps } from "./routes/chrysalis/MilestoneRouteProps";
 import CurrencyConverter from "./routes/CurrencyConverter";
+import IdentityResolver from "./routes/IdentityResolver";
+import { IdentityResolverProps } from "./routes/IdentityResolverProps";
 import Landing from "./routes/Landing";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
@@ -96,13 +99,21 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                 }))}
                 value={this.state.networkId}
                 onChange={value => {
-                    this.props.history.push(
-                        this.props.match.params.action === "streams"
-                            ? `/${value}/streams/0/`
-                            : (this.props.match.params.action === "visualizer"
-                                ? `/${value}/visualizer/`
-                                : `/${value}`)
-                    );
+                    let path = `/${value}`;
+
+                    if (this.props.match.params.action === "streams") {
+                        path = `/${value}/streams/0/`;
+                    }
+
+                    if (this.props.match.params.action === "visualizer") {
+                        path = `/${value}/visualizer/`;
+                    }
+
+                    if (this.props.match.params.action === "identity-resolver") {
+                        path = `/${value}/identity-resolver/`;
+                    }
+
+                    this.props.history.push(path);
                 }}
             />
         );
@@ -119,6 +130,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                         switcher}
                     search={this.props.match.params.action &&
                         this.props.match.params.action !== "streams" &&
+                        this.props.match.params.action !== "identity-resolver" &&
                         this.props.match.params.action !== "visualizer" &&
                         this.props.match.params.action !== "markets" &&
                         this.props.match.params.action !== "currency-converter" && (
@@ -128,33 +140,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                 protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
                             />
                         )}
-                    tools={this.state.networks.length > 0 ? [
-                        {
-                            label: "Explorer",
-                            url: `/${this.state.networkId}/`,
-                            icon: <ExplorerIcon />
-                        },
-                        {
-                            label: "Streams v0",
-                            url: `/${this.state.networkId}/streams/0/`,
-                            icon: <StreamsIcon />
-                        },
-                        {
-                            label: "Visualizer",
-                            url: `/${this.state.networkId}/visualizer/`,
-                            icon: <VisualizerIcon />
-                        },
-                        {
-                            label: "Markets",
-                            url: `/${this.state.networkId}/markets/`,
-                            icon: <MarketsIcon />
-                        },
-                        {
-                            label: "Currency Converter",
-                            url: `/${this.state.networkId}/currency-converter/`,
-                            icon: <CurrencyConverterIcon />
-                        }
-                    ] : []}
+                    tools={this.getTools()}
                 />
                 <div className="content">
                     {this.state.networks.length > 0
@@ -183,6 +169,13 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                                 component={() =>
                                                 (
                                                     <CurrencyConverter />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/identity-resolver/:did?"
+                                                component={(props: RouteComponentProps<IdentityResolverProps>) =>
+                                                (
+                                                    <IdentityResolver {...props} />
                                                 )}
                                             />
                                             <Route
@@ -306,39 +299,107 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                         )}
                 </div>
                 <Footer
-                    dynamic={
-                        this.state.networks.length > 0 ? this.state.networks
-                            .filter(network => network.isEnabled)
-                            .map(n => ({
-                                label: n.label,
-                                url: n.network
-                            }))
-                            .concat({
-                                label: "Streams v0",
-                                url: `${this.state.networkId}/streams/0/`
-                            })
-                            .concat({
-                                label: "Visualizer",
-                                url: `${this.state.networkId}/visualizer/`
-                            })
-                            .concat({
-                                label: "Markets",
-                                url: `${this.state.networkId}/markets/`
-                            })
-                            .concat({
-                                label: "Currency Converter",
-                                url: `${this.state.networkId}/currency-converter/`
-                            }) : [
-                                {
-                                    label: "Maintenance Mode",
-                                    url: ""
-                                }
-                            ]
-                    }
+                    dynamic={this.getFooterItems()}
                 />
                 <Disclaimer />
             </div>
         );
+    }
+
+
+    /**
+     * create a tools list. Excludes Identity Resolver if network is not supported.
+     * @returns array of tools
+     */
+    private getTools() {
+        let tools: {label: string; url: string; icon: JSX.Element}[] = [];
+
+        if (this.state.networks.length > 0) {
+            tools = [
+            {
+                label: "Explorer",
+                url: `/${this.state.networkId}/`,
+                icon: <ExplorerIcon />
+            },
+            {
+                label: "Streams v0",
+                url: `/${this.state.networkId}/streams/0/`,
+                icon: <StreamsIcon />
+            },
+            {
+                label: "Visualizer",
+                url: `/${this.state.networkId}/visualizer/`,
+                icon: <VisualizerIcon />
+            },
+            {
+                label: "Markets",
+                url: `/${this.state.networkId}/markets/`,
+                icon: <MarketsIcon />
+            },
+            {
+                label: "Currency Converter",
+                url: `/${this.state.networkId}/currency-converter/`,
+                icon: <CurrencyConverterIcon />
+            }
+        ];
+
+        if (this.state.networkConfig?.protocolVersion === "chrysalis") {
+            tools.push(
+            {
+                label: "Identity Resolver",
+                url: `/${this.state.networkId}/identity-resolver/`,
+                icon: <IdentityIcon />
+            });
+        }
+        }
+        return tools;
+    }
+
+    /**
+     * Creates footer items. Excludes the Identity Resolver if the network is not supported.
+     * @returns Array of footer items
+     */
+    private getFooterItems() {
+        if (this.state.networks.length > 0) {
+            const footerArray = this.state.networks
+                .filter(network => network.isEnabled)
+                .map(n => ({
+                    label: n.label,
+                    url: n.network
+                }))
+                .concat({
+                    label: "Streams v0",
+                    url: `${this.state.networkId}/streams/0/`
+                })
+                .concat({
+                    label: "Visualizer",
+                    url: `${this.state.networkId}/visualizer/`
+                })
+                .concat({
+                    label: "Markets",
+                    url: `${this.state.networkId}/markets/`
+                })
+                .concat({
+                    label: "Currency Converter",
+                    url: `${this.state.networkId}/currency-converter/`
+                });
+
+                if (this.state.networkConfig?.protocolVersion === "chrysalis") {
+                    footerArray.push({
+                        label: "Identity Resolver",
+                        url: `${this.state.networkId}/identity-resolver/`
+                    });
+                }
+
+                return footerArray;
+        }
+
+        return [
+            {
+                label: "Maintenance Mode",
+                url: ""
+            }
+        ];
     }
 
     /**
@@ -354,12 +415,13 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
         }
         const hasChanged = network !== this.state.networkId;
         if (hasChanged) {
+            const config = this.state.networks.find(n => n.network === network);
             this.setState(
                 {
-                    networkId: network ?? ""
+                    networkId: network ?? "",
+                    networkConfig: config
                 },
                 () => {
-                    const config = this.state.networks.find(n => n.network === network);
                     if (config?.primaryColor && config.secondaryColor) {
                         PaletteHelper.setPalette(config.primaryColor, config.secondaryColor);
                     }

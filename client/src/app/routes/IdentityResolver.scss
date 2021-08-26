@@ -1,0 +1,146 @@
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+
+.identity {
+  display: flex;
+  flex-direction: column;
+
+  .identity-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
+
+    h1 {
+      margin: 0 0 0 10px !important;
+    }
+  }
+
+  .did-error {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: 300px;
+
+    p {
+      color: $danger !important;
+      text-align: center;
+    }
+  }
+
+  .example-did {
+    display: inline-block;
+    margin: 15px 0 !important;
+    padding: 8px 15px;
+    border-radius: 20px;
+    background-color: $white;
+    box-shadow: $box-shadow;
+
+    p {
+      color: $gray-header !important;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+
+    .inner {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      max-width: $desktop-width;
+      margin: 40px 20px;
+
+      @include desktop-down {
+        max-width: 100%;
+        padding-right: 20px;
+        padding-left: 20px;
+
+        > .row {
+          flex-direction: column;
+        }
+      }
+
+      @include phone-down {
+        padding-right: 0;
+        padding-left: 0;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      p {
+        @include font-size(12px);
+
+        color: $gray-10;
+        font-family: $metropolis;
+        font-weight: bold;
+      }
+
+      .status {
+        @include font-size(14px);
+      }
+
+      .cards {
+        flex: 1;
+        margin-right: 24px;
+
+        @include phone-down {
+          margin-right: unset;
+        }
+
+        .item-details {
+          @include font-size(14px);
+
+          font-family: $metropolis;
+
+          .item-details-root {
+            word-break: break-all;
+          }
+        }
+      }
+    }
+  }
+
+  .identity-json-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px;
+    background-color: $gray-light;
+
+    a {
+      color: $gray;
+    }
+  }
+
+  .tool-description {
+    margin: 30px 0;
+    color: $gray !important;
+    font-size: 1em !important;
+    line-height: 1.6;
+  }
+
+  .search-compact {
+    width: 40%;
+    margin: 13px 0 30px 0;
+
+    @include desktop-down {
+      width: 100%;
+    }
+
+    @include phone-down {
+      width: 100%;
+    }
+  }
+}
