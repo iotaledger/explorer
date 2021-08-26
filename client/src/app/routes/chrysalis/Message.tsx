@@ -175,7 +175,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         <div className="section--label">
                                             Message ID
                                         </div>
-                                        <div className="section--value section--value__code row middle">
+                                        <div className="section--value section--value__code featured row middle">
                                             <span className="margin-r-t">
                                                 {this.state.actualMessageId}
                                             </span>

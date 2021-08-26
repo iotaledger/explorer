@@ -7,6 +7,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
 
+
 /**
  * Component which will display a milestone payload.
  */
@@ -50,20 +51,50 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
     public render(): ReactNode {
         return (
             <div className="milestone-payload">
-                <div className="card--header">
+                <div className="section--header section--header__space-between">
                     <h2>Milestone Payload</h2>
+                    {(this.state.hasPrevious || this.state.hasNext) && (
+                        <div className="row middle">
+                            <button
+                                disabled={!this.state.hasPrevious}
+                                type="button"
+                                onClick={async () =>
+                                    this.loadIndex(this.state.previousIndex.toString(), true)}
+                                className="section--action margin-r-t"
+                            >
+                                <span>Previous</span>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14 18L8 12L14 6" stroke="#293858" strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+
+                            </button>
+                            <button
+                                disabled={!this.state.hasNext}
+                                type="button"
+                                onClick={async () =>
+                                    this.loadIndex(this.state.nextIndex.toString(), true)}
+                                className="section--action margin-r-t"
+                            >
+                                <span>Next</span>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 18L16 12L10 6" stroke="#293858" strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+
+                            </button>
+                        </div>
+                    )}
                 </div>
-                <div className="card--content">
-                    <div className="card--label">
+                <div className="section--content max-w-55">
+                    <div className="section--label">
                         Index
                     </div>
-                    <div className="card--value">
+                    <div className="section--value">
                         {this.props.payload.index}
                     </div>
-                    <div className="card--label">
+                    <div className="section--label">
                         Date
                     </div>
-                    <div className="card--value">
+                    <div className="section--value">
                         {this.props.payload.timestamp && DateHelper.format(
                             DateHelper.milliseconds(
                                 this.props.payload.timestamp
@@ -72,34 +103,34 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                     </div>
                     {this.props.advancedMode && (
                         <React.Fragment>
-                            <div className="card--label">
+                            <div className="section--label">
                                 Inclusion Merkle Proof
                             </div>
-                            <div className="card--value">
+                            <div className="section--value section--value__code">
                                 {this.props.payload.inclusionMerkleProof}
                             </div>
                             {this.props.payload.nextPoWScore !== 0 && this.props.payload.nextPoWScoreMilestoneIndex !== 0 && (
                                 <React.Fragment>
-                                    <div className="card--label">
+                                    <div className="section--label">
                                         Next PoW Score
                                     </div>
-                                    <div className="card--value">
+                                    <div className="section--value section--value__code">
                                         {this.props.payload.nextPoWScore}
                                     </div>
-                                    <div className="card--label">
+                                    <div className="section--label">
                                         Next PoW Score Milestone Index
                                     </div>
-                                    <div className="card--value">
+                                    <div className="section--value section--value__code">
                                         {this.props.payload.nextPoWScoreMilestoneIndex}
                                     </div>
                                 </React.Fragment>
                             )}
                             {this.props.payload.publicKeys && (
                                 <React.Fragment>
-                                    <div className="card--label">
+                                    <div className="section--label">
                                         Public Keys
                                     </div>
-                                    <div className="card--value">
+                                    <div className="section--value section--value__code">
                                         {this.props.payload.publicKeys?.map(pubKey => (
                                             <div key={pubKey} className="margin-b-s">
                                                 {pubKey}
@@ -108,43 +139,16 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                     </div>
                                 </React.Fragment>
                             )}
-                            <div className="card--label">
+                            <div className="section--label">
                                 Signatures
                             </div>
-                            <div className="card--value">
+                            <div className="section--value section--value__code">
                                 {this.props.payload.signatures.map(sig => (
                                     <div key={sig} className="margin-b-s">
                                         {sig}
                                     </div>
                                 ))}
                             </div>
-                            {(this.state.hasPrevious || this.state.hasNext) && (
-                                <React.Fragment>
-                                    <div className="card--label">
-                                        Actions
-                                    </div>
-                                    <div className="row middle">
-                                        <button
-                                            disabled={!this.state.hasPrevious}
-                                            type="button"
-                                            onClick={async () =>
-                                                this.loadIndex(this.state.previousIndex.toString(), true)}
-                                            className="card--action margin-r-t"
-                                        >
-                                            Previous Milestone
-                                        </button>
-                                        <button
-                                            disabled={!this.state.hasNext}
-                                            type="button"
-                                            onClick={async () =>
-                                                this.loadIndex(this.state.nextIndex.toString(), true)}
-                                            className="card--action margin-r-t"
-                                        >
-                                            Next Milestone
-                                        </button>
-                                    </div>
-                                </React.Fragment>
-                            )}
                         </React.Fragment>
                     )}
                 </div>
