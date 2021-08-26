@@ -211,6 +211,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             {this.state.message?.payload?.type === 0 && ("Transaction")}
                                             {this.state.message?.payload?.type === 1 && ("Milestone")}
                                             {this.state.message?.payload?.type === 2 && ("Index")}
+                                            {this.state.message?.payload?.type === undefined && ("No Payload")}
                                         </div>
                                         {this.state.advancedMode && (
                                             <React.Fragment>
