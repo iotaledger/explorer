@@ -4,11 +4,13 @@ import IdentityMsgStatusIcon from "./IdentityMsgStatusIcon";
 import "./IdentityMsgIdOverview.scss";
 
 export default class IdentityMessageIdOverview extends Component<IdentityMsgIdOverviewProps> {
+    private readonly EMPTY_MESSAGE_ID = "0".repeat(64);
+
     public render(): ReactNode {
         return (
             <div>
                 {this.props.messageId !== undefined &&
-                    this.props.messageId !== "0000000000000000000000000000000000000000000000000000000000000000" && (
+                    this.props.messageId !== this.EMPTY_MESSAGE_ID && (
                         <div
                             className="msg-id-overview pointer"
                             onClick={() => {
@@ -20,7 +22,7 @@ export default class IdentityMessageIdOverview extends Component<IdentityMsgIdOv
                         </div>
                     )}
 
-                {this.props.messageId === "0000000000000000000000000000000000000000000000000000000000000000" && (
+                {this.props.messageId === this.EMPTY_MESSAGE_ID && (
                     <div
                         className="msg-id-overview"
                     >

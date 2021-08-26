@@ -110,7 +110,7 @@ export interface INetwork {
     order: number;
 
     /**
-     * 
+     * An optional Example for a DID for the Identity tool
      */
     didExample?: string;
 }

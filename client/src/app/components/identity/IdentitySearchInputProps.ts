@@ -2,9 +2,9 @@ export interface IdentitySearchInputProps {
     network: string;
 
     /**
-     * the default input value
+     * show in compact mode
      */
-    did?: string;
+    compact: boolean;
 
     /**
      * Show in compact mode.

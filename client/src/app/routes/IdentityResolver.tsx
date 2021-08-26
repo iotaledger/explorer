@@ -40,7 +40,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
         this.state = {
-            identityResolved: false,
+            isIdentityResolved: false,
             resolvedIdentity: undefined,
             did: props.match.params.did,
             error: false,
@@ -81,7 +81,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
 
         this.setState({
             resolvedIdentity: res,
-            identityResolved: true
+            isIdentityResolved: true
         });
 
         await this.updateMessageDetails(res.messageId ?? "");
@@ -133,7 +133,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                     <div className="card--label form-label-width">DID</div>
                                                     <IdentitySearchInput
                                                         compact={false}
-                                                        onSearch={(e) => {
+                                                        onSearch={e => {
                                                             this.props.history.push(e);
                                                         }}
                                                         network={this.props.match.params.network}
@@ -166,9 +166,8 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                             </div>
                                             <div className="search-compact">
                                                 <IdentitySearchInput
-                                                    did=""
                                                     compact={true}
-                                                    onSearch={(e) => {
+                                                    onSearch={e => {
                                                         this.props.history.push(e);
                                                     }}
                                                     network={this.props.match.params.network}
@@ -245,7 +244,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                             </div>
                                             <div className="card--content">
                                                 <div className="row middle margin-b-s row--tablet-responsive">
-                                                    {!this.state.identityResolved && !this.state.error && (
+                                                    {!this.state.isIdentityResolved && !this.state.error && (
                                                         <React.Fragment>
                                                             <h3 className="margin-r-s">Resolving DID ...</h3>
                                                             <Spinner />
@@ -364,7 +363,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networks = networkService.networks();
 
-        const network = networks.find((n) => n.network === this.props.match.params.network);
+        const network = networks.find(n => n.network === this.props.match.params.network);
 
         this.setState({
             didExample: network?.didExample

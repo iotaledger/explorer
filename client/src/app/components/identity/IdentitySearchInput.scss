@@ -4,89 +4,94 @@
 @import "../../../scss/variables";
 
 .identity-search-input {
-    width: 100%;
-    div {
-        display: flex;
-        flex: 1;
-        flex-direction: row;
-        margin: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  width: 100%;
+  margin: 0;
+  backdrop-filter: blur(1px);
 
-        backdrop-filter: blur(1px);
+  .identity-search--text-input {
+    @include font-size(14px);
 
-        .identity-search--text-input {
-            @include font-size(14px);
+    flex: 1;
+    height: 48px;
+    padding: 0 24px;
+    border: 1px solid $input-border;
+    border-radius: 6px 0 0 6px;
+    color: $gray-10;
+    font-family: $inter;
 
-            flex: 1;
-            height: 48px;
-            padding: 0 24px;
-            border: 1px solid $input-border;
-            border-radius: 6px 0 0 6px;
-            color: $gray-10;
-            font-family: $inter;
+    @include phone-down {
+      @include font-size(12px);
 
-            @include phone-down {
-                @include font-size(12px);
-
-                height: 32px;
-                padding: 0 12px;
-            }
-        }
-
-        .identity-search--button {
-            @include font-size(14px);
-
-            text-align: center;
-            width: 117px;
-            border: 2px solid $main-green-highlight;
-            border-radius: 0 6px 6px 0;
-            background-color: $main-green-highlight;
-            color: $white;
-            font-family: $inter;
-            font-weight: bold;
-            cursor: pointer;
-
-            @include phone-down {
-                @include font-size(12px);
-
-                width: 64px;
-            }
-
-            &:focus {
-                box-shadow: 0 0 3px 0 $white;
-            }
-
-            &:disabled {
-                opacity: 0.5;
-
-                @include phone-down {
-                    opacity: 0.5;
-                }
-            }
-        }
-
-        .identity-search--button:hover {
-            color: $white;
-        }
-
+      height: 32px;
+      padding: 0 12px;
     }
-    &.identity-search-input--compact {
+  }
 
-        .identity-search--text-input {
-            @include font-size(12px);
+  .identity-search--button {
+    @include font-size(14px);
 
-            height: 38px;
-            padding: 0 12px;
-        }
+    width: 117px;
+    border: 2px solid $main-green-highlight;
+    border-radius: 0 6px 6px 0;
+    background-color: $main-green-highlight;
+    color: $white;
+    font-family: $inter;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
 
-        .identity-search--button {
-            @include font-size(12px);
-            width: 38px;
-        }
+    @include phone-down {
+      @include font-size(12px);
+
+      width: 64px;
     }
+
+    &:focus {
+      box-shadow: 0 0 3px 0 $white;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+
+      @include phone-down {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .identity-search--button:hover {
+    color: $white;
+  }
+
+  p {
+    position: absolute;
+    top: 45px;
+    margin: 10px 0 !important;
+    color: $warning !important;
+  }
+
+  &.identity-search-input--compact {
+    .identity-search--text-input {
+      @include font-size(12px);
+
+      height: 38px;
+      padding: 0 12px;
+    }
+
+    .identity-search--button {
+      @include font-size(12px);
+
+      width: 38px;
+    }
+
     p {
-        position: absolute;
-        margin: 10px 0px !important;
-        color: $warning !important;
+      position: absolute;
+      top: 35px;
+      margin: 10px 0 !important;
+      color: $warning !important;
     }
-
+  }
 }

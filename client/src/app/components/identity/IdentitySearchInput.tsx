@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
+import { FaSearch } from "react-icons/fa";
 import AsyncComponent from "../AsyncComponent";
 import "./IdentitySearchInput.scss";
 import { IdentitySearchInputProps } from "./IdentitySearchInputProps";
 import { IdentitySearchInputState } from "./IdentitySearchInputState";
-import { FaSearch } from "react-icons/fa";
 
 /**
  * Component which will show the search input page.
@@ -18,8 +18,8 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
         super(props);
 
         this.state = {
-            did: this.props.did ?? "",
-            isValid: this.isValid(this.props.did),
+            did: "",
+            isValid: false,
             networkMismatch: false
         };
     }
@@ -35,31 +35,28 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
                     "identity-search-input--compact": this.props.compact
                 })}
             >
-                <div>
-                    <input
-                        autoFocus={!this.props.compact}
-                        className="identity-search--text-input"
-                        type="text"
-                        value={this.state.did}
-                        placeholder={this.props.compact ? "Search DID" : ""}
-                        onChange={(e) =>
-                            this.setState({
-                                did: e.target.value,
-                                isValid: this.isValid(e.target.value),
-                                networkMismatch: this.didContainsWrongNetwork(e.target.value, this.props.network)
-                            })
-                        }
-                    />
+                <input
+                    autoFocus={!this.props.compact}
+                    className="identity-search--text-input"
+                    type="text"
+                    value={this.state.did}
+                    placeholder={this.props.compact ? "Search DID" : ""}
+                    onChange={e =>
+                        this.setState({
+                            did: e.target.value,
+                            isValid: this.isValid(e.target.value),
+                            networkMismatch: this.didContainsWrongNetwork(e.target.value, this.props.network)
+                        })}
+                />
 
-                    <button
-                        className="identity-search--button"
-                        type="submit"
-                        onClick={() => this.doSearch()}
-                        disabled={!this.state.isValid}
-                    >
-                        {this.props.compact ? <FaSearch /> : "Search"}
-                    </button>
-                </div>
+                <button
+                    className="identity-search--button"
+                    type="submit"
+                    onClick={() => this.doSearch()}
+                    disabled={!this.state.isValid}
+                >
+                    {this.props.compact ? <FaSearch /> : "Search"}
+                </button>
                 {this.state.networkMismatch && <p>Selected Network may not match DID Network</p>}
             </div>
         );

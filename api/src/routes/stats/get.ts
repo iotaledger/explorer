@@ -16,20 +16,17 @@ export async function get(
     config: IConfiguration,
     request: IStatsGetRequest
 ): Promise<IStatsGetResponse> {
-    if (request.network === "chrysalis") {
-        request.network = "mainnet";
-    }
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
 
     const statsService = ServiceFactory.get<IStatsService>(`stats-${request.network}`);
 
-    const stats = statsService.getStats();
+    const stats = statsService?.getStats();
     let itemsPerSecondHistory;
 
     if (request.includeHistory) {
-        itemsPerSecondHistory = statsService.getItemsPerSecondHistory();
+        itemsPerSecondHistory = statsService?.getItemsPerSecondHistory();
     }
 
     if (stats) {
