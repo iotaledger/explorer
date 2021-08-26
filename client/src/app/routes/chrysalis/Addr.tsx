@@ -10,12 +10,8 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import Output from "../../components/chrysalis/Output";
-import CurrencyButton from "../../components/CurrencyButton";
 import MessageButton from "../../components/MessageButton";
-import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
-import ToolsPanel from "../../components/ToolsPanel";
-import ValueButton from "../../components/ValueButton";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState } from "./AddrState";
@@ -133,8 +129,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                             this.setState({
                                 historicOutputs,
                                 status: `Loading ${this.state.advancedMode
-                                    ? "Historic Outputs" : "Historic Balances"} [${
-                                        historicOutputs.length}/${result.historicAddressOutputIds.length}]`
+                                    ? "Historic Outputs" : "Historic Balances"} [${historicOutputs.length}/${result.historicAddressOutputIds.length}]`
                             });
                         }
 
@@ -144,12 +139,39 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                     }
                 }
 
+                const historicTransactions = [];
+                if (this.state.outputs) {
+                    for (const output of this.state.outputs) {
+                        const msgResult = await this._tangleCacheService.messageDetails(
+                            this.props.match.params.network, output.messageId);
+
+                        if (msgResult) {
+                            historicTransactions.push(msgResult);
+                            console.log("historicTransactions", historicTransactions);
+
+                        }
+
+                        if (!this._isMounted) {
+                            break;
+                        }
+                    }
+                    // historicTransactions = this.state.outputs.map((output) => {
+                    //     return {
+                    //         id: output.messageId
+                    //     }
+                    // })
+                }
+
                 this.setState({
                     outputs,
                     historicOutputs,
                     status: "",
                     statusBusy: false
                 });
+
+
+                // console.log("historicTransactions", historicTransactions);
+                console.log("outputs", outputs);
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
@@ -165,23 +187,43 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             <div className="addr">
                 <div className="wrapper">
                     <div className="inner">
-                        <h1>
-                            Address
-                        </h1>
-                        <div className="row top">
-                            <div className="cards">
-                                <div className="card">
-                                    <div className="card--header card--header__space-between">
+                        <div className="addr--header">
+                            <h1>
+                                Address
+                            </h1>
+                            <div className="addr--header__switch">
+                                <span>Advanced View</span>
+                                <label className="switch">
+                                    <input
+                                        type="checkbox"
+                                        className="margin-l-t"
+                                        checked={this.state.advancedMode}
+                                        onChange={e => this.setState(
+                                            {
+                                                advancedMode: e.target.checked
+                                            },
+                                            () => this._settingsService.saveSingle(
+                                                "advancedMode",
+                                                this.state.advancedMode))}
+                                    />
+                                    <span className="slider round" />
+                                </label>
+                            </div>
+                        </div>
+                        <div className="top">
+                            <div className="sections">
+                                <div className="section">
+                                    <div className="section--header">
                                         <h2>
                                             General
                                         </h2>
                                     </div>
-                                    <div className="card--content">
+                                    <div className="section--content">
                                         <Bech32Address
                                             addressDetails={this.state.bech32AddressDetails}
                                             advancedMode={this.state.advancedMode}
                                         />
-                                        {this.state.balance !== undefined && this.state.balance !== 0 && (
+                                        {/* {this.state.balance !== undefined && this.state.balance !== 0 && (
                                             <div className="row fill margin-t-s margin-b-s value-buttons">
                                                 <div className="col">
                                                     <ValueButton value={this.state.balance ?? 0} label="Balance" />
@@ -193,14 +235,24 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     />
                                                 </div>
                                             </div>
-                                        )}
+                                        )} */}
                                         {this.state.balance !== undefined && this.state.balance === 0 && (
                                             <div>
-                                                <div className="card--label">
+                                                <div className="section--label">
                                                     Balance
                                                 </div>
-                                                <div className="card--value">
+                                                <div className="section--value">
                                                     0
+                                                </div>
+                                            </div>
+                                        )}
+                                        {this.state.balance !== undefined && this.state.balance !== 0 && (
+                                            <div>
+                                                <div className="section--label">
+                                                    Balance
+                                                </div>
+                                                <div className="section--value">
+                                                    {this.state.balance} i
                                                 </div>
                                             </div>
                                         )}
@@ -397,29 +449,43 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             </div>
                                         </div>
                                     )}
-                            </div>
-                            <div className="side-panel-container">
-                                <SidePanel {...this.props} />
-                                <ToolsPanel>
-                                    <div className="card--section">
-                                        <div className="card--label margin-t-t">
-                                            <span>Advanced View</span>
-                                            <input
-                                                type="checkbox"
-                                                checked={this.state.advancedMode}
-                                                className="margin-l-t"
-                                                onChange={e => this.setState(
-                                                    {
-                                                        advancedMode: e.target.checked
-                                                    },
-                                                    () => this._settingsService.saveSingle(
-                                                        "advancedMode",
-                                                        this.state.advancedMode))}
-                                            />
-                                        </div>
+                                <div className="section">
+                                    <div className="section--header">
+                                        <h2>
+                                            Transaction History
+                                        </h2>
                                     </div>
-                                </ToolsPanel>
+                                    <div className="section--grid grid-col-6">
+                                        <div className="section--label">Message Id</div>
+                                        <div className="section--label">Date</div>
+                                        <div className="section--label">Inputs</div>
+                                        <div className="section--label">Outputs</div>
+                                        <div className="section--label">Status</div>
+                                        <div className="section--label">Amount</div>
+                                        {this.state.outputs?.map(output => (
+                                            <React.Fragment key={output.messageId}>
+                                                <div
+                                                    className="section--value"
+                                                >
+                                                    {output.messageId}
+                                                </div>
+                                                <div
+                                                    className="section--value"
+                                                >
+                                                    {new Date().toString()}
+                                                </div>
+                                                <div
+                                                    className="section--value"
+                                                >
+                                                    Outputs:{ }
+                                                </div>
+                                            </React.Fragment>
+
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

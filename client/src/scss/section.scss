@@ -112,6 +112,14 @@
     }
   }
 
+  .section--grid {
+    display: grid;
+
+    &.grid-col-6 {
+      grid-template-columns: 30% 20% 10% 10% 15% 15%;
+    }
+  }
+
   .section--header-count {
     @include font-size(12px);
 
