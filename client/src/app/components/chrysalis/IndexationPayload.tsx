@@ -59,12 +59,15 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                         <span className="margin-r-t">Index</span>
                     </div>
                     <DataToggle options={[{ label: "Text", content: this.state.utf8Index, link: `/${this.props.network}/indexed/${this.props.payload.index}` }, { label: "HEX", content: this.state.hexIndex }]} />
-                    <div className="section--label row middle">
-                        <span className="margin-r-t">Data</span>
-                    </div>
-                    <DataToggle
-                        options={[{ label: "Text", content: this.state.jsonData ? this.state.jsonData : this.state.utf8Data, isJson: this.state.jsonData !== undefined }, { label: "HEX", content: this.state.hexData }]}
-                    />
+                    {(this.state.jsonData || this.state.utf8Data) && (
+                        <React.Fragment>
+                            <div className="section--label row middle">
+                                <span className="margin-r-t">Data</span>
+                            </div>
+                            <DataToggle
+                                options={[{ label: "Text", content: this.state.jsonData ? this.state.jsonData : this.state.utf8Data, isJson: this.state.jsonData !== undefined }, { label: "HEX", content: this.state.hexData }]}
+                            />
+                        </React.Fragment>)}
                 </div>
             </div>
         );

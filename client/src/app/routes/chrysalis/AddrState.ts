@@ -1,4 +1,4 @@
-import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
+import { IAddressResponse, IMessage, IOutputResponse } from "@iota/iota.js";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 
 export interface AddrState {
@@ -37,6 +37,8 @@ export interface AddrState {
      */
     outputs?: IOutputResponse[];
 
+
+
     /**
      * The historic output ids for the address.
      */
@@ -56,4 +58,13 @@ export interface AddrState {
      * Format the amount in full.
      */
     formatFull: boolean;
+
+    historicTransactions?: {
+        messageId: string;
+        inputs: number;
+        outputs: number;
+        date: string;
+        status: string;
+        amount: string;
+    }[];
 }

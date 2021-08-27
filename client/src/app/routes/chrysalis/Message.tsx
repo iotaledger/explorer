@@ -58,7 +58,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
             advancedMode: this._settingsService.get().advancedMode ?? false
         };
     }
-
     /**
      * The component mounted.
      */
