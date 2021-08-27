@@ -10,6 +10,10 @@
   border-bottom: 1px solid $gray-3;
   padding: 25px 0px 16px 0;
 
+  & .section {
+    border-bottom: 0;
+  }
+
   &.section__secondary {
     background-color: #fcfcfc;
   }
