@@ -10,6 +10,7 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import Output from "../../components/chrysalis/Output";
+import TransactionHistory from "../../components/chrysalis/TransactionHistory";
 import MessageButton from "../../components/MessageButton";
 import Spinner from "../../components/Spinner";
 import "./Addr.scss";
@@ -74,6 +75,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
         const result = await this._tangleCacheService.search(
             this.props.match.params.network, this.props.match.params.address);
+        console.log("result", result)
 
         if (result?.address) {
             window.scrollTo({
@@ -138,40 +140,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                         }
                     }
                 }
-
-                const historicTransactions = [];
-                if (this.state.outputs) {
-                    for (const output of this.state.outputs) {
-                        const msgResult = await this._tangleCacheService.messageDetails(
-                            this.props.match.params.network, output.messageId);
-
-                        if (msgResult) {
-                            historicTransactions.push(msgResult);
-                            console.log("historicTransactions", historicTransactions);
-
-                        }
-
-                        if (!this._isMounted) {
-                            break;
-                        }
-                    }
-                    // historicTransactions = this.state.outputs.map((output) => {
-                    //     return {
-                    //         id: output.messageId
-                    //     }
-                    // })
-                }
-
                 this.setState({
                     outputs,
                     historicOutputs,
                     status: "",
                     statusBusy: false
                 });
-
-
-                // console.log("historicTransactions", historicTransactions);
-                console.log("outputs", outputs);
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
@@ -449,47 +423,17 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             </div>
                                         </div>
                                     )}
-                                <div className="section">
-                                    <div className="section--header">
-                                        <h2>
-                                            Transaction History
-                                        </h2>
-                                    </div>
-                                    <div className="section--grid grid-col-6">
-                                        <div className="section--label">Message Id</div>
-                                        <div className="section--label">Date</div>
-                                        <div className="section--label">Inputs</div>
-                                        <div className="section--label">Outputs</div>
-                                        <div className="section--label">Status</div>
-                                        <div className="section--label">Amount</div>
-                                        {this.state.outputs?.map(output => (
-                                            <React.Fragment key={output.messageId}>
-                                                <div
-                                                    className="section--value"
-                                                >
-                                                    {output.messageId}
-                                                </div>
-                                                <div
-                                                    className="section--value"
-                                                >
-                                                    {new Date().toString()}
-                                                </div>
-                                                <div
-                                                    className="section--value"
-                                                >
-                                                    Outputs:{ }
-                                                </div>
-                                            </React.Fragment>
-
-                                        ))}
-                                    </div>
-                                </div>
+                                {this.state.outputs && (
+                                    <TransactionHistory
+                                        network={this.props.match.params.network}
+                                        outputs={this.state.outputs}
+                                    />
+                                )}
                             </div>
-
                         </div>
                     </div>
                 </div>
-            </div >
+            </div>
         );
     }
 }
