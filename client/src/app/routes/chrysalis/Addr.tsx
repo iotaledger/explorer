@@ -12,6 +12,7 @@ import Bech32Address from "../../components/chrysalis/Bech32Address";
 import Output from "../../components/chrysalis/Output";
 import MessageButton from "../../components/MessageButton";
 import Spinner from "../../components/Spinner";
+import Transaction from "./../../components/chrysalis/Transaction";
 import { DateHelper } from "./../../../helpers/dateHelper";
 import { MessageTangleStatus } from "./../../../models/messageTangleStatus";
 import "./Addr.scss";
@@ -187,7 +188,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      * @returns The node to render.
      */
     public render(): ReactNode {
-        console.log("transactions", this.state.transactions);
         return (
             <div className="addr">
                 <div className="wrapper">
@@ -281,7 +281,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </div>
                                     </div>
                                 )}
-                                {this.state.advancedMode &&
+                                {/* {this.state.advancedMode &&
                                     this.state.outputs &&
                                     this.state.outputIds &&
                                     this.state.outputs.length > 0 &&
@@ -297,8 +297,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 advancedMode={this.state.advancedMode}
                                             />
                                         </div>
-                                    ))}
-                                {!this.state.advancedMode &&
+                                    ))} */}
+                                {/* {!this.state.advancedMode &&
                                     this.state.outputs &&
                                     this.state.outputIds &&
                                     this.state.outputs.length > 0 && (
@@ -363,8 +363,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 ))}
                                             </div>
                                         </div>
-                                    )}
-                                {this.state.advancedMode &&
+                                    )} */}
+                                {/* {this.state.advancedMode &&
                                     this.state.historicOutputs &&
                                     this.state.historicOutputIds &&
                                     this.state.historicOutputs.length > 0 && (
@@ -387,8 +387,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </div>
                                             ))}
                                         </React.Fragment>
-                                    )}
-                                {!this.state.advancedMode &&
+                                    )} */}
+                                {/* {!this.state.advancedMode &&
                                     this.state.historicOutputs &&
                                     this.state.historicOutputIds &&
                                     this.state.historicOutputs.length > 0 && (
@@ -453,7 +453,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 ))}
                                             </div>
                                         </div>
-                                    )}
+                                    )} */}
                                 {this.state.transactions && (
                                     <div className="section">
                                         <div className="section--header">
@@ -471,26 +471,32 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <th>Amount</th>
                                             </tr>
                                             {
-                                                this.state.transactions?.map(tx =>
+                                                this.state.outputs?.map(output =>
                                                 (
-                                                    <tr key={tx.messageId}>
-                                                        <td className="section--value section--value__code featured">
-                                                            <Link
-                                                                to={
-                                                                    `/${this.props.match.params.network
-                                                                    }/message/${tx.messageId}`
-                                                                }
-                                                                className="margin-r-t"
-                                                            >
-                                                                {tx.messageId.slice(0, 7)}...{tx.messageId.slice(-7)}
-                                                            </Link>
-                                                        </td>
-                                                        <td className="">{tx.timestamp}</td>
-                                                        <td className="text-right">{tx.inputs}</td>
-                                                        <td className="text-right">{tx.outputs}</td>
-                                                        <td className="">{tx.messageTangleStatus}</td>
-                                                        <td className="">{UnitsHelper.formatBest(tx.amount)}</td>
-                                                    </tr>
+                                                    // <tr key={tx.messageId}>
+                                                    //     <td className="section--value section--value__code featured">
+                                                    //         <Link
+                                                    //             to={
+                                                    //                 `/${this.props.match.params.network
+                                                    //                 }/message/${tx.messageId}`
+                                                    //             }
+                                                    //             className="margin-r-t"
+                                                    //         >
+                                                    //             {tx.messageId.slice(0, 7)}...{tx.messageId.slice(-7)}
+                                                    //         </Link>
+                                                    //     </td>
+                                                    //     <td className="">{tx.timestamp}</td>
+                                                    //     <td className="text-right">{tx.inputs}</td>
+                                                    //     <td className="text-right">{tx.outputs}</td>
+                                                    //     <td className="">{tx.messageTangleStatus}</td>
+                                                    //     <td className="">{UnitsHelper.formatBest(tx.amount)}</td>
+                                                    // </tr>
+
+
+                                                    <Transaction
+                                                        output={output}
+                                                        network={this.props.match.params.network}
+                                                    />
                                                 )
                                                 )
                                             }
@@ -524,18 +530,14 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         this.setState({
             transactions: txs
         }, async () => {
-            console.log("transactions prev", this.state.transactions);
             if (details?.metadata?.referencedByMilestoneIndex) {
                 await this.updateTimestamp(details?.metadata?.referencedByMilestoneIndex, msgId);
             }
             if (!details?.metadata?.referencedByMilestoneIndex) {
-                console.log("2");
                 this._timerId = setTimeout(async () => {
-                    console.log("3");
                     await this.updateMessageStatus(msgId);
                 }, 10000);
             }
-            console.log("transactions post", this.state.transactions);
         });
     }
 
