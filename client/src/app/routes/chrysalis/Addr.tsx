@@ -69,8 +69,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             formatFull: false,
             statusBusy: true,
             status: `Loading ${isAdvanced ? "outputs" : "balances"}...`,
-            advancedMode: isAdvanced,
-            transactions: undefined
+            advancedMode: isAdvanced
         };
     }
 
@@ -104,14 +103,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 const outputs: IOutputResponse[] = [];
 
                 if (result.addressOutputIds) {
-                    const transactions: {
-                        messageId: string;
-                        inputs: number;
-                        outputs: number;
-                        amount: number;
-                        messageTangleStatus?: MessageTangleStatus;
-                        timestamp?: string;
-                    }[] | undefined = [];
+                    const transactions = [];
 
                     for (const outputId of result.addressOutputIds) {
                         const outputResult = await this._tangleCacheService.outputDetails(
@@ -126,19 +118,19 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     ? "Outputs" : "Balances"} [${outputs.length}/${result.addressOutputIds.length}]`
                             });
 
-                            const resultA = await this._tangleCacheService.search(
+                            const transactionResult = await this._tangleCacheService.search(
                                 this.props.match.params.network, outputResult.messageId);
-                            if (resultA?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                            if (transactionResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
                                 transactions.push({
                                     messageId: outputResult?.messageId,
-                                    inputs: resultA?.message?.payload?.essence.inputs.length,
-                                    outputs: resultA?.message?.payload?.essence.outputs.length,
+                                    inputs: transactionResult?.message?.payload?.essence.inputs.length,
+                                    outputs: transactionResult?.message?.payload?.essence.outputs.length,
                                     amount: outputResult?.output?.amount,
                                     messageTangleStatus: undefined,
                                     timestamp: undefined
                                 });
                             }
-                            if (resultA?.message) {
+                            if (transactionResult?.message) {
                                 this.setState({
                                     transactions
                                 }, async () => {
@@ -195,6 +187,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      * @returns The node to render.
      */
     public render(): ReactNode {
+        console.log("transactions", this.state.transactions);
         return (
             <div className="addr">
                 <div className="wrapper">
@@ -461,22 +454,51 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             </div>
                                         </div>
                                     )}
-                                <div>
-                                    {
-                                        this.state.transactions?.map(tx =>
-                                        (
-                                            <div key={tx.messageId}>
-                                                <p>Message id: {tx.messageId}</p>
-                                                <p>Inputs: {tx.inputs}</p>
-                                                <p>Outputs: {tx.outputs}</p>
-                                                <p>Amount: {tx.amount}</p>
-                                                <p>Status: {tx.messageTangleStatus}</p>
-                                                <p>Date: {tx.timestamp}</p>
-                                            </div>
-                                        )
-                                        )
-                                    }
-                                </div>
+                                {this.state.transactions && (
+                                    <div className="section">
+                                        <div className="section--header">
+                                            <h2>
+                                                Transaction History
+                                            </h2>
+                                        </div>
+                                        <table className="transaction--table">
+                                            <tr>
+                                                <th>Message id</th>
+                                                <th>Date</th>
+                                                <th>Inputs</th>
+                                                <th>Outputs</th>
+                                                <th>Status</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                            {
+                                                this.state.transactions?.map(tx =>
+                                                (
+                                                    <tr key={tx.messageId}>
+                                                        <td className="section--value section--value__code featured">
+                                                            <Link
+                                                                to={
+                                                                    `/${this.props.match.params.network
+                                                                    }/message/${tx.messageId}`
+                                                                }
+                                                                className="margin-r-t"
+                                                            >
+                                                                {tx.messageId.slice(0, 7)}...{tx.messageId.slice(-7)}
+                                                            </Link>
+                                                        </td>
+                                                        <td className="">{tx.timestamp}</td>
+                                                        <td className="text-right">{tx.inputs}</td>
+                                                        <td className="text-right">{tx.outputs}</td>
+                                                        <td className="">{tx.messageTangleStatus}</td>
+                                                        <td className="">{UnitsHelper.formatBest(tx.amount)}</td>
+                                                    </tr>
+                                                )
+                                                )
+                                            }
+                                        </table>
+                                    </div>
+                                )}
+
+
                             </div>
                         </div>
                     </div>
@@ -489,7 +511,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         const details = await this._tangleCacheService.messageDetails(
             this.props.match.params.network, msgId ?? "");
 
-        const aux = this.state.transactions?.map(tx =>
+        const txs = this.state.transactions?.map(tx =>
         ((tx.messageId === msgId)
             ? ({
                 ...tx,
@@ -500,18 +522,21 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         );
 
         this.setState({
-            transactions: aux
+            transactions: txs
         }, async () => {
+            console.log("transactions prev", this.state.transactions);
             if (details?.metadata?.referencedByMilestoneIndex) {
-                await this.updateTimestamp(details?.metadata?.referencedByMilestoneIndex, msgId)
+                await this.updateTimestamp(details?.metadata?.referencedByMilestoneIndex, msgId);
             }
+            if (!details?.metadata?.referencedByMilestoneIndex) {
+                console.log("2");
+                this._timerId = setTimeout(async () => {
+                    console.log("3");
+                    await this.updateMessageStatus(msgId);
+                }, 10000);
+            }
+            console.log("transactions post", this.state.transactions);
         });
-
-        if (!details?.metadata?.referencedByMilestoneIndex) {
-            this._timerId = setTimeout(async () => {
-                await this.updateMessageStatus(msgId);
-            }, 10000);
-        }
     }
 
     /**
@@ -544,31 +569,18 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         const result = await this._tangleCacheService.milestoneDetails(
             this.props.match.params.network, milestoneIndex);
 
-        const aux = this.state?.transactions?.map(tx =>
-        (tx.messageId === msgId ? ({
-            ...tx,
-            timestamp: this.calculateTimestamp(result?.timestamp)
-        }
-        ) : tx));
         if (result) {
+            const aux = this.state?.transactions?.map(tx =>
+            (tx.messageId === msgId ? ({
+                ...tx,
+                timestamp: DateHelper.formatShort(DateHelper.milliseconds(result.timestamp))
+            }
+            ) : tx));
             this.setState({
                 transactions: aux
             });
         }
     }
-
-    /**
-      * Calculate the formated date for the message.
-      * @param timestamp The timetamp in milliseconds.
-      * @returns The message status.
-      */
-    private calculateTimestamp(timestamp?: number): string {
-        if (timestamp) {
-            return DateHelper.formatShort(DateHelper.milliseconds(timestamp));
-        }
-        return "No referenced";
-    }
-
 }
 
 export default Addr;

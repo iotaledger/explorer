@@ -69,12 +69,12 @@ export interface AddrState {
         amount: string;
     }[];
 
-    transactions: {
+    transactions?: {
         messageId: string;
         inputs: number;
         outputs: number;
         amount: number;
         messageTangleStatus?: MessageTangleStatus;
         timestamp?: string;
-    }[] | undefined;
+    }[] ;
 }
