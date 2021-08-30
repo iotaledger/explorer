@@ -1,5 +1,6 @@
 import { IAddressResponse, IMessage, IOutputResponse } from "@iota/iota.js";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
+import { MessageTangleStatus } from "./../../../models/messageTangleStatus";
 
 export interface AddrState {
     /**
@@ -67,4 +68,13 @@ export interface AddrState {
         status: string;
         amount: string;
     }[];
+
+    transactions: {
+        messageId: string;
+        inputs: number;
+        outputs: number;
+        amount: number;
+        messageTangleStatus?: MessageTangleStatus;
+        timestamp?: string;
+    }[] | undefined;
 }

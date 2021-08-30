@@ -1,4 +1,4 @@
-import { IOutputResponse, UnitsHelper } from "@iota/iota.js";
+import { IMessageMetadata, IOutputResponse, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -10,9 +10,10 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import Output from "../../components/chrysalis/Output";
-import TransactionHistory from "../../components/chrysalis/TransactionHistory";
 import MessageButton from "../../components/MessageButton";
 import Spinner from "../../components/Spinner";
+import { DateHelper } from "./../../../helpers/dateHelper";
+import { MessageTangleStatus } from "./../../../models/messageTangleStatus";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState } from "./AddrState";
@@ -35,6 +36,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      * The hrp of bech addresses.
      */
     private readonly _bechHrp: string;
+
+    /**
+     * Timer to check to state update.
+     */
+    private _timerId?: NodeJS.Timer;
 
     /**
      * Create a new instance of Addr.
@@ -63,7 +69,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             formatFull: false,
             statusBusy: true,
             status: `Loading ${isAdvanced ? "outputs" : "balances"}...`,
-            advancedMode: isAdvanced
+            advancedMode: isAdvanced,
+            transactions: undefined
         };
     }
 
@@ -75,7 +82,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
         const result = await this._tangleCacheService.search(
             this.props.match.params.network, this.props.match.params.address);
-        console.log("result", result)
 
         if (result?.address) {
             window.scrollTo({
@@ -98,6 +104,15 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 const outputs: IOutputResponse[] = [];
 
                 if (result.addressOutputIds) {
+                    const transactions: {
+                        messageId: string;
+                        inputs: number;
+                        outputs: number;
+                        amount: number;
+                        messageTangleStatus?: MessageTangleStatus;
+                        timestamp?: string;
+                    }[] | undefined = [];
+
                     for (const outputId of result.addressOutputIds) {
                         const outputResult = await this._tangleCacheService.outputDetails(
                             this.props.match.params.network, outputId);
@@ -110,6 +125,29 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 status: `Loading ${this.state.advancedMode
                                     ? "Outputs" : "Balances"} [${outputs.length}/${result.addressOutputIds.length}]`
                             });
+
+                            const resultA = await this._tangleCacheService.search(
+                                this.props.match.params.network, outputResult.messageId);
+                            if (resultA?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                                transactions.push({
+                                    messageId: outputResult?.messageId,
+                                    inputs: resultA?.message?.payload?.essence.inputs.length,
+                                    outputs: resultA?.message?.payload?.essence.outputs.length,
+                                    amount: outputResult?.output?.amount,
+                                    messageTangleStatus: undefined,
+                                    timestamp: undefined
+                                });
+                            }
+                            if (resultA?.message) {
+                                this.setState({
+                                    transactions
+                                }, async () => {
+                                    await this.updateMessageStatus(outputResult.messageId);
+                                });
+                            }
+                            if (!this._isMounted) {
+                                break;
+                            }
                         }
 
                         if (!this._isMounted) {
@@ -423,12 +461,22 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             </div>
                                         </div>
                                     )}
-                                {this.state.outputs && (
-                                    <TransactionHistory
-                                        network={this.props.match.params.network}
-                                        outputs={this.state.outputs}
-                                    />
-                                )}
+                                <div>
+                                    {
+                                        this.state.transactions?.map(tx =>
+                                        (
+                                            <div key={tx.messageId}>
+                                                <p>Message id: {tx.messageId}</p>
+                                                <p>Inputs: {tx.inputs}</p>
+                                                <p>Outputs: {tx.outputs}</p>
+                                                <p>Amount: {tx.amount}</p>
+                                                <p>Status: {tx.messageTangleStatus}</p>
+                                                <p>Date: {tx.timestamp}</p>
+                                            </div>
+                                        )
+                                        )
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -436,6 +484,91 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             </div>
         );
     }
+
+    private async updateMessageStatus(msgId: string): Promise<void> {
+        const details = await this._tangleCacheService.messageDetails(
+            this.props.match.params.network, msgId ?? "");
+
+        const aux = this.state.transactions?.map(tx =>
+        ((tx.messageId === msgId)
+            ? ({
+                ...tx,
+                messageTangleStatus: this.calculateStatus(details?.metadata)
+            }
+            ) : tx
+        )
+        );
+
+        this.setState({
+            transactions: aux
+        }, async () => {
+            if (details?.metadata?.referencedByMilestoneIndex) {
+                await this.updateTimestamp(details?.metadata?.referencedByMilestoneIndex, msgId)
+            }
+        });
+
+        if (!details?.metadata?.referencedByMilestoneIndex) {
+            this._timerId = setTimeout(async () => {
+                await this.updateMessageStatus(msgId);
+            }, 10000);
+        }
+    }
+
+    /**
+     * Calculate the status for the message.
+     * @param metadata The metadata to calculate the status from.
+     * @returns The message status.
+     */
+    private calculateStatus(metadata?: IMessageMetadata): MessageTangleStatus {
+        let messageTangleStatus: MessageTangleStatus = "unknown";
+
+        if (metadata) {
+            if (metadata.milestoneIndex) {
+                messageTangleStatus = "milestone";
+            } else if (metadata.referencedByMilestoneIndex) {
+                messageTangleStatus = "referenced";
+            } else {
+                messageTangleStatus = "pending";
+            }
+        }
+
+        return messageTangleStatus;
+    }
+
+    /**
+     * Calculate the status for the message.
+     * @param milestoneIndex The Milestone id.
+     * @param msgId The message id.
+     */
+    private async updateTimestamp(milestoneIndex: number, msgId: string): Promise<void> {
+        const result = await this._tangleCacheService.milestoneDetails(
+            this.props.match.params.network, milestoneIndex);
+
+        const aux = this.state?.transactions?.map(tx =>
+        (tx.messageId === msgId ? ({
+            ...tx,
+            timestamp: this.calculateTimestamp(result?.timestamp)
+        }
+        ) : tx));
+        if (result) {
+            this.setState({
+                transactions: aux
+            });
+        }
+    }
+
+    /**
+      * Calculate the formated date for the message.
+      * @param timestamp The timetamp in milliseconds.
+      * @returns The message status.
+      */
+    private calculateTimestamp(timestamp?: number): string {
+        if (timestamp) {
+            return DateHelper.formatShort(DateHelper.milliseconds(timestamp));
+        }
+        return "No referenced";
+    }
+
 }
 
 export default Addr;

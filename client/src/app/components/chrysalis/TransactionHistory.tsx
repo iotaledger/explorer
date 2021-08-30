@@ -32,42 +32,45 @@ class TransactionHistory extends AsyncComponent<TransactionHistoryProps, Transac
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
     }
 
+
+
     /**
      * The component mounted.
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
-        this.setState({}, async () => {
-            const transactions = [];
+        // this.setState({}, async () => {
+        //     const transactions = [];
 
-            if (this.props.outputs) {
-                for (const output of this.props.outputs) {
-                    const result = await this._tangleCacheService.search(
-                        this.props.network, output.messageId);
-                    if (result?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                        transactions.push({
-                            messageId: output?.messageId,
-                            inputs: result?.message?.payload?.essence.inputs.length,
-                            outputs: result?.message?.payload?.essence.outputs.length,
-                            amount: output?.output?.amount,
-                            messageTangleStatus: undefined,
-                            timestamp: undefined
-                        });
-                    }
-                    if (result?.message) {
-                        this.setState({
-                            transactions
-                        }, async () => {
-                            await this.updateMessageStatus(output.messageId);
-                        });
-                    }
-                    if (!this._isMounted) {
-                        break;
-                    }
-                }
-            }
-        });
+        //     if (this.props.outputs) {
+        //         for (const output of this.props.outputs) {
+        //             const result = await this._tangleCacheService.search(
+        //                 this.props.network, output.messageId);
+        //             if (result?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+        //                 transactions.push({
+        //                     messageId: output?.messageId,
+        //                     inputs: result?.message?.payload?.essence.inputs.length,
+        //                     outputs: result?.message?.payload?.essence.outputs.length,
+        //                     amount: output?.output?.amount,
+        //                     messageTangleStatus: undefined,
+        //                     timestamp: undefined
+        //                 });
+        //             }
+        //             if (result?.message) {
+        //                 this.setState({
+        //                     transactions
+        //                 }, async () => {
+        //                     await this.updateMessageStatus(output.messageId);
+        //                 });
+        //             }
+        //             if (!this._isMounted) {
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // });
+        this.getTransactions();
     }
 
     /**
@@ -77,6 +80,9 @@ class TransactionHistory extends AsyncComponent<TransactionHistoryProps, Transac
     public componentDidUpdate(prevProps: TransactionHistoryProps): void {
         console.log("Did Update!!!!!!!!");
         console.log("numero de tx!!!!!!!!", this?.props?.outputs?.length);
+        console.log("this.props.outputs", this?.props?.outputs);
+        console.log("prevProps.outputs", prevProps.outputs);
+        console.log("prevProps.outputs !== this.props.outputs", this.props.outputs !== prevProps.outputs);
         if (this.props.outputs !== prevProps.outputs) {
             this.setState({}, async () => {
                 const transactions = [];
@@ -86,6 +92,7 @@ class TransactionHistory extends AsyncComponent<TransactionHistoryProps, Transac
                         const result = await this._tangleCacheService.search(
                             this.props.network, output.messageId);
                         if (result?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                            console.log("TRANSACTION_PAYLOAD_TYPE", result?.message);
                             transactions.push({
                                 messageId: output?.messageId,
                                 inputs: result?.message?.payload?.essence.inputs.length,
@@ -127,7 +134,7 @@ class TransactionHistory extends AsyncComponent<TransactionHistoryProps, Transac
      * @returns The node to render.
      */
     public render(): ReactNode {
-        console.log("this.state.transactions", this.state?.transactions);
+        console.log("this.props.outputs", this.props.outputs);
         return (
             <React.Fragment>
 
@@ -252,6 +259,38 @@ class TransactionHistory extends AsyncComponent<TransactionHistoryProps, Transac
             return DateHelper.formatShort(DateHelper.milliseconds(timestamp));
         }
         return "No referenced";
+    }
+
+    private async getTransactions() {
+        const transactions = [];
+
+        if (this.props.outputs) {
+            for (const output of this.props.outputs) {
+                const result = await this._tangleCacheService.search(
+                    this.props.network, output.messageId);
+                if (result?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                    console.log("transaction payload type", result.message);
+                    transactions.push({
+                        messageId: output?.messageId,
+                        inputs: result?.message?.payload?.essence.inputs.length,
+                        outputs: result?.message?.payload?.essence.outputs.length,
+                        amount: output?.output?.amount,
+                        messageTangleStatus: undefined,
+                        timestamp: undefined
+                    });
+                }
+                if (result?.message) {
+                    this.setState({
+                        transactions
+                    }, async () => {
+                        await this.updateMessageStatus(output.messageId);
+                    });
+                }
+                if (!this._isMounted) {
+                    break;
+                }
+            }
+        }
     }
 }
 
