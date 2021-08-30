@@ -1,3 +1,4 @@
+import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
 import { IIdentityDIDHistoryResponse } from "./../models/api/IIdentityDIDHistoryResponse";
@@ -28,6 +29,25 @@ export class IdentityService {
         const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
         const response = await apiClient.didHistory({ network, did });
+
+        return response;
+    }
+
+    /**
+     * resolves Diff history of and integration message
+     * @param  {string} integrationMsgId MessageId of the parent integration message
+     * @param  {string} network network name
+     * @param payload the body of the request
+     * @returns Promise
+     */
+    public async resolveDiffHistory(
+        integrationMsgId: string,
+        network: string,
+        payload: unknown
+    ): Promise<IIdentityDiffHistoryResponse> {
+        const apiClient = ServiceFactory.get<ApiClient>("api-client");
+
+        const response = await apiClient.diffHistory({ network, integrationMsgId }, payload);
 
         return response;
     }

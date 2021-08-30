@@ -1,4 +1,5 @@
 import React, { Component, Fragment, ReactNode } from "react";
+import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IdentityService } from "../../../services/identityService";
 import JsonViewer from "../JsonViewer";
@@ -8,12 +9,18 @@ import "../../../scss/layout.scss";
 
 import { IdentityHistoryProps } from "./IdentityHistoryProps";
 import IdentityTree from "./tree/IdentityTree";
+import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
+import Spinner from "../Spinner";
 
-export default class IdentityHistory extends Component<IdentityHistoryProps, IdentityHistoryState> {
-    constructor(props: IdentityHistoryProps) {
+export default class IdentityHistory extends Component<
+    RouteComponentProps<IdentityResolverProps>,
+    IdentityHistoryState
+> {
+    constructor(props: RouteComponentProps<IdentityHistoryProps>) {
         super(props);
 
         this.state = {
+            loadingHistory: false,
             historyLoaded: false,
             resolvedHistory: {},
             selectedMessageId: "",
@@ -21,14 +28,16 @@ export default class IdentityHistory extends Component<IdentityHistoryProps, Ide
         };
     }
 
-    public componentDidMount(): void {
-        // this.setContentOfSelectedMessage();
+    public async componentDidMount(): Promise<void> {
+        if (this.isDebugView() && !this.state.historyLoaded) {
+            await this.loadHistory();
+        }
     }
 
     public render(): ReactNode {
         return (
             <Fragment>
-                {!this.state.historyLoaded && (
+                {!this.state.historyLoaded && !this.state.loadingHistory && (
                     <button
                         className="load-history"
                         onClick={async () => {
@@ -37,35 +46,47 @@ export default class IdentityHistory extends Component<IdentityHistoryProps, Ide
                         type="button"
                     >
                         {" "}
-                        Load history
+                        Show History 🡫
                     </button>
                 )}
-                {this.state.historyLoaded && (
+
+                {(this.state.historyLoaded || this.state.loadingHistory) && (
                     <div className="card history-content">
                         <div className="card--header card--header">
                             <h2>History</h2>
                         </div>
-                        <div className="card--content row">
-                            <div className="row wrap middle margin-b-s row--tablet-responsive">
-                                <div className="tree">
-                                    <IdentityTree
-                                        history={this.state.resolvedHistory}
-                                        onItemClick={(messageId, content) => {
-                                            this.setContentOfSelectedMessage(content);
-                                        }}
-                                    />
-                                </div>
+
+                        {this.state.loadingHistory && (
+                            <div className="card--content row">
+                                <h3 className="margin-r-s">Resolving History ...</h3>
+                                <Spinner />
                             </div>
-                            <div
-                                className="
+                        )}
+
+                        {this.state.historyLoaded && (
+                            <div className="card--content row">
+                                <div className="row wrap middle margin-b-s row--tablet-responsive">
+                                    <div className="tree">
+                                        <IdentityTree
+                                            network={this.props.match.params.network}
+                                            history={this.state.resolvedHistory}
+                                            onItemClick={(messageId, content) => {
+                                                this.setContentOfSelectedMessage(content);
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                                <div
+                                    className="
                                     card--value
                                     card--value-textarea
                                     card--value-textarea__json w100
                                     margin-l-s"
-                            >
-                                <JsonViewer json={JSON.stringify(this.state.contentOfSelectedMessage, null, 4)} />
+                                >
+                                    <JsonViewer json={JSON.stringify(this.state.contentOfSelectedMessage, null, 4)} />
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 )}
             </Fragment>
@@ -73,9 +94,20 @@ export default class IdentityHistory extends Component<IdentityHistoryProps, Ide
     }
 
     private async loadHistory(): Promise<void> {
+        window.history.replaceState(
+            null,
+            "",
+            `/${this.props.match.params.network}/identity-resolver/${this.props.match.params.did}?debugview=true`
+        );
+
+        this.setState({ loadingHistory: true });
+
+        if (!this.props.match.params.did) {
+            return;
+        }
         const res = await ServiceFactory.get<IdentityService>("identity").resolveHistory(
-            this.props.did,
-            this.props.network
+            this.props.match.params.did,
+            this.props.match.params.network
         );
 
         console.log(res);
@@ -86,7 +118,8 @@ export default class IdentityHistory extends Component<IdentityHistoryProps, Ide
 
         this.setState({
             historyLoaded: true,
-            resolvedHistory: res
+            resolvedHistory: res,
+            loadingHistory: false
         });
     }
 
@@ -94,5 +127,10 @@ export default class IdentityHistory extends Component<IdentityHistoryProps, Ide
         this.setState({
             contentOfSelectedMessage: content
         });
+    }
+
+    private isDebugView() {
+        const params = new URLSearchParams(document.location.search.slice(1));
+        return params.get("debugview") === "true";
     }
 }

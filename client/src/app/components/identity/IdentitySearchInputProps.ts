@@ -7,11 +7,6 @@ export interface IdentitySearchInputProps {
     compact: boolean;
 
     /**
-     * Show in compact mode.
-     */
-    compact?: boolean;
-
-    /**
      * Perform a search.
      * @param did The DID to search for.
      */

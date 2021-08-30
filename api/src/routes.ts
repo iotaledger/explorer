@@ -30,6 +30,12 @@ export const routes: IRoute[] = [
     { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
     { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true },
     { path: "/did/:network/:did", method: "get", folder: "identity/resolution", func: "get" },
-    { path: "/did-history/:network/:did", method: "get", folder: "identity/history", func: "get" }
-
+    { path: "/did-history/:network/:did", method: "get", folder: "identity/history", func: "get" },
+    {
+        path: "/diff-history/:network/:integrationMsgId",
+        method: "post",
+        folder: "identity/diff",
+        func: "get",
+        dataBody: true
+    }
 ];

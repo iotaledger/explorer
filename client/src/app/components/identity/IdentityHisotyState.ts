@@ -5,4 +5,5 @@ export interface IdentityHistoryState {
     selectedMessageId?: string;
     resolvedHistory?: IIdentityDIDHistoryResponse | undefined;
     contentOfSelectedMessage?: unknown;
+    loadingHistory: boolean;
 }

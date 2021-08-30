@@ -1,3 +1,4 @@
+import { IIdentityDIDHistoryResponse } from './../../models/api/IIdentityDIDHistoryResponse';
 import { IMessageMetadata } from "@iota/iota.js";
 import { IIdentityDidResolveResponse } from "../../models/api/IIdentityResolveResponse";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
@@ -12,6 +13,10 @@ export interface IdentityResolverState {
      * The resolved DID document
      */
     resolvedIdentity: IIdentityDidResolveResponse | undefined;
+
+    resolvedHistory: IIdentityDIDHistoryResponse | undefined;
+
+    historyError: boolean;
 
     /**
      * The DID

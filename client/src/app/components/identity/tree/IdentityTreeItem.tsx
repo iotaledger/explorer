@@ -4,6 +4,8 @@ import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
 import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
 import "./IdentityTreeItem.scss";
 import { IdentityTreeItemState } from "./IdentityTreeItemState";
+import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { IdentityService } from "../../../../services/identityService";
 
 export default class IdentityTreeItem extends Component<IdentityTreeItemProps, IdentityTreeItemState> {
     constructor(props: IdentityTreeItemProps) {
@@ -12,7 +14,8 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
         this.state = {
             hasChildren: Boolean(props.hasChildren),
             loadingChildren: false,
-            isSelected: false
+            isSelected: false,
+            diffHistory: undefined
         };
     }
 
@@ -20,7 +23,9 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
         return (
             <div>
                 <div
-                    className={classNames("tree-item-container fadeIn", { selected: this.props.selected })}
+                    className={classNames("tree-item-container fadeIn", {
+                        "tree-item-selected": this.props.selected
+                    })}
                     onClick={() => {
                         this.props.onClick();
                     }}
@@ -81,7 +86,11 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                             <IdentityMsgStatusIcon status="diff" />
                         </div>
                     )}
-                    <div className={classNames("content row", { "push-right": this.props.nested })}>
+                    <div
+                        className={classNames("content row", {
+                            "push-right": this.props.nested
+                        })}
+                    >
                         <div>
                             <p className="title">{this.shortenMsgId(this.props.messageId ?? "")}</p>
 
@@ -91,13 +100,21 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                         {!this.props.nested && (
                             <a
                                 className="diff-icon"
-                                onClick={(event) => {
+                                onClick={async event => {
                                     event.stopPropagation();
-                                    this.setState({ hasChildren: !this.state.hasChildren, loadingChildren: true });
-                                    const that = this;
-                                    setInterval(function () {
-                                        // that.setState({ loadingChildren: false });
-                                    }, 1000);
+                                    if (this.state.hasChildren) {
+                                        this.setState({
+                                            hasChildren: false
+                                        });
+                                        return;
+                                    }
+
+                                    if (!this.state.diffHistory) {
+                                        await this.loadHistory();
+                                    }
+                                    this.setState({
+                                        hasChildren: true
+                                    });
                                 }}
                             >
                                 <svg
@@ -150,6 +167,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                         {!this.state.loadingChildren && (
                             <Fragment>
                                 <IdentityTreeItem
+                                    network={this.props.network}
                                     lastMsg={false}
                                     nested={true}
                                     firstMsg={true}
@@ -173,5 +191,29 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
         }
 
         return `${msgId.slice(0, 7)}....${msgId.slice(-7)}`;
+    }
+
+    private async loadHistory() {
+        this.setState({
+            loadingChildren: true
+        });
+
+        if (!this.props.messageId || !this.props.network) {
+            return;
+        }
+        const res = await ServiceFactory.get<IdentityService>("identity").resolveDiffHistory(
+            this.props.messageId,
+            this.props.network,
+            this.props.messageContent
+        );
+
+        console.log(res);
+
+        if (typeof res.error === "object") {
+            res.error = JSON.stringify(res.error);
+        }
+        this.setState({
+            loadingChildren: false
+        });
     }
 }

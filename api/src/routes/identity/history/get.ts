@@ -74,18 +74,8 @@ async function resolveHistory(
         };
 
         return history;
-        
-        // return {
-        //     integrationChainData: recepitObj.integrationChainData,
-        //     diffChainData: recepitObj.diffChainData,
-        //     diffChainSpam: recepitObj.diffChainSpam
-        // };
     } catch (e) {
         return { error: e as string };
     }
 }
 
-// function addMessageId(history: unknown): unknown {
-
-//     return {};
-// }
