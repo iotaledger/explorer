@@ -11,26 +11,26 @@ import { TransactionState } from "./TransactionState";
 
 
 /**
- * Component which will display an output.
+ * Component which will display a transaction.
  */
 class Transaction extends Component<TransactionProps, TransactionState> {
     /**
-       * API Client for tangle requests.
-       */
+     * API Client for tangle requests.
+     */
     private readonly _tangleCacheService: TangleCacheService;
-    /**
-         * Create a new instance of Addr.
-         * @param props The props.
-         */
 
+    /**
+     * Create a new instance of Transaction.
+     * @param props The props.
+     */
     constructor(props: TransactionProps) {
         super(props);
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
     }
+
     /**
      * The component mounted.
      */
-
     public async componentDidMount(): Promise<void> {
         const outputResult = await this._tangleCacheService.search(
             this.props.network, this.props.output.messageId);
@@ -40,33 +40,34 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                 inputs: outputResult.message?.payload?.essence?.inputs.length,
                 outputs: outputResult.message?.payload?.essence?.outputs.length
             });
-        }
-        const details = await this._tangleCacheService.messageDetails(
-            this.props.network, this.props.output.messageId ?? "");
-        if (details) {
-            let messageTangleStatus: MessageTangleStatus = "unknown";
 
-            if (details?.metadata) {
-                if (details?.metadata.milestoneIndex) {
-                    messageTangleStatus = "milestone";
-                } else if (details?.metadata.referencedByMilestoneIndex) {
-                    messageTangleStatus = "referenced";
-                } else {
-                    messageTangleStatus = "pending";
-                }
+            const details = await this._tangleCacheService.messageDetails(
+                this.props.network, this.props.output.messageId ?? "");
+            if (details) {
+                let messageTangleStatus: MessageTangleStatus = "unknown";
 
-                this.setState({
-                    messageTangleStatus
-                });
-            }
-            const milestoneIndex = details?.metadata?.referencedByMilestoneIndex;
-            if (milestoneIndex) {
-                const result = await this._tangleCacheService.milestoneDetails(
-                    this.props.network, milestoneIndex);
-                if (result?.timestamp) {
+                if (details?.metadata) {
+                    if (details.metadata.milestoneIndex) {
+                        messageTangleStatus = "milestone";
+                    } else if (details.metadata.referencedByMilestoneIndex) {
+                        messageTangleStatus = "referenced";
+                    } else {
+                        messageTangleStatus = "pending";
+                    }
+
                     this.setState({
-                        date: DateHelper.formatShort(DateHelper.milliseconds(result?.timestamp))
+                        messageTangleStatus
                     });
+                }
+                const milestoneIndex = details?.metadata?.referencedByMilestoneIndex;
+                if (milestoneIndex) {
+                    const result = await this._tangleCacheService.milestoneDetails(
+                        this.props.network, milestoneIndex);
+                    if (result?.timestamp) {
+                        this.setState({
+                            date: DateHelper.formatShort(DateHelper.milliseconds(result.timestamp))
+                        });
+                    }
                 }
             }
         }
