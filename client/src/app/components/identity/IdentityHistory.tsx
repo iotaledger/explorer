@@ -11,11 +11,33 @@ import { IdentityHistoryProps } from "./IdentityHistoryProps";
 import IdentityTree from "./tree/IdentityTree";
 import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
 import Spinner from "../Spinner";
+import ReactDiffViewer from "react-diff-viewer";
 
 export default class IdentityHistory extends Component<
     RouteComponentProps<IdentityResolverProps>,
     IdentityHistoryState
 > {
+    private readonly oldCode = `
+const a = 10
+const b = 10
+const c = () => console.log('foo')
+
+if(a > 10) {
+  console.log('bar')
+}
+
+console.log('done')
+`;
+
+    private readonly newCode = `
+const a = 10
+const boo = 10
+
+if(a === 10) {
+  console.log('bar')
+}
+`;
+
     constructor(props: RouteComponentProps<IdentityHistoryProps>) {
         super(props);
 
@@ -89,6 +111,13 @@ export default class IdentityHistory extends Component<
                         )}
                     </div>
                 )}
+                <ReactDiffViewer
+                    oldValue={JSON.stringify(this.state.contentOfSelectedMessage, null, 4)}
+                    newValue={JSON.stringify(this.state.contentOfSelectedMessage, null, 4)}
+                    splitView={false}
+                    showDiffOnly={false}
+                    hideLineNumbers={true}
+                />
             </Fragment>
         );
     }

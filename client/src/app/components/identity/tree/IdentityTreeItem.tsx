@@ -23,8 +23,8 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
         return (
             <div>
                 <div
-                    className={classNames("tree-item-container fadeIn", {
-                        "tree-item-selected": this.props.selected
+                    className={classNames("tree-item-container noselect fadeIn", {
+                        "tree-item-selected": this.props.selectedMessageId === this.props.messageId
                     })}
                     onClick={() => {
                         this.props.onClick();
@@ -108,13 +108,13 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                                         });
                                         return;
                                     }
-
-                                    if (!this.state.diffHistory) {
-                                        await this.loadHistory();
-                                    }
                                     this.setState({
                                         hasChildren: true
                                     });
+                                    if (!this.state.diffHistory) {
+                                        await this.loadHistory();
+                                    }
+
                                 }}
                             >
                                 <svg
@@ -164,17 +164,50 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                             </div>
                         )}
 
+                        {!this.state.loadingChildren && this.state.diffHistory?.chainData?.length === 0 && (
+                            <div className="tree-item-container fadeIn">
+                                {!this.props.lastMsg && (
+                                    <Fragment>
+                                        <div className="lower-left-straight-line" />
+                                        <div className="upper-left-straight-line" />
+                                    </Fragment>
+                                )}
+                                <div className="upper-curved-line">
+                                    <svg
+                                        width="22"
+                                        height="72"
+                                        viewBox="0 0 22 72"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M1 0C1 32 21 32 21 64M21 64C21 84.8889 21 54.9259 21 64Z"
+                                            stroke="#EEEEEE"
+                                            strokeWidth="2"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="no-diff-icon" />
+                                <p className="title no-diff-title"> No diffs found</p>
+                            </div>
+                        )}
+
                         {!this.state.loadingChildren && (
                             <Fragment>
-                                <IdentityTreeItem
-                                    network={this.props.network}
-                                    lastMsg={false}
-                                    nested={true}
-                                    firstMsg={true}
-                                    hasChildren={false}
-                                    selected={true}
-                                    onClick={() => {}}
-                                />
+                                {this.state.diffHistory?.chainData?.map((value, index) => (
+                                    <IdentityTreeItem
+                                        key={index}
+                                        network={this.props.network}
+                                        lastMsg={index === (this.state.diffHistory?.chainData?.length ?? 0) - 1}
+                                        nested={true}
+                                        firstMsg={index === 0}
+                                        hasChildren={false}
+                                        selectedMessageId={this.props.selectedMessageId}
+                                        messageId={value?.messageId}
+                                        onClick={() => {}}
+                                    />
+                                ))}
+
                                 {/* <IdentityTreeItem lastMsg={false} nested={true} firstMsg={false} hasChildren={false} />
                                 <IdentityTreeItem lastMsg={true} nested={true} firstMsg={false} hasChildren={false} /> */}
                             </Fragment>
@@ -213,7 +246,8 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
             res.error = JSON.stringify(res.error);
         }
         this.setState({
-            loadingChildren: false
+            loadingChildren: false,
+            diffHistory: res
         });
     }
 }

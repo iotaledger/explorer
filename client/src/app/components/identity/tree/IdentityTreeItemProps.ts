@@ -4,7 +4,7 @@ export interface IdentityTreeItemProps {
     firstMsg?: boolean;
     lastMsg?: boolean;
     hasChildren?: boolean;
-    selected?: boolean;
+    selectedMessageId: string;
     messageId?: string;
     messageContent?: unknown;
     parentMessageId?: string;

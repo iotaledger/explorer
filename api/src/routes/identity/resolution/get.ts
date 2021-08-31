@@ -1,11 +1,11 @@
 import * as identity from "@iota/identity-wasm/node";
 
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IIdentityDidResolveRequest } from "../../../models/api/IIdentityDidResolveRequest";
-import { IIdentityDidResolveResponse } from "../../../models/api/IIdentityDidResolveResponse";
-import { IConfiguration } from "../../../models/configuration/IConfiguration";
-import { NetworkService } from "../../../services/networkService";
-import { ValidationHelper } from "../../../utils/validationHelper";
+import {ServiceFactory} from "../../../factories/serviceFactory";
+import {IIdentityDidResolveRequest} from "../../../models/api/IIdentityDidResolveRequest";
+import {IIdentityDidResolveResponse} from "../../../models/api/IIdentityDidResolveResponse";
+import {IConfiguration} from "../../../models/configuration/IConfiguration";
+import {NetworkService} from "../../../services/networkService";
+import {ValidationHelper} from "../../../utils/validationHelper";
 
 /**
  * @param config The configuration.
@@ -21,8 +21,10 @@ export async function get(config: IConfiguration, request: IIdentityDidResolveRe
     const networkConfig = networkService.get(request.network);
 
     if (networkConfig.protocolVersion !== "chrysalis") {
-        // eslint-disable-next-line max-len
-        return { error: "Network is not supported. IOTA Identity only supports chrysalis phase 2 networks, such as the IOTA main network. " };
+        return {
+            // eslint-disable-next-line max-len
+            error: "Network is not supported. IOTA Identity only supports chrysalis phase 2 networks, such as the IOTA main network. "
+        };
     }
 
     const providerUrl = networkConfig.provider;
@@ -45,16 +47,18 @@ async function resolveIdentity(
     try {
         const config = new identity.Config();
         config.setNode(nodeUrl);
-        config.setPermanode(permaNodeUrl);
+        if (permaNodeUrl) {
+            config.setPermanode(permaNodeUrl);
+        }
 
         // Create a client instance to publish messages to the Tangle.
         const client = identity.Client.fromConfig(config);
 
         const res = await client.resolve(did);
 
-        return { document: res.toJSON(), messageId: res.messageId };
+        return {document: res.toJSON(), messageId: res.messageId};
     } catch (e) {
-        return { error: improveErrorMessage(e as string) };
+        return {error: improveErrorMessage(e as string)};
     }
 }
 /**

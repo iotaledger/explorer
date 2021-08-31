@@ -11,9 +11,11 @@
   cursor: pointer;
   border-radius: 6px;
 
+  
+
   &:hover {
     background: linear-gradient(0deg, #ffffff 10%, $gray-daylight 10% 90%, #ffffff 10%);
-}
+  }
 
   .push-right {
     left: 60px !important;
@@ -88,7 +90,7 @@
       margin-top: 5px;
       font-family: $metropolis;
       font-size: 0.8em;
-      color: $gray-header;
+      color: $gray-header !important;
     }
 
     .diff-icon {
@@ -124,6 +126,17 @@
   animation-iteration-count: infinite;
 }
 
+.no-diff-icon {
+  background-color: $gray-header;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: absolute;
+  left: 41px;
+  top: 30px;
+
+}
+
 @keyframes mymove {
   from {
     border: solid $gray-header 4px;
@@ -136,6 +149,15 @@
 .loading-diff-title {
   font-family: $metropolis;
   color: $gray-header;
+  font-size: 0.8em;
+  position: absolute;
+  left: 60px;
+  top: 29px;
+}
+
+.no-diff-title {
+  font-family: $metropolis;
+  color: $gray-header !important;
   font-size: 0.8em;
   position: absolute;
   left: 60px;
@@ -169,4 +191,13 @@
 
 .tree-item-selected {
   background: linear-gradient(0deg, #ffffff 10%, $gray-daylight 10% 90%, #ffffff 10%);
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

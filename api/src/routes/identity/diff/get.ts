@@ -1,7 +1,7 @@
 import * as identity from "@iota/identity-wasm/node";
 
 import {ServiceFactory} from "../../../factories/serviceFactory";
-import { IIdentityDiffHistoryBody } from "../../../models/api/IIdentityDiffHistoryBody";
+import {IIdentityDiffHistoryBody} from "../../../models/api/IIdentityDiffHistoryBody";
 import {IConfiguration} from "../../../models/configuration/IConfiguration";
 import {NetworkService} from "../../../services/networkService";
 import {ValidationHelper} from "../../../utils/validationHelper";
@@ -34,8 +34,8 @@ export async function get(
 
     // body.messageId = request.integrationMsgId;
 
-
     const document = identity.Document.fromJSON(body);
+    document.messageId = request.integrationMsgId;
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>");
     console.log(document);
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -71,20 +71,28 @@ async function resolveDiff(
 
         const diffChainData = [];
 
-        for (const element of recepit.chainData()) {
+        // for (const [index, element] of recepit.chainData().entries()) {
+        //     const integrationMessage = {
+        //         message: recepitObj.chainData[index],
+        //         messageId: element.messageId
+        //     };
+        //     diffChainData.push(integrationMessage);
+        // }
+
+        for (let i = 0; i < recepit.chainData().length; i++) {
             const integrationMessage = {
-                message: element.toJSON(),
-                messageId: element.messageId
+                message: recepitObj.chainData[i],
+                messageId: recepit.chainData()[i].messageId
             };
             diffChainData.push(integrationMessage);
         }
 
-        const history = {
-            chainData: diffChainData,
-            spam: recepitObj.toJSON().diffChainData
-        };
+        // const history = {
+        //     chainData: diffChainData,
+        //     spam: recepitObj.diffChainData
+        // };
 
-        return history;
+        return {chainData: diffChainData, spam: recepitObj.spam};
     } catch (e) {
         return {error: e as string};
     }
