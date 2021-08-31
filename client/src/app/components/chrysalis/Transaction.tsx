@@ -4,10 +4,15 @@ import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { TangleCacheService } from "../../../services/tangleCacheService";
+import Spinner from "../../components/Spinner";
+import MessageTangleState from "../MessageTangleState";
 import { DateHelper } from "./../../../helpers/dateHelper";
 import { MessageTangleStatus } from "./../../../models/messageTangleStatus";
+import "./Transaction.scss";
 import { TransactionProps } from "./TransactionProps";
 import { TransactionState } from "./TransactionState";
+
+
 
 
 /**
@@ -88,14 +93,24 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                         }
                         className="margin-r-t"
                     >
-                        {this.props.output.messageId.slice(0, 7)}...{this.props.output.messageId.slice(-7)}
+                        {this.props.output.messageId.slice(0, 12)}...{this.props.output.messageId.slice(-12)}
                     </Link>
                 </td>
-                <td>{this.state?.date}</td>
-                <td>{this.state?.inputs}</td>
-                <td>{this.state?.outputs}</td>
-                <td>{this.state?.messageTangleStatus === "referenced" ? "confirmed" : this.state?.messageTangleStatus}</td>
-                <td>{UnitsHelper.formatBest(this.props.output.output.amount)}</td>
+                <td>{this.state?.date ?? <Spinner />}</td>
+                <td>{this.state?.inputs ?? <Spinner />}</td>
+                <td>{this.state?.outputs ?? <Spinner />}</td>
+                {/* <td>{this.state?.messageTangleStatus === "referenced" ? "confirmed" : this.state?.messageTangleStatus}</td> */}
+                <td>
+                    {this.state?.messageTangleStatus
+                        ? (
+                            <MessageTangleState
+                                network={this.props.network}
+                                status={this.state.messageTangleStatus}
+                            />
+                        )
+                        : <Spinner />}
+                </td>
+                <td className="amount">+ {UnitsHelper.formatBest(this.props.output.output.amount)}</td>
             </tr>
         );
     }

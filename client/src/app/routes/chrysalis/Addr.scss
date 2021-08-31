@@ -80,26 +80,6 @@
       }
     }
   }
-
-  .transaction--table {
-    width: 100%;
-    border-spacing: 12px 12px;
-    border-collapse: separate;
-
-    tr {
-      @include font-size(14px);
-      font-family: $inter;
-      color: $gray-7;
-
-      th {
-        @include font-size(12px);
-        text-align: left;
-        font-weight: 600;
-        color: $gray-6;
-        text-transform: uppercase;
-      }
-    }
-  }
   .wrapper {
     display: flex;
     justify-content: center;
@@ -170,6 +150,11 @@
       .card + .card {
         margin-top: 23px;
       }
+    }
+  }
+  .transaction--section {
+    @include tablet-down {
+      display: none;
     }
   }
 }

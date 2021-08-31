@@ -1,4 +1,4 @@
-import { IOutputResponse } from "@iota/iota.js";
+import { IOutputResponse, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -145,7 +145,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     <div className="section--content">
                                         <Bech32Address
                                             addressDetails={this.state.bech32AddressDetails}
-                                            advancedMode={false}
+                                            advancedMode={true}
                                         />
                                         {/* {this.state.balance !== undefined && this.state.balance !== 0 && (
                                             <div className="row fill margin-t-s margin-b-s value-buttons">
@@ -176,7 +176,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     Balance
                                                 </div>
                                                 <div className="section--value">
-                                                    {this.state.balance} i
+                                                    {UnitsHelper.formatBest(this.state.balance)}
                                                 </div>
                                             </div>
                                         )}
@@ -191,8 +191,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     </div>
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
-                                    <div className="card">
-                                        <div className="card--content">
+                                    <div className="section">
+                                        <div className="section--content">
                                             <p>
                                                 There are no transactions for this address.
                                             </p>
@@ -200,8 +200,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     </div>
                                 )}
 
-                                {this.state.outputs && (
-                                    <div className="section">
+                                {this.state.outputs && this.state.outputs.length > 0 && (
+                                    <div className="section transaction--section">
                                         <div className="section--header">
                                             <h2>
                                                 Transaction History
