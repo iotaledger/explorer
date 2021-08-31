@@ -1,0 +1,79 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+
+.modal {
+    display: inline-block;
+
+    .modal--icon {
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+    }
+
+    .modal--bg {
+        height: 100vh;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: rgba(19, 31, 55, 0.75);
+        z-index: 1;
+    }
+    .modal--content {
+        z-index: 2;
+        background-color: $white;
+        width: 50%;
+        min-height: 500px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 32px;
+        border: 1px solid #e8eefb;
+        box-shadow: 0px 4px 8px rgba(19, 31, 55, 0.04);
+        border-radius: 6px;
+        overflow-y: scroll;
+        max-height: 100%;
+        @include tablet-down {
+            width: 100%;
+        }
+        .title {
+            @include font-size(20px);
+            font-weight: 600;
+            font-family: $metropolis;
+            letter-spacing: 0.02em;
+            color: $gray-9;
+            border-bottom: 1px solid #e8eefb;
+            padding-bottom: 22px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            button {
+                color: black;
+            }
+        }
+        .modal--description {
+            margin-top: 24px;
+            p {
+                @include font-size(14px, 21px);
+                font-family: $inter;
+                font-weight: 400;
+                color: $gray-7;
+                &:not(:last-child) {
+                    margin-bottom: 24px;
+                }
+            }
+        }
+    }
+    button {
+        background-color: transparent;
+        border: none;
+        &:focus {
+            box-shadow: none;
+        }
+    }
+}

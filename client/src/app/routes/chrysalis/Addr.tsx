@@ -9,10 +9,13 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import Spinner from "../../components/Spinner";
+import messageJSON from "./../../../assets/modals/message.json";
 import Transaction from "./../../components/chrysalis/Transaction";
+import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState } from "./AddrState";
+
 
 /**
  * Component which will show the address page.
@@ -130,17 +133,23 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 <div className="wrapper">
                     <div className="inner">
                         <div className="addr--header">
-                            <h1>
-                                Address
-                            </h1>
+                            <div className="row middle">
+                                <h1>
+                                    Address
+                                </h1>
+                                <Modal icon="dots" data={messageJSON} />
+                            </div>
                         </div>
                         <div className="top">
                             <div className="sections">
                                 <div className="section">
                                     <div className="section--header">
-                                        <h2>
-                                            General
-                                        </h2>
+                                        <div className="row middle">
+                                            <h2>
+                                                General
+                                            </h2>
+                                            <Modal icon="info" data={messageJSON} />
+                                        </div>
                                     </div>
                                     <div className="section--content">
                                         <Bech32Address
@@ -203,9 +212,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 {this.state.outputs && this.state.outputs.length > 0 && (
                                     <div className="section transaction--section">
                                         <div className="section--header">
-                                            <h2>
-                                                Transaction History
-                                            </h2>
+                                            <div className="row middle">
+                                                <h2>
+                                                    Transaction History
+                                                </h2>
+                                                <Modal icon="info" data={messageJSON} />
+                                            </div>
                                         </div>
                                         <table className="transaction--table">
                                             <tr>

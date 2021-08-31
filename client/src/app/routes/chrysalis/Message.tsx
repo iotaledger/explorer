@@ -16,11 +16,12 @@ import TransactionPayload from "../../components/chrysalis/TransactionPayload";
 import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
 import MessageTangleState from "../../components/MessageTangleState";
+import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
+import messageJSON from "./../../../assets/modals/message.json";
 import "./Message.scss";
 import { MessageRouteProps } from "./MessageRouteProps";
 import { MessageState } from "./MessageState";
-
 /**
  * Component which will show the message page.
  */
@@ -124,9 +125,12 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 <div className="wrapper">
                     <div className="inner">
                         <div className="message--header">
-                            <h1>
-                                Message
-                            </h1>
+                            <div className="row middle">
+                                <h1>
+                                    Message
+                                </h1>
+                                <Modal icon="dots" data={messageJSON} />
+                            </div>
                             <div className="message--header__switch">
                                 <span>Advanced View</span>
                                 <label className="switch">
@@ -156,9 +160,13 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             "section--header__tablet-responsive"
                                         )}
                                     >
-                                        <h2>
-                                            General
-                                        </h2>
+                                        <div className="row middle">
+                                            <h2>
+                                                General
+                                            </h2>
+                                            <Modal icon="info" data={messageJSON} />
+                                        </div>
+
                                         <MessageTangleState
                                             network={this.props.match.params.network}
                                             status={this.state.messageTangleStatus}
@@ -232,9 +240,12 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE && (
                                             <div className="section">
                                                 <div className="section--header">
-                                                    <h2>
-                                                        Transaction Payload
-                                                    </h2>
+                                                    <div className="row middle">
+                                                        <h2>
+                                                            Transaction Payload
+                                                        </h2>
+                                                        <Modal icon="info" data={messageJSON} />
+                                                    </div>
                                                 </div>
 
                                                 <div className="transaction-payload-wrapper">
@@ -295,9 +306,12 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 {this.state.advancedMode && (
                                     <div className="section">
                                         <div className="section--header section--header__space-between">
-                                            <h2>
-                                                Metadata
-                                            </h2>
+                                            <div className="row middle">
+                                                <h2>
+                                                    Metadata
+                                                    <Modal icon="info" data={messageJSON} />
+                                                </h2>
+                                            </div>
                                         </div>
                                         <div className="section--content">
                                             {!this.state.metadata && !this.state.metadataError && (
@@ -344,7 +358,12 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
 
                                 <div className="section margin-t-s">
                                     <div className="section--header">
-                                        <h2>Messages Tree</h2>
+                                        <div className="row middle">
+                                            <h2>
+                                                Messages tree
+                                            </h2>
+                                            <Modal icon="info" data={messageJSON} />
+                                        </div>
                                     </div>
                                     <div className="section--content children-container">
                                         <span>In progress...</span>

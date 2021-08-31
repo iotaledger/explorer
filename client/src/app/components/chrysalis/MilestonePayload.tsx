@@ -4,9 +4,10 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
+import Modal from "../../components/Modal";
+import messageJSON from "./../../../assets/modals/message.json";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
-
 
 /**
  * Component which will display a milestone payload.
@@ -52,7 +53,12 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
         return (
             <div className="milestone-payload">
                 <div className="section--header section--header__space-between">
-                    <h2>Milestone Payload</h2>
+                    <div className="row middle">
+                        <h2>
+                            Milestone Payload
+                        </h2>
+                        <Modal icon="info" data={messageJSON} />
+                    </div>
                     {(this.state.hasPrevious || this.state.hasNext) && (
                         <div className="row middle">
                             <button

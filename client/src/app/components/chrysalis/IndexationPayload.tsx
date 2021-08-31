@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
 import { Converter } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
+import Modal from "../../components/Modal";
+import messageJSON from "./../../../assets/modals/message.json";
 import DataToggle from "./../DataToggle";
 import { IndexationPayloadProps } from "./IndexationPayloadProps";
 import { IndexationPayloadState } from "./IndexationPayloadState";
@@ -52,7 +54,12 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
         return (
             <div className="indexation-payload">
                 <div className="section--header">
-                    <h2>Indexation Payload</h2>
+                    <div className="row middle">
+                        <h2>
+                            Indexation Payload
+                        </h2>
+                        <Modal icon="info" data={messageJSON} />
+                    </div>
                 </div>
                 <div className="section--content">
                     <div className="section--label row middle">

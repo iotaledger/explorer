@@ -1,0 +1,36 @@
+@import '../../../scss/fonts';
+@import '../../../scss/mixins';
+@import '../../../scss/media-queries';
+@import '../../../scss/variables';
+
+.transaction--table {
+    width: 100%;
+    border-spacing: 12px 12px;
+    border-collapse: separate;
+
+    tr {
+        @include font-size(14px);
+        font-family: $inter;
+        color: $gray-7;
+
+        th {
+            @include font-size(12px);
+            text-align: left;
+            font-weight: 600;
+            color: $gray-6;
+            text-transform: uppercase;
+        }
+
+        td {
+            .message-tangle-state {
+                margin-left: 0;
+            }
+
+            &.amount {
+                @include font-size(14px);
+                font-weight: 700;
+                color: $mint-green-7;
+            }
+        }
+    }
+}
