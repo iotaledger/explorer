@@ -133,6 +133,17 @@
           margin-top: 0;
           margin-left: 23px;
         }
+        .card--content {
+          .section--value {
+            @include font-size(14px);
+
+            font-family: $ibm-plex-mono;
+            font-weight: normal;
+            line-height: 20px;
+            letter-spacing: 0.02em;
+            color: $blue-5;
+          }
+        }
 
         @include tablet-down {
           .section + .section,
