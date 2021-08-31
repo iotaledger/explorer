@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
@@ -11,9 +10,6 @@ import { MessageTangleStatus } from "./../../../models/messageTangleStatus";
 import "./Transaction.scss";
 import { TransactionProps } from "./TransactionProps";
 import { TransactionState } from "./TransactionState";
-
-
-
 
 /**
  * Component which will display a transaction.
@@ -99,7 +95,6 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                 <td>{this.state?.date ?? <Spinner />}</td>
                 <td>{this.state?.inputs ?? <Spinner />}</td>
                 <td>{this.state?.outputs ?? <Spinner />}</td>
-                {/* <td>{this.state?.messageTangleStatus === "referenced" ? "confirmed" : this.state?.messageTangleStatus}</td> */}
                 <td>
                     {this.state?.messageTangleStatus
                         ? (
