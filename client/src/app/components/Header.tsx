@@ -5,6 +5,7 @@ import close from "../../assets/close.svg";
 import logoHeader from "../../assets/logo-header.svg";
 import menuIcon from "../../assets/menu.svg";
 import "./Header.scss";
+import HeaderDropdown from "./HeaderDropdown";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
 
@@ -35,9 +36,36 @@ class Header extends Component<HeaderProps, HeaderState> {
                     <Link to={this.props.rootPath}>
                         <img className="logo-image" src={logoHeader} alt="Explorer" />
                     </Link>
+                    {this.props.pages && this.props.pages.length > 0 && this.props.pages.map(page => (
+                        <Link
+                            key={page.url}
+                            to={page.url}
+                        >
+                            <span className="margin-l-s">{page.label}</span>
+                        </Link>
+                    ))}
+
+                    <HeaderDropdown
+                        label="Utilities"
+                        columns={[
+                            {
+                                label: "Utilities",
+                                items: [
+                                    {
+                                        label: "Explorer",
+                                        url: "a"
+                                    },
+                                    {
+                                        label: "Visualizer",
+                                        url: "b"
+                                    }
+                                ]
+                            }
+                        ]}
+                    />
                     {this.props.search}
                     {this.props.switcher}
-                    {this.props.tools && this.props.tools.length > 0 && (
+                    {/* {this.props.utilities && this.props.utilities.length > 0 && (
                         <div className="tools tools--small">
                             <button
                                 type="button"
@@ -46,9 +74,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 <img src={menuIcon} alt="Tools" />
                             </button>
                         </div>
-                    )}
+                    )} */}
                 </nav>
-                {this.props.tools && this.props.tools.length > 0 && (
+                {this.props.utilities && this.props.utilities.length > 0 && (
                     <React.Fragment>
                         <button
                             className="tools tools--large"
@@ -82,17 +110,17 @@ class Header extends Component<HeaderProps, HeaderState> {
                                             </button>
                                         </div>
                                         <div className="tools-panel-links">
-                                            {this.props.tools.map(tool => (
+                                            {this.props.utilities.map(utility => (
                                                 <Link
-                                                    key={tool.url}
-                                                    to={tool.url}
+                                                    key={utility.url}
+                                                    to={utility.url}
                                                     onClick={() => this.setState({ isExpanded: false })}
                                                 >
-                                                    {tool.icon}
-                                                    <span className="margin-l-s">{tool.label}</span>
+                                                    <span className="margin-l-s">{utility.label}</span>
                                                 </Link>
                                             ))}
                                         </div>
+
                                     </div>
                                 </div>
                             </React.Fragment>

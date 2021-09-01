@@ -45,3 +45,27 @@
     }
   }
 }
+.switcher--expanded__content {
+  position: absolute;
+  top: 83px;
+  background: $white;
+  left: 0;
+  width: 100%;
+  min-height: 423px;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  .group {
+    display: flex;
+    flex-direction: column;
+  }
+}
+.switcher-bg {
+  height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 84px;
+  left: 0;
+  z-index: 1;
+}

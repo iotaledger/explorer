@@ -3,24 +3,60 @@
  */
 export interface SwitcherProps {
     /**
-     * The networks to link to.
+     * The items to link to.
      */
-    items: {
+    groups: {
         /**
-         * The label for the item.
+         * The label for the group.
          */
         label: string;
         /**
-         * The value to select.
+         * The description of the group.
          */
-        value: string;
+        description: string;
+        /**
+         * The items to link to.
+         */
+        items: {
+            /**
+             * The label for the item.
+             */
+            label: string;
+            /**
+             * The value to select.
+             */
+            value: string;
+            /**
+             * The description of the group.
+             */
+            description?: string;
+            /**
+             * The description of the group.
+             */
+            type: "mainnet" | "devnet";
+        }[];
     }[];
+
+    /**
+     * Is a dropdown menu.
+     */
+    isDropdown?: boolean;
 
     /**
      * The active value.
      */
     value: string;
 
+    /**
+     * Label in case of dropdown menu.
+     */
+    label?: string;
+
+    /**
+     * Eyebrow in case of dropdown menu.
+     */
+    eyebrow?: string;
+    
     /**
      * Is the component disabled.
      */

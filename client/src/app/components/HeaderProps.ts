@@ -20,22 +20,32 @@ export interface HeaderProps {
     search?: ReactNode;
 
     /**
-     * Tools menu
+     * Utilities menu
      */
-    tools?: {
+    utilities?: {
         /**
-         * The label for the tool.
+         * The label for the utility.
          */
         label: string;
 
         /**
-         * The link for the tool.
+         * The link for the utility.
          */
         url: string;
+    }[];
+
+    /**
+     * Pages menu
+     */
+    pages?: {
+        /**
+         * The label for the page.
+         */
+        label: string;
 
         /**
-         * The icon to display.
+         * The link for the page.
          */
-        icon: ReactNode;
+        url: string;
     }[];
 }

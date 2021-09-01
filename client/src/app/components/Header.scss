@@ -8,15 +8,14 @@ header {
   position: relative;
   justify-content: center;
   padding: 15px 20px;
-  background-color: var(--context-primary);
+  background-color: $white;
+  border-bottom: 1px solid $gray-2;
 
   .inner {
     display: flex;
     flex: 1;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    max-width: $desktop-width;
 
     @include tablet-down {
       margin-right: 40px;

@@ -14,6 +14,7 @@ import { AppState } from "./AppState";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
+import HeaderDropdown from "./components/HeaderDropdown";
 import SearchInput from "./components/SearchInput";
 import Switcher from "./components/Switcher";
 import Addr from "./routes/chrysalis/Addr";
@@ -42,6 +43,9 @@ import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import Visualizer from "./routes/Visualizer";
 import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
+import { INetwork } from "../models/db/INetwork";
+import { ProtocolVersion } from '../models/db/protocolVersion';
+
 
 /**
  * Main application class.
@@ -87,14 +91,40 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
      */
     public render(): ReactNode {
         const currentNetworkConfig = this.state.networks.find(n => n.network === this.state.networkId);
+        console.log("networks", this.state.networks)
 
         const switcher = (
             <Switcher
-                items={this.state.networks.filter(network => network.isEnabled).map(n => ({
-                    label: n.label,
-                    value: n.network
-                }))}
+                eyebrow="Selected Network"
+                label={currentNetworkConfig?.label}
+                isDropdown
                 value={this.state.networkId}
+                groups={[
+                    {
+                        label: "IOTA 1.5 (Chrysalis)",
+                        description: "Short Chrysalis network description that explains what Chrysalis is.",
+                        items: this.state.networks.filter(
+                            network => network.protocolVersion === "chrysalis").map(n => ({
+                                label: n.label,
+                                value: n.network,
+                                description: n.description,
+                                type: n.network.includes("mainnet") ? "mainnet" : "devnet"
+                            })
+                            )
+                    },
+                    {
+                        label: "IOTA 1.0 (Legacy)",
+                        description: "Short Coordicide network description that explains what Coordicide is.",
+                        items: this.state.networks.filter(
+                            network => network.protocolVersion === "og").map(n => ({
+                                label: n.label,
+                                value: n.network,
+                                description: n.description,
+                                type: n.network.includes("devnet") ? "devnet" : "mainnet"
+                            })
+                            )
+                    }
+                ]}
                 onChange={value => {
                     this.props.history.push(
                         this.props.match.params.action === "streams"
@@ -105,6 +135,58 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                     );
                 }}
             />
+            // <Switcher
+            //     items={this.state.networks.filter(network => network.isEnabled).map(n => ({
+            //         label: n.label,
+            //         value: n.network
+            //     }))}
+            //     eyebrow="Selected Network"
+            //     label={currentNetworkConfig?.label}
+            //     isDropdown
+            //     value={this.state.networkId}
+            //     onChange={value => {
+            //         this.props.history.push(
+            //             this.props.match.params.action === "streams"
+            //                 ? `/${value}/streams/0/`
+            //                 : (this.props.match.params.action === "visualizer"
+            //                     ? `/${value}/visualizer/`
+            //                     : `/${value}`)
+            //         );
+            //     }}
+            // />
+            // <HeaderDropdown
+            //     label={currentNetworkConfig?.label}
+            //     eyebrow="Selected network"
+            //     columns={
+            //         [
+            //             {
+            //                 label: "IOTA 1.5 (Chrysalis)",
+            //                 description: "Short Chrysalis network description that explains what Chrysalis is.",
+            //                 items: [
+            //                     {
+            //                         label: "Currency Converter",
+            //                         onClick: (value => {
+            //                             this.props.history.push(
+            //                                 this.props.match.params.action === "streams"
+            //                                     ? `/${value}/streams/0/`
+            //                                     : (this.props.match.params.action === "visualizer"
+            //                                         ? `/${value}/visualizer/`
+            //                                         : `/${value}`)
+            //                             );
+            //                         })
+            //                     },
+            //                     {
+            //                         label: "Identity Resolver",
+            //                         url: "b"
+            //                     },
+            //                     {
+            //                         label: "IOTA Streams",
+            //                         url: "c"
+            //                     }
+            //                 ]
+            //             }
+            //         ]}
+            // />
         );
 
         return (
@@ -113,46 +195,59 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                     rootPath={`/${currentNetworkConfig?.isEnabled
                         ? this.state.networkId
                         : ""}`}
-                    switcher={this.props.match.params.action &&
-                        this.props.match.params.action !== "markets" &&
-                        this.props.match.params.action !== "currency-converter" &&
-                        switcher}
-                    search={this.props.match.params.action &&
-                        this.props.match.params.action !== "streams" &&
-                        this.props.match.params.action !== "visualizer" &&
-                        this.props.match.params.action !== "markets" &&
-                        this.props.match.params.action !== "currency-converter" && (
-                            <SearchInput
-                                onSearch={query => this.setQuery(query)}
-                                compact={true}
-                                protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
-                            />
-                        )}
-                    tools={this.state.networks.length > 0 ? [
+                    switcher={switcher}
+                    // switcher={this.props.match.params.action &&
+                    //     this.props.match.params.action !== "markets" &&
+                    //     this.props.match.params.action !== "currency-converter" &&
+                    //     switcher}
+                    search={
+                        <SearchInput
+                            onSearch={query => this.setQuery(query)}
+                            compact={true}
+                            protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
+                        />
+                    }
+                    // search={this.props.match.params.action &&
+                    //     this.props.match.params.action !== "streams" &&
+                    //     this.props.match.params.action !== "visualizer" &&
+                    //     this.props.match.params.action !== "markets" &&
+                    //     this.props.match.params.action !== "currency-converter" && (
+                    //         <SearchInput
+                    //             onSearch={query => this.setQuery(query)}
+                    //             compact={true}
+                    //             protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
+                    //         />
+                    //     )}
+                    pages={this.state.networks.length > 0 ? [
+                        {
+                            label: "Explorer",
+                            url: `/${this.state.networkId}/`
+                        },
+                        {
+                            label: "Visualizer",
+                            url: `/${this.state.networkId}/visualizer/`
+                        }
+                    ] : []}
+                    utilities={this.state.networks.length > 0 ? [
                         {
                             label: "Explorer",
                             url: `/${this.state.networkId}/`,
-                            icon: <ExplorerIcon />
                         },
                         {
                             label: "Streams v0",
                             url: `/${this.state.networkId}/streams/0/`,
-                            icon: <StreamsIcon />
                         },
                         {
                             label: "Visualizer",
                             url: `/${this.state.networkId}/visualizer/`,
-                            icon: <VisualizerIcon />
                         },
                         {
                             label: "Markets",
                             url: `/${this.state.networkId}/markets/`,
-                            icon: <MarketsIcon />
                         },
                         {
                             label: "Currency Converter",
                             url: `/${this.state.networkId}/currency-converter/`,
-                            icon: <CurrencyConverterIcon />
                         }
                     ] : []}
                 />
@@ -329,11 +424,11 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                 label: "Currency Converter",
                                 url: `${this.state.networkId}/currency-converter/`
                             }) : [
-                                {
-                                    label: "Maintenance Mode",
-                                    url: ""
-                                }
-                            ]
+                            {
+                                label: "Maintenance Mode",
+                                url: ""
+                            }
+                        ]
                     }
                 />
                 <Disclaimer />

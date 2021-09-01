@@ -9,7 +9,7 @@ import { ModalState } from "./ModalState";
  */
 class Modal extends Component<ModalProps, ModalState> {
     /**
-     * Create a new instance of Transaction.
+     * Create a new instance of Modal.
      * @param props The props.
      */
     constructor(props: ModalProps) {
