@@ -1,15 +1,11 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import close from "../../assets/close.svg";
 import logoHeader from "../../assets/logo-header.svg";
-import menuIcon from "../../assets/menu.svg";
+import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
 import "./Header.scss";
-import HeaderDropdown from "./HeaderDropdown";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
-
-
 
 /**
  * Component which will show the header.
@@ -35,121 +31,72 @@ class Header extends Component<HeaderProps, HeaderState> {
         return (
             <header>
                 <nav className="inner">
-                    <Link to={this.props.rootPath}>
+                    <Link
+                        to={this.props.rootPath}
+                        onClick={() => this.setState({ isExpanded: false })}
+                    >
                         <img className="logo-image" src={logoHeader} alt="Explorer" />
                     </Link>
                     {this.props.pages && this.props.pages.length > 0 && this.props.pages.map(page => (
                         <Link
                             key={page.url}
                             to={page.url}
+                            onClick={() => this.setState({ isExpanded: false })}
                         >
-                            <span className="page margin-l-s">{page.label}</span>
+                            <span
+                                className={`page margin-l-s ${page.url === window.location.pathname ? "active" : ""}`}
+                            >
+                                {page.label}
+                            </span>
                         </Link>
                     ))}
-
-                    <HeaderDropdown
-                        label="Utilities"
-                        columns={[
-                            {
-                                label: "Utilities",
-                                items: [
-                                    {
-                                        label: "Explorer",
-                                        url: "a"
-                                    },
-                                    {
-                                        label: "Visualizer",
-                                        url: "b"
-                                    }
-                                ]
-                            }
-                        ]}
-                    />
-                    {/* <HeaderDropdown
-                        label="Utilities"
-                        columns={[
-                            {
-                                label: "Utilities",
-                                items: [
-                                    {
-                                        label: "Explorer",
-                                        url: "a"
-                                    },
-                                    {
-                                        label: "Visualizer",
-                                        url: "b"
-                                    }
-                                ]
-                            }
-                        ]}
-                    /> */}
+                    <div
+                        className="utilities--wrapper"
+                    >
+                        <div
+                            className={classNames("utilities--dropdown", { opened: this.state.isExpanded })}
+                            onClick={() => this.setState({ isExpanded: !this.state.isExpanded })}
+                        >
+                            <div className="label">
+                                Utilities
+                            </div>
+                            <div className="icon">
+                                <DropdownIcon />
+                            </div>
+                        </div>
+                        {this.state.isExpanded && (
+                            <React.Fragment>
+                                <div className="utilities--content">
+                                    <div className="utilities">
+                                        <div className="utilities--label">Utilities</div>
+                                        {this.props.utilities?.map(utility => (
+                                            <div
+                                                key={utility.url}
+                                                className="utilities--item"
+                                            >
+                                                <Link
+                                                    to={utility.url}
+                                                    onClick={() => this.setState({ isExpanded: false })}
+                                                >
+                                                    {utility.label}
+                                                </Link>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div
+                                    className="utilities--shield"
+                                    onClick={() => this.setState({ isExpanded: false })}
+                                />
+                            </React.Fragment>
+                        )}
+                    </div>
                     {this.props.search}
                     <div className="network-switcher">
                         {this.props.switcher}
                     </div>
-                    {/* {this.props.utilities && this.props.utilities.length > 0 && (
-                        <div className="tools tools--small">
-                            <button
-                                type="button"
-                                onClick={() => this.setState({ isExpanded: true })}
-                            >
-                                <img src={menuIcon} alt="Tools" />
-                            </button>
-                        </div>
-                    )} */}
                 </nav>
-                {this.props.utilities && this.props.utilities.length > 0 && (
-                    <React.Fragment>
-                        <button
-                            className="tools tools--large"
-                            type="button"
-                            onClick={() => this.setState({ isExpanded: true })}
-                        >
-                            <span className="margin-r-m">Tools</span>
-                            <img src={menuIcon} alt="Tools" />
-                        </button>
-                        {this.state.isExpanded && (
-                            <React.Fragment>
-                                <div
-                                    className={classNames(
-                                        "tools-panel-shield", { "tools-panel-shield__active": this.state.isExpanded }
-                                    )}
-                                    onClick={() => this.setState({ isExpanded: false })}
-                                />
-                                <div
-                                    className={classNames(
-                                        "tools-panel", { "tools-panel__active": this.state.isExpanded }
-                                    )}
-                                >
-                                    <div className="tools-panel-inner">
-                                        <div className="tools-panel-close-container">
-                                            <button
-                                                type="button"
-                                                onClick={() => this.setState({ isExpanded: false })}
-                                                className="button-close"
-                                            >
-                                                <img src={close} alt="Close" />
-                                            </button>
-                                        </div>
-                                        <div className="tools-panel-links">
-                                            {this.props.utilities.map(utility => (
-                                                <Link
-                                                    key={utility.url}
-                                                    to={utility.url}
-                                                    onClick={() => this.setState({ isExpanded: false })}
-                                                >
-                                                    <span className="margin-l-s">{utility.label}</span>
-                                                </Link>
-                                            ))}
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </React.Fragment>
-                        )}
-                    </React.Fragment>
-                )}
-            </header>
+            </header >
         );
     }
 }

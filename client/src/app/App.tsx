@@ -1,10 +1,5 @@
 import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
-import { ReactComponent as CurrencyConverterIcon } from "../assets/currency-converter.svg";
-import { ReactComponent as ExplorerIcon } from "../assets/explorer.svg";
-import { ReactComponent as MarketsIcon } from "../assets/markets.svg";
-import { ReactComponent as StreamsIcon } from "../assets/streams.svg";
-import { ReactComponent as VisualizerIcon } from "../assets/visualizer.svg";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { PaletteHelper } from "../helpers/paletteHelper";
 import { NetworkService } from "../services/networkService";
@@ -14,9 +9,8 @@ import { AppState } from "./AppState";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import HeaderDropdown from "./components/HeaderDropdown";
+import HeaderExpanded from "./components/HeaderExpanded";
 import SearchInput from "./components/SearchInput";
-import Switcher from "./components/Switcher";
 import Addr from "./routes/chrysalis/Addr";
 import { AddrRouteProps } from "./routes/chrysalis/AddrRouteProps";
 import Indexed from "./routes/chrysalis/Indexed";
@@ -43,8 +37,6 @@ import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import Visualizer from "./routes/Visualizer";
 import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
-import { INetwork } from "../models/db/INetwork";
-import { ProtocolVersion } from '../models/db/protocolVersion';
 
 
 /**
@@ -91,50 +83,56 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
      */
     public render(): ReactNode {
         const currentNetworkConfig = this.state.networks.find(n => n.network === this.state.networkId);
-        console.log("networks", this.state.networks)
+        console.log("networks", this.state.networks);
 
         const switcher = (
-            <Switcher
-                eyebrow="Selected Network"
-                label={currentNetworkConfig?.label}
-                isDropdown
-                value={this.state.networkId}
-                groups={[
-                    {
-                        label: "IOTA 1.5 (Chrysalis)",
-                        description: "Short Chrysalis network description that explains what Chrysalis is.",
-                        items: this.state.networks.filter(
-                            network => network.protocolVersion === "chrysalis").map(n => ({
-                                label: n.label,
-                                value: n.network,
-                                description: n.description,
-                                icon: n.network.includes("mainnet") ? "mainnet" : "devnet"
-                            })
-                            )
-                    },
-                    {
-                        label: "IOTA 1.0 (Legacy)",
-                        description: "Short Coordicide network description that explains what Coordicide is.",
-                        items: this.state.networks.filter(
-                            network => network.protocolVersion === "og").map(n => ({
-                                label: n.label,
-                                value: n.network,
-                                description: n.description,
-                                icon: n.network.includes("devnet") ? "devnet" : "mainnet"
-                            })
-                            )
-                    }
-                ]}
-                onChange={value => {
-                    this.props.history.push(
-                        this.props.match.params.action === "streams"
-                            ? `/${value}/streams/0/`
-                            : (this.props.match.params.action === "visualizer"
-                                ? `/${value}/visualizer/`
-                                : `/${value}`)
-                    );
-                }}
-            />
+            <HeaderExpanded
+                label={currentNetworkConfig?.network ? currentNetworkConfig.label : "Network not detected"}
+                eyebrow="Selected network"
+            >
+                <p>In progress</p>
+            </HeaderExpanded>
+            // <Switcher
+            //     eyebrow="Selected Network"
+            //     label={currentNetworkConfig?.label}
+            //     isDropdown
+            //     value={this.state.networkId}
+            //     groups={[
+            //         {
+            //             label: "IOTA 1.5 (Chrysalis)",
+            //             description: "Short Chrysalis network description that explains what Chrysalis is.",
+            //             items: this.state.networks.filter(
+            //                 network => network.protocolVersion === "chrysalis").map(n => ({
+            //                     label: n.label,
+            //                     value: n.network,
+            //                     description: n.description,
+            //                     icon: n.network.includes("mainnet") ? "mainnet" : "devnet"
+            //                 })
+            //                 )
+            //         },
+            //         {
+            //             label: "IOTA 1.0 (Legacy)",
+            //             description: "Short Coordicide network description that explains what Coordicide is.",
+            //             items: this.state.networks.filter(
+            //                 network => network.protocolVersion === "og").map(n => ({
+            //                     label: n.label,
+            //                     value: n.network,
+            //                     description: n.description,
+            //                     icon: n.network.includes("devnet") ? "devnet" : "mainnet"
+            //                 })
+            //                 )
+            //         }
+            //     ]}
+            //     onChange={value => {
+            //         this.props.history.push(
+            //             this.props.match.params.action === "streams"
+            //                 ? `/${value}/streams/0/`
+            //                 : (this.props.match.params.action === "visualizer"
+            //                     ? `/${value}/visualizer/`
+            //                     : `/${value}`)
+            //         );
+            //     }}
+            // />
             // <Switcher
             //     items={this.state.networks.filter(network => network.isEnabled).map(n => ({
             //         label: n.label,
@@ -230,16 +228,8 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                     ] : []}
                     utilities={this.state.networks.length > 0 ? [
                         {
-                            label: "Explorer",
-                            url: `/${this.state.networkId}/`,
-                        },
-                        {
                             label: "Streams v0",
                             url: `/${this.state.networkId}/streams/0/`,
-                        },
-                        {
-                            label: "Visualizer",
-                            url: `/${this.state.networkId}/visualizer/`,
                         },
                         {
                             label: "Markets",

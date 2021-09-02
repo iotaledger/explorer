@@ -48,8 +48,12 @@ header {
       @include font-size(14px, 21px);
       font-family: $metropolis;
       font-weight: 600;
-      color: $gray-9;
+      color: $gray-6;
       letter-spacing: 0.01em;
+
+      &.active {
+        color: $gray-9;
+      }
     }
 
     .network-switcher {
@@ -57,6 +61,77 @@ header {
     }
   }
 
+  .utilities--wrapper {
+    .utilities--dropdown {
+      display: flex;
+      font-family: $metropolis;
+      cursor: pointer;
+      &.opened {
+        .label {
+          color: $gray-9;
+        }
+        .icon {
+          svg {
+            transform: rotate(-180deg);
+            path {
+              stroke: $gray-9;
+            }
+          }
+        }
+      }
+    }
+    .utilities--shield {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: -1;
+    }
+    .utilities--content {
+      position: absolute;
+      top: 83px;
+      background: $white;
+      left: 0;
+      width: 100%;
+      min-height: 423px;
+      z-index: 2;
+    }
+
+    .label {
+      @include font-size(14px, 21px);
+      font-weight: 600;
+      color: $gray-6;
+      letter-spacing: 0.01em;
+    }
+
+    .icon {
+      margin-left: 8px;
+      svg {
+        transition: transform 0.2s ease;
+      }
+    }
+    .utilities {
+      padding: 40px 120px 120px 120px;
+      & * {
+        margin-bottom: 8px;
+      }
+      .utilities--label {
+        font-family: $metropolis;
+        @include font-size(14px, 21px);
+        font-weight: 700;
+        color: $gray-7;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+      .utilities--item a {
+        font-family: $inter;
+        @include font-size(14px, 21px);
+        letter-spacing: 0.5px;
+        color: $gray-7;
+      }
+    }
+  }
   .tools {
     &.tools--large {
       @include font-size(14px);
