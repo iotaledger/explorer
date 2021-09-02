@@ -1,9 +1,12 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
+import { ReactComponent as DevnetIcon } from "./../../assets/devnet.svg";
+import { ReactComponent as MainnetIcon } from "./../../assets/mainnet.svg";
 import "./Switcher.scss";
 import { SwitcherProps } from "./SwitcherProps";
 import { SwitcherState } from "./SwitcherState";
+
 
 /**
  * Component which will show the switcher.
@@ -50,6 +53,7 @@ class Switcher extends Component<SwitcherProps, SwitcherState> {
                 {this.props.isDropdown && (
                     <React.Fragment>
                         <div
+                            className="switcher--dropdown"
                             onClick={() => this.setState({ isExpanded: !this.state?.isExpanded })}
                         >
                             <div>{this.props.eyebrow ? this.props.eyebrow : ""}</div>
@@ -62,25 +66,33 @@ class Switcher extends Component<SwitcherProps, SwitcherState> {
                             <div className="switcher--expanded__content">
                                 {
                                     this.props.groups.map(group => (
-                                        <div key={group.label} className="group" style={{ width: `${100 / this.props.groups.length}%` }}>
+                                        <div
+                                            key={group.label}
+                                            className="group"
+                                            style={{ width: `${100 / this.props.groups.length}%` }}
+                                        >
                                             <div>{group.label}</div>
                                             <div>{group.description}</div>
 
                                             {group.items.map(item => (
-                                                <div key={item.value}>
-                                                    <div>Type: {item.type}</div>
-                                                    <div>Description: {item?.description}</div>
-                                                    <button
-                                                        type="button"
-                                                        className={classNames({
-                                                            selected: item.value === this.props.value
-                                                        })}
-                                                        onClick={() => this.props.onChange(item.value)}
-                                                        disabled={this.props.disabled}
-                                                    >
-                                                        {item.label}
-                                                    </button>
-                                                </div>
+
+                                                item?.icon && (
+                                                    <div key={item.value}>
+                                                        <div>Description: {item?.description}</div>
+                                                        <button
+                                                            type="button"
+                                                            className={classNames({
+                                                                selected: item.value === this.props.value
+                                                            })}
+                                                            onClick={() => this.props.onChange(item.value)}
+                                                            disabled={this.props.disabled}
+                                                        >
+                                                            {item.label}
+                                                        </button>
+                                                        {item.icon === "mainnet" ? (<MainnetIcon />) : (<DevnetIcon />)}
+                                                    </div>
+                                                )
+
                                             )
                                             )}
                                         </div>

@@ -108,7 +108,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                 label: n.label,
                                 value: n.network,
                                 description: n.description,
-                                type: n.network.includes("mainnet") ? "mainnet" : "devnet"
+                                icon: n.network.includes("mainnet") ? "mainnet" : "devnet"
                             })
                             )
                     },
@@ -120,7 +120,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                 label: n.label,
                                 value: n.network,
                                 description: n.description,
-                                type: n.network.includes("devnet") ? "devnet" : "mainnet"
+                                icon: n.network.includes("devnet") ? "devnet" : "mainnet"
                             })
                             )
                     }

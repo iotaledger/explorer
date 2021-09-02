@@ -9,6 +9,8 @@ import HeaderDropdown from "./HeaderDropdown";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
 
+
+
 /**
  * Component which will show the header.
  */
@@ -41,7 +43,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                             key={page.url}
                             to={page.url}
                         >
-                            <span className="margin-l-s">{page.label}</span>
+                            <span className="page margin-l-s">{page.label}</span>
                         </Link>
                     ))}
 
@@ -63,8 +65,28 @@ class Header extends Component<HeaderProps, HeaderState> {
                             }
                         ]}
                     />
+                    {/* <HeaderDropdown
+                        label="Utilities"
+                        columns={[
+                            {
+                                label: "Utilities",
+                                items: [
+                                    {
+                                        label: "Explorer",
+                                        url: "a"
+                                    },
+                                    {
+                                        label: "Visualizer",
+                                        url: "b"
+                                    }
+                                ]
+                            }
+                        ]}
+                    /> */}
                     {this.props.search}
-                    {this.props.switcher}
+                    <div className="network-switcher">
+                        {this.props.switcher}
+                    </div>
                     {/* {this.props.utilities && this.props.utilities.length > 0 && (
                         <div className="tools tools--small">
                             <button

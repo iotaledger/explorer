@@ -27,13 +27,13 @@ export interface SwitcherProps {
              */
             value: string;
             /**
-             * The description of the group.
+             * The description of the item.
              */
             description?: string;
             /**
-             * The description of the group.
+             * The icon of the item.
              */
-            type: "mainnet" | "devnet";
+            icon?: "mainnet" | "devnet";
         }[];
     }[];
 
@@ -45,7 +45,7 @@ export interface SwitcherProps {
     /**
      * The active value.
      */
-    value: string;
+    value?: string;
 
     /**
      * Label in case of dropdown menu.

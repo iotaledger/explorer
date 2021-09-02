@@ -5,11 +5,15 @@
 
 header {
   display: flex;
-  position: relative;
+  position: fixed;
   justify-content: center;
+  width: 100%;
   padding: 15px 20px;
-  background-color: $white;
+  background: rgba(255, 255, 255, 0.2);
   border-bottom: 1px solid $gray-2;
+  min-height: $navbar-height;
+  backdrop-filter: blur(20px);
+  z-index: 1000;
 
   .inner {
     display: flex;
@@ -28,23 +32,28 @@ header {
     a {
       margin-right: 30px;
       outline: none;
+      text-decoration: none;
 
       &:focus {
         box-shadow: 0 0 3px 0 $main-green-highlight;
       }
     }
 
-    .search-input {
-      margin: 10px 30px 10px 5px;
-
-      @include phone-down {
-        margin: 10px 30px 15px 0;
-      }
-    }
-
     .logo-image {
       width: 210px;
       height: 48px;
+    }
+
+    .page {
+      @include font-size(14px, 21px);
+      font-family: $metropolis;
+      font-weight: 600;
+      color: $gray-9;
+      letter-spacing: 0.01em;
+    }
+
+    .network-switcher {
+      margin-left: auto;
     }
   }
 

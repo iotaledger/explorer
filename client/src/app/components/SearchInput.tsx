@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import { FaSearch } from "react-icons/fa";
+import { ReactComponent as SearchIcon } from "./../../assets/search.svg";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import AsyncComponent from "./AsyncComponent";
 import "./SearchInput.scss";
@@ -36,6 +36,14 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                     { "search-input--compact": this.props.compact }
                 )}
             >
+                <button
+                    className="search--button"
+                    type="submit"
+                    onClick={() => this.doSearch()}
+                    disabled={!this.state.isValid}
+                >
+                    {this.props.compact ? (<SearchIcon />) : "Search"}
+                </button>
                 <input
                     className="search--text-input"
                     type="text"
@@ -49,7 +57,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                             ? e.target.value.toUpperCase().trim()
                             : e.target.value)
                     })}
-                    placeholder={this.props.compact ? "Search..." : (
+                    placeholder={this.props.compact ? "Search the tangle" : (
                         this.props.protocolVersion === "chrysalis"
                             ? "Search messages, addresses, outputs, milestones, indexes"
                             : "Search transactions, bundles, addresses, tags")}
@@ -59,14 +67,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                         }
                     }}
                 />
-                <button
-                    className="search--button"
-                    type="submit"
-                    onClick={() => this.doSearch()}
-                    disabled={!this.state.isValid}
-                >
-                    {this.props.compact ? (<FaSearch />) : "Search"}
-                </button>
+
             </div>
         );
     }

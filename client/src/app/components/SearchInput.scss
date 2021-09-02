@@ -7,8 +7,8 @@
   display: flex;
   flex: 1;
   flex-direction: row;
-  margin: 0 20px 20px 20px;
-  backdrop-filter: blur(1px);
+  margin: 0 16px 0px 64px;
+  max-width: 400px;
 
   .search--text-input {
     @include font-size(14px);
@@ -16,10 +16,14 @@
     flex: 1;
     height: 48px;
     padding: 0 24px;
-    border: 1px solid $input-border;
-    border-radius: 6px 0 0 6px;
+    border: 1px solid $gray-3;
+    border-radius: 0 6px 6px 0;
     color: $gray-10;
     font-family: $inter;
+    background-color: transparent;
+    border-left: 0;
+    padding: 0 24px 0 0;
+    box-shadow: none;
 
     @include phone-down {
       @include font-size(12px);
@@ -32,14 +36,12 @@
   .search--button {
     @include font-size(14px);
 
-    width: 117px;
-    border: 2px solid $main-green-highlight;
-    border-radius: 0 6px 6px 0;
-    background-color: $main-green-highlight;
-    color: $white;
-    font-family: $inter;
-    font-weight: bold;
+    border: 1px solid $gray-3;
+    border-right: 0;
+    border-radius: 6px 0 0 6px;
+    background-color: transparent;
     cursor: pointer;
+    padding: 6px 16px;
 
     @include phone-down {
       @include font-size(12px);
@@ -57,23 +59,6 @@
       @include phone-down {
         opacity: 1;
       }
-    }
-  }
-
-  &.search-input--compact {
-    margin: 0;
-
-    .search--text-input {
-      @include font-size(12px);
-
-      height: 32px;
-      padding: 0 12px;
-    }
-
-    .search--button {
-      @include font-size(12px);
-
-      width: 32px;
     }
   }
 }
