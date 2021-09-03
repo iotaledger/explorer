@@ -6,7 +6,8 @@ import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray
 import "./Header.scss";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
-
+import { ReactComponent as DevnetIcon } from "./../../assets/devnet.svg";
+import { ReactComponent as MainnetIcon } from "./../../assets/mainnet.svg";
 /**
  * Component which will show the header.
  */
@@ -19,7 +20,8 @@ class Header extends Component<HeaderProps, HeaderState> {
         super(props);
 
         this.state = {
-            isExpanded: false
+            isNetworkSwitcherExpanded: false,
+            isUtilitiesExpanded: false
         };
     }
 
@@ -33,7 +35,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                 <nav className="inner">
                     <Link
                         to={this.props.rootPath}
-                        onClick={() => this.setState({ isExpanded: false })}
+                        onClick={() => this.setState({ isUtilitiesExpanded: false })}
                     >
                         <img className="logo-image" src={logoHeader} alt="Explorer" />
                     </Link>
@@ -41,7 +43,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                         <Link
                             key={page.url}
                             to={page.url}
-                            onClick={() => this.setState({ isExpanded: false })}
+                            onClick={() => this.setState({ isUtilitiesExpanded: false })}
                         >
                             <span
                                 className={`page margin-l-s ${page.url === window.location.pathname ? "active" : ""}`}
@@ -54,8 +56,8 @@ class Header extends Component<HeaderProps, HeaderState> {
                         className="utilities--wrapper"
                     >
                         <div
-                            className={classNames("utilities--dropdown", { opened: this.state.isExpanded })}
-                            onClick={() => this.setState({ isExpanded: !this.state.isExpanded })}
+                            className={classNames("utilities--dropdown", { opened: this.state.isUtilitiesExpanded })}
+                            onClick={() => this.setState({ isUtilitiesExpanded: !this.state.isUtilitiesExpanded })}
                         >
                             <div className="label">
                                 Utilities
@@ -64,9 +66,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 <DropdownIcon />
                             </div>
                         </div>
-                        {this.state.isExpanded && (
+                        {this.state.isUtilitiesExpanded && (
                             <React.Fragment>
-                                <div className="utilities--content">
+                                <div className="header--expanded">
                                     <div className="utilities">
                                         <div className="utilities--label">Utilities</div>
                                         {this.props.utilities?.map(utility => (
@@ -76,7 +78,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                                             >
                                                 <Link
                                                     to={utility.url}
-                                                    onClick={() => this.setState({ isExpanded: false })}
+                                                    onClick={() => this.setState({ isUtilitiesExpanded: false })}
                                                 >
                                                     {utility.label}
                                                 </Link>
@@ -85,17 +87,123 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     </div>
                                 </div>
                                 <div
-                                    className="utilities--shield"
-                                    onClick={() => this.setState({ isExpanded: false })}
+                                    className="header--expanded--shield"
+                                    onClick={() => this.setState({ isUtilitiesExpanded: false })}
                                 />
                             </React.Fragment>
                         )}
                     </div>
                     {this.props.search}
-                    <div className="network-switcher">
-                        {this.props.switcher}
+                    <div className="network--switcher">
+                        {/* {this.props.switcher} */}
+                        <div
+                            className="network--switcher__header row middle"
+                            onClick={
+                                () =>
+                                    this.setState(
+                                        { isNetworkSwitcherExpanded: !this.state.isNetworkSwitcherExpanded }
+                                    )
+                            }
+                        >
+                            <div
+                                className="network--switcher__dropdown"
+                            >
+                                <div className="eyebrow">Selected Network</div>
+                                <div className="label">{this.props.network?.label}</div>
+                            </div>
+                            <div className="icon margin-l-t">
+                                <DropdownIcon />
+                            </div>
+                            {this.state.isNetworkSwitcherExpanded &&
+                                (
+                                    <React.Fragment>
+                                        <div className="header--expanded">
+                                            <div className="protocol">
+                                                <div>
+                                                    <div className="protocol--title">IOTA 1.5 (Chrysalis)</div>
+                                                    <div className="protocol--description">
+                                                        Short protocol description
+                                                    </div>
+                                                </div>
+                                                <div className="network-cards">
+                                                    {this.props.networks?.map(n => (
+                                                        n.protocolVersion === "chrysalis" && (
+                                                            <div
+                                                                className="network-card"
+                                                                onClick={() => {
+                                                                    this.props.history?.push(
+                                                                        this.props.action === "streams"
+                                                                            ? `/${n.network}/streams/0/`
+                                                                            : (this.props.action === "visualizer"
+                                                                                ? `/${n.network}/visualizer/`
+                                                                                : `/${n.network}`)
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <div className="icon">
+                                                                    {n.network.includes("mainnet")
+                                                                        ? <MainnetIcon />
+                                                                        : <DevnetIcon />}
+                                                                </div>
+                                                                <div className="network-content">
+                                                                    <div className="label">{n.label}</div>
+                                                                    <div className="description">
+                                                                        {n.description}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    ))}
+
+                                                </div>
+                                            </div>
+                                            <div className="protocol">
+                                                <div>
+                                                    <div className="protocol--title">IOTA 1.0 (Legacy)</div>
+                                                    <div className="protocol--description">Short description</div>
+                                                </div>
+                                                <div className="network-cards">
+                                                    {this.props.networks?.map(n => (
+                                                        n.protocolVersion === "og" && (
+                                                            <div
+                                                                className="network-card"
+                                                                onClick={() => {
+                                                                    this.props.history?.push(
+                                                                        this.props.action === "streams"
+                                                                            ? `/${n.network}/streams/0/`
+                                                                            : (this.props.action === "visualizer"
+                                                                                ? `/${n.network}/visualizer/`
+                                                                                : `/${n.network}`)
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <div className="icon">
+                                                                    {n.network.includes("mainnet")
+                                                                        ? <MainnetIcon />
+                                                                        : <DevnetIcon />}
+                                                                </div>
+                                                                <div className="network-content">
+                                                                    <div className="label">{n.label}</div>
+                                                                    <div className="description">
+                                                                        {n.description}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    ))}
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            className="header--expanded--shield"
+                                            onClick={() => this.setState({ isNetworkSwitcherExpanded: false })}
+                                        />
+                                    </React.Fragment>
+                                )}
+                        </div>
                     </div>
-                </nav>
+                </nav >
             </header >
         );
     }

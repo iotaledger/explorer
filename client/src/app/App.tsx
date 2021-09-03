@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import HeaderExpanded from "./components/HeaderExpanded";
 import SearchInput from "./components/SearchInput";
+import Switcher from "./components/Switcher";
 import Addr from "./routes/chrysalis/Addr";
 import { AddrRouteProps } from "./routes/chrysalis/AddrRouteProps";
 import Indexed from "./routes/chrysalis/Indexed";
@@ -86,105 +87,54 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
         console.log("networks", this.state.networks);
 
         const switcher = (
-            <HeaderExpanded
-                label={currentNetworkConfig?.network ? currentNetworkConfig.label : "Network not detected"}
-                eyebrow="Selected network"
-            >
-                <p>In progress</p>
-            </HeaderExpanded>
-            // <Switcher
-            //     eyebrow="Selected Network"
-            //     label={currentNetworkConfig?.label}
-            //     isDropdown
-            //     value={this.state.networkId}
-            //     groups={[
-            //         {
-            //             label: "IOTA 1.5 (Chrysalis)",
-            //             description: "Short Chrysalis network description that explains what Chrysalis is.",
-            //             items: this.state.networks.filter(
-            //                 network => network.protocolVersion === "chrysalis").map(n => ({
-            //                     label: n.label,
-            //                     value: n.network,
-            //                     description: n.description,
-            //                     icon: n.network.includes("mainnet") ? "mainnet" : "devnet"
-            //                 })
-            //                 )
-            //         },
-            //         {
-            //             label: "IOTA 1.0 (Legacy)",
-            //             description: "Short Coordicide network description that explains what Coordicide is.",
-            //             items: this.state.networks.filter(
-            //                 network => network.protocolVersion === "og").map(n => ({
-            //                     label: n.label,
-            //                     value: n.network,
-            //                     description: n.description,
-            //                     icon: n.network.includes("devnet") ? "devnet" : "mainnet"
-            //                 })
-            //                 )
-            //         }
-            //     ]}
-            //     onChange={value => {
-            //         this.props.history.push(
-            //             this.props.match.params.action === "streams"
-            //                 ? `/${value}/streams/0/`
-            //                 : (this.props.match.params.action === "visualizer"
-            //                     ? `/${value}/visualizer/`
-            //                     : `/${value}`)
-            //         );
-            //     }}
-            // />
-            // <Switcher
-            //     items={this.state.networks.filter(network => network.isEnabled).map(n => ({
-            //         label: n.label,
-            //         value: n.network
-            //     }))}
-            //     eyebrow="Selected Network"
-            //     label={currentNetworkConfig?.label}
-            //     isDropdown
-            //     value={this.state.networkId}
-            //     onChange={value => {
-            //         this.props.history.push(
-            //             this.props.match.params.action === "streams"
-            //                 ? `/${value}/streams/0/`
-            //                 : (this.props.match.params.action === "visualizer"
-            //                     ? `/${value}/visualizer/`
-            //                     : `/${value}`)
-            //         );
-            //     }}
-            // />
-            // <HeaderDropdown
-            //     label={currentNetworkConfig?.label}
+            // <HeaderExpanded
+            //     label={currentNetworkConfig?.network ? currentNetworkConfig.label : "Network not detected"}
             //     eyebrow="Selected network"
-            //     columns={
-            //         [
-            //             {
-            //                 label: "IOTA 1.5 (Chrysalis)",
-            //                 description: "Short Chrysalis network description that explains what Chrysalis is.",
-            //                 items: [
-            //                     {
-            //                         label: "Currency Converter",
-            //                         onClick: (value => {
-            //                             this.props.history.push(
-            //                                 this.props.match.params.action === "streams"
-            //                                     ? `/${value}/streams/0/`
-            //                                     : (this.props.match.params.action === "visualizer"
-            //                                         ? `/${value}/visualizer/`
-            //                                         : `/${value}`)
-            //                             );
-            //                         })
-            //                     },
-            //                     {
-            //                         label: "Identity Resolver",
-            //                         url: "b"
-            //                     },
-            //                     {
-            //                         label: "IOTA Streams",
-            //                         url: "c"
-            //                     }
-            //                 ]
-            //             }
-            //         ]}
-            // />
+            // >
+            //     <p>In progress</p>
+            // </HeaderExpanded>
+
+            <Switcher
+                eyebrow="Selected Network"
+                label={currentNetworkConfig?.label}
+                isDropdown
+                value={this.state.networkId}
+                groups={[
+                    {
+                        label: "IOTA 1.5 (Chrysalis)",
+                        description: "Short Chrysalis network description that explains what Chrysalis is.",
+                        items: this.state.networks.filter(
+                            network => network.protocolVersion === "chrysalis").map(n => ({
+                                label: n.label,
+                                value: n.network,
+                                description: n.description,
+                                icon: n.network.includes("mainnet") ? "mainnet" : "devnet"
+                            })
+                            )
+                    },
+                    {
+                        label: "IOTA 1.0 (Legacy)",
+                        description: "Short Coordicide network description that explains what Coordicide is.",
+                        items: this.state.networks.filter(
+                            network => network.protocolVersion === "og").map(n => ({
+                                label: n.label,
+                                value: n.network,
+                                description: n.description,
+                                icon: n.network.includes("devnet") ? "devnet" : "mainnet"
+                            })
+                            )
+                    }
+                ]}
+                onChange={value => {
+                    this.props.history.push(
+                        this.props.match.params.action === "streams"
+                            ? `/${value}/streams/0/`
+                            : (this.props.match.params.action === "visualizer"
+                                ? `/${value}/visualizer/`
+                                : `/${value}`)
+                    );
+                }}
+            />
         );
 
         return (
@@ -193,6 +143,10 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                     rootPath={`/${currentNetworkConfig?.isEnabled
                         ? this.state.networkId
                         : ""}`}
+                    network={currentNetworkConfig}
+                    networks={this.state.networks}
+                    action={this.props.match.params.action}
+                    history={this.props.history}
                     switcher={switcher}
                     // switcher={this.props.match.params.action &&
                     //     this.props.match.params.action !== "markets" &&

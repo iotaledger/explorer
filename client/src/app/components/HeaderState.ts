@@ -5,5 +5,6 @@ export interface HeaderState {
     /**
      * Is the menu expanded.
      */
-    isExpanded: boolean;
+    isNetworkSwitcherExpanded: boolean;
+    isUtilitiesExpanded: boolean;
 }
