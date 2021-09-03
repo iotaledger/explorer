@@ -1,8 +1,8 @@
-import { IIdentityDIDHistoryResponse } from "../../../../models/api/IIdentityDIDHistoryResponse";
+import { IIdentityDidHistoryResponse } from "../../../../models/api/IIdentityDidHistoryResponse";
 
 export interface IdentityTreeProps {
     network: string;
-    history?: IIdentityDIDHistoryResponse | undefined;
+    history?: IIdentityDidHistoryResponse | undefined;
 
     onItemClick(messageId: string, content: unknown): void;
 }

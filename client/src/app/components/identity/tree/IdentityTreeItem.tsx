@@ -98,7 +98,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                             <p className="title">{this.shortenMsgId(this.props.messageId ?? "")}</p>
                             {this.props.content?.created ? (
                                 <p className="time-stamp">
-                                    {moment(this.props.content?.created).format("MMM D  h:m:s a")}
+                                    {moment(this.props.content?.updated).format("MMM D  h:m:s a")}
                                 </p>
                             ) : (
                                 <p className="time-stamp"> n.a.</p>

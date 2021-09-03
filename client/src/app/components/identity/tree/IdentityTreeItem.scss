@@ -5,7 +5,9 @@
 
 .tree-item-container {
   position: relative;
+  min-width: 200px;
   height: 64px;
+  margin-right: 10px;
   overflow: hidden;
   border-radius: 30px;
   background-color: white;

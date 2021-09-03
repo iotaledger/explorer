@@ -1,4 +1,4 @@
-export interface IIdentityDIDHistoryRequest {
+export interface IIdentityDidHistoryRequest {
     /**
      * The network to search on.
      */

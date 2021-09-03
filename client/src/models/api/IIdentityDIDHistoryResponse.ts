@@ -1,4 +1,4 @@
-export interface IIdentityDIDHistoryResponse {
+export interface IIdentityDidHistoryResponse {
     integrationChainData?: IntegrationChainData[];
     diffChainData?: unknown[];
     diffChainSpam?: string[];
@@ -9,6 +9,7 @@ export interface IIdentityDIDHistoryResponse {
 interface IntegrationChainData {
     document: {
         created: string;
+        updated: string;
     };
     messageId: string;
 }

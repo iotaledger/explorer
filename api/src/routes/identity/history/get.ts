@@ -1,18 +1,18 @@
 import * as identity from "@iota/identity-wasm/node";
 
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IIdentityDIDHistoryResponse } from "../../../models/api/IIdentityDIDHistoryResponse";
+import { IIdentityDidHistoryRequest } from "../../../models/api/IIdentityDidHistoryRequest";
+import { IIdentityDidHistoryResponse } from "../../../models/api/IIdentityDidHistoryResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NetworkService } from "../../../services/networkService";
 import { ValidationHelper } from "../../../utils/validationHelper";
-import { IIdentityDIDHistoryRequest } from "./../../../models/api/IIdentityDIDHistoryRequest";
 
 /**
  * @param config The configuration.
  * @param request The request.
  * @returns The response.
  */
-export async function get(config: IConfiguration, request: IIdentityDIDHistoryRequest): Promise<unknown> {
+export async function get(config: IConfiguration, request: IIdentityDidHistoryRequest): Promise<unknown> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
 
@@ -43,7 +43,7 @@ async function resolveHistory(
     did: string,
     nodeUrl: string,
     permaNodeUrl: string
-): Promise<IIdentityDIDHistoryResponse> {
+): Promise<IIdentityDidHistoryResponse> {
     try {
         const config = new identity.Config();
         config.setNode(nodeUrl);

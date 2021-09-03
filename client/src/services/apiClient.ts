@@ -9,7 +9,8 @@ import { IOutputDetailsResponse } from "../models/api/chrysalis/IOutputDetailsRe
 import { ISearchRequest } from "../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
-import { IIdentityDIDHistoryRequest } from "../models/api/IIdentityDIDHistoryRequest";
+import { IIdentityDidHistoryRequest } from "../models/api/IIdentityDidHistoryRequest";
+import { IIdentityDidHistoryResponse } from "../models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveRequest } from "../models/api/IIdentityDidResolveRequest";
 import { IIdentityDiffHistoryRequest } from "../models/api/IIdentityDiffHistoryRequest";
 import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
@@ -29,7 +30,6 @@ import { ITrytesRetrieveRequest } from "../models/api/og/ITrytesRetrieveRequest"
 import { ITrytesRetrieveResponse } from "../models/api/og/ITrytesRetrieveResponse";
 import { IStatsGetRequest } from "../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../models/api/stats/IStatsGetResponse";
-import { IIdentityDIDHistoryResponse } from "./../models/api/IIdentityDIDHistoryResponse";
 import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
 /**
  * Class to handle api communications.
@@ -188,7 +188,9 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async didDocument(request: IIdentityDidResolveRequest): Promise<IIdentityDidResolveResponse> {
-        return this.callApi<unknown, IIdentityDidResolveResponse>(`did/${request.network}/${request.did}`, "get");
+        return this.callApi<unknown, IIdentityDidResolveResponse>(
+            `did/${request.network}/${request.did}/document`, "get"
+            );
     }
 
     /**
@@ -196,9 +198,9 @@ export class ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async didHistory(request: IIdentityDIDHistoryRequest): Promise<IIdentityDIDHistoryResponse> {
+    public async didHistory(request: IIdentityDidHistoryRequest): Promise<IIdentityDidHistoryResponse> {
         return this.callApi<unknown, IIdentityDidResolveResponse>(
-            `did-history/${request.network}/${request.did}`,
+            `did/${request.network}/${request.did}/history`,
             "get"
         );
     }
@@ -214,7 +216,7 @@ export class ApiClient {
         payload: unknown
     ): Promise<IIdentityDiffHistoryResponse> {
         return this.callApi<unknown, IIdentityDiffHistoryResponse>(
-            `diff-history/${request.network}/${request.integrationMsgId}`,
+            `did/${request.network}/diffHistory/${request.integrationMsgId}`,
             "post",
             payload
         );

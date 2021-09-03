@@ -1,4 +1,4 @@
-export interface IIdentityDIDHistoryResponse {
+export interface IIdentityDidHistoryResponse {
     integrationChainData?: unknown[];
     diffChainData?: unknown[];
     diffChainSpam?: string[];

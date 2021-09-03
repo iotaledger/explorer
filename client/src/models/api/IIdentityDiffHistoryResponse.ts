@@ -6,4 +6,5 @@ export interface IIdentityDiffHistoryResponse {
 export interface DiffMessage {
     diff: unknown;
     created: string;
+    updated: string;
 }

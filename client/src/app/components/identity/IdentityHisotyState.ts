@@ -1,4 +1,4 @@
-import { IIdentityDIDHistoryResponse } from "../../../models/api/IIdentityDIDHistoryResponse";
+import { IIdentityDidHistoryResponse } from "../../../models/api/IIdentityDidHistoryResponse";
 
 export interface IdentityHistoryState {
 
@@ -9,7 +9,7 @@ export interface IdentityHistoryState {
     selectedMessageId?: string;
 
     // The history data if resolved from Server.
-    resolvedHistory?: IIdentityDIDHistoryResponse | undefined;
+    resolvedHistory?: IIdentityDidHistoryResponse | undefined;
 
     // The content of the selected integration of diff message.
     contentOfSelectedMessage?: unknown;

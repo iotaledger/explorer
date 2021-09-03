@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
-import { IIdentityDIDHistoryResponse } from "./../models/api/IIdentityDIDHistoryResponse";
+import { IIdentityDidHistoryResponse } from "../models/api/IIdentityDidHistoryResponse";
 import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
 import { ApiClient } from "./apiClient";
 
@@ -25,7 +25,7 @@ export class IdentityService {
      * @param  {string} network network name
      * @returns Promise
      */
-    public async resolveHistory(did: string, network: string): Promise<IIdentityDIDHistoryResponse> {
+    public async resolveHistory(did: string, network: string): Promise<IIdentityDidHistoryResponse> {
         const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
         const response = await apiClient.didHistory({ network, did });
