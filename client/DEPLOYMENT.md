@@ -7,7 +7,8 @@ You should copy `./src/assets/config/config.template` to `./src/assets/config/co
 ```js
 {
     "apiEndpoint": "ENDPOINT",                    /* The URL of the api endpoint e.g. https://api.my-domain.com */
-    "googleAnalyticsId": "GOOGLE-ANALYTICS-ID"    /* Optional, google analytics id */
+    "googleAnalyticsId": "GOOGLE-ANALYTICS-ID",    /* Optional, google analytics id */
+    "identityResolverEnabled": false               /* Enable or disable the Identity Resolver Tool.
 }
 ```
 
@@ -15,7 +16,8 @@ e.g. To run it locally with the API
 
 ```json
 {
-    "apiEndpoint": "http://localhost:4000/"
+    "apiEndpoint": "http://localhost:4000/",
+    "identityResolverEnabled": false
 }
 ```
 
