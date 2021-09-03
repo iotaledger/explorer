@@ -1,5 +1,5 @@
 {
     "apiEndpoint": "API-ENDPOINT",
     "googleAnalyticsId": "GOOGLE-ANALYTICS-ID",
-    "identityResolverEnabled": false
+    "identityResolverEnabled": "IDENTITY-RESOLVER-ENABLED"
 }
