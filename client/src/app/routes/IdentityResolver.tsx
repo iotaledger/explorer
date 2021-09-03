@@ -11,6 +11,7 @@ import { IdentityService } from "../../services/identityService";
 import { NetworkService } from "../../services/networkService";
 import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
+import IdentityHistory from "../components/identity/IdentityHistory";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
 import JsonViewer from "../components/JsonViewer";
@@ -46,7 +47,9 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
             errorMessage: "",
             metadata: undefined,
             messageTangleStatus: "pending",
-            didExample: undefined
+            didExample: undefined,
+            resolvedHistory: undefined,
+            historyError: false
         };
     }
 
@@ -67,6 +70,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
         if (typeof res.error === "object") {
             res.error = JSON.stringify(res.error);
         }
+
         if (res.error) {
             this.setState({
                 error: true,
@@ -130,6 +134,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                     <IdentitySearchInput
                                                         compact={false}
                                                         onSearch={e => {
+                                                            console.log("search!!");
                                                             this.props.history.push(e);
                                                         }}
                                                         network={this.props.match.params.network}
@@ -210,24 +215,28 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                                 labelPosition="top"
                                                             />
                                                         </div>
-                                                        {this.state.resolvedIdentity && !this.state.error && (
-                                                            <Fragment>
-                                                                <div className="card--label">Latest Message Id</div>
-                                                                <div className="card--value row middle">
-                                                                    <div className="margin-r-t">
-                                                                        {this.state.resolvedIdentity?.messageId}
+                                                        {this.state.resolvedIdentity &&
+                                                            !this.state.error &&
+                                                            this.state.resolvedIdentity?.messageId !==
+                                                                "0".repeat(64) && (
+                                                                <Fragment>
+                                                                    <div className="card--label">Latest Message Id</div>
+                                                                    <div className="card--value row middle">
+                                                                        <div className="margin-r-t">
+                                                                            {this.state.resolvedIdentity?.messageId}
+                                                                        </div>
+                                                                        <MessageButton
+                                                                            onClick={() =>
+                                                                                ClipboardHelper.copy(
+                                                                                    this.state.resolvedIdentity
+                                                                                        ?.messageId
+                                                                                )}
+                                                                            buttonType="copy"
+                                                                            labelPosition="top"
+                                                                        />
                                                                     </div>
-                                                                    <MessageButton
-                                                                        onClick={() =>
-                                                                            ClipboardHelper.copy(
-                                                                                this.state.resolvedIdentity?.messageId
-                                                                            )}
-                                                                        buttonType="copy"
-                                                                        labelPosition="top"
-                                                                    />
-                                                                </div>
-                                                            </Fragment>
-                                                        )}
+                                                                </Fragment>
+                                                            )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -237,7 +246,6 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                             <div className="card--header card--header">
                                                 <h2>Content</h2>
                                             </div>
-
                                             <div className="card--content">
                                                 <div className="row middle margin-b-s row--tablet-responsive">
                                                     {!this.state.isIdentityResolved && !this.state.error && (
@@ -252,6 +260,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                             <div className="identity-json-header">
                                                                 <div>
                                                                     <IdentityMessageIdOverview
+                                                                        status="integration"
                                                                         messageId={
                                                                             this.state.resolvedIdentity.messageId
                                                                         }
@@ -302,6 +311,8 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {this.state.isIdentityResolved && <IdentityHistory {...this.props} />}
                                     </div>
                                 )}
                             </div>
@@ -313,6 +324,9 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
     }
 
     private async updateMessageDetails(msgId: string): Promise<void> {
+        if (msgId === "0".repeat(64)) {
+            return;
+        }
         const details = await this._tangleCacheService.messageDetails(this.props.match.params.network, msgId);
 
         this.setState({

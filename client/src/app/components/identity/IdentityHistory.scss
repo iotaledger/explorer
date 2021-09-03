@@ -1,0 +1,31 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.load-history {
+  width: 100%;
+  margin: 30px 0;
+  padding: 10px 50px;
+  border: 0;
+  background-color: $white !important;
+  color: $gray;
+}
+
+.history-content {
+  margin: 30px 0;
+}
+
+.history-tree {
+  height: 100%;
+  margin-right: 20px;
+  margin-left: 0 !important;
+
+  @include phone-down {
+    margin-right: 0;
+  }
+}
+
+.history-error {
+  color: $danger !important;
+}

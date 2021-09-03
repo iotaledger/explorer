@@ -21,8 +21,10 @@ export async function get(config: IConfiguration, request: IIdentityDidResolveRe
     const networkConfig = networkService.get(request.network);
 
     if (networkConfig.protocolVersion !== "chrysalis") {
-        // eslint-disable-next-line max-len
-        return { error: "Network is not supported. IOTA Identity only supports chrysalis phase 2 networks, such as the IOTA main network. " };
+        return {
+            // eslint-disable-next-line max-len
+            error: "Network is not supported. IOTA Identity only supports chrysalis phase 2 networks, such as the IOTA main network. "
+        };
     }
 
     const providerUrl = networkConfig.provider;
@@ -45,31 +47,35 @@ async function resolveIdentity(
     try {
         const config = new identity.Config();
         config.setNode(nodeUrl);
-        config.setPermanode(permaNodeUrl);
+        if (permaNodeUrl) {
+            config.setPermanode(permaNodeUrl);
+        }
 
-        // Create a client instance to publish messages to the Tangle.
         const client = identity.Client.fromConfig(config);
-
         const res = await client.resolve(did);
 
-        return { document: res.document, messageId: res.messageId };
+        return { document: res.toJSON(), messageId: res.messageId };
     } catch (e) {
-        return { error: improveErrorMessage(e as string) };
+        return { error: improveErrorMessage(e) };
     }
 }
 /**
- * @param  {string} errorMessage The error message to be improved
+ * @param errorMessage Error object
+ * @param errorMessage.name Error name
  * @returns an improved error message if possible, otherwise same error message
  */
-function improveErrorMessage(errorMessage: string): string {
-    if (errorMessage === "Chain Error: Invalid Root Document") {
+function improveErrorMessage(errorMessage: { name: string }): string {
+    if (errorMessage.name === "ChainError") {
         return "Chain Error: Invalid Root Document. No valid document can be resolved at the index of the DID.";
     }
 
-    if (errorMessage === "Invalid Method Id") {
+    if (errorMessage.name === "InvalidDID") {
         // eslint-disable-next-line max-len
-        return "Invalid Method Id. The provided DID is invalid. A valid DID starts with “did:iota:” followed by an index.";
+        return "Invalid DID. The provided DID is invalid. A valid DID starts with “did:iota:” followed by an index.";
     }
 
-    return errorMessage;
+    if (errorMessage.name) {
+        return errorMessage.name;
+    }
+    return JSON.stringify(errorMessage);
 }

@@ -47,6 +47,11 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
                             isValid: this.isValid(e.target.value),
                             networkMismatch: this.didContainsWrongNetwork(e.target.value, this.props.network)
                         })}
+                    onKeyPress={e => {
+                        if (e.key === "Enter") {
+                            this.doSearch();
+                        }
+                    }}
                 />
 
                 <button
