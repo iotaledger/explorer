@@ -9,30 +9,28 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
         super(props);
 
         this.state = {
-            selectedMessageId: "test"
+            selectedMessageId: this.props.history?.integrationChainData?.[0].messageId ?? ""
         };
     }
 
     public render(): ReactNode {
         return (
-            <div className="tree">
+            <div className="identity-tree">
                 {this.props.history?.integrationChainData?.map((value, index) => (
                     <IdentityTreeItem
                         network={this.props.network}
-                        parentMessageId={undefined}
                         messageId={value?.messageId}
-                        messageContent={value?.document}
                         key={index}
                         lastMsg={index === (this.props.history?.integrationChainData?.length ?? 0) - 1}
                         nested={false}
                         firstMsg={index === 0}
-                        hasChildren={false}
                         selectedMessageId={this.state.selectedMessageId}
-                        onClick={() => {
+                        content={value.document}
+                        onItemClick={(messageId, content) => {
                             this.setState({
-                                selectedMessageId: value?.messageId
+                                selectedMessageId: messageId ?? ""
                             });
-                            this.props.onItemClick(value?.messageId, value?.document);
+                            this.props.onItemClick(messageId ?? "", content);
                         }}
                     />
                 ))}

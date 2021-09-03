@@ -11,9 +11,9 @@ import { IdentityService } from "../../services/identityService";
 import { NetworkService } from "../../services/networkService";
 import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
+import IdentityHistory from "../components/identity/IdentityHistory";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
-import IdentityHistory from "../components/identity/IdentityHistory";
 import JsonViewer from "../components/JsonViewer";
 import MessageButton from "../components/MessageButton";
 import MessageTangleState from "../components/MessageTangleState";
@@ -215,25 +215,29 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                                 labelPosition="top"
                                                             />
                                                         </div>
-                                                        {this.state.resolvedIdentity && !this.state.error && (
-                                                            <Fragment>
-                                                                <div className="card--label">Latest Message Id</div>
-                                                                <div className="card--value row middle">
-                                                                    <div className="margin-r-t">
-                                                                        {this.state.resolvedIdentity?.messageId}
+                                                        {this.state.resolvedIdentity &&
+                                                            !this.state.error &&
+                                                            this.state.resolvedIdentity?.messageId !==
+                                                                "0".repeat(64) && (
+                                                                <Fragment>
+                                                                    <div className="card--label">Latest Message Id</div>
+                                                                    <div className="card--value row middle">
+                                                                        <div className="margin-r-t">
+                                                                            {this.state.resolvedIdentity?.messageId}
+                                                                        </div>
+                                                                        <MessageButton
+                                                                            onClick={() =>
+                                                                                ClipboardHelper.copy(
+                                                                                    this.state.resolvedIdentity
+                                                                                        ?.messageId
+                                                                                )
+                                                                            }
+                                                                            buttonType="copy"
+                                                                            labelPosition="top"
+                                                                        />
                                                                     </div>
-                                                                    <MessageButton
-                                                                        onClick={() =>
-                                                                            ClipboardHelper.copy(
-                                                                                this.state.resolvedIdentity?.messageId
-                                                                            )
-                                                                        }
-                                                                        buttonType="copy"
-                                                                        labelPosition="top"
-                                                                    />
-                                                                </div>
-                                                            </Fragment>
-                                                        )}
+                                                                </Fragment>
+                                                            )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -257,6 +261,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                             <div className="identity-json-header">
                                                                 <div>
                                                                     <IdentityMessageIdOverview
+                                                                        status="integration"
                                                                         messageId={
                                                                             this.state.resolvedIdentity.messageId
                                                                         }

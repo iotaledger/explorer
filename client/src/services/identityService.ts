@@ -1,7 +1,7 @@
-import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
 import { IIdentityDIDHistoryResponse } from "./../models/api/IIdentityDIDHistoryResponse";
+import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
 import { ApiClient } from "./apiClient";
 
 export class IdentityService {

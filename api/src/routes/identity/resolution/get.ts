@@ -1,11 +1,11 @@
 import * as identity from "@iota/identity-wasm/node";
 
-import {ServiceFactory} from "../../../factories/serviceFactory";
-import {IIdentityDidResolveRequest} from "../../../models/api/IIdentityDidResolveRequest";
-import {IIdentityDidResolveResponse} from "../../../models/api/IIdentityDidResolveResponse";
-import {IConfiguration} from "../../../models/configuration/IConfiguration";
-import {NetworkService} from "../../../services/networkService";
-import {ValidationHelper} from "../../../utils/validationHelper";
+import { ServiceFactory } from "../../../factories/serviceFactory";
+import { IIdentityDidResolveRequest } from "../../../models/api/IIdentityDidResolveRequest";
+import { IIdentityDidResolveResponse } from "../../../models/api/IIdentityDidResolveResponse";
+import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { NetworkService } from "../../../services/networkService";
+import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
  * @param config The configuration.
@@ -51,29 +51,31 @@ async function resolveIdentity(
             config.setPermanode(permaNodeUrl);
         }
 
-        // Create a client instance to publish messages to the Tangle.
         const client = identity.Client.fromConfig(config);
-
         const res = await client.resolve(did);
 
-        return {document: res.toJSON(), messageId: res.messageId};
+        return { document: res.toJSON(), messageId: res.messageId };
     } catch (e) {
-        return {error: improveErrorMessage(e as string)};
+        return { error: improveErrorMessage(e) };
     }
 }
 /**
- * @param  {string} errorMessage The error message to be improved
+ * @param errorMessage Error object
+ * @param errorMessage.name Error name
  * @returns an improved error message if possible, otherwise same error message
  */
-function improveErrorMessage(errorMessage: string): string {
-    if (errorMessage === "Chain Error: Invalid Root Document") {
+function improveErrorMessage(errorMessage: { name: string }): string {
+    if (errorMessage.name === "ChainError") {
         return "Chain Error: Invalid Root Document. No valid document can be resolved at the index of the DID.";
     }
 
-    if (errorMessage === "Invalid Method Id") {
+    if (errorMessage.name === "InvalidDID") {
         // eslint-disable-next-line max-len
-        return "Invalid Method Id. The provided DID is invalid. A valid DID starts with “did:iota:” followed by an index.";
+        return "Invalid DID. The provided DID is invalid. A valid DID starts with “did:iota:” followed by an index.";
     }
 
-    return errorMessage;
+    if (errorMessage.name) {
+        return errorMessage.name;
+    }
+    return JSON.stringify(errorMessage);
 }

@@ -6,7 +6,9 @@ export interface IIdentityDIDHistoryResponse {
     error?: string;
 }
 
-interface IntegrationChainData{
-    document: unknown;
+interface IntegrationChainData {
+    document: {
+        created: string;
+    };
     messageId: string;
 }

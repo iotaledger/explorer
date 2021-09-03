@@ -47,15 +47,15 @@ async function resolveHistory(
     try {
         const config = new identity.Config();
         config.setNode(nodeUrl);
-        config.setPermanode(permaNodeUrl);
+        if (permaNodeUrl) {
+            config.setPermanode(permaNodeUrl);
+        }
 
         // Create a client instance to publish messages to the Tangle.
         const client = identity.Client.fromConfig(config);
 
         const recepit = await client.resolveHistory(did);
         const recepitObj = recepit.toJSON();
-
-
 
         const integrationChainData = [];
 
@@ -78,4 +78,3 @@ async function resolveHistory(
         return { error: e as string };
     }
 }
-

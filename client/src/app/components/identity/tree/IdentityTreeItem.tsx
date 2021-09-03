@@ -1,38 +1,39 @@
 import classNames from "classnames";
+import moment from "moment";
 import React, { Component, Fragment, ReactNode } from "react";
+import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { IdentityService } from "../../../../services/identityService";
 import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
 import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
 import "./IdentityTreeItem.scss";
 import { IdentityTreeItemState } from "./IdentityTreeItemState";
-import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { IdentityService } from "../../../../services/identityService";
 
 export default class IdentityTreeItem extends Component<IdentityTreeItemProps, IdentityTreeItemState> {
     constructor(props: IdentityTreeItemProps) {
         super(props);
 
         this.state = {
-            hasChildren: Boolean(props.hasChildren),
+            hasChildren: false,
             loadingChildren: false,
-            isSelected: false,
-            diffHistory: undefined
+            diffHistory: undefined,
+            error: undefined
         };
     }
 
     public render(): ReactNode {
         return (
             <div>
+                {/* --------- Item Content --------- */}
                 <div
                     className={classNames("tree-item-container noselect fadeIn", {
                         "tree-item-selected": this.props.selectedMessageId === this.props.messageId
                     })}
                     onClick={() => {
-                        this.props.onClick();
+                        this.props.onItemClick(this.props.messageId, this.props.content);
                     }}
                 >
                     {!this.props.nested && !this.props.firstMsg && <div className="upper-left-straight-line" />}
                     {!this.props.nested && !this.props.lastMsg && <div className="lower-left-straight-line" />}
-
                     {!this.props.nested && this.state.hasChildren && (
                         <div className="lower-curved-line">
                             <svg
@@ -91,30 +92,26 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                             "push-right": this.props.nested
                         })}
                     >
+
+                        {/* --------- Title and timestamp --------- */}
                         <div>
                             <p className="title">{this.shortenMsgId(this.props.messageId ?? "")}</p>
-
-                            <p className="time-stamp">Jul 26 01:38 AM</p>
+                            {this.props.content?.created ? (
+                                <p className="time-stamp">
+                                    {moment(this.props.content?.created).format("MMM D  h:m:s a")}
+                                </p>
+                            ) : (
+                                <p className="time-stamp"> n.a.</p>
+                            )}
                         </div>
 
+                        {/* --------- Diff button --------- */}
                         {!this.props.nested && (
                             <a
-                                className="diff-icon"
+                                className={classNames("diff-icon", { "opacity-100": this.state.hasChildren })}
                                 onClick={async event => {
                                     event.stopPropagation();
-                                    if (this.state.hasChildren) {
-                                        this.setState({
-                                            hasChildren: false
-                                        });
-                                        return;
-                                    }
-                                    this.setState({
-                                        hasChildren: true
-                                    });
-                                    if (!this.state.diffHistory) {
-                                        await this.loadHistory();
-                                    }
-
+                                    await this.handleDiffButtonOnClick();
                                 }}
                             >
                                 <svg
@@ -134,8 +131,11 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                         )}
                     </div>
                 </div>
+
+                {/* --------- Nested Element/s --------- */}
                 {this.state.hasChildren && (
                     <Fragment>
+                        {/* --------- Loading Diff Chain... --------- */}
                         {this.state.loadingChildren && (
                             <div className="tree-item-container fadeIn">
                                 {!this.props.lastMsg && (
@@ -164,58 +164,80 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                             </div>
                         )}
 
-                        {!this.state.loadingChildren && this.state.diffHistory?.chainData?.length === 0 && (
-                            <div className="tree-item-container fadeIn">
-                                {!this.props.lastMsg && (
-                                    <Fragment>
-                                        <div className="lower-left-straight-line" />
-                                        <div className="upper-left-straight-line" />
-                                    </Fragment>
-                                )}
-                                <div className="upper-curved-line">
-                                    <svg
-                                        width="22"
-                                        height="72"
-                                        viewBox="0 0 22 72"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M1 0C1 32 21 32 21 64M21 64C21 84.8889 21 54.9259 21 64Z"
-                                            stroke="#EEEEEE"
-                                            strokeWidth="2"
-                                        />
-                                    </svg>
+                        {/* --------- ⚠ Error or No Diffs Found --------- */}
+                        {!this.state.loadingChildren &&
+                            (this.state.diffHistory?.chainData?.length === 0 || this.state.error) && (
+                                <div className="tree-item-container fadeIn">
+                                    {!this.props.lastMsg && (
+                                        <Fragment>
+                                            <div className="lower-left-straight-line" />
+                                            <div className="upper-left-straight-line" />
+                                        </Fragment>
+                                    )}
+                                    <div className="upper-curved-line">
+                                        <svg
+                                            width="22"
+                                            height="72"
+                                            viewBox="0 0 22 72"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M1 0C1 32 21 32 21 64M21 64C21 84.8889 21 54.9259 21 64Z"
+                                                stroke="#EEEEEE"
+                                                strokeWidth="2"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <div className="no-diff-icon" />
+                                    {this.state.diffHistory?.chainData?.length === 0 && (
+                                        <p className="title no-diff-title"> No diffs found</p>
+                                    )}
+                                    {this.state.error && <p className="title no-diff-title"> Error</p>}
                                 </div>
-                                <div className="no-diff-icon" />
-                                <p className="title no-diff-title"> No diffs found</p>
-                            </div>
-                        )}
+                            )}
 
-                        {!this.state.loadingChildren && (
-                            <Fragment>
-                                {this.state.diffHistory?.chainData?.map((value, index) => (
-                                    <IdentityTreeItem
-                                        key={index}
-                                        network={this.props.network}
-                                        lastMsg={index === (this.state.diffHistory?.chainData?.length ?? 0) - 1}
-                                        nested={true}
-                                        firstMsg={index === 0}
-                                        hasChildren={false}
-                                        selectedMessageId={this.props.selectedMessageId}
-                                        messageId={value?.messageId}
-                                        onClick={() => {}}
-                                    />
-                                ))}
-
-                                {/* <IdentityTreeItem lastMsg={false} nested={true} firstMsg={false} hasChildren={false} />
-                                <IdentityTreeItem lastMsg={true} nested={true} firstMsg={false} hasChildren={false} /> */}
-                            </Fragment>
-                        )}
+                        {/* --------- Diff children if Parent is Integration message  --------- */}
+                        {!this.state.loadingChildren &&
+                            this.state.diffHistory?.chainData?.map((value, index) => (
+                                <IdentityTreeItem
+                                    key={index}
+                                    network={this.props.network}
+                                    lastMsg={index === (this.state.diffHistory?.chainData?.length ?? 0) - 1}
+                                    nested={true}
+                                    firstMsg={index === 0}
+                                    selectedMessageId={this.props.selectedMessageId}
+                                    messageId={value?.messageId}
+                                    content={value?.message}
+                                    onItemClick={(messageId, content) => {
+                                        this.props.onItemClick(messageId, content);
+                                    }}
+                                />
+                            ))}
                     </Fragment>
                 )}
             </div>
         );
+    }
+
+    /**
+     * Handles mouse click of Diff icon.
+     * It hides/shows history if already loaded. Otherwise it loads history and shows it.
+     * @returns void
+     */
+    private async handleDiffButtonOnClick() {
+        if (this.state.hasChildren) {
+            this.setState({
+                hasChildren: false
+            });
+            return;
+        }
+        this.setState({
+            hasChildren: true
+        });
+        if (!this.state.diffHistory) {
+            await this.loadDiffHistory();
+        }
     }
 
     private shortenMsgId(msgId: string): string {
@@ -226,7 +248,12 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
         return `${msgId.slice(0, 7)}....${msgId.slice(-7)}`;
     }
 
-    private async loadHistory() {
+    /**
+     * Requests the Diff history of the current integration message
+     * It should only be called if the currrent item is not nested (Integration message)
+     * @returns void
+     */
+    private async loadDiffHistory() {
         this.setState({
             loadingChildren: true
         });
@@ -237,17 +264,38 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
         const res = await ServiceFactory.get<IdentityService>("identity").resolveDiffHistory(
             this.props.messageId,
             this.props.network,
-            this.props.messageContent
+            this.props.content
         );
 
-        console.log(res);
-
-        if (typeof res.error === "object") {
-            res.error = JSON.stringify(res.error);
+        // if result includes Error
+        if (res.error) {
+            this.setState({
+                error: res.error,
+                loadingChildren: false
+            });
+            console.error(res.error);
+            return;
         }
+
+        // reverse the order (first message becomes the newest)
+        res.chainData = res.chainData?.reverse();
+
+        // convert diff from string to object so it can be higlighted in json viewer
+        for (let i = 0; i < res.chainData.length; i++) {
+            const diff = res.chainData[i];
+            if (typeof diff.message.diff === "string") {
+                res.chainData[i].message.diff = JSON.parse(this.removeEscapingBackslash(diff?.message.diff) ?? "");
+            }
+        }
+
         this.setState({
             loadingChildren: false,
             diffHistory: res
         });
+    }
+
+    private removeEscapingBackslash(str: string) {
+        // eslint-disable-next-line @typescript-eslint/quotes
+        return str.replace(/\\"/g, '"');
     }
 }

@@ -1,13 +1,24 @@
 export interface IdentityTreeItemProps {
+    // Network name
     network: string;
-    nested?: boolean;
-    firstMsg?: boolean;
-    lastMsg?: boolean;
-    hasChildren?: boolean;
-    selectedMessageId: string;
-    messageId?: string;
-    messageContent?: unknown;
-    parentMessageId?: string;
 
-    onClick(): void;
+    // If item is nested (Diff message, Error Message, No Diffs, Diffs are loading)
+    nested?: boolean;
+
+    // If item is the first in the list (of integration or diffs).
+    firstMsg?: boolean;
+
+    // If item is the last in the list.
+    lastMsg?: boolean;
+
+    // The messageId of the selected message of the tree.
+    selectedMessageId: string;
+
+    // message Id of current message.
+    messageId?: string;
+
+    // Content of current message.
+    content?: { created: string };
+
+    onItemClick(messageId?: string, content?: unknown): void;
 }

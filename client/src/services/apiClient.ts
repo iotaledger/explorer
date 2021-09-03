@@ -1,5 +1,4 @@
-import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
-import { IIdentityDIDHistoryResponse } from "./../models/api/IIdentityDIDHistoryResponse";
+
 import { FetchHelper } from "../helpers/fetchHelper";
 import { IMessageDetailsRequest } from "../models/api/chrysalis/IMessageDetailsRequest";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
@@ -12,6 +11,7 @@ import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
 import { IIdentityDIDHistoryRequest } from "../models/api/IIdentityDIDHistoryRequest";
 import { IIdentityDidResolveRequest } from "../models/api/IIdentityDidResolveRequest";
+import { IIdentityDiffHistoryRequest } from "../models/api/IIdentityDiffHistoryRequest";
 import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
 import { IMarketGetRequest } from "../models/api/IMarketGetRequest";
 import { IMarketGetResponse } from "../models/api/IMarketGetResponse";
@@ -29,8 +29,8 @@ import { ITrytesRetrieveRequest } from "../models/api/og/ITrytesRetrieveRequest"
 import { ITrytesRetrieveResponse } from "../models/api/og/ITrytesRetrieveResponse";
 import { IStatsGetRequest } from "../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../models/api/stats/IStatsGetResponse";
-import { IIdentityDiffHistoryRequest } from "../models/api/IIdentityDiffHistoryRequest";
-
+import { IIdentityDIDHistoryResponse } from "./../models/api/IIdentityDIDHistoryResponse";
+import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
 /**
  * Class to handle api communications.
  */

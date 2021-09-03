@@ -1,4 +1,11 @@
-.tree{
-    min-width: 200px;
-    margin-left: 20px;
+.identity-tree {
+  min-width: 200px;
+  max-height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
 }

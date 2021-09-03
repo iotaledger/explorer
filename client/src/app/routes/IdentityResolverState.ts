@@ -1,7 +1,7 @@
-import { IIdentityDIDHistoryResponse } from './../../models/api/IIdentityDIDHistoryResponse';
 import { IMessageMetadata } from "@iota/iota.js";
 import { IIdentityDidResolveResponse } from "../../models/api/IIdentityResolveResponse";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
+import { IIdentityDIDHistoryResponse } from "./../../models/api/IIdentityDIDHistoryResponse";
 
 export interface IdentityResolverState {
     /**
