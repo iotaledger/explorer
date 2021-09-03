@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import { ReactComponent as SearchIcon } from "./../../assets/search.svg";
 import { TrytesHelper } from "../../helpers/trytesHelper";
+import { ReactComponent as SearchIcon } from "./../../assets/search.svg";
 import AsyncComponent from "./AsyncComponent";
 import "./SearchInput.scss";
 import { SearchInputProps } from "./SearchInputProps";

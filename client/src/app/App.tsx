@@ -9,9 +9,7 @@ import { AppState } from "./AppState";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import HeaderExpanded from "./components/HeaderExpanded";
 import SearchInput from "./components/SearchInput";
-import Switcher from "./components/Switcher";
 import Addr from "./routes/chrysalis/Addr";
 import { AddrRouteProps } from "./routes/chrysalis/AddrRouteProps";
 import Indexed from "./routes/chrysalis/Indexed";
@@ -84,58 +82,6 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
      */
     public render(): ReactNode {
         const currentNetworkConfig = this.state.networks.find(n => n.network === this.state.networkId);
-        console.log("networks", this.state.networks);
-
-        const switcher = (
-            // <HeaderExpanded
-            //     label={currentNetworkConfig?.network ? currentNetworkConfig.label : "Network not detected"}
-            //     eyebrow="Selected network"
-            // >
-            //     <p>In progress</p>
-            // </HeaderExpanded>
-
-            <Switcher
-                eyebrow="Selected Network"
-                label={currentNetworkConfig?.label}
-                isDropdown
-                value={this.state.networkId}
-                groups={[
-                    {
-                        label: "IOTA 1.5 (Chrysalis)",
-                        description: "Short Chrysalis network description that explains what Chrysalis is.",
-                        items: this.state.networks.filter(
-                            network => network.protocolVersion === "chrysalis").map(n => ({
-                                label: n.label,
-                                value: n.network,
-                                description: n.description,
-                                icon: n.network.includes("mainnet") ? "mainnet" : "devnet"
-                            })
-                            )
-                    },
-                    {
-                        label: "IOTA 1.0 (Legacy)",
-                        description: "Short Coordicide network description that explains what Coordicide is.",
-                        items: this.state.networks.filter(
-                            network => network.protocolVersion === "og").map(n => ({
-                                label: n.label,
-                                value: n.network,
-                                description: n.description,
-                                icon: n.network.includes("devnet") ? "devnet" : "mainnet"
-                            })
-                            )
-                    }
-                ]}
-                onChange={value => {
-                    this.props.history.push(
-                        this.props.match.params.action === "streams"
-                            ? `/${value}/streams/0/`
-                            : (this.props.match.params.action === "visualizer"
-                                ? `/${value}/visualizer/`
-                                : `/${value}`)
-                    );
-                }}
-            />
-        );
 
         return (
             <div className="app">
@@ -147,11 +93,6 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                     networks={this.state.networks}
                     action={this.props.match.params.action}
                     history={this.props.history}
-                    switcher={switcher}
-                    // switcher={this.props.match.params.action &&
-                    //     this.props.match.params.action !== "markets" &&
-                    //     this.props.match.params.action !== "currency-converter" &&
-                    //     switcher}
                     search={
                         <SearchInput
                             onSearch={query => this.setQuery(query)}
@@ -159,17 +100,6 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
                         />
                     }
-                    // search={this.props.match.params.action &&
-                    //     this.props.match.params.action !== "streams" &&
-                    //     this.props.match.params.action !== "visualizer" &&
-                    //     this.props.match.params.action !== "markets" &&
-                    //     this.props.match.params.action !== "currency-converter" && (
-                    //         <SearchInput
-                    //             onSearch={query => this.setQuery(query)}
-                    //             compact={true}
-                    //             protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
-                    //         />
-                    //     )}
                     pages={this.state.networks.length > 0 ? [
                         {
                             label: "Explorer",
@@ -183,15 +113,15 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                     utilities={this.state.networks.length > 0 ? [
                         {
                             label: "Streams v0",
-                            url: `/${this.state.networkId}/streams/0/`,
+                            url: `/${this.state.networkId}/streams/0/`
                         },
                         {
                             label: "Markets",
-                            url: `/${this.state.networkId}/markets/`,
+                            url: `/${this.state.networkId}/markets/`
                         },
                         {
                             label: "Currency Converter",
-                            url: `/${this.state.networkId}/currency-converter/`,
+                            url: `/${this.state.networkId}/currency-converter/`
                         }
                     ] : []}
                 />
@@ -231,7 +161,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                                 (
                                                     <Landing
                                                         {...props}
-                                                        switcher={switcher}
+                                                        switcher={<p>In progress...</p>}
                                                         search={(
                                                             <SearchInput
                                                                 onSearch={query => this.setQuery(query)}

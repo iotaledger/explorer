@@ -16,9 +16,24 @@ export interface HeaderProps {
      */
     switcher?: ReactNode;
 
+    /**
+     * The network selected.
+     */
     network?: INetwork;
+
+    /**
+     * The networks available.
+     */
     networks?: INetwork[];
+
+    /**
+     * History for navigation.
+     */
     history?: H.History;
+
+    /**
+     * Action for navigation.
+     */
     action?: string;
 
     /**

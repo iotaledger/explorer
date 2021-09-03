@@ -39,6 +39,14 @@ header {
       }
     }
 
+    .page,
+    .utilities--wrapper,
+    .search-input {
+      @include tablet-down {
+        display: none;
+      }
+    }
+
     .logo-image {
       width: 210px;
       height: 48px;
@@ -83,6 +91,8 @@ header {
       display: flex;
       font-family: $metropolis;
       cursor: pointer;
+      margin-left: 20px;
+      margin-right: 30px;
       &.opened {
         .label {
           color: $gray-9;

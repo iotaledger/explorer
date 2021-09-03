@@ -7,7 +7,7 @@
   display: flex;
   flex: 1;
   flex-direction: row;
-  margin: 0 16px 0px 64px;
+  margin: 0 16px 0px 32px;
   max-width: 400px;
 
   .search--text-input {
@@ -16,7 +16,7 @@
     flex: 1;
     height: 48px;
     padding: 0 24px;
-    border: 1px solid $gray-3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 0 6px 6px 0;
     color: $gray-10;
     font-family: $inter;
@@ -36,7 +36,7 @@
   .search--button {
     @include font-size(14px);
 
-    border: 1px solid $gray-3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-right: 0;
     border-radius: 6px 0 0 6px;
     background-color: transparent;

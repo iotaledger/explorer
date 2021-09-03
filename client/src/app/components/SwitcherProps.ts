@@ -56,7 +56,6 @@ export interface SwitcherProps {
      * Eyebrow in case of dropdown menu.
      */
     eyebrow?: string;
-    
     /**
      * Is the component disabled.
      */

@@ -1,6 +1,7 @@
 @import '../scss/fonts';
 @import '../scss/media-queries';
 @import '../scss/mixins';
+@import '../scss/variables';
 
 .app {
   display: flex;
@@ -10,6 +11,7 @@
   .content {
     flex: 1;
     min-height: 300px;
+    margin-top: $navbar-height;
   }
 
   .maintenance {

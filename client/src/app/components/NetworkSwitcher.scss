@@ -1,0 +1,121 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+
+.network--switcher {
+    margin-left: auto;
+    border-left: 1px solid $gray-2;
+    padding-left: 24px;
+
+    @include tablet-down {
+        margin-top: 24px;
+        width: 100%;
+        border-left: 0;
+    }
+    .network--switcher__header {
+        font-family: $metropolis;
+        cursor: pointer;
+        &.opened {
+            .icon {
+                svg {
+                    transform: rotate(-180deg);
+                    path {
+                        stroke: $gray-9;
+                    }
+                }
+            }
+        }
+        .network--switcher__dropdown {
+            .label {
+                @include font-size(16px, 18px);
+                font-weight: 600;
+                color: $gray-9;
+                letter-spacing: 0.01em;
+            }
+            .eyebrow {
+                @include font-size(10px, 15px);
+                font-weight: 600;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                color: $mint-green-6;
+            }
+            @include tablet-down {
+                width: 100%;
+            }
+        }
+        .icon {
+            margin-left: 64px;
+            svg {
+                width: 16px;
+                height: 16px;
+                transition: transform 0.2s ease;
+            }
+        }
+    }
+    .protocols {
+        display: flex;
+        max-width: 1400px;
+        margin: auto;
+        padding: 40px;
+        .protocol {
+            width: 33%;
+            padding: 0 24px;
+            .protocol--title {
+                font-family: $metropolis;
+                @include font-size(14px, 21px);
+                font-weight: 700;
+                color: $gray-7;
+                text-transform: uppercase;
+                letter-spacing: 0.15em;
+            }
+            .protocol--description {
+                font-family: $inter;
+                @include font-size(14px, 21px);
+                letter-spacing: 0.5px;
+                color: $gray-7;
+            }
+            .network--cards {
+                padding-top: 44px;
+                .network--card {
+                    &.selected {
+                        background: rgba(20, 202, 191, 0.08);
+                        border-radius: 6px;
+                        .network--icon {
+                            background: $mint-green-6;
+                            svg path {
+                                fill: $white;
+                            }
+                        }
+                    }
+                    margin-bottom: 16px;
+                    padding: 4px;
+                    cursor: pointer;
+                    .network--icon {
+                        min-width: 64px;
+                        height: 64px;
+                        background: $gray-2;
+                        border-radius: 8px;
+                    }
+                    .network--content {
+                        margin-left: 24px;
+                        .label {
+                            font-family: $metropolis;
+                            @include font-size(16px, 24px);
+                            font-weight: 600;
+                            color: $gray-9;
+                            letter-spacing: 0.01em;
+                        }
+                        .description {
+                            font-family: $inter;
+                            @include font-size(12px, 18px);
+                            font-weight: 500;
+                            color: $gray-7;
+                            letter-spacing: 0.5px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
