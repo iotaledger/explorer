@@ -206,6 +206,7 @@ export class ApiClient {
     /**
      * Get the hitstory of a an integration message.
      * @param request The request to send.
+     * @param payload body of request
      * @returns The response from the request.
      */
     public async diffHistory(

@@ -230,8 +230,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                                                 ClipboardHelper.copy(
                                                                                     this.state.resolvedIdentity
                                                                                         ?.messageId
-                                                                                )
-                                                                            }
+                                                                                )}
                                                                             buttonType="copy"
                                                                             labelPosition="top"
                                                                         />
