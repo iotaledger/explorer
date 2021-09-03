@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../factories/serviceFactory";
-import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
 import { IIdentityDidHistoryResponse } from "../models/api/IIdentityDidHistoryResponse";
+import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
 import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
 import { ApiClient } from "./apiClient";
 
