@@ -51,21 +51,17 @@ import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
 /**
  * Main application class.
  */
-class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
+class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConfiguration }, AppState> {
     /**
      * The network service.
      */
     private readonly _networkService: NetworkService;
 
-    private readonly configId = process.env.REACT_APP_CONFIG_ID ?? "local";
-
-    private readonly clientConfig: IConfiguration = require(`../assets/config/config.${this.configId}.json`);
-
     /**
      * Create a new instance of App.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<AppRouteProps>) {
+    constructor(props: RouteComponentProps<AppRouteProps> & { config: IConfiguration }) {
         super(props);
         this._networkService = ServiceFactory.get<NetworkService>("network");
         const networks = this._networkService.networks();
@@ -316,7 +312,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
             ];
 
             if (
-                this.clientConfig.identityResolverEnabled &&
+                this.props.config.identityResolverEnabled &&
                 this.state.networkConfig?.protocolVersion === "chrysalis"
             ) {
                 tools.push({
@@ -359,7 +355,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                 });
 
             if (
-                this.clientConfig.identityResolverEnabled &&
+                this.props.config.identityResolverEnabled &&
                 this.state.networkConfig?.protocolVersion === "chrysalis"
             ) {
                 footerArray.push({
