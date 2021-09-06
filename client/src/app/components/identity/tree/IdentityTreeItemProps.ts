@@ -20,6 +20,11 @@ export interface IdentityTreeItemProps {
     lastMsg?: boolean;
 
     /**
+     * in case of nested item, if parent is last integration message
+     */
+    parentLastMsg?: boolean;
+
+    /**
      * The messageId of the selected message of the tree.
      */
     selectedMessageId: string;

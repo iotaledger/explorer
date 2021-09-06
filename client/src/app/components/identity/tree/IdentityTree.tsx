@@ -26,6 +26,7 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
                         firstMsg={index === 0}
                         selectedMessageId={this.state.selectedMessageId}
                         content={value.document}
+                        parentLastMsg={undefined}
                         onItemClick={(messageId, content) => {
                             this.setState({
                                 selectedMessageId: messageId ?? ""

@@ -47,4 +47,9 @@ export interface IdentityResolverState {
      * an Example for a DID address
      */
     didExample?: string;
+
+    /**
+     * messageId of latest message. (zeros if latest message is a diff message)
+     */
+    latestMessageId?: string;
 }

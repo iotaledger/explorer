@@ -34,6 +34,11 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
      */
     private readonly _tangleCacheService: TangleCacheService;
 
+    /**
+     * placeholder when messageId is not avaiable.
+     */
+    private readonly EMPTY_MESSAGE_ID = "0".repeat(64);
+
     constructor(props: RouteComponentProps<IdentityResolverProps>) {
         super(props);
 
@@ -81,7 +86,8 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
 
         this.setState({
             resolvedIdentity: res,
-            isIdentityResolved: true
+            isIdentityResolved: true,
+            latestMessageId: res.messageId ?? undefined
         });
 
         await this.updateMessageDetails(res.messageId ?? "");
@@ -183,25 +189,26 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                             "
                                             >
                                                 <h2>General</h2>
-                                                {!this.state.error && (
-                                                    <MessageTangleState
-                                                        network={this.props.match.params.network}
-                                                        status={this.state.messageTangleStatus}
-                                                        milestoneIndex={
-                                                            this.state.metadata?.referencedByMilestoneIndex ??
-                                                            this.state.metadata?.milestoneIndex
-                                                        }
-                                                        onClick={
-                                                            this.state.metadata?.referencedByMilestoneIndex
-                                                                ? () =>
-                                                                      this.props.history.push(
-                                                                          // eslint-disable-next-line max-len
-                                                                          `/${this.props.match.params.network}/search/${this.state.metadata?.referencedByMilestoneIndex}`
-                                                                      )
-                                                                : undefined
-                                                        }
-                                                    />
-                                                )}
+                                                {!this.state.error &&
+                                                    !(this.state.latestMessageId === this.EMPTY_MESSAGE_ID) && (
+                                                        <MessageTangleState
+                                                            network={this.props.match.params.network}
+                                                            status={this.state.messageTangleStatus}
+                                                            milestoneIndex={
+                                                                this.state.metadata?.referencedByMilestoneIndex ??
+                                                                this.state.metadata?.milestoneIndex
+                                                            }
+                                                            onClick={
+                                                                this.state.metadata?.referencedByMilestoneIndex
+                                                                    ? () =>
+                                                                          this.props.history.push(
+                                                                              // eslint-disable-next-line max-len
+                                                                              `/${this.props.match.params.network}/search/${this.state.metadata?.referencedByMilestoneIndex}`
+                                                                          )
+                                                                    : undefined
+                                                            }
+                                                        />
+                                                    )}
                                             </div>
                                             <div className="card--content">
                                                 <div className="row middle margin-b-s row--tablet-responsive">
@@ -218,7 +225,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                         {this.state.resolvedIdentity &&
                                                             !this.state.error &&
                                                             this.state.resolvedIdentity?.messageId !==
-                                                                "0".repeat(64) && (
+                                                                this.EMPTY_MESSAGE_ID && (
                                                                 <Fragment>
                                                                     <div className="card--label">Latest Message Id</div>
                                                                     <div className="card--value row middle">
@@ -324,7 +331,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
     }
 
     private async updateMessageDetails(msgId: string): Promise<void> {
-        if (msgId === "0".repeat(64)) {
+        if (msgId === this.EMPTY_MESSAGE_ID) {
             return;
         }
         const details = await this._tangleCacheService.messageDetails(this.props.match.params.network, msgId);
