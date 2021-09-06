@@ -99,21 +99,34 @@
       font-size: 0.8em;
     }
 
+    .diff-icon-active {
+      svg {
+        path {
+          fill: $gray;
+        }
+      }
+    }
+
     .diff-icon {
       display: flex;
+      position: absolute;
+      top: 4px;
+      left: 107px;
       align-items: center;
       justify-content: center;
       width: 30px;
       height: 30px;
       margin-top: 4px;
       margin-left: 10px;
+      border: 1px solid $gray-light;
       border-radius: 4px;
-      opacity: 40%;
-      background-color: transparent;
 
       &:hover {
-        opacity: 100%;
-        background-color: $white;
+        svg {
+          path {
+            fill: $main-green-highlight;
+          }
+        }
       }
     }
   }

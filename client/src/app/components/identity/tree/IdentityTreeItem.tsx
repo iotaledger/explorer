@@ -54,8 +54,13 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
 
                     {this.props.nested && (
                         <Fragment>
-                            <div className="lower-left-straight-line" />
-                            <div className="upper-left-straight-line" />
+                            {!this.props.parentLastMsg && (
+                                <Fragment>
+                                    <div className="upper-left-straight-line" />
+                                    <div className="lower-left-straight-line" />
+                                </Fragment>
+                            )}
+
                             {!this.props.firstMsg && <div className="upper-right-straight-line" />}
                             {!this.props.lastMsg && <div className="lower-right-straight-line" />}
                             {this.props.firstMsg && (
@@ -92,13 +97,12 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                             "push-right": this.props.nested
                         })}
                     >
-
                         {/* --------- Title and timestamp --------- */}
                         <div>
                             <p className="title">{this.shortenMsgId(this.props.messageId ?? "")}</p>
                             {this.props.content?.created ? (
                                 <p className="time-stamp">
-                                    {moment(this.props.content?.updated).format("MMM D  h:m:s a")}
+                                    {moment(this.props.content?.updated).format("MMM D  hh:mm:ss a")}
                                 </p>
                             ) : (
                                 <p className="time-stamp"> n.a.</p>
@@ -108,7 +112,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                         {/* --------- Diff button --------- */}
                         {!this.props.nested && (
                             <a
-                                className={classNames("diff-icon", { "opacity-100": this.state.hasChildren })}
+                                className={classNames("diff-icon", { "diff-icon-active": this.state.hasChildren })}
                                 onClick={async event => {
                                     event.stopPropagation();
                                     await this.handleDiffButtonOnClick();
@@ -209,6 +213,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                                     selectedMessageId={this.props.selectedMessageId}
                                     messageId={value?.messageId}
                                     content={value?.message}
+                                    parentLastMsg={this.props.lastMsg}
                                     onItemClick={(messageId, content) => {
                                         this.props.onItemClick(messageId, content);
                                     }}

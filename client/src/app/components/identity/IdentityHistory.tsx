@@ -50,7 +50,7 @@ export default class IdentityHistory extends Component<
                         }}
                         type="button"
                     >
-                        Load History 🡫
+                        Load History
                     </button>
                 )}
 
