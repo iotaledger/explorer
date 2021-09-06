@@ -11,7 +11,7 @@ header {
   padding: 15px 20px;
   background: rgba(255, 255, 255, 0.2);
   border-bottom: 1px solid $gray-2;
-  min-height: $navbar-height;
+  min-height: $navbar-height-desktop;
   backdrop-filter: blur(20px);
   z-index: 1000;
 
@@ -33,16 +33,12 @@ header {
       margin-right: 30px;
       outline: none;
       text-decoration: none;
-
-      &:focus {
-        box-shadow: 0 0 3px 0 $main-green-highlight;
-      }
     }
 
     .page,
     .utilities--wrapper,
     .search-input {
-      @include tablet-down {
+      @media (max-width: 1200px) {
         display: none;
       }
     }
@@ -50,6 +46,21 @@ header {
     .logo-image {
       width: 210px;
       height: 48px;
+    }
+    .logo-image-mobile {
+      width: 116px;
+      height: 40px;
+    }
+
+    @media (max-width: 1200px) {
+      .logo-image {
+        display: none;
+      }
+    }
+    @media (min-width: 1200px) {
+      .logo-image-mobile {
+        display: none;
+      }
     }
 
     .page {
@@ -76,6 +87,14 @@ header {
     width: 100%;
     min-height: 423px;
     z-index: 2;
+    @media (max-width: 1200px) {
+      position: fixed;
+      top: 139px;
+      left: 0;
+      width: 100vw;
+      height: calc(100vh - 140px);
+      overflow-y: scroll;
+    }
   }
   .header--expanded--shield {
     position: fixed;
@@ -84,6 +103,62 @@ header {
     width: 100%;
     height: 100vh;
     z-index: -1;
+  }
+  .hamburger--menu {
+    margin-left: auto;
+    @media (min-width: 1200px) {
+      display: none;
+    }
+    .hamburger--menu__icon {
+      cursor: pointer;
+    }
+    .menu--expanded {
+      position: fixed;
+      height: 100vh;
+      background: white;
+      width: 100%;
+      left: 0;
+      top: 73px;
+      z-index: 1;
+      .menu--expanded__item {
+        a,
+        div {
+          font-family: $metropolis;
+          @include font-size(16px, 24px);
+          font-weight: 600;
+          color: $gray-6;
+        }
+        display: flex;
+        justify-content: space-between;
+        cursor: pointer;
+        &:hover {
+          background: rgba(72, 87, 118, 0.08);
+          border-radius: 0px 8px 8px 0px;
+        }
+        .icon {
+          svg {
+            transition: transform 0.2s ease;
+          }
+        }
+        &.opened {
+          .icon {
+            svg {
+              transform: rotate(-180deg);
+              path {
+                stroke: $gray-9;
+              }
+            }
+          }
+        }
+      }
+      ul {
+        margin-top: 16px;
+        margin-right: 16px;
+        li {
+          padding: 12px 15px;
+        }
+      }
+    }
   }
 
   .utilities--wrapper {

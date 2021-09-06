@@ -7,4 +7,5 @@ export interface HeaderState {
      */
     isNetworkSwitcherExpanded: boolean;
     isUtilitiesExpanded: boolean;
+    isMenuExpanded: boolean;
 }

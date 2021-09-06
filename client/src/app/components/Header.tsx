@@ -1,6 +1,9 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
+import closeIcon from "../../assets/close.svg";
+import hamburgerIcon from "../../assets/hamburger.svg";
+import logoHeaderMobile from "../../assets/logo-header-mobile.svg";
 import logoHeader from "../../assets/logo-header.svg";
 import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
 import "./Header.scss";
@@ -20,7 +23,8 @@ class Header extends Component<HeaderProps, HeaderState> {
 
         this.state = {
             isNetworkSwitcherExpanded: false,
-            isUtilitiesExpanded: false
+            isUtilitiesExpanded: false,
+            isMenuExpanded: false
         };
     }
 
@@ -53,6 +57,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                         onClick={() => this.setState({ isUtilitiesExpanded: false })}
                     >
                         <img className="logo-image" src={logoHeader} alt="Explorer" />
+                        <img className="logo-image-mobile" src={logoHeaderMobile} alt="Explorer" />
                     </Link>
                     {this.props.pages && this.props.pages.length > 0 && this.props.pages.map(page => (
                         <Link
@@ -114,6 +119,75 @@ class Header extends Component<HeaderProps, HeaderState> {
                         )}
                     </div>
                     {this.props.search}
+                    <div className="hamburger--menu">
+                        <div
+                            className="hamburger--menu__icon"
+                            onClick={() => this.setState({ isMenuExpanded: !this.state.isMenuExpanded })}
+                        >
+                            <img src={this.state.isMenuExpanded ? closeIcon : hamburgerIcon} alt="Hamburger menu" />
+                        </div>
+                        {this.state.isMenuExpanded && (
+                            <div className="menu--expanded">
+                                <ul>
+                                    {this.props.pages && this.props.pages.length > 0 && this.props.pages.map(page => (
+                                        <li className="menu--expanded__item" key={page.url}>
+                                            <Link
+                                                to={page.url}
+                                                onClick={() => this.setState({ isMenuExpanded: false })}
+                                            >
+                                                <span
+                                                    className={` 
+                                                ${page.url === window.location.pathname
+                                                            ? "active" : ""}`}
+                                                >
+                                                    {page.label}
+                                                </span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                    <li
+                                        className={classNames("menu--expanded__item",
+                                            { opened: this.state.isUtilitiesExpanded }
+                                        )}
+                                        onClick={() => this.setState(
+                                            { isUtilitiesExpanded: !this.state.isUtilitiesExpanded }
+                                        )}
+                                    >
+
+                                        <div className="label">
+                                            Utilities
+                                        </div>
+                                        <div className="icon">
+                                            <DropdownIcon />
+                                        </div>
+                                    </li>
+                                    {this.state.isUtilitiesExpanded && (
+                                        <React.Fragment>
+                                            <div className="utilities">
+                                                {this.props.utilities?.map(utility => (
+                                                    <li key={utility.url} className="menu--expanded__item margin-l-t">
+                                                        <Link
+                                                            key={utility.url}
+                                                            to={utility.url}
+                                                            onClick={() => this.setState(
+                                                                { isMenuExpanded: false, isUtilitiesExpanded: false }
+                                                            )}
+                                                        >
+                                                            {utility.label}
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </div>
+                                            <div
+                                                className="header--expanded--shield"
+                                                onClick={() => this.setState({ isUtilitiesExpanded: false })}
+                                            />
+                                        </React.Fragment>
+                                    )}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
                     <NetworkSwitcher
                         eyebrow="Selected network"
                         label={this.props.network?.label}
@@ -139,6 +213,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                             );
                         }}
                     />
+
                 </nav >
             </header >
         );

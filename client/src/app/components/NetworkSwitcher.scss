@@ -8,10 +8,23 @@
     border-left: 1px solid $gray-2;
     padding-left: 24px;
 
-    @include tablet-down {
-        margin-top: 24px;
+    @media (max-width: 1200px) {
+        margin-top: 15px;
         width: 100%;
+        padding-top: 15px;
+        padding-left: 0;
         border-left: 0;
+        position: relative;
+        justify-content: space-between;
+        &::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -20px;
+            background-color: $gray-2;
+            width: 100vw;
+            height: 1px;
+        }
     }
     .network--switcher__header {
         font-family: $metropolis;
@@ -58,6 +71,14 @@
         max-width: 1400px;
         margin: auto;
         padding: 40px;
+        @media (max-width: 1200px) {
+            display: block;
+            padding: 24px;
+            div.protocol {
+                width: 100%;
+                padding: 24px 0;
+            }
+        }
         .protocol {
             width: 33%;
             padding: 0 24px;
@@ -78,15 +99,18 @@
             .network--cards {
                 padding-top: 44px;
                 .network--card {
+                    border-radius: 12px;
                     &.selected {
                         background: rgba(20, 202, 191, 0.08);
-                        border-radius: 6px;
                         .network--icon {
                             background: $mint-green-6;
                             svg path {
                                 fill: $white;
                             }
                         }
+                    }
+                    &:hover:not(.selected) {
+                        background: #f0f2f4;
                     }
                     margin-bottom: 16px;
                     padding: 4px;
