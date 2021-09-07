@@ -9,4 +9,9 @@ export interface IConfiguration {
      * The google analytics id.
      */
     googleAnalyticsId: string;
+
+    /**
+     * If Identity Resolver tool should be supported.
+     */
+    identityResolverEnabled: boolean;
 }

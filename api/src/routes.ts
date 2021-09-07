@@ -28,5 +28,14 @@ export const routes: IRoute[] = [
     { path: "/milestone/:network/:milestoneIndex", method: "get", folder: "chrysalis/milestone", func: "get" },
     { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
     { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
-    { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true }
+    { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true },
+    { path: "/did/:network/:did/document", method: "get", folder: "identity/resolution", func: "get" },
+    { path: "/did/:network/:did/history", method: "get", folder: "identity/history", func: "get" },
+    {
+        path: "/did/:network/diffHistory/:integrationMsgId",
+        method: "post",
+        folder: "identity/diff",
+        func: "get",
+        dataBody: true
+    }
 ];

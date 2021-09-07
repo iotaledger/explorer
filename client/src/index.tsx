@@ -12,6 +12,7 @@ import { IConfiguration } from "./models/config/IConfiguration";
 import { ApiClient } from "./services/apiClient";
 import { CurrencyService } from "./services/currencyService";
 import { FeedClient } from "./services/feedClient";
+import { IdentityService } from "./services/identityService";
 import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesClient } from "./services/milestonesClient";
 import { NetworkService } from "./services/networkService";
@@ -29,7 +30,7 @@ initialiseServices().then(() => {
                     exact={true}
                     path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
                     component={(props: RouteComponentProps<AppRouteProps>) => (
-                        <App {...props} />)}
+                        <App {...props} config={config} />)}
                 />
 
             </BrowserRouter>
@@ -46,6 +47,8 @@ async function initialiseServices(): Promise<void> {
     ServiceFactory.register("api-client", () => new ApiClient(config.apiEndpoint));
     ServiceFactory.register("settings", () => new SettingsService());
     ServiceFactory.register("local-storage", () => new LocalStorageService());
+
+    ServiceFactory.register("identity", () => new IdentityService());
 
     const networkService = new NetworkService();
     ServiceFactory.register("network", () => networkService);

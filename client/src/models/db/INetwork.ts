@@ -108,4 +108,9 @@ export interface INetwork {
      * The ordering for the networks.
      */
     order: number;
+
+    /**
+     * An optional Example for a DID for the Identity tool
+     */
+    didExample?: string;
 }

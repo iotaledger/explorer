@@ -113,4 +113,9 @@ export interface INetwork {
      * The ordering for the networks.
      */
     order: number;
+
+    /**
+     * An example for an Identity DID address.
+     */
+     didExample?: string;
 }
