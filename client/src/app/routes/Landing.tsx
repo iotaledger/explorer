@@ -1,8 +1,7 @@
-import { UnitsHelper, Units } from "@iota/iota.js";
+import { Units, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
-import chevronDownWhite from "../../assets/chevron-down-white.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { RouteBuilder } from "../../helpers/routeBuilder";
 import { INetwork } from "../../models/db/INetwork";
@@ -94,99 +93,100 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                 <div className="wrapper header-wrapper">
                     <div className="inner">
                         <div className="header">
-                            <h2>{this.state.networkConfig.isEnabled ? "Searching" : ""}</h2>
-                            <div className="row space-between wrap">
-                                <h1>{this.state.networkConfig.label}</h1>
-                                {this.state.networkConfig.isEnabled && this.props.switcher}
+                            <div className="header--title">
+                                <h2>{this.state.networkConfig.isEnabled ? "Explore network" : ""}</h2>
+                                <div className="row space-between wrap">
+                                    <h1>{this.state.networkConfig.label}</h1>
+                                </div>
                             </div>
                             {this.state.networkConfig.isEnabled && (
-                                <React.Fragment>
-                                    <div className="row fill">
-                                        {this.props.search}
+                                <div className="row space-between info-boxes">
+                                    <div className="info-box">
+                                        <span className="info-box--title">{
+                                            this.state.networkConfig.protocolVersion === "og"
+                                                ? "Transactions"
+                                                : "Messages"
+                                        } per sec
+                                        </span>
+                                        <span className="info-box--value">
+                                            {this.state.itemsPerSecond} / {
+                                                this.state.confirmedItemsPerSecond
+                                            }
+                                        </span>
+                                        {/* <span className="info-box--action info-box--action__labelvalue">
+                                            <span className="info-box--action__label margin-l-t margin-r-t">
+                                                {this._networkConfig?.protocolVersion === "chrysalis"
+                                                    ? "Referenced Rate:" : "Confirmation Rate:"}
+                                            </span>
+                                            <span className="info-box--action__value margin-r-t">
+                                                {this.state.confirmedItemsPerSecondPercent}
+                                            </span>
+                                        </span> */}
                                     </div>
-                                    <div className="row space-between info-boxes">
+                                    {this.state.networkConfig.showMarket && (
                                         <div className="info-box">
-                                            <span className="info-box--title">{
-                                                this.state.networkConfig.protocolVersion === "og"
-                                                    ? "Transactions"
-                                                    : "Messages"
-                                            } per Second
-                                            </span>
-                                            <span className="info-box--value">
-                                                {this.state.itemsPerSecond} / {
-                                                    this.state.confirmedItemsPerSecond
-                                                }
-                                            </span>
-                                            <span className="info-box--action info-box--action__labelvalue">
-                                                <span className="info-box--action__label margin-l-t margin-r-t">
-                                                    {this._networkConfig?.protocolVersion === "chrysalis"
-                                                        ? "Referenced Rate:" : "Confirmation Rate:"}
-                                                </span>
-                                                <span className="info-box--action__value margin-r-t">
-                                                    {this.state.confirmedItemsPerSecondPercent}
-                                                </span>
-                                            </span>
+                                            {/* <Link
+                                                to={`/${this.props.match.params.network}/markets`}
+                                                className="info-box--title linked"
+                                            >
+                                                IOTA Market Cap
+                                            </Link>
+                                            <Link
+                                                to={`/${this.props.match.params.network}/markets`}
+                                                className="info-box--value linked"
+                                            >
+                                                {this.state.marketCapCurrency}
+                                            </Link> */}
+                                            <span className="info-box--title">IOTA Market Cap</span>
+                                            <span className="info-box--value">{this.state.marketCapCurrency}</span>
+                                            {/* <span className="info-box--action">
+                                                <div className="select-wrapper select-wrapper--small">
+                                                    <select
+                                                        value={this.state.currency}
+                                                        onChange={e => this.setCurrency(e.target.value)}
+                                                    >
+                                                        {this.state.currencies.map(cur => (
+                                                            <option value={cur} key={cur}>{cur}</option>
+                                                        ))}
+                                                    </select>
+                                                    <img src={chevronDownWhite} alt="expand" />
+                                                </div>
+                                            </span> */}
                                         </div>
-                                        {this.state.networkConfig.showMarket && (
-                                            <div className="info-box">
-                                                <Link
-                                                    to={`/${this.props.match.params.network}/markets`}
-                                                    className="info-box--title linked"
-                                                >
-                                                    IOTA Market Cap
-                                                </Link>
-                                                <Link
-                                                    to={`/${this.props.match.params.network}/markets`}
-                                                    className="info-box--value linked"
-                                                >
-                                                    {this.state.marketCapCurrency}
-                                                </Link>
-                                                <span className="info-box--action">
-                                                    <div className="select-wrapper select-wrapper--small">
-                                                        <select
-                                                            value={this.state.currency}
-                                                            onChange={e => this.setCurrency(e.target.value)}
-                                                        >
-                                                            {this.state.currencies.map(cur => (
-                                                                <option value={cur} key={cur}>{cur}</option>
-                                                            ))}
-                                                        </select>
-                                                        <img src={chevronDownWhite} alt="expand" />
-                                                    </div>
-                                                </span>
-                                            </div>
-                                        )}
-                                        {this.state.networkConfig.showMarket && (
-                                            <div className="info-box">
-                                                <Link
-                                                    to={`/${this.props.match.params.network}/markets`}
-                                                    className="info-box--title linked"
-                                                >
-                                                    Price / MI
-                                                </Link>
-                                                <Link
-                                                    to={`/${this.props.match.params.network}/markets`}
-                                                    className="info-box--value linked"
-                                                >
-                                                    {this.state.priceCurrency}
-                                                </Link>
-                                                <span className="info-box--action">
-                                                    <div className="select-wrapper select-wrapper--small">
-                                                        <select
-                                                            value={this.state.currency}
-                                                            onChange={e => this.setCurrency(e.target.value)}
-                                                        >
-                                                            {this.state.currencies.map(cur => (
-                                                                <option value={cur} key={cur}>{cur}</option>
-                                                            ))}
-                                                        </select>
-                                                        <img src={chevronDownWhite} alt="expand" />
-                                                    </div>
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </React.Fragment>
+                                    )}
+                                    {this.state.networkConfig.showMarket && (
+                                        <div className="info-box">
+                                            <span className="info-box--title">Price / MI</span>
+                                            <span className="info-box--value">{this.state.priceCurrency}</span>
+                                            {/* <Link
+                                                to={`/${this.props.match.params.network}/markets`}
+                                                className="info-box--title linked"
+                                            >
+                                                Price / MI
+                                            </Link>
+                                            
+                                            <Link
+                                                to={`/${this.props.match.params.network}/markets`}
+                                                className="info-box--value linked"
+                                            >
+                                                {this.state.priceCurrency}
+                                            </Link> */}
+                                            {/* <span className="info-box--action">
+                                                <div className="select-wrapper select-wrapper--small">
+                                                    <select
+                                                        value={this.state.currency}
+                                                        onChange={e => this.setCurrency(e.target.value)}
+                                                    >
+                                                        {this.state.currencies.map(cur => (
+                                                            <option value={cur} key={cur}>{cur}</option>
+                                                        ))}
+                                                    </select>
+                                                    <img src={chevronDownWhite} alt="expand" />
+                                                </div>
+                                            </span> */}
+                                        </div>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </div>
@@ -197,9 +197,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                             <h1>Feeds</h1>
                             {this.state.networkConfig.isEnabled &&
                                 (
-                                    <div className="row filters wrap card">
+                                    <div className="row filters wrap section">
                                         <div className="col">
-                                            <span className="card--label">
+                                            <span className="section--label">
                                                 {this._networkConfig?.protocolVersion === "og"
                                                     ? "Value" : "Payload"} Filter
                                             </span>
@@ -239,7 +239,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                             this.state.valueFilter !== "noPayload" && (
                                                 <React.Fragment>
                                                     <div className="col">
-                                                        <span className="card--label">Minimum</span>
+                                                        <span className="section--label">Minimum</span>
                                                         <span className="filter--value">
                                                             <div className="select-wrapper">
                                                                 <select
@@ -267,11 +267,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                         </span>
                                                     </div>
                                                     <div className="col">
-                                                        <span className="card--label">&nbsp;</span>
-                                                        <span className="card--label margin-b-t">To</span>
+                                                        <span className="section--label">&nbsp;</span>
+                                                        <span className="section--label margin-b-t">To</span>
                                                     </div>
                                                     <div className="col">
-                                                        <span className="card--label">Maximum</span>
+                                                        <span className="section--label">Maximum</span>
                                                         <span className="filter--value">
                                                             <div className="select-wrapper">
                                                                 <select
@@ -303,28 +303,45 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                     </div>
                                 )}
                             <div className="row wrap feeds">
-                                <div className="feed card">
-                                    <div className="card--header">
-                                        <h2>{this.state.networkConfig.label} Feed</h2>
+                                <div className="feed section">
+                                    <div className="section--header">
+                                        <h2>Latest messages</h2>
+                                        {/* <h2>{this.state.networkConfig.label} Feed</h2> */}
                                     </div>
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
-                                            <span className="card--label">
+                                            <span className="section--label">
                                                 {this.state.networkConfig.protocolVersion === "og"
-                                                    ? "Amount" : "Payload"}
+                                                    ? "Transaction" : "Message id"}
                                             </span>
-                                            <span className="card--label">
+                                            <span className="section--label">
                                                 {this.state.networkConfig.protocolVersion === "og"
-                                                    ? "Transaction" : "Message"}
+                                                    ? "Amount" : "Payload Type"}
                                             </span>
                                         </div>
                                         {this.state.filteredItems.length === 0 && (
                                             <p>There are no items with the current filter.</p>
                                         )}
                                         {this.state.filteredItems.map(item => (
-                                            <div className="row feed-item" key={item.id}>
-                                                <span className="feed-item--value">
-                                                    {item.value !== undefined && (
+                                            <div className=" feed-item" key={item.id}>
+                                                <div className="feed-item__content">
+                                                    <span className="feed-item--label">
+                                                        {this.state.networkConfig.protocolVersion === "og"
+                                                            ? "Transaction" : "Message id"}
+                                                    </span>
+                                                    <Link
+                                                        className="feed-item--hash"
+                                                        to={RouteBuilder.buildItem(this.state.networkConfig, item.id)}
+                                                    >
+                                                        {item.id}
+                                                    </Link>
+                                                </div>
+                                                <div className="feed-item__content">
+                                                    <span className="feed-item--label">
+                                                        {this.state.networkConfig.protocolVersion === "og"
+                                                            ? "Amount" : "Payload Type"}
+                                                    </span>
+                                                    <span className="feed-item--value">
                                                         <button
                                                             type="button"
                                                             onClick={() => this.setState(
@@ -336,59 +353,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                                     this.state.formatFull)
                                                             )}
                                                         >
-                                                            {this.state.formatFull
-                                                                ? `${item.value} i`
-                                                                : UnitsHelper.formatBest(item.value)}
-                                                        </button>
-                                                    )}
-                                                    {item.value === undefined && (
-                                                        <span>
                                                             {item.payloadType}
-                                                        </span>
-                                                    )}
-                                                </span>
-                                                <Link
-                                                    className="feed-item--hash"
-                                                    to={RouteBuilder.buildItem(this.state.networkConfig, item.id)}
-                                                >
-                                                    {item.id}
-                                                </Link>
+                                                        </button>
+                                                    </span>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
-                                </div>
-                                <div className="feed card">
-                                    <div className="card--header">
-                                        <h2>{this.state.networkConfig.label} Milestones</h2>
-                                    </div>
-                                    <div className="feed-items">
-                                        <div className="row feed-item--header">
-                                            <span className="card--label">Milestone</span>
-                                            <span className="card--label">
-                                                {this.state.networkConfig.protocolVersion === "og"
-                                                    ? "Transaction" : "Message Id"}
-                                            </span>
-                                        </div>
-                                        {this.state.milestones.length === 0 && (
-                                            <p>There are no milestones to display.</p>
-                                        )}
-                                        {this.state.milestones.slice(0, 10).map(ms => (
-                                            <div className="row feed-item" key={ms.id}>
-                                                <span className="feed-item--value">{ms.milestoneIndex}</span>
-                                                <Link
-                                                    className="feed-item--hash"
-                                                    to={RouteBuilder.buildMilestone(this.state.networkConfig, ms)}
-                                                >
-                                                    {ms.id}
-                                                </Link>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card margin-t-m">
-                                <div className="card--content description">
-                                    {this.state.networkConfig.description}
                                 </div>
                             </div>
                         </div>
