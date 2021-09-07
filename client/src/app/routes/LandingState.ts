@@ -65,4 +65,14 @@ export interface LandingState extends CurrencyState, FeedsState {
      * Latest transactions.
      */
     filteredItems: IFeedItem[];
+
+    /**
+     * Is the messages feed paused.
+     */
+    isFeedPaused: boolean;
+
+    /**
+     * Is the filter of messages opened.
+     */
+    isFilterExpanded: boolean;
 }

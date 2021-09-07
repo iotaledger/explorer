@@ -251,6 +251,17 @@
               margin-bottom: 0;
             }
 
+            .filter {
+              position: absolute;
+              top: 48px;
+              right: 0;
+              min-width: 350px;
+              min-height: 360px;
+              background: tomato;
+              box-shadow: 0px 2px 4px rgba(123, 148, 186, 0.2);
+              border-radius: 6px;
+            }
+
             .feed-items {
               min-height: 440px;
               padding: 24px 0;

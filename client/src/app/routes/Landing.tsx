@@ -1,7 +1,11 @@
 import { Units, UnitsHelper } from "@iota/iota.js";
+import { is } from "bluebird";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
+import pauseIcon from "../../assets/pause.svg";
+import playIcon from "../../assets/play.svg";
+import filterIcon from "../../assets/filter.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { RouteBuilder } from "../../helpers/routeBuilder";
 import { INetwork } from "../../models/db/INetwork";
@@ -14,6 +18,7 @@ import "./Landing.scss";
 import { LandingProps } from "./LandingProps";
 import { LandingRouteProps } from "./LandingRouteProps";
 import { LandingState } from "./LandingState";
+
 
 /**
  * Component which will show the landing page.
@@ -41,7 +46,14 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             valueMinimumUnits: "i",
             valueMaximum: "1",
             valueMaximumUnits: "Ti",
-            valueFilter: "all",
+            valueFilter: {
+                zeroOnly: true,
+                nonZeroOnly: true,
+                transaction: true,
+                milestone: true,
+                indexed: true,
+                noPayload: true
+            },
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
@@ -54,7 +66,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             milestones: [],
             currency: "USD",
             currencies: [],
-            formatFull: false
+            formatFull: false,
+            isFeedPaused: false,
+            isFilterExpanded: false
         };
     }
 
@@ -78,7 +92,15 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             valueMinimumUnits: filterSettings?.valueMinimumUnits ?? "i",
             valueMaximum: filterSettings?.valueMaximum ?? "3",
             valueMaximumUnits: filterSettings?.valueMaximumUnits ?? "Pi",
-            valueFilter: filterSettings?.valueFilter ?? "all",
+            valueFilter: filterSettings?.valueFilter ??
+            {
+                zeroOnly: true,
+                nonZeroOnly: true,
+                transaction: true,
+                milestone: true,
+                indexed: true,
+                noPayload: true
+            },
             formatFull: settings.formatFull
         });
     }
@@ -197,117 +219,209 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                             <h1>Feeds</h1>
                             {this.state.networkConfig.isEnabled &&
                                 (
-                                    <div className="row filters wrap section">
-                                        <div className="col">
-                                            <span className="section--label">
-                                                {this._networkConfig?.protocolVersion === "og"
-                                                    ? "Value" : "Payload"} Filter
-                                            </span>
-                                            <span className="filter--value">
-                                                <div className="select-wrapper">
-                                                    <select
-                                                        value={this.state.valueFilter}
-                                                        onChange={e => this.setState(
-                                                            {
-                                                                valueFilter: e.target.value as ValueFilter
-                                                            },
-                                                            async () => this.updateFilters())}
-                                                    >
-                                                        <option value="all">All</option>
-                                                        {this._networkConfig?.protocolVersion === "og" && (
-                                                            <React.Fragment>
-                                                                <option value="zeroOnly">Zero Only</option>
-                                                                <option value="nonZeroOnly">Non Zero Only</option>
-                                                            </React.Fragment>
-                                                        )}
-                                                        {this._networkConfig?.protocolVersion === "chrysalis" && (
-                                                            <React.Fragment>
-                                                                <option value="transaction">Transaction</option>
-                                                                <option value="milestone">Milestone</option>
-                                                                <option value="indexed">Indexed</option>
-                                                                <option value="noPayload">No Payload</option>
-                                                            </React.Fragment>
-                                                        )}
-                                                    </select>
-                                                    <img src={chevronDownGray} alt="expand" />
-                                                </div>
-                                            </span>
-                                        </div>
-                                        {this.state.valueFilter !== "zeroOnly" &&
-                                            this.state.valueFilter !== "milestone" &&
-                                            this.state.valueFilter !== "indexed" &&
-                                            this.state.valueFilter !== "noPayload" && (
-                                                <React.Fragment>
-                                                    <div className="col">
-                                                        <span className="section--label">Minimum</span>
-                                                        <span className="filter--value">
-                                                            <div className="select-wrapper">
-                                                                <select
-                                                                    className="select-plus"
-                                                                    value={this.state.valueMinimumUnits}
-                                                                    onChange={e => this.setState(
-                                                                        { valueMinimumUnits: e.target.value as Units },
-                                                                        async () => this.updateFilters())}
-                                                                >
-                                                                    <option value="i">i</option>
-                                                                    <option value="Ki">Ki</option>
-                                                                    <option value="Mi">Mi</option>
-                                                                    <option value="Gi">Gi</option>
-                                                                    <option value="Ti">Ti</option>
-                                                                    <option value="Pi">Pi</option>
-                                                                </select>
-                                                                <img src={chevronDownGray} alt="expand" />
-                                                            </div>
-                                                            <input
-                                                                className="input-plus"
-                                                                type="text"
-                                                                value={this.state.valueMinimum}
-                                                                onChange={e => this.updateMinimum(e.target.value)}
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                    <div className="col">
-                                                        <span className="section--label">&nbsp;</span>
-                                                        <span className="section--label margin-b-t">To</span>
-                                                    </div>
-                                                    <div className="col">
-                                                        <span className="section--label">Maximum</span>
-                                                        <span className="filter--value">
-                                                            <div className="select-wrapper">
-                                                                <select
-                                                                    className="select-plus"
-                                                                    value={this.state.valueMaximumUnits}
-                                                                    onChange={e => this.setState(
-                                                                        { valueMaximumUnits: e.target.value as Units },
-                                                                        async () => this.updateFilters())}
-                                                                >
-                                                                    <option value="i">i</option>
-                                                                    <option value="Ki">Ki</option>
-                                                                    <option value="Mi">Mi</option>
-                                                                    <option value="Gi">Gi</option>
-                                                                    <option value="Ti">Ti</option>
-                                                                    <option value="Pi">Pi</option>
-                                                                </select>
-                                                                <img src={chevronDownGray} alt="expand" />
-                                                            </div>
-                                                            <input
-                                                                className="input-plus"
-                                                                type="text"
-                                                                value={this.state.valueMaximum}
-                                                                onChange={e => this.updateMaximum(e.target.value)}
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                </React.Fragment>
-                                            )}
-                                    </div>
-                                )}
+                                    //     <div className="row filters wrap section">
+                                    //         <div className="col">
+                                    //             <span className="section--label">
+                                    //                 {this._networkConfig?.protocolVersion === "og"
+                                    //                     ? "Value" : "Payload"} Filter
+                                    //             </span>
+                                    //             <span className="filter--value">
+                                    //                 <div className="select-wrapper">
+                                    //                     <select
+                                    //                         value={this.state.valueFilter}
+                                    //                         onChange={e => this.setState(
+                                    //                             {
+                                    //                                 valueFilter: e.target.value as ValueFilter
+                                    //                             },
+                                    //                             async () => this.updateFilters())}
+                                    //                     >
+                                    //                         <option value="all">All</option>
+                                    //                         {this._networkConfig?.protocolVersion === "og" && (
+                                    //                             <React.Fragment>
+                                    //                                 <option value="zeroOnly">Zero Only</option>
+                                    //                                 <option value="nonZeroOnly">Non Zero Only</option>
+                                    //                             </React.Fragment>
+                                    //                         )}
+                                    //                         {this._networkConfig?.protocolVersion === "chrysalis" && (
+                                    //                             <React.Fragment>
+                                    //                                 <option value="transaction">Transaction</option>
+                                    //                                 <option value="milestone">Milestone</option>
+                                    //                                 <option value="indexed">Indexed</option>
+                                    //                                 <option value="noPayload">No Payload</option>
+                                    //                             </React.Fragment>
+                                    //                         )}
+                                    //                     </select>
+                                    //                     <img src={chevronDownGray} alt="expand" />
+                                    //                 </div>
+                                    //             </span>
+                                    //         </div>
+                                    //         {this.state.valueFilter !== "zeroOnly" &&
+                                    //             this.state.valueFilter !== "milestone" &&
+                                    //             this.state.valueFilter !== "indexed" &&
+                                    //             this.state.valueFilter !== "noPayload" && (
+                                    //                 <React.Fragment>
+                                    //                     <div className="col">
+                                    //                         <span className="section--label">Minimum</span>
+                                    //                         <span className="filter--value">
+                                    //                             <div className="select-wrapper">
+                                    //                                 <select
+                                    //                                     className="select-plus"
+                                    //                                     value={this.state.valueMinimumUnits}
+                                    //                                     onChange={e => this.setState(
+                                    //                                         { valueMinimumUnits: e.target.value as Units },
+                                    //                                         async () => this.updateFilters())}
+                                    //                                 >
+                                    //                                     <option value="i">i</option>
+                                    //                                     <option value="Ki">Ki</option>
+                                    //                                     <option value="Mi">Mi</option>
+                                    //                                     <option value="Gi">Gi</option>
+                                    //                                     <option value="Ti">Ti</option>
+                                    //                                     <option value="Pi">Pi</option>
+                                    //                                 </select>
+                                    //                                 <img src={chevronDownGray} alt="expand" />
+                                    //                             </div>
+                                    //                             <input
+                                    //                                 className="input-plus"
+                                    //                                 type="text"
+                                    //                                 value={this.state.valueMinimum}
+                                    //                                 onChange={e => this.updateMinimum(e.target.value)}
+                                    //                             />
+                                    //                         </span>
+                                    //                     </div>
+                                    //                     <div className="col">
+                                    //                         <span className="section--label">&nbsp;</span>
+                                    //                         <span className="section--label margin-b-t">To</span>
+                                    //                     </div>
+                                    //                     <div className="col">
+                                    //                         <span className="section--label">Maximum</span>
+                                    //                         <span className="filter--value">
+                                    //                             <div className="select-wrapper">
+                                    //                                 <select
+                                    //                                     className="select-plus"
+                                    //                                     value={this.state.valueMaximumUnits}
+                                    //                                     onChange={e => this.setState(
+                                    //                                         { valueMaximumUnits: e.target.value as Units },
+                                    //                                         async () => this.updateFilters())}
+                                    //                                 >
+                                    //                                     <option value="i">i</option>
+                                    //                                     <option value="Ki">Ki</option>
+                                    //                                     <option value="Mi">Mi</option>
+                                    //                                     <option value="Gi">Gi</option>
+                                    //                                     <option value="Ti">Ti</option>
+                                    //                                     <option value="Pi">Pi</option>
+                                    //                                 </select>
+                                    //                                 <img src={chevronDownGray} alt="expand" />
+                                    //                             </div>
+                                    //                             <input
+                                    //                                 className="input-plus"
+                                    //                                 type="text"
+                                    //                                 value={this.state.valueMaximum}
+                                    //                                 onChange={e => this.updateMaximum(e.target.value)}
+                                    //                             />
+                                    //                         </span>
+                                    //                     </div>
+                                    //                 </React.Fragment>
+                                    //             )}
+                                    //     </div>
+                                    <p>alalal</p>)}
                             <div className="row wrap feeds">
                                 <div className="feed section">
-                                    <div className="section--header">
+                                    <div className="section--header row space-between">
                                         <h2>Latest messages</h2>
+                                        <div className="relative">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    this.setState({ isFeedPaused: !this.state.isFeedPaused });
+                                                }}
+                                            >
+                                                {this.state.isFeedPaused
+                                                    ? (<img src={playIcon} alt="Feed messages" />)
+                                                    : (<img src={pauseIcon} alt="Pause feeding messages" />)}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    this.setState({ isFilterExpanded: !this.state.isFeedPaused });
+                                                }}
+                                            >
+                                                {this.state.isFeedPaused
+                                                    ? (<img src={filterIcon} alt="Feed messages" />)
+                                                    : (<img src={filterIcon} alt="Pause feeding messages" />)}
+                                            </button>
+                                            <div className="filter">
+                                                <div className="filter-header">
+                                                    <span>Payload Filter</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => this.setState({
+                                                            valueFilter: {
+                                                                zeroOnly: true,
+                                                                nonZeroOnly: true,
+                                                                transaction: true,
+                                                                milestone: true,
+                                                                indexed: true,
+                                                                noPayload: true
+                                                            }
+                                                        })}
+                                                    >
+                                                        Reset
+                                                    </button>
+                                                </div>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={this.state.valueFilter.transaction}
+                                                        onChange={e => this.setState(
+                                                            {
+                                                                valueFilter: { ...this.state.valueFilter, transaction: !this.state.valueFilter.transaction }
+                                                            },
+                                                            async () => this.updateFilters())}
+                                                    />
+                                                    Transaction
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={this.state.valueFilter.milestone}
+                                                        onChange={e => this.setState(
+                                                            {
+                                                                valueFilter: { ...this.state.valueFilter, milestone: !this.state.valueFilter.milestone }
+                                                            },
+                                                            async () => this.updateFilters())}
+                                                    />
+                                                    Milestone
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={this.state.valueFilter.indexed}
+                                                        onChange={e => this.setState(
+                                                            {
+                                                                valueFilter: { ...this.state.valueFilter, indexed: !this.state.valueFilter.indexed }
+                                                            },
+                                                            async () => this.updateFilters())}
+                                                    />
+                                                    Indexed
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={this.state.valueFilter.noPayload}
+                                                        onChange={e => this.setState(
+                                                            {
+                                                                valueFilter: { ...this.state.valueFilter, noPayload: !this.state.valueFilter.noPayload }
+                                                            },
+                                                            async () => this.updateFilters())}
+                                                    />
+                                                    No payload
+                                                </label>
+                                            </div>
+
+                                        </div>
                                         {/* <h2>{this.state.networkConfig.label} Feed</h2> */}
                                     </div>
+
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
                                             <span className="section--label">
@@ -362,16 +476,17 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        {!this.state.networkConfig.isEnabled && (
-                            <div className="card margin-t-m">
-                                <div className="card--content description">
-                                    {this.state.networkConfig.isEnabled === undefined
-                                        ? "This network is not recognised."
-                                        : "This network is currently disabled in explorer."}
+                            {!this.state.networkConfig.isEnabled && (
+                                <div className="card margin-t-m">
+                                    <div className="card--content description">
+                                        {this.state.networkConfig.isEnabled === undefined
+                                            ? "This network is not recognised."
+                                            : "This network is currently disabled in explorer."}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -420,30 +535,93 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                     Math.abs(item.value) >= minLimit &&
                     Math.abs(item.value) <= maxLimit);
 
-            if (this.state.valueFilter === "zeroOnly") {
+            if (this.state.valueFilter.zeroOnly) {
                 filter = (item: IFeedItem) => item.value === 0;
-            } else if (this.state.valueFilter === "nonZeroOnly" || this.state.valueFilter === "transaction") {
+            } else if (this.state.valueFilter.nonZeroOnly || this.state.valueFilter.transaction) {
                 filter = (item: IFeedItem) =>
                     item.value !== undefined &&
                     item.value !== 0 &&
                     Math.abs(item.value) >= minLimit &&
                     Math.abs(item.value) <= maxLimit;
-            } else if (this.state.valueFilter === "milestone") {
+            } else if (this.state.valueFilter.milestone) {
                 filter = (item: IFeedItem) =>
                     item.payloadType === "MS";
-            } else if (this.state.valueFilter === "indexed") {
+            } else if (this.state.valueFilter.indexed) {
                 filter = (item: IFeedItem) =>
                     item.payloadType === "Index";
-            } else if (this.state.valueFilter === "noPayload") {
+            } else if (this.state.valueFilter.noPayload) {
                 filter = (item: IFeedItem) =>
                     item.payloadType === "None";
             }
 
-            this.setState({
-                filteredItems: this._feedClient.getItems()
-                    .filter(item => filter(item))
-                    .slice(0, 10)
+            let filters = [
+                {
+                    payloadType: "zeroOnly",
+                    filter: (item: IFeedItem) => item.value === 0
+                },
+                {
+                    payloadType: "nonZeroOnly",
+                    filter: (item: IFeedItem) =>
+                        item.value !== undefined &&
+                        item.value !== 0 &&
+                        Math.abs(item.value) >= minLimit &&
+                        Math.abs(item.value) <= maxLimit
+                },
+                {
+                    payloadType: "transaction",
+                    filter: (item: IFeedItem) =>
+                        item.value !== undefined &&
+                        item.value !== 0 &&
+                        Math.abs(item.value) >= minLimit &&
+                        Math.abs(item.value) <= maxLimit
+                },
+                {
+                    payloadType: "milestone",
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "MS"
+
+                },
+                {
+                    payloadType: "indexed",
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "Index"
+                },
+                {
+                    payloadType: "noPayload",
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "None"
+
+                }
+            ];
+
+            filters = filters.filter(f => {
+                let ans = false;
+                for (const [key, value] of Object.entries(this.state.valueFilter)) {
+                    if (f.payloadType === key && value) {
+                        ans = true;
+                    }
+                }
+                return ans;
             });
+
+            console.log("filters", filters);
+
+            if (!this.state.isFeedPaused) {
+                this.setState({
+                    filteredItems: this._feedClient.getItems()
+                        .filter(item => {
+                            let ans = false;
+                            filters.forEach(f => {
+                                if (f.filter(item)) {
+                                    ans = true;
+                                }
+                            })
+                            return ans;
+                        }
+                        )
+                        .slice(0, 10)
+                });
+            }
         }
     }
 
