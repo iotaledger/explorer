@@ -249,17 +249,94 @@
 
             .section--header {
               margin-bottom: 0;
+              button {
+                margin-left: 28px;
+              }
+              @include tablet-down {
+                padding: 0 24px;
+              }
             }
 
-            .filter {
-              position: absolute;
-              top: 48px;
-              right: 0;
-              min-width: 350px;
-              min-height: 360px;
-              background: tomato;
-              box-shadow: 0px 2px 4px rgba(123, 148, 186, 0.2);
-              border-radius: 6px;
+            .filter-wrapper {
+              .filter--bg {
+                @include tablet-down {
+                  height: 100vh;
+                  width: 100%;
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  z-index: 2000;
+                  background: rgba(19, 31, 55, 0.75);
+                }
+              }
+              .filter {
+                position: absolute;
+                top: 48px;
+                right: 0;
+                min-width: 350px;
+                background: $white;
+                box-shadow: 0px 2px 4px rgba(123, 148, 186, 0.2);
+                border-radius: 6px;
+                padding: 8px;
+                z-index: 10000;
+                @include tablet-down {
+                  position: fixed;
+                  bottom: 0;
+                  top: unset;
+                  left: 0;
+                  width: 100vw;
+                }
+                .filter-header {
+                  font-family: $inter;
+                  font-weight: 700;
+                  @include font-size(14px, 21px);
+                  padding: 8px;
+                  letter-spacing: 0.5px;
+                  color: $gray-7;
+                  border-bottom: 1px solid $gray-3;
+                  margin-bottom: 8px;
+                  button {
+                    font-weight: 400;
+                    border: 1px solid $gray-3;
+                    padding: 6px 20px;
+                  }
+                }
+                .section--label {
+                  margin-left: 8px;
+                }
+                .filter--value {
+                  display: flex;
+                  margin: 0 8px;
+                  color: $gray-6;
+                  font-family: $inter;
+                  @include font-size(14px, 21px);
+                  background-color: $gray-1;
+                  .input-plus {
+                    width: 94px;
+                    border-right: 0;
+                    border-radius: 6px 0 0 6px;
+                    padding: 8px;
+                    background-color: transparent;
+                  }
+                  .select-plus {
+                    border-left: 0;
+                    border-radius: 0px 6px 6px 0;
+                    min-width: 20px;
+                    padding: 0 39px 0 11px;
+                    background-color: transparent;
+                  }
+                }
+                label {
+                  display: block;
+                  font-family: $inter;
+                  @include font-size(14px, 21px);
+                  color: $gray-7;
+                  padding: 12px 10px;
+                  input {
+                    margin-right: 18px;
+                  }
+                }
+              }
             }
 
             .feed-items {
@@ -372,11 +449,8 @@
   }
 
   .header-wrapper {
-    // background: linear-gradient(to bottom, var(--context-primary), var(--context-secondary));
     background: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
     .inner {
-      // max-width: $desktop-width - 140px;
-
       .header {
         background-image: url('../../assets/bubbles.svg');
         background-repeat: no-repeat;

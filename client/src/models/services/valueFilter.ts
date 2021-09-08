@@ -1,11 +1,4 @@
-/**
- * The filter for values.
- */
 export interface ValueFilter {
-    zeroOnly: boolean;
-    nonZeroOnly: boolean;
-    transaction: boolean;
-    milestone: boolean;
-    indexed: boolean;
-    noPayload: boolean;
-}
+    label: "Zero only" | "Non-zero only" | "Transaction" | "Milestone" | "Indexed" | "No payload";
+    isEnabled: boolean;
+};

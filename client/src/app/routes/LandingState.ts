@@ -54,7 +54,7 @@ export interface LandingState extends CurrencyState, FeedsState {
     /**
      * Filter specific value types.
      */
-    valueFilter: ValueFilter;
+    valuesFilter: ValueFilter[];
 
     /**
      * Format the iota in full.
@@ -75,4 +75,9 @@ export interface LandingState extends CurrencyState, FeedsState {
      * Is the filter of messages opened.
      */
     isFilterExpanded: boolean;
+
+    /**
+     * Messages snapshot when feed is paused.
+     */
+    frozenMessages: IFeedItem[];
 }
