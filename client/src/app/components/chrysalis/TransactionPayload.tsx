@@ -9,6 +9,8 @@ import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import { NetworkService } from "../../../services/networkService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../AsyncComponent";
+import CurrencyButton from "../CurrencyButton";
+import ValueButton from "../ValueButton";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Bech32Address from "./Bech32Address";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
@@ -169,26 +171,36 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
     public render(): ReactNode {
         return (
             <React.Fragment>
-                {/* {this.state.transferTotal !== 0 && (
-                    <div className="card margin-b-s">
-                        <div className="card--content">
-                            <div className="row fill margin-t-s margin-b-s value-buttons">
-                                <div className="col">
-                                    <ValueButton value={this.state.transferTotal} />
-                                </div>
-                                <div className="col">
-                                    <CurrencyButton
-                                        marketsRoute={
-                                            `/${this.props.network}/markets`
-                                        }
-                                        value={this.state.transferTotal}
-                                    />
-                                </div>
-                                BALANCE: {UnitsHelper.formatUnits(this.state.transferTotal, UnitsHelper.calculateBest(this.state.transferTotal))}
-                            </div>
+                {this.state.transferTotal !== 0 && (
+                    // <div className="card margin-b-s">
+                    //     <div className="card--content">
+                    //         <div className="row fill margin-t-s margin-b-s value-buttons">
+                    //             <div className="col">
+                    //                 <ValueButton value={this.state.transferTotal} />
+                    //             </div>
+                    //             <div className="col">
+                    //                 <CurrencyButton
+                    //                     marketsRoute={
+                    //                         `/${this.props.network}/markets`
+                    //                     }
+                    //                     value={this.state.transferTotal}
+                    //                 />
+                    //             </div>
+                    //             BALANCE: {UnitsHelper.formatUnits(this.state.transferTotal, UnitsHelper.calculateBest(this.state.transferTotal))}
+                    //         </div>
+                    //     </div>
+                    // </div>
+                    <div className="section--content">
+                        <div className="section--label">
+                            Value
+                        </div>
+                        <div className="section--value row middle">
+                            <span>
+                                {UnitsHelper.formatUnits(this.state.transferTotal, UnitsHelper.calculateBest(this.state.transferTotal))}
+                            </span>
                         </div>
                     </div>
-                )} */}
+                )}
                 <div className="row row--tablet-responsive fill stretch transaction-simple">
                     <div className="card col fill">
                         <div className="card--header">
