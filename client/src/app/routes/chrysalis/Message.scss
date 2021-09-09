@@ -23,6 +23,9 @@
         font-weight: 500;
         color: $gray-6;
         margin-right: 16px;
+        @include phone-down {
+          margin-right: 1px;
+        }
       }
       .switch {
         position: relative;
@@ -151,6 +154,9 @@
             line-height: 20px;
             letter-spacing: 0.02em;
             color: $blue-5;
+          }
+          .card--value {
+            margin-left: auto;
           }
         }
 
