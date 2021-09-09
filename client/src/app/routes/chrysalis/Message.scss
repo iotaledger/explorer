@@ -1,7 +1,7 @@
-@import "../../../scss/fonts";
-@import "../../../scss/mixins";
-@import "../../../scss/media-queries";
-@import "../../../scss/variables";
+@import '../../../scss/fonts';
+@import '../../../scss/mixins';
+@import '../../../scss/media-queries';
+@import '../../../scss/variables';
 
 .message {
   display: flex;
@@ -53,7 +53,7 @@
 
       .slider:before {
         position: absolute;
-        content: "";
+        content: '';
         height: 15px;
         width: 15px;
         left: 2.5px;

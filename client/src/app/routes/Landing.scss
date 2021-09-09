@@ -1,7 +1,7 @@
-@import "../../scss/fonts";
-@import "../../scss/mixins";
-@import "../../scss/media-queries";
-@import "../../scss/variables";
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
 
 .landing {
   display: flex;
@@ -467,7 +467,7 @@
     background: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
     .inner {
       .header {
-        background-image: url("../../assets/bubbles.svg");
+        background-image: url('../../assets/bubbles.svg');
         background-repeat: no-repeat;
         background-position: center bottom;
 
