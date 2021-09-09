@@ -1,11 +1,14 @@
-import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, serializeMessage, TRANSACTION_PAYLOAD_TYPE, WriteStream } from "@iota/iota.js";
+import { CONFLICT_REASON_STRINGS, Converter, Ed25519Address, ED25519_ADDRESS_TYPE, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, MILESTONE_PAYLOAD_TYPE, REFERENCE_UNLOCK_BLOCK_TYPE, serializeMessage, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper, WriteStream } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../../helpers/downloadHelper";
+import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
+import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -22,6 +25,11 @@ import messageJSON from "./../../../assets/modals/message.json";
 import "./Message.scss";
 import { MessageRouteProps } from "./MessageRouteProps";
 import { MessageState } from "./MessageState";
+
+
+
+
+
 /**
  * Component which will show the message page.
  */
@@ -42,6 +50,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
     private _timerId?: NodeJS.Timer;
 
     /**
+     * The hrp of bech addresses.
+     */
+    private readonly _bechHrp: string;
+
+    /**
      * Create a new instance of Message.
      * @param props The props.
      */
@@ -50,6 +63,14 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
+
+
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        const networkConfig = this.props.match.params.network
+            ? networkService.get(this.props.match.params.network)
+            : undefined;
+
+        this._bechHrp = networkConfig?.bechHrp ?? "iota";
 
         this.state = {
             messageTangleStatus: "pending",
@@ -90,11 +111,116 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
             window.history.replaceState(undefined, window.document.title, `/${this.props.match.params.network
                 }/message/${result.includedMessageId ?? this.props.match.params.messageId}`);
 
+            // Prepare Transaction Payload data
+            const inputs: (IUTXOInput & {
+                outputHash: string;
+                isGenesis: boolean;
+                transactionUrl: string;
+                transactionAddress: IBech32AddressDetails;
+                signature: string;
+                publicKey: string;
+            })[] = [];
+            const outputs = [];
+            let transferTotal = 0;
+            const unlockAddresses: IBech32AddressDetails[] = [];
+
+            if (result.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                const GENESIS_HASH = "0".repeat(64);
+
+                const signatureBlocks: ISignatureUnlockBlock[] = [];
+                for (let i = 0; i < result.message.payload.unlockBlocks.length; i++) {
+                    if (result.message.payload.unlockBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE) {
+                        const sigUnlockBlock = result.message.payload.unlockBlocks[i] as ISignatureUnlockBlock;
+                        signatureBlocks.push(sigUnlockBlock);
+                    } else if (result.message.payload.unlockBlocks[i].type === REFERENCE_UNLOCK_BLOCK_TYPE) {
+                        const refUnlockBlock = result.message.payload.unlockBlocks[i] as IReferenceUnlockBlock;
+                        signatureBlocks.push(
+                            result.message.payload.unlockBlocks[refUnlockBlock.reference] as ISignatureUnlockBlock
+                        );
+                    }
+                }
+
+                for (let i = 0; i < signatureBlocks.length; i++) {
+                    unlockAddresses.push(
+                        Bech32AddressHelper.buildAddress(
+                            this._bechHrp,
+                            Converter.bytesToHex(
+                                new Ed25519Address(Converter.hexToBytes(signatureBlocks[i].signature.publicKey))
+                                    .toAddress()
+                            ),
+                            signatureBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE
+                                ? ED25519_ADDRESS_TYPE : undefined
+                        )
+                    );
+                }
+
+                for (let i = 0; i < result.message.payload.essence.inputs.length; i++) {
+                    const input = result.message.payload.essence.inputs[i];
+                    const isGenesis = input.transactionId === GENESIS_HASH;
+                    const writeOutputStream = new WriteStream();
+                    writeOutputStream.writeUInt16("transactionOutputIndex", input.transactionOutputIndex);
+                    const outputHash = input.transactionId + writeOutputStream.finalHex();
+                    inputs.push({
+                        ...input,
+                        isGenesis,
+                        outputHash,
+                        transactionUrl: `/${this.props.match.params.network}/search/${outputHash}`,
+                        transactionAddress: unlockAddresses[i],
+                        signature: signatureBlocks[i].signature.signature,
+                        publicKey: signatureBlocks[i].signature.publicKey
+                    });
+                }
+
+                let remainderIndex = 1000;
+                for (let i = 0; i < result.message.payload.essence.outputs.length; i++) {
+                    if (result.message.payload.essence.outputs[i].type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
+                        result.message.payload.essence.outputs[i].type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) {
+                        const address = Bech32AddressHelper.buildAddress(
+                            this._bechHrp,
+                            result.message.payload.essence.outputs[i].address.address,
+                            result.message.payload.essence.outputs[i].address.type);
+                        const isRemainder = inputs.some(input => input.transactionAddress.bech32 === address.bech32);
+                        outputs.push({
+                            index: isRemainder ? (remainderIndex++) + i : i,
+                            type: result.message.payload.essence.outputs[i].type,
+                            address,
+                            amount: result.message.payload.essence.outputs[i].amount,
+                            isRemainder
+                        });
+                        if (!isRemainder) {
+                            transferTotal += result.message.payload.essence.outputs[i].amount;
+                        }
+                    }
+                }
+
+                for (let i = 0; i < inputs.length; i++) {
+                    const outputResponse = await this._tangleCacheService.outputDetails(
+                        this.props.match.params.network, inputs[i].outputHash
+                    );
+
+                    if (outputResponse?.output) {
+                        inputs[i].transactionAddress = Bech32AddressHelper.buildAddress(
+                            this._bechHrp,
+                            outputResponse.output.address.address,
+                            outputResponse.output.address.type
+                        );
+                        inputs[i].transactionUrl =
+                            `/${this.props.match.params.network}/message/${outputResponse.messageId}`;
+                    }
+                }
+
+                outputs.sort((a, b) => a.index - b.index);
+            }
+
             this.setState({
                 paramMessageId: this.props.match.params.messageId,
                 actualMessageId: result.includedMessageId ?? this.props.match.params.messageId,
                 message: result.message,
-                dataUrls
+                dataUrls,
+                inputs,
+                outputs,
+                unlockAddresses,
+                transferTotal
             }, async () => {
                 await this.updateMessageDetails();
             });
@@ -201,7 +327,9 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                     <div className="section--label">
                                                         Parent Message {idx + 1}
                                                     </div>
-                                                    <div className="section--value section--value__code featured row middle">
+                                                    <div
+                                                        className="section--value section--value__code featured row middle"
+                                                    >
                                                         {parent !== "0".repeat(64) && (
                                                             <React.Fragment>
                                                                 <Link
@@ -250,10 +378,14 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             Payload Type
                                         </div>
                                         <div className="section--value row middle">
-                                            {this.state.message?.payload?.type === 0 && ("Transaction")}
-                                            {this.state.message?.payload?.type === 1 && ("Milestone")}
-                                            {this.state.message?.payload?.type === 2 && ("Index")}
-                                            {this.state.message?.payload?.type === undefined && ("No Payload")}
+                                            {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                                                ("Transaction")}
+                                            {this.state.message?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
+                                                ("Milestone")}
+                                            {this.state.message?.payload?.type === INDEXATION_PAYLOAD_TYPE &&
+                                                ("Index")}
+                                            {this.state.message?.payload?.type === undefined &&
+                                                ("No Payload")}
                                         </div>
                                         {this.state.advancedMode && (
                                             <React.Fragment>
@@ -265,44 +397,68 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 </div>
                                             </React.Fragment>
                                         )}
+                                        {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                                            this.state.transferTotal && (
+                                                <React.Fragment>
+                                                    <div className="section--label">
+                                                        Value
+                                                    </div>
+                                                    <div className="section--value row middle">
+                                                        {UnitsHelper.formatUnits(this.state.transferTotal,
+                                                            UnitsHelper.calculateBest(this.state.transferTotal))}
+                                                    </div>
+                                                </React.Fragment>
+                                            )}
                                     </div>
                                 </div>
 
 
                                 {this.state.message?.payload && (
                                     <React.Fragment>
-                                        {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE && (
-                                            <div className="section">
-                                                <div className="section--header">
-                                                    <div className="row middle">
-                                                        <h2>
-                                                            Transaction Payload
-                                                        </h2>
-                                                        <Modal icon="info" data={messageJSON} />
+                                        {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE &&
+                                            this.state.inputs &&
+                                            this.state.outputs &&
+                                            this.state.transferTotal &&
+                                            this.state.unlockAddresses &&
+                                            (
+                                                <div className="section">
+                                                    <div className="section--header row space-between">
+                                                        <div className="row middle">
+                                                            <h2>
+                                                                Transaction Payload
+                                                            </h2>
+                                                            <Modal icon="info" data={messageJSON} />
+                                                        </div>
+                                                        <span className="transfer-value">
+                                                            {UnitsHelper.formatUnits(this.state.transferTotal,
+                                                                UnitsHelper.calculateBest(this.state.transferTotal))}
+                                                        </span>
                                                     </div>
-                                                </div>
 
-                                                <div className="transaction-payload-wrapper">
-                                                    <TransactionPayload
-                                                        network={this.props.match.params.network}
-                                                        history={this.props.history}
-                                                        payload={this.state.message.payload}
-                                                        advancedMode={this.state.advancedMode}
-                                                    />
-                                                </div>
-
-                                                {this.state.message.payload.essence.payload && (
-                                                    <div className="section">
-                                                        <IndexationPayload
+                                                    <div className="transaction-payload-wrapper">
+                                                        <TransactionPayload
                                                             network={this.props.match.params.network}
                                                             history={this.props.history}
-                                                            payload={this.state.message.payload.essence.payload}
+                                                            inputs={this.state.inputs}
+                                                            outputs={this.state.outputs}
+                                                            unlockAddresses={this.state.unlockAddresses}
+                                                            transferTotal={this.state.transferTotal}
                                                             advancedMode={this.state.advancedMode}
                                                         />
                                                     </div>
-                                                )}
-                                            </div>
-                                        )}
+
+                                                    {this.state.message.payload.essence.payload && (
+                                                        <div className="section">
+                                                            <IndexationPayload
+                                                                network={this.props.match.params.network}
+                                                                history={this.props.history}
+                                                                payload={this.state.message.payload.essence.payload}
+                                                                advancedMode={this.state.advancedMode}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
                                         {this.state.message.payload.type === MILESTONE_PAYLOAD_TYPE && (
                                             <React.Fragment>
                                                 <div className="section">
