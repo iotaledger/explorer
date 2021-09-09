@@ -45,6 +45,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                 <div className="card col fill">
                     <div className="card--header">
                         <h2 className="card--header__title">From</h2>
+                        <span className="dot-separator">.</span>
+                        <span>{this.props.inputs.length}</span>
                     </div>
                     <div className="card--content">
                         {this.props.inputs.map((input, idx) => (
@@ -101,6 +103,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                 <div className="card col fill">
                     <div className="card--header">
                         <h2 className="card--header__title">To</h2>
+                        <span className="dot-separator">.</span>
+                        <span>{this.props.outputs.length}</span>
                     </div>
                     <div className="card--content">
                         {this.props.outputs.map((output, idx) => (
