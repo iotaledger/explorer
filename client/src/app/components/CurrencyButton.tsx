@@ -41,27 +41,49 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
      */
     public render(): ReactNode {
         return (
-            <div className="currency-button">
-                <div className="currency-button--label">
-                    Conversion
-                </div>
-                <div className="currency-button--value">
-                    {this.state.valueCurrency}
-                </div>
-                <div className="currency-button--selector">
-                    <div className="rate--label">
-                        Rate
-                        <Link
-                            to={this.props.marketsRoute}
-                            className="rate--value"
-                        >
-                            {this.state.priceCurrency}
-                        </Link>
+            <React.Fragment>
+                {!this.props.onlyFiatSelect && this.props.marketsRoute && this.props.value && (
+
+                    <div className="currency-button">
+                        <div className="currency-button--label">
+                            Conversion
+                        </div>
+                        <div className="currency-button--value">
+                            {this.state.valueCurrency}
+                        </div>
+                        <div className="currency-button--selector">
+                            <div className="rate--label">
+                                Rate
+                                <Link
+                                    to={this.props.marketsRoute}
+                                    className="rate--value"
+                                >
+                                    {this.state.priceCurrency}
+                                </Link>
+                            </div>
+                            <div className="select-wrapper select-wrapper--small">
+                                <select
+                                    value={this.state.currency}
+                                    onChange={e => this.setCurrency(e.target.value)}
+                                >
+                                    {this.state.currencies.map(cur => (
+                                        <option value={cur} key={cur}>{cur}</option>
+                                    ))}
+                                </select>
+                                <img src={chevronDownGray} alt="expand" />
+                            </div>
+                        </div>
                     </div>
+                )}
+
+                {this.props.onlyFiatSelect && (
                     <div className="select-wrapper select-wrapper--small">
                         <select
                             value={this.state.currency}
-                            onChange={e => this.setCurrency(e.target.value)}
+                            onChange={e => {
+                                this.setCurrency(e.target.value);
+                                this.updateCurrency();
+                            }}
                         >
                             {this.state.currencies.map(cur => (
                                 <option value={cur} key={cur}>{cur}</option>
@@ -69,8 +91,12 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
                         </select>
                         <img src={chevronDownGray} alt="expand" />
                     </div>
-                </div>
-            </div>
+                )
+                }
+            </React.Fragment>
+
+
+
         );
     }
 
@@ -78,7 +104,7 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
      * Update formatted currencies.
      */
     protected updateCurrency(): void {
-        if (this._currencyData) {
+        if (this._currencyData && this.props.value) {
             this.setState({
                 valueCurrency:
                     this._currencyService.convertIota(

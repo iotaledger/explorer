@@ -42,7 +42,9 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                         `/${this.props.network
                                         }/addr/${this.props.addressDetails?.bech32}`)}
                                 >
-                                    {`${this.props.addressDetails.bech32.slice(0, 7)}...${this.props.addressDetails.bech32.slice(-7)} `}
+                                    {this.props.truncateAddress
+                                        ? `${this.props.addressDetails.bech32.slice(0, 7)}...${this.props.addressDetails.bech32.slice(-7)} `
+                                        : this.props.addressDetails.bech32}
                                 </button>
                             )}
                             {!this.props.history && (

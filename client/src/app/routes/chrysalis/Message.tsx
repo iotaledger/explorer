@@ -1,7 +1,7 @@
 import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, serializeMessage, TRANSACTION_PAYLOAD_TYPE, WriteStream } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../../helpers/downloadHelper";
@@ -195,6 +195,40 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 labelPosition="top"
                                             />
                                         </div>
+                                        {this.state.advancedMode &&
+                                            this.state.message?.parentMessageIds?.map((parent, idx) => (
+                                                <React.Fragment key={idx}>
+                                                    <div className="section--label">
+                                                        Parent Message {idx + 1}
+                                                    </div>
+                                                    <div className="section--value section--value__code featured row middle">
+                                                        {parent !== "0".repeat(64) && (
+                                                            <React.Fragment>
+                                                                <Link
+                                                                    className="margin-r-t"
+                                                                    to={
+                                                                        `/${this.props.match.params.network
+                                                                        }/message/${parent}`
+                                                                    }
+                                                                >
+                                                                    {parent}
+                                                                </Link>
+                                                                <MessageButton
+                                                                    onClick={() => ClipboardHelper.copy(
+                                                                        parent
+                                                                    )}
+                                                                    buttonType="copy"
+                                                                    labelPosition="top"
+                                                                />
+                                                            </React.Fragment>
+                                                        )}
+                                                        {parent === "0".repeat(64) && (
+                                                            <span>Genesis</span>
+                                                        )}
+                                                    </div>
+                                                </React.Fragment>
+                                            )
+                                            )}
                                         {this.state.paramMessageId !== this.state.actualMessageId && (
                                             <React.Fragment>
                                                 <div className="section--label">
@@ -352,6 +386,42 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                     )}
                                                 </React.Fragment>
                                             )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {this.state.advancedMode && (
+                                    <div className="section margin-t-s">
+                                        <div className="section--header">
+                                            <h2>Child Messages</h2>
+                                            {this.state.childrenIds !== undefined && (
+                                                <span className="section--header-count">
+                                                    {this.state.childrenIds.length}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="section--content children-container">
+                                            {this.state.childrenBusy && (<Spinner />)}
+                                            {this.state.childrenIds?.map(childId => (
+                                                <div
+                                                    className="section--value section--value__code featured row middle"
+                                                    key={childId}
+                                                >
+                                                    <Link
+                                                        to={
+                                                            `/${this.props.match.params.network
+                                                            }/message/${childId}`
+                                                        }
+                                                    >
+                                                        {childId}
+                                                    </Link>
+                                                </div>
+                                            ))}
+                                            {!this.state.childrenBusy &&
+                                                this.state.childrenIds &&
+                                                this.state.childrenIds.length === 0 && (
+                                                    <p>There are no children for this message.</p>
+                                                )}
                                         </div>
                                     </div>
                                 )}
