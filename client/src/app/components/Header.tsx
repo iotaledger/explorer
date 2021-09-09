@@ -6,6 +6,7 @@ import hamburgerIcon from "../../assets/hamburger.svg";
 import logoHeaderMobile from "../../assets/logo-header-mobile.svg";
 import logoHeader from "../../assets/logo-header.svg";
 import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
+import CurrencyButton from "./CurrencyButton";
 import "./Header.scss";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
@@ -119,6 +120,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                         )}
                     </div>
                     {this.props.search}
+                    <CurrencyButton
+                        onlyFiatSelect
+                    />
                     <div className="hamburger--menu">
                         <div
                             className="hamburger--menu__icon"
