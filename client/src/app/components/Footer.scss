@@ -27,7 +27,7 @@ footer {
       section {
         margin-right: 28px;
         margin-bottom: 28px;
-
+        font-weight: 500;
         @include tablet-down {
           margin-right: 0;
           width: 50%;
@@ -47,6 +47,7 @@ footer {
 
         ul {
           list-style: none;
+          font-weight: 500;
 
           li {
             @include font-size(12px, 18px);
@@ -118,6 +119,7 @@ footer {
       align-items: center;
       span {
         margin-left: 16px;
+        font-weight: 500;
       }
       @media screen and (max-width: 768px) {
         padding-bottom: 16px 8px;
