@@ -265,10 +265,10 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                             {this.state.outputs.map((output, idx) => (
                                 <React.Fragment key={idx}>
                                     <div
-                                        className="card--content__input card--content__flex_between"
+                                        className="card--content__input "
                                         onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx })}
                                     >
-                                        <div className={classNames("margin-r-t", "card--content__input--dropdown", { opened: this.state.showOutputDetails === idx })}>
+                                        <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === idx })}>
                                             <DropdownIcon />
                                         </div>
                                         <Bech32Address
@@ -282,22 +282,23 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         <div className="card--value">
                                             {UnitsHelper.formatBest(output.amount)}
                                         </div>
-                                        {this.state.showOutputDetails === idx
-                                            ? (
-                                                <React.Fragment>
-                                                    <div className="card--label"> Address</div>
-                                                    <div className="card--value">
-                                                        <Bech32Address
-                                                            network={this.props.network}
-                                                            history={this.props.history}
-                                                            addressDetails={output.address}
-                                                            advancedMode={true}
-                                                            hideLabel={true}
-                                                            truncateAddress={false}
-                                                        />
-                                                    </div>
-                                                </React.Fragment>) : ""}
                                     </div>
+
+                                    {this.state.showOutputDetails === idx
+                                        ? (
+                                            <React.Fragment>
+                                                <div className="card--label"> Address</div>
+                                                <div className="card--value">
+                                                    <Bech32Address
+                                                        network={this.props.network}
+                                                        history={this.props.history}
+                                                        addressDetails={output.address}
+                                                        advancedMode={true}
+                                                        hideLabel={true}
+                                                        truncateAddress={false}
+                                                    />
+                                                </div>
+                                            </React.Fragment>) : ""}
                                 </React.Fragment>
                             ))}
                         </div>

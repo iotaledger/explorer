@@ -314,7 +314,11 @@
     margin-bottom: 12px;
     color: $gray-10;
     word-break: break-all;
+    margin-left: 65px;
 
+    @include phone-down {
+      margin-left: 15px;
+    }
     a,
     button {
       color: $blue-5;
