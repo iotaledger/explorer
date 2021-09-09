@@ -131,7 +131,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
             outputs,
             unlockAddresses,
             transferTotal,
-            showDetails: -1
+            showInputDetails: -1,
+            showOutputDetails: -1
         };
     }
 
@@ -198,9 +199,9 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 <React.Fragment key={idx}>
                                     <div
                                         className="card--content__input"
-                                        onClick={() => this.setState({ showDetails: this.state.showDetails === idx ? -1 : idx })}
+                                        onClick={() => this.setState({ showInputDetails: this.state.showInputDetails === idx ? -1 : idx })}
                                     >
-                                        <div className={classNames("margin-r-t", "card--content__input--dropdown", { opened: this.state.showDetails === idx })}>
+                                        <div className={classNames("margin-r-t", "card--content__input--dropdown", { opened: this.state.showInputDetails === idx })}>
                                             <DropdownIcon />
                                         </div>
                                         <Bech32Address
@@ -209,11 +210,23 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             addressDetails={input.transactionAddress}
                                             advancedMode={false}
                                             hideLabel={true}
+                                            truncateAddress={true}
                                         />
                                     </div>
-                                    {this.state.showDetails === idx
+                                    {this.state.showInputDetails === idx
                                         ? (
                                             <React.Fragment>
+                                                <div className="card--label"> Address</div>
+                                                <div className="card--value">
+                                                    <Bech32Address
+                                                        network={this.props.network}
+                                                        history={this.props.history}
+                                                        addressDetails={input.transactionAddress}
+                                                        advancedMode={true}
+                                                        hideLabel={true}
+                                                        truncateAddress={false}
+                                                    />
+                                                </div>
                                                 <div className="card--label"> Message id</div>
                                                 <div className="card--value">
                                                     <Link
@@ -238,33 +251,42 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         </div>
                         <div className="card--content">
                             {this.state.outputs.map((output, idx) => (
-                                <div key={idx} className="card--content__flex_between">
-                                    <Bech32Address
-                                        network={this.props.network}
-                                        history={this.props.history}
-                                        addressDetails={output.address}
-                                        advancedMode={false}
-                                        hideLabel={true}
-                                    />
-                                    <div className="card--value">
-                                        {UnitsHelper.formatBest(output.amount)}
-                                        {/* <div className="card--label card--label__no-height margin-r-s">
-                                            {output.isRemainder ? "Remainder" : "Amount"}
-                                        </div> */}
-                                        {/* <button
-                                            type="button"
-                                            onClick={() => this.setState(
-                                                {
-                                                    formatFull: !this.state.formatFull
-                                                }
-                                            )}
-                                        >
-                                            {this.state.formatFull
-                                                ? `${output.amount} i`
-                                                : UnitsHelper.formatBest(output.amount)}
-                                        </button> */}
+                                <React.Fragment key={idx}>
+                                    <div
+                                        className="card--content__input card--content__flex_between"
+                                        onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx })}
+                                    >
+                                        <div className={classNames("margin-r-t", "card--content__input--dropdown", { opened: this.state.showOutputDetails === idx })}>
+                                            <DropdownIcon />
+                                        </div>
+                                        <Bech32Address
+                                            network={this.props.network}
+                                            history={this.props.history}
+                                            addressDetails={output.address}
+                                            advancedMode={false}
+                                            hideLabel={true}
+                                            truncateAddress={true}
+                                        />
+                                        <div className="card--value">
+                                            {UnitsHelper.formatBest(output.amount)}
+                                        </div>
+                                        {this.state.showOutputDetails === idx
+                                            ? (
+                                                <React.Fragment>
+                                                    <div className="card--label"> Address</div>
+                                                    <div className="card--value">
+                                                        <Bech32Address
+                                                            network={this.props.network}
+                                                            history={this.props.history}
+                                                            addressDetails={output.address}
+                                                            advancedMode={true}
+                                                            hideLabel={true}
+                                                            truncateAddress={false}
+                                                        />
+                                                    </div>
+                                                </React.Fragment>) : ""}
                                     </div>
-                                </div>
+                                </React.Fragment>
                             ))}
                         </div>
                     </div>
