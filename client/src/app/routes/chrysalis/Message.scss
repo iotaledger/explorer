@@ -1,7 +1,7 @@
-@import '../../../scss/fonts';
-@import '../../../scss/mixins';
-@import '../../../scss/media-queries';
-@import '../../../scss/variables';
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
 
 .message {
   display: flex;
@@ -23,6 +23,9 @@
         font-weight: 500;
         color: $gray-6;
         margin-right: 16px;
+        @include phone-down {
+          margin-right: 1px;
+        }
       }
       .switch {
         position: relative;
@@ -50,7 +53,7 @@
 
       .slider:before {
         position: absolute;
-        content: '';
+        content: "";
         height: 15px;
         width: 15px;
         left: 2.5px;
