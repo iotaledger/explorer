@@ -187,7 +187,7 @@
   }
 
   .card--content {
-    padding: 0px 30px 20px;
+    padding: 0 30px 20px;
 
     .card--content__flex_between {
       display: flex;
@@ -197,6 +197,7 @@
     @include phone-down {
       padding: 15px 20px;
     }
+
     .card--content__input {
       display: flex;
 
@@ -261,58 +262,12 @@
     margin-left: 10px;
   }
 
-  .card--label {
-    @include font-size(12px);
-
-    display: flex;
-    align-items: center;
-    height: 32px;
-    color: $gray-6;
-    font-family: $inter;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-
-    button,
-    .button {
-      @include font-size(12px);
-
-      padding: 0;
-      border: 0;
-      background: none;
-      color: inherit;
-      font-family: inherit;
-      font-size: inherit;
-      font-weight: inherit;
-      text-align: left;
-      text-transform: inherit;
-      cursor: pointer;
-
-      &:hover {
-        color: $main-green-highlight;
-        text-decoration: underline;
-      }
-
-      &:focus {
-        box-shadow: none;
-      }
-    }
-
-    &.card--label__no-case {
-      text-transform: none;
-    }
-
-    &.card--label__no-height {
-      height: auto;
-    }
-  }
-
   .card--value {
     @include font-size(14px, 20px);
 
-    font-family: $ibm-plex-mono;
     margin-bottom: 12px;
     color: $gray-10;
+    font-family: $ibm-plex-mono;
     word-break: break-all;
 
     a,
@@ -397,6 +352,52 @@
           color: lighten($main-green-highlight, 10%);
         }
       }
+    }
+  }
+
+  .card--label {
+    @include font-size(12px);
+
+    display: flex;
+    align-items: center;
+    height: 32px;
+    color: $gray-6;
+    font-family: $inter;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+
+    button,
+    .button {
+      @include font-size(12px);
+
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      text-align: left;
+      text-transform: inherit;
+      cursor: pointer;
+
+      &:hover {
+        color: $main-green-highlight;
+        text-decoration: underline;
+      }
+
+      &:focus {
+        box-shadow: none;
+      }
+    }
+
+    &.card--label__no-case {
+      text-transform: none;
+    }
+
+    &.card--label__no-height {
+      height: auto;
     }
   }
 }
