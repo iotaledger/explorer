@@ -254,120 +254,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                                                         payload.label === "Transaction" &&
                                                                         payload.isEnabled)) && (
                                                                         <div className="row">
-                                                                            <div className="col">
-                                                                                <span className="section--label">
-                                                                                    Minimum
-                                                                                </span>
-                                                                                <span className="filter--value">
-                                                                                    <input
-                                                                                        className="input-plus"
-                                                                                        type="text"
-                                                                                        value={this.state.valueMinimum}
-                                                                                        onChange={
-                                                                                            e =>
-                                                                                                this.updateMinimum(
-                                                                                                    e.target.value
-                                                                                                )
-                                                                                        }
-                                                                                    />
-                                                                                    <div className="select-wrapper">
-                                                                                        <select
-                                                                                            className="select-plus"
-                                                                                            value={this.state.valueMinimumUnits}
-                                                                                            onChange={
-                                                                                                e =>
-                                                                                                    this.setState(
-                                                                                                        {
-                                                                                                            valueMinimumUnits:
-                                                                                                                e.target.value as Units
-                                                                                                        },
-                                                                                                        async () =>
-                                                                                                            this.updateFilters()
-                                                                                                    )}
-                                                                                        >
-                                                                                            <option value="i">
-                                                                                                i
-                                                                                            </option>
-                                                                                            <option value="Ki">
-                                                                                                Ki
-                                                                                            </option>
-                                                                                            <option value="Mi">
-                                                                                                Mi
-                                                                                            </option>
-                                                                                            <option value="Gi">
-                                                                                                Gi
-                                                                                            </option>
-                                                                                            <option value="Ti">
-                                                                                                Ti
-                                                                                            </option>
-                                                                                            <option value="Pi">
-                                                                                                Pi
-                                                                                            </option>
-                                                                                        </select>
-                                                                                        <img
-                                                                                            src={chevronDownGray}
-                                                                                            alt="expand"
-                                                                                        />
-                                                                                    </div>
-                                                                                </span>
-                                                                            </div>
-                                                                            <div className="col">
-                                                                                <span className="section--label">
-                                                                                    Maximum
-                                                                                </span>
-                                                                                <span className="filter--value">
-                                                                                    <input
-                                                                                        className="input-plus"
-                                                                                        type="text"
-                                                                                        value={this.state.valueMaximum}
-                                                                                        onChange={
-                                                                                            e =>
-                                                                                                this.updateMaximum(
-                                                                                                    e.target.value
-                                                                                                )
-                                                                                        }
-                                                                                    />
-                                                                                    <div className="select-wrapper">
-                                                                                        <select
-                                                                                            className="select-plus"
-                                                                                            value={this.state.valueMaximumUnits}
-                                                                                            onChange={
-                                                                                                e =>
-                                                                                                    this.setState(
-                                                                                                        {
-                                                                                                            valueMaximumUnits:
-                                                                                                                e.target.value as Units
-                                                                                                        },
-                                                                                                        async () =>
-                                                                                                            this.updateFilters())
-                                                                                            }
-                                                                                        >
-                                                                                            <option value="i">
-                                                                                                i
-                                                                                            </option>
-                                                                                            <option value="Ki">
-                                                                                                Ki
-                                                                                            </option>
-                                                                                            <option value="Mi">
-                                                                                                Mi
-                                                                                            </option>
-                                                                                            <option value="Gi">
-                                                                                                Gi
-                                                                                            </option>
-                                                                                            <option value="Ti">
-                                                                                                Ti
-                                                                                            </option>
-                                                                                            <option value="Pi">
-                                                                                                Pi
-                                                                                            </option>
-                                                                                        </select>
-                                                                                        <img
-                                                                                            src={chevronDownGray}
-                                                                                            alt="expand"
-                                                                                        />
-                                                                                    </div>
-                                                                                </span>
-                                                                            </div>
+                                                                            {this.transactionDropdown("minimum")}
+                                                                            {this.transactionDropdown("maximum")}
                                                                         </div>
                                                                     )}
                                                             </React.Fragment>
@@ -624,6 +512,78 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
             return payload;
         });
         this.setState({ valuesFilter }, async () => this.updateFilters());
+    }
+
+    private transactionDropdown(type: "minimum" | "maximum"): ReactNode {
+        return (
+            <div className="col">
+                <span className="section--label">
+                    {type === "minimum" ? "Minimum" : "Maximum"}
+                </span>
+                <span className="filter--value">
+                    <input
+                        className="input-plus"
+                        type="text"
+                        value={type === "minimum" ? this.state.valueMinimum : this.state.valueMaximum}
+                        onChange={
+                            e =>
+                            (type === "minimum"
+                                ? this.updateMinimum(e.target.value)
+                                : this.updateMaximum(e.target.value)
+                            )
+                        }
+                    />
+                    <div className="select-wrapper">
+                        <select
+                            className="select-plus"
+                            value={type === "minimum" ? this.state.valueMinimumUnits : this.state.valueMaximumUnits}
+                            onChange={
+                                e =>
+                                (type === "minimum" ? this.setState(
+                                    {
+                                        valueMinimumUnits:
+                                            e.target.value as Units
+                                    },
+                                    async () =>
+                                        this.updateFilters()
+                                ) : this.setState(
+                                    {
+                                        valueMaximumUnits:
+                                            e.target.value as Units
+                                    },
+                                    async () =>
+                                        this.updateFilters()
+                                ))
+
+                            }
+                        >
+                            <option value="i">
+                                i
+                            </option>
+                            <option value="Ki">
+                                Ki
+                            </option>
+                            <option value="Mi">
+                                Mi
+                            </option>
+                            <option value="Gi">
+                                Gi
+                            </option>
+                            <option value="Ti">
+                                Ti
+                            </option>
+                            <option value="Pi">
+                                Pi
+                            </option>
+                        </select>
+                        <img
+                            src={chevronDownGray}
+                            alt="expand"
+                        />
+                    </div>
+                </span>
+            </div>
+        );
     }
 }
 
