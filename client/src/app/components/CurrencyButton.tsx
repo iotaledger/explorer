@@ -91,12 +91,8 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
                         </select>
                         <img src={chevronDownGray} alt="expand" />
                     </div>
-                )
-                }
+                )}
             </React.Fragment>
-
-
-
         );
     }
 

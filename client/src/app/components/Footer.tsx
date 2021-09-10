@@ -2,13 +2,13 @@ import React, { Component, ReactNode } from "react";
 import logoFooter from "../../assets/logo-footer.svg";
 import { FoundationDataHelper } from "../../helpers/foundationDataHelper";
 import { ReactComponent as DiscordIcon } from "./../../assets/discord.svg";
+import { ReactComponent as FacebookIcon } from "./../../assets/facebook.svg";
 import { ReactComponent as GithubIcon } from "./../../assets/github.svg";
 import { ReactComponent as InstagramIcon } from "./../../assets/instagram.svg";
 import { ReactComponent as LinkedinIcon } from "./../../assets/linkedin.svg";
 import { ReactComponent as RedditIcon } from "./../../assets/reddit.svg";
 import { ReactComponent as TwitterIcon } from "./../../assets/twitter.svg";
 import { ReactComponent as YoutubeIcon } from "./../../assets/youtube.svg";
-import { ReactComponent as FacebookIcon } from "./../../assets/facebook.svg";
 import "./Footer.scss";
 import { FooterProps } from "./FooterProps";
 import { FooterState } from "./FooterState";
@@ -62,9 +62,9 @@ class Footer extends Component<FooterProps, FooterState> {
         }, {
             name: "Facebook",
             icon: <FacebookIcon />,
-            url: " https://www.facebook.com/iotafoundation/",
+            url: "https://www.facebook.com/iotafoundation/",
             color: "#d1ddf0"
-        },
+        }
     ];
 
     /**

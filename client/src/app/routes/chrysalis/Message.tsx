@@ -26,10 +26,6 @@ import "./Message.scss";
 import { MessageRouteProps } from "./MessageRouteProps";
 import { MessageState } from "./MessageState";
 
-
-
-
-
 /**
  * Component which will show the message page.
  */
@@ -328,7 +324,8 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                         Parent Message {idx + 1}
                                                     </div>
                                                     <div
-                                                        className="section--value section--value__code featured row middle"
+                                                        className="section--value section--value__code featured
+                                                           row middle"
                                                     >
                                                         {parent !== "0".repeat(64) && (
                                                             <React.Fragment>
@@ -593,58 +590,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     </div>
                                     <div className="section--content children-container">
                                         <span>In progress...</span>
-                                        {/* {this.state.childrenBusy && (<Spinner />)}
-                                        {this.state.childrenIds?.map(childId => (
-                                            <div className="section--value" key={childId}>
-                                                <Link
-                                                    to={
-                                                        `/${this.props.match.params.network
-                                                        }/message/${childId}`
-                                                    }
-                                                >
-                                                    {childId}
-                                                </Link>
-                                            </div>
-                                        ))}
-                                        <span>Parents</span>
-                                        {this.state.message?.parentMessageIds?.map((parent, idx) => (
-                                            <React.Fragment key={idx}>
-                                                <div className="section--label">
-                                                    Parent Message {idx + 1}
-                                                </div>
-                                                <div className="section--value row middle">
-                                                    {parent !== "0".repeat(64) && (
-                                                        <React.Fragment>
-                                                            <Link
-                                                                className="margin-r-t"
-                                                                to={
-                                                                    `/${this.props.match.params.network
-                                                                    }/message/${parent}`
-                                                                }
-                                                            >
-                                                                {parent}
-                                                            </Link>
-                                                            <MessageButton
-                                                                onClick={() => ClipboardHelper.copy(
-                                                                    parent
-                                                                )}
-                                                                buttonType="copy"
-                                                                labelPosition="top"
-                                                            />
-                                                        </React.Fragment>
-                                                    )}
-                                                    {parent === "0".repeat(64) && (
-                                                        <span>Genesis</span>
-                                                    )}
-                                                </div>
-                                            </React.Fragment>
-                                        )
-                                        )}
-                                        <div>Myself:</div>
-                                        <div>
-                                            {this.state.actualMessageId}
-                                        </div> */}
-
                                     </div>
                                 </div>
                             </div>

@@ -12,12 +12,16 @@ class QR extends Component<QRProps, QRState> {
      * @param props The props.
      */
 
+    /**
+     * The QR size in pixels.
+     */
     private readonly size: number = 150;
+
     constructor(props: QRProps) {
         super(props);
         this.state = {
             cells: []
-        }
+        };
     }
 
     public componentDidMount(): void {
