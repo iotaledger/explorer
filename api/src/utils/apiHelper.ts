@@ -236,7 +236,7 @@ function logParams(obj: { [id: string]: unknown }): { [id: string]: unknown } {
 export function cors(
     req: IHttpRequest,
     res: IHttpResponse,
-    allowDomains: string | string[] | undefined,
+    allowDomains: string | (string | RegExp)[] | undefined,
     allowMethods: string | undefined,
     allowHeaders: string | undefined): void {
     if (!allowDomains || allowDomains === "*") {
@@ -246,8 +246,13 @@ export function cors(
         const origins = Array.isArray(allowDomains) ? allowDomains : allowDomains.split(";");
         let isAllowed;
         for (const origin of origins) {
-            if (requestOrigin === origin || origin === "*") {
-                isAllowed = origin;
+            if (typeof origin === "string") {
+                if (requestOrigin === origin || origin === "*") {
+                    isAllowed = origin;
+                    break;
+                }
+            } else if (origin.test(requestOrigin)) {
+                isAllowed = requestOrigin;
                 break;
             }
         }
