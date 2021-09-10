@@ -77,7 +77,7 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
                 )}
 
                 {this.props.onlyFiatSelect && (
-                    <div className="select-wrapper select-wrapper--small">
+                    <div className="select-wrapper ">
                         <select
                             value={this.state.currency}
                             onChange={e => {
