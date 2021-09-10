@@ -8,6 +8,7 @@ import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
+import QR from "../../components/chrysalis/QR";
 import Spinner from "../../components/Spinner";
 import messageJSON from "./../../../assets/modals/message.json";
 import Transaction from "./../../components/chrysalis/Transaction";
@@ -151,12 +152,13 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             <Modal icon="info" data={messageJSON} />
                                         </div>
                                     </div>
-                                    <div className="section--content">
-                                        <Bech32Address
-                                            addressDetails={this.state.bech32AddressDetails}
-                                            advancedMode={true}
-                                        />
-                                        {/* {this.state.balance !== undefined && this.state.balance !== 0 && (
+                                    <div className="row space-between">
+                                        <div className="section--content">
+                                            <Bech32Address
+                                                addressDetails={this.state.bech32AddressDetails}
+                                                advancedMode={true}
+                                            />
+                                            {/* {this.state.balance !== undefined && this.state.balance !== 0 && (
                                             <div className="row fill margin-t-s margin-b-s value-buttons">
                                                 <div className="col">
                                                     <ValueButton value={this.state.balance ?? 0} label="Balance" />
@@ -169,35 +171,46 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </div>
                                             </div>
                                         )} */}
-                                        {this.state.balance !== undefined && this.state.balance === 0 && (
-                                            <div>
-                                                <div className="section--label">
-                                                    Balance
+
+
+                                            {this.state.balance !== undefined && this.state.balance === 0 && (
+                                                <div>
+                                                    <div className="section--label">
+                                                        Balance
+                                                    </div>
+                                                    <div className="section--value">
+                                                        0
+                                                    </div>
                                                 </div>
-                                                <div className="section--value">
-                                                    0
+                                            )}
+                                            {this.state.balance !== undefined && this.state.balance !== 0 && (
+                                                <div>
+                                                    <div className="section--label">
+                                                        Balance
+                                                    </div>
+                                                    <div className="section--value">
+                                                        {UnitsHelper.formatBest(this.state.balance)}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                        {this.state.balance !== undefined && this.state.balance !== 0 && (
-                                            <div>
-                                                <div className="section--label">
-                                                    Balance
+                                            )}
+                                            {this.state.status && (
+                                                <div className="middle row">
+                                                    {this.state.statusBusy && (<Spinner />)}
+                                                    <p className="status">
+                                                        {this.state.status}
+                                                    </p>
                                                 </div>
-                                                <div className="section--value">
-                                                    {UnitsHelper.formatBest(this.state.balance)}
-                                                </div>
-                                            </div>
-                                        )}
-                                        {this.state.status && (
-                                            <div className="middle row">
-                                                {this.state.statusBusy && (<Spinner />)}
-                                                <p className="status">
-                                                    {this.state.status}
-                                                </p>
-                                            </div>
-                                        )}
+                                            )}
+                                        </div>
+                                        <div className="section--content">
+                                            {this.state.bech32AddressDetails?.bech32 &&
+                                                (
+                                                    //  eslint-disable-next-line react/jsx-pascal-case
+                                                    <QR data={this.state.bech32AddressDetails.bech32} />
+                                                )}
+                                        </div>
                                     </div>
+
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
                                     <div className="section">
