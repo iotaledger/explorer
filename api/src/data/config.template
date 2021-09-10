@@ -7,7 +7,7 @@
         "dbTablePrefix": "DB-TABLE-PREFIX"
     },
     "allowedDomains": [
-        "ALLOWED-DOMAIN"
+        ALLOWED-DOMAINS
     ],
     "allowedMethods": "ALLOWED-METHODS",
     "allowedHeaders": "ALLOWED-HEADERS",

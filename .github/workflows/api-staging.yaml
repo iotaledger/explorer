@@ -23,7 +23,7 @@ jobs:
       CONFIG_DB_AWS_ACCESS_KEY_ID: ${{ secrets.STAGING_CONFIG_DB_AWS_ACCESS_KEY_ID }}
       CONFIG_DB_AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGING_CONFIG_DB_AWS_SECRET_ACCESS_KEY }}
       CONFIG_DB_TABLE_PREFIX: ${{ secrets.STAGING_CONFIG_DB_TABLE_PREFIX }}
-      CONFIG_ALLOWED_DOMAIN: ${{ secrets.STAGING_CONFIG_ALLOWED_DOMAIN }}
+      CONFIG_ALLOWED_DOMAINS: ${{ secrets.STAGING_CONFIG_ALLOWED_DOMAINS }}
       CONFIG_ROUTE_CORS: ${{ secrets.STAGING_CONFIG_ROUTE_CORS }}
       CONFIG_VERBOSE_LOGGING: ${{ secrets.STAGING_VERBOSE_LOGGING }}
       CONFIG_PRIVATE_KEY_ED25519: ${{ secrets.STAGING_PRIVATE_KEY_ED25519 }}
@@ -57,7 +57,7 @@ jobs:
           sed -i 's/DB-AWS-ACCESS-KEY-ID/${{ env.CONFIG_DB_AWS_ACCESS_KEY_ID }}/g' config.$CONFIG_ID.json
           sed -i 's/DB-AWS-SECRET-ACCESS-KEY/${{ env.CONFIG_DB_AWS_SECRET_ACCESS_KEY }}/g' config.$CONFIG_ID.json
           sed -i 's/DB-TABLE-PREFIX/${{ env.CONFIG_DB_TABLE_PREFIX }}/g' config.$CONFIG_ID.json
-          sed -i 's/ALLOWED-DOMAIN/${{ env.CONFIG_ALLOWED_DOMAIN }}/g' config.$CONFIG_ID.json
+          sed -i 's/ALLOWED-DOMAINS/${{ env.CONFIG_ALLOWED_DOMAINS }}/g' config.$CONFIG_ID.json
           sed -i 's/ROUTE-CORS/${{ env.CONFIG_ROUTE_CORS }}/g' config.$CONFIG_ID.json
           sed -i 's/VERBOSE-LOGGING/${{ env.CONFIG_VERBOSE_LOGGING }}/g' config.$CONFIG_ID.json
           sed -i 's/PRIVATE-KEY-ED25519/${{ env.CONFIG_PRIVATE_KEY_ED25519 }}/g' config.$CONFIG_ID.json
