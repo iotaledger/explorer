@@ -112,6 +112,15 @@
       .message--header {
         margin-bottom: 20px;
       }
+      .section--header {
+        .transfer-value {
+          font-family: $inter;
+          @include font-size(16px, 24px);
+          font-weight: 700;
+          margin-left: auto;
+          color: $gray-9;
+        }
+      }
 
       .sections {
         flex: 1;
@@ -145,6 +154,9 @@
             line-height: 20px;
             letter-spacing: 0.02em;
             color: $blue-5;
+          }
+          .card--value {
+            margin-left: auto;
           }
         }
 

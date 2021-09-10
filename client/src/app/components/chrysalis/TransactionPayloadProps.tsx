@@ -1,6 +1,6 @@
-import { ITransactionPayload } from "@iota/iota.js";
+import { IUTXOInput } from "@iota/iota.js";
 import * as H from "history";
-
+import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 export interface TransactionPayloadProps {
     /**
      * The network to lookup.
@@ -8,10 +8,37 @@ export interface TransactionPayloadProps {
     network: string;
 
     /**
-     * The transaction payload.
+     * The unlock addresses for the transactions.
      */
-    payload: ITransactionPayload;
+    inputs: (IUTXOInput & {
+        outputHash: string;
+        isGenesis: boolean;
+        transactionUrl: string;
+        transactionAddress: IBech32AddressDetails;
+        signature: string;
+        publicKey: string;
+    })[];
 
+    /**
+     * The outputs.
+     */
+    outputs: {
+        index: number;
+        type: number;
+        address: IBech32AddressDetails;
+        amount: number;
+        isRemainder: boolean;
+    }[];
+
+    /**
+     * The total of the transfer excluding remainders.
+     */
+    transferTotal: number;
+
+    /**
+     * The unlock addresses for the transactions.
+     */
+    unlockAddresses: IBech32AddressDetails[];
     /**
      * History for navigation.
      */
