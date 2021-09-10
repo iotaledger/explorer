@@ -153,4 +153,9 @@
       display: none;
     }
   }
+  .general-content {
+    @include tablet-down {
+      flex-direction: column;
+    }
+  }
 }

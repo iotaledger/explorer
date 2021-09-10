@@ -152,7 +152,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             <Modal icon="info" data={messageJSON} />
                                         </div>
                                     </div>
-                                    <div className="row space-between">
+                                    <div className="row space-between general-content">
                                         <div className="section--content">
                                             <Bech32Address
                                                 addressDetails={this.state.bech32AddressDetails}
