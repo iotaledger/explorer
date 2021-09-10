@@ -28,7 +28,7 @@
     align-self: flex-start;
     margin-left: 16px;
     @include phone-down {
-      margin-left: 180px;
+      margin-left: 60%;
     }
     .data-toggle--tab {
       margin: 0 2px;
