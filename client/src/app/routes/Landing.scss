@@ -343,22 +343,10 @@
                   padding: 12px 10px;
 
                   input {
+                    position: relative;
                     width: 20px;
                     height: 20px;
                     margin-right: 18px;
-                    &:after {
-                      width: 20px;
-                      height: 20px;
-                      display: inline-flex;
-                      align-items: center;
-                      justify-content: center;
-                      background-color: #0fc1b7;
-                      border-radius: 6px;
-                      color: white;
-                      padding: 0;
-                      bottom: 5px;
-                      left: -1px;
-                    }
                   }
                 }
               }
