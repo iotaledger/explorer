@@ -1,0 +1,88 @@
+@import "../../../scss/variables";
+
+.dropdown-wrapper{
+  position: relative;
+
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.compare-selector {
+  background-color: $white;
+  border-radius: 5px;
+  padding: 5px 10px;
+  white-space: nowrap;
+  height: 30px;
+  img {
+    margin-left: 10px;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.dropdown-placeholder {
+  color: $gray-header !important;
+}
+
+.dropdown-content {
+  border-radius: 5px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 35px;
+  max-height: 250px;
+  width: 200px;
+  background-color: $white;
+  overflow: hidden;
+  box-shadow: $box-shadow;
+}
+
+.dropdown-item {
+  position: static;
+  height: 45px;
+  background-color: white;
+  width: 100%;
+  overflow: hidden;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $light-green !important;
+  }
+}
+
+.dropdown-item-title {
+  margin-left: 10px;
+  margin-top: 12px;
+
+  p {
+    margin-left: 10px;
+  }
+}
+
+.dropdown-item-timestamp {
+  margin-top: 3px;
+  margin-left: 37px;
+  color: $gray-header !important;
+}
+
+.reset-button{
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 7px !important;
+}
+
+.dropdown-item-warning{
+  margin: 20px 5px;
+  color: $warning !important;
+}

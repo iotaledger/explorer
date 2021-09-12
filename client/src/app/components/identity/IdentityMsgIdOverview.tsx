@@ -1,8 +1,11 @@
+import "./IdentityMsgIdOverview.scss";
+
 import React, { Component, Fragment, ReactNode } from "react";
+
+import { IdentityHelper } from "../../../helpers/IdentityHelper";
 import { IdentityMsgIdOverviewProps } from "./IdentityMsgIdOverviewProps";
 import { IdentityMsgOverviewState } from "./IdentityMsgIdOverviewState";
 import IdentityMsgStatusIcon from "./IdentityMsgStatusIcon";
-import "./IdentityMsgIdOverview.scss";
 
 /**
  * Shows a shortened Message Id and a Message Icon depending on type of message.
@@ -23,7 +26,7 @@ export default class IdentityMessageIdOverview extends Component<IdentityMsgIdOv
                                 }}
                             >
                                 <IdentityMsgStatusIcon status={this.props.status} />
-                                <p>{this.shortenMsgId(this.props.messageId ?? "")}</p>
+                                <p>{IdentityHelper.shortenMsgId(this.props.messageId ?? "")}</p>
                             </div>
                         )}
 
@@ -38,13 +41,5 @@ export default class IdentityMessageIdOverview extends Component<IdentityMsgIdOv
                 <div />
             </Fragment>
         );
-    }
-
-    private shortenMsgId(msgId: string): string {
-        if (msgId.length < 10) {
-            return msgId;
-        }
-
-        return `${msgId.slice(0, 7)}....${msgId.slice(-7)}`;
     }
 }

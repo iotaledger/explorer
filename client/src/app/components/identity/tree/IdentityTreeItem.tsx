@@ -1,12 +1,14 @@
+import "./IdentityTreeItem.scss";
+
+import React, { Component, Fragment, ReactNode } from "react";
+
+import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
+import { IdentityService } from "../../../../services/identityService";
+import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
+import { IdentityTreeItemState } from "./IdentityTreeItemState";
+import { ServiceFactory } from "../../../../factories/serviceFactory";
 import classNames from "classnames";
 import moment from "moment";
-import React, { Component, Fragment, ReactNode } from "react";
-import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { IdentityService } from "../../../../services/identityService";
-import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
-import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
-import "./IdentityTreeItem.scss";
-import { IdentityTreeItemState } from "./IdentityTreeItemState";
 
 export default class IdentityTreeItem extends Component<IdentityTreeItemProps, IdentityTreeItemState> {
     constructor(props: IdentityTreeItemProps) {
@@ -23,6 +25,92 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
     public render(): ReactNode {
         return (
             <div>
+                {/* --------- Nested Element/s --------- */}
+                {this.state.hasChildren && (
+                    <Fragment>
+                        {/* --------- Loading Diff Chain... --------- */}
+                        {this.state.loadingChildren && (
+                            <div className="tree-item-container fadeIn">
+                                {!this.props.lastMsg && (
+                                    <Fragment>
+                                        <div className="lower-left-straight-line" />
+                                        <div className="upper-left-straight-line" />
+                                    </Fragment>
+                                )}
+                                <div className="upper-curved-line">
+                                    <svg
+                                        width="22"
+                                        height="72"
+                                        viewBox="0 0 22 72"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M1 0C1 32 21 32 21 64M21 64C21 84.8889 21 54.9259 21 64Z"
+                                            stroke="#EEEEEE"
+                                            strokeWidth="2"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="loading-diff-icon" />
+                                <p className="title loading-diff-title"> Loading Diff Chain</p>
+                            </div>
+                        )}
+
+                        {/* --------- ⚠ Error or No Diffs Found --------- */}
+                        {!this.state.loadingChildren &&
+                            (this.state.diffHistory?.chainData?.length === 0 || this.state.error) && (
+                                <div className="tree-item-container fadeIn">
+                                    {!this.props.lastMsg && (
+                                        <Fragment>
+                                            <div className="lower-left-straight-line" />
+                                            <div className="upper-left-straight-line" />
+                                        </Fragment>
+                                    )}
+                                    <div className="upper-curved-line">
+                                        <svg
+                                            width="22"
+                                            height="72"
+                                            viewBox="0 0 22 72"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M1 0C1 32 21 32 21 64M21 64C21 84.8889 21 54.9259 21 64Z"
+                                                stroke="#EEEEEE"
+                                                strokeWidth="2"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <div className="no-diff-icon" />
+                                    {this.state.diffHistory?.chainData?.length === 0 && (
+                                        <p className="title no-diff-title"> No diffs found</p>
+                                    )}
+                                    {this.state.error && <p className="title no-diff-title"> Error</p>}
+                                </div>
+                            )}
+
+                        {/* --------- Diff children if Parent is Integration message  --------- */}
+                        {!this.state.loadingChildren &&
+                            this.state.diffHistory?.chainData?.map((value, index) => (
+                                <IdentityTreeItem
+                                    key={index}
+                                    network={this.props.network}
+                                    lastMsg={index === (this.state.diffHistory?.chainData?.length ?? 0) - 1}
+                                    nested={true}
+                                    firstMsg={index === 0}
+                                    selectedMessageId={this.props.selectedMessageId}
+                                    messageId={value?.messageId}
+                                    content={value?.message}
+                                    parentLastMsg={this.props.lastMsg}
+                                    onItemClick={(messageId, content) => {
+                                        this.props.onItemClick(messageId, content);
+                                    }}
+                                />
+                            ))}
+                    </Fragment>
+                )}
+
                 {/* --------- Item Content --------- */}
                 <div
                     className={classNames("tree-item-container noselect fadeIn", {
@@ -135,92 +223,6 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                         )}
                     </div>
                 </div>
-
-                {/* --------- Nested Element/s --------- */}
-                {this.state.hasChildren && (
-                    <Fragment>
-                        {/* --------- Loading Diff Chain... --------- */}
-                        {this.state.loadingChildren && (
-                            <div className="tree-item-container fadeIn">
-                                {!this.props.lastMsg && (
-                                    <Fragment>
-                                        <div className="lower-left-straight-line" />
-                                        <div className="upper-left-straight-line" />
-                                    </Fragment>
-                                )}
-                                <div className="upper-curved-line">
-                                    <svg
-                                        width="22"
-                                        height="72"
-                                        viewBox="0 0 22 72"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M1 0C1 32 21 32 21 64M21 64C21 84.8889 21 54.9259 21 64Z"
-                                            stroke="#EEEEEE"
-                                            strokeWidth="2"
-                                        />
-                                    </svg>
-                                </div>
-                                <div className="loading-diff-icon" />
-                                <p className="title loading-diff-title"> Loading Diff Chain</p>
-                            </div>
-                        )}
-
-                        {/* --------- ⚠ Error or No Diffs Found --------- */}
-                        {!this.state.loadingChildren &&
-                            (this.state.diffHistory?.chainData?.length === 0 || this.state.error) && (
-                                <div className="tree-item-container fadeIn">
-                                    {!this.props.lastMsg && (
-                                        <Fragment>
-                                            <div className="lower-left-straight-line" />
-                                            <div className="upper-left-straight-line" />
-                                        </Fragment>
-                                    )}
-                                    <div className="upper-curved-line">
-                                        <svg
-                                            width="22"
-                                            height="72"
-                                            viewBox="0 0 22 72"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                d="M1 0C1 32 21 32 21 64M21 64C21 84.8889 21 54.9259 21 64Z"
-                                                stroke="#EEEEEE"
-                                                strokeWidth="2"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <div className="no-diff-icon" />
-                                    {this.state.diffHistory?.chainData?.length === 0 && (
-                                        <p className="title no-diff-title"> No diffs found</p>
-                                    )}
-                                    {this.state.error && <p className="title no-diff-title"> Error</p>}
-                                </div>
-                            )}
-
-                        {/* --------- Diff children if Parent is Integration message  --------- */}
-                        {!this.state.loadingChildren &&
-                            this.state.diffHistory?.chainData?.map((value, index) => (
-                                <IdentityTreeItem
-                                    key={index}
-                                    network={this.props.network}
-                                    lastMsg={index === (this.state.diffHistory?.chainData?.length ?? 0) - 1}
-                                    nested={true}
-                                    firstMsg={index === 0}
-                                    selectedMessageId={this.props.selectedMessageId}
-                                    messageId={value?.messageId}
-                                    content={value?.message}
-                                    parentLastMsg={this.props.lastMsg}
-                                    onItemClick={(messageId, content) => {
-                                        this.props.onItemClick(messageId, content);
-                                    }}
-                                />
-                            ))}
-                    </Fragment>
-                )}
             </div>
         );
     }

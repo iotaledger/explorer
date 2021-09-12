@@ -1,19 +1,22 @@
-import React, { Component, Fragment, ReactNode } from "react";
-import { HiDownload } from "react-icons/hi";
-import { RouteComponentProps } from "react-router-dom";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { DownloadHelper } from "../../../helpers/downloadHelper";
-import { DiffMessage } from "../../../models/api/IIdentityDiffHistoryResponse";
-import { IdentityService } from "../../../services/identityService";
-import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
-import JsonViewer from "../JsonViewer";
-import Spinner from "../Spinner";
-import { IdentityHistoryState } from "./IdentityHisotyState";
-import { IdentityHistoryProps } from "./IdentityHistoryProps";
-import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
 import "./IdentityHistory.scss";
 import "../../../scss/layout.scss";
+
+import React, { Component, Fragment, ReactNode } from "react";
+
+import { DiffMessage } from "../../../models/api/IIdentityDiffHistoryResponse";
+import { DownloadHelper } from "../../../helpers/downloadHelper";
+import { HiDownload } from "react-icons/hi";
+import { IdentityHistoryProps } from "./IdentityHistoryProps";
+import { IdentityHistoryState } from "./IdentityHisotyState";
+import IdentityJsonDifference from "./IdentityJsonDifferece";
+import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
+import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
+import { IdentityService } from "../../../services/identityService";
 import IdentityTree from "./tree/IdentityTree";
+import JsonViewer from "../JsonViewer";
+import { RouteComponentProps } from "react-router-dom";
+import { ServiceFactory } from "../../../factories/serviceFactory";
+import Spinner from "../Spinner";
 
 export default class IdentityHistory extends Component<
     RouteComponentProps<IdentityResolverProps>,
@@ -28,7 +31,8 @@ export default class IdentityHistory extends Component<
             resolvedHistory: {},
             selectedMessageId: "",
             contentOfSelectedMessage: {},
-            error: undefined
+            error: undefined,
+            compareWith: []
         };
     }
 
@@ -87,61 +91,41 @@ export default class IdentityHistory extends Component<
                                         onItemClick={(messageId, content) => {
                                             this.setState({
                                                 contentOfSelectedMessage: content,
-                                                selectedMessageId: messageId
+                                                selectedMessageId: messageId,
+                                                compareWith: this.getPreviousMessages(messageId)
                                             });
                                         }}
                                     />
                                 </div>
-                                <div>
-                                    {/* --------- Header of JsonViewer --------- */}
-                                    <div className="identity-json-header">
-                                        <div>
-                                            <IdentityMessageIdOverview
-                                                status={
-                                                    (this.state.contentOfSelectedMessage as DiffMessage).diff
-                                                        ? "diff"
-                                                        : "integration"
-                                                }
-                                                messageId={this.state.selectedMessageId}
-                                                onClick={() => {
-                                                    this.props.history.push(
-                                                        // eslint-disable-next-line max-len
-                                                        `/${this.props.match.params.network}/message/${this.state.selectedMessageId}`
-                                                    );
-                                                }}
-                                            />
-                                        </div>
-
-                                        <a
-                                            href={DownloadHelper.createJsonDataUrl(this.state.contentOfSelectedMessage)}
-                                            download={DownloadHelper.filename(
-                                                this.state.selectedMessageId ?? "did",
-                                                "json"
-                                            )}
-                                            role="button"
-                                        >
-                                            <HiDownload />
-                                        </a>
-                                    </div>
-
-                                    {/* --------- JsonViewer --------- */}
-                                    <div
-                                        className="
-                                            card--value
-                                            card--value-textarea
-                                            card--value-textarea__json"
-                                    >
-                                        <JsonViewer
-                                            json={JSON.stringify(this.state.contentOfSelectedMessage, null, 4)}
-                                        />
-                                    </div>
-                                </div>
+                                <IdentityJsonDifference
+                                    messageId={this.state.selectedMessageId ?? ""}
+                                    content={this.state.contentOfSelectedMessage}
+                                    compareWith={this.state.compareWith}
+                                />
                             </div>
                         )}
                     </div>
                 )}
             </Fragment>
         );
+    }
+
+    private getPreviousMessages(messageId: string): { messageId: string; content: unknown }[] {
+        const integratoinChain = this.state.resolvedHistory?.integrationChainData;
+        if (!integratoinChain) {
+            return [];
+        }
+
+        const index = integratoinChain.findIndex((element: { messageId: string }) => element.messageId === messageId);
+
+        const previousMessages = [];
+        for (let i = index + 1; i < integratoinChain.length; i++) {
+            previousMessages.push({
+                messageId: integratoinChain[i].messageId,
+                content: integratoinChain[i].document
+            });
+        }
+        return previousMessages;
     }
 
     private async loadIntegrationHistory(): Promise<void> {

@@ -19,4 +19,6 @@ export interface IdentityHistoryState {
 
     // if error during history resolution.
     error: string | undefined;
+
+    compareWith: { messageId: string; content: unknown }[];
 }
