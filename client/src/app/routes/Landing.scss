@@ -383,7 +383,7 @@
                 }
 
                 &:hover {
-                  background-color: $gray-1;
+                  background-color: var(--hover-bg);
                   border-radius: 6px;
                 }
 

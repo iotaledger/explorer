@@ -110,7 +110,7 @@
                         }
                     }
                     &:hover:not(.selected) {
-                        background: #f0f2f4;
+                        background: var(--hover-bg);
                     }
                     margin-bottom: 16px;
                     padding: 4px;
