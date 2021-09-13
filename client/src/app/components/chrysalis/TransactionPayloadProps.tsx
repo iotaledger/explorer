@@ -17,6 +17,7 @@ export interface TransactionPayloadProps {
         transactionAddress: IBech32AddressDetails;
         signature: string;
         publicKey: string;
+        amount: number;
     })[];
 
     /**

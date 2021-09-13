@@ -3,6 +3,8 @@ import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { ServiceFactory } from "../../../factories/serviceFactory";
+import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../AsyncComponent";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Bech32Address from "./Bech32Address";
@@ -15,11 +17,18 @@ import { TransactionPayloadState } from "./TransactionPayloadState";
  */
 class TransactionPayload extends AsyncComponent<TransactionPayloadProps, TransactionPayloadState> {
     /**
+     * API Client for tangle requests.
+     */
+    private readonly _tangleCacheService: TangleCacheService;
+    /**
      * Create a new instance of TransactionPayload.
      * @param props The props.
      */
+
     constructor(props: TransactionPayloadProps) {
         super(props);
+
+        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
         this.state = {
             formatFull: false,
@@ -66,7 +75,11 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         hideLabel={true}
                                         truncateAddress={true}
                                     />
+                                    <div className="card--value">
+                                        {UnitsHelper.formatBest(input.amount)}
+                                    </div>
                                 </div>
+
                                 {this.state.showInputDetails === idx
                                     ? (
                                         <React.Fragment>
@@ -81,7 +94,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                     truncateAddress={false}
                                                 />
                                             </div>
-                                            <div className="card--label"> Message id</div>
+                                            <div className="card--label"> Transaction Id</div>
                                             <div className="card--value">
                                                 <Link
                                                     to={input.transactionUrl}
@@ -90,6 +103,10 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                     {input.transactionId}
                                                 </Link>
                                             </div>
+                                            <div className="card--label"> Transaction Output Index</div>
+                                            <div className="card--value">{input.transactionOutputIndex}</div>
+                                            <div className="card--label"> Amount</div>
+                                            <div className="card--value">{input.amount}</div>
                                             <div className="card--label"> Signature</div>
                                             <div className="card--value">{input.signature}</div>
                                             <div className="card--label"> Public Key</div>

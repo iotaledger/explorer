@@ -75,6 +75,7 @@ export interface MessageState {
         transactionAddress: IBech32AddressDetails;
         signature: string;
         publicKey: string;
+        amount: number;
     })[];
 
     /**
