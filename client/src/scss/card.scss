@@ -3,6 +3,7 @@
 @import './media-queries';
 @import './mixins';
 @import './variables';
+@import './themes';
 
 .card {
   display: flex;
@@ -29,7 +30,6 @@
   input {
     &[type='checkbox'] {
       @include font-size(24px);
-
       width: 24px;
       height: 24px;
       padding: 0;
@@ -309,6 +309,9 @@
 
   .card--value {
     @include font-size(14px, 20px);
+    input {
+      background-color: var(--light-bg);
+    }
 
     font-family: $ibm-plex-mono;
     margin-bottom: 12px;
