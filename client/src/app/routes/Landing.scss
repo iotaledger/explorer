@@ -470,10 +470,10 @@
     background: var(--header-bg);
     .inner {
       .header {
-        background-image: url('../../assets/bubbles.svg');
+        background-image: var(--bubbles-bg-image);
         background-repeat: no-repeat;
-        background-position: center bottom;
-
+        background-position: 55%;
+        background-size: cover;
         @include tablet-down {
           background-size: cover;
         }
