@@ -6,6 +6,8 @@
 
 .network--switcher {
     margin-left: auto;
+    border-left: 1px solid $gray-2;
+
     padding-left: 24px;
 
     @media (max-width: 1200px) {
