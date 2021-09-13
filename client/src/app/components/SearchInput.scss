@@ -7,6 +7,7 @@
 .search-input {
   display: flex;
   flex: 1;
+  height: 40px;
   flex-direction: row;
   margin: 0 12px 0px 20px;
   max-width: 400px;
@@ -14,7 +15,7 @@
     @include font-size(14px);
 
     flex: 1;
-    height: 48px;
+    height: 40px;
     padding: 0 24px;
     border: 1px solid var(--input-border-color);
     border-radius: 0 6px 6px 0;
@@ -22,7 +23,6 @@
     font-family: $inter;
     background-color: transparent;
     border-left: 0;
-    padding: 0 24px 0 0;
     box-shadow: none;
 
     &::placeholder {

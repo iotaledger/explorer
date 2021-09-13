@@ -5,7 +5,9 @@
 .select-wrapper {
   display: inline-block;
   position: relative;
-
+  @include tablet-down {
+    display: none;
+  }
   img {
     position: absolute;
     z-index: 2;
@@ -18,7 +20,7 @@
   select {
     @include font-size(14px);
 
-    height: 47.99px;
+    height: 40px;
     margin: 0;
     padding: 0 48px 0 20px;
     border: 1px solid var(--input-border-color);
@@ -52,6 +54,7 @@
       min-width: 100px;
       margin-right: -1px;
       border-radius: 6px 0 0 6px;
+      height: 48px;
 
       &:focus {
         z-index: 1;
