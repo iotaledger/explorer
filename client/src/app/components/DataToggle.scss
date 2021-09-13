@@ -2,15 +2,16 @@
 @import '../../scss/mixins';
 @import '../../scss/media-queries';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .data-toggle {
   @include font-size(14px, 21px);
 
   font-family: $inter;
   min-height: 56px;
-  background: $gray-noon;
+  background-color: var(--light-bg);
   border-radius: 6px;
-  color: $gray-9;
+  color: var(body-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
