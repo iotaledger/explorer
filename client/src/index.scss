@@ -84,7 +84,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   border-radius: 0;
-  background-color: $gray-header;
+  background-color: var(--header-color);
 }
 
 :root {

@@ -5,11 +5,17 @@
     --body-color: #131f37;
     --header-bg: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
     --header-color: #677695;
+    --header-box: #ffffff;
+    --header-label: #131f37;
+    --border-color: #e8eefb;
 
     body.darkmode {
         --body-background: #091326;
         --body-color: #fcfcfc;
         --header-bg: linear-gradient(180deg, #485776 0%, #131f37 100%);
         --header-color: #909fbe;
+        --header-box: #06102399;
+        --header-label: #d8e1f4;
+        --border-color: #ffffff1e;
     }
 }

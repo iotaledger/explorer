@@ -2,6 +2,7 @@
 @import '../../scss/mixins';
 @import '../../scss/media-queries';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .network--switcher {
     margin-left: auto;
@@ -43,7 +44,7 @@
             .label {
                 @include font-size(16px, 18px);
                 font-weight: 600;
-                color: $gray-9;
+                color: var(--header-label);
                 letter-spacing: 0.01em;
             }
             .eyebrow {
