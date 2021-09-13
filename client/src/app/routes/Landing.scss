@@ -2,6 +2,7 @@
 @import '../../scss/mixins';
 @import '../../scss/media-queries';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .landing {
   display: flex;
@@ -49,7 +50,6 @@
             @include font-size(48px, 58px);
             font-family: $metropolis;
             letter-spacing: 0.5px;
-            color: $gray-9;
 
             @include phone-down {
               @include font-size(32px, 36px);
@@ -462,7 +462,7 @@
   }
 
   .header-wrapper {
-    background: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
+    background: var(--header-bg);
     .inner {
       .header {
         background-image: url('../../assets/bubbles.svg');
