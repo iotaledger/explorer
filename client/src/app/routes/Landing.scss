@@ -256,6 +256,7 @@
 
             .section--header {
               margin-bottom: 0;
+
               button {
                 margin-left: 28px;
               }
@@ -280,10 +281,10 @@
                 position: absolute;
                 z-index: 900;
                 top: 48px;
-                right: 0;
+                right: 0.7px;
                 min-width: 350px;
                 background: var(--body-background);
-                box-shadow: 0px 0px 4px rgba(123, 148, 186, 0.2);
+                box-shadow: -1px 0px 9px 0px rgba(123, 148, 186, 75%);
                 border-radius: 6px;
                 padding: 8px;
                 border: 0.5px solid rgba(255, 255, 255, 0);
@@ -295,6 +296,9 @@
                   left: 0;
                   width: 100vw;
                 }
+                span {
+                  color: var(--expanded-color);
+                }
                 .filter-header {
                   font-family: $inter;
                   font-weight: 700;
@@ -302,11 +306,11 @@
                   padding: 8px;
                   letter-spacing: 0.5px;
                   color: $gray-7;
-                  border-bottom: 1px solid $gray-3;
+                  border-bottom: 1px solid var(--input-border-color);
                   margin-bottom: 8px;
                   button {
                     font-weight: 400;
-                    border: 1px solid $gray-3;
+                    border: 1px solid var(--input-border-color);
                     padding: 6px 20px;
                   }
                 }
@@ -316,7 +320,7 @@
                 .filter--value {
                   display: flex;
                   margin: 0 8px;
-                  color: $gray-6;
+                  color: var(--expanded-color);
                   font-family: $inter;
                   @include font-size(14px, 21px);
                   background-color: transparent;
@@ -333,13 +337,14 @@
                     min-width: 20px;
                     padding: 0 39px 0 11px;
                     background-color: transparent;
+                    color: var(--expanded-color);
                   }
                 }
                 label {
                   display: block;
                   font-family: $inter;
                   @include font-size(14px, 21px);
-                  color: $gray-7;
+                  color: var(--expanded-color);
                   padding: 12px 10px;
 
                   input {
