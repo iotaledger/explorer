@@ -54,7 +54,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                 <div className="card col fill">
                     <div className="card--header">
                         <h2 className="card--header__title">From</h2>
-                        <span className="dot-separator">.</span>
+                        <span className="dot-separator">·</span>
                         <span>{this.props.inputs.length}</span>
                     </div>
                     <div className="card--content">
@@ -105,8 +105,6 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             </div>
                                             <div className="card--label"> Transaction Output Index</div>
                                             <div className="card--value">{input.transactionOutputIndex}</div>
-                                            <div className="card--label"> Amount</div>
-                                            <div className="card--value">{input.amount}</div>
                                             <div className="card--label"> Signature</div>
                                             <div className="card--value">{input.signature}</div>
                                             <div className="card--label"> Public Key</div>
@@ -120,7 +118,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                 <div className="card col fill">
                     <div className="card--header">
                         <h2 className="card--header__title">To</h2>
-                        <span className="dot-separator">.</span>
+                        <span className="dot-separator">·</span>
                         <span>{this.props.outputs.length}</span>
                     </div>
                     <div className="card--content">

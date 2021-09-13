@@ -12,7 +12,7 @@ export interface TransactionState {
     /**
      * The total amount of the transaction.
      */
-    amount?: number;
+    amount: number;
     /**
      * The status of the message.
      */
