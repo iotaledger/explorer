@@ -2,6 +2,7 @@
 @import '../../scss/mixins';
 @import '../../scss/media-queries';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .search-input {
   display: flex;
@@ -16,7 +17,7 @@
     flex: 1;
     height: 48px;
     padding: 0 24px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--input-border);
     border-radius: 0 6px 6px 0;
     color: $gray-10;
     font-family: $inter;
@@ -25,6 +26,9 @@
     padding: 0 24px 0 0;
     box-shadow: none;
 
+    &::placeholder {
+      color: var(--input-border);
+    }
     @include phone-down {
       @include font-size(12px);
 
@@ -36,7 +40,7 @@
   .search--button {
     @include font-size(14px);
 
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--input-border);
     border-right: 0;
     border-radius: 6px 0 0 6px;
     background-color: transparent;

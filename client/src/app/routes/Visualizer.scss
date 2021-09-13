@@ -2,6 +2,7 @@
 @import '../../scss/mixins';
 @import '../../scss/media-queries';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .visualizer {
   margin: 30px 40px;
@@ -22,7 +23,7 @@
     justify-content: stretch;
     height: 70vh;
     overflow: hidden;
-    border: 1px solid $gray-light;
+    border: 1px solid var(--input-border);
     border-radius: 6px;
 
     .viva {
@@ -76,8 +77,9 @@
 
   .sidepanel-border {
     flex: 0 0 220px;
+    border: 1px solid var(--input-border);
     border-radius: 6px;
-    background: #ffffff;
+    background-color: transparent;
 
     @media (max-width: 1000px) {
       &.tablet-hidden {

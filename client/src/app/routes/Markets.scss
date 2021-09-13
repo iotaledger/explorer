@@ -2,6 +2,7 @@
 @import '../../scss/mixins';
 @import '../../scss/media-queries';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .markets {
   display: flex;
@@ -48,7 +49,7 @@
           right: 20px;
           min-width: 150px;
           padding: 10px;
-          border: 2px solid $input-border;
+          border: 2px solid var(--input-border);
           border-radius: 5px;
           background-color: $white;
 
@@ -115,6 +116,7 @@
 
                 font-family: $inter;
                 font-weight: bold;
+                color: var(--body-color);
               }
 
               &.ct-horizontal {

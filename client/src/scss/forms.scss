@@ -1,5 +1,6 @@
 @import './mixins';
 @import './variables';
+@import './themes';
 
 .select-wrapper {
   display: inline-block;
@@ -20,11 +21,11 @@
     height: 47.99px;
     margin: 0;
     padding: 0 48px 0 20px;
-    border: 1px solid $input-border;
+    border: 1px solid var(--input-border);
     border-radius: 6px;
     outline: none;
-    background-color: #ffffff;
-    color: $gray-10;
+    background-color: transparent;
+    color: var(--body-color);
     font-family: $inter;
     appearance: none;
 
@@ -82,7 +83,7 @@ input {
   height: 40px;
   margin: 0;
   padding: 0 20px;
-  border: 1px solid $input-border;
+  border: 1px solid var(--input-border);
   border-radius: 6px;
   outline: none;
   color: $gray-10;
@@ -132,6 +133,7 @@ button {
 
 .form-input-long {
   width: 100%;
+  background-color: transparent;
 }
 
 .card {
@@ -143,7 +145,7 @@ button {
     justify-content: center;
     height: 32px;
     padding: 0 21px;
-    border: 1px solid $input-border;
+    border: 1px solid var(--input-border);
     border-radius: 6px;
     outline: none;
     background-color: transparent;
