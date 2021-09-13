@@ -3,6 +3,7 @@
 :root {
     --body-background: #ffffff;
     --body-color: #131f37;
+    --navbar-bg: rgba(255, 255, 255, 0.2);
     --header-bg: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
     --header-color: #677695;
     --header-box: #ffffff;
@@ -12,6 +13,7 @@
     body.darkmode {
         --body-background: #091326;
         --body-color: #fcfcfc;
+        --navbar-bg: rgba(6, 16, 35, 0.2);
         --header-bg: linear-gradient(180deg, #485776 0%, #131f37 100%);
         --header-color: #909fbe;
         --header-box: #06102399;

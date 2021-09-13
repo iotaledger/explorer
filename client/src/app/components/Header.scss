@@ -2,6 +2,7 @@
 @import '../../scss/media-queries';
 @import '../../scss/mixins';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 header {
   display: flex;
@@ -9,8 +10,8 @@ header {
   justify-content: center;
   width: 100%;
   padding: 15px 20px;
-  background: rgba(255, 255, 255, 0.2);
-  border-bottom: 1px solid $gray-2;
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--border-color);
   min-height: $navbar-height-desktop;
   backdrop-filter: blur(20px);
   z-index: 1000;
