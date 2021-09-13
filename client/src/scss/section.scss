@@ -115,6 +115,7 @@
   }
 
   .section--content {
+    color: var(--body-color);
     &.max-w-55 {
       max-width: 55%;
       @include tablet-down {
@@ -332,7 +333,7 @@
     @include font-size(14px);
 
     margin-bottom: 26px;
-    color: $gray-9;
+    color: var(--body-color);
     letter-spacing: 0.5px;
     font-family: $inter;
     word-break: break-all;
