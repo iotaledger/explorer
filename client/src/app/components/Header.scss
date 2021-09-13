@@ -71,7 +71,7 @@ header {
       letter-spacing: 0.01em;
 
       &.active {
-        color: $gray-9;
+        color: var(--body-color);
       }
     }
 
