@@ -83,7 +83,7 @@ header {
   .header--expanded {
     position: absolute;
     top: 83px;
-    background: $white;
+    background: var(--body-background);
     left: 0;
     width: 100%;
     min-height: 423px;

@@ -87,7 +87,7 @@
                 font-family: $metropolis;
                 @include font-size(14px, 21px);
                 font-weight: 700;
-                color: $gray-7;
+                color: var(--expanded-color);
                 text-transform: uppercase;
                 letter-spacing: 0.15em;
             }
@@ -95,7 +95,7 @@
                 font-family: $inter;
                 @include font-size(14px, 21px);
                 letter-spacing: 0.5px;
-                color: $gray-7;
+                color: var(--expanded-color);
             }
             .network--cards {
                 padding-top: 44px;
@@ -128,14 +128,14 @@
                             font-family: $metropolis;
                             @include font-size(16px, 24px);
                             font-weight: 600;
-                            color: $gray-9;
+                            color: var(--body-color);
                             letter-spacing: 0.01em;
                         }
                         .description {
                             font-family: $inter;
                             @include font-size(12px, 18px);
                             font-weight: 500;
-                            color: $gray-7;
+                            color: var(--expanded-color);
                             letter-spacing: 0.5px;
                         }
                     }
