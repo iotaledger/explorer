@@ -113,8 +113,29 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                         }
                     }
                 }
+                const historicOutputs: IOutputResponse[] = [];
+
+                if (result.historicAddressOutputIds) {
+                    for (const outputId of result.historicAddressOutputIds) {
+                        const outputResult = await this._tangleCacheService.outputDetails(
+                            this.props.match.params.network, outputId);
+
+                        if (outputResult) {
+                            historicOutputs.push(outputResult);
+
+                            this.setState({
+                                historicOutputs,
+                                status: "Loading historic..."
+                            });
+                        }
+
+                        if (!this._isMounted) {
+                            break;
+                        }
+                    }
+                }
                 this.setState({
-                    outputs,
+                    outputs: outputs.concat(historicOutputs),
                     status: "",
                     statusBusy: false
                 });
