@@ -19,9 +19,11 @@ header {
   .inner {
     display: flex;
     flex: 1;
-    flex-wrap: wrap;
-    align-items: center;
 
+    align-items: center;
+    @media (max-width: 1200px) {
+      flex-wrap: wrap;
+    }
     @include tablet-down {
       margin-right: 40px;
     }
@@ -48,6 +50,7 @@ header {
       width: 210px;
       height: 48px;
     }
+
     .logo-image-mobile {
       width: 116px;
       height: 40px;
@@ -173,13 +176,13 @@ header {
       margin-right: 30px;
       &.opened {
         .label {
-          color: $gray-9;
+          color: var(--header-color);
         }
         .icon {
           svg {
             transform: rotate(-180deg);
             path {
-              stroke: $gray-9;
+              stroke: var(--header-color);
             }
           }
         }
