@@ -21,7 +21,7 @@
     height: 47.99px;
     margin: 0;
     padding: 0 48px 0 20px;
-    border: 1px solid var(--input-border);
+    border: 1px solid var(--input-border-color);
     border-radius: 6px;
     outline: none;
     background-color: transparent;
@@ -83,7 +83,7 @@ input {
   height: 40px;
   margin: 0;
   padding: 0 20px;
-  border: 1px solid var(--input-border);
+  border: 1px solid var(--input-border-color);
   border-radius: 6px;
   outline: none;
   color: $gray-10;
@@ -145,7 +145,7 @@ button {
     justify-content: center;
     height: 32px;
     padding: 0 21px;
-    border: 1px solid var(--input-border);
+    border: 1px solid var(--input-border-color);
     border-radius: 6px;
     outline: none;
     background-color: transparent;

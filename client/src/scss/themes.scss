@@ -6,12 +6,12 @@
     --navbar-bg: rgba(255, 255, 255, 0.2);
     --header-bg: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
     --header-color: #677695;
-    --header-box: #ffffff;
-    --header-label: #131f37;
+    --header-box-bg: #ffffff;
+    --header-label-color: #131f37;
     --border-color: #e8eefb;
     --expanded-color: #485776;
     --hover-bg: $grey2;
-    --input-border: #d9e1ef;
+    --input-border-color: #d9e1ef;
 
     body.darkmode {
         --body-background: #091326;
@@ -19,11 +19,11 @@
         --navbar-bg: rgba(6, 16, 35, 0.2);
         --header-bg: linear-gradient(180deg, #485776 0%, #131f37 100%);
         --header-color: #909fbe;
-        --header-box: #06102399;
-        --header-label: #d8e1f4;
+        --header-box-bg: #06102399;
+        --header-label-color: #d8e1f4;
         --border-color: #ffffff1e;
         --expanded-color: #909fbe;
         --hover-bg: #48577614;
-        --input-border: #909fbe;
+        --input-border-color: #909fbe;
     }
 }
