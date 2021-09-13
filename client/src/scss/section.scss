@@ -3,11 +3,12 @@
 @import './media-queries';
 @import './mixins';
 @import './variables';
+@import './themes';
 
 .section {
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid $gray-3;
+  border-bottom: 1px solid var(--border-color);
   padding: 25px 0px 16px 0;
 
   & .section {
