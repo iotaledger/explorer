@@ -11,6 +11,7 @@
     --border-color: #e8eefb;
     --expanded-color: #485776;
     --hover-bg: $grey2;
+    --input-border: #d9e1ef;
 
     body.darkmode {
         --body-background: #091326;
@@ -23,5 +24,6 @@
         --border-color: #ffffff1e;
         --expanded-color: #909fbe;
         --hover-bg: #48577614;
+        --input-border: #909fbe;
     }
 }
