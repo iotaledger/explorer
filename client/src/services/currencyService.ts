@@ -1,4 +1,5 @@
 import { ServiceFactory } from "../factories/serviceFactory";
+import { TrytesHelper } from "../helpers/trytesHelper";
 import { ICurrencySettings } from "../models/services/ICurrencySettings";
 import { ApiClient } from "./apiClient";
 import { SettingsService } from "./settingsService";
@@ -201,12 +202,18 @@ export class CurrencyService {
     private readonly _apiClient: ApiClient;
 
     /**
+     * Subsribers to settings updates.
+     */
+    private readonly _subscribers: { [id: string]: () => void };
+
+    /**
      * Create a new instance of CurrencyService.
      * @param apiEndpoint The api endpoint.
      */
     constructor(apiEndpoint: string) {
         this._apiClient = new ApiClient(apiEndpoint);
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
+        this._subscribers = {};
     }
 
     /**
@@ -250,6 +257,18 @@ export class CurrencyService {
      */
     public saveFiatCode(fiatCode: string): void {
         this._settingsService.saveSingle("fiatCode", fiatCode);
+
+        for (const id in this._subscribers) {
+            this._subscribers[id]();
+        }
+    }
+
+    /**
+     * Get fiat code stored in settings
+     * @returns Active fiat code.
+     */
+    public getSettingsFiatCode(): string {
+        return this._settingsService.get()?.fiatCode;
     }
 
     /**
@@ -408,6 +427,27 @@ export class CurrencyService {
      */
     public getSymbol(currencyCode: string): string {
         return CurrencyService.SYMBOL_MAP[currencyCode] || currencyCode;
+    }
+
+    /**
+     * Subscribe to the wallet updates.
+     * @param callback The callback to trigger when there are updates.
+     * @returns The subscription id.
+     */
+    public subscribe(callback: () => void): string {
+        const id = TrytesHelper.generateHash(27);
+
+        this._subscribers[id] = callback;
+
+        return id;
+    }
+
+    /**
+     * Unsubscribe from the wallet updates.
+     * @param id The subscription ids.
+     */
+    public unsubscribe(id: string): void {
+        delete this._subscribers[id];
     }
 
     /**
