@@ -358,7 +358,7 @@
       max-height: 150px;
       padding: 10px;
       overflow: auto;
-      background: $gray-noon;
+      background: var(--light-bg);
 
       &.card--value-textarea__ascii,
       &.card--value-textarea__utf8 {
