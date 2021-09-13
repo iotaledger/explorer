@@ -13,6 +13,8 @@ import "./Header.scss";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
 import NetworkSwitcher from "./NetworkSwitcher";
+import lightMode from "../../assets/light-mode.svg";
+import darkMode from "../../assets/dark-mode.svg";
 
 
 /**
@@ -144,13 +146,19 @@ class Header extends Component<HeaderProps, HeaderState> {
                     <CurrencyButton
                         onlyFiatSelect
                     />
-                    <button
-                        type="button"
-                        className="card--action margin-l-s"
-                        onClick={() => this.toggleMode()}
-                    >
-                        {this.state.darkMode ? "Light Mode" : "Dark Mode"}
-                    </button>
+
+                    {this.state.darkMode ?
+                        <img
+                            src={lightMode} alt="light-mode"
+                            onClick={() => this.toggleMode()}
+                            className="toggle-mode"
+                        /> :
+                        <img
+                            src={darkMode} alt="light-mode"
+                            onClick={() => this.toggleMode()}
+                            className="toggle-mode"
+
+                        />}
                     <div className="hamburger--menu">
                         <div
                             className="hamburger--menu__icon"
