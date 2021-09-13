@@ -49,6 +49,7 @@ header {
     .logo-image {
       width: 210px;
       height: 48px;
+      filter: var(--logo-filter);
     }
 
     .logo-image-mobile {

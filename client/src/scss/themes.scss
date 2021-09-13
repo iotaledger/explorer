@@ -14,6 +14,7 @@
     --light-bg: #f2f5fb;
     --input-border-color: #d9e1ef;
     --modal-color: #485776;
+    --logo-filter: invert(0);
 
     body.darkmode {
         --body-background: #091326;
@@ -29,5 +30,6 @@
         --light-bg: #48577614;
         --input-border-color: #909fbe;
         --modal-color: #d8e1f4;
+        --logo-filter: grayscale(1) invert(1);
     }
 }
