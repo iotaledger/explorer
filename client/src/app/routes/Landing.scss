@@ -78,7 +78,7 @@
           display: grid;
           grid-template-columns: auto auto auto;
           padding: 24px;
-          background: rgba(255, 255, 255, 0.6);
+          background: var(--header-box);
           backdrop-filter: blur(20px);
           border-radius: 6px;
 
@@ -121,7 +121,7 @@
               @include tablet-down {
                 text-align: center;
               }
-
+              color: var(--body-color);
               font-family: $inter;
               font-weight: 600;
               text-decoration: none;
@@ -212,7 +212,7 @@
               @include font-size(12px);
 
               margin-bottom: 12px;
-              color: $gray-header;
+              color: var(--header-color);
               font-family: $metropolis;
               font-weight: bold;
               text-transform: uppercase;
