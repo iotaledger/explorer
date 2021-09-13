@@ -278,6 +278,7 @@
               }
               .filter {
                 position: absolute;
+                z-index: 900;
                 top: 48px;
                 right: 0;
                 min-width: 350px;
@@ -285,7 +286,6 @@
                 box-shadow: 0px 0px 4px rgba(123, 148, 186, 0.2);
                 border-radius: 6px;
                 padding: 8px;
-                z-index: 10000;
                 border: 0.5px solid rgba(255, 255, 255, 0);
                 margin-right: 1px;
                 @include tablet-down {
@@ -343,22 +343,10 @@
                   padding: 12px 10px;
 
                   input {
+                    position: relative;
                     width: 20px;
                     height: 20px;
                     margin-right: 18px;
-                    &:after {
-                      width: 20px;
-                      height: 20px;
-                      display: inline-flex;
-                      align-items: center;
-                      justify-content: center;
-                      background-color: #0fc1b7;
-                      border-radius: 6px;
-                      color: white;
-                      padding: 0;
-                      bottom: 5px;
-                      left: -1px;
-                    }
                   }
                 }
               }

@@ -40,12 +40,18 @@
       appearance: none;
 
       &:checked {
+        border-color: #57d087;
+        background-color: #57d087;
+        color: $white;
+
         &::after {
-          content: '\2713';
-          position: relative;
-          bottom: 4px;
-          left: 0;
-          color: $main-green;
+          content: '✓';
+          position: absolute;
+          top: 45%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+
+          @include font-size(16px);
         }
       }
     }
