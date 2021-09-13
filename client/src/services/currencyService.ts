@@ -214,7 +214,7 @@ export class CurrencyService {
      * @param callback Called when currencies are loaded.
      */
     public loadCurrencies(
-        callback: (available: boolean, data?: ICurrencySettings, err?: Error) => void): void {
+        callback: (available: boolean, data?: ICurrencySettings, err?: unknown) => void): void {
         const settings = this._settingsService.get();
         let hasData = false;
 
@@ -416,7 +416,7 @@ export class CurrencyService {
      * @returns True if the load was succesful.
      */
     private async loadData(
-        callback: (available: boolean, data?: ICurrencySettings, err?: Error) => void): Promise<void> {
+        callback: (available: boolean, data?: ICurrencySettings, err?: unknown) => void): Promise<void> {
         try {
             const currencyResponse = await this._apiClient.currencies();
             if (!currencyResponse.error) {
