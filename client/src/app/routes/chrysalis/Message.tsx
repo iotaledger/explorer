@@ -115,6 +115,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 transactionAddress: IBech32AddressDetails;
                 signature: string;
                 publicKey: string;
+                amount: number;
             })[] = [];
             const outputs = [];
             let transferTotal = 0;
@@ -156,8 +157,17 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                     const writeOutputStream = new WriteStream();
                     writeOutputStream.writeUInt16("transactionOutputIndex", input.transactionOutputIndex);
                     const outputHash = input.transactionId + writeOutputStream.finalHex();
+                    const transactionOutputIndex = input.transactionOutputIndex;
+                    const transactionResult = await this._tangleCacheService.search(
+                        this.props.match.params.network, input.transactionId);
+                    let amount = 0;
+                    if (transactionResult?.message && transactionResult?.message.payload?.type ===
+                        TRANSACTION_PAYLOAD_TYPE) {
+                        amount = transactionResult.message.payload?.essence.outputs[transactionOutputIndex].amount;
+                    }
                     inputs.push({
                         ...input,
+                        amount,
                         isGenesis,
                         outputHash,
                         transactionUrl: `/${this.props.match.params.network}/search/${outputHash}`,

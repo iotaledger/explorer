@@ -12,6 +12,7 @@
     flex: 1;
     min-height: 300px;
     margin-top: $navbar-height-desktop;
+
     @media (max-width: 1200px) {
       margin-top: $navbar-height-mobile;
     }

@@ -12,6 +12,7 @@
         @include font-size(14px);
         font-family: $inter;
         color: $gray-7;
+        letter-spacing: 0.5px;
 
         th {
             @include font-size(12px);
@@ -27,9 +28,15 @@
             }
 
             &.amount {
-                @include font-size(14px);
+                @include font-size(14px, 21px);
                 font-weight: 700;
-                color: $mint-green-7;
+
+                &.positive {
+                    color: $mint-green-7;
+                }
+                &.negative {
+                    color: $gray-7;
+                }
             }
         }
     }
