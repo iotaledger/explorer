@@ -102,12 +102,7 @@
                 padding-top: 44px;
                 .network--card {
                     border-radius: 12px;
-                    .network--icon {
-                        background: var(--header-svg-bg);
-                        svg path {
-                            fill: var(--header-svg-fill);
-                        }
-                    }
+
                     &.selected {
                         background: rgba(20, 202, 191, 0.08);
                         .network--icon {
@@ -128,6 +123,10 @@
                         height: 64px;
                         background: $gray-2;
                         border-radius: 8px;
+                        background: var(--header-svg-bg);
+                        svg path {
+                            fill: var(--header-svg-fill);
+                        }
                     }
                     .network--content {
                         margin-left: 24px;
