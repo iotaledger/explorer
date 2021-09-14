@@ -11,4 +11,8 @@ export interface CurrencyButtonProps {
      * Only shows fiat dropdown menu to choose fiat currency.
      */
     onlyFiatSelect?: boolean;
+    /**
+     * Only shows simple fiat value.
+     */
+    simple?: boolean;
 }

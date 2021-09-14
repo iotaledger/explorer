@@ -43,7 +43,6 @@ class Transaction extends Component<TransactionProps, TransactionState> {
             : undefined;
 
         this._bechHrp = networkConfig?.bechHrp ?? "iota";
-
     }
 
     /**
