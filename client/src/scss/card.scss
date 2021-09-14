@@ -3,14 +3,15 @@
 @import './media-queries';
 @import './mixins';
 @import './variables';
+@import './themes';
 
 .card {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid $gray-3;
   border-radius: 6px;
-  background-color: $white;
+  background-color: transparent;
+  border: 1px solid var(--input-border-color);
 
   &.card__secondary {
     background-color: #fcfcfc;
@@ -29,7 +30,6 @@
   input {
     &[type='checkbox'] {
       @include font-size(24px);
-
       width: 24px;
       height: 24px;
       padding: 0;
@@ -114,7 +114,7 @@
     margin-left: 20px;
     padding: 0 8px;
     border-radius: 6px;
-    background-color: $gray-light;
+    background-color: var(--light-bg);
     color: $gray;
     font-family: $metropolis;
     font-weight: bold;
@@ -150,6 +150,7 @@
     min-height: 50px;
     margin: 20px 26px 0 26px;
     padding-bottom: 14px;
+    color: var(--body-color);
 
     .card--header__title {
       line-height: 100%;
@@ -203,11 +204,6 @@
 
   .card--content {
     padding: 0 30px 20px;
-
-    .card--content__flex_between {
-      display: flex;
-      justify-content: space-between;
-    }
 
     @include phone-down {
       padding: 15px 20px;
@@ -279,6 +275,9 @@
 
   .card--value {
     @include font-size(14px, 20px);
+    input {
+      background-color: var(--light-bg);
+    }
 
     margin-bottom: 12px;
     color: $gray-10;
@@ -325,7 +324,7 @@
       max-height: 150px;
       padding: 10px;
       overflow: auto;
-      background: $gray-noon;
+      background: var(--light-bg);
 
       &.card--value-textarea__ascii,
       &.card--value-textarea__utf8 {

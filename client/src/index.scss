@@ -6,6 +6,7 @@
 @import './scss/layout';
 @import './scss/media-queries';
 @import './scss/variables';
+@import './scss/themes';
 @import 'chartist/dist/scss/chartist';
 
 html {
@@ -21,7 +22,7 @@ html {
 h1 {
   @include font-size(32px, 40px);
 
-  color: $gray-midnight;
+  color: var(--body-color);
   font-family: $metropolis;
   font-weight: bold;
 }
@@ -29,7 +30,7 @@ h1 {
 h2 {
   @include font-size(20px, 24px);
 
-  color: $gray-9;
+  color: var(--body-color);
   font-family: $metropolis;
   font-weight: bold;
   letter-spacing: 0.02em;
@@ -45,7 +46,8 @@ h3 {
 
 body {
   height: 100%;
-  background-color: $body-background;
+  background: var(--body-background);
+  transition: background 0.3s;
 
   #root {
     display: flex;
@@ -83,7 +85,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   border-radius: 0;
-  background-color: $gray-header;
+  background-color: var(--header-color);
 }
 
 :root {

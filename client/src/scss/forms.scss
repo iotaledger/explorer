@@ -1,10 +1,13 @@
 @import './mixins';
 @import './variables';
+@import './themes';
 
 .select-wrapper {
   display: inline-block;
   position: relative;
-
+  @media (max-width: 1200px) {
+    display: none;
+  }
   img {
     position: absolute;
     z-index: 2;
@@ -17,14 +20,14 @@
   select {
     @include font-size(14px);
 
-    height: 47.99px;
+    height: 40px;
     margin: 0;
     padding: 0 48px 0 20px;
-    border: 1px solid $input-border;
+    border: 1px solid var(--input-border-color);
     border-radius: 6px;
     outline: none;
-    background-color: #ffffff;
-    color: $gray-10;
+    background-color: transparent;
+    color: var(--body-color);
     font-family: $inter;
     appearance: none;
 
@@ -51,6 +54,7 @@
       min-width: 100px;
       margin-right: -1px;
       border-radius: 6px 0 0 6px;
+      height: 48px;
 
       &:focus {
         z-index: 1;
@@ -58,8 +62,8 @@
     }
 
     option {
-      background-color: $white;
-      color: $gray-midnight;
+      background-color: var(--body-background);
+      color: var(--body-color);
     }
   }
 
@@ -82,7 +86,7 @@ input {
   height: 40px;
   margin: 0;
   padding: 0 20px;
-  border: 1px solid $input-border;
+  border: 1px solid var(--input-border-color);
   border-radius: 6px;
   outline: none;
   color: $gray-10;
@@ -132,6 +136,7 @@ button {
 
 .form-input-long {
   width: 100%;
+  background-color: transparent;
 }
 
 .card {
@@ -143,11 +148,11 @@ button {
     justify-content: center;
     height: 32px;
     padding: 0 21px;
-    border: 1px solid $input-border;
+    border: 1px solid var(--input-border-color);
     border-radius: 6px;
     outline: none;
     background-color: transparent;
-    color: $gray-midnight;
+    color: var(--body-color);
     font-family: $metropolis;
     cursor: pointer;
 

@@ -3,12 +3,13 @@
 @import './media-queries';
 @import './mixins';
 @import './variables';
+@import './themes';
 
 .section {
   display: flex;
   flex-direction: column;
-  padding: 25px 0 16px 0;
-  border-bottom: 1px solid $gray-3;
+  border-bottom: 1px solid var(--border-color);
+  padding: 25px 0px 16px 0;
 
   & .section {
     border-bottom: 0;
@@ -114,6 +115,7 @@
   }
 
   .section--content {
+    color: var(--body-color);
     &.max-w-55 {
       max-width: 55%;
 
@@ -140,7 +142,7 @@
     margin-left: 20px;
     padding: 0 8px;
     border-radius: 6px;
-    background-color: $gray-light;
+    background-color: var(--light-bg);
     color: $gray;
     font-family: $metropolis;
     font-weight: bold;
@@ -333,9 +335,9 @@
     @include font-size(14px);
 
     margin-bottom: 26px;
-    color: $gray-9;
-    font-family: $inter;
+    color: var(--body-color);
     letter-spacing: 0.5px;
+    font-family: $inter;
     word-break: break-all;
 
     &.section--value__code {

@@ -2,10 +2,12 @@
 @import '../../scss/mixins';
 @import '../../scss/media-queries';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .network--switcher {
     margin-left: auto;
-    border-left: 1px solid $gray-2;
+    border-left: 1px solid var(--border-color);
+
     padding-left: 24px;
 
     @media (max-width: 1200px) {
@@ -21,7 +23,7 @@
             position: absolute;
             top: -3px;
             left: -20px;
-            background-color: $gray-2;
+            background-color: var(--border-color);
             width: 100vw;
             height: 1px;
         }
@@ -43,7 +45,7 @@
             .label {
                 @include font-size(16px, 18px);
                 font-weight: 600;
-                color: $gray-9;
+                color: var(--header-label-color);
                 letter-spacing: 0.01em;
             }
             .eyebrow {
@@ -86,7 +88,7 @@
                 font-family: $metropolis;
                 @include font-size(14px, 21px);
                 font-weight: 700;
-                color: $gray-7;
+                color: var(--expanded-color);
                 text-transform: uppercase;
                 letter-spacing: 0.15em;
             }
@@ -94,12 +96,13 @@
                 font-family: $inter;
                 @include font-size(14px, 21px);
                 letter-spacing: 0.5px;
-                color: $gray-7;
+                color: var(--expanded-color);
             }
             .network--cards {
                 padding-top: 44px;
                 .network--card {
                     border-radius: 12px;
+
                     &.selected {
                         background: rgba(20, 202, 191, 0.08);
                         .network--icon {
@@ -110,7 +113,7 @@
                         }
                     }
                     &:hover:not(.selected) {
-                        background: #f0f2f4;
+                        background: var(--light-bg);
                     }
                     margin-bottom: 16px;
                     padding: 4px;
@@ -120,6 +123,10 @@
                         height: 64px;
                         background: $gray-2;
                         border-radius: 8px;
+                        background: var(--header-svg-bg);
+                        svg path {
+                            fill: var(--header-svg-fill);
+                        }
                     }
                     .network--content {
                         margin-left: 24px;
@@ -127,14 +134,14 @@
                             font-family: $metropolis;
                             @include font-size(16px, 24px);
                             font-weight: 600;
-                            color: $gray-9;
+                            color: var(--body-color);
                             letter-spacing: 0.01em;
                         }
                         .description {
                             font-family: $inter;
                             @include font-size(12px, 18px);
                             font-weight: 500;
-                            color: $gray-7;
+                            color: var(--expanded-color);
                             letter-spacing: 0.5px;
                         }
                     }

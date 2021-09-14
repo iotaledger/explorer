@@ -2,6 +2,7 @@
 @import '../../scss/mixins';
 @import '../../scss/media-queries';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .modal {
     display: inline-block;
@@ -23,7 +24,7 @@
     }
     .modal--content {
         z-index: 3000;
-        background-color: $white;
+        background-color: var(--body-background);
         width: 50%;
         min-height: 500px;
         position: fixed;
@@ -34,7 +35,6 @@
         border: 1px solid #e8eefb;
         box-shadow: 0px 4px 8px rgba(19, 31, 55, 0.04);
         border-radius: 6px;
-        overflow-y: scroll;
         max-height: 100%;
         @include tablet-down {
             width: 100%;
@@ -44,7 +44,7 @@
             font-weight: 600;
             font-family: $metropolis;
             letter-spacing: 0.02em;
-            color: $gray-9;
+            color: var(--body-color);
             border-bottom: 1px solid #e8eefb;
             padding-bottom: 22px;
 
@@ -62,7 +62,7 @@
                 @include font-size(14px, 21px);
                 font-family: $inter;
                 font-weight: 400;
-                color: $gray-7;
+                color: var(--modal-color);
                 &:not(:last-child) {
                     margin-bottom: 24px;
                 }

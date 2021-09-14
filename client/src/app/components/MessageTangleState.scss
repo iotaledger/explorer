@@ -2,6 +2,7 @@
 @import '../../scss/mixins';
 @import '../../scss/media-queries';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .messages-tangle-state {
   display: flex;
@@ -44,7 +45,7 @@
     cursor: pointer;
 
     &.message-tangle-state__referenced {
-      background-color: $mint-green-1;
+      background-color: var(--message-referenced-bg);
       color: $mint-green-7;
     }
 
@@ -54,7 +55,7 @@
     }
 
     &.message-tangle-state__pending {
-      background-color: $gray-light;
+      background-color: var(--light-bg);
       color: #8493ad;
     }
 

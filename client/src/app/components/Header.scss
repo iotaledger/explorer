@@ -2,6 +2,7 @@
 @import '../../scss/media-queries';
 @import '../../scss/mixins';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 header {
   display: flex;
@@ -9,8 +10,8 @@ header {
   justify-content: center;
   width: 100%;
   padding: 15px 20px;
-  background: rgba(255, 255, 255, 0.2);
-  border-bottom: 1px solid $gray-2;
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--border-color);
   min-height: $navbar-height-desktop;
   backdrop-filter: blur(20px);
   z-index: 1000;
@@ -18,9 +19,11 @@ header {
   .inner {
     display: flex;
     flex: 1;
-    flex-wrap: wrap;
-    align-items: center;
 
+    align-items: center;
+    @media (max-width: 1200px) {
+      flex-wrap: wrap;
+    }
     @include tablet-down {
       margin-right: 40px;
     }
@@ -46,10 +49,13 @@ header {
     .logo-image {
       width: 210px;
       height: 48px;
+      filter: var(--logo-filter);
     }
+
     .logo-image-mobile {
       width: 116px;
       height: 40px;
+      filter: var(--logo-filter);
     }
 
     @media (max-width: 1200px) {
@@ -71,10 +77,12 @@ header {
       letter-spacing: 0.01em;
 
       &.active {
-        color: $gray-9;
+        color: var(--body-color);
       }
     }
-
+    .toggle-mode {
+      margin-left: auto;
+    }
     .network-switcher {
       margin-left: auto;
     }
@@ -82,7 +90,7 @@ header {
   .header--expanded {
     position: absolute;
     top: 83px;
-    background: $white;
+    background: var(--body-background);
     left: 0;
     width: 100%;
     min-height: 423px;
@@ -105,7 +113,7 @@ header {
     z-index: -1;
   }
   .hamburger--menu {
-    margin-left: auto;
+    margin-left: 30px;
     @media (min-width: 1200px) {
       display: none;
     }
@@ -170,13 +178,13 @@ header {
       margin-right: 30px;
       &.opened {
         .label {
-          color: $gray-9;
+          color: var(--header-color);
         }
         .icon {
           svg {
             transform: rotate(-180deg);
             path {
-              stroke: $gray-9;
+              stroke: var(--header-color);
             }
           }
         }

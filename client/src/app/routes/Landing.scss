@@ -2,6 +2,7 @@
 @import '../../scss/mixins';
 @import '../../scss/media-queries';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .landing {
   display: flex;
@@ -49,7 +50,6 @@
             @include font-size(48px, 58px);
             font-family: $metropolis;
             letter-spacing: 0.5px;
-            color: $gray-9;
 
             @include phone-down {
               @include font-size(32px, 36px);
@@ -78,7 +78,7 @@
           display: grid;
           grid-template-columns: auto auto auto;
           padding: 24px;
-          background: rgba(255, 255, 255, 0.6);
+          background: var(--header-box-bg);
           backdrop-filter: blur(20px);
           border-radius: 6px;
 
@@ -121,7 +121,7 @@
               @include tablet-down {
                 text-align: center;
               }
-
+              color: var(--body-color);
               font-family: $inter;
               font-weight: 600;
               text-decoration: none;
@@ -212,7 +212,7 @@
               @include font-size(12px);
 
               margin-bottom: 12px;
-              color: $gray-header;
+              color: var(--header-color);
               font-family: $metropolis;
               font-weight: bold;
               text-transform: uppercase;
@@ -256,6 +256,7 @@
 
             .section--header {
               margin-bottom: 0;
+
               button {
                 margin-left: 28px;
               }
@@ -280,10 +281,10 @@
                 position: absolute;
                 z-index: 900;
                 top: 48px;
-                right: 0;
+                right: 0.7px;
                 min-width: 350px;
-                background: $white;
-                box-shadow: 0px 0px 4px rgba(123, 148, 186, 0.2);
+                background: var(--body-background);
+                box-shadow: -1px 0px 9px 0px rgba(123, 148, 186, 75%);
                 border-radius: 6px;
                 padding: 8px;
                 border: 0.5px solid rgba(255, 255, 255, 0);
@@ -295,6 +296,9 @@
                   left: 0;
                   width: 100vw;
                 }
+                span {
+                  color: var(--expanded-color);
+                }
                 .filter-header {
                   font-family: $inter;
                   font-weight: 700;
@@ -302,12 +306,13 @@
                   padding: 8px;
                   letter-spacing: 0.5px;
                   color: $gray-7;
-                  border-bottom: 1px solid $gray-3;
+                  border-bottom: 1px solid var(--input-border-color);
                   margin-bottom: 8px;
                   button {
                     font-weight: 400;
-                    border: 1px solid $gray-3;
+                    border: 1px solid var(--input-border-color);
                     padding: 6px 20px;
+                    color: var(--header-color);
                   }
                 }
                 .section--label {
@@ -316,10 +321,10 @@
                 .filter--value {
                   display: flex;
                   margin: 0 8px;
-                  color: $gray-6;
+                  color: var(--expanded-color);
                   font-family: $inter;
                   @include font-size(14px, 21px);
-                  background-color: $gray-1;
+                  background-color: transparent;
                   .input-plus {
                     width: 94px;
                     border-right: 0;
@@ -333,13 +338,14 @@
                     min-width: 20px;
                     padding: 0 39px 0 11px;
                     background-color: transparent;
+                    color: var(--expanded-color);
                   }
                 }
                 label {
                   display: block;
                   font-family: $inter;
                   @include font-size(14px, 21px);
-                  color: $gray-7;
+                  color: var(--expanded-color);
                   padding: 12px 10px;
 
                   input {
@@ -383,7 +389,7 @@
                 }
 
                 &:hover {
-                  background-color: $gray-1;
+                  background-color: var(--light-bg);
                   border-radius: 6px;
                 }
 
@@ -462,13 +468,13 @@
   }
 
   .header-wrapper {
-    background: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
+    background: var(--header-bg);
     .inner {
       .header {
-        background-image: url('../../assets/bubbles.svg');
+        background-image: var(--bubbles-bg-image);
         background-repeat: no-repeat;
-        background-position: center bottom;
-
+        background-position: 55%;
+        background-size: cover;
         @include tablet-down {
           background-size: cover;
         }
