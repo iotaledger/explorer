@@ -51,4 +51,9 @@ export interface AddrState {
      * Format the amount in full.
      */
     formatFull: boolean;
+
+    /**
+     * Value of the transaction filter.
+     */
+    filterValue: "all" | "incoming" | "outgoing";
 }

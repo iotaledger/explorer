@@ -9,4 +9,8 @@ export interface TransactionProps {
      * The network to lookup.
      */
     network: string;
+    /**
+     * The filter value.
+     */
+    filterValue: "all" | "incoming" | "outgoing";
 }
