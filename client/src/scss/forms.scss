@@ -152,7 +152,7 @@ button {
     border-radius: 6px;
     outline: none;
     background-color: transparent;
-    color: $gray-midnight;
+    color: var(--body-color);
     font-family: $metropolis;
     cursor: pointer;
 
