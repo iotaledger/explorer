@@ -327,43 +327,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 labelPosition="top"
                                             />
                                         </div>
-                                        {this.state.advancedMode &&
-                                            this.state.message?.parentMessageIds?.map((parent, idx) => (
-                                                <React.Fragment key={idx}>
-                                                    <div className="section--label">
-                                                        Parent Message {idx + 1}
-                                                    </div>
-                                                    <div
-                                                        className="section--value section--value__code featured
-                                                           row middle"
-                                                    >
-                                                        {parent !== "0".repeat(64) && (
-                                                            <React.Fragment>
-                                                                <Link
-                                                                    className="margin-r-t"
-                                                                    to={
-                                                                        `/${this.props.match.params.network
-                                                                        }/message/${parent}`
-                                                                    }
-                                                                >
-                                                                    {parent}
-                                                                </Link>
-                                                                <MessageButton
-                                                                    onClick={() => ClipboardHelper.copy(
-                                                                        parent
-                                                                    )}
-                                                                    buttonType="copy"
-                                                                    labelPosition="top"
-                                                                />
-                                                            </React.Fragment>
-                                                        )}
-                                                        {parent === "0".repeat(64) && (
-                                                            <span>Genesis</span>
-                                                        )}
-                                                    </div>
-                                                </React.Fragment>
-                                            )
-                                            )}
+
                                         {this.state.paramMessageId !== this.state.actualMessageId && (
                                             <React.Fragment>
                                                 <div className="section--label">
@@ -552,43 +516,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         </div>
                                     </div>
                                 )}
-
-                                {this.state.advancedMode && (
-                                    <div className="section margin-t-s">
-                                        <div className="section--header">
-                                            <h2>Child Messages</h2>
-                                            {this.state.childrenIds !== undefined && (
-                                                <span className="section--header-count">
-                                                    {this.state.childrenIds.length}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="section--content children-container">
-                                            {this.state.childrenBusy && (<Spinner />)}
-                                            {this.state.childrenIds?.map(childId => (
-                                                <div
-                                                    className="section--value section--value__code featured row middle"
-                                                    key={childId}
-                                                >
-                                                    <Link
-                                                        to={
-                                                            `/${this.props.match.params.network
-                                                            }/message/${childId}`
-                                                        }
-                                                    >
-                                                        {childId}
-                                                    </Link>
-                                                </div>
-                                            ))}
-                                            {!this.state.childrenBusy &&
-                                                this.state.childrenIds &&
-                                                this.state.childrenIds.length === 0 && (
-                                                    <p>There are no children for this message.</p>
-                                                )}
-                                        </div>
-                                    </div>
-                                )}
-
                                 <div className="section margin-t-s">
                                     <div className="section--header">
                                         <div className="row middle">
@@ -599,7 +526,92 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         </div>
                                     </div>
                                     <div className="section--content children-container">
-                                        <span>In progress...</span>
+                                        <div className="section">
+                                            <div className="section--header">
+                                                <h3>Parent Messages</h3>
+                                                {this.state !== undefined && (
+                                                    <span className="section--header-count">
+                                                        {this.state.message?.parentMessageIds?.length}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {this.state.advancedMode &&
+                                                this.state.message?.parentMessageIds?.map((parent, idx) => (
+                                                    <React.Fragment key={idx}>
+                                                        <div
+                                                            className="section--value section--value__code featured
+                                                           row middle"
+                                                        >
+                                                            {parent !== "0".repeat(64) && (
+                                                                <React.Fragment>
+                                                                    <Link
+                                                                        className="margin-r-t"
+                                                                        to={
+                                                                            `/${this.props.match.params.network
+                                                                            }/message/${parent}`
+                                                                        }
+                                                                    >
+                                                                        {parent}
+                                                                    </Link>
+                                                                    <MessageButton
+                                                                        onClick={() => ClipboardHelper.copy(
+                                                                            parent
+                                                                        )}
+                                                                        buttonType="copy"
+                                                                        labelPosition="top"
+                                                                    />
+                                                                </React.Fragment>
+                                                            )}
+                                                            {parent === "0".repeat(64) && (
+                                                                <span>Genesis</span>
+                                                            )}
+                                                        </div>
+                                                    </React.Fragment>
+                                                )
+                                                )}
+                                        </div>
+                                        <div className="section">
+                                            <div className="section--header">
+                                                <h3>Child Messages</h3>
+                                                {this.state.childrenIds !== undefined && (
+                                                    <span className="section--header-count">
+                                                        {this.state.childrenIds.length}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="section--content children-container">
+                                                {this.state.childrenBusy && (<Spinner />)}
+                                                {this.state.childrenIds?.map(childId => (
+                                                    <div
+                                                        className="section--value
+                                                         section--value__code featured row middle"
+                                                        key={childId}
+                                                    >
+                                                        <Link
+                                                            className="margin-r-t"
+                                                            to={
+                                                                `/${this.props.match.params.network
+                                                                }/message/${childId}`
+                                                            }
+                                                        >
+                                                            {childId}
+                                                        </Link>
+                                                        <MessageButton
+                                                            onClick={() => ClipboardHelper.copy(
+                                                                childId
+                                                            )}
+                                                            buttonType="copy"
+                                                            labelPosition="top"
+                                                        />
+                                                    </div>
+                                                ))}
+                                                {!this.state.childrenBusy &&
+                                                    this.state.childrenIds &&
+                                                    this.state.childrenIds.length === 0 && (
+                                                        <p>There are no children for this message.</p>
+                                                    )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
