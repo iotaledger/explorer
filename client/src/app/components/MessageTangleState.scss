@@ -55,7 +55,7 @@
     }
 
     &.message-tangle-state__pending {
-      background-color: $gray-light;
+      background-color: var(--light-bg);
       color: #8493ad;
     }
 
