@@ -62,8 +62,8 @@
     }
 
     option {
-      background-color: $white;
-      color: $gray-midnight;
+      background-color: var(--body-background);
+      color: var(--body-color);
     }
   }
 
