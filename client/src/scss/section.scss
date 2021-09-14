@@ -222,8 +222,8 @@
     padding: 9px;
     border: 1px solid $gray-3;
     border-radius: 6px;
-    background: $white;
-    color: $gray-7;
+    background: var(--light-bg);
+    color: var(--expanded-color);
     font-family: $inter;
     font-weight: 400;
     letter-spacing: 0.5px;
