@@ -152,7 +152,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      * @returns The node to render.
      */
     public render(): ReactNode {
-        console.log("balance", this.state.balance);
         return (
             <div className="addr">
                 <div className="wrapper">
