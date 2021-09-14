@@ -81,7 +81,13 @@ header {
       }
     }
     .toggle-mode {
-      margin-left: auto;
+      @media (min-width: 1200px) {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      @media (max-width: 1200px) {
+        margin-left: auto;
+      }
     }
     .network-switcher {
       margin-left: auto;
