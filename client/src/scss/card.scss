@@ -150,6 +150,7 @@
     min-height: 50px;
     margin: 20px 26px 0 26px;
     padding-bottom: 14px;
+    color: var(--body-color);
 
     .card--header__title {
       @include font-size(14px, 21px);
@@ -188,11 +189,6 @@
 
   .card--content {
     padding: 0px 30px 20px;
-
-    .card--content__flex_between {
-      display: flex;
-      justify-content: space-between;
-    }
 
     @include phone-down {
       padding: 15px 20px;
