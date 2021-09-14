@@ -46,7 +46,8 @@ h3 {
 
 body {
   height: 100%;
-  background-color: var(--body-background);
+  background: var(--body-background);
+  transition: background 0.3s;
 
   #root {
     display: flex;
