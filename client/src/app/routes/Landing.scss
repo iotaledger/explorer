@@ -21,8 +21,6 @@
         height: 550px;
       }
       .header {
-        padding-left: 23px;
-        padding-right: 23px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -38,7 +36,10 @@
           justify-content: flex-start;
           row-gap: 12rem;
         }
-
+        @media (max-width: 1052px) {
+          padding-right: 23px;
+          padding-left: 23px;
+        }
         .header--title {
           h2 {
             @include font-size(16px, 24px);
