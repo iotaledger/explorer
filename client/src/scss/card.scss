@@ -209,6 +209,10 @@
       padding: 15px 20px;
     }
 
+    input {
+      padding: 0 20px;
+    }
+
     .card--content__input {
       display: flex;
 
@@ -277,6 +281,7 @@
     @include font-size(14px, 20px);
     input {
       background-color: var(--light-bg);
+      padding: 0 20px;
     }
 
     margin-bottom: 12px;
