@@ -51,7 +51,8 @@
           padding: 10px;
           border: 2px solid var(--input-border-color);
           border-radius: 5px;
-          background-color: $white;
+          background-color: var(--light-bg);
+          color: var(--header-color);
 
           @include font-size(12px);
 
@@ -79,7 +80,7 @@
 
         &.date-links--secondary {
           border-color: $dark-green;
-          background-color: $white;
+          background-color: var(--light-bg);
           color: $dark-green;
         }
       }
