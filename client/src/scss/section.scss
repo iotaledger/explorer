@@ -340,6 +340,9 @@
     font-family: $inter;
     word-break: break-all;
 
+    span {
+      color: var(--body-color);
+    }
     &.section--value__code {
       @include font-size(14px);
 
