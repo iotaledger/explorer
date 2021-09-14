@@ -1,40 +1,40 @@
 @import './variables';
 
 :root {
-    --body-background: #ffffff;
-    --body-color: #131f37;
+    --body-background: #{$white};
+    --body-color: #{$gray-9};
     --navbar-bg: rgba(255, 255, 255, 0.2);
     --header-bg: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
     --bubbles-bg-image: url('../assets/bubbles.svg');
-    --header-color: #677695;
-    --header-box-bg: #ffffff;
-    --header-label-color: #131f37;
-    --header-svg-fill: #485776;
-    --header-svg-bg: #e8eefb;
-    --border-color: #e8eefb;
-    --expanded-color: #485776;
-    --light-bg: #f2f5fb;
+    --header-color: #{$gray-6};
+    --header-box-bg: #{$white};
+    --header-label-color: #{$gray-midnight};
+    --header-svg-fill: #{$gray-7};
+    --header-svg-bg: #{$gray-2};
+    --border-color: #{$gray-2};
+    --expanded-color: #{$gray-7};
+    --light-bg: #{$gray-1};
     --input-border-color: #d9e1ef;
-    --modal-color: #485776;
+    --modal-color: #{$gray-7};
     --logo-filter: invert(0);
-    --message-referenced-bg: #c8fffa;
+    --message-referenced-bg: #{$mint-green-1};
 
     body.darkmode {
         --body-background: #091326;
-        --body-color: #fcfcfc;
+        --body-color: #{$white};
         --navbar-bg: rgba(6, 16, 35, 0.2);
-        --header-bg: linear-gradient(180deg, #485776 0%, #131f37 100%);
+        --header-bg: linear-gradient(180deg, #{$gray-7} 0%, #{$gray-9} 100%);
         --bubbles-bg-image: url('../assets/bubbles-dark.svg');
-        --header-color: #909fbe;
+        --header-color: #{$gray-5};
         --header-box-bg: #06102399;
-        --header-label-color: #d8e1f4;
-        --header-svg-fill: #909fbe;
+        --header-label-color: #{$gray-3};
+        --header-svg-fill: #{$gray-5};
         --header-svg-bg: #202e4a;
         --border-color: #ffffff1e;
-        --expanded-color: #909fbe;
+        --expanded-color: #{$gray-5};
         --light-bg: #48577614;
-        --input-border-color: #909fbe;
-        --modal-color: #d8e1f4;
+        --input-border-color: #{$gray-5};
+        --modal-color: #{$gray-3};
         --logo-filter: grayscale(1) invert(1);
         --message-referenced-bg: rgba(0, 224, 202, 0.2);
     }
