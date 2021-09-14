@@ -81,7 +81,7 @@ header {
       }
     }
     .toggle-mode {
-      margin-left: 10px;
+      margin-left: auto;
     }
     .network-switcher {
       margin-left: auto;
@@ -113,7 +113,7 @@ header {
     z-index: -1;
   }
   .hamburger--menu {
-    margin-left: auto;
+    margin-left: 30px;
     @media (min-width: 1200px) {
       display: none;
     }

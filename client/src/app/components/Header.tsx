@@ -2,7 +2,9 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import closeIcon from "../../assets/close.svg";
+import darkMode from "../../assets/dark-mode.svg";
 import hamburgerIcon from "../../assets/hamburger.svg";
+import lightMode from "../../assets/light-mode.svg";
 import logoHeaderMobile from "../../assets/logo-header-mobile.svg";
 import logoHeader from "../../assets/logo-header.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -13,8 +15,7 @@ import "./Header.scss";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
 import NetworkSwitcher from "./NetworkSwitcher";
-import lightMode from "../../assets/light-mode.svg";
-import darkMode from "../../assets/dark-mode.svg";
+
 
 
 /**
