@@ -23,7 +23,10 @@ import { IdentityResolverState } from "./IdentityResolverState";
 
 import "./IdentityResolver.scss";
 
-class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolverProps>, IdentityResolverState> {
+class IdentityResolver extends AsyncComponent<
+    RouteComponentProps<IdentityResolverProps> & { isNetworkChrysalis: boolean },
+    IdentityResolverState
+> {
     /**
      * Timer to check to state update.
      */
@@ -39,7 +42,7 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
      */
     private readonly EMPTY_MESSAGE_ID = "0".repeat(64);
 
-    constructor(props: RouteComponentProps<IdentityResolverProps>) {
+    constructor(props: RouteComponentProps<IdentityResolverProps> & { isNetworkChrysalis: boolean }) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
@@ -116,53 +119,63 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                         <div className="row">
                             <div className="cards">
                                 {!this.state.did && (
-                                    <div>
-                                        <div className="identity-title">
-                                            <IdentityIcon />
-                                            <h1>Identity Resolver</h1>
-                                        </div>
-
-                                        <div>
-                                            <p className="tool-description">
-                                                The Identity Resolver is a tool for resolving Decentralized Identifiers
-                                                (DIDs) into their associated DID Document, by retrieving the information
-                                                from an IOTA Tangle. The tool has debugging capabilities to view the
-                                                entire history of a DID Document, including invalid DID messages.
-                                            </p>
-                                        </div>
-                                        <div className="card">
-                                            <div className="card--header card--header__space-between">
-                                                <h2>General</h2>
-                                            </div>
-                                            <div className="card--content">
-                                                <div className="row middle margin-b-s row--tablet-responsive">
-                                                    <div className="card--label form-label-width">DID</div>
-                                                    <IdentitySearchInput
-                                                        compact={false}
-                                                        onSearch={e => {
-                                                            console.log("search!!");
-                                                            this.props.history.push(e);
-                                                        }}
-                                                        network={this.props.match.params.network}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {this.state.didExample && (
-                                            <div
-                                                className="example-did"
-                                                onClick={() => {
-                                                    this.props.history.push(
-                                                        // eslint-disable-next-line max-len
-                                                        `/${this.props.match.params.network}/identity-resolver/${this.state.didExample}`
-                                                    );
-                                                }}
-                                            >
-                                                <p> DID Example </p>
+                                    <Fragment>
+                                        {!this.props.isNetworkChrysalis && (
+                                            <div className="unsupported-network">
+                                                Network is not supported. IOTA Identity only supports chrysalis phase 2
+                                                networks, such as the IOTA main network.
                                             </div>
                                         )}
-                                    </div>
+
+                                        <div>
+                                            <div className="identity-title">
+                                                <IdentityIcon />
+                                                <h1>Identity Resolver</h1>
+                                            </div>
+
+                                            <div>
+                                                <p className="tool-description">
+                                                    The Identity Resolver is a tool for resolving Decentralized
+                                                    Identifiers (DIDs) into their associated DID Document, by retrieving
+                                                    the information from an IOTA Tangle. The tool has debugging
+                                                    capabilities to view the entire history of a DID Document, including
+                                                    invalid DID messages.
+                                                </p>
+                                            </div>
+                                            <div className="card">
+                                                <div className="card--header card--header__space-between">
+                                                    <h2>General</h2>
+                                                </div>
+                                                <div className="card--content">
+                                                    <div className="row middle margin-b-s row--tablet-responsive">
+                                                        <div className="card--label form-label-width">DID</div>
+                                                        <IdentitySearchInput
+                                                            compact={false}
+                                                            onSearch={e => {
+                                                                console.log("search!!");
+                                                                this.props.history.push(e);
+                                                            }}
+                                                            network={this.props.match.params.network}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {this.state.didExample && (
+                                                <div
+                                                    className="example-did"
+                                                    onClick={() => {
+                                                        this.props.history.push(
+                                                            // eslint-disable-next-line max-len
+                                                            `/${this.props.match.params.network}/identity-resolver/${this.state.didExample}`
+                                                        );
+                                                    }}
+                                                >
+                                                    <p> DID Example </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Fragment>
                                 )}
                                 {this.state.did && (
                                     <div>
@@ -237,7 +250,8 @@ class IdentityResolver extends AsyncComponent<RouteComponentProps<IdentityResolv
                                                                                 ClipboardHelper.copy(
                                                                                     this.state.resolvedIdentity
                                                                                         ?.messageId
-                                                                                )}
+                                                                                )
+                                                                            }
                                                                             buttonType="copy"
                                                                             labelPosition="top"
                                                                         />

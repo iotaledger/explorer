@@ -170,7 +170,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                         <Route
                                             path="/:network/identity-resolver/:did?"
                                             component={(props: RouteComponentProps<IdentityResolverProps>) => (
-                                                <IdentityResolver {...props} />
+                                                <IdentityResolver
+                                                    {...props}
+                                                    isNetworkChrysalis={
+                                                        this.state.networkConfig?.protocolVersion === "chrysalis"
+                                                    }
+                                                />
                                             )}
                                         />
                                         <Route
@@ -312,9 +317,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
             ];
 
             if (
-                this.props.config.identityResolverEnabled &&
-                this.state.networkConfig?.protocolVersion === "chrysalis"
-            ) {
+                this.props.config.identityResolverEnabled) {
                 tools.push({
                     label: "Identity Resolver",
                     url: `/${this.state.networkId}/identity-resolver/`,
@@ -355,8 +358,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                 });
 
             if (
-                this.props.config.identityResolverEnabled &&
-                this.state.networkConfig?.protocolVersion === "chrysalis"
+                this.props.config.identityResolverEnabled
             ) {
                 footerArray.push({
                     label: "Identity Resolver",

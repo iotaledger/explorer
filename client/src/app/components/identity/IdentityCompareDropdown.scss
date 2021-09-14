@@ -53,10 +53,13 @@
   width: 100%;
   overflow: hidden;
   cursor: pointer;
-
   &:hover {
     background-color: $light-green !important;
   }
+}
+
+.dropdown-item-selected{
+  background-color: $gray-noon;
 }
 
 .dropdown-item-title {

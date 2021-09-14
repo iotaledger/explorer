@@ -10,6 +10,7 @@ import { IdentityHelper } from "../../../helpers/IdentityHelper";
 import IdentityMsgStatusIcon from "./IdentityMsgStatusIcon";
 import { IoWarningOutline } from "react-icons/io5";
 import chevronDownGray from "../../../assets/chevron-down-gray.svg";
+import classNames from "classnames";
 
 class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, IdentityCompareDropdownState> {
     constructor(props: IdentityCompareDropdownProps) {
@@ -46,14 +47,14 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                             });
                         }}
                     >
-                        {!this.state.selectedMessageId ? (
+                        {!this.props.selectedMessageId ? (
                             <p className="dropdown-placeholder">compare with</p>
                         ) : (
                             <Fragment>
                                 <IdentityMsgStatusIcon status="integration" />
 
                                 <p className="margin-l-t">
-                                    {IdentityHelper.shortenMsgId(this.state.selectedMessageId)}
+                                    {IdentityHelper.shortenMsgId(this.props.selectedMessageId)}
                                 </p>
                             </Fragment>
                         )}
@@ -65,7 +66,9 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                         <div className="dropdown-content">
                             {this.props.messages.map((value, index) => (
                                 <div
-                                    className="dropdown-item"
+                                    className={classNames("dropdown-item", {
+                                        "dropdown-item-selected": this.props.selectedMessageId === value.messageId
+                                    })}
                                     key={index}
                                     onMouseUp={e => {
                                         e.stopPropagation();
@@ -87,7 +90,7 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                             ))}
 
                             {this.props.messages.length === 0 && (
-                                <div className="dropdoen-item row middle">
+                                <div className="row middle">
                                     <div className="margin-l-s">
                                         <IconContext.Provider value={{ color: "#ffc107", size: "20px" }}>
                                             <IoWarningOutline />
@@ -101,7 +104,7 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                 </div>
 
                 {/* --------- Reset Button --------- */}
-                {this.state.selectedMessageId && (
+                {this.props.selectedMessageId && (
                     <button
                         className="reset-button"
                         type="button"
@@ -120,12 +123,5 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
             </Fragment>
         );
     }
-
-    // private toggleContent() {
-    //     this.setState({
-    //         contentShown: !this.state.contentShown
-    //     });
-    //     return undefined;
-    // }
 }
 export default IdentityCompareDropdown;

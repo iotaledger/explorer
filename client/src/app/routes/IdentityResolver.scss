@@ -144,3 +144,13 @@
     }
   }
 }
+
+
+.unsupported-network{
+  background-color: rgba(250, 212, 208, 1);
+  color: $danger;
+  font-family: $metropolis;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+}

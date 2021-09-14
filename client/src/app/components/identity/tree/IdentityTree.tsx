@@ -1,8 +1,10 @@
+import "./IdentityTree.scss";
+
 import React, { Component, ReactNode } from "react";
+
 import IdentityTreeItem from "./IdentityTreeItem";
 import { IdentityTreeProps } from "./IdentityTreeProps";
 import { IdentityTreeState } from "./IdentityTreeState";
-import "./IdentityTree.scss";
 
 export default class IdentityMessageIdOverview extends Component<IdentityTreeProps, IdentityTreeState> {
     constructor(props: IdentityTreeProps) {
@@ -26,7 +28,7 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
                         firstMsg={index === 0}
                         selectedMessageId={this.state.selectedMessageId}
                         content={value.document}
-                        parentLastMsg={undefined}
+                        parentFirstMsg={undefined}
                         onItemClick={(messageId, content) => {
                             this.setState({
                                 selectedMessageId: messageId ?? ""

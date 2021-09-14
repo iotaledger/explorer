@@ -45,67 +45,76 @@ export default class IdentityHistory extends Component<
     public render(): ReactNode {
         return (
             <Fragment>
-                {/* --------- Load History Button --------- */}
-                {!this.state.historyLoaded && !this.state.loadingHistory && !this.state.error && (
-                    <button
-                        className="load-history"
-                        onClick={async () => {
-                            await this.loadIntegrationHistory();
-                        }}
-                        type="button"
-                    >
-                        Load History
-                    </button>
-                )}
-
                 {/* --------- History Card --------- */}
-                {(this.state.historyLoaded || this.state.loadingHistory || this.state.error) && (
-                    <div className="card history-content">
-                        <div className="card--header card--header">
-                            <h2>History</h2>
-                        </div>
-
-                        {/* --------- Resolving History Spinner --------- */}
-                        {this.state.loadingHistory && (
-                            <div className="card--content row">
-                                <h3 className="margin-r-s">Resolving History ...</h3>
-                                <Spinner />
-                            </div>
-                        )}
-
-                        {/* --------- Error Case --------- */}
-                        {this.state.error && (
-                            <div className="card--content">
-                                <p className="margin-r-s history-error">Something went wrong!</p>
-                                <p className="margin-r-s history-error">{this.state.error}</p>
-                            </div>
-                        )}
-
-                        {/* --------- History Tree and JsonVeiwer --------- */}
-                        {this.state.historyLoaded && !this.state.error && (
-                            <div className="card--content row row--tablet-responsive">
-                                <div className="history-tree margin-b-s">
-                                    <IdentityTree
-                                        network={this.props.match.params.network}
-                                        history={this.state.resolvedHistory}
-                                        onItemClick={(messageId, content) => {
-                                            this.setState({
-                                                contentOfSelectedMessage: content,
-                                                selectedMessageId: messageId,
-                                                compareWith: this.getPreviousMessages(messageId)
-                                            });
-                                        }}
-                                    />
-                                </div>
-                                <IdentityJsonDifference
-                                    messageId={this.state.selectedMessageId ?? ""}
-                                    content={this.state.contentOfSelectedMessage}
-                                    compareWith={this.state.compareWith}
-                                />
+                <div className="card history-content">
+                    <div className="card--header card--header history-header">
+                        <h2>History</h2>
+                        {/* --------- Load History Button --------- */}
+                        {!this.state.historyLoaded && !this.state.loadingHistory && !this.state.error && (
+                            <div>
+                                <button
+                                    className="load-history-button"
+                                    onClick={async () => {
+                                        await this.loadIntegrationHistory();
+                                    }}
+                                    type="button"
+                                >
+                                    Load History
+                                </button>
                             </div>
                         )}
                     </div>
-                )}
+
+                    {/* --------- Resolving History Spinner --------- */}
+                    {this.state.loadingHistory && (
+                        <div className="card--content row">
+                            <h3 className="margin-r-s">Resolving History ...</h3>
+                            <Spinner />
+                        </div>
+                    )}
+
+                    {/* --------- Error Case --------- */}
+                    {this.state.error && (
+                        <div className="card--content">
+                            <p className="margin-r-s history-error">Something went wrong!</p>
+                            <p className="margin-r-s history-error">{this.state.error}</p>
+                        </div>
+                    )}
+
+                    {/* --------- History Tree and JsonVeiwer --------- */}
+                    {this.state.historyLoaded && !this.state.error && (
+                        <div className="card--content row row--tablet-responsive">
+                            <div className="history-tree margin-b-s">
+                                <IdentityTree
+                                    network={this.props.match.params.network}
+                                    history={this.state.resolvedHistory}
+                                    onItemClick={(messageId, content) => {
+                                        this.setState({
+                                            contentOfSelectedMessage: content,
+                                            selectedMessageId: messageId,
+                                            compareWith: this.getPreviousMessages(messageId),
+                                            selectedComparedContent: undefined,
+                                            selectedComparedMessageId: undefined
+                                        });
+                                    }}
+                                />
+                            </div>
+                            <IdentityJsonDifference
+                                messageId={this.state.selectedMessageId ?? ""}
+                                content={this.state.contentOfSelectedMessage}
+                                compareWith={this.state.compareWith}
+                                onCompareSelectionChange={(messageId, content) => {
+                                    this.setState({
+                                        selectedComparedMessageId: messageId,
+                                        selectedComparedContent: content
+                                    });
+                                }}
+                                selectedComparedContent={this.state.selectedComparedContent}
+                                selectedComparedMessageId={this.state.selectedComparedMessageId}
+                            />
+                        </div>
+                    )}
+                </div>
             </Fragment>
         );
     }
@@ -168,6 +177,10 @@ export default class IdentityHistory extends Component<
             loadingHistory: false,
             selectedMessageId: res.integrationChainData?.[0].messageId,
             contentOfSelectedMessage: res.integrationChainData?.[0].document
+        });
+
+        this.setState({
+            compareWith: this.getPreviousMessages(res.integrationChainData?.[0].messageId ?? "")
         });
     }
 

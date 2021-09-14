@@ -24,6 +24,14 @@ class IdentityJsonDifference extends Component<IdentityJsonDifferenceProps, Iden
         };
     }
 
+    // public componentDidUpdate(prevProps: IdentityJsonDifferenceProps) {
+    //     if (this.state.selectedComparedMessageId !== undefined) {
+    //         this.setState({
+    //             selectedComparedMessageId: undefined
+    //         });
+    //     }
+    // }
+
     public render(): ReactNode {
         return (
             <div>
@@ -58,11 +66,9 @@ class IdentityJsonDifference extends Component<IdentityJsonDifferenceProps, Iden
                                 //     { messageId: "al;skdfj;alsdkfj", content: undefined }
                                 // ]
                             }
+                            selectedMessageId={this.props.selectedComparedMessageId}
                             onSelectionChange={(messageId, content) => {
-                                this.setState({
-                                    selectedComparedMessageId: messageId,
-                                    selectedComparedContent: content
-                                });
+                                this.props.onCompareSelectionChange(messageId, content);
                             }}
                         />
                     </div>
@@ -86,8 +92,8 @@ class IdentityJsonDifference extends Component<IdentityJsonDifferenceProps, Iden
                     <ReactDiffViewer
                         newValue={JSON.stringify(this.props.content, null, 4)}
                         oldValue={
-                            this.state.selectedComparedContent
-                                ? JSON.stringify(this.state.selectedComparedContent, null, 4)
+                            this.props.selectedComparedContent
+                                ? JSON.stringify(this.props.selectedComparedContent, null, 4)
                                 : JSON.stringify(this.props.content, null, 4)
                         }
                         splitView={false}

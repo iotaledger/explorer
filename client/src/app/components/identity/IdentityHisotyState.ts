@@ -21,4 +21,7 @@ export interface IdentityHistoryState {
     error: string | undefined;
 
     compareWith: { messageId: string; content: unknown }[];
+
+    selectedComparedMessageId?: string;
+    selectedComparedContent?: unknown;
 }
