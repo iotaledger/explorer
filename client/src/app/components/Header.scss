@@ -55,6 +55,7 @@ header {
     .logo-image-mobile {
       width: 116px;
       height: 40px;
+      filter: var(--logo-filter);
     }
 
     @media (max-width: 1200px) {
