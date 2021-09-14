@@ -133,7 +133,7 @@ header {
     .menu--expanded {
       position: fixed;
       height: 100vh;
-      background: white;
+      background: var(--body-background);
       width: 100%;
       left: 0;
       top: 73px;
