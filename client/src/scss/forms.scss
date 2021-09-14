@@ -89,7 +89,7 @@ input {
   border: 1px solid var(--input-border-color);
   border-radius: 6px;
   outline: none;
-  color: $gray-10;
+  color: var(--body-color);
   font-family: $inter;
 
   &:focus {
