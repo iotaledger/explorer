@@ -9,6 +9,7 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import QR from "../../components/chrysalis/QR";
+import CurrencyButton from "../../components/CurrencyButton";
 import Spinner from "../../components/Spinner";
 import messageJSON from "./../../../assets/modals/message.json";
 import Transaction from "./../../components/chrysalis/Transaction";
@@ -212,6 +213,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     </div>
                                                     <div className="section--value">
                                                         {UnitsHelper.formatBest(this.state.balance)}
+                                                        <CurrencyButton simple value={this.state.balance} />
                                                     </div>
                                                 </div>
                                             )}

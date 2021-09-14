@@ -42,8 +42,7 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
     public render(): ReactNode {
         return (
             <React.Fragment>
-                {!this.props.onlyFiatSelect && this.props.marketsRoute && this.props.value && (
-
+                {!this.props.onlyFiatSelect && this.props.marketsRoute && this.props.value && !this.props.simple && (
                     <div className="currency-button">
                         <div className="currency-button--label">
                             Conversion
@@ -91,6 +90,10 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
                         </select>
                         <img src={chevronDownGray} alt="expand" />
                     </div>
+                )}
+
+                {this.props.simple && (
+                    <span className="margin-l-t">({this.state.valueCurrency})</span>
                 )}
             </React.Fragment>
         );
