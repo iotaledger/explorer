@@ -24,6 +24,7 @@
     background-color: transparent;
     border-left: 0;
     box-shadow: none;
+    color: var(--body-color);
 
     &::placeholder {
       color: var(--input-border-color);
