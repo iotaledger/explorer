@@ -43,6 +43,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
             : undefined;
 
         this._bechHrp = networkConfig?.bechHrp ?? "iota";
+
     }
 
     /**
@@ -150,41 +151,47 @@ class Transaction extends Component<TransactionProps, TransactionState> {
         }
     }
 
+
     /**
      * Render the component.
      * @returns The node to render.
      */
     public render(): ReactNode {
         return (
-            <tr>
-                <td className="section--value section--value__code featured">
-                    <Link
-                        to={
-                            `/${this.props.network
-                            }/message/${this.props.output.messageId}`
-                        }
-                        className="margin-r-t"
-                    >
-                        {this.props.output.messageId.slice(0, 12)}...{this.props.output.messageId.slice(-12)}
-                    </Link>
-                </td>
-                <td>{this.state?.date ?? <Spinner />}</td>
-                <td>{this.state?.inputs ?? <Spinner />}</td>
-                <td>{this.state?.outputs ?? <Spinner />}</td>
-                <td>
-                    {this.state?.messageTangleStatus
-                        ? (
-                            <MessageTangleState
-                                network={this.props.network}
-                                status={this.state.messageTangleStatus}
-                            />
-                        )
-                        : <Spinner />}
-                </td>
-                <td className={`amount ${this.state?.amount < 0 ? "negative" : "positive"}`}>
-                    {UnitsHelper.formatBest(this.state?.amount)}
-                </td>
-            </tr>
+            (this.props.filterValue === "all" ||
+                (this.props.filterValue === "incoming" && this.state && this.state.amount > 0) ||
+                (this.props.filterValue === "outgoing" && this.state && this.state.amount < 0)) && (
+                <tr>
+                    <td className="section--value section--value__code featured">
+                        <Link
+                            to={
+                                `/${this.props.network
+                                }/message/${this.props.output.messageId}`
+                            }
+                            className="margin-r-t"
+                        >
+                            {this.props.output.messageId.slice(0, 12)}...{this.props.output.messageId.slice(-12)}
+                        </Link>
+                    </td>
+                    <td>{this.state?.date ?? <Spinner />}</td>
+                    <td>{this.state?.inputs ?? <Spinner />}</td>
+                    <td>{this.state?.outputs ?? <Spinner />}</td>
+                    <td>
+                        {this.state?.messageTangleStatus
+                            ? (
+                                <MessageTangleState
+                                    network={this.props.network}
+                                    status={this.state.messageTangleStatus}
+                                />
+                            )
+                            : <Spinner />}
+                    </td>
+                    <td className={`amount ${this.state?.amount < 0 ? "negative" : "positive"}`}>
+                        {UnitsHelper.formatBest(this.state?.amount)}
+                    </td>
+                </tr>
+            )
+
         );
     }
 }
