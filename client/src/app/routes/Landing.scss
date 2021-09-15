@@ -21,8 +21,6 @@
         height: 550px;
       }
       .header {
-        padding-left: 23px;
-        padding-right: 23px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -38,7 +36,10 @@
           justify-content: flex-start;
           row-gap: 12rem;
         }
-
+        @media (max-width: 1052px) {
+          padding-right: 23px;
+          padding-left: 23px;
+        }
         .header--title {
           h2 {
             @include font-size(16px, 24px);
@@ -273,7 +274,7 @@
                   position: fixed;
                   top: 0;
                   left: 0;
-                  z-index: 2000;
+                  z-index: 800;
                   background: rgba(19, 31, 55, 0.75);
                 }
               }
@@ -295,6 +296,9 @@
                   top: unset;
                   left: 0;
                   width: 100vw;
+                }
+                .row {
+                  margin-bottom: 12px;
                 }
                 span {
                   color: var(--expanded-color);
@@ -329,8 +333,10 @@
                     width: 94px;
                     border-right: 0;
                     border-radius: 6px 0 0 6px;
+                    color: var(--expanded-color);
                     padding: 8px;
                     background-color: transparent;
+                    box-shadow: 0 0 0 0;
                   }
                   .select-plus {
                     border-left: 0;
@@ -361,7 +367,9 @@
             .feed-items {
               min-height: 440px;
               padding: 24px 0;
-
+              p {
+                color: var(--body-color);
+              }
               .feed-item--header {
                 margin-bottom: 10px;
                 justify-content: space-between;

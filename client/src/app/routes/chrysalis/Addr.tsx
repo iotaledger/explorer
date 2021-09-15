@@ -248,14 +248,17 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                                 {this.state.outputs && this.state.outputs.length > 0 && (
                                     <div className="section transaction--section">
-                                        <div className="section--header">
+                                        <div className="section--header section--header__space-between">
                                             <div className="row middle">
                                                 <h2>
                                                     Transaction History
                                                 </h2>
                                                 <Modal icon="info" data={messageJSON} />
+                                            </div>
+                                            <div className="messages-tangle-state">
                                                 <div className="section--header__filter">
                                                     <button
+                                                        className="filter-buttons"
                                                         type="button"
                                                         onClick={() => {
                                                             this.setState({ filterValue: "all" });
@@ -264,6 +267,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                         All
                                                     </button>
                                                     <button
+                                                        className="filter-buttons middle"
                                                         type="button"
                                                         onClick={() => {
                                                             this.setState({ filterValue: "incoming" });
@@ -272,6 +276,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                         Incoming
                                                     </button>
                                                     <button
+                                                        className="filter-buttons"
                                                         type="button"
                                                         onClick={() => {
                                                             this.setState({ filterValue: "outgoing" });
@@ -281,6 +286,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     </button>
                                                 </div>
                                             </div>
+
                                         </div>
                                         <table className="transaction--table">
                                             <tr>

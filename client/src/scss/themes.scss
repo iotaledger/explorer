@@ -18,6 +18,7 @@
     --modal-color: #{$gray-7};
     --logo-filter: invert(0);
     --message-referenced-bg: #{$mint-green-1};
+    --qr-color: #{$gray-9};
 
     body.darkmode {
         --body-background: #091326;
@@ -37,5 +38,6 @@
         --modal-color: #{$gray-3};
         --logo-filter: grayscale(1) invert(1);
         --message-referenced-bg: rgba(0, 224, 202, 0.2);
+        --qr-color: #{$white};
     }
 }

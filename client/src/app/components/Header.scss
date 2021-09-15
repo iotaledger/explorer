@@ -37,7 +37,11 @@ header {
       outline: none;
       text-decoration: none;
     }
-
+    .select-wrapper {
+      @media (max-width: 1200px) {
+        display: none;
+      }
+    }
     .page,
     .utilities--wrapper,
     .search-input {
@@ -83,7 +87,8 @@ header {
     .toggle-mode {
       @media (min-width: 1200px) {
         padding-left: 10px;
-        padding-right: 10px;
+        padding-right: 15px;
+        cursor: pointer;
       }
       @media (max-width: 1200px) {
         margin-left: auto;
@@ -101,6 +106,9 @@ header {
     width: 100%;
     min-height: 423px;
     z-index: 2;
+
+    box-shadow: 0px 6px 12px -3px rgb(123 148 186 / 75%);
+
     @media (max-width: 1200px) {
       position: fixed;
       top: 139px;
@@ -129,7 +137,7 @@ header {
     .menu--expanded {
       position: fixed;
       height: 100vh;
-      background: white;
+      background: var(--body-background);
       width: 100%;
       left: 0;
       top: 73px;

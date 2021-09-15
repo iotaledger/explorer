@@ -5,13 +5,11 @@
 .select-wrapper {
   display: inline-block;
   position: relative;
-  @media (max-width: 1200px) {
-    display: none;
-  }
+
   img {
     position: absolute;
     z-index: 2;
-    top: 16px;
+    top: 43%;
     right: 18px;
     color: $gray;
     pointer-events: none;
@@ -85,7 +83,6 @@ input {
 
   height: 40px;
   margin: 0;
-  padding: 0 20px;
   border: 1px solid var(--input-border-color);
   border-radius: 6px;
   outline: none;

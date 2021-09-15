@@ -178,6 +178,11 @@
 
     &.card--header__space-between {
       justify-content: space-between;
+      .select-wrapper {
+        @media (max-width: 1200px) {
+          display: none;
+        }
+      }
     }
 
     @include tablet-down {
@@ -207,6 +212,10 @@
 
     @include phone-down {
       padding: 15px 20px;
+    }
+
+    input {
+      padding: 0 20px;
     }
 
     .card--content__input {
@@ -276,11 +285,12 @@
   .card--value {
     @include font-size(14px, 20px);
     input {
-      background-color: var(--light-bg);
+      background-color: var(--body-background);
+      padding: 0 20px;
     }
 
     margin-bottom: 12px;
-    color: $gray-10;
+    color: var(--body-color);
     font-family: $ibm-plex-mono;
     word-break: break-all;
 
