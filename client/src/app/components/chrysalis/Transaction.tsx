@@ -89,9 +89,16 @@ class Transaction extends Component<TransactionProps, TransactionState> {
             const outputs = messageResult?.message?.payload?.essence.outputs;
             let inputsAmount = 0;
             let outputsAmount = 0;
+
+            let isAddressInInput = false;
+            let isAddressInOutput = false;
             for (let i = 0; i < inputs.length; i++) {
                 const input = inputs[i];
                 const transactionAddress = unlockAddresses[i];
+
+                if (transactionAddress.hex === currentAddress.address) {
+                    isAddressInInput = true;
+                }
 
                 if (transactionAddress?.hex === currentAddress.address) {
                     const transactionOutputIndex = input.transactionOutputIndex;
@@ -108,9 +115,23 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                 const output = outputs[i];
                 if (output.address.address === currentAddress.address) {
                     outputsAmount += output.amount;
+                    isAddressInOutput = true;
                 }
             }
+
+            let type: "unknown" | "topup" | "remainder" | "outgoing" | "FORWARDS" = "unknown";
+
+            if (!isAddressInInput && isAddressInOutput) {
+                type = this.props.output.isSpent ? "FORWARDS" : "topup";
+            }
+            if (isAddressInInput && isAddressInOutput) {
+                type = "remainder";
+            }
+
+            this.setState({ type });
+
             const amount = outputsAmount - inputsAmount;
+
 
             this.setState({
                 inputs: inputs.length,
@@ -187,6 +208,12 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                     </td>
                     <td className={`amount ${this.state?.amount < 0 ? "negative" : "positive"}`}>
                         {UnitsHelper.formatBest(this.state?.amount)}
+                    </td>
+                    <td>
+                        {this.state?.type}
+                    </td>
+                    <td>
+                        {this.props.output.isSpent ? "SPENT" : "UNSPENT"}
                     </td>
                 </tr>
             )

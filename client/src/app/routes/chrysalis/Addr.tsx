@@ -290,6 +290,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <th>Outputs</th>
                                                 <th>Status</th>
                                                 <th>Amount</th>
+                                                <th>Type</th>
+                                                <th>Is Spent</th>
                                             </tr>
                                             {
                                                 this.state.outputs.map(output =>
