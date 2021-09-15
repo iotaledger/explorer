@@ -5,9 +5,7 @@
 .select-wrapper {
   display: inline-block;
   position: relative;
-  @media (max-width: 1200px) {
-    display: none;
-  }
+
   img {
     position: absolute;
     z-index: 2;

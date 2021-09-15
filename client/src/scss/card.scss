@@ -178,6 +178,11 @@
 
     &.card--header__space-between {
       justify-content: space-between;
+      .select-wrapper {
+        @media (max-width: 1200px) {
+          display: none;
+        }
+      }
     }
 
     @include tablet-down {
