@@ -70,4 +70,14 @@ export interface HeaderProps {
          */
         url: string;
     }[];
+
+    /**
+     * Darkmode theme
+     */
+    darkMode?: boolean;
+
+    /**
+     * Function to toggle dark/light theme
+     */
+    toggleMode?: () => void;
 }
