@@ -2,6 +2,8 @@
 @import '../../../scss/mixins';
 @import '../../../scss/media-queries';
 @import '../../../scss/variables';
+@import '../../../scss/themes';
+
 
 .transaction--table {
     width: 100%;
@@ -23,6 +25,7 @@
         }
 
         td {
+            color:var(--body-color);
             .message-tangle-state {
                 margin-left: 0;
             }
@@ -35,7 +38,7 @@
                     color: $mint-green-7;
                 }
                 &.negative {
-                    color: $gray-7;
+                    color: var(--expanded-color);
                 }
             }
         }
