@@ -63,7 +63,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             formatFull: false,
             statusBusy: true,
             status: "Loading transactions...",
-            filterValue: "all"
+            filterValue: "all",
+            received: 0,
+            sent: 0
         };
     }
 
@@ -194,12 +196,36 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </div>
                                             </div>
                                         )} */}
+                                            {this.state.received !== undefined && (
+                                                <div>
+                                                    <div className="section--label">
+                                                        Total received
+                                                    </div>
+                                                    <div className="section--value">
+                                                        {UnitsHelper.formatBest(this.state.received)}
+                                                        <CurrencyButton simple value={this.state.received} />
+                                                    </div>
+                                                </div>
+                                            )}
 
+                                            <div>
+                                                <div className="section--label">
+                                                    Total sent
+                                                </div>
+                                                <div className="section--value">
+                                                    {UnitsHelper.formatBest(this.state.sent)}
+                                                    <CurrencyButton
+                                                        simple
+                                                        value={this.state.sent}
+                                                    />
+                                                </div>
+
+                                            </div>
 
                                             {this.state.balance !== undefined && this.state.balance === 0 && (
                                                 <div>
                                                     <div className="section--label">
-                                                        Balance
+                                                        Final balance
                                                     </div>
                                                     <div className="section--value">
                                                         0
@@ -209,7 +235,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             {this.state.balance !== undefined && this.state.balance !== 0 && (
                                                 <div>
                                                     <div className="section--label">
-                                                        Balance
+                                                        Final balance
                                                     </div>
                                                     <div className="section--value">
                                                         {UnitsHelper.formatBest(this.state.balance)}
@@ -217,6 +243,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     </div>
                                                 </div>
                                             )}
+
+
                                             {this.state.status && (
                                                 <div className="middle row">
                                                     {this.state.statusBusy && (<Spinner />)}
@@ -305,6 +333,14 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                         output={output}
                                                         network={this.props.match.params.network}
                                                         filterValue={this.state.filterValue}
+                                                        receivedAmountHandler={(amount: number): void => {
+                                                            const received = this.state.received + amount;
+                                                            let sent = this.state.sent;
+                                                            if (this.state.balance) {
+                                                                sent = received - this.state.balance;
+                                                            }
+                                                            this.setState({ received, sent });
+                                                        }}
                                                     />
                                                 )
                                                 )

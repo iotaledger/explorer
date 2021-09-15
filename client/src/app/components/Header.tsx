@@ -7,8 +7,6 @@ import hamburgerIcon from "../../assets/hamburger.svg";
 import lightMode from "../../assets/light-mode.svg";
 import logoHeaderMobile from "../../assets/logo-header-mobile.svg";
 import logoHeader from "../../assets/logo-header.svg";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { SettingsService } from "../../services/settingsService";
 import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
 import CurrencyButton from "./CurrencyButton";
 import "./Header.scss";
@@ -16,17 +14,10 @@ import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
 import NetworkSwitcher from "./NetworkSwitcher";
 
-
-
 /**
  * Component which will show the header.
  */
 class Header extends Component<HeaderProps, HeaderState> {
-    /**
-     * Settings service.
-     */
-    private readonly _settingsService: SettingsService;
-
     /**
      * Create a new instance of Header.
      * @param props The props.
@@ -34,23 +25,11 @@ class Header extends Component<HeaderProps, HeaderState> {
     constructor(props: HeaderProps) {
         super(props);
 
-        this._settingsService = ServiceFactory.get<SettingsService>("settings");
-
         this.state = {
             isNetworkSwitcherExpanded: false,
             isUtilitiesExpanded: false,
-            isMenuExpanded: false,
-            darkMode: this._settingsService.get().darkMode ?? false
+            isMenuExpanded: false
         };
-    }
-
-    /**
-     * The component mounted.
-     */
-    public componentDidMount(): void {
-        if (this.state.darkMode) {
-            this.toggleModeClass();
-        }
     }
 
     /**
@@ -148,18 +127,17 @@ class Header extends Component<HeaderProps, HeaderState> {
                         onlyFiatSelect
                     />
 
-                    {this.state.darkMode ?
-                        <img
-                            src={lightMode} alt="light-mode"
-                            onClick={() => this.toggleMode()}
-                            className="toggle-mode"
-                        /> :
-                        <img
-                            src={darkMode} alt="light-mode"
-                            onClick={() => this.toggleMode()}
-                            className="toggle-mode"
-
-                        />}
+                    {this.props.darkMode
+                        ? <img
+                                src={lightMode} alt="light-mode"
+                                onClick={this.props?.toggleMode}
+                                className="toggle-mode"
+                          />
+                        : <img
+                                src={darkMode} alt="light-mode"
+                                onClick={this.props?.toggleMode}
+                                className="toggle-mode"
+                          />}
                     <div className="hamburger--menu">
                         <div
                             className="hamburger--menu__icon"
@@ -258,26 +236,6 @@ class Header extends Component<HeaderProps, HeaderState> {
                 </nav >
             </header >
         );
-    }
-
-    /**
-     * Toggle the display mode.
-     */
-    private toggleMode(): void {
-        this.setState({
-            darkMode: !this.state.darkMode
-        }, () => {
-            this._settingsService.saveSingle("darkMode", this.state.darkMode);
-        });
-        this.toggleModeClass();
-    }
-
-    /**
-     * Toggle darkmode classname to the body DOM node
-     */
-    private toggleModeClass(): void {
-        const body = document.querySelector("body");
-        body?.classList.toggle("darkmode");
     }
 }
 

@@ -89,11 +89,16 @@ class Transaction extends Component<TransactionProps, TransactionState> {
             const outputs = messageResult?.message?.payload?.essence.outputs;
             let inputsAmount = 0;
             let outputsAmount = 0;
+
+            let isAddressInInput = false;
+            let isAddressInOutput = false;
+
             for (let i = 0; i < inputs.length; i++) {
                 const input = inputs[i];
                 const transactionAddress = unlockAddresses[i];
 
                 if (transactionAddress?.hex === currentAddress.address) {
+                    isAddressInInput = true;
                     const transactionOutputIndex = input.transactionOutputIndex;
                     const transactionResult = await this._tangleCacheService.search(
                         this.props.network, input.transactionId);
@@ -107,10 +112,16 @@ class Transaction extends Component<TransactionProps, TransactionState> {
             for (let i = 0; i < outputs.length; i++) {
                 const output = outputs[i];
                 if (output.address.address === currentAddress.address) {
+                    isAddressInOutput = true;
                     outputsAmount += output.amount;
                 }
             }
+
             const amount = outputsAmount - inputsAmount;
+
+            if (!isAddressInInput && isAddressInOutput) {
+                this.props.receivedAmountHandler(this.props.output.output.amount);
+            }
 
             this.setState({
                 inputs: inputs.length,

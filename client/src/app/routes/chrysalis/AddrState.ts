@@ -38,6 +38,16 @@ export interface AddrState {
     outputs?: IOutputResponse[];
 
     /**
+     * The received amount.
+     */
+    received: number;
+
+    /**
+     * The total sent amount.
+     */
+    sent: number;
+
+    /**
      * The historic output ids for the address.
      */
     historicOutputIds?: string[];
