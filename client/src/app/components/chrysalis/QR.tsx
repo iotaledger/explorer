@@ -50,7 +50,7 @@ class QR extends Component<QRProps, QRState> {
                             <rect
                                 height={1}
                                 key={cellIndex}
-                                style={{ fill: cell ? "#000000" : "none" }}
+                                style={{ fill: cell ? "var(--qr-color)" : "none" }}
                                 width={1}
                                 x={cellIndex}
                                 y={rowIndex}
