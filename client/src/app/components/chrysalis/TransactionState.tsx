@@ -14,10 +14,6 @@ export interface TransactionState {
      */
     amount: number;
     /**
-     * The transaction type.
-     */
-    type: "topup" | "remainder" | "outgoing" | "unknown" | "FORWARDS";
-    /**
      * The status of the message.
      */
     messageTangleStatus?: MessageTangleStatus;

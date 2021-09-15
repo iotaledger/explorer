@@ -92,15 +92,13 @@ class Transaction extends Component<TransactionProps, TransactionState> {
 
             let isAddressInInput = false;
             let isAddressInOutput = false;
+
             for (let i = 0; i < inputs.length; i++) {
                 const input = inputs[i];
                 const transactionAddress = unlockAddresses[i];
 
-                if (transactionAddress.hex === currentAddress.address) {
-                    isAddressInInput = true;
-                }
-
                 if (transactionAddress?.hex === currentAddress.address) {
+                    isAddressInInput = true;
                     const transactionOutputIndex = input.transactionOutputIndex;
                     const transactionResult = await this._tangleCacheService.search(
                         this.props.network, input.transactionId);
@@ -114,24 +112,16 @@ class Transaction extends Component<TransactionProps, TransactionState> {
             for (let i = 0; i < outputs.length; i++) {
                 const output = outputs[i];
                 if (output.address.address === currentAddress.address) {
-                    outputsAmount += output.amount;
                     isAddressInOutput = true;
+                    outputsAmount += output.amount;
                 }
             }
 
-            let type: "unknown" | "topup" | "remainder" | "outgoing" | "FORWARDS" = "unknown";
-
-            if (!isAddressInInput && isAddressInOutput) {
-                type = this.props.output.isSpent ? "FORWARDS" : "topup";
-            }
-            if (isAddressInInput && isAddressInOutput) {
-                type = "remainder";
-            }
-
-            this.setState({ type });
-
             const amount = outputsAmount - inputsAmount;
 
+            if (!isAddressInInput && isAddressInOutput) {
+                this.props.receivedAmountHandler(this.props.output.output.amount);
+            }
 
             this.setState({
                 inputs: inputs.length,
@@ -208,12 +198,6 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                     </td>
                     <td className={`amount ${this.state?.amount < 0 ? "negative" : "positive"}`}>
                         {UnitsHelper.formatBest(this.state?.amount)}
-                    </td>
-                    <td>
-                        {this.state?.type}
-                    </td>
-                    <td>
-                        {this.props.output.isSpent ? "SPENT" : "UNSPENT"}
                     </td>
                 </tr>
             )

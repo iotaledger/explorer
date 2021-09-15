@@ -13,4 +13,9 @@ export interface TransactionProps {
      * The filter value.
      */
     filterValue: "all" | "incoming" | "outgoing";
+
+    /**
+     * The received amount handler.
+     */
+    receivedAmountHandler(amount: number): void;
 }
