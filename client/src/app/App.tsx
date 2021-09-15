@@ -36,8 +36,7 @@ import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import Visualizer from "./routes/Visualizer";
-import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
-
+import { VisualizerProps, VisualizerRouteProps } from "./routes/VisualizerRouteProps";
 
 /**
  * Main application class.
@@ -199,10 +198,13 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                             />
                                             <Route
                                                 path="/:network/visualizer/"
-                                                component={(props: RouteComponentProps<VisualizerRouteProps>) =>
-                                                (
-                                                    <Visualizer {...props} />
-                                                )}
+                                                component={
+                                                    (props:
+                                                        RouteComponentProps<VisualizerRouteProps> & VisualizerProps) =>
+                                                        (
+                                                            <Visualizer darkMode={this.state.darkMode} {...props} />
+                                                        )
+                                                }
                                             />
                                             <Route
                                                 path="/:network/transaction/:hash"

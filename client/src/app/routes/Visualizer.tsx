@@ -10,13 +10,13 @@ import { INodeData } from "../../models/graph/INodeData";
 import { IFeedItem } from "../../models/IFeedItem";
 import Feeds from "../components/Feeds";
 import "./Visualizer.scss";
-import { VisualizerRouteProps } from "./VisualizerRouteProps";
+import { VisualizerProps, VisualizerRouteProps } from "./VisualizerRouteProps";
 import { VisualizerState } from "./VisualizerState";
 
 /**
  * Component which will show the visualizer page.
  */
-class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, VisualizerState> {
+class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & VisualizerProps, VisualizerState> {
     /**
      * Maximum number of items.
      */
@@ -131,7 +131,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Create a new instance of Visualizer.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<VisualizerRouteProps>) {
+    constructor(props: RouteComponentProps<VisualizerRouteProps> & VisualizerProps) {
         super(props);
 
         this._existingIds = [];
@@ -152,8 +152,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             currencies: [],
             itemCount: 0,
             selectedFeedItem: undefined,
-            filter: "",
-            darkMode: this._settingsService.get().darkMode ?? false
+            filter: ""
         };
     }
 
@@ -188,7 +187,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     public render(): ReactNode {
         return (
             <div className={
-                classNames("visualizer", { "dark-mode": this.state.darkMode })
+                classNames("visualizer", { "dark-mode": this.props.darkMode })
             }
             >
                 <div className="row middle">
@@ -211,13 +210,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     () => this.restyleNodes())}
                                 maxLength={this._networkConfig?.protocolVersion === "og" ? 90 : 2000}
                             />
-                            <button
-                                type="button"
-                                className="card--action margin-l-s"
-                                onClick={() => this.toggleMode()}
-                            >
-                                {this.state.darkMode ? "Light Mode" : "Dark Mode"}
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -563,7 +555,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graphics.node(node => this.calculateNodeStyle(
                 node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data)));
 
-            this._graphics.link(() => Viva.Graph.View.webglLine(this.state.darkMode
+            this._graphics.link(() => Viva.Graph.View.webglLine(this.props.darkMode
                 ? Visualizer.EDGE_COLOR_DARK : Visualizer.EDGE_COLOR_LIGHT));
 
             const events = Viva.Graph.webglInputEvents(this._graphics, this._graph);
@@ -762,7 +754,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graph.forEachLink((link: Viva.Graph.ILink<unknown>) => {
                 const linkUI = this._graphics?.getLinkUI(link.id);
                 if (linkUI) {
-                    linkUI.color = this.state.darkMode
+                    linkUI.color = this.props.darkMode
                         ? Visualizer.EDGE_COLOR_DARK
                         : Visualizer.EDGE_COLOR_LIGHT;
                 }
@@ -838,18 +830,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 y: this._graphElement.clientHeight / 2
             });
         }
-    }
-
-    /**
-     * Toggle the display mode.
-     */
-    private toggleMode(): void {
-        this.setState({
-            darkMode: !this.state.darkMode
-        }, () => {
-            this._settingsService.saveSingle("darkMode", this.state.darkMode);
-            this.styleConnections();
-        });
     }
 
     /**
