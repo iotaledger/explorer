@@ -50,11 +50,13 @@ class Bech32Address extends Component<Bech32AddressProps> {
                             {!this.props.history && (
                                 <span className="margin-r-t">{this.props.addressDetails.bech32}</span>
                             )}
-                            {/* <MessageButton
-                                onClick={() => ClipboardHelper.copy(this.props.addressDetails?.bech32)}
-                                buttonType="copy"
-                                labelPosition="top"
-                            /> */}
+                            {!this.props.truncateAddress && (
+                                <MessageButton
+                                    onClick={() => ClipboardHelper.copy(this.props.addressDetails?.bech32)}
+                                    buttonType="copy"
+                                    labelPosition="top"
+                                />
+                            )}
                         </div>
                     </React.Fragment>
                 )}
