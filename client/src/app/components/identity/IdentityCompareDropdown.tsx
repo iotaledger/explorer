@@ -34,6 +34,7 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
         return (
             <div className="row middle">
                 <div className="dropdown-wrapper noselect">
+                    {/* ---------  selector --------- */}
                     <div
                         className="compare-selector"
                         onMouseUp={e => {
@@ -60,6 +61,8 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
 
                         <img src={chevronDownGray} alt="expand" />
                     </div>
+
+                    {/* --------- dropdown content --------- */}
                     {this.state.contentShown && (
                         <div className="dropdown-content">
                             {this.props.messages.map((value, index) => (
@@ -78,10 +81,12 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                                         this.props.onSelectionChange(value.messageId, value.content);
                                     }}
                                 >
+                                    {/* --------- title --------- */}
                                     <div className="dropdown-item-title row middle">
                                         <IdentityMsgStatusIcon status="integration" />
                                         <p> {IdentityHelper.shortenMsgId(value.messageId)}</p>
                                     </div>
+                                    {/* --------- timestamp --------- */}
                                     <p className="dropdown-item-timestamp">
                                         {moment((value.content as IntegrationDocument)?.updated).format(
                                             "MMM D  hh:mm:ss a"
@@ -89,7 +94,7 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                                     </p>
                                 </div>
                             ))}
-
+                            {/* --------- ⚠ warning if no messages to select --------- */}
                             {this.props.messages.length === 0 && (
                                 <div className="row middle">
                                     <div className="margin-l-s">
