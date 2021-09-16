@@ -9,7 +9,7 @@ import chevronDownGray from "../../../assets/chevron-down-gray.svg";
 import { IdentityHelper } from "../../../helpers/identityHelper";
 import { IntegrationDocument } from "../../../models/api/IIdentityDidHistoryResponse";
 import { IdentityCompareDropdownProps } from "./IdentityCompareDropdownProps";
-import { IdentityCompareDropdownState } from "./IdentityCompareDropdownstate";
+import { IdentityCompareDropdownState } from "./IdentityCompareDropdownState";
 import IdentityMsgStatusIcon from "./IdentityMsgStatusIcon";
 
 class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, IdentityCompareDropdownState> {

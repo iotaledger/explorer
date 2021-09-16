@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/quotes */
-
 import "./IdentityJsonCompare.scss";
 import React, { Component, ReactNode } from "react";
 import ReactDiffViewer from "react-diff-viewer";

@@ -6,8 +6,8 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IdentityService } from "../../../services/identityService";
 import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
 import Spinner from "../Spinner";
-import { IdentityHistoryState } from "./IdentityHistotyState";
 import { IdentityHistoryProps } from "./IdentityHistoryProps";
+import { IdentityHistoryState } from "./IdentityHistotyState";
 import IdentityJsonCompare from "./IdentityJsonCompare";
 import IdentityTree from "./tree/IdentityTree";
 
