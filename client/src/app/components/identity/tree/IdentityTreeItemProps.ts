@@ -1,3 +1,5 @@
+import { IntegrationDocument } from "../../../../models/api/IIdentityDidHistoryResponse";
+
 export interface IdentityTreeItemProps {
     /**
      * Network name
@@ -20,9 +22,9 @@ export interface IdentityTreeItemProps {
     lastMsg?: boolean;
 
     /**
-     * in case of nested item, if parent is last integration message
+     * in case of nested item, if parent is first integration message
      */
-    parentLastMsg?: boolean;
+    parentFirstMsg?: boolean;
 
     /**
      * The messageId of the selected message of the tree.
@@ -37,7 +39,7 @@ export interface IdentityTreeItemProps {
     /**
      * Content of current message.
      */
-    content?: { created: string; updated: string };
+    content?: IntegrationDocument;
 
     onItemClick(messageId?: string, content?: unknown): void;
 }

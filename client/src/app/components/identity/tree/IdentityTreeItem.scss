@@ -3,10 +3,12 @@
 @import "../../../../scss/media-queries";
 @import "../../../../scss/variables";
 
+$item-height: 64px;
+
 .tree-item-container {
   position: relative;
   min-width: 200px;
-  height: 64px;
+  height: $item-height;
   margin-right: 10px;
   overflow: hidden;
   border-radius: 30px;
@@ -31,14 +33,16 @@
 
   .msg-icon-left {
     position: absolute;
+    z-index: 3;
     top: 20px;
     left: 20px;
   }
 
   .msg-icon-right {
     position: absolute;
-    top: 20px;
-    left: 41px;
+    z-index: 3;
+    top: 21px;
+    left: 44px;
   }
 
   .lower-left-straight-line {
@@ -52,7 +56,7 @@
 
   .upper-right-straight-line {
     position: absolute;
-    left: 45px;
+    left: 48px;
     width: 2px;
     height: 33px;
     background-color: #eeeeee;
@@ -61,28 +65,19 @@
   .lower-right-straight-line {
     position: absolute;
     top: 31px;
-    left: 45px;
+    left: 48px;
     width: 2px;
     height: 33px;
     background-color: #eeeeee;
   }
 
-  .lower-curved-line {
-    position: absolute;
-    top: 30px;
-    left: 25px;
-  }
-
-  .upper-curved-line {
-    position: absolute;
-    top: -34px;
-    left: 25px;
-  }
-
   .content {
+    display: flex;
     position: absolute;
     top: 10px;
     left: 40px;
+    justify-content: space-between;
+    width: calc(100% - 50px);
 
     div {
       margin-top: 10px;
@@ -109,7 +104,6 @@
 
     .diff-icon {
       display: flex;
-      position: absolute;
       top: 4px;
       left: 107px;
       align-items: center;
@@ -118,6 +112,8 @@
       height: 30px;
       margin-top: 4px;
       margin-left: 10px;
+      padding-top: 3px;
+      padding-left: 3px;
       border: 1px solid $gray-light;
       border-radius: 4px;
 
@@ -134,8 +130,9 @@
 
 .loading-diff-icon {
   position: absolute;
-  top: 30px;
-  left: 41px;
+  z-index: 3;
+  top: 22px;
+  left: 43px;
   width: 10px;
   height: 10px;
   animation: mymove 1s;
@@ -145,14 +142,11 @@
   background-color: $gray-light;
 }
 
-.opacity-100 {
-  opacity: 1 !important;
-}
-
 .no-diff-icon {
   position: absolute;
-  top: 30px;
-  left: 41px;
+  z-index: 3;
+  top: 22px;
+  left: 43px;
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -171,7 +165,7 @@
 
 .loading-diff-title {
   position: absolute;
-  top: 29px;
+  top: 22px;
   left: 60px;
   color: $gray-header;
   font-family: $metropolis;
@@ -180,39 +174,39 @@
 
 .no-diff-title {
   position: absolute;
-  top: 29px;
+  top: 22px;
   left: 60px;
   color: $gray-header !important;
   font-family: $metropolis;
   font-size: 0.8em;
 }
 
-.fadeIn {
-  -webkit-animation-name: fade-in;
-  animation-name: fade-in;
+.expand-animation {
+  -webkit-animation-name: expand;
+  animation-name: expand;
   -webkit-animation-duration: 0.5s;
-  animation-duration: 0.5s;
+  animation-duration: 0.8s;
   -webkit-animation-fill-mode: both;
   animation-fill-mode: both;
 }
 
-@-webkit-keyframes fade-in {
+@-webkit-keyframes expand {
   0% {
-    opacity: 0;
+    height: 0;
   }
 
   100% {
-    opacity: 1;
+    height: $item-height;
   }
 }
 
-@keyframes fade-in {
+@keyframes expand {
   0% {
-    opacity: 0;
+    height: 0;
   }
 
   100% {
-    opacity: 1;
+    height: $item-height;
   }
 }
 
@@ -227,4 +221,37 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+.backward-curved-line {
+  position: absolute;
+  z-index: 2;
+  top: -33px;
+  left: 26px;
+}
+
+.identity-item-wrapper {
+  position: relative;
+}
+
+.forward-curved-line {
+  position: absolute;
+  z-index: 2;
+  top: 28px;
+  left: 25px;
+}
+
+.fade-animation {
+  animation-name: fade-anim;
+  animation-duration: 1s;
+}
+
+@keyframes fade-anim {
+  0% {
+    opacity: 0%;
+  }
+
+  100% {
+    opacity: 100%;
+  }
 }

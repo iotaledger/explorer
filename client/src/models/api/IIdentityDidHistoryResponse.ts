@@ -6,10 +6,12 @@ export interface IIdentityDidHistoryResponse {
     error?: string;
 }
 
-interface IntegrationChainData {
-    document: {
-        created: string;
-        updated: string;
-    };
+export interface IntegrationChainData {
+    document: IntegrationDocument;
     messageId: string;
+}
+
+export interface IntegrationDocument {
+    created?: string;
+    updated?: string;
 }

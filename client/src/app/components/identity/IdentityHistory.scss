@@ -3,13 +3,19 @@
 @import "../../../scss/media-queries";
 @import "../../../scss/variables";
 
-.load-history {
-  width: 100%;
-  margin: 30px 0;
-  padding: 10px 50px;
-  border: 0;
-  background-color: $white !important;
-  color: $gray;
+.load-history-button {
+  padding: 10px 17px !important;
+  border: 1px solid $gray-header !important;
+  border-radius: 6px;
+  color: $gray-header !important;
+  font-family: $metropolis !important;
+  cursor: pointer !important;
+
+  &:hover {
+    border-color: $gray-10 !important;
+    color: $gray-10 !important;
+    text-decoration: none !important;
+  }
 }
 
 .history-content {
@@ -26,6 +32,8 @@
   }
 }
 
-.history-error {
-  color: $danger !important;
+.history-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
