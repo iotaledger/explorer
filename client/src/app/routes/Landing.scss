@@ -17,9 +17,11 @@
       flex: 1;
       flex-direction: column;
       max-width: $desktop-width;
+
       @include tablet-down {
         height: 550px;
       }
+
       .header {
         display: flex;
         align-items: center;
@@ -27,28 +29,34 @@
         min-height: 446px;
         padding-top: 50px;
         padding-bottom: 50px;
+
         @include tablet-down {
           flex-direction: column;
           align-items: flex-start;
           padding-bottom: 0;
         }
+
         @include phone-down {
           justify-content: flex-start;
           row-gap: 12rem;
         }
+
         @media (max-width: 1052px) {
           padding-right: 23px;
           padding-left: 23px;
         }
+
         .header--title {
           h2 {
             @include font-size(16px, 24px);
+
             color: $mint-green-6;
             text-transform: uppercase;
           }
 
           h1 {
             @include font-size(48px, 58px);
+
             font-family: $metropolis;
             letter-spacing: 0.5px;
 
@@ -56,9 +64,10 @@
               @include font-size(32px, 36px);
             }
           }
+
           @include tablet-down {
-            padding-left: 24px;
             padding-top: 127px;
+            padding-left: 24px;
           }
         }
 
@@ -76,12 +85,13 @@
             width: 100%;
             padding: 12px;
           }
+
           display: grid;
           grid-template-columns: auto auto auto;
           padding: 24px;
+          border-radius: 6px;
           background: var(--header-box-bg);
           backdrop-filter: blur(20px);
-          border-radius: 6px;
 
           .info-box {
             display: flex;
@@ -90,6 +100,7 @@
             justify-content: center;
             width: 100%;
             padding: 24px;
+
             @include tablet-down {
               padding: 12px;
             }
@@ -97,16 +108,16 @@
             .info-box--title {
               @include font-size(12px, 18px);
 
+              color: $gray-5;
               font-family: $inter;
               font-weight: 500;
-              color: $gray-5;
-              text-decoration: none;
               letter-spacing: 0.5px;
+              text-decoration: none;
 
               @include tablet-down {
-                text-align: center;
-                padding: 15px 5px 0 5px;
                 margin-bottom: 16px;
+                padding: 15px 5px 0 5px;
+                text-align: center;
               }
             }
 
@@ -116,6 +127,7 @@
               @include tablet-down {
                 text-align: center;
               }
+
               color: var(--body-color);
               font-family: $inter;
               font-weight: 600;
@@ -249,6 +261,7 @@
               button {
                 margin-left: 28px;
               }
+
               @include tablet-down {
                 padding: 0 24px;
               }
@@ -257,90 +270,104 @@
             .filter-wrapper {
               .filter--bg {
                 @include tablet-down {
-                  height: 100vh;
-                  width: 100%;
                   position: fixed;
+                  z-index: 800;
                   top: 0;
                   left: 0;
-                  z-index: 800;
+                  width: 100%;
+                  height: 100vh;
                   background: rgba(19, 31, 55, 0.75);
                 }
               }
+
               .filter {
                 position: absolute;
                 z-index: 900;
                 top: 48px;
                 right: 0.7px;
                 min-width: 350px;
-                background: var(--body-background);
-                box-shadow: -1px 0px 9px 0px rgba(123, 148, 186, 75%);
-                border-radius: 6px;
+                margin-right: 1px;
                 padding: 8px;
                 border: 0.5px solid rgba(255, 255, 255, 0);
-                margin-right: 1px;
+                border-radius: 6px;
+                background: var(--body-background);
+                box-shadow: -1px 0 9px 0 rgba(123, 148, 186, 75%);
+
                 @include tablet-down {
                   position: fixed;
-                  bottom: 0;
                   top: unset;
+                  bottom: 0;
                   left: 0;
                   width: 100vw;
                 }
+
                 .row {
                   margin-bottom: 12px;
                 }
+
                 span {
                   color: var(--expanded-color);
                 }
+
                 .filter-header {
+                  margin-bottom: 8px;
+                  padding: 8px;
+                  border-bottom: 1px solid var(--input-border-color);
+                  color: $gray-7;
                   font-family: $inter;
                   font-weight: 700;
-                  @include font-size(14px, 21px);
-                  padding: 8px;
                   letter-spacing: 0.5px;
-                  color: $gray-7;
-                  border-bottom: 1px solid var(--input-border-color);
-                  margin-bottom: 8px;
+
+                  @include font-size(14px, 21px);
+
                   button {
-                    font-weight: 400;
-                    border: 1px solid var(--input-border-color);
                     padding: 6px 20px;
+                    border: 1px solid var(--input-border-color);
                     color: var(--header-color);
+                    font-weight: 400;
                   }
                 }
+
                 .section--label {
                   margin-left: 8px;
                 }
+
                 .filter--value {
                   display: flex;
                   margin: 0 8px;
+                  background-color: transparent;
                   color: var(--expanded-color);
                   font-family: $inter;
+
                   @include font-size(14px, 21px);
-                  background-color: transparent;
+
                   .input-plus {
                     width: 94px;
+                    padding: 8px;
                     border-right: 0;
                     border-radius: 6px 0 0 6px;
-                    color: var(--expanded-color);
-                    padding: 8px;
                     background-color: transparent;
                     box-shadow: 0 0 0 0;
+                    color: var(--expanded-color);
                   }
+
                   .select-plus {
-                    border-left: 0;
-                    border-radius: 0px 6px 6px 0;
                     min-width: 20px;
                     padding: 0 39px 0 11px;
+                    border-left: 0;
+                    border-radius: 0 6px 6px 0;
                     background-color: transparent;
                     color: var(--expanded-color);
                   }
                 }
+
                 label {
                   display: block;
-                  font-family: $inter;
-                  @include font-size(14px, 21px);
-                  color: var(--expanded-color);
                   padding: 12px 10px;
+                  color: var(--expanded-color);
+                  font-family: $inter;
+
+                  @include font-size(14px, 21px);
 
                   input {
                     position: relative;
@@ -355,18 +382,22 @@
             .feed-items {
               min-height: 440px;
               padding: 24px 0;
+
               p {
                 color: var(--body-color);
               }
+
               .feed-item--header {
-                margin-bottom: 10px;
                 justify-content: space-between;
+                margin-bottom: 10px;
 
                 .section--label {
                   @include font-size(12px, 18px);
+
+                  min-width: 90px;
                   color: $gray-6;
                   text-transform: uppercase;
-                  min-width: 90px;
+
                   @include tablet-down {
                     display: none;
                   }
@@ -376,37 +407,43 @@
               .feed-item {
                 display: flex;
                 align-items: center;
-                padding: 14px 8px;
                 justify-content: space-between;
+                padding: 14px 8px;
+
                 @include tablet-down {
                   display: block;
                   padding: 24px 24px;
-                  box-shadow: 0px 2px 6px rgba(19, 31, 55, 0.12);
+                  box-shadow: 0 2px 6px rgba(19, 31, 55, 0.12);
                 }
 
                 &:hover {
-                  background-color: var(--light-bg);
                   border-radius: 6px;
+                  background-color: var(--light-bg);
                 }
 
                 .feed-item__content {
                   display: flex;
+
                   @include tablet-down {
                     flex-direction: column;
                     align-items: flex-start;
+
                     &:first-child {
                       margin-bottom: 16px;
                     }
                   }
                 }
+
                 .feed-item--label {
                   display: none;
+
                   @include tablet-down {
                     display: block;
-                    font-family: $inter;
-                    @include font-size(14px, 21px);
                     color: $gray-6;
+                    font-family: $inter;
                     letter-spacing: 0.5px;
+
+                    @include font-size(14px, 21px);
                   }
                 }
 
@@ -465,12 +502,14 @@
 
   .header-wrapper {
     background: var(--header-bg);
+
     .inner {
       .header {
         background-image: var(--bubbles-bg-image);
         background-repeat: no-repeat;
         background-position: 55%;
         background-size: cover;
+
         @include tablet-down {
           background-size: cover;
         }
@@ -480,9 +519,11 @@
 
   .feeds-wrapper {
     padding: 44px 20px;
+
     @include desktop-down {
       padding: 44px 0;
     }
+
     .inner {
       @include desktop-down {
         max-width: 98%;

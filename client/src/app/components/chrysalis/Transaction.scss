@@ -4,43 +4,47 @@
 @import '../../../scss/variables';
 @import '../../../scss/themes';
 
-
 .transaction--table {
-    width: 100%;
-    border-spacing: 12px 12px;
-    border-collapse: separate;
+  width: 100%;
+  border-spacing: 12px 12px;
+  border-collapse: separate;
 
-    tr {
-        @include font-size(14px);
-        font-family: $inter;
-        color: $gray-7;
-        letter-spacing: 0.5px;
+  tr {
+    @include font-size(14px);
 
-        th {
-            @include font-size(12px);
-            text-align: left;
-            font-weight: 600;
-            color: $gray-6;
-            text-transform: uppercase;
-        }
+    color: $gray-7;
+    font-family: $inter;
+    letter-spacing: 0.5px;
 
-        td {
-            color:var(--body-color);
-            .message-tangle-state {
-                margin-left: 0;
-            }
+    th {
+      @include font-size(12px);
 
-            &.amount {
-                @include font-size(14px, 21px);
-                font-weight: 700;
-
-                &.positive {
-                    color: $mint-green-7;
-                }
-                &.negative {
-                    color: var(--expanded-color);
-                }
-            }
-        }
+      color: $gray-6;
+      font-weight: 600;
+      text-align: left;
+      text-transform: uppercase;
     }
+
+    td {
+      color: var(--body-color);
+
+      .message-tangle-state {
+        margin-left: 0;
+      }
+
+      &.amount {
+        @include font-size(14px, 21px);
+
+        font-weight: 700;
+
+        &.positive {
+          color: $mint-green-7;
+        }
+
+        &.negative {
+          color: var(--expanded-color);
+        }
+      }
+    }
+  }
 }

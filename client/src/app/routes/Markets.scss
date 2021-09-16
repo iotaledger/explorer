@@ -115,9 +115,9 @@
               &.ct-vertical {
                 @include font-size(10px);
 
+                color: var(--body-color);
                 font-family: $inter;
                 font-weight: bold;
-                color: var(--body-color);
               }
 
               &.ct-horizontal {

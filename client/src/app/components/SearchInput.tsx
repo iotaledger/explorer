@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import { ReactComponent as SearchIcon } from "./../../assets/search.svg";

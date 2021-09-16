@@ -10,6 +10,7 @@ footer {
     padding: 32px 20px;
     background-color: $gray-midnight;
     color: $white;
+
     .inner {
       flex: 1;
       max-width: $desktop-width;
@@ -28,9 +29,10 @@ footer {
         margin-right: 28px;
         margin-bottom: 28px;
         font-weight: 500;
+
         @include tablet-down {
-          margin-right: 0;
           width: 50%;
+          margin-right: 0;
           padding-left: 12px;
         }
 
@@ -40,20 +42,20 @@ footer {
           margin-bottom: 16px;
           color: $gray-6;
           font-family: $metropolis-bold;
+          letter-spacing: 0.15em;
           text-transform: uppercase;
           white-space: nowrap;
-          letter-spacing: 0.15em;
         }
 
         ul {
-          list-style: none;
           font-weight: 500;
+          list-style: none;
 
           li {
             @include font-size(12px, 18px);
 
-            font-family: $inter;
             margin-bottom: 8px;
+            font-family: $inter;
 
             a {
               color: $gray-3;
@@ -102,27 +104,32 @@ footer {
   }
 
   .social--media__wrapper {
-    width: 100%;
     display: flex;
-    padding: 0;
+    width: 100%;
     margin: 0;
+    padding: 0;
+
     .social--media__item {
-      width: 16.666666666666668%;
-      text-decoration: none;
-      font-family: $inter;
-      @include font-size(16px, 18px);
-      padding: 11px 0;
-      letter-spacing: 0.5px;
-      color: #f6f8fc;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      width: 16.666666666666668%;
+      padding: 11px 0;
+      color: #f6f8fc;
+      font-family: $inter;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+
+      @include font-size(16px, 18px);
+
       span {
         margin-left: 16px;
         font-weight: 500;
       }
+
       @media screen and (max-width: 768px) {
         padding-bottom: 16px 8px;
+
         span {
           display: none;
         }

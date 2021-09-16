@@ -50,9 +50,9 @@
     &.select-plus {
       position: relative;
       min-width: 100px;
+      height: 48px;
       margin-right: -1px;
       border-radius: 6px 0 0 6px;
-      height: 48px;
 
       &:focus {
         z-index: 1;

@@ -16,7 +16,6 @@ import IndexationPayload from "../../components/chrysalis/IndexationPayload";
 import MilestonePayload from "../../components/chrysalis/MilestonePayload";
 import ReceiptPayload from "../../components/chrysalis/ReceiptPayload";
 import TransactionPayload from "../../components/chrysalis/TransactionPayload";
-import CurrencyButton from "../../components/CurrencyButton";
 import FiatValue from "../../components/FiatValue";
 import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";

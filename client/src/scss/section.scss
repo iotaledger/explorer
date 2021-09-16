@@ -8,8 +8,8 @@
 .section {
   display: flex;
   flex-direction: column;
+  padding: 25px 0 16px 0;
   border-bottom: 1px solid var(--border-color);
-  padding: 25px 0px 16px 0;
 
   & .section {
     border-bottom: 0;
@@ -116,6 +116,7 @@
 
   .section--content {
     color: var(--body-color);
+
     &.max-w-55 {
       max-width: 55%;
 
@@ -361,13 +362,14 @@
 
     margin-bottom: 26px;
     color: var(--body-color);
-    letter-spacing: 0.5px;
     font-family: $inter;
+    letter-spacing: 0.5px;
     word-break: break-all;
 
     span {
       color: var(--body-color);
     }
+
     &.section--value__code {
       @include font-size(14px);
 
