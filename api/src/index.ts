@@ -15,13 +15,23 @@ import { cors, executeRoute, matchRouteUrl } from "./utils/apiHelper";
 const configId = process.env.CONFIG_ID || "local";
 const config: IConfiguration = require(`./data/config.${configId}.json`);
 
-const configAllowedDomains: string[] | undefined = config.allowedDomains;
+const configAllowedDomains: (string | RegExp)[] | undefined = [];
 const configAllowedMethods: string | undefined =
     !config.allowedMethods || config.allowedMethods === "ALLOWED-METHODS"
         ? undefined : config.allowedMethods;
 const configAllowedHeaders: string | undefined =
     !config.allowedHeaders || config.allowedHeaders === "ALLOWED-HEADERS"
         ? undefined : config.allowedHeaders;
+
+if (Array.isArray(config.allowedDomains)) {
+    for (const dom of config.allowedDomains) {
+        if (dom.indexOf("*") > 0) {
+            configAllowedDomains.push(new RegExp(dom.replace(/\*/g, "(.*)")));
+        } else {
+            configAllowedDomains.push(dom);
+        }
+    }
+}
 
 const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 4000;
 

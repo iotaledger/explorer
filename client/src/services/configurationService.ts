@@ -21,7 +21,7 @@ export class ConfigurationService<T> {
             }
             throw new Error("Could not find file");
         } catch (err) {
-            throw new Error(`Error loading configuration file\n${err.message}`);
+            throw new Error(`Error loading configuration file\n${err instanceof Error ? err.message : err}`);
         }
     }
 
