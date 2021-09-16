@@ -540,40 +540,39 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                     </span>
                                                 )}
                                             </div>
-                                            {this.state.advancedMode &&
-                                                this.state.message?.parentMessageIds?.map((parent, idx) => (
-                                                    <React.Fragment key={idx}>
-                                                        <div
-                                                            className="section--value section--value__code featured
+                                            {this.state.message?.parentMessageIds?.map((parent, idx) => (
+                                                <React.Fragment key={idx}>
+                                                    <div
+                                                        className="section--value section--value__code featured
                                                            row middle"
-                                                        >
-                                                            {parent !== "0".repeat(64) && (
-                                                                <React.Fragment>
-                                                                    <Link
-                                                                        className="margin-r-t"
-                                                                        to={
-                                                                            `/${this.props.match.params.network
-                                                                            }/message/${parent}`
-                                                                        }
-                                                                    >
-                                                                        {parent}
-                                                                    </Link>
-                                                                    <MessageButton
-                                                                        onClick={() => ClipboardHelper.copy(
-                                                                            parent
-                                                                        )}
-                                                                        buttonType="copy"
-                                                                        labelPosition="top"
-                                                                    />
-                                                                </React.Fragment>
-                                                            )}
-                                                            {parent === "0".repeat(64) && (
-                                                                <span>Genesis</span>
-                                                            )}
-                                                        </div>
-                                                    </React.Fragment>
-                                                )
-                                                )}
+                                                    >
+                                                        {parent !== "0".repeat(64) && (
+                                                            <React.Fragment>
+                                                                <Link
+                                                                    className="margin-r-t"
+                                                                    to={
+                                                                        `/${this.props.match.params.network
+                                                                        }/message/${parent}`
+                                                                    }
+                                                                >
+                                                                    {parent}
+                                                                </Link>
+                                                                <MessageButton
+                                                                    onClick={() => ClipboardHelper.copy(
+                                                                        parent
+                                                                    )}
+                                                                    buttonType="copy"
+                                                                    labelPosition="top"
+                                                                />
+                                                            </React.Fragment>
+                                                        )}
+                                                        {parent === "0".repeat(64) && (
+                                                            <span>Genesis</span>
+                                                        )}
+                                                    </div>
+                                                </React.Fragment>
+                                            )
+                                            )}
                                         </div>
                                         <div className="section">
                                             <div className="section--header">
