@@ -9,6 +9,7 @@ import logoHeaderMobile from "../../assets/logo-header-mobile.svg";
 import logoHeader from "../../assets/logo-header.svg";
 import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
 import CurrencyButton from "./CurrencyButton";
+import FiatSelector from "./FiatSelector";
 import "./Header.scss";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
@@ -123,21 +124,20 @@ class Header extends Component<HeaderProps, HeaderState> {
                         )}
                     </div>
                     {this.props.search}
-                    <CurrencyButton
-                        onlyFiatSelect
-                    />
+
+                    <FiatSelector />
 
                     {this.props.darkMode
                         ? <img
-                                src={lightMode} alt="light-mode"
-                                onClick={this.props?.toggleMode}
-                                className="toggle-mode"
-                          />
+                            src={lightMode} alt="light-mode"
+                            onClick={this.props?.toggleMode}
+                            className="toggle-mode"
+                        />
                         : <img
-                                src={darkMode} alt="light-mode"
-                                onClick={this.props?.toggleMode}
-                                className="toggle-mode"
-                          />}
+                            src={darkMode} alt="light-mode"
+                            onClick={this.props?.toggleMode}
+                            className="toggle-mode"
+                        />}
                     <div className="hamburger--menu">
                         <div
                             className="hamburger--menu__icon"

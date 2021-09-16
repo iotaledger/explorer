@@ -17,6 +17,7 @@ import MilestonePayload from "../../components/chrysalis/MilestonePayload";
 import ReceiptPayload from "../../components/chrysalis/ReceiptPayload";
 import TransactionPayload from "../../components/chrysalis/TransactionPayload";
 import CurrencyButton from "../../components/CurrencyButton";
+import FiatValue from "../../components/FiatValue";
 import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
 import MessageTangleState from "../../components/MessageTangleState";
@@ -378,7 +379,8 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                     <div className="section--value row middle">
                                                         {UnitsHelper.formatUnits(this.state.transferTotal,
                                                             UnitsHelper.calculateBest(this.state.transferTotal))}
-                                                        <CurrencyButton simple value={this.state.transferTotal} />
+                                                        {" "}
+                                                        (<FiatValue value={this.state.transferTotal} />)
                                                     </div>
                                                 </React.Fragment>
                                             )}
@@ -405,7 +407,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                         <span className="transfer-value">
                                                             {UnitsHelper.formatUnits(this.state.transferTotal,
                                                                 UnitsHelper.calculateBest(this.state.transferTotal))}
-                                                            <CurrencyButton simple value={this.state.transferTotal} />
+                                                            <FiatValue value={this.state.transferTotal} />
 
                                                         </span>
                                                     </div>

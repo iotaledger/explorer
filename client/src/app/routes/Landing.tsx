@@ -13,19 +13,18 @@ import { IFilterSettings } from "../../models/services/IFilterSettings";
 import { NetworkService } from "../../services/networkService";
 import Feeds from "../components/Feeds";
 import "./Landing.scss";
-import { LandingProps } from "./LandingProps";
 import { LandingRouteProps } from "./LandingRouteProps";
 import { LandingState } from "./LandingState";
 
 /**
  * Component which will show the landing page.
  */
-class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProps, LandingState> {
+class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState> {
     /**
      * Create a new instance of Landing.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<LandingRouteProps> & LandingProps) {
+    constructor(props: RouteComponentProps<LandingRouteProps>) {
         super(props);
 
         const networkService = ServiceFactory.get<NetworkService>("network");
@@ -589,3 +588,4 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
 
 
 export default Landing;
+

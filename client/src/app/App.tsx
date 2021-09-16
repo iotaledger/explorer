@@ -175,17 +175,6 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                                 (
                                                     <Landing
                                                         {...props}
-                                                        switcher={<p>In progress...</p>}
-                                                        search={(
-                                                            <SearchInput
-                                                                onSearch={query => this.setQuery(query)}
-                                                                compact={false}
-                                                                protocolVersion={
-                                                                    currentNetworkConfig?.protocolVersion ??
-                                                                    "og"
-                                                                }
-                                                            />
-                                                        )}
                                                     />
                                                 )}
                                             />
@@ -201,9 +190,9 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                                 component={
                                                     (props:
                                                         RouteComponentProps<VisualizerRouteProps> & VisualizerProps) =>
-                                                        (
-                                                            <Visualizer darkMode={this.state.darkMode} {...props} />
-                                                        )
+                                                    (
+                                                        <Visualizer darkMode={this.state.darkMode} {...props} />
+                                                    )
                                                 }
                                             />
                                             <Route
@@ -373,7 +362,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
     /**
      * Toggle the display mode.
      */
-     private toggleMode(): void {
+    private toggleMode(): void {
         this.setState({
             darkMode: !this.state.darkMode
         }, () => {

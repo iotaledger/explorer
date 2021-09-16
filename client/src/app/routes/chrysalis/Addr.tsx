@@ -9,7 +9,7 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import QR from "../../components/chrysalis/QR";
-import CurrencyButton from "../../components/CurrencyButton";
+import FiatValue from "../../components/FiatValue";
 import Spinner from "../../components/Spinner";
 import messageJSON from "./../../../assets/modals/message.json";
 import Transaction from "./../../components/chrysalis/Transaction";
@@ -183,19 +183,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 addressDetails={this.state.bech32AddressDetails}
                                                 advancedMode={true}
                                             />
-                                            {/* {this.state.balance !== undefined && this.state.balance !== 0 && (
-                                            <div className="row fill margin-t-s margin-b-s value-buttons">
-                                                <div className="col">
-                                                    <ValueButton value={this.state.balance ?? 0} label="Balance" />
-                                                </div>
-                                                <div className="col">
-                                                    <CurrencyButton
-                                                        marketsRoute={`/${this.props.match.params.network}/markets`}
-                                                        value={this.state.balance ?? 0}
-                                                    />
-                                                </div>
-                                            </div>
-                                        )} */}
                                             {this.state.received !== undefined && (
                                                 <div>
                                                     <div className="section--label">
@@ -203,7 +190,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     </div>
                                                     <div className="section--value">
                                                         {UnitsHelper.formatBest(this.state.received)}
-                                                        <CurrencyButton simple value={this.state.received} />
+                                                        <FiatValue value={this.state.received} />
                                                     </div>
                                                 </div>
                                             )}
@@ -214,10 +201,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </div>
                                                 <div className="section--value">
                                                     {UnitsHelper.formatBest(this.state.sent)}
-                                                    <CurrencyButton
-                                                        simple
-                                                        value={this.state.sent}
-                                                    />
+                                                    <FiatValue value={this.state.sent} />
                                                 </div>
 
                                             </div>
@@ -239,7 +223,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     </div>
                                                     <div className="section--value">
                                                         {UnitsHelper.formatBest(this.state.balance)}
-                                                        <CurrencyButton simple value={this.state.balance} />
+                                                        <FiatValue value={this.state.balance} />
                                                     </div>
                                                 </div>
                                             )}
