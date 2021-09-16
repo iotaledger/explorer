@@ -22,48 +22,48 @@ class Footer extends Component<FooterProps, FooterState> {
             name: "Youtube",
             icon: <YoutubeIcon />,
             url: "https://www.youtube.com/c/iotafoundation",
-            color: "#131f36"
+            color: "#131F37"
         },
         {
             name: "GitHub",
             icon: <GithubIcon />,
             url: "https://github.com/iotaledger/",
-            color: "#3c4964"
+            color: "#2C3850"
         },
         {
             name: "Discord",
             icon: <DiscordIcon />,
             url: "https://discord.iota.org/",
-            color: "#69768f"
+            color: "#4B576F"
         },
         {
             name: "Twitter",
             icon: <TwitterIcon />,
             url: "https://twitter.com/iota",
-            color: "#8493ad"
+            color: "#6A768E"
         },
         {
             name: "Reddit",
             icon: <RedditIcon />,
             url: "https://www.reddit.com/r/Iota/",
-            color: "#9fafca"
+            color: "#7D89A1"
         },
         {
             name: "LinkedIn",
             icon: <LinkedinIcon />,
             url: "https://www.linkedin.com/company/iotafoundation/",
-            color: "#c3d0e4"
+            color: "#8995AD"
         },
         {
             name: "Instagram",
             icon: <InstagramIcon />,
             url: " https://www.instagram.com/iotafoundation/",
-            color: "#d1ddf0"
+            color: "#99A5BD"
         }, {
             name: "Facebook",
             icon: <FacebookIcon />,
             url: "https://www.facebook.com/iotafoundation/",
-            color: "#d1ddf0"
+            color: "#BAC6DE"
         }
     ];
 
