@@ -118,18 +118,20 @@ export default class IdentityHistory extends Component<
      * @returns a list messageId and content of all integration mesages previous to the given message
      */
     private getPreviousMessages(messageId: string): { messageId: string; content: unknown }[] {
-        const integratoinChain = this.state.resolvedHistory?.integrationChainData;
-        if (!integratoinChain) {
+        const integrationChainData = this.state.resolvedHistory?.integrationChainData;
+        if (!integrationChainData) {
             return [];
         }
 
-        const index = integratoinChain.findIndex((element: { messageId: string }) => element.messageId === messageId);
+        const index = integrationChainData.findIndex(
+            (element: { messageId: string }) => element.messageId === messageId
+        );
 
         const previousMessages = [];
-        for (let i = index + 1; i < integratoinChain.length; i++) {
+        for (let i = index + 1; i < integrationChainData.length; i++) {
             previousMessages.push({
-                messageId: integratoinChain[i].messageId,
-                content: integratoinChain[i].document
+                messageId: integrationChainData[i].messageId,
+                content: integrationChainData[i].document
             });
         }
         return previousMessages;
