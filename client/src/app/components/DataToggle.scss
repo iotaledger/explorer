@@ -7,30 +7,33 @@
 .data-toggle {
   @include font-size(14px, 21px);
 
-  font-family: $inter;
-  min-height: 56px;
-  background-color: var(--light-bg);
-  border-radius: 6px;
-  color: var(body-color);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 16px;
+  justify-content: space-between;
+  min-height: 56px;
   margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 6px;
+  background-color: var(--light-bg);
+  color: var(body-color);
+  font-family: $inter;
   white-space: pre-wrap;
+
   @include phone-down {
-    white-space: pre;
     flex-wrap: wrap;
+    white-space: pre;
   }
 
   .data-toggle--tabs {
     display: flex;
-    justify-content: flex-end;
     align-self: flex-start;
+    justify-content: flex-end;
     margin-left: 16px;
+
     @include phone-down {
       margin-left: 60%;
     }
+
     .data-toggle--tab {
       margin: 0 2px;
       padding: 2px 12px;
@@ -38,10 +41,10 @@
       cursor: pointer;
 
       &.data-toggle--tab__active {
-        font-weight: 700;
-        background: $gray-7;
         border-radius: 12px;
+        background: $gray-7;
         color: $white;
+        font-weight: 700;
       }
     }
   }

@@ -19,47 +19,49 @@
       & > span {
         @include font-size(12px, 18px);
 
+        margin-right: 16px;
+        color: $gray-6;
         font-family: $inter;
         font-weight: 500;
-        color: $gray-6;
-        margin-right: 16px;
+
         @include phone-down {
           margin-right: 1px;
         }
       }
+
       .switch {
-        position: relative;
         display: inline-block;
+        position: relative;
         width: 32px;
         height: 20px;
       }
 
       .switch input {
-        opacity: 0;
         width: 0;
         height: 0;
+        opacity: 0;
       }
 
       .slider {
         position: absolute;
-        cursor: pointer;
         top: 0;
-        left: 0;
         right: 0;
         bottom: 0;
-        background-color: $gray-4;
+        left: 0;
         transition: 0.4s;
+        background-color: $gray-4;
+        cursor: pointer;
       }
 
-      .slider:before {
-        position: absolute;
+      .slider::before {
         content: '';
-        height: 15px;
-        width: 15px;
-        left: 2.5px;
+        position: absolute;
         bottom: 2.5px;
-        background-color: white;
+        left: 2.5px;
+        width: 15px;
+        height: 15px;
         transition: 0.4s;
+        background-color: white;
       }
 
       input:checked + .slider {
@@ -70,7 +72,7 @@
         box-shadow: 0 0 1px $green-6;
       }
 
-      input:checked + .slider:before {
+      input:checked + .slider::before {
         transform: translateX(12px);
       }
 
@@ -78,7 +80,7 @@
         border-radius: 16px;
       }
 
-      .slider.round:before {
+      .slider.round::before {
         border-radius: 50%;
       }
     }
@@ -98,11 +100,12 @@
       @include tablet-down {
         margin: 40px 24px;
       }
+
       @include desktop-down {
         max-width: 100%;
+        margin: 40px 0;
         padding-right: 24px;
         padding-left: 24px;
-        margin: 40px 0;
 
         > .row {
           flex-direction: column;
@@ -112,13 +115,15 @@
       .message--header {
         margin-bottom: 20px;
       }
+
       .section--header {
         .transfer-value {
-          font-family: $inter;
-          @include font-size(16px, 24px);
-          font-weight: 700;
           margin-left: auto;
           color: $gray-9;
+          font-family: $inter;
+          font-weight: 700;
+
+          @include font-size(16px, 24px);
         }
       }
 
@@ -141,20 +146,23 @@
           margin-top: 0;
           margin-left: 23px;
         }
+
         .card + .card {
           margin-top: 0;
           margin-left: 23px;
         }
+
         .card--content {
           .section--value {
             @include font-size(14px);
 
+            color: $blue-5;
             font-family: $ibm-plex-mono;
             font-weight: normal;
-            line-height: 20px;
             letter-spacing: 0.02em;
-            color: $blue-5;
+            line-height: 20px;
           }
+
           .card--value {
             margin-left: auto;
           }

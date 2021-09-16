@@ -5,148 +5,178 @@
 @import '../../scss/themes';
 
 .network--switcher {
-    margin-left: auto;
-    border-left: 1px solid var(--border-color);
+  margin-left: auto;
+  padding-left: 24px;
+  border-left: 1px solid var(--border-color);
 
-    padding-left: 24px;
+  @media (max-width: 1200px) {
+    position: relative;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 15px;
+    padding-top: 15px;
+    padding-left: 0;
+    border-left: 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -20px;
+      width: 100vw;
+      height: 1px;
+      background-color: var(--border-color);
+    }
+  }
+
+  .network--switcher__header {
+    font-family: $metropolis;
+    cursor: pointer;
+
+    .icon {
+      margin-left: 40px;
+
+      svg {
+        width: 16px;
+        height: 16px;
+        transition: transform 0.2s ease;
+      }
+    }
+
+    &.opened {
+      .icon {
+        svg {
+          transform: rotate(-180deg);
+
+          path {
+            stroke: var(--body-color);
+          }
+        }
+      }
+    }
+
+    .network--switcher__dropdown {
+      .label {
+        @include font-size(16px, 18px);
+
+        color: var(--header-label-color);
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+
+      .eyebrow {
+        @include font-size(10px, 15px);
+
+        color: $mint-green-6;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+
+      @include tablet-down {
+        width: 100%;
+      }
+    }
+  }
+
+  .protocols {
+    display: flex;
+    max-width: 1400px;
+    margin: auto;
+    padding: 40px;
 
     @media (max-width: 1200px) {
-        margin-top: 15px;
-        width: 100%;
-        padding-top: 15px;
-        padding-left: 0;
-        border-left: 0;
-        position: relative;
-        justify-content: space-between;
-        &::before {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -20px;
-            background-color: var(--border-color);
-            width: 100vw;
-            height: 1px;
-        }
-    }
-    .network--switcher__header {
-        font-family: $metropolis;
-        cursor: pointer;
-        &.opened {
-            .icon {
-                svg {
-                    transform: rotate(-180deg);
-                    path {
-                        stroke: var(--body-color);
-                    }
-                }
-            }
-        }
-        .network--switcher__dropdown {
-            .label {
-                @include font-size(16px, 18px);
-                font-weight: 600;
-                color: var(--header-label-color);
-                letter-spacing: 0.01em;
-            }
-            .eyebrow {
-                @include font-size(10px, 15px);
-                font-weight: 600;
-                letter-spacing: 0.15em;
-                text-transform: uppercase;
-                color: $mint-green-6;
-            }
-            @include tablet-down {
-                width: 100%;
-            }
-        }
-        .icon {
-            margin-left: 40px;
-            svg {
-                width: 16px;
-                height: 16px;
-                transition: transform 0.2s ease;
-            }
-        }
-    }
-    .protocols {
-        display: flex;
-        max-width: 1400px;
-        margin: auto;
-        padding: 40px;
-        @media (max-width: 1200px) {
-            display: block;
-            padding: 24px;
-            div.protocol {
-                width: 100%;
-                padding: 24px 0;
-            }
-        }
-        .protocol {
-            width: 33%;
-            padding: 0 24px;
-            .protocol--title {
-                font-family: $metropolis;
-                @include font-size(14px, 21px);
-                font-weight: 700;
-                color: var(--expanded-color);
-                text-transform: uppercase;
-                letter-spacing: 0.15em;
-            }
-            .protocol--description {
-                font-family: $inter;
-                @include font-size(14px, 21px);
-                letter-spacing: 0.5px;
-                color: var(--expanded-color);
-            }
-            .network--cards {
-                padding-top: 44px;
-                .network--card {
-                    border-radius: 12px;
+      display: block;
+      padding: 24px;
 
-                    &.selected {
-                        background: rgba(20, 202, 191, 0.08);
-                        .network--icon {
-                            background: $mint-green-6;
-                            svg path {
-                                fill: $white;
-                            }
-                        }
-                    }
-                    &:hover:not(.selected) {
-                        background: var(--light-bg);
-                    }
-                    margin-bottom: 16px;
-                    padding: 4px;
-                    cursor: pointer;
-                    .network--icon {
-                        min-width: 64px;
-                        height: 64px;
-                        background: $gray-2;
-                        border-radius: 8px;
-                        background: var(--header-svg-bg);
-                        svg path {
-                            fill: var(--header-svg-fill);
-                        }
-                    }
-                    .network--content {
-                        margin-left: 24px;
-                        .label {
-                            font-family: $metropolis;
-                            @include font-size(16px, 24px);
-                            font-weight: 600;
-                            color: var(--body-color);
-                            letter-spacing: 0.01em;
-                        }
-                        .description {
-                            font-family: $inter;
-                            @include font-size(12px, 18px);
-                            font-weight: 500;
-                            color: var(--expanded-color);
-                            letter-spacing: 0.5px;
-                        }
-                    }
-                }
-            }
-        }
+      div.protocol {
+        width: 100%;
+        padding: 24px 0;
+      }
     }
+
+    .protocol {
+      width: 33%;
+      padding: 0 24px;
+
+      .protocol--title {
+        color: var(--expanded-color);
+        font-family: $metropolis;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+
+        @include font-size(14px, 21px);
+      }
+
+      .protocol--description {
+        color: var(--expanded-color);
+        font-family: $inter;
+        letter-spacing: 0.5px;
+
+        @include font-size(14px, 21px);
+      }
+
+      .network--cards {
+        padding-top: 44px;
+
+        .network--card {
+          margin-bottom: 16px;
+          padding: 4px;
+          border-radius: 12px;
+          cursor: pointer;
+
+          &:hover:not(.selected) {
+            background: var(--light-bg);
+          }
+
+          .network--icon {
+            min-width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            background: $gray-2;
+            background: var(--header-svg-bg);
+
+            svg path {
+              fill: var(--header-svg-fill);
+            }
+          }
+
+          &.selected {
+            background: rgba(20, 202, 191, 0.08);
+
+            .network--icon {
+              background: $mint-green-6;
+
+              svg path {
+                fill: $white;
+              }
+            }
+          }
+
+          .network--content {
+            margin-left: 24px;
+
+            .label {
+              color: var(--body-color);
+              font-family: $metropolis;
+              font-weight: 600;
+              letter-spacing: 0.01em;
+
+              @include font-size(16px, 24px);
+            }
+
+            .description {
+              color: var(--expanded-color);
+              font-family: $inter;
+              font-weight: 500;
+              letter-spacing: 0.5px;
+
+              @include font-size(12px, 18px);
+            }
+          }
+        }
+      }
+    }
+  }
 }

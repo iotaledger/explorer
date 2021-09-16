@@ -7,23 +7,24 @@
 header {
   display: flex;
   position: fixed;
+  z-index: 1000;
   justify-content: center;
   width: 100%;
-  padding: 15px 20px;
-  background: var(--navbar-bg);
-  border-bottom: 1px solid var(--border-color);
   min-height: $navbar-height-desktop;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--navbar-bg);
   backdrop-filter: blur(20px);
-  z-index: 1000;
 
   .inner {
     display: flex;
     flex: 1;
-
     align-items: center;
+
     @media (max-width: 1200px) {
       flex-wrap: wrap;
     }
+
     @include tablet-down {
       margin-right: 40px;
     }
@@ -37,13 +38,14 @@ header {
       outline: none;
       text-decoration: none;
     }
+
     .select-wrapper {
       @media (max-width: 1200px) {
         display: none;
       }
     }
+
     .page,
-    .utilities--wrapper,
     .search-input {
       @media (max-width: 1200px) {
         display: none;
@@ -67,6 +69,7 @@ header {
         display: none;
       }
     }
+
     @media (min-width: 1200px) {
       .logo-image-mobile {
         display: none;
@@ -75,39 +78,43 @@ header {
 
     .page {
       @include font-size(14px, 21px);
+
+      color: $gray-6;
       font-family: $metropolis;
       font-weight: 600;
-      color: $gray-6;
       letter-spacing: 0.01em;
 
       &.active {
         color: var(--body-color);
       }
     }
+
     .toggle-mode {
       @media (min-width: 1200px) {
-        padding-left: 10px;
         padding-right: 15px;
+        padding-left: 10px;
         cursor: pointer;
       }
+
       @media (max-width: 1200px) {
         margin-left: auto;
       }
     }
+
     .network-switcher {
       margin-left: auto;
     }
   }
+
   .header--expanded {
     position: absolute;
+    z-index: 2;
     top: 83px;
-    background: var(--body-background);
     left: 0;
     width: 100%;
     min-height: 423px;
-    z-index: 2;
-
-    box-shadow: 0px 6px 12px -3px rgb(123 148 186 / 75%);
+    background: var(--body-background);
+    box-shadow: 0 6px 12px -3px rgb(123 148 186 / 75%);
 
     @media (max-width: 1200px) {
       position: fixed;
@@ -118,85 +125,53 @@ header {
       overflow-y: scroll;
     }
   }
+
   .header--expanded--shield {
     position: fixed;
-    left: 0;
+    z-index: -1;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100vh;
-    z-index: -1;
-  }
-  .hamburger--menu {
-    margin-left: 30px;
-    @media (min-width: 1200px) {
-      display: none;
-    }
-    .hamburger--menu__icon {
-      cursor: pointer;
-    }
-    .menu--expanded {
-      position: fixed;
-      height: 100vh;
-      background: var(--body-background);
-      width: 100%;
-      left: 0;
-      top: 73px;
-      z-index: 1;
-      .menu--expanded__item {
-        a,
-        div {
-          font-family: $metropolis;
-          @include font-size(16px, 24px);
-          font-weight: 600;
-          color: $gray-6;
-        }
-        display: flex;
-        justify-content: space-between;
-        cursor: pointer;
-        &:hover {
-          background: rgba(72, 87, 118, 0.08);
-          border-radius: 0px 8px 8px 0px;
-        }
-        .icon {
-          svg {
-            transition: transform 0.2s ease;
-          }
-        }
-        &.opened {
-          .icon {
-            svg {
-              transform: rotate(-180deg);
-              path {
-                stroke: $gray-9;
-              }
-            }
-          }
-        }
-      }
-      ul {
-        margin-top: 16px;
-        margin-right: 16px;
-        li {
-          padding: 12px 15px;
-        }
-      }
-    }
   }
 
   .utilities--wrapper {
+    @media (max-width: 1200px) {
+      display: none;
+    }
+
     .utilities--dropdown {
       display: flex;
+      margin-right: 30px;
+      margin-left: 20px;
       font-family: $metropolis;
       cursor: pointer;
-      margin-left: 20px;
-      margin-right: 30px;
+
+      .label {
+        @include font-size(14px, 21px);
+
+        color: $gray-6;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+
+      .icon {
+        margin-left: 8px;
+
+        svg {
+          transition: transform 0.2s ease;
+        }
+      }
+
       &.opened {
         .label {
           color: var(--header-color);
         }
+
         .icon {
           svg {
             transform: rotate(-180deg);
+
             path {
               stroke: var(--header-color);
             }
@@ -205,40 +180,102 @@ header {
       }
     }
 
-    .label {
-      @include font-size(14px, 21px);
-      font-weight: 600;
-      color: $gray-6;
-      letter-spacing: 0.01em;
-    }
-
-    .icon {
-      margin-left: 8px;
-      svg {
-        transition: transform 0.2s ease;
-      }
-    }
     .utilities {
       padding: 40px 120px 120px 120px;
+
       & * {
         margin-bottom: 8px;
       }
+
       .utilities--label {
+        color: $gray-7;
         font-family: $metropolis;
-        @include font-size(14px, 21px);
         font-weight: 700;
-        color: $gray-7;
-        text-transform: uppercase;
         letter-spacing: 0.15em;
-      }
-      .utilities--item a {
-        font-family: $inter;
+        text-transform: uppercase;
+
         @include font-size(14px, 21px);
-        letter-spacing: 0.5px;
+      }
+
+      .utilities--item a {
         color: $gray-7;
+        font-family: $inter;
+        letter-spacing: 0.5px;
+
+        @include font-size(14px, 21px);
       }
     }
   }
+
+  .hamburger--menu {
+    margin-left: 30px;
+
+    @media (min-width: 1200px) {
+      display: none;
+    }
+
+    .hamburger--menu__icon {
+      cursor: pointer;
+    }
+
+    .menu--expanded {
+      position: fixed;
+      z-index: 1;
+      top: 73px;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: var(--body-background);
+
+      .menu--expanded__item {
+        a,
+        div {
+          color: $gray-6;
+          font-family: $metropolis;
+          font-weight: 600;
+
+          @include font-size(16px, 24px);
+        }
+
+        display: flex;
+        justify-content: space-between;
+        cursor: pointer;
+
+        &:hover {
+          border-radius: 0 8px 8px 0;
+          background: rgba(72, 87, 118, 0.08);
+        }
+
+        .icon {
+          svg {
+            transition: transform 0.2s ease;
+          }
+        }
+
+        &.opened {
+          .icon {
+            svg {
+              transform: rotate(-180deg);
+
+              path {
+                stroke: $gray-9;
+              }
+            }
+          }
+        }
+      }
+
+      ul {
+        margin-top: 16px;
+        margin-right: 16px;
+
+        li {
+          padding: 12px 15px;
+        }
+      }
+    }
+  }
+
   .tools {
     &.tools--large {
       @include font-size(14px);
