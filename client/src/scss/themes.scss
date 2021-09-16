@@ -19,6 +19,8 @@
     --logo-filter: invert(0);
     --message-referenced-bg: #{$mint-green-1};
     --qr-color: #{$gray-9};
+    --box-shadow-center: 0 0 4px rgb(132 147 173, 0.3);
+    --box-shadow-down: 0 4px 30px rgba(132, 147, 173, 0.1);
 
     body.darkmode {
         --body-background: #091326;
