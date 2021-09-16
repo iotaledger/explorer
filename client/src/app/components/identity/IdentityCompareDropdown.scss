@@ -1,8 +1,7 @@
 @import "../../../scss/variables";
 
-.dropdown-wrapper{
+.dropdown-wrapper {
   position: relative;
-
 }
 
 .noselect {
@@ -15,12 +14,18 @@
 }
 
 .compare-selector {
-  background-color: $white;
-  border-radius: 5px;
-  padding: 5px 10px;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 150px;
   height: 30px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: $white;
+  white-space: nowrap;
+
   img {
+    width: 13px;
     margin-left: 10px;
   }
 
@@ -30,41 +35,43 @@
 }
 
 .dropdown-placeholder {
+  align-self: center;
   color: $gray-header !important;
 }
 
 .dropdown-content {
-  border-radius: 5px;
-  position: absolute;
   display: flex;
-  flex-direction: column;
+  position: absolute;
   top: 35px;
-  max-height: 250px;
+  flex-direction: column;
   width: 200px;
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 5px;
   background-color: $white;
-  overflow: hidden;
   box-shadow: $box-shadow;
 }
 
 .dropdown-item {
   position: static;
-  height: 45px;
-  background-color: white;
   width: 100%;
+  min-height: 52px;
   overflow: hidden;
+  background-color: white;
   cursor: pointer;
+
   &:hover {
     background-color: $light-green !important;
   }
 }
 
-.dropdown-item-selected{
+.dropdown-item-selected {
   background-color: $gray-noon;
 }
 
 .dropdown-item-title {
-  margin-left: 10px;
   margin-top: 12px;
+  margin-left: 10px;
 
   p {
     margin-left: 10px;
@@ -72,20 +79,20 @@
 }
 
 .dropdown-item-timestamp {
-  margin-top: 3px;
-  margin-left: 37px;
+  margin-top: 7px;
+  margin-left: 30px;
   color: $gray-header !important;
 }
 
-.reset-button{
-  height: 100%;
+.reset-button {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  height: 100%;
   padding: 0 7px !important;
 }
 
-.dropdown-item-warning{
+.dropdown-item-warning {
   margin: 20px 5px;
   color: $warning !important;
 }

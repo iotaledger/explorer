@@ -1,22 +1,15 @@
 import "./IdentityHistory.scss";
 import "../../../scss/layout.scss";
-
 import React, { Component, Fragment, ReactNode } from "react";
-
-import { DiffMessage } from "../../../models/api/IIdentityDiffHistoryResponse";
-import { DownloadHelper } from "../../../helpers/downloadHelper";
-import { HiDownload } from "react-icons/hi";
-import { IdentityHistoryProps } from "./IdentityHistoryProps";
-import { IdentityHistoryState } from "./IdentityHisotyState";
-import IdentityJsonDifference from "./IdentityJsonDifferece";
-import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
-import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
-import { IdentityService } from "../../../services/identityService";
-import IdentityTree from "./tree/IdentityTree";
-import JsonViewer from "../JsonViewer";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { IdentityService } from "../../../services/identityService";
+import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
 import Spinner from "../Spinner";
+import { IdentityHistoryState } from "./IdentityHisotyState";
+import { IdentityHistoryProps } from "./IdentityHistoryProps";
+import IdentityJsonCompare from "./IdentityJsonCompare";
+import IdentityTree from "./tree/IdentityTree";
 
 export default class IdentityHistory extends Component<
     RouteComponentProps<IdentityResolverProps>,
@@ -99,7 +92,8 @@ export default class IdentityHistory extends Component<
                                     }}
                                 />
                             </div>
-                            <IdentityJsonDifference
+                            <IdentityJsonCompare
+                                network={this.props.match.params.network}
                                 messageId={this.state.selectedMessageId ?? ""}
                                 content={this.state.contentOfSelectedMessage}
                                 compareWith={this.state.compareWith}
@@ -119,6 +113,10 @@ export default class IdentityHistory extends Component<
         );
     }
 
+    /**
+     * @param messageId message Id of integration message
+     * @returns a list messageId and content of all integration mesages previous to the given message
+     */
     private getPreviousMessages(messageId: string): { messageId: string; content: unknown }[] {
         const integratoinChain = this.state.resolvedHistory?.integrationChainData;
         if (!integratoinChain) {

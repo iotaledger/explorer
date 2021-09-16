@@ -1,23 +1,22 @@
 import "./IdentityCompareDropdown.scss";
-
-import React, { Component, Fragment, ReactNode } from "react";
-
+import classNames from "classnames";
+import moment from "moment";
+import React, { Component, ReactNode } from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import { IoWarningOutline } from "react-icons/io5";
 import { IconContext } from "react-icons/lib";
+import chevronDownGray from "../../../assets/chevron-down-gray.svg";
+import { IdentityHelper } from "../../../helpers/identityHelper";
+import { IntegrationDocument } from "../../../models/api/IIdentityDidHistoryResponse";
 import { IdentityCompareDropdownProps } from "./IdentityCompareDropdownProps";
 import { IdentityCompareDropdownState } from "./IdentityCompareDropdownstate";
-import { IdentityHelper } from "../../../helpers/IdentityHelper";
 import IdentityMsgStatusIcon from "./IdentityMsgStatusIcon";
-import { IoWarningOutline } from "react-icons/io5";
-import chevronDownGray from "../../../assets/chevron-down-gray.svg";
-import classNames from "classnames";
 
 class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, IdentityCompareDropdownState> {
     constructor(props: IdentityCompareDropdownProps) {
         super(props);
 
         this.state = {
-            selectedMessageId: "",
             contentShown: false
         };
 
@@ -33,10 +32,10 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
 
     public render(): ReactNode {
         return (
-            <Fragment>
+            <div className="row middle">
                 <div className="dropdown-wrapper noselect">
                     <div
-                        className="compare-selector row middle"
+                        className="compare-selector"
                         onMouseUp={e => {
                             e.stopPropagation();
                         }}
@@ -50,16 +49,15 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                         {!this.props.selectedMessageId ? (
                             <p className="dropdown-placeholder">compare with</p>
                         ) : (
-                            <Fragment>
+                            <div className="row">
                                 <IdentityMsgStatusIcon status="integration" />
 
                                 <p className="margin-l-t">
                                     {IdentityHelper.shortenMsgId(this.props.selectedMessageId)}
                                 </p>
-                            </Fragment>
+                            </div>
                         )}
 
-                        <p> </p>
                         <img src={chevronDownGray} alt="expand" />
                     </div>
                     {this.state.contentShown && (
@@ -75,7 +73,6 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                                     }}
                                     onClick={e => {
                                         this.setState({
-                                            selectedMessageId: value.messageId,
                                             contentShown: !this.state.contentShown
                                         });
                                         this.props.onSelectionChange(value.messageId, value.content);
@@ -85,7 +82,11 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                                         <IdentityMsgStatusIcon status="integration" />
                                         <p> {IdentityHelper.shortenMsgId(value.messageId)}</p>
                                     </div>
-                                    <p className="dropdown-item-timestamp"> n/a </p>
+                                    <p className="dropdown-item-timestamp">
+                                        {moment((value.content as IntegrationDocument)?.updated).format(
+                                            "MMM D  hh:mm:ss a"
+                                        )}
+                                    </p>
                                 </div>
                             ))}
 
@@ -102,16 +103,12 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                         </div>
                     )}
                 </div>
-
                 {/* --------- Reset Button --------- */}
                 {this.props.selectedMessageId && (
                     <button
                         className="reset-button"
                         type="button"
                         onClick={e => {
-                            this.setState({
-                                selectedMessageId: undefined
-                            });
                             this.props.onSelectionChange();
                         }}
                     >
@@ -120,7 +117,7 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                         </IconContext.Provider>
                     </button>
                 )}
-            </Fragment>
+            </div>
         );
     }
 }

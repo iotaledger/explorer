@@ -11,11 +11,10 @@
   font-family: $metropolis !important;
   cursor: pointer !important;
 
-  &:hover{
-    color: $gray-10 !important;
+  &:hover {
     border-color: $gray-10 !important;
+    color: $gray-10 !important;
     text-decoration: none !important;
-
   }
 }
 
@@ -33,7 +32,7 @@
   }
 }
 
-.history-header{
+.history-header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

@@ -1,14 +1,28 @@
 import "./IdentityTreeItem.scss";
-
-import React, { Component, Fragment, ReactNode } from "react";
-
-import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
-import { IdentityService } from "../../../../services/identityService";
-import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
-import { IdentityTreeItemState } from "./IdentityTreeItemState";
-import { ServiceFactory } from "../../../../factories/serviceFactory";
 import classNames from "classnames";
 import moment from "moment";
+import React, { Component, Fragment, ReactNode } from "react";
+import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { IdentityService } from "../../../../services/identityService";
+import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
+import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
+import { IdentityTreeItemState } from "./IdentityTreeItemState";
+
+const BACKWARDS_CURVED_LINE = (
+    <div className="backward-curved-line fade-animation">
+        <svg width="24" height="60" viewBox="0 0 24 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 0C1 27.0423 23 32.9577 23 60" stroke="#EEEEEE" strokeWidth="2" />
+        </svg>
+    </div>
+);
+
+const FORWARD_CURVED_LINE = (
+    <div className="forward-curved-line fade-animation">
+        <svg width="24" height="60" viewBox="0 0 24 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 60C1 32.9577 23 27.0423 23 5.96046e-08" stroke="#EEEEEE" strokeWidth="2" />
+        </svg>
+    </div>
+);
 
 export default class IdentityTreeItem extends Component<IdentityTreeItemProps, IdentityTreeItemState> {
     constructor(props: IdentityTreeItemProps) {
@@ -24,13 +38,21 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
 
     public render(): ReactNode {
         return (
-            <div>
+            <div className="identity-item-wrapper">
+                {this.props.nested && (
+                    <Fragment>
+                        {!this.props.parentFirstMsg && this.props.firstMsg && <div>{BACKWARDS_CURVED_LINE}</div>}
+                        {this.props.lastMsg && <div>{FORWARD_CURVED_LINE}</div>}
+                    </Fragment>
+                )}
+
                 {/* --------- Nested Element/s --------- */}
                 {this.state.hasChildren && (
                     <Fragment>
-                        {((this.state.hasChildren && this.state.diffHistory?.chainData?.length === 0) ||
-                            this.state.loadingChildren) && (
+                        {((this.state.diffHistory?.chainData?.length === 0) ||
+                            this.state.loadingChildren || this.state.error) && (
                             <div className="expand-animation">
+
                                 {/* --------- Loading Diff Chain... --------- */}
                                 {this.state.loadingChildren && (
                                     <div className="tree-item-container">
@@ -40,21 +62,6 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                                                 <div className="upper-left-straight-line" />
                                             </Fragment>
                                         )}
-                                        <div className="forward-curved-line-lower">
-                                            <svg
-                                                width="17"
-                                                height="47"
-                                                viewBox="0 0 17 47"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                <path
-                                                    d="M16 0C16 20.5699 7.73592 33.3097 1.83221 46.5"
-                                                    stroke="#EEEEEE"
-                                                    strokeWidth="2"
-                                                />
-                                            </svg>
-                                        </div>
                                         <div className="loading-diff-icon" />
                                         <p className="title loading-diff-title"> Loading Diff Chain</p>
                                     </div>
@@ -71,37 +78,6 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                                                 </Fragment>
                                             )}
 
-                                            <div className="forward-curved-line-lower">
-                                                <svg
-                                                    width="17"
-                                                    height="47"
-                                                    viewBox="0 0 17 47"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M16 0C16 20.5699 7.73592 33.3097 1.83221 46.5"
-                                                        stroke="#EEEEEE"
-                                                        strokeWidth="2"
-                                                    />
-                                                </svg>
-                                            </div>
-                                            {/* 
-                                    <div className="backward-curved-line-upper">
-                                        <svg
-                                            width="22"
-                                            height="72"
-                                            viewBox="0 0 22 72"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                d="M1 0C1 32 21 32 21 64M21 64C21 84.8889 21 54.9259 21 64Z"
-                                                stroke="#EEEEEE"
-                                                strokeWidth="2"
-                                            />
-                                        </svg>
-                                    </div> */}
                                             <div className="no-diff-icon" />
                                             {this.state.diffHistory?.chainData?.length === 0 && (
                                                 <p className="title no-diff-title"> No diffs found</p>
@@ -109,6 +85,8 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                                             {this.state.error && <p className="title no-diff-title"> Error</p>}
                                         </div>
                                     )}
+                                {!this.props.firstMsg && <div>{BACKWARDS_CURVED_LINE}</div>}
+                                <div>{FORWARD_CURVED_LINE}</div>
                             </div>
                         )}
                         {/* --------- Diff children if Parent is Integration message  --------- */}
@@ -139,43 +117,17 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                         "tree-item-selected": this.props.selectedMessageId === this.props.messageId
                     })}
                     onClick={() => {
+                        if (this.props.selectedMessageId === this.props.messageId) {
+                            this.setState({
+                                hasChildren: false
+                            });
+                            return;
+                        }
                         this.props.onItemClick(this.props.messageId, this.props.content);
                     }}
                 >
                     {!this.props.nested && !this.props.firstMsg && <div className="upper-left-straight-line" />}
                     {!this.props.nested && !this.props.lastMsg && <div className="lower-left-straight-line" />}
-                    {!this.props.nested && this.state.hasChildren && (
-                        <div className="forward-curved-line-upper">
-                            {/* <svg
-                                width="22"
-                                height="72"
-                                viewBox="0 0 22 72"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M1 0C1 32 21 32 21 64M21 64C21 84.8889 21 54.9259 21 64Z"
-                                    stroke="#EEEEEE"
-                                    strokeWidth="2"
-                                />
-                            </svg> */}
-                            {/* becomes upper curved */}
-                            <svg
-                                width="13"
-                                height="38"
-                                viewBox="0 0 13 38"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M11.8322 0.5C6.58975 10.767 1.06409 20.6799 1.06409 37.5"
-                                    stroke="#EEEEEE"
-                                    strokeWidth="2"
-                                />
-                            </svg>
-                        </div>
-                    )}
-
                     {this.props.nested && (
                         <Fragment>
                             {!this.props.parentFirstMsg && (
@@ -187,38 +139,6 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
 
                             {!this.props.firstMsg && <div className="upper-right-straight-line" />}
                             {!this.props.lastMsg && <div className="lower-right-straight-line" />}
-                            {this.props.lastMsg && (
-                                <div className="forward-curved-line-lower">
-                                    {/* <svg
-                                        width="22"
-                                        height="72"
-                                        viewBox="0 0 22 72"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M1 0C1 32 21 32 21 64M21 64C21 84.8889 21 54.9259 21 64Z"
-                                            stroke="#EEEEEE"
-                                            strokeWidth="2"
-                                        />
-                                    </svg> */}
-
-                                    {/* becomes lower curved */}
-                                    <svg
-                                        width="17"
-                                        height="47"
-                                        viewBox="0 0 17 47"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M16 0C16 20.5699 7.73592 33.3097 1.83221 46.5"
-                                            stroke="#EEEEEE"
-                                            strokeWidth="2"
-                                        />
-                                    </svg>
-                                </div>
-                            )}
                         </Fragment>
                     )}
                     {!this.props.nested && (
@@ -232,7 +152,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                         </div>
                     )}
                     <div
-                        className={classNames("content row", {
+                        className={classNames("content", {
                             "push-right": this.props.nested
                         })}
                     >
@@ -329,7 +249,8 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
         if (res.error) {
             this.setState({
                 error: res.error,
-                loadingChildren: false
+                loadingChildren: false,
+                diffHistory: undefined
             });
             console.error(res.error);
             return;
@@ -348,7 +269,8 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
 
         this.setState({
             loadingChildren: false,
-            diffHistory: res
+            diffHistory: res,
+            error: undefined
         });
     }
 

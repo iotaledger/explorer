@@ -152,7 +152,6 @@ class IdentityResolver extends AsyncComponent<
                                                         <IdentitySearchInput
                                                             compact={false}
                                                             onSearch={e => {
-                                                                console.log("search!!");
                                                                 this.props.history.push(e);
                                                             }}
                                                             network={this.props.match.params.network}
@@ -250,8 +249,7 @@ class IdentityResolver extends AsyncComponent<
                                                                                 ClipboardHelper.copy(
                                                                                     this.state.resolvedIdentity
                                                                                         ?.messageId
-                                                                                )
-                                                                            }
+                                                                                )}
                                                                             buttonType="copy"
                                                                             labelPosition="top"
                                                                         />

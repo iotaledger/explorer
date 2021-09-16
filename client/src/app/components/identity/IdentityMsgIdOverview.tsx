@@ -2,7 +2,7 @@ import "./IdentityMsgIdOverview.scss";
 
 import React, { Component, Fragment, ReactNode } from "react";
 
-import { IdentityHelper } from "../../../helpers/IdentityHelper";
+import { IdentityHelper } from "../../../helpers/identityHelper";
 import { IdentityMsgIdOverviewProps } from "./IdentityMsgIdOverviewProps";
 import { IdentityMsgOverviewState } from "./IdentityMsgIdOverviewState";
 import IdentityMsgStatusIcon from "./IdentityMsgStatusIcon";
