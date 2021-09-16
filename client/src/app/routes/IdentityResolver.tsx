@@ -24,7 +24,7 @@ import { IdentityResolverState } from "./IdentityResolverState";
 import "./IdentityResolver.scss";
 
 class IdentityResolver extends AsyncComponent<
-    RouteComponentProps<IdentityResolverProps> & { isNetworkChrysalis: boolean },
+    RouteComponentProps<IdentityResolverProps> & { isSupported: boolean },
     IdentityResolverState
 > {
     /**
@@ -42,7 +42,7 @@ class IdentityResolver extends AsyncComponent<
      */
     private readonly EMPTY_MESSAGE_ID = "0".repeat(64);
 
-    constructor(props: RouteComponentProps<IdentityResolverProps> & { isNetworkChrysalis: boolean }) {
+    constructor(props: RouteComponentProps<IdentityResolverProps> & { isSupported: boolean }) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
@@ -120,7 +120,7 @@ class IdentityResolver extends AsyncComponent<
                             <div className="cards">
                                 {!this.state.did && (
                                     <Fragment>
-                                        {!this.props.isNetworkChrysalis && (
+                                        {!this.props.isSupported && (
                                             <div className="unsupported-network">
                                                 Network is not supported. IOTA Identity only supports chrysalis phase 2
                                                 networks, such as the IOTA main network.

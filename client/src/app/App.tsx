@@ -172,7 +172,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             component={(props: RouteComponentProps<IdentityResolverProps>) => (
                                                 <IdentityResolver
                                                     {...props}
-                                                    isNetworkChrysalis={
+                                                    isSupported={
                                                         this.state.networkConfig?.protocolVersion === "chrysalis"
                                                     }
                                                 />
