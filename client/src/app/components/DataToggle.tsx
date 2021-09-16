@@ -20,7 +20,6 @@ class DataToggle extends Component<DataToggleProps, DataToggleState> {
         };
     }
 
-
     /**
      * Render the component.
      * @returns The node to render.

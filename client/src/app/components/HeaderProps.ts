@@ -12,11 +12,6 @@ export interface HeaderProps {
     rootPath: string;
 
     /**
-     * The switch elements to display as content.
-     */
-    switcher?: ReactNode;
-
-    /**
      * The network selected.
      */
     network?: INetwork;

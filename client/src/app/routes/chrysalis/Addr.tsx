@@ -190,18 +190,17 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     </div>
                                                     <div className="section--value">
                                                         {UnitsHelper.formatBest(this.state.received)}
-                                                        <FiatValue value={this.state.received} />
+                                                        {" "}(<FiatValue value={this.state.received} />)
                                                     </div>
                                                 </div>
                                             )}
-
                                             <div>
                                                 <div className="section--label">
                                                     Total sent
                                                 </div>
                                                 <div className="section--value">
                                                     {UnitsHelper.formatBest(this.state.sent)}
-                                                    <FiatValue value={this.state.sent} />
+                                                    {" "}(<FiatValue value={this.state.sent} />)
                                                 </div>
 
                                             </div>
@@ -223,7 +222,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     </div>
                                                     <div className="section--value">
                                                         {UnitsHelper.formatBest(this.state.balance)}
-                                                        <FiatValue value={this.state.balance} />
+                                                        {" "}(<FiatValue value={this.state.balance} />)
                                                     </div>
                                                 </div>
                                             )}

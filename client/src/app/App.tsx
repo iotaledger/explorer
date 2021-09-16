@@ -108,7 +108,6 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                     search={
                         <SearchInput
                             onSearch={query => this.setQuery(query)}
-                            compact={true}
                             protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
                         />
                     }

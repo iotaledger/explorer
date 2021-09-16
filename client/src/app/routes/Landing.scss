@@ -103,12 +103,6 @@
               text-decoration: none;
               letter-spacing: 0.5px;
 
-              // &.linked {
-              //   &:hover {
-              //     text-decoration: underline;
-              //   }
-              // }
-
               @include tablet-down {
                 text-align: center;
                 padding: 15px 5px 0 5px;
@@ -128,12 +122,6 @@
               text-decoration: none;
               text-transform: uppercase;
               white-space: nowrap;
-
-              // &.linked {
-              //   &:hover {
-              //     text-decoration: underline;
-              //   }
-              // }
             }
 
             .info-box--action {

@@ -36,19 +36,16 @@ class Modal extends Component<ModalProps, ModalState> {
                 >
                     {this.props.icon === "dots" && (
                         <DotsIcon />
-
                     )}
                     {this.props.icon === "info" && (
                         <InfoIcon />
-
                     )}
                 </button>
                 {this.state.show && (
                     <React.Fragment>
                         <div className="modal--content">
                             <div className="modal--header">
-
-                                <div className="title">
+                                <div className="modal--title">
                                     {this.props.data?.title}
                                     <button
                                         type="button"
@@ -60,7 +57,6 @@ class Modal extends Component<ModalProps, ModalState> {
                             </div>
                             <div className="modal--description">
                                 <div dangerouslySetInnerHTML={{ __html: this.props.data?.description }} />
-
                             </div>
                         </div>
                         <div

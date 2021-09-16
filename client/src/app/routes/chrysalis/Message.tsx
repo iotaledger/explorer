@@ -420,7 +420,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                             outputs={this.state.outputs}
                                                             unlockAddresses={this.state.unlockAddresses}
                                                             transferTotal={this.state.transferTotal}
-                                                            advancedMode={this.state.advancedMode}
                                                         />
                                                     </div>
 

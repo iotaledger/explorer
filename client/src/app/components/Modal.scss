@@ -39,7 +39,7 @@
         @include tablet-down {
             width: 100%;
         }
-        .title {
+        .modal--title {
             @include font-size(20px);
             font-weight: 600;
             font-family: $metropolis;

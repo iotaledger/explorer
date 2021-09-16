@@ -4,7 +4,7 @@ export interface FiatValueProps {
      */
     value: number;
     /**
-     * The optional additional classes.
+     * The optional additional CSS classes.
      */
     classNames?: string;
 }

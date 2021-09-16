@@ -4,11 +4,11 @@ import "./CurrencyButton.scss";
 import { FiatValueProps } from "./FiatValueProps";
 import { FiatValueState } from "./FiatValueState";
 /**
- * Component which will display a currency button.
+ * Component which will display a fiat value.
  */
 class FiatValue extends Currency<FiatValueProps, FiatValueState> {
     /**
-     * Create a new instance of CurrencyButton.
+     * Create a new instance of FiatValue.
      * @param props The props.
      */
     constructor(props: FiatValueProps) {
@@ -19,6 +19,16 @@ class FiatValue extends Currency<FiatValueProps, FiatValueState> {
             currency: "USD",
             currencies: []
         };
+    }
+
+    /**
+     * The component was updated.
+     * @param prevProps The previous properties.
+     */
+    public componentDidUpdate(prevProps: FiatValueProps): void {
+        if (this.props.value !== prevProps.value) {
+            this.updateCurrency();
+        }
     }
 
     /**

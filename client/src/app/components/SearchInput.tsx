@@ -31,10 +31,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
     public render(): ReactNode {
         return (
             <div
-                className={classNames(
-                    "search-input",
-                    { "search-input--compact": this.props.compact }
-                )}
+                className="search-input"
             >
                 <button
                     className="search--button"
@@ -42,12 +39,12 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                     onClick={() => this.doSearch()}
                     disabled={!this.state.isValid}
                 >
-                    {this.props.compact ? (<SearchIcon />) : "Search"}
+                    <SearchIcon />
                 </button>
                 <input
                     className="search--text-input"
                     type="text"
-                    autoFocus={!this.props.compact}
+                    autoFocus
                     value={this.state.query}
                     onChange={e => this.setState({
                         query: this.props.protocolVersion === "og"
@@ -57,15 +54,12 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                             ? e.target.value.toUpperCase().trim()
                             : e.target.value)
                     })}
-                    placeholder={this.props.compact ? "Search the tangle" : (
-                        this.props.protocolVersion === "chrysalis"
-                            ? "Search messages, addresses, outputs, milestones, indexes"
-                            : "Search transactions, bundles, addresses, tags")}
                     onKeyDown={e => {
                         if (e.keyCode === 13 && this.state.isValid) {
                             this.doSearch();
                         }
                     }}
+                    placeholder="Search the tangle..."
                 />
 
             </div>

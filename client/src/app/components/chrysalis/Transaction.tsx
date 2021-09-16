@@ -56,7 +56,6 @@ class Transaction extends Component<TransactionProps, TransactionState> {
 
         const unlockAddresses: IBech32AddressDetails[] = [];
 
-
         if (messageResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
             const signatureBlocks: ISignatureUnlockBlock[] = [];
             for (let i = 0; i < messageResult.message.payload.unlockBlocks.length; i++) {
@@ -161,7 +160,6 @@ class Transaction extends Component<TransactionProps, TransactionState> {
         }
     }
 
-
     /**
      * Render the component.
      * @returns The node to render.
@@ -201,7 +199,6 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                     </td>
                 </tr>
             )
-
         );
     }
 }

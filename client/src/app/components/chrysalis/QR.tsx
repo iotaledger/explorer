@@ -4,11 +4,11 @@ import { QRProps } from "./QRProps";
 import { QRState } from "./QRState";
 
 /**
- * Component which will display an Bech32Address.
+ * Component which will display a QR code.
  */
 class QR extends Component<QRProps, QRState> {
     /**
-     * Create a new instance of Bech32Address.
+     * Create a new instance of QR.
      * @param props The props.
      */
 
@@ -46,19 +46,16 @@ class QR extends Component<QRProps, QRState> {
             >
                 {this.state.cells.map((row, rowIndex) => (
                     row.map((cell, cellIndex) => (
-                        (
-                            <rect
-                                height={1}
-                                key={cellIndex}
-                                style={{ fill: cell ? "var(--qr-color)" : "none" }}
-                                width={1}
-                                x={cellIndex}
-                                y={rowIndex}
-                            />
-                        )
+                        <rect
+                            height={1}
+                            key={cellIndex}
+                            style={{ fill: cell ? "var(--qr-color)" : "none" }}
+                            width={1}
+                            x={cellIndex}
+                            y={rowIndex}
+                        />)
                     )
-                    )))}
-
+                ))}
             </svg>
 
         );
