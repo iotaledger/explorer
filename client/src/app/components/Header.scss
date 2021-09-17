@@ -36,13 +36,16 @@ header {
       display: flex;
       align-items: center;
 
-      .logo-image {
+      svg {
         width: auto;
         height: 48px;
-        filter: var(--logo-filter);
 
         @include desktop-down {
           height: 40px;
+        }
+
+        path {
+          fill: var(--body-color);
         }
       }
     }
@@ -64,7 +67,7 @@ header {
 
     .inner--main {
       flex: 1;
-      padding: 0 24px;
+      padding: 0 14px 0 24px;
     }
 
     .inner--networks {
@@ -116,32 +119,6 @@ header {
           }
         }
 
-        .utilities {
-          padding: 40px 120px 120px 120px;
-
-          & * {
-            margin-bottom: 8px;
-          }
-
-          .utilities--label {
-            color: $gray-7;
-            font-family: $metropolis;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-
-            @include font-size(14px, 21px);
-          }
-
-          .utilities--item a {
-            color: $gray-7;
-            font-family: $inter;
-            letter-spacing: 0.5px;
-
-            @include font-size(14px, 21px);
-          }
-        }
-
         &.opened {
           .label {
             color: var(--header-color);
@@ -158,6 +135,32 @@ header {
           }
         }
       }
+
+      .utilities {
+        padding: 40px 120px 120px 120px;
+
+        & * {
+          margin-bottom: 8px;
+        }
+
+        .utilities--label {
+          color: $gray-7;
+          font-family: $metropolis;
+          font-weight: 700;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+
+          @include font-size(14px, 21px);
+        }
+
+        .utilities--item a {
+          color: $gray-7;
+          font-family: $inter;
+          letter-spacing: 0.5px;
+
+          @include font-size(14px, 21px);
+        }
+      }
     }
 
     .search-input {
@@ -172,12 +175,15 @@ header {
       margin-left: 16px;
     }
 
-    .toggle-mode {
+    .theme-toggle {
       margin-left: 16px;
-      cursor: pointer;
 
       @include desktop-down {
         margin-left: auto;
+      }
+
+      svg path {
+        fill: var(--header-icon-color);
       }
     }
 
@@ -232,14 +238,22 @@ header {
   }
 
   .hamburger--menu {
+    display: none;
     margin-left: 30px;
 
-    @media (min-width: 1200px) {
-      display: none;
+    @include desktop-down {
+      display: block;
+      margin-left: 8px;
     }
 
     .hamburger--menu__icon {
       cursor: pointer;
+
+      svg {
+        path {
+          fill: var(--header-icon-color);
+        }
+      }
     }
 
     .menu--expanded {
@@ -284,10 +298,6 @@ header {
           .icon {
             svg {
               transform: rotate(-180deg);
-
-              path {
-                stroke: $gray-9;
-              }
             }
           }
         }

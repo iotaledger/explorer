@@ -21,6 +21,7 @@
     height: 40px;
     margin: 0;
     padding: 0 48px 0 20px;
+    transition: border-color 0.2s ease;
     border: 1px solid var(--input-border-color);
     border-radius: 6px;
     outline: none;
@@ -30,7 +31,7 @@
     appearance: none;
 
     &:focus {
-      box-shadow: 0 0 3px 0 $main-green-highlight;
+      border-color: var(--input-focus-border-color);
     }
 
     &:-ms-expand {

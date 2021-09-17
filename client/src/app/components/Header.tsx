@@ -1,11 +1,16 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { ReactComponent as CloseIcon } from "./../../assets/close.svg";
+import { ReactComponent as DarkModeIcon } from "./../../assets/dark-mode.svg";
+import { ReactComponent as LightModeIcon } from "./../../assets/light-mode.svg";
+import { ReactComponent as HamburgerIcon } from "./../../assets/hamburger.svg";
+import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
+
 import closeIcon from "../../assets/close.svg";
 import darkMode from "../../assets/dark-mode.svg";
 import hamburgerIcon from "../../assets/hamburger.svg";
 import lightMode from "../../assets/light-mode.svg";
-import logoHeader from "../../assets/logo-header.svg";
 import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
 import FiatSelector from "./FiatSelector";
 import "./Header.scss";
@@ -61,7 +66,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                             onClick={() => this.setState({ isUtilitiesExpanded: false })}
                             className="logo-image--wrapper"
                         >
-                            <img className="logo-image" src={logoHeader} alt="Explorer" />
+                            <LogoHeader />
                         </Link>
                         {this.props.pages && this.props.pages.length > 0 && this.props.pages.map(page => (
                             <Link
@@ -124,25 +129,21 @@ class Header extends Component<HeaderProps, HeaderState> {
                         {this.props.search}
 
                         <FiatSelector />
-                        <img
-                            src={
-                                this.props.darkMode
-                                    ? lightMode
-                                    : darkMode
-                                }
-                            alt={this.props.darkMode
-                                ? "Toggle Dark Mode"
-                                : "Toggle Light Mode"}
+                        <button
+                            type="button"
+                            className="button--unstyled theme-toggle"
                             onClick={this.props?.toggleMode}
-                            className="toggle-mode"
-                        />
+                        >
+                            {this.props.darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+                        </button>
                         <div className="hamburger--menu">
-                            <div
-                                className="hamburger--menu__icon"
+                            <button
+                                type="button"
+                                className="button--unstyled hamburger--menu__icon"
                                 onClick={() => this.setState({ isMenuExpanded: !this.state.isMenuExpanded })}
                             >
-                                <img src={this.state.isMenuExpanded ? closeIcon : hamburgerIcon} alt="Hamburger menu" />
-                            </div>
+                                {this.state.isMenuExpanded ? <CloseIcon /> : <HamburgerIcon />}
+                            </button>
                             {this.state.isMenuExpanded && (
                                 <div className="menu--expanded">
                                     <ul>
@@ -156,13 +157,13 @@ class Header extends Component<HeaderProps, HeaderState> {
                                                         <span
                                                             className={` 
                                                     ${page.url === window.location.pathname
-                                                                ? "active" : ""}`}
+                                                                    ? "active" : ""}`}
                                                         >
                                                             {page.label}
                                                         </span>
                                                     </Link>
                                                 </li>
-                                        ))}
+                                            ))}
                                         <li
                                             className={classNames("menu--expanded__item",
                                                 { opened: this.state.isUtilitiesExpanded }

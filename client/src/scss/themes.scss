@@ -9,14 +9,14 @@
   --header-color: #{$gray-6};
   --header-box-bg: #{$white};
   --header-label-color: #{$gray-midnight};
-  --header-svg-fill: #{$gray-7};
+  --header-icon-color: #{$gray-7};
   --header-svg-bg: #{$gray-2};
   --border-color: #{$gray-2};
   --expanded-color: #{$gray-7};
   --light-bg: #{$gray-1};
   --input-border-color: #d9e1ef;
+  --input-focus-border-color: #{$gray-7};
   --modal-color: #{$gray-7};
-  --logo-filter: invert(0);
   --message-referenced-bg: #{$mint-green-1};
   --qr-color: #{$gray-9};
   --box-shadow-center: 0 0 4px rgb(132 147 173, 0.3);
@@ -31,14 +31,14 @@
     --header-color: #{$gray-5};
     --header-box-bg: #06102399;
     --header-label-color: #{$gray-3};
-    --header-svg-fill: #{$gray-5};
+    --header-icon-color: #{$gray-5};
     --header-svg-bg: #202e4a;
     --border-color: #ffffff1e;
     --expanded-color: #{$gray-5};
     --light-bg: #48577614;
     --input-border-color: #{$gray-5};
+    --input-focus-border-color: #{$gray-3};
     --modal-color: #{$gray-3};
-    --logo-filter: grayscale(1) invert(1);
     --message-referenced-bg: rgba(0, 224, 202, 0.2);
     --qr-color: #{$white};
   }

@@ -25,10 +25,6 @@
       .icon {
         svg {
           transform: rotate(-180deg);
-
-          path {
-            stroke: var(--body-color);
-          }
         }
       }
     }
@@ -63,6 +59,10 @@
         width: 16px;
         height: 16px;
         transition: transform 0.2s ease;
+
+        path {
+          stroke: var(--header-icon-color);
+        }
       }
     }
   }
@@ -138,7 +138,7 @@
             background: var(--header-svg-bg);
 
             svg path {
-              fill: var(--header-svg-fill);
+              fill: var(--header-icon-color);
             }
           }
 

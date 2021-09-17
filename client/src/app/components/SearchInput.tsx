@@ -32,14 +32,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
             <div
                 className="search-input"
             >
-                <button
-                    className="search--button"
-                    type="submit"
-                    onClick={() => this.doSearch()}
-                    disabled={!this.state.isValid}
-                >
-                    <SearchIcon />
-                </button>
+                <SearchIcon />
                 <input
                     className="search--text-input"
                     type="text"
