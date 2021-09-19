@@ -7,6 +7,7 @@ import { IdentityService } from "../../../../services/identityService";
 import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
 import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
 import { IdentityTreeItemState } from "./IdentityTreeItemState";
+import { DiffMessage } from "../../../../models/api/IIdentityDiffHistoryResponse";
 
 const BACKWARDS_CURVED_LINE = (
     <div className="backward-curved-line fade-animation">
@@ -49,10 +50,10 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                 {/* --------- Nested Element/s --------- */}
                 {this.state.hasChildren && (
                     <Fragment>
-                        {((this.state.diffHistory?.chainData?.length === 0) ||
-                            this.state.loadingChildren || this.state.error) && (
+                        {(this.state.diffHistory?.chainData?.length === 0 ||
+                            this.state.loadingChildren ||
+                            this.state.error) && (
                             <div className="expand-animation">
-
                                 {/* --------- Loading Diff Chain... --------- */}
                                 {this.state.loadingChildren && (
                                     <div className="tree-item-container">
@@ -100,11 +101,13 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                                         firstMsg={index === 0}
                                         selectedMessageId={this.props.selectedMessageId}
                                         messageId={value?.messageId}
-                                        content={value?.message}
+                                        messageContent={value?.message}
+                                        documentContent={value?.document}
                                         parentFirstMsg={this.props.firstMsg}
                                         onItemClick={(messageId, content) => {
                                             this.props.onItemClick(messageId, content);
                                         }}
+                                        contentState="doc"
                                     />
                                 </div>
                             ))}
@@ -123,7 +126,14 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                             });
                             return;
                         }
-                        this.props.onItemClick(this.props.messageId, this.props.content);
+                        this.props.onItemClick({
+                            messageId: this.props.messageId ?? "",
+                            content: {
+                                message: this.props.messageContent,
+                                document: this.props.documentContent
+                            },
+                            messageType: (this.props.messageContent as DiffMessage).diff ? "diff" : "int"
+                        });
                     }}
                 >
                     {!this.props.nested && !this.props.firstMsg && <div className="upper-left-straight-line" />}
@@ -147,7 +157,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                         </div>
                     )}
                     {this.props.nested && (
-                        <div className="msg-icon-right">
+                        <div className="msg-icon-right fade-animation">
                             <IdentityMsgStatusIcon status="diff" />
                         </div>
                     )}
@@ -159,9 +169,9 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                         {/* --------- Title and timestamp --------- */}
                         <div>
                             <p className="title">{this.shortenMsgId(this.props.messageId ?? "")}</p>
-                            {this.props.content?.created ? (
+                            {this.props.messageContent?.created ? (
                                 <p className="time-stamp">
-                                    {moment(this.props.content?.updated).format("MMM D  hh:mm:ss a")}
+                                    {moment(this.props.messageContent?.updated).format("MMM D  hh:mm:ss a")}
                                 </p>
                             ) : (
                                 <p className="time-stamp"> n.a.</p>
@@ -242,7 +252,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
         const res = await ServiceFactory.get<IdentityService>("identity").resolveDiffHistory(
             this.props.messageId,
             this.props.network,
-            this.props.content
+            this.props.messageContent
         );
 
         // if result includes Error
@@ -258,6 +268,8 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
 
         // reverse the order (first message becomes the newest)
         res.chainData = res.chainData?.reverse();
+
+        console.log(res.chainData);
 
         // convert diff from string to object so it can be higlighted in json viewer
         for (let i = 0; i < res.chainData.length; i++) {

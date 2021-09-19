@@ -1,15 +1,15 @@
 export interface IdentityJsonCompareProps {
     messageId: string;
-    content: unknown;
+    content: { document: unknown; message: unknown };
 
     network: string;
 
     selectedComparedMessageId?: string;
-    selectedComparedContent?: unknown;
+    selectedComparedContent?: { document: unknown; message: unknown };
     compareWith?: {
         messageId: string;
-        content: unknown;
+        content: { document: unknown; message: unknown };
     }[];
 
-    onCompareSelectionChange(messageId?: string, content?: unknown): void;
+    onCompareSelectionChange(messageId?: string, content?: { document: unknown; message: unknown }): void;
 }

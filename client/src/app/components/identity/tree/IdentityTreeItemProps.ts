@@ -1,4 +1,5 @@
-import { IntegrationDocument } from "../../../../models/api/IIdentityDidHistoryResponse";
+import { IIdentityMessageWrapper } from './../../../../models/identity/IIdentityMessageWrapper';
+import { IntegrationMessage } from "../../../../models/api/IIdentityDidHistoryResponse";
 
 export interface IdentityTreeItemProps {
     /**
@@ -39,7 +40,17 @@ export interface IdentityTreeItemProps {
     /**
      * Content of current message.
      */
-    content?: IntegrationDocument;
+    messageContent?: {
+        created?: string;
+        updated?: string;
+    };
 
-    onItemClick(messageId?: string, content?: unknown): void;
+    documentContent: {
+        created?: string;
+        updated?: string;
+    };
+
+    contentState: "doc" | "msg";
+
+    onItemClick(selectedItem: IIdentityMessageWrapper, compareWith?: IIdentityMessageWrapper[]): void;
 }

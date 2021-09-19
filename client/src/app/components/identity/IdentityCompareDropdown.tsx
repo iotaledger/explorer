@@ -7,7 +7,7 @@ import { IoWarningOutline } from "react-icons/io5";
 import { IconContext } from "react-icons/lib";
 import chevronDownGray from "../../../assets/chevron-down-gray.svg";
 import { IdentityHelper } from "../../../helpers/identityHelper";
-import { IntegrationDocument } from "../../../models/api/IIdentityDidHistoryResponse";
+import { IntegrationMessage } from "../../../models/api/IIdentityDidHistoryResponse";
 import { IdentityCompareDropdownProps } from "./IdentityCompareDropdownProps";
 import { IdentityCompareDropdownState } from "./IdentityCompareDropdownState";
 import IdentityMsgStatusIcon from "./IdentityMsgStatusIcon";
@@ -88,7 +88,7 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                                     </div>
                                     {/* --------- timestamp --------- */}
                                     <p className="dropdown-item-timestamp">
-                                        {moment((value.content as IntegrationDocument)?.updated).format(
+                                        {moment((value.content as IntegrationMessage)?.updated).format(
                                             "MMM D  hh:mm:ss a"
                                         )}
                                     </p>

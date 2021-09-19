@@ -52,7 +52,7 @@
     margin: 0 3px;
   }
 
-  @include phone-down {
+  @include tablet-down {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -61,5 +61,76 @@
     .compare-icon {
       display: none;
     }
+  }
+}
+
+.toggle-box {
+  height: 25px;
+  background-color: $white;
+  border-radius: 5px;
+  border: 1px solid $gray-header;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  margin-right: 5px;
+  cursor: pointer;
+
+  margin-left: 5px;
+  &:hover {
+    border-color: $main-green-highlight;
+  }
+
+  @include phone-down {
+    flex-direction: column;
+    height: 60px;
+  }
+}
+
+.toggle-button {
+  height: 100%;
+  font-family: $metropolis !important;
+  font-size: 0.9em;
+  padding: 5px 5px;
+  color: $gray-header;
+
+  @include phone-down {
+    font-size: 0.7em;
+    height: 50%;
+  }
+}
+
+.toggle-button-active {
+  background-color: $light-green;
+  color: $gray-midnight;
+}
+
+.download-button {
+  @include phone-down {
+    height: 60px;
+    border-radius: 5px;
+    border: 1px solid $gray-header;
+    padding: 0.88em 4px;
+  }
+}
+
+.toggle-separator {
+  height: 100%;
+  width: 1px;
+  background-color: $gray-header;
+
+  @include phone-down {
+    width: 100%;
+    height: 1px;
+  }
+
+  .noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 }

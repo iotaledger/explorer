@@ -1,3 +1,4 @@
+import { IntegrationMessage } from './../models/api/IIdentityDidHistoryResponse';
 
 export class IdentityHelper {
     /**
@@ -10,5 +11,12 @@ export class IdentityHelper {
         }
 
         return `${msgId.slice(0, 7)}....${msgId.slice(-7)}`;
+    }
+
+    public static getDocumentFromIntegrationMsg(message: IntegrationMessage) {
+        const document = { ...message };
+        delete document.proof;
+        delete document.previousMessageId;
+        return document;
     }
 }

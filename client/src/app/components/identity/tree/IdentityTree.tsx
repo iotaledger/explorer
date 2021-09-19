@@ -5,6 +5,7 @@ import React, { Component, ReactNode } from "react";
 import IdentityTreeItem from "./IdentityTreeItem";
 import { IdentityTreeProps } from "./IdentityTreeProps";
 import { IdentityTreeState } from "./IdentityTreeState";
+import { IdentityHelper } from "../../../../helpers/identityHelper";
 
 export default class IdentityMessageIdOverview extends Component<IdentityTreeProps, IdentityTreeState> {
     constructor(props: IdentityTreeProps) {
@@ -27,14 +28,16 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
                         nested={false}
                         firstMsg={index === 0}
                         selectedMessageId={this.state.selectedMessageId}
-                        content={value.document}
+                        messageContent={value.document}
+                        documentContent={IdentityHelper.getDocumentFromIntegrationMsg(value.document)}
                         parentFirstMsg={undefined}
-                        onItemClick={(messageId, content) => {
+                        onItemClick={selectedItem => {
                             this.setState({
-                                selectedMessageId: messageId ?? ""
+                                selectedMessageId: selectedItem.messageId ?? ""
                             });
-                            this.props.onItemClick(messageId ?? "", content);
+                            this.props.onItemClick(selectedItem);
                         }}
+                        contentState="doc"
                     />
                 ))}
             </div>

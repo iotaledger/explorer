@@ -12,7 +12,7 @@ export interface IdentityHistoryState {
     resolvedHistory?: IIdentityDidHistoryResponse | undefined;
 
     // The content of the selected integration of diff message.
-    contentOfSelectedMessage?: unknown;
+    contentOfSelectedMessage: { document: unknown; message: unknown };
 
     // if history request is in progress.
     loadingHistory: boolean;
@@ -20,8 +20,8 @@ export interface IdentityHistoryState {
     // if error during history resolution.
     error: string | undefined;
 
-    compareWith: { messageId: string; content: unknown }[];
+    compareWith: { messageId: string; content: { document: unknown; message: unknown } }[];
 
     selectedComparedMessageId?: string;
-    selectedComparedContent?: unknown;
+    selectedComparedContent?: { document: unknown; message: unknown };
 }

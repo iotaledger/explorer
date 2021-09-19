@@ -63,18 +63,22 @@ async function resolveDiff(
 
         const recepit = await client.resolveDiffHistory(document);
 
-        const recepitObj = recepit.toJSON();
-
         const diffChainData = [];
 
-        for (let i = 0; i < recepit.chainData().length; i++) {
+        const chainDate = recepit.chainData();
+
+        for (let i = 0; i < chainDate.length; i++) {
+            document.merge(chainDate[i]);
+
             const integrationMessage = {
-                message: recepitObj.chainData[i],
-                messageId: recepit.chainData()[i].messageId
+                message: chainDate[i],
+                document: document.toJSON(),
+                messageId: chainDate[i].messageId
             };
             diffChainData.push(integrationMessage);
         }
 
+        const recepitObj = recepit.toJSON();
         return { chainData: diffChainData, spam: recepitObj.spam };
     } catch (e) {
         return { error: e as string };
