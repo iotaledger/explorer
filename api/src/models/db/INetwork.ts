@@ -117,5 +117,10 @@ export interface INetwork {
     /**
      * An example for an Identity DID address.
      */
-     didExample?: string;
+    didExample?: string;
+
+    /**
+     * Url for faucet.
+     */
+    faucet?: string;
 }
