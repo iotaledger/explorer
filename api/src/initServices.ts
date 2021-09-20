@@ -123,7 +123,6 @@ export async function initServices(config: IConfiguration) {
     }
 
     const update = async () => {
-        await networkService.buildCache();
         const currencyService = new CurrencyService(config);
         const log = await currencyService.update();
         console.log(log);

@@ -8,7 +8,9 @@
   align-items: center;
   justify-content: center;
   width: fit-content;
-  padding: 3px 10px;
+  min-width: 150px;
+  height: 30px;
+  padding: 6px 10px;
   border-radius: 6px;
   background-color: $white;
 

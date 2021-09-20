@@ -1,0 +1,65 @@
+@import "../../../scss/variables";
+@import "../../../scss/mixins";
+@import "../../../scss/fonts";
+@import "../../../scss/layout.scss";
+
+.json-viewer {
+  font-family: "Courier New", Courier, monospace;
+  white-space: pre-wrap;
+
+  .string {
+    color: green;
+  }
+
+  .number {
+    color: darkorange;
+  }
+
+  .boolean {
+    color: blue;
+  }
+
+  .null {
+    color: magenta;
+  }
+
+  .key {
+    color: $gray-10;
+  }
+}
+
+.difference-select {
+  font-family: $metropolis !important;
+
+  select {
+    height: 26px !important;
+    font-size: 13px !important;
+  }
+
+  img {
+    top: 10px !important;
+  }
+}
+
+.compare-elements {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  .compare-icon {
+    align-self: center;
+    justify-self: center;
+    margin: 0 3px;
+  }
+
+  @include phone-down {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+
+    .compare-icon {
+      display: none;
+    }
+  }
+}
