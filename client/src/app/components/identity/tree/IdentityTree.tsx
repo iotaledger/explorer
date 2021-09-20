@@ -31,11 +31,11 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
                         messageContent={value.document}
                         documentContent={IdentityHelper.getDocumentFromIntegrationMsg(value.document)}
                         parentFirstMsg={undefined}
-                        onItemClick={selectedItem => {
+                        onItemClick={(selectedItem, compareWith) => {
                             this.setState({
                                 selectedMessageId: selectedItem.messageId ?? ""
                             });
-                            this.props.onItemClick(selectedItem);
+                            this.props.onItemClick(selectedItem, compareWith);
                         }}
                         contentState="doc"
                     />

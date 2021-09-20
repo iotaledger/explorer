@@ -8,6 +8,8 @@ import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
 import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
 import { IdentityTreeItemState } from "./IdentityTreeItemState";
 import { DiffMessage } from "../../../../models/api/IIdentityDiffHistoryResponse";
+import { IdentityHelper } from "../../../../helpers/identityHelper";
+import { IIdentityMessageWrapper } from "../../../../models/identity/IIdentityMessageWrapper";
 
 const BACKWARDS_CURVED_LINE = (
     <div className="backward-curved-line fade-animation">
@@ -104,8 +106,8 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                                         messageContent={value?.message}
                                         documentContent={value?.document}
                                         parentFirstMsg={this.props.firstMsg}
-                                        onItemClick={(messageId, content) => {
-                                            this.props.onItemClick(messageId, content);
+                                        onItemClick={content => {
+                                            this.props.onItemClick(content, this.getPreviousMessage(content.messageId));
                                         }}
                                         contentState="doc"
                                     />
@@ -228,6 +230,27 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
         }
     }
 
+    private getPreviousMessage(messageId: string): IIdentityMessageWrapper[] {
+        const diffChainData = this.state.diffHistory?.chainData;
+        if (!diffChainData) {
+            return [];
+        }
+
+        const index = diffChainData.findIndex((element: { messageId: string }) => element.messageId === messageId);
+
+        const previousMessages = [];
+        for (let i = index + 1; i < diffChainData.length; i++) {
+            previousMessages.push({
+                messageId: diffChainData[i].messageId,
+                content: {
+                    message: diffChainData[i].document,
+                    document: IdentityHelper.getDocumentFromIntegrationMsg(diffChainData[i].document)
+                }
+            });
+        }
+        return previousMessages;
+    }
+
     private shortenMsgId(msgId: string): string {
         if (msgId.length < 10) {
             return msgId;
@@ -268,8 +291,6 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
 
         // reverse the order (first message becomes the newest)
         res.chainData = res.chainData?.reverse();
-
-        console.log(res.chainData);
 
         // convert diff from string to object so it can be higlighted in json viewer
         for (let i = 0; i < res.chainData.length; i++) {

@@ -3,6 +3,10 @@
 @import "../../../scss/fonts";
 @import "../../../scss/layout.scss";
 
+.container {
+  width: 100%;
+}
+
 .json-viewer {
   font-family: "Courier New", Courier, monospace;
   white-space: pre-wrap;

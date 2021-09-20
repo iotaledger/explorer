@@ -7,5 +7,5 @@ export interface IIdentityMessageWrapper {
             updated?: string;
         };
     };
-    messageType: "diff" | "int";
+    messageType?: "diff" | "int";
 }

@@ -41,7 +41,7 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
 
     public render(): ReactNode {
         return (
-            <div>
+            <div className="container">
                 {/* --------- Header of JsonViewer --------- */}
                 <div className="identity-json-header">
                     <div className="compare-elements">

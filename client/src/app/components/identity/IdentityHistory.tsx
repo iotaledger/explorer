@@ -83,11 +83,13 @@ export default class IdentityHistory extends Component<
                                 <IdentityTree
                                     network={this.props.match.params.network}
                                     history={this.state.resolvedHistory}
-                                    onItemClick={selectedItem => {
+                                    onItemClick={(selectedItem, compareWith) => {
                                         this.setState({
                                             contentOfSelectedMessage: selectedItem.content,
                                             selectedMessageId: selectedItem.messageId,
-                                            compareWith: this.getPreviousMessages(selectedItem.messageId),
+                                            compareWith: compareWith
+                                                ? compareWith
+                                                : this.getPreviousMessages(selectedItem.messageId),
                                             selectedComparedContent: undefined,
                                             selectedComparedMessageId: undefined
                                         });
