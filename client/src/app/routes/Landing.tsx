@@ -392,9 +392,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps> & LandingProp
                                 </div>
                                 {this.state.networkConfig.faucet && (
                                     <div className="card--content description">
-                                        Get tokens from the Faucet:&nbsp;
+                                        <span>Get tokens from the Faucet:</span>
                                         <a
-                                            className="data-link"
+                                            className="data-link margin-l-t"
                                             href={this.state.networkConfig.faucet}
                                             target="_blank"
                                             rel="noopener noreferrer"
