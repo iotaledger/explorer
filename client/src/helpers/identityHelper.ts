@@ -1,4 +1,4 @@
-import { IdentityDocument } from './../models/api/IIdentityDidHistoryResponse';
+import { IdentityDocument } from "./../models/api/IIdentityDidHistoryResponse";
 
 export class IdentityHelper {
     /**

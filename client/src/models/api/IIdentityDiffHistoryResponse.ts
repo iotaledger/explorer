@@ -1,4 +1,4 @@
-import { IIdentityMessageWrapper } from './../identity/IIdentityMessageWrapper';
+import { IIdentityMessageWrapper } from "./../identity/IIdentityMessageWrapper";
 export interface IIdentityDiffHistoryResponse {
     chainData: IIdentityMessageWrapper[];
     spam: string[];
