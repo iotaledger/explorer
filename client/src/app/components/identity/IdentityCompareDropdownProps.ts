@@ -1,5 +1,6 @@
+import { IIdentityMessageWrapper } from './../../../models/identity/IIdentityMessageWrapper';
 export interface IdentityCompareDropdownProps {
-    selectedMessageId?: string;
-    messages: { messageId: string; content: { document: unknown; message: unknown } }[];
-    onSelectionChange(messageId?: string, content?: { document: unknown; message: unknown }): void;
+    selectedMessage?: IIdentityMessageWrapper;
+    messages: IIdentityMessageWrapper[];
+    onSelectionChange(selectedMessage?: IIdentityMessageWrapper): void;
 }

@@ -3,6 +3,8 @@ import "../../../scss/layout.scss";
 import React, { Component, Fragment, ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { IdentityHelper } from "../../../helpers/identityHelper";
+import { IIdentityMessageWrapper } from "../../../models/identity/IIdentityMessageWrapper";
 import { IdentityService } from "../../../services/identityService";
 import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
 import Spinner from "../Spinner";
@@ -10,8 +12,6 @@ import { IdentityHistoryProps } from "./IdentityHistoryProps";
 import { IdentityHistoryState } from "./IdentityHistoryState";
 import IdentityJsonCompare from "./IdentityJsonCompare";
 import IdentityTree from "./tree/IdentityTree";
-import { IdentityHelper } from "../../../helpers/identityHelper";
-import { IntegrationMessage } from "../../../models/api/IIdentityDidHistoryResponse";
 
 export default class IdentityHistory extends Component<
     RouteComponentProps<IdentityResolverProps>,
@@ -24,8 +24,7 @@ export default class IdentityHistory extends Component<
             loadingHistory: false,
             historyLoaded: false,
             resolvedHistory: {},
-            selectedMessageId: "",
-            contentOfSelectedMessage: { document: {}, message: {} },
+            selectedMessage: undefined,
             error: undefined,
             compareWith: []
         };
@@ -76,7 +75,7 @@ export default class IdentityHistory extends Component<
                         </div>
                     )}
 
-                    {/* --------- History Tree and JsonVeiwer --------- */}
+                    {/* --------- History Tree and JsonViewer --------- */}
                     {this.state.historyLoaded && !this.state.error && (
                         <div className="card--content row row--tablet-responsive">
                             <div className="history-tree margin-b-s">
@@ -85,33 +84,27 @@ export default class IdentityHistory extends Component<
                                     history={this.state.resolvedHistory}
                                     onItemClick={(selectedItem, compareWith) => {
                                         this.setState({
-                                            contentOfSelectedMessage: selectedItem.content,
-                                            selectedMessageId: selectedItem.messageId,
+                                            selectedMessage: selectedItem,
                                             compareWith: compareWith
-                                                ? compareWith
+                                                ? compareWith.concat(
+                                                      this.getPreviousMessages(selectedItem.parentMessageId ?? "", true)
+                                                  )
                                                 : this.getPreviousMessages(selectedItem.messageId),
-                                            selectedComparedContent: undefined,
-                                            selectedComparedMessageId: undefined
+                                            selectedComparisonMessage: undefined
                                         });
                                     }}
                                 />
                             </div>
                             <IdentityJsonCompare
                                 network={this.props.match.params.network}
-                                messageId={this.state.selectedMessageId ?? ""}
-                                content={this.state.contentOfSelectedMessage}
+                                selectedMessage={this.state.selectedMessage}
                                 compareWith={this.state.compareWith}
-                                onCompareSelectionChange={(messageId, content) => {
+                                onCompareSelectionChange={message => {
                                     this.setState({
-                                        selectedComparedMessageId: messageId,
-                                        selectedComparedContent: content
+                                        selectedComparisonMessage: message
                                     });
                                 }}
-                                selectedComparedContent={{
-                                    document: this.state.selectedComparedContent?.document,
-                                    message: this.state.selectedComparedContent?.message
-                                }}
-                                selectedComparedMessageId={this.state.selectedComparedMessageId}
+                                selectedComparisonMessage={this.state.selectedComparisonMessage}
                             />
                         </div>
                     )}
@@ -122,11 +115,10 @@ export default class IdentityHistory extends Component<
 
     /**
      * @param messageId message Id of integration message
-     * @returns a list messageId and content of all integration mesages previous to the given message
+     * @param inclusive include the searched message in the result.
+     * @returns a list messageId and content of all integration messages previous to the given message
      */
-    private getPreviousMessages(
-        messageId: string
-    ): { messageId: string; content: { document: unknown; message: unknown } }[] {
+    private getPreviousMessages(messageId: string, inclusive = false): IIdentityMessageWrapper[] {
         const integrationChainData = this.state.resolvedHistory?.integrationChainData;
         if (!integrationChainData) {
             return [];
@@ -137,13 +129,15 @@ export default class IdentityHistory extends Component<
         );
 
         const previousMessages = [];
-        for (let i = index + 1; i < integrationChainData.length; i++) {
+
+        let i = inclusive ? index : index + 1;
+
+        for (i; i < integrationChainData.length; i++) {
             previousMessages.push({
                 messageId: integrationChainData[i].messageId,
-                content: {
-                    message: integrationChainData[i].document,
-                    document: IdentityHelper.getDocumentFromIntegrationMsg(integrationChainData[i].document)
-                }
+                message: integrationChainData[i].document,
+                document: IdentityHelper.removeMetaDataFromDocument(integrationChainData[i].document),
+                isDiff: false
             });
         }
         return previousMessages;
@@ -188,10 +182,11 @@ export default class IdentityHistory extends Component<
                 historyLoaded: true,
                 resolvedHistory: res,
                 loadingHistory: false,
-                selectedMessageId: res.integrationChainData?.[0].messageId,
-                contentOfSelectedMessage: {
+                selectedMessage: {
+                    messageId: res.integrationChainData?.[0].messageId,
                     message: res.integrationChainData?.[0].document,
-                    document: IdentityHelper.getDocumentFromIntegrationMsg(res.integrationChainData?.[0].document)
+                    document: IdentityHelper.removeMetaDataFromDocument(res.integrationChainData?.[0].document),
+                    isDiff: false
                 }
             });
 

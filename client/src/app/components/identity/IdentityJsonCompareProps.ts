@@ -1,15 +1,28 @@
+import { IIdentityMessageWrapper } from "./../../../models/identity/IIdentityMessageWrapper";
 export interface IdentityJsonCompareProps {
-    messageId: string;
-    content: { document: unknown; message: unknown };
+    /**
+     * main message that is shown if no comparison is done.
+     */
+    selectedMessage?: IIdentityMessageWrapper;
 
+    /**
+     * network name
+     */
     network: string;
 
-    selectedComparedMessageId?: string;
-    selectedComparedContent?: { document: unknown; message: unknown };
-    compareWith?: {
-        messageId: string;
-        content: { document: unknown; message: unknown };
-    }[];
+    /**
+     * selected message in the compare dropdown.
+     */
+    selectedComparisonMessage?: IIdentityMessageWrapper;
 
-    onCompareSelectionChange(messageId?: string, content?: { document: unknown; message: unknown }): void;
+    /**
+     * list of message to compare the main message with which will be shown in the dropdown menu.
+     */
+    compareWith: IIdentityMessageWrapper[];
+
+    /**
+     * on message click from the compare dropdown menu.
+     * @param message message that has been clicked.
+     */
+    onCompareSelectionChange(message?: IIdentityMessageWrapper): void;
 }

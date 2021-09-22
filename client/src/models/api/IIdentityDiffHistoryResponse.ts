@@ -1,5 +1,6 @@
+import { IIdentityMessageWrapper } from './../identity/IIdentityMessageWrapper';
 export interface IIdentityDiffHistoryResponse {
-    chainData: { messageId: string; message: DiffMessage; document: DiffDocument }[];
+    chainData: IIdentityMessageWrapper[];
     spam: string[];
     error?: string;
 }

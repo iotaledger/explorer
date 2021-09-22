@@ -7,11 +7,11 @@ export interface IIdentityDidHistoryResponse {
 }
 
 export interface IntegrationChainData {
-    document: IntegrationMessage;
+    document: IdentityDocument;
     messageId: string;
 }
 
-export interface IntegrationMessage {
+export interface IdentityDocument {
     created?: string;
     updated?: string;
     previousMessageId?: string;

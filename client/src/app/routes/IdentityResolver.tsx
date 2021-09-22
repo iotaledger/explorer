@@ -263,7 +263,7 @@ class IdentityResolver extends AsyncComponent<
 
                                         <div className="card">
                                             <div className="card--header card--header">
-                                                <h2>Content</h2>
+                                                <h2>Current DID Document</h2>
                                             </div>
                                             <div className="card--content">
                                                 <div className="row middle margin-b-s row--tablet-responsive">

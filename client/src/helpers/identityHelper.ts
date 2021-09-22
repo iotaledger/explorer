@@ -1,4 +1,4 @@
-import { IntegrationMessage } from './../models/api/IIdentityDidHistoryResponse';
+import { IdentityDocument } from './../models/api/IIdentityDidHistoryResponse';
 
 export class IdentityHelper {
     /**
@@ -13,10 +13,10 @@ export class IdentityHelper {
         return `${msgId.slice(0, 7)}....${msgId.slice(-7)}`;
     }
 
-    public static getDocumentFromIntegrationMsg(message: IntegrationMessage) {
-        const document = { ...message };
-        delete document.proof;
-        delete document.previousMessageId;
-        return document;
+    public static removeMetaDataFromDocument(document: IdentityDocument) {
+        const doc = { ...document };
+        delete doc.proof;
+        delete doc.previousMessageId;
+        return doc;
     }
 }

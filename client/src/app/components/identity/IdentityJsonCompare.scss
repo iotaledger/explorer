@@ -66,22 +66,33 @@
       display: none;
     }
   }
+
+  @include desktop-down {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+
+    .compare-icon {
+      display: none;
+    }
+  }
 }
 
 .toggle-box {
-  height: 25px;
-  background-color: $white;
-  border-radius: 5px;
-  border: 1px solid $gray-header;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   flex-wrap: nowrap;
-  overflow: hidden;
+  align-items: center;
+  justify-content: space-between;
+  height: 25px;
   margin-right: 5px;
+  margin-left: 5px;
+  overflow: hidden;
+  border: 1px solid $gray-header;
+  border-radius: 5px;
+  background-color: $white;
   cursor: pointer;
 
-  margin-left: 5px;
   &:hover {
     border-color: $main-green-highlight;
   }
@@ -94,14 +105,14 @@
 
 .toggle-button {
   height: 100%;
-  font-family: $metropolis !important;
-  font-size: 0.9em;
   padding: 5px 5px;
   color: $gray-header;
+  font-family: $metropolis !important;
+  font-size: 0.9em;
 
   @include phone-down {
-    font-size: 0.7em;
     height: 50%;
+    font-size: 0.7em;
   }
 }
 
@@ -113,15 +124,15 @@
 .download-button {
   @include phone-down {
     height: 60px;
-    border-radius: 5px;
-    border: 1px solid $gray-header;
     padding: 0.88em 4px;
+    border: 1px solid $gray-header;
+    border-radius: 5px;
   }
 }
 
 .toggle-separator {
-  height: 100%;
   width: 1px;
+  height: 100%;
   background-color: $gray-header;
 
   @include phone-down {
@@ -129,7 +140,7 @@
     height: 1px;
   }
 
-  .noselect {
+  .no-select {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;

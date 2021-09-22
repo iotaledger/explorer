@@ -47,6 +47,12 @@
 }
 
 .dropdown-content {
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
   display: flex;
   position: absolute;
   top: 35px;
