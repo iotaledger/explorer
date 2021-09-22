@@ -22,6 +22,7 @@ import { IdentityResolverProps } from "./IdentityResolverProps";
 import { IdentityResolverState } from "./IdentityResolverState";
 
 import "./IdentityResolver.scss";
+import { IdentityHelper } from "../../helpers/identityHelper";
 
 class IdentityResolver extends AsyncComponent<
     RouteComponentProps<IdentityResolverProps> & { isSupported: boolean },
@@ -38,7 +39,7 @@ class IdentityResolver extends AsyncComponent<
     private readonly _tangleCacheService: TangleCacheService;
 
     /**
-     * placeholder when messageId is not avaiable.
+     * placeholder when messageId is not available.
      */
     private readonly EMPTY_MESSAGE_ID = "0".repeat(64);
 
@@ -87,13 +88,16 @@ class IdentityResolver extends AsyncComponent<
             return;
         }
 
-        this.setState({
-            resolvedIdentity: res,
-            isIdentityResolved: true,
-            latestMessageId: res.messageId ?? undefined
-        });
+        if (res.document) {
+            res.document = IdentityHelper.removeMetaDataFromDocument(res.document);
+            this.setState({
+                resolvedIdentity: res,
+                isIdentityResolved: true,
+                latestMessageId: res.messageId ?? undefined
+            });
 
-        await this.updateMessageDetails(res.messageId ?? "");
+            await this.updateMessageDetails(res.messageId ?? "");
+        }
     }
 
     /**
@@ -249,7 +253,8 @@ class IdentityResolver extends AsyncComponent<
                                                                                 ClipboardHelper.copy(
                                                                                     this.state.resolvedIdentity
                                                                                         ?.messageId
-                                                                                )}
+                                                                                )
+                                                                            }
                                                                             buttonType="copy"
                                                                             labelPosition="top"
                                                                         />
@@ -275,7 +280,7 @@ class IdentityResolver extends AsyncComponent<
                                                     )}
 
                                                     {this.state.resolvedIdentity && (
-                                                        <div>
+                                                        <div className="w100">
                                                             <div className="identity-json-header">
                                                                 <div>
                                                                     <IdentityMessageIdOverview
@@ -309,7 +314,8 @@ class IdentityResolver extends AsyncComponent<
                                                                 className="
                                                             card--value
                                                             card--value-textarea
-                                                            card--value-textarea__json"
+                                                            card--value-textarea__json
+                                                            "
                                                             >
                                                                 <JsonViewer
                                                                     json={JSON.stringify(

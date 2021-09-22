@@ -1,3 +1,4 @@
+import { IIdentityDocument } from "./../identity/IIdentityDocument";
 import { IResponse } from "./IResponse";
 
 export interface IIdentityDidResolveResponse extends IResponse{
@@ -10,5 +11,5 @@ export interface IIdentityDidResolveResponse extends IResponse{
     /**
      * Resolved DID Document
      */
-    document?: string;
+    document?: IIdentityDocument;
 }
