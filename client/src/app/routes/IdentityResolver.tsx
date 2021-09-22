@@ -6,6 +6,7 @@ import { ReactComponent as IdentityIcon } from "../../assets/identity-icon-hex.s
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../helpers/downloadHelper";
+import { IdentityHelper } from "../../helpers/identityHelper";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
 import { IdentityService } from "../../services/identityService";
 import { NetworkService } from "../../services/networkService";
@@ -22,7 +23,6 @@ import { IdentityResolverProps } from "./IdentityResolverProps";
 import { IdentityResolverState } from "./IdentityResolverState";
 
 import "./IdentityResolver.scss";
-import { IdentityHelper } from "../../helpers/identityHelper";
 
 class IdentityResolver extends AsyncComponent<
     RouteComponentProps<IdentityResolverProps> & { isSupported: boolean },
@@ -253,8 +253,7 @@ class IdentityResolver extends AsyncComponent<
                                                                                 ClipboardHelper.copy(
                                                                                     this.state.resolvedIdentity
                                                                                         ?.messageId
-                                                                                )
-                                                                            }
+                                                                                )}
                                                                             buttonType="copy"
                                                                             labelPosition="top"
                                                                         />
