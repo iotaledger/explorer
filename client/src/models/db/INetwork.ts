@@ -113,4 +113,9 @@ export interface INetwork {
      * An optional Example for a DID for the Identity tool
      */
     didExample?: string;
+
+    /**
+     * Url for faucet.
+     */
+    faucet?: string;
 }

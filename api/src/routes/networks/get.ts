@@ -31,7 +31,8 @@ export async function get(config: IConfiguration): Promise<INetworkGetResponse> 
                 order: n.order,
                 description: n.description,
                 bechHrp: n.bechHrp,
-                didExample: n.didExample
+                didExample: n.didExample,
+                faucet: n.faucet
             })
             )
             .sort((a, b) => a.order - b.order)
