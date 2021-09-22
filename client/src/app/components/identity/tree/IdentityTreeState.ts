@@ -1,4 +1,7 @@
+import { IIdentityMessageWrapper } from "./../../../../models/identity/IIdentityMessageWrapper";
 export interface IdentityTreeState {
-    // messageId of the selected item of the tree.
-    selectedMessageId: string;
+    /**
+     * selected item of the tree.
+     */
+    selectedMessage: IIdentityMessageWrapper;
 }

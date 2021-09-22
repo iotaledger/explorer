@@ -45,7 +45,7 @@ export async function get(
  * @param document integration document.
  * @param nodeUrl url of the network node.
  * @param permaNodeUrl url of permanode
- * @returns Promise
+ * @returns resolved diff chain and spam messages
  */
 async function resolveDiff(
     document: identity.Document,
@@ -61,21 +61,26 @@ async function resolveDiff(
         }
         const client = identity.Client.fromConfig(config);
 
-        const recepit = await client.resolveDiffHistory(document);
+        const receipt = await client.resolveDiffHistory(document);
 
-        const recepitObj = recepit.toJSON();
+        const receiptObj = receipt.toJSON();
 
         const diffChainData = [];
 
-        for (let i = 0; i < recepit.chainData().length; i++) {
+        const chainData = receipt.chainData();
+
+        for (let i = 0; i < chainData.length; i++) {
+            document.merge(chainData[i]);
+
             const integrationMessage = {
-                message: recepitObj.chainData[i],
-                messageId: recepit.chainData()[i].messageId
+                message: receiptObj.chainData[i],
+                document: document.toJSON(),
+                messageId: chainData[i].messageId
             };
             diffChainData.push(integrationMessage);
         }
 
-        return { chainData: diffChainData, spam: recepitObj.spam };
+        return { chainData: diffChainData, spam: receiptObj.spam };
     } catch (e) {
         return { error: e as string };
     }

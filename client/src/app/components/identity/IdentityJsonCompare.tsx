@@ -1,12 +1,13 @@
 import "./IdentityJsonCompare.scss";
+import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import ReactDiffViewer from "react-diff-viewer";
 import { HiDownload } from "react-icons/hi";
 import { DownloadHelper } from "../../../helpers/downloadHelper";
 import { JsonSyntaxHelper } from "../../../helpers/jsonSyntaxHelper";
-import { DiffMessage } from "../../../models/api/IIdentityDiffHistoryResponse";
 import IdentityCompareDropdown from "./IdentityCompareDropdown";
 import { IdentityJsonCompareProps } from "./IdentityJsonCompareProps";
+import { IdentityJsonCompareState } from "./IdentityJsonCompareState";
 import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
 
 const COMPARE_ICON = (
@@ -28,41 +29,91 @@ const COMPARE_ICON = (
     </svg>
 );
 
-class IdentityJsonCompare extends Component<IdentityJsonCompareProps> {
+class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJsonCompareState> {
+    constructor(props: IdentityJsonCompareProps) {
+        super(props);
+
+        this.state = {
+            toggleState: "doc"
+        };
+    }
+
     public render(): ReactNode {
         return (
-            <div>
+            <div className="container">
                 {/* --------- Header of JsonViewer --------- */}
                 <div className="identity-json-header">
                     <div className="compare-elements">
                         <IdentityMessageIdOverview
-                            status={(this.props.content as DiffMessage).diff ? "diff" : "integration"}
-                            messageId={this.props.messageId}
+                            status={this.props.selectedMessage?.isDiff ? "diff" : "integration"}
+                            messageId={this.props.selectedMessage?.messageId}
                             onClick={() => {
-                                window.location.href = `/${this.props.network}/message/${this.props.messageId}`;
+                                // eslint-disable-next-line max-len
+                                window.location.href = `/${this.props.network}/message/${this.props.selectedMessage?.messageId}`;
                             }}
                         />
-                        {!(this.props.content as DiffMessage).diff && (
-                            <div className="row">
-                                {COMPARE_ICON}
-                                <IdentityCompareDropdown
-                                    messages={this.props.compareWith ?? []}
-                                    selectedMessageId={this.props.selectedComparedMessageId}
-                                    onSelectionChange={(messageId, content) => {
-                                        this.props.onCompareSelectionChange(messageId, content);
-                                    }}
-                                />
+                        {!(this.props.selectedMessage?.isDiff && this.state.toggleState === "msg") && (
+                            <div>
+                                <div className="row">
+                                    {COMPARE_ICON}
+                                    <IdentityCompareDropdown
+                                        messages={this.props.compareWith ?? []}
+                                        selectedMessage={this.props.selectedComparisonMessage}
+                                        onSelectionChange={selectedMessage => {
+                                            this.props.onCompareSelectionChange(selectedMessage);
+                                        }}
+                                    />
+                                </div>
                             </div>
                         )}
                     </div>
 
-                    <a
-                        href={DownloadHelper.createJsonDataUrl(this.props.content)}
-                        download={DownloadHelper.filename(this.props.messageId, "json")}
-                        role="button"
-                    >
-                        <HiDownload />
-                    </a>
+                    <div className="row middle">
+                        {/* --------- Toggle Button --------- */}
+                        <div
+                            className="toggle-box no-select"
+                            onClick={e => {
+                                this.setState({
+                                    toggleState: this.state.toggleState === "doc" ? "msg" : "doc"
+                                });
+                                if (this.props.selectedMessage?.isDiff) {
+                                    this.props.onCompareSelectionChange();
+                                }
+                            }}
+                        >
+                            <div
+                                className={classNames("toggle-button", {
+                                    "toggle-button-active": this.state.toggleState === "doc"
+                                })}
+                            >
+                                Doc
+                            </div>
+                            <div className="toggle-separator" />
+                            <div
+                                className={classNames("toggle-button", {
+                                    "toggle-button-active": this.state.toggleState === "msg"
+                                })}
+                            >
+                                Msg
+                            </div>
+                        </div>
+                        {/* --------- Download Icon --------- */}
+                        <a
+                            className="download-button"
+                            href={DownloadHelper.createJsonDataUrl(
+                                this.state.toggleState === "doc"
+                                    ? this.props.selectedMessage?.document
+                                    : this.props.selectedMessage?.message
+                            )}
+                            download={DownloadHelper.filename(
+                                this.props.selectedMessage?.messageId ?? "message",
+                                "json"
+                            )}
+                            role="button"
+                        >
+                            <HiDownload size={20} />
+                        </a>
+                    </div>
                 </div>
 
                 {/* --------- Json Compare Viewer --------- */}
@@ -73,11 +124,30 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps> {
                     card--value-textarea__json"
                 >
                     <ReactDiffViewer
-                        newValue={JSON.stringify(this.props.content, null, 4)}
+                        newValue={JSON.stringify(
+                            this.state.toggleState === "doc"
+                                ? this.props.selectedMessage?.document
+                                : this.props.selectedMessage?.message,
+                            null,
+                            4
+                        )}
                         oldValue={
-                            this.props.selectedComparedContent
-                                ? JSON.stringify(this.props.selectedComparedContent, null, 4)
-                                : JSON.stringify(this.props.content, null, 4)
+                            this.props.selectedComparisonMessage?.message &&
+                            this.props.selectedComparisonMessage.document
+                                ? JSON.stringify(
+                                      this.state.toggleState === "doc"
+                                          ? this.props.selectedComparisonMessage.document
+                                          : this.props.selectedComparisonMessage.message,
+                                      null,
+                                      4
+                                  )
+                                : JSON.stringify(
+                                      this.state.toggleState === "doc"
+                                          ? this.props.selectedMessage?.document
+                                          : this.props.selectedMessage?.message,
+                                      null,
+                                      4
+                                  )
                         }
                         splitView={false}
                         disableWordDiff={true}

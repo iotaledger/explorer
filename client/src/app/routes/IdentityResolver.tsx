@@ -6,6 +6,7 @@ import { ReactComponent as IdentityIcon } from "../../assets/identity-icon-hex.s
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../helpers/downloadHelper";
+import { IdentityHelper } from "../../helpers/identityHelper";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
 import { IdentityService } from "../../services/identityService";
 import { NetworkService } from "../../services/networkService";
@@ -38,7 +39,7 @@ class IdentityResolver extends AsyncComponent<
     private readonly _tangleCacheService: TangleCacheService;
 
     /**
-     * placeholder when messageId is not avaiable.
+     * placeholder when messageId is not available.
      */
     private readonly EMPTY_MESSAGE_ID = "0".repeat(64);
 
@@ -87,13 +88,16 @@ class IdentityResolver extends AsyncComponent<
             return;
         }
 
-        this.setState({
-            resolvedIdentity: res,
-            isIdentityResolved: true,
-            latestMessageId: res.messageId ?? undefined
-        });
+        if (res.document) {
+            res.document = IdentityHelper.removeMetaDataFromDocument(res.document);
+            this.setState({
+                resolvedIdentity: res,
+                isIdentityResolved: true,
+                latestMessageId: res.messageId ?? undefined
+            });
 
-        await this.updateMessageDetails(res.messageId ?? "");
+            await this.updateMessageDetails(res.messageId ?? "");
+        }
     }
 
     /**
@@ -263,7 +267,7 @@ class IdentityResolver extends AsyncComponent<
 
                                         <div className="card">
                                             <div className="card--header card--header">
-                                                <h2>Content</h2>
+                                                <h2>Current DID Document</h2>
                                             </div>
                                             <div className="card--content">
                                                 <div className="row middle margin-b-s row--tablet-responsive">
@@ -275,7 +279,7 @@ class IdentityResolver extends AsyncComponent<
                                                     )}
 
                                                     {this.state.resolvedIdentity && (
-                                                        <div>
+                                                        <div className="w100">
                                                             <div className="identity-json-header">
                                                                 <div>
                                                                     <IdentityMessageIdOverview
@@ -309,7 +313,8 @@ class IdentityResolver extends AsyncComponent<
                                                                 className="
                                                             card--value
                                                             card--value-textarea
-                                                            card--value-textarea__json"
+                                                            card--value-textarea__json
+                                                            "
                                                             >
                                                                 <JsonViewer
                                                                     json={JSON.stringify(

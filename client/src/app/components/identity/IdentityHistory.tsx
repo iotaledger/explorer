@@ -3,6 +3,8 @@ import "../../../scss/layout.scss";
 import React, { Component, Fragment, ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { IdentityHelper } from "../../../helpers/identityHelper";
+import { IIdentityMessageWrapper } from "../../../models/identity/IIdentityMessageWrapper";
 import { IdentityService } from "../../../services/identityService";
 import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
 import Spinner from "../Spinner";
@@ -22,8 +24,7 @@ export default class IdentityHistory extends Component<
             loadingHistory: false,
             historyLoaded: false,
             resolvedHistory: {},
-            selectedMessageId: "",
-            contentOfSelectedMessage: {},
+            selectedMessage: undefined,
             error: undefined,
             compareWith: []
         };
@@ -74,37 +75,36 @@ export default class IdentityHistory extends Component<
                         </div>
                     )}
 
-                    {/* --------- History Tree and JsonVeiwer --------- */}
+                    {/* --------- History Tree and JsonViewer --------- */}
                     {this.state.historyLoaded && !this.state.error && (
                         <div className="card--content row row--tablet-responsive">
                             <div className="history-tree margin-b-s">
                                 <IdentityTree
                                     network={this.props.match.params.network}
                                     history={this.state.resolvedHistory}
-                                    onItemClick={(messageId, content) => {
+                                    onItemClick={(selectedItem, compareWith) => {
                                         this.setState({
-                                            contentOfSelectedMessage: content,
-                                            selectedMessageId: messageId,
-                                            compareWith: this.getPreviousMessages(messageId),
-                                            selectedComparedContent: undefined,
-                                            selectedComparedMessageId: undefined
+                                            selectedMessage: selectedItem,
+                                            compareWith: compareWith
+                                                ? compareWith.concat(
+                                                      this.getPreviousMessages(selectedItem.parentMessageId ?? "", true)
+                                                  )
+                                                : this.getPreviousMessages(selectedItem.messageId),
+                                            selectedComparisonMessage: undefined
                                         });
                                     }}
                                 />
                             </div>
                             <IdentityJsonCompare
                                 network={this.props.match.params.network}
-                                messageId={this.state.selectedMessageId ?? ""}
-                                content={this.state.contentOfSelectedMessage}
+                                selectedMessage={this.state.selectedMessage}
                                 compareWith={this.state.compareWith}
-                                onCompareSelectionChange={(messageId, content) => {
+                                onCompareSelectionChange={message => {
                                     this.setState({
-                                        selectedComparedMessageId: messageId,
-                                        selectedComparedContent: content
+                                        selectedComparisonMessage: message
                                     });
                                 }}
-                                selectedComparedContent={this.state.selectedComparedContent}
-                                selectedComparedMessageId={this.state.selectedComparedMessageId}
+                                selectedComparisonMessage={this.state.selectedComparisonMessage}
                             />
                         </div>
                     )}
@@ -115,9 +115,10 @@ export default class IdentityHistory extends Component<
 
     /**
      * @param messageId message Id of integration message
-     * @returns a list messageId and content of all integration mesages previous to the given message
+     * @param inclusive include the searched message in the result.
+     * @returns a list messageId and content of all integration messages previous to the given message
      */
-    private getPreviousMessages(messageId: string): { messageId: string; content: unknown }[] {
+    private getPreviousMessages(messageId: string, inclusive = false): IIdentityMessageWrapper[] {
         const integrationChainData = this.state.resolvedHistory?.integrationChainData;
         if (!integrationChainData) {
             return [];
@@ -128,10 +129,15 @@ export default class IdentityHistory extends Component<
         );
 
         const previousMessages = [];
-        for (let i = index + 1; i < integrationChainData.length; i++) {
+
+        let i = inclusive ? index : index + 1;
+
+        for (i; i < integrationChainData.length; i++) {
             previousMessages.push({
                 messageId: integrationChainData[i].messageId,
-                content: integrationChainData[i].document
+                message: integrationChainData[i].document,
+                document: IdentityHelper.removeMetaDataFromDocument(integrationChainData[i].document),
+                isDiff: false
             });
         }
         return previousMessages;
@@ -168,20 +174,26 @@ export default class IdentityHistory extends Component<
             return;
         }
 
-        // reverse the order (first message becomes the newest)
-        res.integrationChainData = res.integrationChainData?.reverse();
+        if (res.integrationChainData) {
+            // reverse the order (first message becomes the newest)
+            res.integrationChainData = res.integrationChainData?.reverse();
 
-        this.setState({
-            historyLoaded: true,
-            resolvedHistory: res,
-            loadingHistory: false,
-            selectedMessageId: res.integrationChainData?.[0].messageId,
-            contentOfSelectedMessage: res.integrationChainData?.[0].document
-        });
+            this.setState({
+                historyLoaded: true,
+                resolvedHistory: res,
+                loadingHistory: false,
+                selectedMessage: {
+                    messageId: res.integrationChainData?.[0].messageId,
+                    message: res.integrationChainData?.[0].document,
+                    document: IdentityHelper.removeMetaDataFromDocument(res.integrationChainData?.[0].document),
+                    isDiff: false
+                }
+            });
 
-        this.setState({
-            compareWith: this.getPreviousMessages(res.integrationChainData?.[0].messageId ?? "")
-        });
+            this.setState({
+                compareWith: this.getPreviousMessages(res.integrationChainData?.[0].messageId ?? "")
+            });
+        }
     }
 
     /**

@@ -2,6 +2,7 @@ import "./IdentityTree.scss";
 
 import React, { Component, ReactNode } from "react";
 
+import { IdentityHelper } from "../../../../helpers/identityHelper";
 import IdentityTreeItem from "./IdentityTreeItem";
 import { IdentityTreeProps } from "./IdentityTreeProps";
 import { IdentityTreeState } from "./IdentityTreeState";
@@ -10,8 +11,19 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
     constructor(props: IdentityTreeProps) {
         super(props);
 
+        const firstMsg = this.props.history?.integrationChainData?.[0];
+
+        if (!firstMsg) {
+            return;
+        }
+
         this.state = {
-            selectedMessageId: this.props.history?.integrationChainData?.[0].messageId ?? ""
+            selectedMessage: {
+                message: firstMsg.document,
+                document: IdentityHelper.removeMetaDataFromDocument(firstMsg.document),
+                messageId: firstMsg.messageId,
+                isDiff: false
+            }
         };
     }
 
@@ -21,19 +33,23 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
                 {this.props.history?.integrationChainData?.map((value, index) => (
                     <IdentityTreeItem
                         network={this.props.network}
-                        messageId={value?.messageId}
+                        itemMessage={{
+                            message: value.document,
+                            document: IdentityHelper.removeMetaDataFromDocument(value.document),
+                            messageId: value.messageId,
+                            isDiff: false
+                        }}
                         key={index}
                         lastMsg={index === (this.props.history?.integrationChainData?.length ?? 0) - 1}
                         nested={false}
                         firstMsg={index === 0}
-                        selectedMessageId={this.state.selectedMessageId}
-                        content={value.document}
+                        selectedMessage={this.state.selectedMessage}
                         parentFirstMsg={undefined}
-                        onItemClick={(messageId, content) => {
+                        onItemClick={(selectedItem, compareWith) => {
                             this.setState({
-                                selectedMessageId: messageId ?? ""
+                                selectedMessage: selectedItem ?? ""
                             });
-                            this.props.onItemClick(messageId ?? "", content);
+                            this.props.onItemClick(selectedItem, compareWith);
                         }}
                     />
                 ))}
