@@ -177,9 +177,6 @@
     flex-direction: row;
     align-items: center;
     min-height: 50px;
-    // margin: 20px 26px 0 26px;
-    padding-bottom: 32px;
-    // border-bottom: 1px solid $gray-noon;
 
     @include phone-down {
       min-height: unset;

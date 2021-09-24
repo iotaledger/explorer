@@ -13,8 +13,8 @@
     min-height: 300px;
     margin-top: $navbar-height-desktop;
 
-    @media (max-width: 1200px) {
-      margin-top: $navbar-height-mobile;
+    @include desktop-down {
+      margin-top: calc(2 * #{$navbar-height-mobile});
     }
   }
 

@@ -18,61 +18,49 @@
       flex-direction: column;
       max-width: $desktop-width;
 
-      @include tablet-down {
-        height: 550px;
-      }
-
       .header {
         display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
         min-height: 446px;
-        padding-top: 50px;
-        padding-bottom: 50px;
+        padding: 50px 0;
 
-        @include tablet-down {
+        @include desktop-down {
           flex-direction: column;
-          align-items: flex-start;
+          align-items: inherit;
+          justify-content: space-between;
+          padding-top: 133px;
           padding-bottom: 0;
         }
 
-        @include phone-down {
-          justify-content: flex-start;
-          row-gap: 12rem;
-        }
-
-        @media (max-width: 1052px) {
-          padding-right: 23px;
-          padding-left: 23px;
-        }
-
         .header--title {
-          h2 {
-            @include font-size(16px, 24px);
+          margin-right: 24px;
 
-            color: $mint-green-6;
-            text-transform: uppercase;
+          @include desktop-down {
+            margin: 0;
           }
 
           h1 {
             @include font-size(48px, 58px);
 
-            font-family: $metropolis;
-            letter-spacing: 0.5px;
+            font-family: $metropolis-semi-bold;
+            letter-spacing: 0.02em;
 
             @include phone-down {
               @include font-size(32px, 36px);
             }
           }
 
-          @include tablet-down {
-            padding-top: 127px;
-            padding-left: 24px;
-          }
-        }
+          h2 {
+            @include font-size(16px, 24px);
 
-        @include desktop-down {
-          padding-top: 20px;
+            color: $mint-green-6;
+            font-family: $metropolis-bold;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+          }
         }
 
         .switcher {
@@ -80,18 +68,22 @@
         }
 
         .info-boxes {
-          @include tablet-down {
-            grid-template-columns: auto auto;
-            width: 100%;
-            padding: 12px;
-          }
-
           display: grid;
           grid-template-columns: auto auto auto;
           padding: 24px;
           border-radius: 6px;
           background: var(--header-box-bg);
           backdrop-filter: blur(20px);
+
+          @include desktop-down {
+            margin: 0 calc(-1 * #{$inner-padding});
+            margin-top: 120px;
+            border-radius: 0;
+          }
+
+          @include tablet-down {
+            grid-template-columns: auto auto;
+          }
 
           .info-box {
             display: flex;
@@ -124,16 +116,16 @@
             .info-box--value {
               @include font-size(24px);
 
-              @include tablet-down {
-                text-align: center;
-              }
-
               color: var(--body-color);
               font-family: $inter;
               font-weight: 600;
               text-decoration: none;
               text-transform: uppercase;
-              white-space: nowrap;
+              white-space: break-spaces;
+
+              @include tablet-down {
+                text-align: center;
+              }
             }
 
             .info-box--action {
@@ -237,33 +229,24 @@
             margin-right: 30px;
             overflow: hidden;
 
-            &.section {
-              h2 {
-                margin-bottom: 0;
-                padding-top: 0;
-                padding-left: 0;
-              }
-            }
-
             @include desktop-down {
               width: 100%;
               margin-top: 20px;
               margin-right: 0;
             }
 
-            &:last-child {
-              margin-right: 0;
+            h2 {
+              margin-bottom: 0;
+              padding-top: 0;
+              padding-left: 0;
             }
 
-            .section--header {
-              margin-bottom: 0;
+            .feed--actions {
+              display: flex;
+              position: relative;
 
-              button {
-                margin-left: 28px;
-              }
-
-              @include tablet-down {
-                padding: 0 24px;
+              button:first-child {
+                margin-right: 16px;
               }
             }
 
@@ -276,7 +259,7 @@
                   left: 0;
                   width: 100%;
                   height: 100vh;
-                  background: rgba(19, 31, 55, 0.75);
+                  background: rgba(9, 19, 38, 0.4);
                 }
               }
 
@@ -412,8 +395,7 @@
 
                 @include tablet-down {
                   display: block;
-                  padding: 24px 24px;
-                  box-shadow: 0 2px 6px rgba(19, 31, 55, 0.12);
+                  padding: 24px;
                 }
 
                 &:hover {
@@ -501,33 +483,55 @@
   }
 
   .header-wrapper {
+    position: relative;
+    z-index: 0;
+    padding: 0 $inner-padding;
+    overflow: hidden;
     background: var(--header-bg);
 
-    .inner {
-      .header {
-        background-image: var(--bubbles-bg-image);
-        background-repeat: no-repeat;
-        background-position: 55%;
-        background-size: cover;
+    &::after,
+    &::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 250px;
+      height: 200px;
+    }
 
-        @include tablet-down {
-          background-size: cover;
-        }
+    &::before {
+      top: 75px;
+      right: 50%;
+      transform: translateX(300%);
+      background: var(--bubble-2);
+      background-repeat: no-repeat;
+      background-size: contain;
+
+      @include desktop-down {
+        top: 200px;
+        right: -130px;
+        bottom: inherit;
+        transform: none;
+      }
+    }
+
+    &::after {
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-100%);
+      background: var(--bubble-1);
+      background-repeat: no-repeat;
+      background-size: contain;
+
+      @include desktop-down {
+        top: 0;
+        bottom: inherit;
+        left: 0;
+        transform: translate(-130px, -40px);
       }
     }
   }
 
   .feeds-wrapper {
-    padding: 44px 20px;
-
-    @include desktop-down {
-      padding: 44px 0;
-    }
-
-    .inner {
-      @include desktop-down {
-        max-width: 98%;
-      }
-    }
+    padding: 44px $inner-padding;
   }
 }

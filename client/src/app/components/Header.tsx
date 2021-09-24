@@ -1,22 +1,18 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
+import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
 import { ReactComponent as CloseIcon } from "./../../assets/close.svg";
 import { ReactComponent as DarkModeIcon } from "./../../assets/dark-mode.svg";
-import { ReactComponent as LightModeIcon } from "./../../assets/light-mode.svg";
 import { ReactComponent as HamburgerIcon } from "./../../assets/hamburger.svg";
-import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
-
-import closeIcon from "../../assets/close.svg";
-import darkMode from "../../assets/dark-mode.svg";
-import hamburgerIcon from "../../assets/hamburger.svg";
-import lightMode from "../../assets/light-mode.svg";
-import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
+import { ReactComponent as LightModeIcon } from "./../../assets/light-mode.svg";
 import FiatSelector from "./FiatSelector";
 import "./Header.scss";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
 import NetworkSwitcher from "./NetworkSwitcher";
+
 
 /**
  * Component which will show the header.

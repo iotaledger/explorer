@@ -2,9 +2,9 @@ import { Units, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
-import filterIcon from "../../assets/filter.svg";
-import pauseIcon from "../../assets/pause.svg";
-import playIcon from "../../assets/play.svg";
+import { ReactComponent as FilterIcon } from "../../assets/filter.svg";
+import { ReactComponent as PauseIcon } from "../../assets/pause.svg";
+import { ReactComponent as PlayIcon } from "../../assets/play.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { RouteBuilder } from "../../helpers/routeBuilder";
 import { INetwork } from "../../models/db/INetwork";
@@ -168,7 +168,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 <div className="feed section">
                                     <div className="section--header row space-between">
                                         <h2>Latest messages</h2>
-                                        <div className="relative">
+                                        <div className="feed--actions">
                                             <button
                                                 type="button"
                                                 onClick={() => {
@@ -178,9 +178,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     });
                                                 }}
                                             >
-                                                {this.state.isFeedPaused
-                                                    ? (<img src={playIcon} alt="Feed messages" />)
-                                                    : (<img src={pauseIcon} alt="Pause feeding messages" />)}
+                                                {this.state.isFeedPaused ? <PlayIcon /> : <PauseIcon />}
                                             </button>
                                             <button
                                                 type="button"
@@ -188,7 +186,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     this.setState({ isFilterExpanded: !this.state.isFilterExpanded });
                                                 }}
                                             >
-                                                <img src={filterIcon} alt="Settings" />
+                                                <FilterIcon />
                                             </button>
                                             {this.state.isFilterExpanded && (
                                                 <div className="filter-wrapper">

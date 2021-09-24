@@ -5,9 +5,10 @@
   --body-color: #{$gray-9};
   --navbar-bg: rgba(255, 255, 255, 0.2);
   --header-bg: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
-  --bubbles-bg-image: url('../assets/bubbles.svg');
+  --bubble-1: url('../assets/bubble-1.svg');
+  --bubble-2: url('../assets/bubble-2.svg');
   --header-color: #{$gray-6};
-  --header-box-bg: #{$white};
+  --header-box-bg: rgba(255, 255, 255, 0.6);
   --header-label-color: #{$gray-midnight};
   --header-icon-color: #{$gray-7};
   --header-svg-bg: #{$gray-2};
@@ -27,9 +28,10 @@
     --body-color: #{$white};
     --navbar-bg: rgba(6, 16, 35, 0.2);
     --header-bg: linear-gradient(180deg, #{$gray-7} 0%, #{$gray-9} 100%);
-    --bubbles-bg-image: url('../assets/bubbles-dark.svg');
+    --bubble-1: url('../assets/bubble-1-darkmode.svg');
+    --bubble-2: url('../assets/bubble-2-darkmode.svg');
     --header-color: #{$gray-5};
-    --header-box-bg: #06102399;
+    --header-box-bg: rgba(6, 16, 35, 0.6);
     --header-label-color: #{$gray-3};
     --header-icon-color: #{$gray-5};
     --header-svg-bg: #202e4a;
