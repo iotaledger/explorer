@@ -1,11 +1,10 @@
-import { CONFLICT_REASON_STRINGS, Converter, Ed25519Address, ED25519_ADDRESS_TYPE, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, MILESTONE_PAYLOAD_TYPE, REFERENCE_UNLOCK_BLOCK_TYPE, serializeMessage, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper, WriteStream } from "@iota/iota.js";
+import { CONFLICT_REASON_STRINGS, Converter, Ed25519Address, ED25519_ADDRESS_TYPE, IMessage, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, MILESTONE_PAYLOAD_TYPE, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper, WriteStream } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { DownloadHelper } from "../../../helpers/downloadHelper";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 import { NetworkService } from "../../../services/networkService";
@@ -21,12 +20,13 @@ import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
 import MessageTangleState from "../../components/MessageTangleState";
 import Modal from "../../components/Modal";
+import { ModalIconType } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
+import Switcher from "../../components/Switcher";
 import messageJSON from "./../../../assets/modals/message.json";
 import "./Message.scss";
 import { MessageRouteProps } from "./MessageRouteProps";
 import { MessageState } from "./MessageState";
-
 /**
  * Component which will show the message page.
  */
@@ -72,8 +72,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
         this.state = {
             messageTangleStatus: "pending",
             childrenBusy: true,
-            dataUrls: {},
-            selectedDataUrl: "json",
             advancedMode: this._settingsService.get().advancedMode ?? false
         };
     }
@@ -94,140 +92,15 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 behavior: "smooth"
             });
 
-            const writeStream = new WriteStream();
-            serializeMessage(writeStream, result.message);
-            const finalBytes = writeStream.finalBytes();
-
-            const dataUrls = {
-                json: DownloadHelper.createJsonDataUrl(result.message),
-                bin: DownloadHelper.createBinaryDataUrl(finalBytes),
-                base64: DownloadHelper.createBase64DataUrl(finalBytes),
-                hex: DownloadHelper.createHexDataUrl(finalBytes)
-            };
-
             window.history.replaceState(undefined, window.document.title, `/${this.props.match.params.network
                 }/message/${result.includedMessageId ?? this.props.match.params.messageId}`);
 
-            // Prepare Transaction Payload data
-            const inputs: (IUTXOInput & {
-                outputHash: string;
-                isGenesis: boolean;
-                transactionUrl: string;
-                transactionAddress: IBech32AddressDetails;
-                signature: string;
-                publicKey: string;
-                amount: number;
-            })[] = [];
-            const outputs = [];
-            let transferTotal = 0;
-            const unlockAddresses: IBech32AddressDetails[] = [];
-
-            if (result.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                const GENESIS_HASH = "0".repeat(64);
-
-                const signatureBlocks: ISignatureUnlockBlock[] = [];
-                for (let i = 0; i < result.message.payload.unlockBlocks.length; i++) {
-                    if (result.message.payload.unlockBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE) {
-                        const sigUnlockBlock = result.message.payload.unlockBlocks[i] as ISignatureUnlockBlock;
-                        signatureBlocks.push(sigUnlockBlock);
-                    } else if (result.message.payload.unlockBlocks[i].type === REFERENCE_UNLOCK_BLOCK_TYPE) {
-                        const refUnlockBlock = result.message.payload.unlockBlocks[i] as IReferenceUnlockBlock;
-                        signatureBlocks.push(
-                            result.message.payload.unlockBlocks[refUnlockBlock.reference] as ISignatureUnlockBlock
-                        );
-                    }
-                }
-
-                for (let i = 0; i < signatureBlocks.length; i++) {
-                    unlockAddresses.push(
-                        Bech32AddressHelper.buildAddress(
-                            this._bechHrp,
-                            Converter.bytesToHex(
-                                new Ed25519Address(Converter.hexToBytes(signatureBlocks[i].signature.publicKey))
-                                    .toAddress()
-                            ),
-                            signatureBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE
-                                ? ED25519_ADDRESS_TYPE : undefined
-                        )
-                    );
-                }
-
-                for (let i = 0; i < result.message.payload.essence.inputs.length; i++) {
-                    const input = result.message.payload.essence.inputs[i];
-                    const isGenesis = input.transactionId === GENESIS_HASH;
-                    const writeOutputStream = new WriteStream();
-                    writeOutputStream.writeUInt16("transactionOutputIndex", input.transactionOutputIndex);
-                    const outputHash = input.transactionId + writeOutputStream.finalHex();
-                    const transactionOutputIndex = input.transactionOutputIndex;
-                    const transactionResult = await this._tangleCacheService.search(
-                        this.props.match.params.network, input.transactionId);
-                    let amount = 0;
-                    if (transactionResult?.message && transactionResult?.message.payload?.type ===
-                        TRANSACTION_PAYLOAD_TYPE) {
-                        amount = transactionResult.message.payload?.essence.outputs[transactionOutputIndex].amount;
-                    }
-                    inputs.push({
-                        ...input,
-                        amount,
-                        isGenesis,
-                        outputHash,
-                        transactionUrl: `/${this.props.match.params.network}/search/${outputHash}`,
-                        transactionAddress: unlockAddresses[i],
-                        signature: signatureBlocks[i].signature.signature,
-                        publicKey: signatureBlocks[i].signature.publicKey
-                    });
-                }
-
-                let remainderIndex = 1000;
-                for (let i = 0; i < result.message.payload.essence.outputs.length; i++) {
-                    if (result.message.payload.essence.outputs[i].type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
-                        result.message.payload.essence.outputs[i].type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) {
-                        const address = Bech32AddressHelper.buildAddress(
-                            this._bechHrp,
-                            result.message.payload.essence.outputs[i].address.address,
-                            result.message.payload.essence.outputs[i].address.type);
-                        const isRemainder = inputs.some(input => input.transactionAddress.bech32 === address.bech32);
-                        outputs.push({
-                            index: isRemainder ? (remainderIndex++) + i : i,
-                            type: result.message.payload.essence.outputs[i].type,
-                            address,
-                            amount: result.message.payload.essence.outputs[i].amount,
-                            isRemainder
-                        });
-                        if (!isRemainder) {
-                            transferTotal += result.message.payload.essence.outputs[i].amount;
-                        }
-                    }
-                }
-
-                for (let i = 0; i < inputs.length; i++) {
-                    const outputResponse = await this._tangleCacheService.outputDetails(
-                        this.props.match.params.network, inputs[i].outputHash
-                    );
-
-                    if (outputResponse?.output) {
-                        inputs[i].transactionAddress = Bech32AddressHelper.buildAddress(
-                            this._bechHrp,
-                            outputResponse.output.address.address,
-                            outputResponse.output.address.type
-                        );
-                        inputs[i].transactionUrl =
-                            `/${this.props.match.params.network}/message/${outputResponse.messageId}`;
-                    }
-                }
-
-                outputs.sort((a, b) => a.index - b.index);
-            }
+            await this.getInputsAndOutputs(result?.message);
 
             this.setState({
                 paramMessageId: this.props.match.params.messageId,
                 actualMessageId: result.includedMessageId ?? this.props.match.params.messageId,
-                message: result.message,
-                dataUrls,
-                inputs,
-                outputs,
-                unlockAddresses,
-                transferTotal
+                message: result.message
             }, async () => {
                 await this.updateMessageDetails();
             });
@@ -257,363 +130,342 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
             <div className="message">
                 <div className="wrapper">
                     <div className="inner">
-                        <div className="message--header">
+                        <div className="message--header ">
                             <div className="row middle">
                                 <h1>
                                     Message
                                 </h1>
-                                <Modal icon="dots" data={messageJSON} />
+                                <Modal icon={ModalIconType.Dots} data={messageJSON} />
                             </div>
-                            <div className="message--header__switch">
-                                <span>Advanced View</span>
-                                <label className="switch">
-                                    <input
-                                        type="checkbox"
-                                        className="margin-l-t"
-                                        checked={this.state.advancedMode}
-                                        onChange={e => this.setState(
-                                            {
-                                                advancedMode: e.target.checked
-                                            },
-                                            () => this._settingsService.saveSingle(
-                                                "advancedMode",
-                                                this.state.advancedMode))}
-                                    />
-                                    <span className="slider round" />
-                                </label>
-                            </div>
+                            <Switcher
+                                label="Advanced View"
+                                checked={this.state.advancedMode}
+                                onToggle={e => this.setState(
+                                    {
+                                        advancedMode: e.target.checked
+                                    },
+                                    () => this._settingsService.saveSingle(
+                                        "advancedMode",
+                                        this.state.advancedMode))}
+                            />
                         </div>
-                        <div className="top">
-                            <div className="sections">
-                                <div className="section">
-                                    <div
-                                        className={classNames(
-                                            "section--header",
-                                            "section--header__space-between",
-                                            "section--header__tablet-responsive"
-                                        )}
-                                    >
-                                        <div className="row middle">
-                                            <h2>
-                                                General
-                                            </h2>
-                                            <Modal icon="info" data={messageJSON} />
-                                        </div>
+                        <div className="sections">
 
-                                        <MessageTangleState
-                                            network={this.props.match.params.network}
-                                            status={this.state.messageTangleStatus}
-                                            milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
-                                                this.state.metadata?.milestoneIndex}
-                                            onClick={this.state.metadata?.referencedByMilestoneIndex
-                                                ? () => this.props.history.push(
-                                                    `/${this.props.match.params.network
-                                                    }/search/${this.state.metadata?.referencedByMilestoneIndex}`)
-                                                : undefined}
+                            <div className="section">
+                                <div
+                                    className={classNames(
+                                        "section--header",
+                                        "section--header__space-between",
+                                        "section--header__tablet-responsive"
+                                    )}
+                                >
+                                    <div className="row middle">
+                                        <h2>
+                                            General
+                                        </h2>
+                                        <Modal icon={ModalIconType.Info} data={messageJSON} />
+                                    </div>
+
+                                    <MessageTangleState
+                                        network={this.props.match.params.network}
+                                        status={this.state.messageTangleStatus}
+                                        milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
+                                            this.state.metadata?.milestoneIndex}
+                                        onClick={this.state.metadata?.referencedByMilestoneIndex
+                                            ? () => this.props.history.push(
+                                                `/${this.props.match.params.network
+                                                }/search/${this.state.metadata?.referencedByMilestoneIndex}`)
+                                            : undefined}
+                                    />
+                                </div>
+                                <div className="section--content">
+                                    <div className="section--label">
+                                        Message ID
+                                    </div>
+                                    <div className="section--value section--value__code featured row middle">
+                                        <span className="margin-r-t">
+                                            {this.state.actualMessageId}
+                                        </span>
+                                        <MessageButton
+                                            onClick={() => ClipboardHelper.copy(
+                                                this.state.actualMessageId
+                                            )}
+                                            buttonType="copy"
+                                            labelPosition="top"
                                         />
                                     </div>
-                                    <div className="section--content">
-                                        <div className="section--label">
-                                            Message ID
-                                        </div>
-                                        <div className="section--value section--value__code featured row middle">
-                                            <span className="margin-r-t">
-                                                {this.state.actualMessageId}
-                                            </span>
-                                            <MessageButton
-                                                onClick={() => ClipboardHelper.copy(
-                                                    this.state.actualMessageId
-                                                )}
-                                                buttonType="copy"
-                                                labelPosition="top"
-                                            />
-                                        </div>
 
-                                        {this.state.paramMessageId !== this.state.actualMessageId && (
+                                    {this.state.paramMessageId !== this.state.actualMessageId && (
+                                        <React.Fragment>
+                                            <div className="section--label">
+                                                Transaction Id
+                                            </div>
+                                            <div className="section--value section--value__secondary row middle">
+                                                <span className="margin-r-t">{this.state.paramMessageId}</span>
+                                                <MessageButton
+                                                    onClick={() => ClipboardHelper.copy(
+                                                        this.state.paramMessageId
+                                                    )}
+                                                    buttonType="copy"
+                                                    labelPosition="top"
+                                                />
+                                            </div>
+                                        </React.Fragment>
+                                    )}
+                                    <div className="section--label">
+                                        Payload Type
+                                    </div>
+                                    <div className="section--value row middle">
+                                        {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                                            ("Transaction")}
+                                        {this.state.message?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
+                                            ("Milestone")}
+                                        {this.state.message?.payload?.type === INDEXATION_PAYLOAD_TYPE &&
+                                            ("Index")}
+                                        {this.state.message?.payload?.type === undefined &&
+                                            ("No Payload")}
+                                    </div>
+                                    {this.state.advancedMode && (
+                                        <React.Fragment>
+                                            <div className="section--label">
+                                                Nonce
+                                            </div>
+                                            <div className="section--value row middle">
+                                                <span className="margin-r-t">{this.state.message?.nonce}</span>
+                                            </div>
+                                        </React.Fragment>
+                                    )}
+                                    {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                                        this.state.transferTotal && (
                                             <React.Fragment>
                                                 <div className="section--label">
-                                                    Transaction Id
-                                                </div>
-                                                <div className="section--value section--value__secondary row middle">
-                                                    <span className="margin-r-t">{this.state.paramMessageId}</span>
-                                                    <MessageButton
-                                                        onClick={() => ClipboardHelper.copy(
-                                                            this.state.paramMessageId
-                                                        )}
-                                                        buttonType="copy"
-                                                        labelPosition="top"
-                                                    />
-                                                </div>
-                                            </React.Fragment>
-                                        )}
-                                        <div className="section--label">
-                                            Payload Type
-                                        </div>
-                                        <div className="section--value row middle">
-                                            {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-                                                ("Transaction")}
-                                            {this.state.message?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
-                                                ("Milestone")}
-                                            {this.state.message?.payload?.type === INDEXATION_PAYLOAD_TYPE &&
-                                                ("Index")}
-                                            {this.state.message?.payload?.type === undefined &&
-                                                ("No Payload")}
-                                        </div>
-                                        {this.state.advancedMode && (
-                                            <React.Fragment>
-                                                <div className="section--label">
-                                                    Nonce
+                                                    Value
                                                 </div>
                                                 <div className="section--value row middle">
-                                                    <span className="margin-r-t">{this.state.message?.nonce}</span>
+                                                    {UnitsHelper.formatUnits(this.state.transferTotal,
+                                                        UnitsHelper.calculateBest(this.state.transferTotal))}
+                                                    {" "}
+                                                    (<FiatValue value={this.state.transferTotal} />)
                                                 </div>
                                             </React.Fragment>
                                         )}
-                                        {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-                                            this.state.transferTotal && (
-                                                <React.Fragment>
-                                                    <div className="section--label">
-                                                        Value
-                                                    </div>
-                                                    <div className="section--value row middle">
-                                                        {UnitsHelper.formatUnits(this.state.transferTotal,
-                                                            UnitsHelper.calculateBest(this.state.transferTotal))}
-                                                        {" "}
-                                                        (<FiatValue value={this.state.transferTotal} />)
-                                                    </div>
-                                                </React.Fragment>
-                                            )}
-                                    </div>
                                 </div>
+                            </div>
 
 
-                                {this.state.message?.payload && (
-                                    <React.Fragment>
-                                        {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE &&
-                                            this.state.inputs &&
-                                            this.state.outputs &&
-                                            this.state.transferTotal &&
-                                            this.state.unlockAddresses &&
-                                            (
-                                                <div className="section">
-                                                    <div className="section--header row space-between">
-                                                        <div className="row middle">
-                                                            <h2>
-                                                                Transaction Payload
-                                                            </h2>
-                                                            <Modal icon="info" data={messageJSON} />
-                                                        </div>
-                                                        <span className="transfer-value">
-                                                            {UnitsHelper.formatUnits(this.state.transferTotal,
-                                                                UnitsHelper.calculateBest(this.state.transferTotal))}
-                                                            <FiatValue value={this.state.transferTotal} />
+                            {this.state.message?.payload && (
+                                <React.Fragment>
+                                    {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE &&
+                                        this.state.inputs &&
+                                        this.state.outputs &&
+                                        this.state.transferTotal &&
+                                        this.state.unlockAddresses &&
+                                        (
+                                            <div className="section">
 
-                                                        </span>
-                                                    </div>
 
-                                                    <div className="transaction-payload-wrapper">
-                                                        <TransactionPayload
-                                                            network={this.props.match.params.network}
-                                                            history={this.props.history}
-                                                            inputs={this.state.inputs}
-                                                            outputs={this.state.outputs}
-                                                            unlockAddresses={this.state.unlockAddresses}
-                                                            transferTotal={this.state.transferTotal}
-                                                        />
-                                                    </div>
-
-                                                    {this.state.message.payload.essence.payload && (
-                                                        <div className="section">
-                                                            <IndexationPayload
-                                                                network={this.props.match.params.network}
-                                                                history={this.props.history}
-                                                                payload={this.state.message.payload.essence.payload}
-                                                                advancedMode={this.state.advancedMode}
-                                                            />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
-                                        {this.state.message.payload.type === MILESTONE_PAYLOAD_TYPE && (
-                                            <React.Fragment>
-                                                <div className="section">
-                                                    <MilestonePayload
+                                                <div className="transaction-payload-wrapper">
+                                                    <TransactionPayload
                                                         network={this.props.match.params.network}
                                                         history={this.props.history}
-                                                        payload={this.state.message.payload}
-                                                        advancedMode={this.state.advancedMode}
+                                                        inputs={this.state.inputs}
+                                                        outputs={this.state.outputs}
+                                                        unlockAddresses={this.state.unlockAddresses}
+                                                        transferTotal={this.state.transferTotal}
                                                     />
                                                 </div>
-                                                {this.state.message.payload.receipt && (
+
+                                                {this.state.message.payload.essence.payload && (
                                                     <div className="section">
-                                                        <ReceiptPayload
+                                                        <IndexationPayload
                                                             network={this.props.match.params.network}
                                                             history={this.props.history}
-                                                            payload={this.state.message.payload.receipt}
+                                                            payload={this.state.message.payload.essence.payload}
                                                             advancedMode={this.state.advancedMode}
                                                         />
                                                     </div>
                                                 )}
-                                            </React.Fragment>
+                                            </div>
                                         )}
-                                        {this.state.message.payload.type === INDEXATION_PAYLOAD_TYPE && (
+                                    {this.state.message.payload.type === MILESTONE_PAYLOAD_TYPE && (
+                                        <React.Fragment>
                                             <div className="section">
-                                                <IndexationPayload
+                                                <MilestonePayload
                                                     network={this.props.match.params.network}
                                                     history={this.props.history}
                                                     payload={this.state.message.payload}
                                                     advancedMode={this.state.advancedMode}
                                                 />
                                             </div>
-                                        )}
-                                    </React.Fragment>
-                                )}
-                                {this.state.advancedMode && (
-                                    <div className="section">
-                                        <div className="section--header section--header__space-between">
-                                            <div className="row middle">
-                                                <h2>
-                                                    Metadata
-                                                    <Modal icon="info" data={messageJSON} />
-                                                </h2>
-                                            </div>
+                                            {this.state.message.payload.receipt && (
+                                                <div className="section">
+                                                    <ReceiptPayload
+                                                        network={this.props.match.params.network}
+                                                        history={this.props.history}
+                                                        payload={this.state.message.payload.receipt}
+                                                        advancedMode={this.state.advancedMode}
+                                                    />
+                                                </div>
+                                            )}
+                                        </React.Fragment>
+                                    )}
+                                    {this.state.message.payload.type === INDEXATION_PAYLOAD_TYPE && (
+                                        <div className="section">
+                                            <IndexationPayload
+                                                network={this.props.match.params.network}
+                                                history={this.props.history}
+                                                payload={this.state.message.payload}
+                                                advancedMode={this.state.advancedMode}
+                                            />
                                         </div>
-                                        <div className="section--content">
-                                            {!this.state.metadata && !this.state.metadataError && (
-                                                <Spinner />
-                                            )}
-                                            {this.state.metadataError && (
-                                                <p className="danger">
-                                                    Failed to retrieve metadata. {this.state.metadataError}
-                                                </p>
-                                            )}
-                                            {this.state.metadata && !this.state.metadataError && (
-                                                <React.Fragment>
-                                                    <div className="section--label">
-                                                        Is Solid
-                                                    </div>
-                                                    <div className="section--value row middle">
-                                                        <span className="margin-r-t">
-                                                            {this.state.metadata?.isSolid ? "Yes" : "No"}
-                                                        </span>
-                                                    </div>
-                                                    <div className="section--label">
-                                                        Ledger Inclusion
-                                                    </div>
-                                                    <div className="section--value row middle">
-                                                        <InclusionState
-                                                            state={this.state.metadata?.ledgerInclusionState}
-                                                        />
-                                                    </div>
-                                                    {this.state.conflictReason && (
-                                                        <React.Fragment>
-                                                            <div className="section--label">
-                                                                Conflict Reason
-                                                            </div>
-                                                            <div className="section--value">
-                                                                {this.state.conflictReason}
-                                                            </div>
-                                                        </React.Fragment>
-                                                    )}
-                                                </React.Fragment>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-                                <div className="section margin-t-s">
-                                    <div className="section--header">
+                                    )}
+                                </React.Fragment>
+                            )}
+                            {this.state.advancedMode && (
+                                <div className="section">
+                                    <div className="section--header section--header__space-between">
                                         <div className="row middle">
                                             <h2>
-                                                Messages tree
+                                                Metadata
+                                                <Modal icon={ModalIconType.Info} data={messageJSON} />
                                             </h2>
-                                            <Modal icon="info" data={messageJSON} />
                                         </div>
                                     </div>
-                                    <div className="section--content children-container">
-                                        <div className="section">
-                                            <div className="section--header">
-                                                <h3>Parent Messages</h3>
-                                                {this.state !== undefined && (
-                                                    <span className="section--header-count">
-                                                        {this.state.message?.parentMessageIds?.length}
+                                    <div className="section--content">
+                                        {!this.state.metadata && !this.state.metadataError && (
+                                            <Spinner />
+                                        )}
+                                        {this.state.metadataError && (
+                                            <p className="danger">
+                                                Failed to retrieve metadata. {this.state.metadataError}
+                                            </p>
+                                        )}
+                                        {this.state.metadata && !this.state.metadataError && (
+                                            <React.Fragment>
+                                                <div className="section--label">
+                                                    Is Solid
+                                                </div>
+                                                <div className="section--value row middle">
+                                                    <span className="margin-r-t">
+                                                        {this.state.metadata?.isSolid ? "Yes" : "No"}
                                                     </span>
+                                                </div>
+                                                <div className="section--label">
+                                                    Ledger Inclusion
+                                                </div>
+                                                <div className="section--value row middle">
+                                                    <InclusionState
+                                                        state={this.state.metadata?.ledgerInclusionState}
+                                                    />
+                                                </div>
+                                                {this.state.conflictReason && (
+                                                    <React.Fragment>
+                                                        <div className="section--label">
+                                                            Conflict Reason
+                                                        </div>
+                                                        <div className="section--value">
+                                                            {this.state.conflictReason}
+                                                        </div>
+                                                    </React.Fragment>
                                                 )}
-                                            </div>
-                                            {this.state.message?.parentMessageIds?.map((parent, idx) => (
-                                                <React.Fragment key={idx}>
-                                                    <div
-                                                        className="section--value section--value__code featured
-                                                           row middle"
-                                                    >
-                                                        {parent !== "0".repeat(64) && (
-                                                            <React.Fragment>
-                                                                <Link
-                                                                    className="margin-r-t"
-                                                                    to={
-                                                                        `/${this.props.match.params.network
-                                                                        }/message/${parent}`
-                                                                    }
-                                                                >
-                                                                    {parent}
-                                                                </Link>
-                                                                <MessageButton
-                                                                    onClick={() => ClipboardHelper.copy(
-                                                                        parent
-                                                                    )}
-                                                                    buttonType="copy"
-                                                                    labelPosition="top"
-                                                                />
-                                                            </React.Fragment>
-                                                        )}
-                                                        {parent === "0".repeat(64) && (
-                                                            <span>Genesis</span>
-                                                        )}
-                                                    </div>
-                                                </React.Fragment>
-                                            )
+                                            </React.Fragment>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                            <div className="section">
+                                <div className="section--header">
+                                    <div className="row middle">
+                                        <h2>
+                                            Messages tree
+                                        </h2>
+                                        <Modal icon={ModalIconType.Info} data={messageJSON} />
+                                    </div>
+                                </div>
+                                <div className="section--content children-container">
+                                    <div>
+                                        <div className="section--header">
+                                            <h3>Parent Messages</h3>
+                                            {this.state !== undefined && (
+                                                <span className="section--header-count">
+                                                    {this.state.message?.parentMessageIds?.length}
+                                                </span>
                                             )}
                                         </div>
-                                        <div className="section">
-                                            <div className="section--header">
-                                                <h3>Child Messages</h3>
-                                                {this.state.childrenIds !== undefined && (
-                                                    <span className="section--header-count">
-                                                        {this.state.childrenIds.length}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <div className="section--content children-container">
-                                                {this.state.childrenBusy && (<Spinner />)}
-                                                {this.state.childrenIds?.map(childId => (
-                                                    <div
-                                                        className="section--value
-                                                         section--value__code featured row middle"
-                                                        key={childId}
-                                                    >
-                                                        <Link
-                                                            className="margin-r-t"
-                                                            to={
-                                                                `/${this.props.match.params.network
-                                                                }/message/${childId}`
-                                                            }
-                                                        >
-                                                            {childId}
-                                                        </Link>
-                                                        <MessageButton
-                                                            onClick={() => ClipboardHelper.copy(
-                                                                childId
-                                                            )}
-                                                            buttonType="copy"
-                                                            labelPosition="top"
-                                                        />
-                                                    </div>
-                                                ))}
-                                                {!this.state.childrenBusy &&
-                                                    this.state.childrenIds &&
-                                                    this.state.childrenIds.length === 0 && (
-                                                        <p>There are no children for this message.</p>
+                                        {this.state.message?.parentMessageIds?.map((parent, idx) => (
+                                            <React.Fragment key={idx}>
+                                                <div
+                                                    className="section--value section--value__code featured
+                                                           row middle"
+                                                >
+                                                    {parent !== "0".repeat(64) && (
+                                                        <React.Fragment>
+                                                            <Link
+                                                                className="margin-r-t"
+                                                                to={
+                                                                    `/${this.props.match.params.network
+                                                                    }/message/${parent}`
+                                                                }
+                                                            >
+                                                                {parent}
+                                                            </Link>
+                                                            <MessageButton
+                                                                onClick={() => ClipboardHelper.copy(
+                                                                    parent
+                                                                )}
+                                                                buttonType="copy"
+                                                                labelPosition="top"
+                                                            />
+                                                        </React.Fragment>
                                                     )}
-                                            </div>
+                                                    {parent === "0".repeat(64) && (
+                                                        <span>Genesis</span>
+                                                    )}
+                                                </div>
+                                            </React.Fragment>
+                                        )
+                                        )}
+                                    </div>
+                                    <div>
+                                        <div className="section--header">
+                                            <h3>Child Messages</h3>
+                                            {this.state.childrenIds !== undefined && (
+                                                <span className="section--header-count">
+                                                    {this.state.childrenIds.length}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="section--content children-container">
+                                            {this.state.childrenBusy && (<Spinner />)}
+                                            {this.state.childrenIds?.map(childId => (
+                                                <div
+                                                    className="section--value
+                                                         section--value__code featured row middle"
+                                                    key={childId}
+                                                >
+                                                    <Link
+                                                        className="margin-r-t"
+                                                        to={
+                                                            `/${this.props.match.params.network
+                                                            }/message/${childId}`
+                                                        }
+                                                    >
+                                                        {childId}
+                                                    </Link>
+                                                    <MessageButton
+                                                        onClick={() => ClipboardHelper.copy(
+                                                            childId
+                                                        )}
+                                                        buttonType="copy"
+                                                        labelPosition="top"
+                                                    />
+                                                </div>
+                                            ))}
+                                            {!this.state.childrenBusy &&
+                                                this.state.childrenIds &&
+                                                this.state.childrenIds.length === 0 && (
+                                                    <p>There are no children for this message.</p>
+                                                )}
                                         </div>
                                     </div>
                                 </div>
@@ -685,6 +537,133 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
         }
 
         return conflictReason;
+    }
+
+    /**
+     * Get inputs and outputs for the message.
+     * @param transactionMessage The message to get inputs and outputs.
+     */
+    private async getInputsAndOutputs(transactionMessage: IMessage): Promise<void> {
+        if (transactionMessage?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+            const inputs: (IUTXOInput & {
+                outputHash: string;
+                isGenesis: boolean;
+                transactionUrl: string;
+                transactionAddress: IBech32AddressDetails;
+                signature: string;
+                publicKey: string;
+                amount: number;
+            })[] = [];
+            const outputs = [];
+            let transferTotal = 0;
+            const unlockAddresses: IBech32AddressDetails[] = [];
+
+
+            const GENESIS_HASH = "0".repeat(64);
+
+            const signatureBlocks: ISignatureUnlockBlock[] = [];
+            for (let i = 0; i < transactionMessage.payload.unlockBlocks.length; i++) {
+                if (transactionMessage.payload.unlockBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE) {
+                    const sigUnlockBlock = transactionMessage.payload.unlockBlocks[i] as ISignatureUnlockBlock;
+                    signatureBlocks.push(sigUnlockBlock);
+                } else if (transactionMessage.payload.unlockBlocks[i].type === REFERENCE_UNLOCK_BLOCK_TYPE) {
+                    const refUnlockBlock = transactionMessage.payload.unlockBlocks[i] as IReferenceUnlockBlock;
+                    signatureBlocks.push(
+                        transactionMessage.payload.unlockBlocks[refUnlockBlock.reference] as ISignatureUnlockBlock
+                    );
+                }
+            }
+
+            for (let i = 0; i < signatureBlocks.length; i++) {
+                unlockAddresses.push(
+                    Bech32AddressHelper.buildAddress(
+                        this._bechHrp,
+                        Converter.bytesToHex(
+                            new Ed25519Address(Converter.hexToBytes(signatureBlocks[i].signature.publicKey))
+                                .toAddress()
+                        ),
+                        signatureBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE
+                            ? ED25519_ADDRESS_TYPE : undefined
+                    )
+                );
+            }
+
+            for (let i = 0; i < transactionMessage.payload.essence.inputs.length; i++) {
+                const input = transactionMessage.payload.essence.inputs[i];
+                const isGenesis = input.transactionId === GENESIS_HASH;
+                const writeOutputStream = new WriteStream();
+                writeOutputStream.writeUInt16("transactionOutputIndex", input.transactionOutputIndex);
+                const outputHash = input.transactionId + writeOutputStream.finalHex();
+                const transactionOutputIndex = input.transactionOutputIndex;
+                const transactionResult = await this._tangleCacheService.search(
+                    this.props.match.params.network, input.transactionId);
+                let amount = 0;
+                if (transactionResult?.message && transactionResult?.message.payload?.type ===
+                    TRANSACTION_PAYLOAD_TYPE) {
+                    amount = transactionResult.message.payload?.essence.outputs[transactionOutputIndex].amount;
+                }
+                inputs.push({
+                    ...input,
+                    amount,
+                    isGenesis,
+                    outputHash,
+                    transactionUrl: `/${this.props.match.params.network}/search/${outputHash}`,
+                    transactionAddress: unlockAddresses[i],
+                    signature: signatureBlocks[i].signature.signature,
+                    publicKey: signatureBlocks[i].signature.publicKey
+                });
+            }
+
+            let remainderIndex = 1000;
+            for (let i = 0; i < transactionMessage.payload.essence.outputs.length; i++) {
+                if (transactionMessage.payload.essence.outputs[i].type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
+                    transactionMessage.payload.essence.outputs[i].type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) {
+                    const address = Bech32AddressHelper.buildAddress(
+                        this._bechHrp,
+                        transactionMessage.payload.essence.outputs[i].address.address,
+                        transactionMessage.payload.essence.outputs[i].address.type);
+                    const isRemainder = inputs.some(input => input.transactionAddress.bech32 === address.bech32);
+                    outputs.push({
+                        index: isRemainder ? (remainderIndex++) + i : i,
+                        type: transactionMessage.payload.essence.outputs[i].type,
+                        address,
+                        amount: transactionMessage.payload.essence.outputs[i].amount,
+                        isRemainder
+                    });
+                    if (!isRemainder) {
+                        transferTotal += transactionMessage.payload.essence.outputs[i].amount;
+                    }
+                }
+            }
+
+            for (let i = 0; i < inputs.length; i++) {
+                const outputResponse = await this._tangleCacheService.outputDetails(
+                    this.props.match.params.network, inputs[i].outputHash
+                );
+
+                if (outputResponse?.output) {
+                    inputs[i].transactionAddress = Bech32AddressHelper.buildAddress(
+                        this._bechHrp,
+                        outputResponse.output.address.address,
+                        outputResponse.output.address.type
+                    );
+                    inputs[i].transactionUrl =
+                        `/${this.props.match.params.network}/message/${outputResponse.messageId}`;
+                }
+            }
+
+            outputs.sort((a, b) => a.index - b.index);
+
+
+            this.setState({
+                inputs,
+                outputs,
+                unlockAddresses,
+                transferTotal
+            }, async () => {
+                await this.updateMessageDetails();
+            });
+        }
     }
 }
 

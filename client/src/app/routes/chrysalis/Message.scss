@@ -7,85 +7,6 @@
   display: flex;
   flex-direction: column;
 
-  .message--header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .message--header__switch {
-      display: flex;
-      align-items: center;
-
-      & > span {
-        @include font-size(12px, 18px);
-
-        margin-right: 16px;
-        color: $gray-6;
-        font-family: $inter;
-        font-weight: 500;
-
-        @include phone-down {
-          margin-right: 1px;
-        }
-      }
-
-      .switch {
-        display: inline-block;
-        position: relative;
-        width: 32px;
-        height: 20px;
-      }
-
-      .switch input {
-        width: 0;
-        height: 0;
-        opacity: 0;
-      }
-
-      .slider {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        transition: 0.4s;
-        background-color: $gray-4;
-        cursor: pointer;
-      }
-
-      .slider::before {
-        content: '';
-        position: absolute;
-        bottom: 2.5px;
-        left: 2.5px;
-        width: 15px;
-        height: 15px;
-        transition: 0.4s;
-        background-color: white;
-      }
-
-      input:checked + .slider {
-        background-color: $green-6;
-      }
-
-      input:focus + .slider {
-        box-shadow: 0 0 1px $green-6;
-      }
-
-      input:checked + .slider::before {
-        transform: translateX(12px);
-      }
-
-      .slider.round {
-        border-radius: 16px;
-      }
-
-      .slider.round::before {
-        border-radius: 50%;
-      }
-    }
-  }
-
   .wrapper {
     display: flex;
     justify-content: center;
@@ -95,15 +16,13 @@
       flex: 1;
       flex-direction: column;
       max-width: $desktop-width;
-      margin: 40px 20px;
-
-      @include tablet-down {
-        margin: 40px 24px;
-      }
+      margin: 40px 25px;
 
       @include desktop-down {
+        flex: unset;
+        width: 100%;
         max-width: 100%;
-        margin: 40px 0;
+        margin: 40px 24px;
         padding-right: 24px;
         padding-left: 24px;
 
@@ -112,114 +31,52 @@
         }
       }
 
-      .message--header {
-        margin-bottom: 20px;
+      @include tablet-down {
+        margin: 28px 0;
       }
 
-      .section--header {
-        .transfer-value {
-          margin-left: auto;
-          color: $gray-9;
-          font-family: $inter;
-          font-weight: 700;
+      .message--header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-          @include font-size(16px, 24px);
+        @include tablet-down {
+          margin-bottom: 37px;
         }
       }
 
       .sections {
         flex: 1;
+        margin-top: 9px;
 
         @include desktop-down {
           flex: unset;
           width: 100%;
         }
-      }
 
-      .section + .section {
-        margin-top: 23px;
-      }
+        .section {
+          padding: 66px 0 32px 0;
 
-      .transaction-simple {
-        .section + .section,
-        .card + .card {
-          margin-top: 0;
-          margin-left: 23px;
-        }
-
-        .card + .card {
-          margin-top: 0;
-          margin-left: 23px;
-        }
-
-        .card--content {
-          .section--value {
-            @include font-size(14px);
-
-            color: $blue-5;
-            font-family: $ibm-plex-mono;
-            font-weight: normal;
-            letter-spacing: 0.02em;
-            line-height: 20px;
+          @include tablet-down {
+            padding-top: 24px;
           }
 
-          .card--value {
-            margin-left: auto;
-          }
-        }
+          .section--header {
+            margin-bottom: 34px;
 
-        @include tablet-down {
-          .section + .section,
-          .card + .card {
-            margin-top: 23px;
-            margin-left: 0;
-          }
-        }
-      }
+            .transfer-value {
+              margin-left: auto;
+              color: $gray-9;
+              font-family: $inter;
+              font-weight: 700;
 
-      .transaction-payload-wrapper {
-        margin-bottom: 23px;
-      }
-
-      @include desktop-down {
-        flex: unset;
-        width: 100%;
-      }
-
-      .value-buttons {
-        .col {
-          flex: 1;
-          width: auto;
-        }
-
-        .col + .col {
-          margin-left: 24px;
-        }
-      }
-
-      @include desktop-down {
-        .value-buttons {
-          flex-direction: column;
-
-          .col {
-            flex: unset;
-            width: 100%;
+              @include font-size(16px, 24px);
+            }
           }
 
-          .col + .col {
-            margin-top: 23px;
-            margin-left: 0;
+          .transaction-payload-wrapper {
+            margin-bottom: 23px;
           }
-        }
-      }
-
-      .side-panel-container {
-        display: flex;
-        flex-direction: column;
-
-        @include desktop-down {
-          flex: 1;
-          width: 100%;
         }
       }
     }

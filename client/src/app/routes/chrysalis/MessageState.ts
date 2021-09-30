@@ -49,18 +49,6 @@ export interface MessageState {
     messageTangleStatus: MessageTangleStatus;
 
     /**
-     * The data urls.
-     */
-    dataUrls: {
-        [id: string]: string;
-    };
-
-    /**
-     * The selected data url.
-     */
-    selectedDataUrl: string;
-
-    /**
      * Display advanced mode.
      */
     advancedMode: boolean;
@@ -68,7 +56,7 @@ export interface MessageState {
     /**
      * The unlock addresses for the transactions.
      */
-     inputs?: (IUTXOInput & {
+    inputs?: (IUTXOInput & {
         outputHash: string;
         isGenesis: boolean;
         transactionUrl: string;
