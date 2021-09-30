@@ -165,3 +165,10 @@
   text-overflow: ellipsis !important;
   word-break: normal !important;
 }
+
+.dot-separator {
+  margin: 0 6px;
+  color: $gray-6;
+
+  @include font-size(20px);
+}

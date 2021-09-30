@@ -36,7 +36,6 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
         this.state = {
-            formatFull: false,
             showInputDetails: -1,
             showOutputDetails: -1
         };
@@ -55,7 +54,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      */
     public render(): ReactNode {
         return (
-            <div>
+            <div className="transaction-payload-wrapper">
                 <div className="section--header row space-between">
                     <div className="row middle">
                         <h2>
@@ -64,17 +63,23 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         <Modal icon={ModalIconType.Info} data={messageJSON} />
 
                     </div>
-                    <span className="transfer-value">
-                        {UnitsHelper.formatUnits(this.props.transferTotal,
-                            UnitsHelper.calculateBest(this.props.transferTotal))}
-                        <FiatValue value={this.props.transferTotal} />
-                    </span>
+                    <div className="transaction-value">
+
+                        <span className="value">
+                            {UnitsHelper.formatUnits(this.props.transferTotal,
+                                UnitsHelper.calculateBest(this.props.transferTotal))}
+                        </span>
+                        <span className="dot-separator">•</span>
+                        <span className="fiat-value">
+                            <FiatValue value={this.props.transferTotal} />
+                        </span>
+                    </div>
                 </div>
                 <div className="row row--tablet-responsive fill stretch transaction-payload">
                     <div className="card col fill">
                         <div className="card--header">
                             <h2 className="card--header__title">From</h2>
-                            <span className="dot-separator">·</span>
+                            <span className="dot-separator">•</span>
                             <span>{this.props.inputs.length}</span>
                         </div>
                         <div className="card--content">
@@ -92,8 +97,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             history={this.props.history}
                                             addressDetails={input.transactionAddress}
                                             advancedMode={false}
-                                            hideLabel={true}
-                                            truncateAddress={true}
+                                            hideLabel
+                                            truncateAddress
                                         />
                                         <div className="card--value">
                                             {UnitsHelper.formatBest(input.amount)}
@@ -109,8 +114,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                         network={this.props.network}
                                                         history={this.props.history}
                                                         addressDetails={input.transactionAddress}
-                                                        advancedMode={true}
-                                                        hideLabel={true}
+                                                        advancedMode
+                                                        hideLabel
                                                         truncateAddress={false}
                                                     />
                                                 </div>
@@ -138,7 +143,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                     <div className="card col fill">
                         <div className="card--header">
                             <h2 className="card--header__title">To</h2>
-                            <span className="dot-separator">·</span>
+                            <span className="dot-separator">•</span>
                             <span>{this.props.outputs.length}</span>
                         </div>
                         <div className="card--content">
@@ -156,8 +161,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             history={this.props.history}
                                             addressDetails={output.address}
                                             advancedMode={false}
-                                            hideLabel={true}
-                                            truncateAddress={true}
+                                            hideLabel
+                                            truncateAddress
                                         />
                                         <div className="card--value">
                                             {UnitsHelper.formatBest(output.amount)}
@@ -173,8 +178,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                         network={this.props.network}
                                                         history={this.props.history}
                                                         addressDetails={output.address}
-                                                        advancedMode={true}
-                                                        hideLabel={true}
+                                                        advancedMode
+                                                        hideLabel
                                                         truncateAddress={false}
                                                     />
                                                 </div>

@@ -159,11 +159,6 @@
       @include font-size(14px, 21px);
 
       & + .dot-separator {
-        margin: 0 6px;
-        color: $gray-6;
-
-        @include font-size(40px);
-
         & + span {
           @include font-size(14px, 14px);
 

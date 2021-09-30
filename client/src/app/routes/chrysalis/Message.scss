@@ -63,19 +63,6 @@
 
           .section--header {
             margin-bottom: 34px;
-
-            .transfer-value {
-              margin-left: auto;
-              color: $gray-9;
-              font-family: $inter;
-              font-weight: 700;
-
-              @include font-size(16px, 24px);
-            }
-          }
-
-          .transaction-payload-wrapper {
-            margin-bottom: 23px;
           }
         }
       }

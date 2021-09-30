@@ -259,21 +259,15 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         this.state.inputs &&
                                         this.state.outputs &&
                                         this.state.transferTotal &&
-                                        this.state.unlockAddresses &&
                                         (
                                             <div className="section">
-
-
-                                                <div className="transaction-payload-wrapper">
-                                                    <TransactionPayload
-                                                        network={this.props.match.params.network}
-                                                        history={this.props.history}
-                                                        inputs={this.state.inputs}
-                                                        outputs={this.state.outputs}
-                                                        unlockAddresses={this.state.unlockAddresses}
-                                                        transferTotal={this.state.transferTotal}
-                                                    />
-                                                </div>
+                                                <TransactionPayload
+                                                    network={this.props.match.params.network}
+                                                    history={this.props.history}
+                                                    inputs={this.state.inputs}
+                                                    outputs={this.state.outputs}
+                                                    transferTotal={this.state.transferTotal}
+                                                />
 
                                                 {this.state.message.payload.essence.payload && (
                                                     <div className="section">

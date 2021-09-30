@@ -1,8 +1,4 @@
 export interface TransactionPayloadState {
-    /**
-     * Format the curreny in full.
-     */
-    formatFull?: boolean;
 
     /**
      * Shows details of the specified input id

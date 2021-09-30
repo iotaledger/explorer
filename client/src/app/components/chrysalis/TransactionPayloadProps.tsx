@@ -37,10 +37,6 @@ export interface TransactionPayloadProps {
     transferTotal: number;
 
     /**
-     * The unlock addresses for the transactions.
-     */
-    unlockAddresses: IBech32AddressDetails[];
-    /**
      * History for navigation.
      */
     history: H.History;
