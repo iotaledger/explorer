@@ -104,7 +104,7 @@ class Footer extends Component<FooterProps, FooterState> {
     public render(): ReactNode {
         return (
             <footer>
-                <div className="foundation--data">
+                <section className="footer--content ">
                     <div className="inner">
                         <div className="row">
                             {[this.state.siteFooterSection].concat(this.state.foundationData?.footerSections ?? [])
@@ -122,7 +122,7 @@ class Footer extends Component<FooterProps, FooterState> {
                                 ))}
                         </div>
                         <hr className="sep" />
-                        <div className="row secondary">
+                        <div className="row foundation-data">
                             <div className="col fill margin-t-m">
                                 <img src={logoFooter} alt="IOTA" />
                             </div>
@@ -141,22 +141,22 @@ class Footer extends Component<FooterProps, FooterState> {
                         </div>
                     </div>
 
-                </div>
-                <div className="social--media__wrapper">
-                    {this.SOCIAL_LINKS.map((socialPage, socialPageID) => (
+                </section>
+                <section className="social--media__wrapper">
+                    {this.SOCIAL_LINKS.map((social, socialID) => (
                         <a
-                            href={socialPage.url}
-                            key={socialPageID}
+                            href={social.url}
+                            key={socialID}
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ backgroundColor: socialPage.color }}
+                            style={{ backgroundColor: social.color, width: `${100 / this.SOCIAL_LINKS.length}%` }}
                             className="social--media__item"
                         >
-                            {socialPage.icon}
-                            <span>{socialPage.name}</span>
+                            {social.icon}
+                            <span>{social.name}</span>
                         </a>
                     ))}
-                </div>
+                </section>
             </footer>
         );
     }
