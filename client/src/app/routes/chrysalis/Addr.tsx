@@ -10,6 +10,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import QR from "../../components/chrysalis/QR";
 import FiatValue from "../../components/FiatValue";
+import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
 import messageJSON from "./../../../assets/modals/message.json";
 import Transaction from "./../../components/chrysalis/Transaction";
@@ -17,7 +18,6 @@ import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState } from "./AddrState";
-import { ModalIcon } from "../../components/ModalProps";
 
 
 /**
@@ -268,7 +268,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <Modal icon={ModalIcon.Info} data={messageJSON} />
                                             </div>
                                             <div className="messages-tangle-state">
-                                                <div className="section--header__filter">
+                                                <div className="transactions-filter">
                                                     <button
                                                         className="filter-buttons"
                                                         type="button"

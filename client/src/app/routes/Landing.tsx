@@ -170,6 +170,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         <h2>Latest messages</h2>
                                         <div className="feed--actions">
                                             <button
+                                                className="button--unstyled"
                                                 type="button"
                                                 onClick={() => {
                                                     this.setState({
@@ -182,6 +183,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             </button>
                                             <button
                                                 type="button"
+                                                className="button--unstyled"
                                                 onClick={() => {
                                                     this.setState({ isFilterExpanded: !this.state.isFilterExpanded });
                                                 }}
@@ -194,6 +196,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                         <div className="filter-header row space-between middle">
                                                             <span>Payload Filter</span>
                                                             <button
+                                                                className="button--unstyled"
                                                                 type="button"
                                                                 onClick={() => this.setState({
                                                                     valuesFilter:
@@ -231,32 +234,35 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                                 Reset
                                                             </button>
                                                         </div>
-                                                        {this.state.valuesFilter.map(payload => (
-                                                            <React.Fragment key={payload.label}>
-                                                                <label >
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={payload.isEnabled}
-                                                                        onChange={
-                                                                            () => this.toggleFilterValue(payload.label)
-                                                                        }
-                                                                    />
-                                                                    {payload.label}
-                                                                </label>
-                                                                {((this.state.networkConfig.protocolVersion === "og" &&
-                                                                    payload.label === "Non-zero only" &&
-                                                                    payload.isEnabled) ||
-                                                                    (this.state.networkConfig.protocolVersion ===
-                                                                        "chrysalis" &&
-                                                                        payload.label === "Transaction" &&
-                                                                        payload.isEnabled)) && (
-                                                                        <div className="row">
-                                                                            {this.transactionDropdown("minimum")}
-                                                                            {this.transactionDropdown("maximum")}
-                                                                        </div>
-                                                                    )}
-                                                            </React.Fragment>
-                                                        ))}
+
+                                                        <div className="filter-content">
+                                                            {this.state.valuesFilter.map(payload => (
+                                                                <React.Fragment key={payload.label}>
+                                                                    <label >
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={payload.isEnabled}
+                                                                            onChange={
+                                                                                () => this.toggleFilterValue(payload.label)
+                                                                            }
+                                                                        />
+                                                                        {payload.label}
+                                                                    </label>
+                                                                    {((this.state.networkConfig.protocolVersion === "og" &&
+                                                                        payload.label === "Non-zero only" &&
+                                                                        payload.isEnabled) ||
+                                                                        (this.state.networkConfig.protocolVersion ===
+                                                                            "chrysalis" &&
+                                                                            payload.label === "Transaction" &&
+                                                                            payload.isEnabled)) && (
+                                                                            <div className="row">
+                                                                                {this.transactionDropdown("minimum")}
+                                                                                {this.transactionDropdown("maximum")}
+                                                                            </div>
+                                                                        )}
+                                                                </React.Fragment>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                     <div
                                                         className="filter--bg"

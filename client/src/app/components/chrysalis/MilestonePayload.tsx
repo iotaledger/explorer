@@ -7,6 +7,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../ModalProps";
 import messageJSON from "./../../../assets/modals/message.json";
+import "./MilestonePayload.scss";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
 
@@ -53,7 +54,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
     public render(): ReactNode {
         return (
             <div className="milestone-payload">
-                <div className="section--header section--header__space-between">
+                <div className="section--header row space-between">
                     <div className="row middle">
                         <h2>
                             Milestone Payload
@@ -61,13 +62,13 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         <Modal icon={ModalIcon.Info} data={messageJSON} />
                     </div>
                     {(this.state.hasPrevious || this.state.hasNext) && (
-                        <div className="row middle">
+                        <div className="section--content row middle">
                             <button
                                 disabled={!this.state.hasPrevious}
                                 type="button"
                                 onClick={async () =>
                                     this.loadIndex(this.state.previousIndex.toString(), true)}
-                                className="section--action margin-r-t"
+                                className="milestone-action margin-r-t"
                             >
                                 <span>Previous</span>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -80,7 +81,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                 type="button"
                                 onClick={async () =>
                                     this.loadIndex(this.state.nextIndex.toString(), true)}
-                                className="section--action margin-r-t"
+                                className="milestone-action margin-r-t"
                             >
                                 <span>Next</span>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

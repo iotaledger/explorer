@@ -155,8 +155,8 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 <div
                                     className={classNames(
                                         "section--header",
-                                        "section--header__space-between",
-                                        "section--header__tablet-responsive"
+                                        "row space-between",
+                                        "row--tablet-responsive"
                                     )}
                                 >
                                     <div className="row middle">
@@ -381,7 +381,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         <div className="section--header">
                                             <h3>Parent Messages</h3>
                                             {this.state !== undefined && (
-                                                <span className="section--header-count">
+                                                <span className="messages--number">
                                                     {this.state.message?.parentMessageIds?.length}
                                                 </span>
                                             )}
@@ -424,7 +424,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         <div className="section--header">
                                             <h3>Child Messages</h3>
                                             {this.state.childrenIds !== undefined && (
-                                                <span className="section--header-count">
+                                                <span className="messages--number">
                                                     {this.state.childrenIds.length}
                                                 </span>
                                             )}

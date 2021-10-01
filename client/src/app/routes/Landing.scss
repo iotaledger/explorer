@@ -193,32 +193,6 @@
           font-family: $metropolis;
         }
 
-        .filters {
-          margin: 0 0 28px 0;
-          padding: 23px;
-
-          .col {
-            justify-content: center;
-            margin-right: 20px;
-
-            .filter--value {
-              @include font-size(12px);
-
-              margin-bottom: 12px;
-              color: var(--header-color);
-              font-family: $metropolis;
-              font-weight: bold;
-              text-transform: uppercase;
-              white-space: nowrap;
-            }
-
-            input {
-              width: 165px;
-              text-align: right;
-            }
-          }
-        }
-
         .feeds {
           @include desktop-down {
             flex-direction: column;
@@ -304,10 +278,44 @@
                   @include font-size(14px, 21px);
 
                   button {
+                    @include font-size(14px, 21px);
+
                     padding: 6px 20px;
                     border: 1px solid var(--input-border-color);
                     color: var(--header-color);
+                    font-family: $inter;
                     font-weight: 400;
+                  }
+                }
+
+                .filter-content {
+                  input {
+                    &[type='checkbox'] {
+                      @include font-size(24px);
+
+                      width: 24px;
+                      height: 24px;
+                      padding: 0;
+                      font-weight: bold;
+                      vertical-align: middle;
+                      appearance: none;
+
+                      &:checked {
+                        border-color: #57d087;
+                        background-color: #57d087;
+                        color: $white;
+
+                        &::after {
+                          content: '✓';
+                          position: absolute;
+                          top: 45%;
+                          left: 50%;
+                          transform: translate(-50%, -50%);
+
+                          @include font-size(16px);
+                        }
+                      }
+                    }
                   }
                 }
 
@@ -491,7 +499,7 @@
 
     &::after,
     &::before {
-      content: "";
+      content: '';
       position: absolute;
       z-index: -1;
       width: 250px;

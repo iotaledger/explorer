@@ -64,7 +64,6 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
 
                     </div>
                     <div className="transaction-value">
-
                         <span className="value">
                             {UnitsHelper.formatUnits(this.props.transferTotal,
                                 UnitsHelper.calculateBest(this.props.transferTotal))}

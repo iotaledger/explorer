@@ -63,6 +63,22 @@
 
           .section--header {
             margin-bottom: 34px;
+
+            .messages--number {
+              @include font-size(12px);
+
+              display: flex;
+              align-items: center;
+              height: 24px;
+              margin-left: 20px;
+              padding: 0 8px;
+              border-radius: 6px;
+              background-color: var(--light-bg);
+              color: $gray;
+              font-family: $metropolis;
+              font-weight: bold;
+              white-space: nowrap;
+            }
           }
         }
       }
