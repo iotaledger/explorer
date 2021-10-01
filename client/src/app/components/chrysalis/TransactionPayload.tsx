@@ -8,7 +8,7 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../AsyncComponent";
 import FiatValue from "../FiatValue";
 import Modal from "../Modal";
-import { ModalIconType } from "../ModalProps";
+import { ModalIcon } from "../ModalProps";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import messageJSON from "./../../../assets/modals/message.json";
 import Bech32Address from "./Bech32Address";
@@ -60,7 +60,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         <h2>
                             Transaction Payload
                         </h2>
-                        <Modal icon={ModalIconType.Info} data={messageJSON} />
+                        <Modal icon={ModalIcon.Info} data={messageJSON} />
 
                     </div>
                     <div className="transaction-value">

@@ -20,7 +20,7 @@ import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
 import MessageTangleState from "../../components/MessageTangleState";
 import Modal from "../../components/Modal";
-import { ModalIconType } from "../../components/ModalProps";
+import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
 import Switcher from "../../components/Switcher";
 import messageJSON from "./../../../assets/modals/message.json";
@@ -135,7 +135,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 <h1>
                                     Message
                                 </h1>
-                                <Modal icon={ModalIconType.Dots} data={messageJSON} />
+                                <Modal icon={ModalIcon.Dots} data={messageJSON} />
                             </div>
                             <Switcher
                                 label="Advanced View"
@@ -163,7 +163,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         <h2>
                                             General
                                         </h2>
-                                        <Modal icon={ModalIconType.Info} data={messageJSON} />
+                                        <Modal icon={ModalIcon.Info} data={messageJSON} />
                                     </div>
 
                                     <MessageTangleState
@@ -321,7 +321,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         <div className="row middle">
                                             <h2>
                                                 Metadata
-                                                <Modal icon={ModalIconType.Info} data={messageJSON} />
+                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
                                             </h2>
                                         </div>
                                     </div>
@@ -373,7 +373,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         <h2>
                                             Messages tree
                                         </h2>
-                                        <Modal icon={ModalIconType.Info} data={messageJSON} />
+                                        <Modal icon={ModalIcon.Info} data={messageJSON} />
                                     </div>
                                 </div>
                                 <div className="section--content children-container">

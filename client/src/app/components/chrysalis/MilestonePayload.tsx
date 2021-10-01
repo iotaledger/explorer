@@ -5,7 +5,7 @@ import { DateHelper } from "../../../helpers/dateHelper";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
-import { ModalIconType } from "../ModalProps";
+import { ModalIcon } from "../ModalProps";
 import messageJSON from "./../../../assets/modals/message.json";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
@@ -58,7 +58,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         <h2>
                             Milestone Payload
                         </h2>
-                        <Modal icon={ModalIconType.Info} data={messageJSON} />
+                        <Modal icon={ModalIcon.Info} data={messageJSON} />
                     </div>
                     {(this.state.hasPrevious || this.state.hasNext) && (
                         <div className="row middle">

@@ -17,7 +17,7 @@ import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState } from "./AddrState";
-import { ModalIconType } from '../../components/ModalProps';
+import { ModalIcon } from "../../components/ModalProps";
 
 
 /**
@@ -164,7 +164,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 <h1>
                                     Address
                                 </h1>
-                                <Modal icon={ModalIconType.Dots} data={messageJSON} />
+                                <Modal icon={ModalIcon.Dots} data={messageJSON} />
                             </div>
                         </div>
                         <div className="top">
@@ -175,7 +175,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             <h2>
                                                 General
                                             </h2>
-                                            <Modal icon={ModalIconType.Info} data={messageJSON} />
+                                            <Modal icon={ModalIcon.Info} data={messageJSON} />
                                         </div>
                                     </div>
                                     <div className="row space-between general-content">
@@ -265,7 +265,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <h2>
                                                     Transaction History
                                                 </h2>
-                                                <Modal icon={ModalIconType.Info} data={messageJSON} />
+                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
                                             </div>
                                             <div className="messages-tangle-state">
                                                 <div className="section--header__filter">
