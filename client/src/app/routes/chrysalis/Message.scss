@@ -39,40 +39,22 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-
-        @include tablet-down {
-          margin-bottom: 37px;
-        }
       }
 
-      .sections {
-        flex: 1;
-        margin-top: 9px;
+      .section .section--header .messages--number {
+        @include font-size(12px);
 
-        @include desktop-down {
-          flex: unset;
-          width: 100%;
-        }
-
-        .section {
-          .section--header {
-            .messages--number {
-              @include font-size(12px);
-
-              display: flex;
-              align-items: center;
-              height: 24px;
-              margin-left: 20px;
-              padding: 0 8px;
-              border-radius: 6px;
-              background-color: var(--light-bg);
-              color: $gray;
-              font-family: $metropolis;
-              font-weight: bold;
-              white-space: nowrap;
-            }
-          }
-        }
+        display: flex;
+        align-items: center;
+        height: 24px;
+        margin-left: 20px;
+        padding: 0 8px;
+        border-radius: 6px;
+        background-color: var(--light-bg);
+        color: $gray;
+        font-family: $metropolis;
+        font-weight: bold;
+        white-space: nowrap;
       }
     }
   }
