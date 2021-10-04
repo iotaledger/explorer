@@ -30,7 +30,7 @@
   }
 
   .card--content {
-    .section--value {
+    .value {
       @include font-size(14px);
 
       color: $blue-5;

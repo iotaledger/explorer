@@ -279,11 +279,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
-                                            <span className="section--label">
+                                            <span className="label">
                                                 {this.state.networkConfig.protocolVersion === "og"
                                                     ? "Transaction" : "Message id"}
                                             </span>
-                                            <span className="section--label">
+                                            <span className="label">
                                                 {this.state.networkConfig.protocolVersion === "og"
                                                     ? "Amount" : "Payload Type"}
                                             </span>
@@ -520,7 +520,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     private transactionDropdown(type: "minimum" | "maximum"): ReactNode {
         return (
             <div className="col">
-                <span className="section--label">
+                <span className="label">
                     {type === "minimum" ? "Minimum" : "Maximum"}
                 </span>
                 <span className="filter--value">

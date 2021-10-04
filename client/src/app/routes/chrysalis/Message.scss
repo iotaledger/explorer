@@ -55,15 +55,7 @@
         }
 
         .section {
-          padding: 66px 0 32px 0;
-
-          @include tablet-down {
-            padding-top: 24px;
-          }
-
           .section--header {
-            margin-bottom: 34px;
-
             .messages--number {
               @include font-size(12px);
 

@@ -179,27 +179,27 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </div>
                                     </div>
                                     <div className="row space-between general-content">
-                                        <div className="section--content">
+                                        <div className="section--data">
                                             <Bech32Address
                                                 addressDetails={this.state.bech32AddressDetails}
                                                 advancedMode={true}
                                             />
                                             {this.state.received !== undefined && (
-                                                <div>
-                                                    <div className="section--label">
+                                                <div className="section--data">
+                                                    <div className="label">
                                                         Total received
                                                     </div>
-                                                    <div className="section--value">
+                                                    <div className="value">
                                                         {UnitsHelper.formatBest(this.state.received)}
                                                         {" "}(<FiatValue value={this.state.received} />)
                                                     </div>
                                                 </div>
                                             )}
-                                            <div>
-                                                <div className="section--label">
+                                            <div className="section--data">
+                                                <div className="label">
                                                     Total sent
                                                 </div>
-                                                <div className="section--value">
+                                                <div className="value">
                                                     {UnitsHelper.formatBest(this.state.sent)}
                                                     {" "}(<FiatValue value={this.state.sent} />)
                                                 </div>
@@ -207,21 +207,21 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             </div>
 
                                             {this.state.balance !== undefined && this.state.balance === 0 && (
-                                                <div>
-                                                    <div className="section--label">
+                                                <div className="section--data">
+                                                    <div className="label">
                                                         Final balance
                                                     </div>
-                                                    <div className="section--value">
+                                                    <div className="value">
                                                         0
                                                     </div>
                                                 </div>
                                             )}
                                             {this.state.balance !== undefined && this.state.balance !== 0 && (
-                                                <div>
-                                                    <div className="section--label">
+                                                <div className="section--data">
+                                                    <div className="label">
                                                         Final balance
                                                     </div>
-                                                    <div className="section--value">
+                                                    <div className="value">
                                                         {UnitsHelper.formatBest(this.state.balance)}
                                                         {" "}(<FiatValue value={this.state.balance} />)
                                                     </div>
@@ -238,7 +238,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="section--content">
+                                        <div className="section--data">
                                             {this.state.bech32AddressDetails?.bech32 &&
                                                 (
                                                     //  eslint-disable-next-line react/jsx-pascal-case
@@ -250,7 +250,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
                                     <div className="section">
-                                        <div className="section--content">
+                                        <div className="section--data">
                                             <p>
                                                 There are no transactions for this address.
                                             </p>

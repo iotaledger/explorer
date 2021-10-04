@@ -170,7 +170,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                 (this.props.filterValue === "incoming" && this.state && this.state.amount > 0) ||
                 (this.props.filterValue === "outgoing" && this.state && this.state.amount < 0)) && (
                 <tr>
-                    <td className="section--value section--value__code featured">
+                    <td className="value code highlight">
                         <Link
                             to={
                                 `/${this.props.network

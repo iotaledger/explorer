@@ -178,11 +178,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             : undefined}
                                     />
                                 </div>
-                                <div className="section--content">
-                                    <div className="section--label">
+                                <div className="section--data">
+                                    <div className="label">
                                         Message ID
                                     </div>
-                                    <div className="section--value section--value__code featured row middle">
+                                    <div className="value code highlight row middle">
                                         <span className="margin-r-t">
                                             {this.state.actualMessageId}
                                         </span>
@@ -194,28 +194,30 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             labelPosition="top"
                                         />
                                     </div>
+                                </div>
 
-                                    {this.state.paramMessageId !== this.state.actualMessageId && (
-                                        <React.Fragment>
-                                            <div className="section--label">
-                                                Transaction Id
-                                            </div>
-                                            <div className="section--value section--value__secondary row middle">
-                                                <span className="margin-r-t">{this.state.paramMessageId}</span>
-                                                <MessageButton
-                                                    onClick={() => ClipboardHelper.copy(
-                                                        this.state.paramMessageId
-                                                    )}
-                                                    buttonType="copy"
-                                                    labelPosition="top"
-                                                />
-                                            </div>
-                                        </React.Fragment>
-                                    )}
-                                    <div className="section--label">
+                                {this.state.paramMessageId !== this.state.actualMessageId && (
+                                    <div className="section--data">
+                                        <div className="label">
+                                            Transaction Id
+                                        </div>
+                                        <div className="value value__secondary row middle">
+                                            <span className="margin-r-t">{this.state.paramMessageId}</span>
+                                            <MessageButton
+                                                onClick={() => ClipboardHelper.copy(
+                                                    this.state.paramMessageId
+                                                )}
+                                                buttonType="copy"
+                                                labelPosition="top"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="section--data">
+                                    <div className="label">
                                         Payload Type
                                     </div>
-                                    <div className="section--value row middle">
+                                    <div className="value row middle">
                                         {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
                                             ("Transaction")}
                                         {this.state.message?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
@@ -225,31 +227,31 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         {this.state.message?.payload?.type === undefined &&
                                             ("No Payload")}
                                     </div>
-                                    {this.state.advancedMode && (
-                                        <React.Fragment>
-                                            <div className="section--label">
-                                                Nonce
-                                            </div>
-                                            <div className="section--value row middle">
-                                                <span className="margin-r-t">{this.state.message?.nonce}</span>
-                                            </div>
-                                        </React.Fragment>
-                                    )}
-                                    {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-                                        this.state.transferTotal && (
-                                            <React.Fragment>
-                                                <div className="section--label">
-                                                    Value
-                                                </div>
-                                                <div className="section--value row middle">
-                                                    {UnitsHelper.formatUnits(this.state.transferTotal,
-                                                        UnitsHelper.calculateBest(this.state.transferTotal))}
-                                                    {" "}
-                                                    (<FiatValue value={this.state.transferTotal} />)
-                                                </div>
-                                            </React.Fragment>
-                                        )}
                                 </div>
+                                {this.state.advancedMode && (
+                                    <div className="section--data">
+                                        <div className="label">
+                                            Nonce
+                                        </div>
+                                        <div className="value row middle">
+                                            <span className="margin-r-t">{this.state.message?.nonce}</span>
+                                        </div>
+                                    </div>
+                                )}
+                                {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                                    this.state.transferTotal && (
+                                        <div className="section--data">
+                                            <div className="label">
+                                                Value
+                                            </div>
+                                            <div className="value row middle">
+                                                {UnitsHelper.formatUnits(this.state.transferTotal,
+                                                    UnitsHelper.calculateBest(this.state.transferTotal))}
+                                                {" "}
+                                                (<FiatValue value={this.state.transferTotal} />)
+                                            </div>
+                                        </div>
+                                    )}
                             </div>
 
 
@@ -325,7 +327,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             </h2>
                                         </div>
                                     </div>
-                                    <div className="section--content">
+                                    <div className="section--data">
                                         {!this.state.metadata && !this.state.metadataError && (
                                             <Spinner />
                                         )}
@@ -336,31 +338,35 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         )}
                                         {this.state.metadata && !this.state.metadataError && (
                                             <React.Fragment>
-                                                <div className="section--label">
-                                                    Is Solid
+                                                <div className="section--data">
+                                                    <div className="label">
+                                                        Is Solid
+                                                    </div>
+                                                    <div className="value row middle">
+                                                        <span className="margin-r-t">
+                                                            {this.state.metadata?.isSolid ? "Yes" : "No"}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <div className="section--value row middle">
-                                                    <span className="margin-r-t">
-                                                        {this.state.metadata?.isSolid ? "Yes" : "No"}
-                                                    </span>
-                                                </div>
-                                                <div className="section--label">
-                                                    Ledger Inclusion
-                                                </div>
-                                                <div className="section--value row middle">
-                                                    <InclusionState
-                                                        state={this.state.metadata?.ledgerInclusionState}
-                                                    />
+                                                <div className="section--data">
+                                                    <div className="label">
+                                                        Ledger Inclusion
+                                                    </div>
+                                                    <div className="value row middle">
+                                                        <InclusionState
+                                                            state={this.state.metadata?.ledgerInclusionState}
+                                                        />
+                                                    </div>
                                                 </div>
                                                 {this.state.conflictReason && (
-                                                    <React.Fragment>
-                                                        <div className="section--label">
+                                                    <div className="section--data">
+                                                        <div className="label">
                                                             Conflict Reason
                                                         </div>
-                                                        <div className="section--value">
+                                                        <div className="value">
                                                             {this.state.conflictReason}
                                                         </div>
-                                                    </React.Fragment>
+                                                    </div>
                                                 )}
                                             </React.Fragment>
                                         )}
@@ -376,20 +382,20 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         <Modal icon={ModalIcon.Info} data={messageJSON} />
                                     </div>
                                 </div>
-                                <div className="section--content children-container">
-                                    <div>
-                                        <div className="section--header">
-                                            <h3>Parent Messages</h3>
-                                            {this.state !== undefined && (
-                                                <span className="messages--number">
-                                                    {this.state.message?.parentMessageIds?.length}
-                                                </span>
-                                            )}
-                                        </div>
+                                <div className="section--data">
+                                    <div className="section--header">
+                                        <h3>Parent Messages</h3>
+                                        {this.state !== undefined && (
+                                            <span className="messages--number">
+                                                {this.state.message?.parentMessageIds?.length}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="section--data">
                                         {this.state.message?.parentMessageIds?.map((parent, idx) => (
                                             <React.Fragment key={idx}>
                                                 <div
-                                                    className="section--value section--value__code featured
+                                                    className="value code highlight
                                                            row middle"
                                                 >
                                                     {parent !== "0".repeat(64) && (
@@ -420,54 +426,52 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         )
                                         )}
                                     </div>
-                                    <div>
-                                        <div className="section--header">
-                                            <h3>Child Messages</h3>
-                                            {this.state.childrenIds !== undefined && (
-                                                <span className="messages--number">
-                                                    {this.state.childrenIds.length}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="section--content children-container">
-                                            {this.state.childrenBusy && (<Spinner />)}
-                                            {this.state.childrenIds?.map(childId => (
-                                                <div
-                                                    className="section--value
-                                                         section--value__code featured row middle"
-                                                    key={childId}
+                                    <div className="section--header">
+                                        <h3>Child Messages</h3>
+                                        {this.state.childrenIds !== undefined && (
+                                            <span className="messages--number">
+                                                {this.state.childrenIds.length}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="section--data">
+                                        {this.state.childrenBusy && (<Spinner />)}
+                                        {this.state.childrenIds?.map(childId => (
+                                            <div
+                                                className="value
+                                                         code highlight row middle"
+                                                key={childId}
+                                            >
+                                                <Link
+                                                    className="margin-r-t"
+                                                    to={
+                                                        `/${this.props.match.params.network
+                                                        }/message/${childId}`
+                                                    }
                                                 >
-                                                    <Link
-                                                        className="margin-r-t"
-                                                        to={
-                                                            `/${this.props.match.params.network
-                                                            }/message/${childId}`
-                                                        }
-                                                    >
-                                                        {childId}
-                                                    </Link>
-                                                    <MessageButton
-                                                        onClick={() => ClipboardHelper.copy(
-                                                            childId
-                                                        )}
-                                                        buttonType="copy"
-                                                        labelPosition="top"
-                                                    />
-                                                </div>
-                                            ))}
-                                            {!this.state.childrenBusy &&
-                                                this.state.childrenIds &&
-                                                this.state.childrenIds.length === 0 && (
-                                                    <p>There are no children for this message.</p>
-                                                )}
-                                        </div>
+                                                    {childId}
+                                                </Link>
+                                                <MessageButton
+                                                    onClick={() => ClipboardHelper.copy(
+                                                        childId
+                                                    )}
+                                                    buttonType="copy"
+                                                    labelPosition="top"
+                                                />
+                                            </div>
+                                        ))}
+                                        {!this.state.childrenBusy &&
+                                            this.state.childrenIds &&
+                                            this.state.childrenIds.length === 0 && (
+                                                <p>There are no children for this message.</p>
+                                            )}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 

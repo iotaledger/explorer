@@ -27,13 +27,13 @@ class Bech32Address extends Component<Bech32AddressProps> {
         return (
             <div className="bech32-address">
                 {this.props.addressDetails?.bech32 && (
-                    <React.Fragment>
+                    <div className="section--data">
                         {!this.props.hideLabel && (
-                            <div className="section--label">
+                            <div className="label">
                                 Address
                             </div>
                         )}
-                        <div className="section--value row middle">
+                        <div className="value row middle">
                             {this.props.history && (
                                 <button
                                     type="button"
@@ -58,14 +58,14 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                 />
                             )}
                         </div>
-                    </React.Fragment>
+                    </div>
                 )}
                 {this.props.advancedMode && this.props.addressDetails?.typeLabel && this.props.addressDetails?.hex && (
-                    <React.Fragment>
-                        <div className="section--label">
+                    <div className="section--data">
+                        <div className="label">
                             {this.props.addressDetails.typeLabel} Address
                         </div>
-                        <div className="section--value row middle">
+                        <div className="value row middle">
                             {this.props.history && (
                                 <button
                                     type="button"
@@ -86,7 +86,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                 labelPosition="top"
                             />
                         </div>
-                    </React.Fragment>
+                    </div>
                 )}
             </div>
         );
