@@ -5,6 +5,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IdentityHelper } from "../../../helpers/identityHelper";
 import { IIdentityMessageWrapper } from "../../../models/identity/IIdentityMessageWrapper";
+import IdentityDiffStorageService from "../../../services/identityDiffStorageService";
 import { IdentityService } from "../../../services/identityService";
 import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
 import Spinner from "../Spinner";
@@ -93,6 +94,13 @@ export default class IdentityHistory extends Component<
                                             selectedComparisonMessage: undefined
                                         });
                                     }}
+                                    updateCompareWith={() => {
+                                        this.setState({
+                                            compareWith: this.getPreviousMessages(
+                                                this.state.selectedMessage?.messageId ?? ""
+                                            )
+                                        });
+                                    }}
                                 />
                             </div>
                             <IdentityJsonCompare
@@ -128,17 +136,27 @@ export default class IdentityHistory extends Component<
             (element: { messageId: string }) => element.messageId === messageId
         );
 
-        const previousMessages = [];
+        let previousMessages: IIdentityMessageWrapper[] = [];
 
         let i = inclusive ? index : index + 1;
 
         for (i; i < integrationChainData.length; i++) {
-            previousMessages.push({
-                messageId: integrationChainData[i].messageId,
-                message: integrationChainData[i].document,
+            if (i !== index) {
+                // add diffs if already loaded
+                const diffs = IdentityDiffStorageService.instance.getDiffMessages(integrationChainData[i].messageId);
+                if (diffs) {
+                    previousMessages = previousMessages.concat(diffs);
+                }
+            }
+            // add integrations message
+            const msg: IIdentityMessageWrapper = {
                 document: IdentityHelper.removeMetaDataFromDocument(integrationChainData[i].document),
-                isDiff: false
-            });
+                isDiff: false,
+                message: integrationChainData[i].document,
+                messageId: integrationChainData[i].messageId
+            };
+
+            previousMessages.push(msg);
         }
         return previousMessages;
     }

@@ -42,4 +42,9 @@ export interface IdentityTreeItemProps {
      * @param compareWith (in case of diff message) previous diff messages that can be compared with clicked message.
      */
     onItemClick(selectedItem: IIdentityMessageWrapper, compareWith?: IIdentityMessageWrapper[]): void;
+
+    /**
+     * update the messages to compare with of the selected message.
+     */
+    updateCompareWith(): void;
 }

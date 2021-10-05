@@ -7,4 +7,8 @@ export interface IdentityTreeProps {
 
     onItemClick(selectedItem: IIdentityMessageWrapper, compareWith?: IIdentityMessageWrapper[]): void;
 
+    /**
+     * update the messages to compare with of the selected message.
+     */
+    updateCompareWith(): void;
 }
