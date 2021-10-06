@@ -8,7 +8,7 @@ import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../helpers/downloadHelper";
 import { IdentityHelper } from "../../helpers/identityHelper";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
-import IdentityDiffStorageService from "../../services/identityDiffStorageService";
+import { IdentityDiffStorageService } from "../../services/identityDiffStorageService";
 import { IdentityService } from "../../services/identityService";
 import { NetworkService } from "../../services/networkService";
 import { TangleCacheService } from "../../services/tangleCacheService";

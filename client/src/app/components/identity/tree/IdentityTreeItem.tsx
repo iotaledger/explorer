@@ -6,7 +6,7 @@ import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IdentityHelper } from "../../../../helpers/identityHelper";
 import { DiffMessage } from "../../../../models/api/IIdentityDiffHistoryResponse";
 import { IIdentityMessageWrapper } from "../../../../models/identity/IIdentityMessageWrapper";
-import IdentityDiffStorageService from "../../../../services/identityDiffStorageService";
+import { IdentityDiffStorageService } from "../../../../services/identityDiffStorageService";
 import { IdentityService } from "../../../../services/identityService";
 import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
 import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
@@ -117,7 +117,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                                                 this.getPreviousMessages(content.messageId)
                                             );
                                         }}
-                                        updateCompareWith={this.props.updateCompareWith}
+                                        onDiffMessagesUpdate={this.props.onDiffMessagesUpdate}
                                     />
                                 </div>
                             ))}
@@ -318,7 +318,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
         IdentityDiffStorageService.instance.setDiffMessages(this.props.itemMessage.messageId, res.chainData);
 
         // in case a newer message is selected, the loaded diffs will be available to compare with.
-        this.props.updateCompareWith();
+        this.props.onDiffMessagesUpdate();
     }
 
     private removeEscapingBackslash(str: string) {

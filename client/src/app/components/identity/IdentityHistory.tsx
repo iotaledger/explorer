@@ -5,7 +5,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IdentityHelper } from "../../../helpers/identityHelper";
 import { IIdentityMessageWrapper } from "../../../models/identity/IIdentityMessageWrapper";
-import IdentityDiffStorageService from "../../../services/identityDiffStorageService";
+import { IdentityDiffStorageService } from "../../../services/identityDiffStorageService";
 import { IdentityService } from "../../../services/identityService";
 import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
 import Spinner from "../Spinner";
@@ -94,7 +94,7 @@ export default class IdentityHistory extends Component<
                                             selectedComparisonMessage: undefined
                                         });
                                     }}
-                                    updateCompareWith={() => {
+                                    onDiffMessagesUpdate={() => {
                                         this.setState({
                                             compareWith: this.getPreviousMessages(
                                                 this.state.selectedMessage?.messageId ?? ""

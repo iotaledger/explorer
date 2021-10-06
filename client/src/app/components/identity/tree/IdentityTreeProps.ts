@@ -8,7 +8,7 @@ export interface IdentityTreeProps {
     onItemClick(selectedItem: IIdentityMessageWrapper, compareWith?: IIdentityMessageWrapper[]): void;
 
     /**
-     * update the messages to compare with of the selected message.
+     * triggered when new diff messages are loaded.
      */
-    updateCompareWith(): void;
+    onDiffMessagesUpdate(): void;
 }

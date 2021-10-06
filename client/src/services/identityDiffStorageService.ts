@@ -3,7 +3,7 @@ import { IIdentityMessageWrapper } from "../models/identity/IIdentityMessageWrap
 /**
  * Singleton for storing diff messages.
  */
-export default class IdentityDiffStorageService {
+export class IdentityDiffStorageService {
     private static _instance: IdentityDiffStorageService;
 
     private readonly diffMap: Map<string, IIdentityMessageWrapper[]>;
