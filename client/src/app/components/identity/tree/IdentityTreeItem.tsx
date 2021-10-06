@@ -6,6 +6,7 @@ import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IdentityHelper } from "../../../../helpers/identityHelper";
 import { DiffMessage } from "../../../../models/api/IIdentityDiffHistoryResponse";
 import { IIdentityMessageWrapper } from "../../../../models/identity/IIdentityMessageWrapper";
+import { IdentityDiffStorageService } from "../../../../services/identityDiffStorageService";
 import { IdentityService } from "../../../../services/identityService";
 import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
 import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
@@ -116,6 +117,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                                                 this.getPreviousMessages(content.messageId)
                                             );
                                         }}
+                                        onDiffMessagesUpdate={this.props.onDiffMessagesUpdate}
                                     />
                                 </div>
                             ))}
@@ -281,8 +283,6 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
             this.props.itemMessage.message
         );
 
-        console.log(res);
-
         // if result includes Error
         if (res.error) {
             this.setState({
@@ -304,6 +304,8 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                 (res.chainData[i].message as DiffMessage).diff = JSON.parse(
                     this.removeEscapingBackslash((diff?.message as DiffMessage).diff as string) ?? ""
                 );
+                res.chainData[i].isDiff = true;
+                res.chainData[i].document = IdentityHelper.removeMetaDataFromDocument(res.chainData[i].document);
             }
         }
 
@@ -312,6 +314,11 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
             diffHistory: res,
             error: undefined
         });
+
+        IdentityDiffStorageService.instance.setDiffMessages(this.props.itemMessage.messageId, res.chainData);
+
+        // in case a newer message is selected, the loaded diffs will be available to compare with.
+        this.props.onDiffMessagesUpdate();
     }
 
     private removeEscapingBackslash(str: string) {

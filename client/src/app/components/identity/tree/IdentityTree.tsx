@@ -51,6 +51,7 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
                             });
                             this.props.onItemClick(selectedItem, compareWith);
                         }}
+                        onDiffMessagesUpdate={this.props.onDiffMessagesUpdate}
                     />
                 ))}
             </div>
