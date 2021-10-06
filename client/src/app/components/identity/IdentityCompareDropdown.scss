@@ -1,4 +1,5 @@
 @import "../../../scss/variables";
+@import "../../../scss/layout.scss";
 
 .dropdown-wrapper {
   position: relative;
@@ -32,6 +33,12 @@
   &:hover {
     cursor: pointer;
   }
+
+  p {
+    @include phone-down {
+      font-size: 0.7em !important;
+    }
+  }
 }
 
 .dropdown-placeholder {
@@ -40,6 +47,12 @@
 }
 
 .dropdown-content {
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
   display: flex;
   position: absolute;
   top: 35px;

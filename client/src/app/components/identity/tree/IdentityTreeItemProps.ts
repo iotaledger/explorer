@@ -1,4 +1,4 @@
-import { IntegrationDocument } from "../../../../models/api/IIdentityDidHistoryResponse";
+import { IIdentityMessageWrapper } from "./../../../../models/identity/IIdentityMessageWrapper";
 
 export interface IdentityTreeItemProps {
     /**
@@ -27,19 +27,24 @@ export interface IdentityTreeItemProps {
     parentFirstMsg?: boolean;
 
     /**
-     * The messageId of the selected message of the tree.
+     * message that is represented by this tree item.
      */
-    selectedMessageId: string;
+    itemMessage: IIdentityMessageWrapper;
 
     /**
-     * message Id of current message.
+     * the selected message in the tree.
      */
-    messageId?: string;
+    selectedMessage: IIdentityMessageWrapper;
 
     /**
-     * Content of current message.
+     * mouse click on item.
+     * @param selectedItem message of item that has been clicked.
+     * @param compareWith (in case of diff message) previous diff messages that can be compared with clicked message.
      */
-    content?: IntegrationDocument;
+    onItemClick(selectedItem: IIdentityMessageWrapper, compareWith?: IIdentityMessageWrapper[]): void;
 
-    onItemClick(messageId?: string, content?: unknown): void;
+    /**
+     * triggered when new diff messages are loaded.
+     */
+    onDiffMessagesUpdate(): void;
 }

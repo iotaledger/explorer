@@ -1,3 +1,4 @@
+import { IIdentityDocument } from "./../identity/IIdentityDocument";
 export interface IIdentityDidHistoryResponse {
     integrationChainData?: IntegrationChainData[];
     diffChainData?: unknown[];
@@ -7,11 +8,7 @@ export interface IIdentityDidHistoryResponse {
 }
 
 export interface IntegrationChainData {
-    document: IntegrationDocument;
+    document: IIdentityDocument;
     messageId: string;
 }
 
-export interface IntegrationDocument {
-    created?: string;
-    updated?: string;
-}

@@ -1,7 +1,7 @@
 import { IIdentityDiffHistoryResponse } from "../../../../models/api/IIdentityDiffHistoryResponse";
 
 export interface IdentityTreeItemState {
-    // If children of current integraion message are shown.
+    // If children of current integration message are shown.
     hasChildren: boolean;
 
     // If loading diff history of current integration message is in progress.
