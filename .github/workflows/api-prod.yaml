@@ -80,11 +80,6 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
-      - name: Build
-        run: |
-          cd api
-          npm install
-          npm run build
       - name: Deploy
         run: |
           cd api
