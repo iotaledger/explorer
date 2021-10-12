@@ -1,4 +1,5 @@
-import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, serializeMessage, TRANSACTION_PAYLOAD_TYPE, WriteStream } from "@iota/iota.js";
+import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, serializeMessage, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
+import { WriteStream } from "@iota/util.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { FaFileDownload } from "react-icons/fa";

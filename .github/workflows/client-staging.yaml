@@ -2,7 +2,7 @@ name: Client Build and Deploy Staging
 
 on:
   push:
-    branches: [develop]
+    branches: [dev]
     paths:
       - "client/**"
       - ".github/workflows/client-staging.yaml"

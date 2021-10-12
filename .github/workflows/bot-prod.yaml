@@ -2,7 +2,7 @@ name: Bot Build and Deploy Production
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - "discord-bot/**"
       - ".github/workflows/bot-prod.yaml"

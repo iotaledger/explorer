@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
-import { SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper, WriteStream } from "@iota/iota.js";
+import { SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, UnitsHelper } from "@iota/iota.js";
+import { WriteStream } from "@iota/util.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";

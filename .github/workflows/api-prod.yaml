@@ -2,7 +2,7 @@ name: API Build and Deploy Production
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - "api/**"
       - ".github/workflows/api-prod.yaml"

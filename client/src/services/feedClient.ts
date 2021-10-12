@@ -1,5 +1,7 @@
-import { Blake2b, Converter, deserializeMessage, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, ReadStream, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
+import { Blake2b } from "@iota/crypto.js";
+import { deserializeMessage, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
 import { asTransactionObject } from "@iota/transaction-converter";
+import { Converter, ReadStream } from "@iota/util.js";
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";

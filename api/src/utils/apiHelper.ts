@@ -1,4 +1,5 @@
-import { Converter, Ed25519 } from "@iota/iota.js";
+import { Ed25519 } from "@iota/crypto.js";
+import { Converter } from "@iota/util.js";
 import path from "path";
 import { inspect } from "util";
 import { IDataResponse } from "../models/api/IDataResponse";
