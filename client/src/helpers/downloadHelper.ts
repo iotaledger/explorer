@@ -1,4 +1,4 @@
-import { Converter } from "@iota/iota.js";
+import { Converter } from "@iota/util.js";
 
 /**
  * Class to help with downloading.

@@ -1,4 +1,5 @@
-import { Bech32Helper, Converter, ED25519_ADDRESS_TYPE } from "@iota/iota.js";
+import { Bech32Helper, ED25519_ADDRESS_TYPE } from "@iota/iota.js";
+import { Converter } from "@iota/util.js";
 import { IBech32AddressDetails } from "../models/IBech32AddressDetails";
 
 export class Bech32AddressHelper {

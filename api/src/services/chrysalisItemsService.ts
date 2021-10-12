@@ -1,5 +1,6 @@
-import { Converter, IMessageMetadata } from "@iota/iota.js";
+import { IMessageMetadata } from "@iota/iota.js";
 import type { IMqttClient } from "@iota/mqtt.js";
+import { Converter } from "@iota/util.js";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IFeedItemMetadata } from "../models/api/IFeedItemMetadata";
 import { IFeedSubscriptionMessage } from "../models/api/IFeedSubscriptionMessage";

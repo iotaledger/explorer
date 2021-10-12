@@ -91,7 +91,7 @@ Make sure to discuss the feature on [Discord](https://discord.iota.org/).
 
 ### Building a new feature
 
-To build a new feature, check out a new branch based on the `master` branch, and be sure to consider the following:
+To build a new feature, check out a new branch based on the `main` branch, and be sure to consider the following:
 
 - If the feature has a public facing API, make sure to document it, using JSDoc code comments
 </details>
@@ -121,7 +121,7 @@ The following is a typical workflow for submitting a new pull request:
 1. Fork this repository
 2. Create a new branch based on your fork. For example, `git checkout -b fix/my-fix` or ` git checkout -b feat/my-feature`.
 3. Commit changes and push them to your fork
-4. Target your pull request to be merged with `master`
+4. Target your pull request to be merged with `main`
 
 If all [status checks](https://help.github.com/articles/about-status-checks/) pass, and the maintainer approves the PR, it will be merged.
 

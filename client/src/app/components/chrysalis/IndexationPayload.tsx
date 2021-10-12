@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Converter } from "@iota/iota.js";
+import { Converter } from "@iota/util.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";

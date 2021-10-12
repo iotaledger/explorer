@@ -1,5 +1,7 @@
 import { composeAPI, Transaction } from "@iota/core";
-import { Bech32Helper, Blake2b, Converter, ED25519_ADDRESS_TYPE, IAddressOutputsResponse, IMessagesResponse, IMilestoneResponse, IOutputResponse, serializeMessage, SingleNodeClient, WriteStream } from "@iota/iota.js";
+import { Blake2b } from "@iota/crypto.js";
+import { Bech32Helper, ED25519_ADDRESS_TYPE, IAddressOutputsResponse, IMessagesResponse, IMilestoneResponse, IOutputResponse, serializeMessage, SingleNodeClient } from "@iota/iota.js";
+import { Converter, WriteStream } from "@iota/util.js";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
