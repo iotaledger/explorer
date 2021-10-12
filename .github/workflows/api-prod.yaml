@@ -88,4 +88,5 @@ jobs:
       - name: Deploy
         run: |
           cd api
+          gcloud config set app/cloud_build_timeout 900
           gcloud app deploy app.yaml dispatch.yaml --quiet
