@@ -5,10 +5,6 @@
 
 .milestone-payload {
   .milestone-action {
-    & + .section--action {
-      margin-left: 10px;
-    }
-
     @include font-size(14px, 21px);
 
     position: relative;
@@ -58,13 +54,6 @@
     &:disabled {
       opacity: 0.3;
       pointer-events: none;
-    }
-
-    &.section--action-icon {
-      @include font-size(20px);
-
-      padding: 8px;
-      border: 0;
     }
   }
 }

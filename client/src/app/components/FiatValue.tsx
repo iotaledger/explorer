@@ -37,11 +37,7 @@ class FiatValue extends Currency<FiatValueProps, FiatValueState> {
      */
     public render(): ReactNode {
         return (
-            this.props.value !== 0 && (
-                <span className={this.props.classNames}>
-                    {this.state.valueCurrency}
-                </span>
-            )
+            <span className={this.props.classNames}>{this.state.valueCurrency}</span>
         );
     }
 
@@ -49,14 +45,14 @@ class FiatValue extends Currency<FiatValueProps, FiatValueState> {
      * Update formatted currencies.
      */
     protected updateCurrency(): void {
-        if (this._currencyData && this.props.value) {
+        if (this._currencyData) {
             this.setState({
-                valueCurrency:
-                    this._currencyService.convertIota(
-                        this.props.value,
-                        this._currencyData,
-                        true,
-                        2)
+                valueCurrency: this._currencyService.convertIota(
+                    this.props.value,
+                    this._currencyData,
+                    true,
+                    2
+                )
             });
         }
     }

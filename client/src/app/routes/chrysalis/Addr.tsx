@@ -63,6 +63,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             ),
             formatFull: false,
             statusBusy: true,
+            receivedStatusBusy: true,
             status: "Loading transactions...",
             filterValue: "all",
             received: 0,
@@ -98,7 +99,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 historicOutputIds: result.historicAddressOutputIds
             }, async () => {
                 const outputs: IOutputResponse[] = [];
-
                 if (result.addressOutputIds) {
                     for (const outputId of result.addressOutputIds) {
                         const outputResult = await this._tangleCacheService.outputDetails(
@@ -184,26 +184,33 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 addressDetails={this.state.bech32AddressDetails}
                                                 advancedMode={true}
                                             />
-                                            {this.state.received !== undefined && (
-                                                <div className="section--data">
-                                                    <div className="label">
-                                                        Total received
-                                                    </div>
-                                                    <div className="value">
-                                                        {UnitsHelper.formatBest(this.state.received)}
-                                                        {" "}(<FiatValue value={this.state.received} />)
-                                                    </div>
+                                            <div className="section--data">
+                                                <div className="label">
+                                                    Total received
                                                 </div>
-                                            )}
+                                                <div className="value">
+                                                    {this.state.receivedStatusBusy ? (<Spinner />)
+                                                        : (
+                                                            <React.Fragment>
+                                                                ({UnitsHelper.formatBest(this.state.received)}
+                                                                {" "}(<FiatValue value={this.state.received} />))
+                                                            </React.Fragment>
+                                                        )}
+                                                </div>
+                                            </div>
                                             <div className="section--data">
                                                 <div className="label">
                                                     Total sent
                                                 </div>
                                                 <div className="value">
-                                                    {UnitsHelper.formatBest(this.state.sent)}
-                                                    {" "}(<FiatValue value={this.state.sent} />)
+                                                    {this.state.receivedStatusBusy ? (<Spinner />)
+                                                        : (
+                                                            <React.Fragment>
+                                                                ({UnitsHelper.formatBest(this.state.sent)}
+                                                                {" "}(<FiatValue value={this.state.sent} />))
+                                                            </React.Fragment>
+                                                        )}
                                                 </div>
-
                                             </div>
 
                                             {this.state.balance !== undefined && this.state.balance === 0 && (
@@ -310,7 +317,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <th>Amount</th>
                                             </tr>
                                             {
-                                                this.state.outputs.map(output =>
+                                                this.state.outputs.map((output, i) =>
                                                 (
                                                     <Transaction
                                                         key={output?.messageId}
@@ -324,6 +331,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 sent = received - this.state.balance;
                                                             }
                                                             this.setState({ received, sent });
+                                                            if (this.state.outputs &&
+                                                                i === this.state.outputs.length - 1) {
+                                                                this.setState({ receivedStatusBusy: false });
+                                                            }
                                                         }}
                                                     />
                                                 )

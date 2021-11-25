@@ -23,6 +23,11 @@ export interface AddrState {
     statusBusy: boolean;
 
     /**
+     * Is the received calculation status busy.
+     */
+    receivedStatusBusy: boolean;
+
+    /**
      * The status.
      */
     status: string;
