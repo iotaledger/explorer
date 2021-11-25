@@ -20,8 +20,7 @@
   white-space: pre-wrap;
 
   @include phone-down {
-    flex-wrap: wrap;
-    white-space: pre;
+    display: block;
   }
 
   .data-toggle--tabs {
@@ -31,7 +30,7 @@
     margin-left: 16px;
 
     @include phone-down {
-      margin-left: 60%;
+      margin-top: 16px;
     }
 
     .data-toggle--tab {

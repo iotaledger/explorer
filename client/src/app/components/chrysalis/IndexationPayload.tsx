@@ -54,7 +54,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
      */
     public render(): ReactNode {
         return (
-            <div className="indexation-payload">
+            <div>
                 <div className="section--header">
                     <div className="row middle">
                         <h2>
