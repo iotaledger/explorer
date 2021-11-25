@@ -381,10 +381,13 @@
               .feed-item--header {
                 justify-content: space-between;
                 margin-bottom: 10px;
+                padding: 0 8px;
 
                 .label {
                   @include font-size(12px, 18px);
 
+                  font-family: $inter;
+                  font-weight: 500;
                   min-width: 90px;
                   color: $gray-6;
                   text-transform: uppercase;
@@ -402,8 +405,12 @@
                 padding: 14px 8px;
 
                 @include tablet-down {
-                  display: block;
-                  padding: 24px;
+                  flex-direction: column;
+                  align-items: flex-start;
+                  justify-content: flex-start;
+                  padding: 0;
+                  padding-right: 32px;
+                  margin-bottom: 32px;
                 }
 
                 &:hover {
@@ -416,7 +423,6 @@
 
                   @include tablet-down {
                     flex-direction: column;
-                    align-items: flex-start;
 
                     &:first-child {
                       margin-bottom: 16px;

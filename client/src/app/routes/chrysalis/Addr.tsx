@@ -192,8 +192,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     {this.state.receivedStatusBusy ? (<Spinner />)
                                                         : (
                                                             <React.Fragment>
-                                                                ({UnitsHelper.formatBest(this.state.received)}
-                                                                {" "}(<FiatValue value={this.state.received} />))
+                                                                {UnitsHelper.formatBest(this.state.received)}
+                                                                {" "}(<FiatValue value={this.state.received} />)
                                                             </React.Fragment>
                                                         )}
                                                 </div>
@@ -206,8 +206,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     {this.state.receivedStatusBusy ? (<Spinner />)
                                                         : (
                                                             <React.Fragment>
-                                                                ({UnitsHelper.formatBest(this.state.sent)}
-                                                                {" "}(<FiatValue value={this.state.sent} />))
+                                                                {UnitsHelper.formatBest(this.state.sent)}
+                                                                {" "}(<FiatValue value={this.state.sent} />)
                                                             </React.Fragment>
                                                         )}
                                                 </div>
