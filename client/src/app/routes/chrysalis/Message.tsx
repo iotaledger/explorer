@@ -1,11 +1,8 @@
-import { CONFLICT_REASON_STRINGS, Converter, Ed25519Address, ED25519_ADDRESS_TYPE, IMessage, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, MILESTONE_PAYLOAD_TYPE, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper, WriteStream } from "@iota/iota.js";
-import classNames from "classnames";
+import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
@@ -24,6 +21,7 @@ import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
 import Switcher from "../../components/Switcher";
 import messageJSON from "./../../../assets/modals/message.json";
+import { TransactionsHelper } from "./../../../helpers/transactionsHelper";
 import "./Message.scss";
 import { MessageRouteProps } from "./MessageRouteProps";
 import { MessageState } from "./MessageState";
@@ -95,7 +93,19 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
             window.history.replaceState(undefined, window.document.title, `/${this.props.match.params.network
                 }/message/${result.includedMessageId ?? this.props.match.params.messageId}`);
 
-            await this.getInputsAndOutputs(result?.message);
+            const { inputs, outputs, unlockAddresses, transferTotal } =
+                await TransactionsHelper.getInputsAndOutputs(result?.message,
+                    this.props.match.params.network,
+                    this._bechHrp,
+                    this._tangleCacheService);
+            this.setState({
+                inputs,
+                outputs,
+                unlockAddresses,
+                transferTotal
+            }, async () => {
+                await this.updateMessageDetails();
+            });
 
             this.setState({
                 paramMessageId: this.props.match.params.messageId,
@@ -525,133 +535,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
         }
 
         return conflictReason;
-    }
-
-    /**
-     * Get inputs and outputs for the message.
-     * @param transactionMessage The message to get inputs and outputs.
-     */
-    private async getInputsAndOutputs(transactionMessage: IMessage): Promise<void> {
-        if (transactionMessage?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-            const inputs: (IUTXOInput & {
-                outputHash: string;
-                isGenesis: boolean;
-                transactionUrl: string;
-                transactionAddress: IBech32AddressDetails;
-                signature: string;
-                publicKey: string;
-                amount: number;
-            })[] = [];
-            const outputs = [];
-            let transferTotal = 0;
-            const unlockAddresses: IBech32AddressDetails[] = [];
-
-
-            const GENESIS_HASH = "0".repeat(64);
-
-            const signatureBlocks: ISignatureUnlockBlock[] = [];
-            for (let i = 0; i < transactionMessage.payload.unlockBlocks.length; i++) {
-                if (transactionMessage.payload.unlockBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE) {
-                    const sigUnlockBlock = transactionMessage.payload.unlockBlocks[i] as ISignatureUnlockBlock;
-                    signatureBlocks.push(sigUnlockBlock);
-                } else if (transactionMessage.payload.unlockBlocks[i].type === REFERENCE_UNLOCK_BLOCK_TYPE) {
-                    const refUnlockBlock = transactionMessage.payload.unlockBlocks[i] as IReferenceUnlockBlock;
-                    signatureBlocks.push(
-                        transactionMessage.payload.unlockBlocks[refUnlockBlock.reference] as ISignatureUnlockBlock
-                    );
-                }
-            }
-
-            for (let i = 0; i < signatureBlocks.length; i++) {
-                unlockAddresses.push(
-                    Bech32AddressHelper.buildAddress(
-                        this._bechHrp,
-                        Converter.bytesToHex(
-                            new Ed25519Address(Converter.hexToBytes(signatureBlocks[i].signature.publicKey))
-                                .toAddress()
-                        ),
-                        signatureBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE
-                            ? ED25519_ADDRESS_TYPE : undefined
-                    )
-                );
-            }
-
-            for (let i = 0; i < transactionMessage.payload.essence.inputs.length; i++) {
-                const input = transactionMessage.payload.essence.inputs[i];
-                const isGenesis = input.transactionId === GENESIS_HASH;
-                const writeOutputStream = new WriteStream();
-                writeOutputStream.writeUInt16("transactionOutputIndex", input.transactionOutputIndex);
-                const outputHash = input.transactionId + writeOutputStream.finalHex();
-                const transactionOutputIndex = input.transactionOutputIndex;
-                const transactionResult = await this._tangleCacheService.search(
-                    this.props.match.params.network, input.transactionId);
-                let amount = 0;
-                if (transactionResult?.message && transactionResult?.message.payload?.type ===
-                    TRANSACTION_PAYLOAD_TYPE) {
-                    amount = transactionResult.message.payload?.essence.outputs[transactionOutputIndex].amount;
-                }
-                inputs.push({
-                    ...input,
-                    amount,
-                    isGenesis,
-                    outputHash,
-                    transactionUrl: `/${this.props.match.params.network}/search/${outputHash}`,
-                    transactionAddress: unlockAddresses[i],
-                    signature: signatureBlocks[i].signature.signature,
-                    publicKey: signatureBlocks[i].signature.publicKey
-                });
-            }
-
-            let remainderIndex = 1000;
-            for (let i = 0; i < transactionMessage.payload.essence.outputs.length; i++) {
-                if (transactionMessage.payload.essence.outputs[i].type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
-                    transactionMessage.payload.essence.outputs[i].type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) {
-                    const address = Bech32AddressHelper.buildAddress(
-                        this._bechHrp,
-                        transactionMessage.payload.essence.outputs[i].address.address,
-                        transactionMessage.payload.essence.outputs[i].address.type);
-                    const isRemainder = inputs.some(input => input.transactionAddress.bech32 === address.bech32);
-                    outputs.push({
-                        index: isRemainder ? (remainderIndex++) + i : i,
-                        type: transactionMessage.payload.essence.outputs[i].type,
-                        address,
-                        amount: transactionMessage.payload.essence.outputs[i].amount,
-                        isRemainder
-                    });
-                    if (!isRemainder) {
-                        transferTotal += transactionMessage.payload.essence.outputs[i].amount;
-                    }
-                }
-            }
-
-            for (let i = 0; i < inputs.length; i++) {
-                const outputResponse = await this._tangleCacheService.outputDetails(
-                    this.props.match.params.network, inputs[i].outputHash
-                );
-
-                if (outputResponse?.output) {
-                    inputs[i].transactionAddress = Bech32AddressHelper.buildAddress(
-                        this._bechHrp,
-                        outputResponse.output.address.address,
-                        outputResponse.output.address.type
-                    );
-                    inputs[i].transactionUrl =
-                        `/${this.props.match.params.network}/message/${outputResponse.messageId}`;
-                }
-            }
-
-            outputs.sort((a, b) => a.index - b.index);
-
-
-            this.setState({
-                inputs,
-                outputs,
-                unlockAddresses,
-                transferTotal
-            }, async () => {
-                await this.updateMessageDetails();
-            });
-        }
     }
 }
 

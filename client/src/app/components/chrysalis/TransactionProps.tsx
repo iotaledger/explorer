@@ -1,21 +1,12 @@
-import { IOutputResponse } from "@iota/iota.js";
+
+import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 
 export interface TransactionProps {
-    /**
-     * The output.
-     */
-    output: IOutputResponse;
-    /**
-     * The network to lookup.
-     */
+    messageId: string;
+    inputs: number;
+    outputs: number;
+    messageTangleStatus: MessageTangleStatus;
+    date: string;
+    amount: number;
     network: string;
-    /**
-     * The filter value.
-     */
-    filterValue: "all" | "incoming" | "outgoing";
-
-    /**
-     * The received amount handler.
-     */
-    receivedAmountHandler(amount: number): void;
 }

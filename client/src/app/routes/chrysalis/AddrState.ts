@@ -1,5 +1,6 @@
 import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
+import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 
 export interface AddrState {
     /**
@@ -21,11 +22,6 @@ export interface AddrState {
      * Is the component status busy.
      */
     statusBusy: boolean;
-
-    /**
-     * Is the received calculation status busy.
-     */
-    receivedStatusBusy: boolean;
 
     /**
      * The status.
@@ -71,4 +67,13 @@ export interface AddrState {
      * Value of the transaction filter.
      */
     filterValue: "all" | "incoming" | "outgoing";
+
+    transactions?: {
+        messageId: string;
+        inputs: number;
+        outputs: number;
+        messageTangleStatus: MessageTangleStatus;
+        date: string;
+        amount: number;
+    }[];
 }

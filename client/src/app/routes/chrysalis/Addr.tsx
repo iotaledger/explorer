@@ -1,8 +1,9 @@
-import { IOutputResponse, UnitsHelper } from "@iota/iota.js";
+import { ISigLockedDustAllowanceOutput, ISigLockedSingleOutput, IUTXOInput, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
+import { TransactionsHelper } from "../../../helpers/transactionsHelper";
 import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
@@ -62,8 +63,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 props.match.params.address
             ),
             formatFull: false,
+            transactions: undefined,
             statusBusy: true,
-            receivedStatusBusy: true,
             status: "Loading transactions...",
             filterValue: "all",
             received: 0,
@@ -98,52 +99,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 outputIds: result.addressOutputIds,
                 historicOutputIds: result.historicAddressOutputIds
             }, async () => {
-                const outputs: IOutputResponse[] = [];
-                if (result.addressOutputIds) {
-                    for (const outputId of result.addressOutputIds) {
-                        const outputResult = await this._tangleCacheService.outputDetails(
-                            this.props.match.params.network, outputId);
-
-                        if (outputResult) {
-                            outputs.push(outputResult);
-
-                            this.setState({
-                                outputs,
-                                status: `Loading transactions [${outputs.length}/${result.addressOutputIds.length}]`
-                            });
-                        }
-
-                        if (!this._isMounted) {
-                            break;
-                        }
-                    }
-                }
-                const historicOutputs: IOutputResponse[] = [];
-
-                if (result.historicAddressOutputIds) {
-                    for (const outputId of result.historicAddressOutputIds) {
-                        const outputResult = await this._tangleCacheService.outputDetails(
-                            this.props.match.params.network, outputId);
-
-                        if (outputResult) {
-                            historicOutputs.push(outputResult);
-
-                            this.setState({
-                                historicOutputs,
-                                status: "Loading historic..."
-                            });
-                        }
-
-                        if (!this._isMounted) {
-                            break;
-                        }
-                    }
-                }
-                this.setState({
-                    outputs: outputs.concat(historicOutputs),
-                    status: "",
-                    statusBusy: false
-                });
+                await this.getTransactions(this.state.outputIds, this.state.historicOutputIds);
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
@@ -189,7 +145,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     Total received
                                                 </div>
                                                 <div className="value">
-                                                    {this.state.receivedStatusBusy ? (<Spinner />)
+                                                    {this.state.statusBusy ? (<Spinner />)
                                                         : (
                                                             <React.Fragment>
                                                                 {UnitsHelper.formatBest(this.state.received)}
@@ -203,7 +159,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     Total sent
                                                 </div>
                                                 <div className="value">
-                                                    {this.state.receivedStatusBusy ? (<Spinner />)
+                                                    {this.state.statusBusy ? (<Spinner />)
                                                         : (
                                                             <React.Fragment>
                                                                 {UnitsHelper.formatBest(this.state.sent)}
@@ -265,7 +221,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     </div>
                                 )}
 
-                                {this.state.outputs && this.state.outputs.length > 0 && (
+                                {this.state.transactions && this.state.transactions?.length > 0 && (
                                     <div className="section transaction--section">
                                         <div className="section--header section--header__space-between">
                                             <div className="row middle">
@@ -316,30 +272,14 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <th>Status</th>
                                                 <th>Amount</th>
                                             </tr>
-                                            {
-                                                this.state.outputs.map((output, i) =>
-                                                (
-                                                    <Transaction
-                                                        key={output?.messageId}
-                                                        output={output}
-                                                        network={this.props.match.params.network}
-                                                        filterValue={this.state.filterValue}
-                                                        receivedAmountHandler={(amount: number): void => {
-                                                            const received = this.state.received + amount;
-                                                            let sent = this.state.sent;
-                                                            if (this.state.balance) {
-                                                                sent = received - this.state.balance;
-                                                            }
-                                                            this.setState({ received, sent });
-                                                            if (this.state.outputs &&
-                                                                i === this.state.outputs.length - 1) {
-                                                                this.setState({ receivedStatusBusy: false });
-                                                            }
-                                                        }}
-                                                    />
-                                                )
-                                                )
-                                            }
+                                            {this.state.transactions?.map(tx =>
+                                            (
+                                                <Transaction
+                                                    key={tx?.messageId}
+                                                    network={this.props.match.params.network}
+                                                    {...tx}
+                                                />
+                                            ))}
                                         </table>
                                     </div>
                                 )}
@@ -349,6 +289,56 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 </div >
             </div >
         );
+    }
+
+    private async getTransactions(outputIds: string[] = [], historicOutputIds: string[] = []): Promise<void> {
+        const transactions = [];
+        const totalOutputIds = outputIds.concat(historicOutputIds);
+        if (totalOutputIds) {
+            for (const outputId of totalOutputIds) {
+                const outputResult = await this._tangleCacheService.outputDetails(
+                    this.props.match.params.network, outputId);
+
+                if (outputResult) {
+                    const messageResult = await this._tangleCacheService.search(
+                        this.props.match.params.network, outputResult.messageId);
+                    const { inputs, outputs, ...rest } = await
+                        TransactionsHelper.getInputsAndOutputs(messageResult?.message,
+                            this.props.match.params.network, this._bechHrp, this._tangleCacheService);
+                    const { date, messageTangleStatus } = await TransactionsHelper.getMessageStatus(
+                        this.props.match.params.network, outputResult.messageId,
+                        this._tangleCacheService);
+                    const amount = await this.getTransactionAmount(inputs, outputs);
+                    transactions.push({
+                        messageId: outputResult.messageId,
+                        inputs: inputs.length,
+                        outputs: outputs.length,
+                        date,
+                        messageTangleStatus,
+                        amount
+                    });
+                    this.setState({
+                        transactions,
+                        status: `Loading transactions [${transactions.length}/${totalOutputIds.length}]`
+                    });
+                }
+
+                if (!this._isMounted) {
+                    break;
+                }
+            }
+            this.setState({
+                status: "",
+                statusBusy: false
+            });
+        }
+    }
+
+    // Add logic
+    private async getTransactionAmount(
+        inputs: IUTXOInput[],
+        outputs: (ISigLockedSingleOutput | ISigLockedDustAllowanceOutput)[]): Promise<number> {
+        return 0;
     }
 }
 
