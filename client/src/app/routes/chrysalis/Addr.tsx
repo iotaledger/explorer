@@ -4,6 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/transactionsHelper";
+import { ApiClient } from '../../../services/apiClient';
 import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
@@ -77,7 +78,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-
         const result = await this._tangleCacheService.search(
             this.props.match.params.network, this.props.match.params.address);
 
@@ -100,6 +100,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 historicOutputIds: result.historicAddressOutputIds
             }, async () => {
                 await this.getTransactions(this.state.outputIds, this.state.historicOutputIds);
+                await this.testrag();
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
@@ -334,6 +335,15 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 statusBusy: false
             });
         }
+    }
+
+    private async testrag() {
+        const apiClient = ServiceFactory.get<ApiClient>("api-client");
+        const response = await apiClient.transactionsDetails({
+            network: this.props.match.params.network,
+            address: this.state.address?.address ?? ""
+        });
+        console.log("response", response);
     }
 
     // Add logic

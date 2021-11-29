@@ -4,9 +4,11 @@ import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
 import { INetwork } from "../models/db/INetwork";
+import { AdvancedSingleNodeClient } from "./advancedSingleNodeClient";
 
 /**
  * Helper functions for use with tangle.
@@ -618,6 +620,28 @@ export class TangleHelper {
                 });
                 return await client.output(outputId);
             } catch {
+            }
+        }
+    }
+
+    /**
+     * Get the transactions of an address.
+     * @param network The network to find the items on.
+     * @param address The address to get the transactions associated to.
+     * @returns The transactions.
+     */
+    public static async transactionsDetails(network: INetwork,
+        address: string): Promise<ITransactionsDetailsResponse | undefined> {
+        if (network.permaNodeEndpoint) {
+            try {
+                const client = new AdvancedSingleNodeClient(network.permaNodeEndpoint, {
+                    userName: network.permaNodeEndpointUser,
+                    password: network.permaNodeEndpointPassword,
+                    basePath: "/"
+                });
+                return await client.transactionHistory(address);
+            } catch {
+                return { error: "Failed to fetch" };
             }
         }
     }
