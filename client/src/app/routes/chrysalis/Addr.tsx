@@ -271,6 +271,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <th>Outputs</th>
                                                 <th>Status</th>
                                                 <th>Amount</th>
+                                                <th>[DEV]: is_spent</th>
                                             </tr>
                                             {this.state.transactions?.map(tx =>
                                             (
@@ -315,7 +316,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                         outputs: outputs.length,
                         date,
                         messageTangleStatus,
-                        amount
+                        amount,
+                        isSpent: outputResult.isSpent
                     });
                     this.setState({
                         transactions,

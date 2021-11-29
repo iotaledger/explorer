@@ -75,5 +75,6 @@ export interface AddrState {
         messageTangleStatus: MessageTangleStatus;
         date: string;
         amount: number;
+        isSpent: boolean;
     }[];
 }

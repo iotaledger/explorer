@@ -9,4 +9,5 @@ export interface TransactionProps {
     date: string;
     amount: number;
     network: string;
+    isSpent: boolean;
 }
