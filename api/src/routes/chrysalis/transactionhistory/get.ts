@@ -15,7 +15,7 @@ import { ValidationHelper } from "../../../utils/validationHelper";
 export async function get(
     config: IConfiguration,
     request: ITransactionsDetailsRequest
-): Promise<ITransactionsDetailsResponse> {
+): Promise<{ transactionHistory: ITransactionsDetailsResponse } | unknown> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -25,7 +25,6 @@ export async function get(
     if (networkConfig.protocolVersion !== "chrysalis") {
         return {};
     }
-    // eslint-disable-next-line no-alert
     return {
         transactionHistory: await TangleHelper.transactionsDetails(networkConfig, request.address)
     };

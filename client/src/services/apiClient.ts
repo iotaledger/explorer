@@ -5,10 +5,10 @@ import { IMilestoneDetailsRequest } from "../models/api/chrysalis/IMilestoneDeta
 import { IMilestoneDetailsResponse } from "../models/api/chrysalis/IMilestoneDetailsResponse";
 import { IOutputDetailsRequest } from "../models/api/chrysalis/IOutputDetailsRequest";
 import { IOutputDetailsResponse } from "../models/api/chrysalis/IOutputDetailsResponse";
-import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ISearchRequest } from "../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
+import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
 import { IMarketGetRequest } from "../models/api/IMarketGetRequest";
 import { IMarketGetResponse } from "../models/api/IMarketGetResponse";
@@ -185,7 +185,6 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async transactionsDetails(request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse> {
-        console.log("[client]: transactionDetails");
         return this.callApi<unknown, ITransactionsDetailsResponse>(
             `transactionhistory/${request.network}/${request.address}`,
             "get"

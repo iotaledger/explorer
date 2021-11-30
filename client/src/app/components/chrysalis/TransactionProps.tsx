@@ -6,8 +6,8 @@ export interface TransactionProps {
     inputs: number;
     outputs: number;
     messageTangleStatus: MessageTangleStatus;
-    date: string;
-    amount: number;
+    date?: string;
+    amount?: number;
     network: string;
-    isSpent: boolean;
+    isSpent?: boolean;
 }

@@ -1,54 +1,36 @@
-import { Converter, IPowProvider, SingleNodeClientOptions, IResponse, ClientError } from "@iota/iota.js";
+import { ClientError, Converter, IResponse, SingleNodeClientOptions } from "@iota/iota.js";
 import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 /**
  * Client for API communication.
  */
 export class AdvancedSingleNodeClient {
     /**
- * A zero nonce.
- * @internal
- */
-    private static readonly NONCE_ZERO: Uint8Array = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0]);
-
-    /**
      * The endpoint for the API.
-     * @internal
      */
     private readonly _endpoint: string;
 
     /**
      * The base path for the API.
-     * @internal
      */
     private readonly _basePath: string;
 
     /**
-     * Optional PoW provider to be used for messages with nonce=0/undefined.
-     * @internal
-     */
-    private readonly _powProvider?: IPowProvider;
-
-    /**
      * The Api request timeout.
-     * @internal
      */
     private readonly _timeout?: number;
 
     /**
      * Username for the endpoint.
-     * @internal
      */
     private readonly _userName?: string;
 
     /**
      * Password for the endpoint.
-     * @internal
      */
     private readonly _password?: string;
 
     /**
      * Additional headers to include in the requests.
-     * @internal
      */
     private readonly _headers?: { [id: string]: string };
 
@@ -63,7 +45,6 @@ export class AdvancedSingleNodeClient {
         }
         this._endpoint = endpoint.replace(/\/+$/, "");
         this._basePath = options?.basePath ?? "/api/v1/";
-        this._powProvider = options?.powProvider;
         this._timeout = options?.timeout;
         this._userName = options?.userName;
         this._password = options?.password;
@@ -95,7 +76,6 @@ export class AdvancedSingleNodeClient {
      * @param headers The headers for the request.
      * @param requestData Request to send to the endpoint.
      * @returns The response.
-     * @internal
      */
 
     public async fetchWithTimeout(

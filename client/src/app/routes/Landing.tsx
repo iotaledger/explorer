@@ -243,12 +243,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                                             type="checkbox"
                                                                             checked={payload.isEnabled}
                                                                             onChange={
-                                                                                () => this.toggleFilterValue(payload.label)
+                                                                                () => (
+                                                                                    this.toggleFilter(payload.label)
+                                                                                )
                                                                             }
                                                                         />
                                                                         {payload.label}
                                                                     </label>
-                                                                    {((this.state.networkConfig.protocolVersion === "og" &&
+                                                                    {((this.state
+                                                                        .networkConfig
+                                                                        .protocolVersion === "og" &&
                                                                         payload.label === "Non-zero only" &&
                                                                         payload.isEnabled) ||
                                                                         (this.state.networkConfig.protocolVersion ===
@@ -507,7 +511,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * Enable or disable the payload type to show in feed.
      * @param payloadType The payload type to toggle.
      */
-    private toggleFilterValue(payloadType: string): void {
+    private toggleFilter(payloadType: string): void {
         const valuesFilter = this.state.valuesFilter.map(payload => {
             if (payload.label === payloadType) {
                 payload.isEnabled = !payload.isEnabled;

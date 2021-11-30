@@ -5,20 +5,31 @@ import { MessageTangleStatus } from "../models/messageTangleStatus";
 import { TangleCacheService } from "../services/tangleCacheService";
 import { Bech32AddressHelper } from "./bech32AddressHelper";
 
+interface Input {
+    outputHash: string;
+    isGenesis: boolean;
+    transactionUrl: string;
+    transactionAddress: IBech32AddressDetails;
+    signature: string;
+    publicKey: string;
+    amount: number;
+}
+
+interface Output {
+    index: number; type: 0 | 1; address: IBech32AddressDetails; amount: number; isRemainder: boolean;
+}
 export class TransactionsHelper {
     public static async getInputsAndOutputs(
         transactionMessage: IMessage | undefined,
-        network: string, _bechHrp: string, tangleCacheService: TangleCacheService): Promise<any> {
-        const inputs: (IUTXOInput & {
-            outputHash: string;
-            isGenesis: boolean;
-            transactionUrl: string;
-            transactionAddress: IBech32AddressDetails;
-            signature: string;
-            publicKey: string;
-            amount: number;
-        })[] = [];
-        const outputs = [];
+        network: string, _bechHrp: string, tangleCacheService: TangleCacheService):
+        Promise<{
+            inputs: (IUTXOInput & Input)[];
+            outputs: Output[];
+            unlockAddresses: IBech32AddressDetails[];
+            transferTotal: number;
+        }> {
+        const inputs: (IUTXOInput & Input)[] = [];
+        const outputs: Output[] = [];
         let transferTotal = 0;
         const unlockAddresses: IBech32AddressDetails[] = [];
 
@@ -124,7 +135,7 @@ export class TransactionsHelper {
     public static async getMessageStatus(
         network: string,
         messageId: string,
-        tangleCacheService: TangleCacheService): Promise<any> {
+        tangleCacheService: TangleCacheService): Promise<{ messageTangleStatus: MessageTangleStatus; date: string }> {
         let messageTangleStatus: MessageTangleStatus = "unknown";
         let date: string = "";
         const details = await tangleCacheService.messageDetails(
@@ -150,5 +161,5 @@ export class TransactionsHelper {
         }
         return { messageTangleStatus, date };
     }
-
 }
+

@@ -1,5 +1,6 @@
+import { ISigLockedDustAllowanceOutput, ISigLockedSingleOutput, IUTXOInput } from "@iota/iota.js";
+import { MessageTangleStatus } from "../../messageTangleStatus";
 import { IResponse } from "../IResponse";
-
 export interface Output {
     output: {
         address: {
@@ -35,11 +36,61 @@ export interface ITransaction {
      * The inputs.
      */
     inputs: Input[];
+    /**
+     * Date of Milestone Reference.
+     */
+    date?: string;
+    /**
+     * Message status
+     */
+    messageTangleStatus: MessageTangleStatus;
+    /**
+     * Show if a transation is spent or not.
+     */
+    isSpent?: boolean;
+    /**
+     * Transaction which is consumed related to the current transaction.
+     */
+    relatedSpentTransaction?: {
+        /**
+         * The message id the output was contained in.
+         */
+        messageId: string;
+        /**
+         * Message status
+         */
+        messageTangleStatus: MessageTangleStatus;
+        /**
+         * The inputs.
+         */
+        inputs: IUTXOInput[];
+        /**
+         * Date of Milestone Reference.
+         */
+        date?: string;
+        /**
+         * The outputs.
+         */
+        outputs: (ISigLockedDustAllowanceOutput | ISigLockedSingleOutput)[];
+        /**
+         * Show if a transation is spent or not.
+         */
+        isSpent?: boolean;
+    };
 }
 
 export interface ITransactionsDetailsResponse extends IResponse {
     /**
      * The transaction history data.
      */
-    transactionHistory?: ITransaction[];
+    transactionHistory: {
+        /**
+         * Transactions related to the address.
+         */
+        transactions?: ITransaction[];
+        /**
+         * State of Transactions.
+         */
+        state?: number;
+    };
 }

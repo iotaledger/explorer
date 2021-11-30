@@ -48,7 +48,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                     <td className={`amount ${this.state?.amount < 0 ? "negative" : "positive"}`}>
                         {UnitsHelper.formatBest(this.state?.amount)}
                     </td>
-                    <td>{this.props.isSpent ? 'YES' : 'NO'}</td>
+                    <td>{this.props.isSpent !== undefined ? (this.props.isSpent ? "YES" : "NO") : "-"}</td>
                 </tr>
             )
         );

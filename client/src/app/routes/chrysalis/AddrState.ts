@@ -1,6 +1,6 @@
 import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
+import { ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
-import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 
 export interface AddrState {
     /**
@@ -67,14 +67,8 @@ export interface AddrState {
      * Value of the transaction filter.
      */
     filterValue: "all" | "incoming" | "outgoing";
-
-    transactions?: {
-        messageId: string;
-        inputs: number;
-        outputs: number;
-        messageTangleStatus: MessageTangleStatus;
-        date: string;
-        amount: number;
-        isSpent: boolean;
-    }[];
+    /**
+     * List of transactions of an address.
+     */
+    transactionHistory?: ITransactionsDetailsResponse;
 }
