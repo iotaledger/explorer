@@ -7,6 +7,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../ModalProps";
 import messageJSON from "./../../../assets/modals/message.json";
+import "./MilestonePayload.scss";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
 
@@ -53,7 +54,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
     public render(): ReactNode {
         return (
             <div className="milestone-payload">
-                <div className="section--header section--header__space-between">
+                <div className="section--header row space-between">
                     <div className="row middle">
                         <h2>
                             Milestone Payload
@@ -61,13 +62,13 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         <Modal icon={ModalIcon.Info} data={messageJSON} />
                     </div>
                     {(this.state.hasPrevious || this.state.hasNext) && (
-                        <div className="row middle">
+                        <div className="section--data row middle">
                             <button
                                 disabled={!this.state.hasPrevious}
                                 type="button"
                                 onClick={async () =>
                                     this.loadIndex(this.state.previousIndex.toString(), true)}
-                                className="section--action margin-r-t"
+                                className="milestone-action margin-r-t"
                             >
                                 <span>Previous</span>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -80,7 +81,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                 type="button"
                                 onClick={async () =>
                                     this.loadIndex(this.state.nextIndex.toString(), true)}
-                                className="section--action margin-r-t"
+                                className="milestone-action margin-r-t"
                             >
                                 <span>Next</span>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -91,74 +92,85 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         </div>
                     )}
                 </div>
-                <div className="section--content max-w-55">
-                    <div className="section--label">
+                <div className="section--data ">
+                    <div className="label">
                         Index
                     </div>
-                    <div className="section--value">
+                    <div className="value">
                         {this.props.payload.index}
                     </div>
-                    <div className="section--label">
+                </div>
+                <div className="section--data ">
+                    <div className="label">
                         Date
                     </div>
-                    <div className="section--value">
+                    <div className="value">
                         {this.props.payload.timestamp && DateHelper.format(
                             DateHelper.milliseconds(
                                 this.props.payload.timestamp
                             )
                         )}
                     </div>
-                    {this.props.advancedMode && (
-                        <React.Fragment>
-                            <div className="section--label">
+                </div>
+                {this.props.advancedMode && (
+                    <React.Fragment>
+                        <div className="section--data ">
+                            <div className="label">
                                 Inclusion Merkle Proof
                             </div>
-                            <div className="section--value section--value__code">
+                            <div className="value code">
                                 {this.props.payload.inclusionMerkleProof}
                             </div>
-                            {this.props.payload.nextPoWScore !== 0 && this.props.payload.nextPoWScoreMilestoneIndex !== 0 && (
-                                <React.Fragment>
-                                    <div className="section--label">
+                        </div>
+                        {this.props.payload.nextPoWScore !== 0 && this.props.payload.nextPoWScoreMilestoneIndex !== 0 && (
+                            <React.Fragment>
+                                <div className="section--data ">
+                                    <div className="label">
                                         Next PoW Score
                                     </div>
-                                    <div className="section--value section--value__code">
+                                    <div className="value code">
                                         {this.props.payload.nextPoWScore}
                                     </div>
-                                    <div className="section--label">
+                                </div>
+                                <div className="section--data ">
+
+                                    <div className="label">
                                         Next PoW Score Milestone Index
                                     </div>
-                                    <div className="section--value section--value__code">
+                                    <div className="value code">
                                         {this.props.payload.nextPoWScoreMilestoneIndex}
                                     </div>
-                                </React.Fragment>
-                            )}
-                            {this.props.payload.publicKeys && (
-                                <React.Fragment>
-                                    <div className="section--label">
-                                        Public Keys
-                                    </div>
-                                    <div className="section--value section--value__code">
-                                        {this.props.payload.publicKeys?.map(pubKey => (
-                                            <div key={pubKey} className="margin-b-s">
-                                                {pubKey}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </React.Fragment>
-                            )}
-                            <div className="section--label">
+                                </div>
+                            </React.Fragment>
+                        )}
+                        {this.props.payload.publicKeys && (
+                            <div className="section--data">
+                                <div className="label">
+                                    Public Keys
+                                </div>
+                                <div className="value code">
+                                    {this.props.payload.publicKeys?.map(pubKey => (
+                                        <div key={pubKey} className="margin-b-s">
+                                            {pubKey}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        <div className="section--data ">
+                            <div className="label">
                                 Signatures
                             </div>
-                            <div className="section--value section--value__code">
+                            <div className="value code">
                                 {this.props.payload.signatures.map(sig => (
                                     <div key={sig} className="margin-b-s">
                                         {sig}
                                     </div>
                                 ))}
                             </div>
-                        </React.Fragment>
-                    )}
-                </div>
+                        </div>
+                    </React.Fragment>
+                )}
             </div>
         );
     }

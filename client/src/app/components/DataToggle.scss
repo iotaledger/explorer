@@ -15,12 +15,13 @@
   padding: 16px;
   border-radius: 6px;
   background-color: var(--light-bg);
-  color: var(body-color);
+  color: var(--body-color);
   font-family: $inter;
   white-space: pre-wrap;
 
   @include phone-down {
     flex-wrap: wrap;
+    display: block;
   }
 
   .data-toggle--tabs {
@@ -30,7 +31,7 @@
     margin-left: 16px;
 
     @include phone-down {
-      margin-left: 60%;
+      margin-top: 16px;
     }
 
     .data-toggle--tab {

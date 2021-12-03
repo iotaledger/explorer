@@ -1,0 +1,59 @@
+@import '../../../scss/fonts';
+@import '../../../scss/mixins';
+@import '../../../scss/media-queries';
+@import '../../../scss/variables';
+
+.milestone-payload {
+  .milestone-action {
+    @include font-size(14px, 21px);
+
+    position: relative;
+    width: 120px;
+    padding: 9px;
+    border: 1px solid $gray-3;
+    border-radius: 6px;
+    background: var(--light-bg);
+    color: var(--expanded-color);
+    font-family: $inter;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+
+    @include tablet-down {
+      width: 32px;
+      height: 32px;
+      border-radius: 100%;
+    }
+
+    span {
+      width: 100%;
+
+      @include tablet-down {
+        display: none;
+      }
+    }
+
+    svg {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      @include tablet-down {
+        display: block;
+      }
+    }
+
+    &:hover {
+      color: $main-green-highlight;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+  }
+}

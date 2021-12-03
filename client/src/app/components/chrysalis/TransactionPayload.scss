@@ -3,7 +3,7 @@
 @import '../../../scss/media-queries';
 @import '../../../scss/variables';
 
-.transaction-payload-wrapper {
+.transaction-payload {
   .section--header {
     .transaction-value {
       margin-left: auto;
@@ -12,43 +12,45 @@
       font-weight: 700;
 
       @include font-size(16px, 24px);
-    }
 
-    .value {
-      margin-right: 8px;
-      color: $gray-9;
-    }
+      .value {
+        margin-right: 8px;
+        color: $gray-9;
+      }
 
-    .fiat-value {
-      margin-left: 8px;
-    }
-  }
-
-  .card + .card {
-    margin-top: 0;
-    margin-left: 23px;
-  }
-
-  .card--content {
-    .section--value {
-      @include font-size(14px);
-
-      color: $blue-5;
-      font-family: $ibm-plex-mono;
-      font-weight: normal;
-      letter-spacing: 0.02em;
-      line-height: 20px;
-    }
-
-    .card--value {
-      margin-left: auto;
+      .fiat-value {
+        margin-left: 8px;
+      }
     }
   }
 
-  @include tablet-down {
-    .card + .card {
-      margin-top: 23px;
-      margin-left: 0;
+  .card {
+    & + .card {
+      margin-top: 0;
+      margin-left: 23px;
+
+      @include tablet-down {
+        margin-top: 23px;
+        margin-left: 0;
+      }
+    }
+
+    .card--content {
+      .card--value {
+        margin-left: auto;
+      }
+
+      .bech32-address {
+        .value {
+          @include font-size(14px);
+
+          color: $blue-5;
+          font-family: $ibm-plex-mono;
+          font-weight: normal;
+          letter-spacing: 0.02em;
+          line-height: 20px;
+        }
+      }
     }
   }
 }

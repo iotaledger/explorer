@@ -54,7 +54,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
      */
     public render(): ReactNode {
         return (
-            <div className="indexation-payload">
+            <div>
                 <div className="section--header">
                     <div className="row middle">
                         <h2>
@@ -63,14 +63,14 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                         <Modal icon={ModalIcon.Info} data={messageJSON} />
                     </div>
                 </div>
-                <div className="section--content">
-                    <div className="section--label row middle">
+                <div className="section--data">
+                    <div className="label row middle">
                         <span className="margin-r-t">Index</span>
                     </div>
                     <DataToggle options={[{ label: "Text", content: this.state.utf8Index, link: `/${this.props.network}/indexed/${this.props.payload.index}` }, { label: "HEX", content: this.state.hexIndex }]} />
                     {(this.state.jsonData || this.state.utf8Data) && (
                         <React.Fragment>
-                            <div className="section--label row middle">
+                            <div className="label row middle">
                                 <span className="margin-r-t">Data</span>
                             </div>
                             <DataToggle

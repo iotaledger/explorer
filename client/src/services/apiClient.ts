@@ -7,6 +7,8 @@ import { IOutputDetailsRequest } from "../models/api/chrysalis/IOutputDetailsReq
 import { IOutputDetailsResponse } from "../models/api/chrysalis/IOutputDetailsResponse";
 import { ISearchRequest } from "../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
+import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
 import { IMarketGetRequest } from "../models/api/IMarketGetRequest";
 import { IMarketGetResponse } from "../models/api/IMarketGetResponse";
@@ -173,6 +175,18 @@ export class ApiClient {
     public async outputDetails(request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
         return this.callApi<unknown, IOutputDetailsResponse>(
             `output/${request.network}/${request.outputId}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the transaction history details of an address.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async transactionsDetails(request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse> {
+        return this.callApi<unknown, ITransactionsDetailsResponse>(
+            `transactionhistory/${request.network}/${request.address}`,
             "get"
         );
     }

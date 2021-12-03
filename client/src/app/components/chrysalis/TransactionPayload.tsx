@@ -54,17 +54,15 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      */
     public render(): ReactNode {
         return (
-            <div className="transaction-payload-wrapper">
-                <div className="section--header row space-between">
+            <div className="transaction-payload">
+                <div className="section--header">
                     <div className="row middle">
                         <h2>
                             Transaction Payload
                         </h2>
                         <Modal icon={ModalIcon.Info} data={messageJSON} />
-
                     </div>
                     <div className="transaction-value">
-
                         <span className="value">
                             {UnitsHelper.formatUnits(this.props.transferTotal,
                                 UnitsHelper.calculateBest(this.props.transferTotal))}
@@ -75,7 +73,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         </span>
                     </div>
                 </div>
-                <div className="row row--tablet-responsive fill stretch transaction-payload">
+                <div className="row row--tablet-responsive fill">
                     <div className="card col fill">
                         <div className="card--header">
                             <h2 className="card--header__title">From</h2>
@@ -105,36 +103,35 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         </div>
                                     </div>
 
-                                    {this.state.showInputDetails === idx
-                                        ? (
-                                            <React.Fragment>
-                                                <div className="card--label"> Address</div>
-                                                <div className="card--value">
-                                                    <Bech32Address
-                                                        network={this.props.network}
-                                                        history={this.props.history}
-                                                        addressDetails={input.transactionAddress}
-                                                        advancedMode
-                                                        hideLabel
-                                                        truncateAddress={false}
-                                                    />
-                                                </div>
-                                                <div className="card--label"> Transaction Id</div>
-                                                <div className="card--value">
-                                                    <Link
-                                                        to={input.transactionUrl}
-                                                        className="margin-r-t"
-                                                    >
-                                                        {input.transactionId}
-                                                    </Link>
-                                                </div>
-                                                <div className="card--label"> Transaction Output Index</div>
-                                                <div className="card--value">{input.transactionOutputIndex}</div>
-                                                <div className="card--label"> Signature</div>
-                                                <div className="card--value">{input.signature}</div>
-                                                <div className="card--label"> Public Key</div>
-                                                <div className="card--value">{input.publicKey}</div>
-                                            </React.Fragment>) : ""}
+                                    {this.state.showInputDetails === idx && (
+                                        <React.Fragment>
+                                            <div className="card--label"> Address</div>
+                                            <div className="card--value">
+                                                <Bech32Address
+                                                    network={this.props.network}
+                                                    history={this.props.history}
+                                                    addressDetails={input.transactionAddress}
+                                                    advancedMode
+                                                    hideLabel
+                                                    truncateAddress={false}
+                                                />
+                                            </div>
+                                            <div className="card--label"> Transaction Id</div>
+                                            <div className="card--value">
+                                                <Link
+                                                    to={input.transactionUrl}
+                                                    className="margin-r-t"
+                                                >
+                                                    {input.transactionId}
+                                                </Link>
+                                            </div>
+                                            <div className="card--label"> Transaction Output Index</div>
+                                            <div className="card--value">{input.transactionOutputIndex}</div>
+                                            <div className="card--label"> Signature</div>
+                                            <div className="card--value">{input.signature}</div>
+                                            <div className="card--label"> Public Key</div>
+                                            <div className="card--value">{input.publicKey}</div>
+                                        </React.Fragment>)}
                                 </React.Fragment>
                             ))}
                         </div>
@@ -169,21 +166,20 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         </div>
                                     </div>
 
-                                    {this.state.showOutputDetails === idx
-                                        ? (
-                                            <React.Fragment>
-                                                <div className="card--label"> Address</div>
-                                                <div className="card--value">
-                                                    <Bech32Address
-                                                        network={this.props.network}
-                                                        history={this.props.history}
-                                                        addressDetails={output.address}
-                                                        advancedMode
-                                                        hideLabel
-                                                        truncateAddress={false}
-                                                    />
-                                                </div>
-                                            </React.Fragment>) : ""}
+                                    {this.state.showOutputDetails === idx && (
+                                        <React.Fragment>
+                                            <div className="card--label"> Address</div>
+                                            <div className="card--value">
+                                                <Bech32Address
+                                                    network={this.props.network}
+                                                    history={this.props.history}
+                                                    addressDetails={output.address}
+                                                    advancedMode
+                                                    hideLabel
+                                                    truncateAddress={false}
+                                                />
+                                            </div>
+                                        </React.Fragment>)}
                                 </React.Fragment>
                             ))}
                         </div>

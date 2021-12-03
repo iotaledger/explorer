@@ -1,4 +1,5 @@
 import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
+import { ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 
 export interface AddrState {
@@ -66,4 +67,8 @@ export interface AddrState {
      * Value of the transaction filter.
      */
     filterValue: "all" | "incoming" | "outgoing";
+    /**
+     * List of transactions of an address.
+     */
+    transactionHistory?: ITransactionsDetailsResponse;
 }

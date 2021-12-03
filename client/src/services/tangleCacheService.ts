@@ -5,6 +5,7 @@ import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
 import { ProtocolVersion } from "../models/db/protocolVersion";
@@ -823,6 +824,29 @@ export class TangleCacheService {
         }
 
         return this._chrysalisSearchCache[networkId][milestoneIndex.toString()]?.data?.milestone;
+    }
+
+    /**
+     * Get the milestone details.
+     * @param networkId The network to search
+     * @param address The address to get the transactions for.
+     * @returns The transactions response.
+     */
+    public async transactionsDetails(
+        networkId: string,
+        address: string): Promise<ITransactionsDetailsResponse | undefined> {
+        if (!this._chrysalisSearchCache[networkId][address]?.data?.transactionHistory) {
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
+            const response = await apiClient.transactionsDetails({ network: networkId, address });
+            if (response) {
+                this._chrysalisSearchCache[networkId][address] = {
+                    data: { transactionHistory: response },
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._chrysalisSearchCache[networkId][address]?.data?.transactionHistory;
     }
 
     /**
