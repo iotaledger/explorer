@@ -179,6 +179,9 @@
     @include tablet-down {
       display: none;
     }
+    .section--header__filter{
+      display:flex;
+    }
   }
 
   .general-content {

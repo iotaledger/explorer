@@ -20,6 +20,7 @@
   white-space: pre-wrap;
 
   @include phone-down {
+    flex-wrap: wrap;
     display: block;
   }
 
