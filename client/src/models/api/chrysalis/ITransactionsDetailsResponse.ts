@@ -27,7 +27,7 @@ export interface ITransaction {
     /**
      * The milestone index.
      */
-    milestoneIndex: string;
+    milestoneIndex?: string;
     /**
      * The outputs.
      */
@@ -40,6 +40,10 @@ export interface ITransaction {
      * Date of Milestone Reference.
      */
     date?: string;
+    /**
+     * Amount of transaction.
+     */
+    amount?: number;
     /**
      * Message status
      */
@@ -76,6 +80,10 @@ export interface ITransaction {
          * Show if a transation is spent or not.
          */
         isSpent?: boolean;
+        /**
+         * Amount of transaction.
+         */
+        amount?: number;
     };
 }
 

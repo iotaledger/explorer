@@ -17,7 +17,6 @@ class Transaction extends Component<TransactionProps, TransactionState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        console.log("TRANSACTION COMP");
         return (
             (
                 <tr>
@@ -45,8 +44,8 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                             )
                             : <Spinner />}
                     </td>
-                    <td className={`amount ${this.state?.amount < 0 ? "negative" : "positive"}`}>
-                        {UnitsHelper.formatBest(this.state?.amount)}
+                    <td className={`amount ${this.props.amount && this.props.amount < 0 ? "negative" : "positive"}`}>
+                        {this.props.amount ? UnitsHelper.formatBest(this.props.amount ?? 0) : <Spinner />}
                     </td>
                     <td>{this.props.isSpent !== undefined ? (this.props.isSpent ? "YES" : "NO") : "-"}</td>
                 </tr>

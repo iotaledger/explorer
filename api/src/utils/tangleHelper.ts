@@ -634,6 +634,9 @@ export class TangleHelper {
         address: string): Promise<ITransactionsDetailsResponse | undefined> {
         if (network.permaNodeEndpoint) {
             try {
+                // We use AdvancedSingleNodeClient to get the transactions because SingleNodeClient depends
+                // on @iota/iota.js  methods and @iota/iota.js methods and @iota/iota.js does not support the
+                // address/transactions endpoint. The dependency @iota/iota.js must be updated to offer this new method
                 const client = new AdvancedSingleNodeClient(network.permaNodeEndpoint, {
                     userName: network.permaNodeEndpointUser,
                     password: network.permaNodeEndpointPassword,

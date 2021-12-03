@@ -1,4 +1,4 @@
-import { ISigLockedDustAllowanceOutput, ISigLockedSingleOutput, IUTXOInput, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
+import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -19,6 +19,7 @@ import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState } from "./AddrState";
+
 /**
  * Component which will show the address page.
  */
@@ -217,79 +218,126 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     </div>
                                 )}
 
-                                {this.state.transactionHistory && (
-                                    <div className="section transaction--section">
-                                        <div className="section--header section--header__space-between">
-                                            <div className="row middle">
-                                                <h2>
-                                                    Transaction History
-                                                </h2>
-                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
-                                            </div>
-                                            <div className="messages-tangle-state">
-                                                <div className="transactions-filter">
-                                                    <button
-                                                        className="filter-buttons"
-                                                        type="button"
-                                                        onClick={() => {
-                                                            this.setState({ filterValue: "all" });
-                                                        }}
-                                                    >
-                                                        All
-                                                    </button>
-                                                    <button
-                                                        className="filter-buttons middle"
-                                                        type="button"
-                                                        onClick={() => {
-                                                            this.setState({ filterValue: "incoming" });
-                                                        }}
-                                                    >
-                                                        Incoming
-                                                    </button>
-                                                    <button
-                                                        className="filter-buttons"
-                                                        type="button"
-                                                        onClick={() => {
-                                                            this.setState({ filterValue: "outgoing" });
-                                                        }}
-                                                    >
-                                                        Outgoing
-                                                    </button>
+                                {((this.state.transactions && this.state.transactions.length > 0) ||
+                                    (this.state.transactionHistory?.transactionHistory.transactions &&
+                                        this.state.transactionHistory?.transactionHistory.transactions.length > 0)) && (
+                                        <div className="section transaction--section">
+                                            <div className="section--header section--header__space-between">
+                                                <div className="row middle">
+                                                    <h2>
+                                                        Transaction History
+                                                    </h2>
+                                                    <Modal icon={ModalIcon.Info} data={messageJSON} />
                                                 </div>
+                                                <div className="messages-tangle-state">
+                                                    <div className="transactions-filter">
+                                                        <button
+                                                            className="filter-buttons"
+                                                            type="button"
+                                                            onClick={() => {
+                                                                this.setState({ filterValue: "all" });
+                                                            }}
+                                                        >
+                                                            All
+                                                        </button>
+                                                        <button
+                                                            className="filter-buttons middle"
+                                                            type="button"
+                                                            onClick={() => {
+                                                                this.setState({ filterValue: "incoming" });
+                                                            }}
+                                                        >
+                                                            Incoming
+                                                        </button>
+                                                        <button
+                                                            className="filter-buttons"
+                                                            type="button"
+                                                            onClick={() => {
+                                                                this.setState({ filterValue: "outgoing" });
+                                                            }}
+                                                        >
+                                                            Outgoing
+                                                        </button>
+                                                    </div>
+                                                </div>
+
                                             </div>
-
-                                        </div>
-                                        <table className="transaction--table">
-                                            <tr>
-                                                <th>Message id</th>
-                                                <th>Date</th>
-                                                <th>Inputs</th>
-                                                <th>Outputs</th>
-                                                <th>Status</th>
-                                                <th>Amount</th>
-                                                <th>[DEV]: is_spent</th>
-                                            </tr>
-                                            {this.state.transactionHistory
-                                                ?.transactionHistory
-                                                ?.transactions
-                                                ?.map(transaction =>
-                                                (
-                                                    <Transaction
-                                                        key={transaction?.messageId}
-                                                        messageId={transaction?.messageId}
-                                                        network={this.props.match.params.network}
-                                                        inputs={transaction?.inputs.length}
-                                                        outputs={transaction?.outputs.length}
-                                                        messageTangleStatus={transaction?.messageTangleStatus}
-                                                        date={transaction?.date}
-                                                        isSpent={transaction?.isSpent}
-                                                        amount={-1}
-                                                    />
-                                                ))}
-
-                                        </table>
-                                    </div>
-                                )}
+                                            <table className="transaction--table">
+                                                <tr>
+                                                    <th>Message id</th>
+                                                    <th>Date</th>
+                                                    <th>Inputs</th>
+                                                    <th>Outputs</th>
+                                                    <th>Status</th>
+                                                    <th>Amount</th>
+                                                    <th>[DEV]: is_spent</th>
+                                                </tr>
+                                                {/* Standard Transactions */}
+                                                {this.state.transactions
+                                                    ?.map(transaction =>
+                                                    (
+                                                        <Transaction
+                                                            key={transaction?.messageId}
+                                                            messageId={transaction?.messageId}
+                                                            network={this.props.match.params.network}
+                                                            inputs={transaction?.inputs.length}
+                                                            outputs={transaction?.outputs.length}
+                                                            messageTangleStatus={transaction?.messageTangleStatus}
+                                                            date={transaction?.date}
+                                                            amount={transaction?.amount}
+                                                        />
+                                                    ))}
+                                                {/* Historic Transactions */}
+                                                {this.state.transactionHistory
+                                                    ?.transactionHistory
+                                                    ?.transactions
+                                                    ?.map(transaction =>
+                                                    (transaction.relatedSpentTransaction ? (
+                                                        <React.Fragment>
+                                                            <Transaction
+                                                                key={transaction?.messageId}
+                                                                messageId={transaction?.messageId}
+                                                                network={this.props.match.params.network}
+                                                                inputs={transaction?.inputs.length}
+                                                                outputs={transaction?.outputs.length}
+                                                                messageTangleStatus={transaction?.messageTangleStatus}
+                                                                date={transaction?.date}
+                                                                isSpent={transaction?.isSpent}
+                                                                amount={transaction?.amount}
+                                                            />
+                                                            <Transaction
+                                                                key={transaction?.relatedSpentTransaction.messageId}
+                                                                messageId={transaction
+                                                                    ?.relatedSpentTransaction
+                                                                    .messageId}
+                                                                network={this.props.match.params.network}
+                                                                inputs={transaction
+                                                                    ?.relatedSpentTransaction.inputs.length}
+                                                                outputs={transaction
+                                                                    ?.relatedSpentTransaction.outputs.length}
+                                                                messageTangleStatus={transaction
+                                                                    ?.relatedSpentTransaction.messageTangleStatus}
+                                                                date={transaction?.relatedSpentTransaction.date}
+                                                                isSpent={transaction?.relatedSpentTransaction.isSpent}
+                                                                amount={transaction?.relatedSpentTransaction.amount}
+                                                            />
+                                                        </React.Fragment>
+                                                    ) : (
+                                                        <Transaction
+                                                            key={transaction?.messageId}
+                                                            messageId={transaction?.messageId}
+                                                            network={this.props.match.params.network}
+                                                            inputs={transaction?.inputs.length}
+                                                            outputs={transaction?.outputs.length}
+                                                            messageTangleStatus={transaction?.messageTangleStatus}
+                                                            date={transaction?.date}
+                                                            isSpent={transaction?.isSpent}
+                                                            amount={transaction?.amount}
+                                                        />
+                                                    ))
+                                                    )}
+                                            </table>
+                                        </div>)}
                             </div>
                         </div>
                     </div >
@@ -298,10 +346,51 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         );
     }
 
+    private async getTransactions(): Promise<void> {
+        if (this.state.outputIds) {
+            const transactions = [];
+            for (const outputId of this.state.outputIds) {
+                const outputResult = await this._tangleCacheService.outputDetails(
+                    this.props.match.params.network, outputId);
+
+                if (outputResult) {
+                    const messageResult = await this._tangleCacheService.search(
+                        this.props.match.params.network, outputResult.messageId);
+                    const { inputs, outputs } = await
+                        TransactionsHelper.getInputsAndOutputs(messageResult?.message,
+                            this.props.match.params.network, this._bechHrp, this._tangleCacheService);
+                    const { date, messageTangleStatus } = await TransactionsHelper.getMessageStatus(
+                        this.props.match.params.network, outputResult.messageId,
+                        this._tangleCacheService);
+                    const amount = await this.getTransactionAmount(outputResult.messageId);
+                    transactions.push({
+                        messageId: outputResult.messageId,
+                        inputs,
+                        outputs,
+                        date,
+                        messageTangleStatus,
+                        amount
+                    });
+                    this.setState({
+                        transactions,
+                        status: `Loading transactions [${transactions.length}/${this.state.outputIds.length}]`
+                    });
+                }
+                if (!this._isMounted) {
+                    break;
+                }
+            }
+        }
+    }
 
     private async getTransactionHistory() {
+        // Standard transactions (Hornet node)
+        await this.getTransactions();
+
+        // Historic transactions (permanode)
         const transactionsDetails = await this._tangleCacheService.transactionsDetails(
             this.props.match.params.network, this.state.address?.address ?? "");
+
 
         if (transactionsDetails?.transactionHistory.transactions) {
             let i = 0;
@@ -314,8 +403,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                         this._tangleCacheService);
                 transaction.date = date;
                 transaction.messageTangleStatus = messageTangleStatus;
+                transaction.amount = await this.getTransactionAmount(transaction.messageId);
+
 
                 let isTransactionSpent = false;
+
                 // Get spent related transaction
                 for (const output of transaction.outputs) {
                     if (output.output.address.address === this.state.address?.address && output.spendingMessageId) {
@@ -331,6 +423,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 date: statusDetails.date,
                                 messageTangleStatus: statusDetails.messageTangleStatus,
                                 isSpent: true,
+                                amount: await this.getTransactionAmount(output.spendingMessageId),
                                 inputs: transactionsResult?.message?.payload?.essence?.inputs,
                                 outputs: transactionsResult?.message?.payload?.essence?.outputs
                             };
@@ -341,7 +434,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 transaction.isSpent = isTransactionSpent;
                 this.setState({
                     transactionHistory: transactionsDetails,
-                    status: `Loading transactions [${i}/${transactionsDetails.transactionHistory.transactions.length}]`
+                    status: `Loading historic transactions 
+                    [${i}/${transactionsDetails.transactionHistory.transactions.length}]`
                 });
             }
         }
@@ -353,9 +447,28 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
     // Add logic
     private async getTransactionAmount(
-        inputs: IUTXOInput[],
-        outputs: (ISigLockedSingleOutput | ISigLockedDustAllowanceOutput)[]): Promise<number> {
-        return 0;
+        messageId: string): Promise<number> {
+        const result = await this._tangleCacheService.search(
+            this.props.match.params.network, messageId);
+        const { inputs, outputs } =
+            await TransactionsHelper.getInputsAndOutputs(result?.message,
+                this.props.match.params.network,
+                this._bechHrp,
+                this._tangleCacheService);
+
+
+        const inputsRelated = inputs.filter(input => input.transactionAddress.hex === this.state.address?.address);
+        const outputsRelated = outputs.filter(output => output.address.hex === this.state.address?.address);
+        let fromAmount = 0;
+        let toAmount = 0;
+        for (const input of inputsRelated) {
+            fromAmount += input.amount;
+        }
+        for (const output of outputsRelated) {
+            toAmount += output.amount;
+        }
+
+        return toAmount - fromAmount;
     }
 }
 

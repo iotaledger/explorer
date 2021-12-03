@@ -5,7 +5,7 @@ import { MessageTangleStatus } from "../models/messageTangleStatus";
 import { TangleCacheService } from "../services/tangleCacheService";
 import { Bech32AddressHelper } from "./bech32AddressHelper";
 
-interface Input {
+export interface Input {
     outputHash: string;
     isGenesis: boolean;
     transactionUrl: string;
@@ -15,7 +15,7 @@ interface Input {
     amount: number;
 }
 
-interface Output {
+export interface Output {
     index: number; type: 0 | 1; address: IBech32AddressDetails; amount: number; isRemainder: boolean;
 }
 export class TransactionsHelper {
