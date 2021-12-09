@@ -335,6 +335,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     </div>
                                 </div>
                             </div>
+                            <div className="card margin-t-m">
+                                <div className="card--content description">
+                                    {this.state.networkConfig.description}
+                                </div>
+                            </div>
                             {!this.state.networkConfig.isEnabled && (
                                 <div className="card margin-t-m">
                                     <div className="card--content description">
