@@ -16,8 +16,6 @@ import Indexed from "./routes/chrysalis/Indexed";
 import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
 import Message from "./routes/chrysalis/Message";
 import { MessageRouteProps } from "./routes/chrysalis/MessageRouteProps";
-import Milestone from "./routes/chrysalis/Milestone";
-import { MilestoneRouteProps } from "./routes/chrysalis/MilestoneRouteProps";
 import CurrencyConverter from "./routes/CurrencyConverter";
 import Landing from "./routes/Landing";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
@@ -235,15 +233,6 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                                 component={(props: RouteComponentProps<AddrRouteProps>) =>
                                                 (
                                                     <Addr
-                                                        {...props}
-                                                    />
-                                                )}
-                                            />
-                                            <Route
-                                                path="/:network/milestone/:milestoneIndex"
-                                                component={(props: RouteComponentProps<MilestoneRouteProps>) =>
-                                                (
-                                                    <Milestone
                                                         {...props}
                                                     />
                                                 )}

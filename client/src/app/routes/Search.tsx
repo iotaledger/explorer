@@ -288,6 +288,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 );
 
                                 if (response) {
+                                    console.log("response", response);
                                     let objType = "";
                                     let objParam = query;
                                     if (response.message) {
@@ -300,7 +301,8 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                         objType = "message";
                                         objParam = response.output.messageId;
                                     } else if (response.milestone) {
-                                        objType = "milestone";
+                                        objType = "message";
+                                        objParam = response.milestone?.messageId;
                                     }
                                     this.setState({
                                         status: "",

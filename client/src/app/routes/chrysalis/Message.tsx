@@ -173,9 +173,9 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
                                         this.state.metadata?.milestoneIndex}
                                     onClick={this.state.metadata?.referencedByMilestoneIndex
-                                        ? () => this.props.history.push(
+                                        ? (messageId: string) => this.props.history.push(
                                             `/${this.props.match.params.network
-                                            }/search/${this.state.metadata?.referencedByMilestoneIndex}`)
+                                            }/search/${messageId}`)
                                         : undefined}
                                 />
                             </div>

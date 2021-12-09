@@ -22,48 +22,78 @@
         max-width: 100%;
         padding-right: 20px;
         padding-left: 20px;
-
-        > .row {
-          flex-direction: column;
-        }
       }
+      .indexed-number {
+        @include font-size(12px);
 
-      h1 {
-        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        height: 24px;
+        margin-left: 20px;
+        padding: 0 8px;
+        border-radius: 6px;
+        background-color: var(--light-bg);
+        color: $gray;
+        font-family: $metropolis;
+        font-weight: bold;
+        white-space: nowrap;
       }
+      .indexed-messages {
+        &.scroll-limit {
+          max-height: 550px;
+          overflow-y: auto;
 
-      .cards {
-        flex: 1;
-        margin-right: 24px;
-
-        @include desktop-down {
-          flex: unset;
-          width: 100%;
-          margin-right: 0;
-        }
-
-        .col + .col {
-          margin-left: 23px;
-
-          @include tablet-down {
-            margin-left: 0;
+          &.scroll-limit__disabled {
+            opacity: 0.5;
           }
         }
+        .indexed-message {
+          width: 100%;
+          &:hover {
+            background-color: var(--light-bg);
+          }
+          button {
+            @include font-size(14px);
 
-        .card--content {
-          &.card__scroll-limit {
-            max-height: 550px;
-            overflow-y: auto;
-
-            &.card__scroll-limit__disabled {
-              opacity: 0.5;
+            font-family: $ibm-plex-mono;
+            font-weight: normal;
+            letter-spacing: 0.02em;
+            line-height: 20px;
+            color: var(--body-color);
+            border: none;
+            background: none;
+            width: 100%;
+            span {
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              &:hover {
+                text-decoration: underline;
+              }
             }
           }
         }
       }
+      .indexed-actions {
+        button {
+          @include font-size(14px, 21px);
 
-      .card + .card {
-        margin-top: 23px;
+          display: flex;
+          justify-content: center;
+          position: relative;
+          width: 120px;
+          padding: 9px;
+          border: 1px solid $gray-3;
+          border-radius: 6px;
+          background: var(--light-bg);
+          color: var(--expanded-color);
+          font-family: $inter;
+          font-weight: 400;
+          letter-spacing: 0.5px;
+          text-align: center;
+          text-decoration: none;
+          cursor: pointer;
+        }
       }
     }
   }

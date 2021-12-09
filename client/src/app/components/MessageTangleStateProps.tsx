@@ -19,5 +19,5 @@ export interface MessageTangleStateProps {
     /**
      * The button click.
      */
-    onClick?(): void;
+    onClick?(messageId?: string): void;
 }

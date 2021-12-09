@@ -27,6 +27,7 @@ class MessageTangleState extends AsyncComponent<MessageTangleStateProps, Message
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
         this.state = {
+            messageId: "",
         };
     }
 
@@ -65,7 +66,11 @@ class MessageTangleState extends AsyncComponent<MessageTangleStateProps, Message
                                     Referenced by {" "}
                                     <span
                                         className="message-tangle-reference__link"
-                                        onClick={this.props.onClick}
+                                        onClick={() => {
+                                            if (this.props.onClick) {
+                                                this.props.onClick(this.state.messageId);
+                                            }
+                                        }}
                                     >Milestone
                                     </span>
                                     {" "} {this.props.milestoneIndex} {this.state.timestamp}
@@ -81,7 +86,11 @@ class MessageTangleState extends AsyncComponent<MessageTangleStateProps, Message
                                 <div>
                                     <span
                                         className="message-tangle-reference__link"
-                                        onClick={this.props.onClick}
+                                        onClick={() => {
+                                            if (this.props.onClick) {
+                                                this.props.onClick(this.state.messageId);
+                                            }
+                                        }}
                                     >Milestone  {" "} {this.props.milestoneIndex}
                                     </span>
                                     {" "} created at {this.state.timestamp}
@@ -122,7 +131,8 @@ class MessageTangleState extends AsyncComponent<MessageTangleStateProps, Message
                 this.setState({
                     timestamp: result.timestamp
                         ? ` at ${DateHelper.formatShort(DateHelper.milliseconds(result.timestamp))}`
-                        : undefined
+                        : undefined,
+                    messageId: result.messageId
                 });
             }
         }
