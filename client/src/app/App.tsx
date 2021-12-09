@@ -1,7 +1,6 @@
 import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { PaletteHelper } from "../helpers/paletteHelper";
 import { NetworkService } from "../services/networkService";
 import { SettingsService } from "../services/settingsService";
 import "./App.scss";
@@ -333,10 +332,6 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                     networkId: network ?? ""
                 },
                 () => {
-                    const config = this.state.networks.find(n => n.network === network);
-                    if (config?.primaryColor && config.secondaryColor) {
-                        PaletteHelper.setPalette(config.primaryColor, config.secondaryColor);
-                    }
                     if (!this.props.location.pathname.startsWith(`/${network}`) && updateLocation) {
                         this.props.history.replace(`/${network}`);
                     }
