@@ -33,7 +33,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                 Address
                             </div>
                         )}
-                        <div className="value row middle">
+                        <div className="value row middle code">
                             {this.props.history && (
                                 <button
                                     type="button"
@@ -65,7 +65,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                         <div className="label">
                             {this.props.addressDetails.typeLabel} Address
                         </div>
-                        <div className="value row middle">
+                        <div className="value row middle code">
                             {this.props.history && (
                                 <button
                                     type="button"

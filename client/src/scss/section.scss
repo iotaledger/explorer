@@ -56,6 +56,16 @@
       &.highlight {
         color: $blue-5;
       }
+
+      &.featured {
+        @include font-size(16px, 24px);
+        font-weight: 700;
+        letter-spacing: 0.75px;
+        color: $gray-9;
+        span {
+          color: $gray-6;
+        }
+      }
     }
 
     &.max-w-55 {

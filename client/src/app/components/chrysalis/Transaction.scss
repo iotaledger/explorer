@@ -6,8 +6,11 @@
 
 .transaction--table {
   width: 100%;
-  border-spacing: 12px 12px;
+  border-spacing: 12px 28px;
   border-collapse: separate;
+  @include tablet-down {
+    display: none;
+  }
 
   tr {
     @include font-size(14px);
@@ -31,7 +34,18 @@
       .message-tangle-state {
         margin-left: 0;
       }
+      &.code {
+        @include font-size(14px);
 
+        font-family: $ibm-plex-mono;
+        font-weight: normal;
+        letter-spacing: 0.02em;
+        line-height: 20px;
+      }
+
+      &.highlight {
+        color: $blue-5;
+      }
       &.amount {
         @include font-size(14px, 21px);
 
@@ -43,6 +57,48 @@
 
         &.negative {
           color: var(--expanded-color);
+        }
+      }
+    }
+  }
+}
+
+.transaction-cards {
+  display: none;
+  @include tablet-down {
+    display: block;
+    .transaction-card {
+      margin-bottom: 48px;
+      .field {
+        margin-bottom: 8px;
+        .label {
+          color: $gray-6;
+          font-family: $inter;
+          letter-spacing: 0.5px;
+
+          @include font-size(14px, 21px);
+        }
+        .value {
+          @include font-size(14px, 21px);
+          font-family: $metropolis;
+          color: $gray-6;
+          font-weight: 700;
+
+          &.message-id {
+            overflow: hidden;
+            color: $blue-5;
+            font-family: $ibm-plex-mono;
+            text-decoration: none;
+            text-overflow: ellipsis;
+            word-break: break-word;
+            font-weight: 500;
+          }
+          .messages-tangle-state {
+            display: inline-block;
+            .message-tangle-state {
+              margin-left: 0;
+            }
+          }
         }
       }
     }

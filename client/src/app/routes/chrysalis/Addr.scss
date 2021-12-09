@@ -152,40 +152,52 @@
   }
 
   .transaction--section {
-    .transactions-filter {
-      border: 0.2px solid var(--input-border-color);
-      border-radius: 6px;
-      font-family: $inter;
-      font-size: 12px;
-      font-weight: 500;
-
-      .middle {
-        border-right: 0.2px solid var(--input-border-color);
-        border-left: 0.2px solid var(--input-border-color);
-      }
-
-      .filter-buttons {
-        padding: 3px 8px;
-        border-radius: 0;
-        background-color: var(--light-bg);
-        color: var(--header-color);
-
-        &:focus {
-          background-color: var(--message-referenced-bg);
-          color: var(--body-color);
+    @include tablet-down {
+      .section--header {
+        flex-direction: column;
+        align-items: flex-start;
+        .transactions-filter {
+          margin-top: 24px;
         }
       }
     }
-    @include tablet-down {
-      display: none;
+    .transactions-filter {
+      font-family: $inter;
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      button {
+        @include font-size(12px, 18px);
+        letter-spacing: 0.5px;
+        color: $gray-5;
+        padding: 3px 12px;
+        background-color: var(--body-background);
+        color: var(--header-color);
+        border-radius: 0;
+        border: 0.2px solid var(--input-border-color);
+        &:focus {
+          box-shadow: none;
+        }
+        &.active {
+          background-color: rgba(20, 202, 191, 0.12);
+          color: $gray-7;
+        }
+        &:first-child {
+          border-radius: 6px 0 0 6px;
+        }
+        &:last-child {
+          border-radius: 0 6px 6px 0;
+        }
+      }
     }
-    .section--header__filter{
-      display:flex;
+
+    .section--header__filter {
+      display: flex;
     }
   }
 
   .general-content {
-    @include tablet-down {
+    @media (max-width: 980px) {
       flex-direction: column;
     }
   }

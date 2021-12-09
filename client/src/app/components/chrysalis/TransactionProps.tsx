@@ -10,4 +10,5 @@ export interface TransactionProps {
     amount?: number;
     network: string;
     isSpent?: boolean;
+    tableFormat?: boolean;
 }

@@ -1,4 +1,5 @@
 import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
+import classNames from 'classnames';
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -137,46 +138,49 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 addressDetails={this.state.bech32AddressDetails}
                                                 advancedMode={true}
                                             />
-                                            <div className="section--data">
-                                                <div className="label">
-                                                    Total received
+                                            <div className="row">
+                                                <div className="section--data margin-r-m">
+                                                    <div className="label">
+                                                        Total received
+                                                    </div>
+                                                    <div className="value">
+                                                        {this.state.statusBusy ? (<Spinner />)
+                                                            : (
+                                                                <React.Fragment>
+                                                                    {UnitsHelper.formatBest(
+                                                                        (this.state.balance ?? 0) - this.state.sent
+                                                                    )}
+                                                                    {" "}(
+                                                                    <FiatValue
+                                                                        value={(this.state.balance ?? 0) - this.state.sent}
+                                                                    />)
+                                                                </React.Fragment>
+                                                            )}
+                                                    </div>
                                                 </div>
-                                                <div className="value">
-                                                    {this.state.statusBusy ? (<Spinner />)
-                                                        : (
-                                                            <React.Fragment>
-                                                                {UnitsHelper.formatBest(
-                                                                    (this.state.balance ?? 0) - this.state.sent
-                                                                )}
-                                                                {" "}(
-                                                                <FiatValue
-                                                                    value={(this.state.balance ?? 0) - this.state.sent}
-                                                                />)
-                                                            </React.Fragment>
-                                                        )}
+                                                <div className="section--data margin-l-m">
+                                                    <div className="label">
+                                                        Total sent
+                                                    </div>
+                                                    <div className="value">
+                                                        {this.state.statusBusy ? (<Spinner />)
+                                                            : (
+                                                                <React.Fragment>
+                                                                    {UnitsHelper.formatBest(this.state.sent)}
+                                                                    {" "}(<FiatValue value={this.state.sent} />)
+                                                                </React.Fragment>
+                                                            )}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="section--data">
-                                                <div className="label">
-                                                    Total sent
-                                                </div>
-                                                <div className="value">
-                                                    {this.state.statusBusy ? (<Spinner />)
-                                                        : (
-                                                            <React.Fragment>
-                                                                {UnitsHelper.formatBest(this.state.sent)}
-                                                                {" "}(<FiatValue value={this.state.sent} />)
-                                                            </React.Fragment>
-                                                        )}
-                                                </div>
-                                            </div>
+
 
                                             {this.state.balance !== undefined && this.state.balance === 0 && (
                                                 <div className="section--data">
                                                     <div className="label">
                                                         Final balance
                                                     </div>
-                                                    <div className="value">
+                                                    <div className="value featured">
                                                         0
                                                     </div>
                                                 </div>
@@ -186,9 +190,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     <div className="label">
                                                         Final balance
                                                     </div>
-                                                    <div className="value">
+                                                    <div className="value featured">
                                                         {UnitsHelper.formatBest(this.state.balance)}
-                                                        {" "}(<FiatValue value={this.state.balance} />)
+                                                        {" "}
+                                                        <span>(</span>
+                                                        <FiatValue value={this.state.balance} />
+                                                        <span>)</span>
                                                     </div>
                                                 </div>
                                             )}
@@ -227,17 +234,19 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     (this.state.transactionHistory?.transactionHistory.transactions &&
                                         this.state.transactionHistory?.transactionHistory.transactions.length > 0)) && (
                                         <div className="section transaction--section">
-                                            <div className="section--header section--header__space-between">
+                                            <div className="section--header row space-between">
                                                 <div className="row middle">
                                                     <h2>
                                                         Transaction History
                                                     </h2>
                                                     <Modal icon={ModalIcon.Info} data={messageJSON} />
                                                 </div>
-                                                <div className="messages-tangle-state">
+                                                <div>
                                                     <div className="transactions-filter">
                                                         <button
-                                                            className="filter-buttons"
+                                                            className={classNames(
+                                                                { active: this.state.filterValue === "all" }
+                                                            )}
                                                             type="button"
                                                             onClick={() => {
                                                                 this.setState({ filterValue: "all" });
@@ -246,8 +255,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                             All
                                                         </button>
                                                         <button
-                                                            className="filter-buttons middle"
-                                                            type="button"
+                                                            className={classNames(
+                                                                { active: this.state.filterValue === "incoming" }
+                                                            )} type="button"
                                                             onClick={() => {
                                                                 this.setState({ filterValue: "incoming" });
                                                             }}
@@ -255,8 +265,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                             Incoming
                                                         </button>
                                                         <button
-                                                            className="filter-buttons"
-                                                            type="button"
+                                                            className={classNames(
+                                                                { active: this.state.filterValue === "outgoing" }
+                                                            )} type="button"
                                                             onClick={() => {
                                                                 this.setState({ filterValue: "outgoing" });
                                                             }}
@@ -275,11 +286,116 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     <th>Outputs</th>
                                                     <th>Status</th>
                                                     <th>Amount</th>
-                                                    <th>[DEV]: is_spent</th>
+                                                    {/* <th>[DEV]: is_spent</th> */}
                                                 </tr>
                                                 {/* Standard Transactions */}
                                                 {this.state.transactions
-                                                    ?.map(transaction =>
+                                                    ?.filter(transaction => {
+                                                        if (this.state.filterValue === "all") {
+                                                            return true;
+                                                        }
+                                                        if (this.state.filterValue === "incoming") {
+                                                            return (transaction.amount ?? 0) > 0;
+                                                        }
+                                                        if (this.state.filterValue === "outgoing") {
+                                                            return (transaction.amount ?? 0) < 0;
+                                                        }
+                                                        return true;
+                                                    }).map(transaction =>
+                                                    (
+                                                        <Transaction
+                                                            key={transaction?.messageId}
+                                                            messageId={transaction?.messageId}
+                                                            network={this.props.match.params.network}
+                                                            inputs={transaction?.inputs.length}
+                                                            outputs={transaction?.outputs.length}
+                                                            messageTangleStatus={transaction?.messageTangleStatus}
+                                                            date={transaction?.date}
+                                                            amount={transaction?.amount}
+                                                            tableFormat={true}
+                                                        />
+                                                    ))}
+                                                {/* Historic Transactions */}
+                                                {this.state.transactionHistory
+                                                    ?.transactionHistory
+                                                    ?.transactions
+                                                    ?.filter(transaction => {
+                                                        if (this.state.filterValue === "all") {
+                                                            return true;
+                                                        }
+                                                        if (this.state.filterValue === "incoming") {
+                                                            return (transaction.amount ?? 0) > 0;
+                                                        }
+                                                        if (this.state.filterValue === "outgoing") {
+                                                            return (transaction.amount ?? 0) < 0;
+                                                        }
+                                                        return true;
+                                                    }).map(transaction =>
+                                                    (transaction.relatedSpentTransaction ? (
+                                                        <React.Fragment>
+                                                            <Transaction
+                                                                key={transaction?.messageId}
+                                                                messageId={transaction?.messageId}
+                                                                network={this.props.match.params.network}
+                                                                inputs={transaction?.inputs.length}
+                                                                outputs={transaction?.outputs.length}
+                                                                messageTangleStatus={transaction?.messageTangleStatus}
+                                                                date={transaction?.date}
+                                                                // isSpent={transaction?.isSpent}
+                                                                amount={transaction?.amount}
+                                                                tableFormat={true}
+                                                            />
+                                                            <Transaction
+                                                                key={transaction?.relatedSpentTransaction.messageId}
+                                                                messageId={transaction
+                                                                    ?.relatedSpentTransaction
+                                                                    .messageId}
+                                                                network={this.props.match.params.network}
+                                                                inputs={transaction
+                                                                    ?.relatedSpentTransaction.inputs.length}
+                                                                outputs={transaction
+                                                                    ?.relatedSpentTransaction.outputs.length}
+                                                                messageTangleStatus={transaction
+                                                                    ?.relatedSpentTransaction.messageTangleStatus}
+                                                                date={transaction?.relatedSpentTransaction.date}
+                                                                // isSpent={transaction?.relatedSpentTransaction.isSpent}
+                                                                amount={transaction?.relatedSpentTransaction.amount}
+                                                                tableFormat={true}
+                                                            />
+                                                        </React.Fragment>
+                                                    ) : (
+                                                        <Transaction
+                                                            key={transaction?.messageId}
+                                                            messageId={transaction?.messageId}
+                                                            network={this.props.match.params.network}
+                                                            inputs={transaction?.inputs.length}
+                                                            outputs={transaction?.outputs.length}
+                                                            messageTangleStatus={transaction?.messageTangleStatus}
+                                                            date={transaction?.date}
+                                                            isSpent={transaction?.isSpent}
+                                                            amount={transaction?.amount}
+                                                            tableFormat={true}
+                                                        />
+                                                    ))
+                                                    )}
+                                            </table>
+                                            {/* Only visible in mobile -- Card transactions*/}
+                                            <div className="transaction-cards">
+
+                                                {/* Standard Transactions */}
+                                                {this.state.transactions
+                                                    ?.filter(transaction => {
+                                                        if (this.state.filterValue === "all") {
+                                                            return true;
+                                                        }
+                                                        if (this.state.filterValue === "incoming") {
+                                                            return (transaction.amount ?? 0) > 0;
+                                                        }
+                                                        if (this.state.filterValue === "outgoing") {
+                                                            return (transaction.amount ?? 0) < 0;
+                                                        }
+                                                        return true;
+                                                    }).map(transaction =>
                                                     (
                                                         <Transaction
                                                             key={transaction?.messageId}
@@ -296,7 +412,18 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 {this.state.transactionHistory
                                                     ?.transactionHistory
                                                     ?.transactions
-                                                    ?.map(transaction =>
+                                                    ?.filter(transaction => {
+                                                        if (this.state.filterValue === "all") {
+                                                            return true;
+                                                        }
+                                                        if (this.state.filterValue === "incoming") {
+                                                            return (transaction.amount ?? 0) > 0;
+                                                        }
+                                                        if (this.state.filterValue === "outgoing") {
+                                                            return (transaction.amount ?? 0) < 0;
+                                                        }
+                                                        return true;
+                                                    }).map(transaction =>
                                                     (transaction.relatedSpentTransaction ? (
                                                         <React.Fragment>
                                                             <Transaction
@@ -307,7 +434,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 outputs={transaction?.outputs.length}
                                                                 messageTangleStatus={transaction?.messageTangleStatus}
                                                                 date={transaction?.date}
-                                                                isSpent={transaction?.isSpent}
+                                                                // isSpent={transaction?.isSpent}
                                                                 amount={transaction?.amount}
                                                             />
                                                             <Transaction
@@ -323,7 +450,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 messageTangleStatus={transaction
                                                                     ?.relatedSpentTransaction.messageTangleStatus}
                                                                 date={transaction?.relatedSpentTransaction.date}
-                                                                isSpent={transaction?.relatedSpentTransaction.isSpent}
+                                                                // isSpent={transaction?.relatedSpentTransaction.isSpent}
                                                                 amount={transaction?.relatedSpentTransaction.amount}
                                                             />
                                                         </React.Fragment>
@@ -341,7 +468,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                         />
                                                     ))
                                                     )}
-                                            </table>
+                                            </div>
                                         </div>)}
                             </div>
                         </div>
