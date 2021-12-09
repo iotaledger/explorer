@@ -145,8 +145,13 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     {this.state.statusBusy ? (<Spinner />)
                                                         : (
                                                             <React.Fragment>
-                                                                {UnitsHelper.formatBest(this.state.received)}
-                                                                {" "}(<FiatValue value={this.state.received} />)
+                                                                {UnitsHelper.formatBest(
+                                                                    (this.state.balance ?? 0) - this.state.sent
+                                                                )}
+                                                                {" "}(
+                                                                <FiatValue
+                                                                    value={(this.state.balance ?? 0) - this.state.sent}
+                                                                />)
                                                             </React.Fragment>
                                                         )}
                                                 </div>
@@ -403,7 +408,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                         this._tangleCacheService);
                 transaction.date = date;
                 transaction.messageTangleStatus = messageTangleStatus;
-                transaction.amount = await this.getTransactionAmount(transaction.messageId);
+                const amount = await this.getTransactionAmount(transaction.messageId);
+                transaction.amount = amount;
+
+                if (amount < 0) {
+                    this.setState({ sent: this.state.sent + Math.abs(transaction.amount) });
+                }
 
 
                 let isTransactionSpent = false;
@@ -418,15 +428,19 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 this._tangleCacheService);
 
                         if (transactionsResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                            const amount = await this.getTransactionAmount(output.spendingMessageId);
                             transaction.relatedSpentTransaction = {
                                 messageId: output.spendingMessageId,
                                 date: statusDetails.date,
                                 messageTangleStatus: statusDetails.messageTangleStatus,
                                 isSpent: true,
-                                amount: await this.getTransactionAmount(output.spendingMessageId),
+                                amount,
                                 inputs: transactionsResult?.message?.payload?.essence?.inputs,
                                 outputs: transactionsResult?.message?.payload?.essence?.outputs
                             };
+                            if (amount < 0) {
+                                this.setState({ sent: this.state.sent + Math.abs(transaction.amount) });
+                            }
                             isTransactionSpent = true;
                         }
                     }
@@ -445,7 +459,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         });
     }
 
-    // Add logic
     private async getTransactionAmount(
         messageId: string): Promise<number> {
         const result = await this._tangleCacheService.search(
@@ -467,7 +480,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         for (const output of outputsRelated) {
             toAmount += output.amount;
         }
-
         return toAmount - fromAmount;
     }
 }
