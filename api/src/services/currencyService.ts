@@ -21,6 +21,11 @@ export class CurrencyService {
     private static readonly MS_PER_DAY: number = 86400000;
 
     /**
+     * Coin Gecko API calls per minut.
+     */
+    private static readonly CG_CALLS_PER_MINUTE: number = 50;
+
+    /**
      * Is the service already updating.
      */
     private _isUpdating: boolean;
@@ -139,7 +144,8 @@ export class CurrencyService {
                         dates.push(endDate.getTime());
                     }
 
-                    for (let i = 0; i < dates.length; i++) {
+                    const numDates = dates.length > 50 ? CurrencyService.CG_CALLS_PER_MINUTE : dates.length;
+                    for (let i = 0; i < numDates; i++) {
                         log += await this.updateMarketsForDate(
                             markets, new Date(dates[i]), currentState, i === dates.length - 1);
                     }
