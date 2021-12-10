@@ -1,7 +1,7 @@
 import { Units, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import chevronDownGray from "../../assets/chevron-down-gray.svg";
+import dropdown from "../../assets/dropdown.svg";
 import { ReactComponent as FilterIcon } from "../../assets/filter.svg";
 import { ReactComponent as PauseIcon } from "../../assets/pause.svg";
 import { ReactComponent as PlayIcon } from "../../assets/play.svg";
@@ -542,8 +542,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     private transactionDropdown(type: "minimum" | "maximum"): ReactNode {
         return (
             <div className="col">
-                <span className="label">
-                    {type === "minimum" ? "Minimum" : "Maximum"}
+                <span className="label margin-b-2">
+                    {type === "minimum" ? "Min value" : "Max value"}
                 </span>
                 <span className="filter--value">
                     <input
@@ -602,7 +602,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             </option>
                         </select>
                         <img
-                            src={chevronDownGray}
+                            src={dropdown}
                             alt="expand"
                         />
                     </div>
