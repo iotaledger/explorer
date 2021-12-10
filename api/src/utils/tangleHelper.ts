@@ -394,6 +394,15 @@ export class TangleHelper {
         let queryLower = query.toLowerCase();
 
         try {
+            // If the query starts with did:iota: then lookup a Decentralized identifier
+            if (queryLower.startsWith("did:iota:")) {
+                return {
+                    did: query
+                };
+            }
+        } catch {
+        }
+        try {
             // If the query is an integer then lookup a milestone
             if (/^\d+$/.test(query)) {
                 const milestone = await client.milestone(Number.parseInt(query, 10));

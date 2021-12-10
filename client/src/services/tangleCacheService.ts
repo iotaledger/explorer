@@ -737,6 +737,7 @@ export class TangleCacheService {
                 response.indexMessageIds ||
                 response.milestone ||
                 response.output ||
+                response.did ||
                 response.addressOutputIds) {
                 this._chrysalisSearchCache[networkId][fullQuery] = {
                     data: response,

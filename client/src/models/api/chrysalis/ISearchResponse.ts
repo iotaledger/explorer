@@ -56,4 +56,8 @@ export interface ISearchResponse extends IResponse {
      * Transactions of an address.
      */
     transactionHistory?: ITransactionsDetailsResponse;
+    /**
+     * DiD identifier.
+     */
+    did?: string;
 }

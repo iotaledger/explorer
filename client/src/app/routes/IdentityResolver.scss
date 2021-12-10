@@ -7,17 +7,6 @@
   display: flex;
   flex-direction: column;
 
-  .identity-title {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 20px;
-
-    h1 {
-      margin: 0 0 0 10px !important;
-    }
-  }
-
   .did-error {
     display: flex;
     flex-direction: column;
@@ -26,21 +15,18 @@
     height: 300px;
 
     p {
-      color: $danger !important;
+      @include font-size(14px, 21px);
+
+      font-family: $inter;
+      letter-spacing: 0.5px;
+      color: $did-error !important;
       text-align: center;
     }
   }
 
   .example-did {
-    display: inline-block;
-    margin: 15px 0 !important;
-    padding: 8px 15px;
-    border-radius: 20px;
-    background-color: $white;
-    // box-shadow: $box-shadow;
-
     p {
-      color: $gray-5 !important;
+      color: $gray-7;
     }
 
     &:hover {
@@ -74,16 +60,12 @@
         padding-left: 0;
       }
 
-      h1 {
-        margin-bottom: 20px;
-      }
-
       p {
-        @include font-size(12px);
-
+        @include font-size(14px, 21px);
         color: $gray-10;
-        font-family: $metropolis;
-        font-weight: bold;
+
+        font-family: $inter;
+        letter-spacing: 0.5px;
       }
 
       .status {
