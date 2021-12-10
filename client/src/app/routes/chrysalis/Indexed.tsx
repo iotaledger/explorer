@@ -1,22 +1,20 @@
 import { Converter } from "@iota/util.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
-import MessageButton from "../../components/MessageButton";
+import DataToggle from "../../components/DataToggle";
 import Modal from "../../components/Modal";
-import { ModalIcon } from '../../components/ModalProps';
+import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
 import Switcher from "../../components/Switcher";
 import messageJSON from "./../../../assets/modals/message.json";
 import "./Indexed.scss";
 import { IndexedRouteProps } from "./IndexedRouteProps";
 import { IndexedState } from "./IndexedState";
-import DataToggle from '../../components/DataToggle';
 
 /**
  * Component which will show the indexes page.
@@ -135,7 +133,22 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                         Index
                                     </span>
                                 </div>
-                                <DataToggle options={[{ label: "Text", content: this.state.utf8Index, link: `/${this.props.match.params.network}/indexed/${this.state.utf8Index}` }, { label: "HEX", content: this.state.hexIndex }]} />
+                                <DataToggle
+                                    options={
+                                        [
+                                            {
+                                                label: "Text",
+                                                content: this.state.utf8Index,
+                                                // eslint-disable-next-line max-len
+                                                link: `/${this.props.match.params.network}/indexed/${this.state.utf8Index}`
+                                            },
+                                            {
+                                                label: "HEX",
+                                                content: this.state.hexIndex
+                                            }
+                                        ]
+                                    }
+                                />
                             </div>
                         </div>
                         <div className="section margin-t-s">

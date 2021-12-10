@@ -1,4 +1,5 @@
-import { ClientError, Converter, IResponse, SingleNodeClientOptions } from "@iota/iota.js";
+import { ClientError, IResponse, SingleNodeClientOptions } from "@iota/iota.js";
+import { Converter } from "@iota/util.js";
 import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 /**
  * Client for API communication.

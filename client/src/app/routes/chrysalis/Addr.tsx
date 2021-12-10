@@ -1,5 +1,5 @@
 import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
-import classNames from 'classnames';
+import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -152,7 +152,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                     )}
                                                                     {" "}(
                                                                     <FiatValue
-                                                                        value={(this.state.balance ?? 0) - this.state.sent}
+                                                                        value={
+                                                                            (this.state.balance ?? 0) -
+                                                                            this.state.sent
+                                                                        }
                                                                     />)
                                                                 </React.Fragment>
                                                             )}
@@ -341,7 +344,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 outputs={transaction?.outputs.length}
                                                                 messageTangleStatus={transaction?.messageTangleStatus}
                                                                 date={transaction?.date}
-                                                                // isSpent={transaction?.isSpent}
                                                                 amount={transaction?.amount}
                                                                 tableFormat={true}
                                                             />
@@ -358,7 +360,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 messageTangleStatus={transaction
                                                                     ?.relatedSpentTransaction.messageTangleStatus}
                                                                 date={transaction?.relatedSpentTransaction.date}
-                                                                // isSpent={transaction?.relatedSpentTransaction.isSpent}
                                                                 amount={transaction?.relatedSpentTransaction.amount}
                                                                 tableFormat={true}
                                                             />
@@ -434,7 +435,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 outputs={transaction?.outputs.length}
                                                                 messageTangleStatus={transaction?.messageTangleStatus}
                                                                 date={transaction?.date}
-                                                                // isSpent={transaction?.isSpent}
                                                                 amount={transaction?.amount}
                                                             />
                                                             <Transaction
@@ -450,7 +450,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 messageTangleStatus={transaction
                                                                     ?.relatedSpentTransaction.messageTangleStatus}
                                                                 date={transaction?.relatedSpentTransaction.date}
-                                                                // isSpent={transaction?.relatedSpentTransaction.isSpent}
                                                                 amount={transaction?.relatedSpentTransaction.amount}
                                                             />
                                                         </React.Fragment>
@@ -555,13 +554,13 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 this._tangleCacheService);
 
                         if (transactionsResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                            const amount = await this.getTransactionAmount(output.spendingMessageId);
+                            const totalAmount = await this.getTransactionAmount(output.spendingMessageId);
                             transaction.relatedSpentTransaction = {
                                 messageId: output.spendingMessageId,
                                 date: statusDetails.date,
                                 messageTangleStatus: statusDetails.messageTangleStatus,
                                 isSpent: true,
-                                amount,
+                                amount: totalAmount,
                                 inputs: transactionsResult?.message?.payload?.essence?.inputs,
                                 outputs: transactionsResult?.message?.payload?.essence?.outputs
                             };

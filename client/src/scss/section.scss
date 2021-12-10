@@ -59,9 +59,11 @@
 
       &.featured {
         @include font-size(16px, 24px);
+
+        color: $gray-9;
         font-weight: 700;
         letter-spacing: 0.75px;
-        color: $gray-9;
+
         span {
           color: $gray-6;
         }

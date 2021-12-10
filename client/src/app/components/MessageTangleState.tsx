@@ -27,7 +27,7 @@ class MessageTangleState extends AsyncComponent<MessageTangleStateProps, Message
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
         this.state = {
-            messageId: "",
+            messageId: ""
         };
     }
 
