@@ -339,6 +339,19 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 <div className="card--content description">
                                     {this.state.networkConfig.description}
                                 </div>
+                                {this.state.networkConfig.faucet && (
+                                    <div className="card--content description">
+                                        <span>Get tokens from the Faucet:</span>
+                                        <a
+                                            className="data-link margin-l-t"
+                                            href={this.state.networkConfig.faucet}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            {this.state.networkConfig.faucet}
+                                        </a>
+                                    </div>
+                                )}
                             </div>
                             {!this.state.networkConfig.isEnabled && (
                                 <div className="card margin-t-m">
@@ -353,7 +366,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 

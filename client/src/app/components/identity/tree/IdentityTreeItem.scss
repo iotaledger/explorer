@@ -1,0 +1,257 @@
+@import '../../../../scss/fonts';
+@import '../../../../scss/mixins';
+@import '../../../../scss/media-queries';
+@import '../../../../scss/variables';
+
+$item-height: 64px;
+
+.tree-item-container {
+  position: relative;
+  min-width: 200px;
+  height: $item-height;
+  margin-right: 10px;
+  overflow: hidden;
+  background-color: white;
+  cursor: pointer;
+
+  &:hover {
+    background: linear-gradient(0deg, #ffffff 10%, $gray-daylight 10% 90%, #ffffff 10%);
+  }
+
+  .push-right {
+    left: 60px !important;
+  }
+
+  .upper-left-straight-line {
+    position: absolute;
+    left: 25px;
+    width: 2px;
+    height: 33px;
+    background-color: #eeeeee;
+  }
+
+  .msg-icon-left {
+    position: absolute;
+    z-index: 3;
+    top: 20px;
+    left: 20px;
+  }
+
+  .msg-icon-right {
+    position: absolute;
+    z-index: 3;
+    top: 21px;
+    left: 44px;
+  }
+
+  .lower-left-straight-line {
+    position: absolute;
+    top: 31px;
+    left: 25px;
+    width: 2px;
+    height: 33px;
+    background-color: #eeeeee;
+  }
+
+  .upper-right-straight-line {
+    position: absolute;
+    left: 48px;
+    width: 2px;
+    height: 33px;
+    background-color: #eeeeee;
+  }
+
+  .lower-right-straight-line {
+    position: absolute;
+    top: 31px;
+    left: 48px;
+    width: 2px;
+    height: 33px;
+    background-color: #eeeeee;
+  }
+
+  .content {
+    display: flex;
+    position: absolute;
+    top: 10px;
+    left: 40px;
+    justify-content: space-between;
+    width: calc(100% - 50px);
+
+    div {
+      margin-top: 10px;
+    }
+
+    .title {
+      font-family: $metropolis;
+    }
+
+    .time-stamp {
+      margin-top: 5px;
+      color: $gray-5 !important;
+      font-family: $metropolis;
+      font-size: 0.7em !important;
+    }
+
+    .diff-icon-active {
+      svg {
+        path {
+          fill: $gray;
+        }
+      }
+    }
+
+    .diff-icon {
+      display: flex;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      margin-top: 8px;
+      margin-left: 10px;
+      padding-top: 3px;
+      padding-left: 3px;
+      border: 1px solid $gray-light;
+      border-radius: 4px;
+
+      &:hover {
+        svg {
+          path {
+            fill: $main-green-highlight;
+          }
+        }
+
+        border: 1px solid $main-green-highlight;
+      }
+    }
+  }
+}
+
+.loading-diff-icon {
+  position: absolute;
+  z-index: 3;
+  top: 22px;
+  left: 43px;
+  width: 10px;
+  height: 10px;
+  animation: diff-anim 1s;
+  animation-iteration-count: infinite;
+  border: solid $gray-5 1px;
+  border-radius: 5px;
+  background-color: $gray-light;
+}
+
+.no-diff-icon {
+  position: absolute;
+  z-index: 3;
+  top: 22px;
+  left: 43px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: $gray-5;
+}
+
+@keyframes diff-anim {
+  from {
+    border: solid $gray-5 4px;
+  }
+
+  to {
+    border: solid $gray-5 0;
+  }
+}
+
+.loading-diff-title {
+  position: absolute;
+  top: 22px;
+  left: 60px;
+  color: $gray-5;
+  font-family: $metropolis;
+  font-size: 0.8em;
+}
+
+.no-diff-title {
+  position: absolute;
+  top: 22px;
+  left: 60px;
+  color: $gray-5 !important;
+  font-family: $metropolis;
+  font-size: 0.8em;
+}
+
+.expand-animation {
+  -webkit-animation-name: expand;
+  animation-name: expand;
+  -webkit-animation-duration: 0.5s;
+  animation-duration: 0.8s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes expand {
+  0% {
+    height: 0;
+  }
+
+  100% {
+    height: $item-height;
+  }
+}
+
+@keyframes expand {
+  0% {
+    height: 0;
+  }
+
+  100% {
+    height: $item-height;
+  }
+}
+
+.tree-item-selected {
+  background: linear-gradient(0deg, #ffffff 10%, $light-green 10% 90%, #ffffff 10%);
+}
+
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.backward-curved-line {
+  position: absolute;
+  z-index: 2;
+  top: -33px;
+  left: 26px;
+}
+
+.identity-item-wrapper {
+  position: relative;
+}
+
+.forward-curved-line {
+  position: absolute;
+  z-index: 2;
+  top: 28px;
+  left: 25px;
+}
+
+.fade-animation {
+  animation-name: fade-anim;
+  animation-duration: 1s;
+}
+
+@keyframes fade-anim {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

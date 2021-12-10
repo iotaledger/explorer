@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
+import { IConfiguration } from "../models/config/IConfiguration";
 import { NetworkService } from "../services/networkService";
 import { SettingsService } from "../services/settingsService";
 import "./App.scss";
@@ -17,6 +19,8 @@ import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
 import Message from "./routes/chrysalis/Message";
 import { MessageRouteProps } from "./routes/chrysalis/MessageRouteProps";
 import CurrencyConverter from "./routes/CurrencyConverter";
+import IdentityResolver from "./routes/IdentityResolver";
+import { IdentityResolverProps } from "./routes/IdentityResolverProps";
 import Landing from "./routes/Landing";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
@@ -38,7 +42,7 @@ import { VisualizerProps, VisualizerRouteProps } from "./routes/VisualizerRouteP
 /**
  * Main application class.
  */
-class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
+class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConfiguration }, AppState> {
     /**
      * The network service.
      */
@@ -53,7 +57,7 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
      * Create a new instance of App.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<AppRouteProps>) {
+    constructor(props: RouteComponentProps<AppRouteProps> & { config: IConfiguration }) {
         super(props);
 
         this._networkService = ServiceFactory.get<NetworkService>("network");
@@ -130,6 +134,10 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                         {
                             label: "Currency Converter",
                             url: `/${this.state.networkId}/currency-converter/`
+                        },
+                        {
+                            label: "Decentralized Identifier",
+                            url: `/${this.state.networkId}/identity-resolver/`
                         }
                     ] : []}
                     darkMode={this.state.darkMode}
@@ -255,6 +263,17 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                                                     />
                                                 )}
                                             />
+                                            <Route
+                                                path="/:network/identity-resolver/:did?"
+                                                component={(props: RouteComponentProps<IdentityResolverProps>) => (
+                                                    <IdentityResolver
+                                                        {...props}
+                                                        isSupported={
+                                                            this.state.networkConfig?.protocolVersion === "chrysalis"
+                                                        }
+                                                    />
+                                                )}
+                                            />
                                         </Switch>
                                     )}
                             </React.Fragment>
@@ -267,40 +286,100 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
                             </div>
                         )}
                 </div>
-                <Footer
-                    dynamic={
-                        this.state.networks.length > 0 ? this.state.networks
-                            .filter(network => network.isEnabled)
-                            .map(n => ({
-                                label: n.label,
-                                url: n.network
-                            }))
-                            .concat({
-                                label: "Streams v0",
-                                url: `${this.state.networkId}/streams/0/`
-                            })
-                            .concat({
-                                label: "Visualizer",
-                                url: `${this.state.networkId}/visualizer/`
-                            })
-                            .concat({
-                                label: "Markets",
-                                url: `${this.state.networkId}/markets/`
-                            })
-                            .concat({
-                                label: "Currency Converter",
-                                url: `${this.state.networkId}/currency-converter/`
-                            }) : [
-                            {
-                                label: "Maintenance Mode",
-                                url: ""
-                            }
-                        ]
-                    }
-                />
+                <Footer dynamic={this.getFooterItems()} />
                 <Disclaimer />
-            </div>
+            </div >
         );
+    }
+
+    /**
+     * create a tools list. Excludes Identity Resolver if network is not supported.
+     * @returns array of tools
+     */
+    private getTools() {
+        let tools: { label: string; url: string }[] = [];
+
+        if (this.state.networks.length > 0) {
+            tools = [
+                {
+                    label: "Explorer",
+                    url: `/${this.state.networkId}/`
+                },
+                {
+                    label: "Streams v0",
+                    url: `/${this.state.networkId}/streams/0/`
+                },
+                {
+                    label: "Visualizer",
+                    url: `/${this.state.networkId}/visualizer/`
+                },
+                {
+                    label: "Markets",
+                    url: `/${this.state.networkId}/markets/`
+                },
+                {
+                    label: "Currency Converter",
+                    url: `/${this.state.networkId}/currency-converter/`
+                }
+            ];
+
+            if (this.props.config.identityResolverEnabled) {
+                tools.push({
+                    label: "Identity Resolver",
+                    url: `/${this.state.networkId}/identity-resolver/`
+                });
+            }
+        }
+        return tools;
+    }
+
+    /**
+     * Creates footer items. Excludes the Identity Resolver if the network is not supported.
+     * @returns Array of footer items
+     */
+    private getFooterItems() {
+        if (this.state.networks.length > 0) {
+            const footerArray = this.state.networks
+                .filter(network => network.isEnabled)
+                .map(n => ({
+                    label: n.label,
+                    url: n.network
+                }))
+                .concat({
+                    label: "Streams v0",
+                    url: `${this.state.networkId}/streams/0/`
+                })
+                .concat({
+                    label: "Visualizer",
+                    url: `${this.state.networkId}/visualizer/`
+                })
+                .concat({
+                    label: "Markets",
+                    url: `${this.state.networkId}/markets/`
+                })
+                .concat({
+                    label: "Currency Converter",
+                    url: `${this.state.networkId}/currency-converter/`
+                });
+
+            if (
+                this.props.config.identityResolverEnabled
+            ) {
+                footerArray.push({
+                    label: "Identity Resolver",
+                    url: `${this.state.networkId}/identity-resolver/`
+                });
+            }
+
+            return footerArray;
+        }
+
+        return [
+            {
+                label: "Maintenance Mode",
+                url: ""
+            }
+        ];
     }
 
     /**
@@ -310,15 +389,17 @@ class App extends Component<RouteComponentProps<AppRouteProps>, AppState> {
      */
     private setNetwork(network: string | undefined, updateLocation: boolean): void {
         if (!network) {
-            network = this.state.networks && this.state.networks.length > 0
-                ? this.state.networks[0].network : "mainnet";
+            network =
+                this.state.networks && this.state.networks.length > 0 ? this.state.networks[0].network : "mainnet";
             updateLocation = true;
         }
         const hasChanged = network !== this.state.networkId;
         if (hasChanged) {
+            const config = this.state.networks.find(n => n.network === network);
             this.setState(
                 {
-                    networkId: network ?? ""
+                    networkId: network ?? "",
+                    networkConfig: config
                 },
                 () => {
                     if (!this.props.location.pathname.startsWith(`/${network}`) && updateLocation) {

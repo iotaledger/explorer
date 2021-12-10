@@ -2,7 +2,7 @@ name: API Build and Deploy Production
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - "api/**"
       - ".github/workflows/api-prod.yaml"
@@ -23,7 +23,7 @@ jobs:
       CONFIG_DB_AWS_ACCESS_KEY_ID: ${{ secrets.PROD_CONFIG_DB_AWS_ACCESS_KEY_ID }}
       CONFIG_DB_AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_CONFIG_DB_AWS_SECRET_ACCESS_KEY }}
       CONFIG_DB_TABLE_PREFIX: ${{ secrets.PROD_CONFIG_DB_TABLE_PREFIX }}
-      CONFIG_ALLOWED_DOMAIN: ${{ secrets.PROD_CONFIG_ALLOWED_DOMAIN }}
+      CONFIG_ALLOWED_DOMAINS: ${{ secrets.PROD_CONFIG_ALLOWED_DOMAINS }}
       CONFIG_ROUTE_CORS: ${{ secrets.PROD_CONFIG_ROUTE_CORS }}
       CONFIG_VERBOSE_LOGGING: ${{ secrets.PROD_VERBOSE_LOGGING }}
       CONFIG_PRIVATE_KEY_ED25519: ${{ secrets.PROD_PRIVATE_KEY_ED25519 }}
@@ -57,7 +57,7 @@ jobs:
           sed -i 's/DB-AWS-ACCESS-KEY-ID/${{ env.CONFIG_DB_AWS_ACCESS_KEY_ID }}/g' config.$CONFIG_ID.json
           sed -i 's/DB-AWS-SECRET-ACCESS-KEY/${{ env.CONFIG_DB_AWS_SECRET_ACCESS_KEY }}/g' config.$CONFIG_ID.json
           sed -i 's/DB-TABLE-PREFIX/${{ env.CONFIG_DB_TABLE_PREFIX }}/g' config.$CONFIG_ID.json
-          sed -i 's/ALLOWED-DOMAIN/${{ env.CONFIG_ALLOWED_DOMAIN }}/g' config.$CONFIG_ID.json
+          sed -i 's/ALLOWED-DOMAINS/${{ env.CONFIG_ALLOWED_DOMAINS }}/g' config.$CONFIG_ID.json
           sed -i 's/ROUTE-CORS/${{ env.CONFIG_ROUTE_CORS }}/g' config.$CONFIG_ID.json
           sed -i 's/VERBOSE-LOGGING/${{ env.CONFIG_VERBOSE_LOGGING }}/g' config.$CONFIG_ID.json
           sed -i 's/PRIVATE-KEY-ED25519/${{ env.CONFIG_PRIVATE_KEY_ED25519 }}/g' config.$CONFIG_ID.json
@@ -80,11 +80,6 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
-      - name: Build
-        run: |
-          cd api
-          npm install
-          npm run build
       - name: Deploy
         run: |
           cd api

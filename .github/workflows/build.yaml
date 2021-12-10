@@ -2,7 +2,7 @@ name: Build All with Node versions 14, 16
 
 on:
   push:
-    branches: [master, develop]
+    branches: [main, dev]
     paths:
       - "api/**"
       - "client/**"

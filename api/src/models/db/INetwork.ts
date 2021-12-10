@@ -113,4 +113,14 @@ export interface INetwork {
      * The ordering for the networks.
      */
     order: number;
+
+    /**
+     * An example for an Identity DID address.
+     */
+    didExample?: string;
+
+    /**
+     * Url for faucet.
+     */
+    faucet?: string;
 }

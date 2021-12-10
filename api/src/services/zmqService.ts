@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { Subscriber } from "zeromq";
+import zmq from "zeromq";
 import { IAddress } from "../models/zmq/IAddress";
 import { IAntn } from "../models/zmq/IAntn";
 import { IDnscc } from "../models/zmq/IDnscc";
@@ -53,7 +53,7 @@ export class ZmqService {
     /**
      * The connected socket.
      */
-    private _socket?: Subscriber;
+    private _socket?: zmq.Socket;
 
     /**
      * Last time a message was received.
@@ -82,29 +82,16 @@ export class ZmqService {
         try {
             if (!this._socket) {
                 console.log("ZMQ::Connect", this._endpoint);
-                this._socket = new Subscriber();
+                this._socket = zmq.socket("sub");
                 this._socket.connect(this._endpoint);
+
+                this._socket.on("message", async (msg: Buffer) => this.handleMessage(msg.toString()));
 
                 for (const event of this._events) {
                     this._socket.subscribe(event);
                 }
 
                 this._lastMessageTime = Date.now();
-
-                // Run this as a background task otherwise
-                // it will block this method
-                setTimeout(
-                    async () => {
-                        try {
-                            this._lastMessageTime = Date.now();
-                            for await (const [msg] of this._socket) {
-                                await this.handleMessage(msg.toString());
-                            }
-                        } catch (err) {
-                            console.error("ZMQ::Listening", err);
-                        }
-                    },
-                    500);
             }
         } catch (err) {
             console.error("ZMQ::Connect Error", err);

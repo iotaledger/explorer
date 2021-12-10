@@ -1,0 +1,151 @@
+@import '../../../scss/variables';
+@import '../../../scss/mixins';
+@import '../../../scss/fonts';
+@import '../../../scss/layout.scss';
+
+.container {
+  width: 100%;
+}
+
+.json-viewer {
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre-wrap;
+
+  .string {
+    color: green;
+  }
+
+  .number {
+    color: darkorange;
+  }
+
+  .boolean {
+    color: blue;
+  }
+
+  .null {
+    color: magenta;
+  }
+
+  .key {
+    color: $gray-10;
+  }
+}
+
+.difference-select {
+  font-family: $metropolis !important;
+
+  select {
+    height: 26px !important;
+    font-size: 13px !important;
+  }
+
+  img {
+    top: 10px !important;
+  }
+}
+
+.compare-elements {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  .compare-icon {
+    align-self: center;
+    justify-self: center;
+    margin: 0 3px;
+  }
+
+  @include tablet-down {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+
+    .compare-icon {
+      display: none;
+    }
+  }
+
+  @include desktop-down {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+
+    .compare-icon {
+      display: none;
+    }
+  }
+}
+
+.toggle-box {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  height: 25px;
+  margin-right: 5px;
+  margin-left: 5px;
+  overflow: hidden;
+  border: 1px solid $gray-5;
+  border-radius: 5px;
+  background-color: $white;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $main-green-highlight;
+  }
+
+  @include phone-down {
+    flex-direction: column;
+    height: 60px;
+  }
+}
+
+.toggle-button {
+  height: 100%;
+  padding: 5px 5px;
+  color: $gray-5;
+  font-family: $metropolis !important;
+  font-size: 0.9em;
+
+  @include phone-down {
+    height: 50%;
+    font-size: 0.7em;
+  }
+}
+
+.toggle-button-active {
+  background-color: $light-green;
+  color: $gray-midnight;
+}
+
+.download-button {
+  @include phone-down {
+    height: 60px;
+    padding: 0.88em 4px;
+    border: 1px solid $gray-5;
+    border-radius: 5px;
+  }
+}
+
+.toggle-separator {
+  width: 1px;
+  height: 100%;
+  background-color: $gray-5;
+
+  @include phone-down {
+    width: 100%;
+    height: 1px;
+  }
+
+  .no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+}

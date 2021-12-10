@@ -2,7 +2,7 @@ name: Client Build and Deploy Staging
 
 on:
   push:
-    branches: [develop]
+    branches: [dev]
     paths:
       - "client/**"
       - ".github/workflows/client-staging.yaml"
@@ -21,6 +21,7 @@ jobs:
       CONFIG_API_ENDPOINT: ${{ secrets.STAGING_CONFIG_API_ENDPOINT }}
       CONFIG_FEED_ENDPOINT: ${{ secrets.STAGING_CONFIG_FEED_ENDPOINT }}
       CONFIG_GOOGLE_ANALYTICS_ID: ${{ secrets.STAGING_CONFIG_GOOGLE_ANALYTICS_ID }}
+      CONFIG_IDENTITY_RESOLVER_ENABLED: ${{ secrets.STAGING_CONFIG_IDENTITY_RESOLVER_ENABLED }}
       VERCEL_DOMAIN: ${{ secrets.VERCEL_CLIENT_STAGING_DOMAIN }}
 
       # Global Vercel env vars
@@ -36,6 +37,7 @@ jobs:
           mv config.template config.$CONFIG_ID.json
           sed -i "s/API-ENDPOINT/${{ env.CONFIG_API_ENDPOINT }}/g" config.$CONFIG_ID.json
           sed -i "s/GOOGLE-ANALYTICS-ID/${{ env.CONFIG_GOOGLE_ANALYTICS_ID }}/g" config.$CONFIG_ID.json
+          sed -i "s/IDENTITY-RESOLVER-ENABLED/${{ env.CONFIG_IDENTITY_RESOLVER_ENABLED }}/g" config.$CONFIG_ID.json
       - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:

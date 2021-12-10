@@ -1,4 +1,4 @@
-import { Converter } from "@iota/iota.js";
+import { Converter } from "@iota/util.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
