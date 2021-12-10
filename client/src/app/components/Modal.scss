@@ -49,6 +49,7 @@
 
     @include tablet-down {
       width: 100%;
+      overflow-y: scroll;
     }
 
     .modal--title {
