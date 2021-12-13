@@ -4,17 +4,21 @@
 @import '../../../scss/variables';
 
 .load-history-button {
-  padding: 10px 17px !important;
-  border: 1px solid $gray-5 !important;
+  justify-content: center;
+  width: 120px;
+  padding: 9px;
+  border: 1px solid #d8e1f4;
   border-radius: 6px;
-  color: $gray-5 !important;
-  font-family: $metropolis !important;
-  cursor: pointer !important;
+  background: var(--light-bg);
+  color: var(--expanded-color);
+  font-family: $inter;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+
+  @include font-size(14px);
 
   &:hover {
-    border-color: $gray-10 !important;
-    color: $gray-10 !important;
-    text-decoration: none !important;
+    text-decoration: none;
   }
 }
 
@@ -25,15 +29,9 @@
 .history-tree {
   height: 100%;
   margin-right: 20px;
-  margin-left: 0 !important;
+  margin-left: 0;
 
   @include phone-down {
     margin-right: 0;
   }
-}
-
-.history-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
 }

@@ -7,8 +7,21 @@
   width: 100%;
 }
 
+.diff-wrapper {
+  border: 1px solid $gray-3;
+  border-top: 0;
+  padding-right: 8px;
+
+  * {
+    word-break: break-all;
+  }
+}
+
 .json-viewer {
-  font-family: 'Courier New', Courier, monospace;
+  @include font-size(12px, 20px);
+
+  font-family: $ibm-plex-mono;
+  letter-spacing: 0.02em;
   white-space: pre-wrap;
 
   .string {
@@ -88,52 +101,57 @@
   margin-right: 5px;
   margin-left: 5px;
   overflow: hidden;
-  border: 1px solid $gray-5;
+  border: 1px solid $gray-3;
   border-radius: 5px;
   background-color: $white;
   cursor: pointer;
 
-  &:hover {
-    border-color: $main-green-highlight;
+  @include phone-down{
+    height: 50px;
+    flex-direction: column;
   }
 
-  @include phone-down {
-    flex-direction: column;
-    height: 60px;
+  &:hover {
+    border-color: $main-green-highlight;
   }
 }
 
 .toggle-button {
   height: 100%;
-  padding: 5px 5px;
-  color: $gray-5;
-  font-family: $metropolis !important;
-  font-size: 0.9em;
+  padding: 3px 8px;
+  color: var(--expanded-color);
+  font-family: $inter;
+  font-weight: 500;
 
-  @include phone-down {
-    height: 50%;
-    font-size: 0.7em;
+  @include font-size(12px, 18px);
+
+  @include phone-down{
+    text-align: center;
+    width: 100%;
   }
+
 }
 
 .toggle-button-active {
   background-color: $light-green;
-  color: $gray-midnight;
+  color: var(--body-color);
 }
 
 .download-button {
+  margin-top: 4px;
+  margin-right: 8px;
+  margin-left: 19px;
+
   @include phone-down {
     height: 60px;
     padding: 0.88em 4px;
-    border: 1px solid $gray-5;
-    border-radius: 5px;
   }
 }
 
 .toggle-separator {
   width: 1px;
   height: 100%;
-  background-color: $gray-5;
+  background-color: $gray-3;
 
   @include phone-down {
     width: 100%;

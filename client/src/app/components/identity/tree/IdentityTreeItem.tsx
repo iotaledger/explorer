@@ -56,24 +56,9 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                         {(this.state.diffHistory?.chainData?.length === 0 ||
                             this.state.loadingChildren ||
                             this.state.error) && (
-                            <div className="expand-animation">
-                                {/* --------- Loading Diff Chain... --------- */}
-                                {this.state.loadingChildren && (
-                                    <div className="tree-item-container">
-                                        {!this.props.firstMsg && (
-                                            <Fragment>
-                                                <div className="lower-left-straight-line" />
-                                                <div className="upper-left-straight-line" />
-                                            </Fragment>
-                                        )}
-                                        <div className="loading-diff-icon" />
-                                        <p className="title loading-diff-title"> Loading Diff Chain</p>
-                                    </div>
-                                )}
-
-                                {/* --------- ⚠ Error or No Diffs Found --------- */}
-                                {!this.state.loadingChildren &&
-                                    (this.state.diffHistory?.chainData?.length === 0 || this.state.error) && (
+                                <div className="expand-animation">
+                                    {/* --------- Loading Diff Chain... --------- */}
+                                    {this.state.loadingChildren && (
                                         <div className="tree-item-container">
                                             {!this.props.firstMsg && (
                                                 <Fragment>
@@ -81,18 +66,33 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                                                     <div className="upper-left-straight-line" />
                                                 </Fragment>
                                             )}
-
-                                            <div className="no-diff-icon" />
-                                            {this.state.diffHistory?.chainData?.length === 0 && (
-                                                <p className="title no-diff-title"> No diffs found</p>
-                                            )}
-                                            {this.state.error && <p className="title no-diff-title"> Error</p>}
+                                            <div className="loading-diff-icon" />
+                                            <p className="title loading-diff-title"> Loading Diff Chain</p>
                                         </div>
                                     )}
-                                {!this.props.firstMsg && <div>{BACKWARDS_CURVED_LINE}</div>}
-                                <div>{FORWARD_CURVED_LINE}</div>
-                            </div>
-                        )}
+
+                                    {/* --------- ⚠ Error or No Diffs Found --------- */}
+                                    {!this.state.loadingChildren &&
+                                        (this.state.diffHistory?.chainData?.length === 0 || this.state.error) && (
+                                            <div className="tree-item-container">
+                                                {!this.props.firstMsg && (
+                                                    <Fragment>
+                                                        <div className="lower-left-straight-line" />
+                                                        <div className="upper-left-straight-line" />
+                                                    </Fragment>
+                                                )}
+
+                                                <div className="no-diff-icon" />
+                                                {this.state.diffHistory?.chainData?.length === 0 && (
+                                                    <p className="title no-diff-title"> No diffs found</p>
+                                                )}
+                                                {this.state.error && <p className="title no-diff-title"> Error</p>}
+                                            </div>
+                                        )}
+                                    {!this.props.firstMsg && <div>{BACKWARDS_CURVED_LINE}</div>}
+                                    <div>{FORWARD_CURVED_LINE}</div>
+                                </div>
+                            )}
                         {/* --------- Diff children if Parent is Integration message  --------- */}
                         {!this.state.loadingChildren &&
                             this.state.diffHistory?.chainData?.map((value, index) => (
@@ -192,15 +192,14 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                             >
                                 <svg
                                     width="17"
-                                    height="19"
-                                    viewBox="0 0 17 19"
+                                    height="20"
+                                    viewBox="0 0 17 20"
                                     fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
+                                    xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         // eslint-disable-next-line max-len
-                                        d="M4.00101 10.9995V12.1725C4.6685 12.4084 5.2311 12.8727 5.58937 13.4833C5.94763 14.0939 6.07849 14.8115 5.95882 15.5093C5.83914 16.207 5.47664 16.84 4.93538 17.2964C4.39412 17.7527 3.70896 18.003 3.00101 18.003C2.29305 18.003 1.60789 17.7527 1.06663 17.2964C0.525375 16.84 0.16287 16.207 0.043195 15.5093C-0.0764802 14.8115 0.0543805 14.0939 0.412646 13.4833C0.770912 12.8727 1.33351 12.4084 2.00101 12.1725V5.83049C1.33351 5.59458 0.770912 5.13029 0.412646 4.51968C0.0543805 3.90907 -0.0764802 3.19146 0.043195 2.4937C0.16287 1.79593 0.525375 1.16294 1.06663 0.706614C1.60789 0.250285 2.29305 0 3.00101 0C3.70896 0 4.39412 0.250285 4.93538 0.706614C5.47664 1.16294 5.83914 1.79593 5.95882 2.4937C6.07849 3.19146 5.94763 3.90907 5.58937 4.51968C5.2311 5.13029 4.6685 5.59458 4.00101 5.83049V8.17049C4.31301 8.06049 4.64801 8.00049 4.99801 7.99949L11.035 7.99349C11.3 7.99322 11.5541 7.88775 11.7415 7.70024C11.9288 7.51273 12.034 7.25853 12.034 6.99349V5.84249C11.3617 5.61291 10.7926 5.15223 10.428 4.54243C10.0634 3.93263 9.927 3.21326 10.043 2.51233C10.1591 1.8114 10.52 1.17437 11.0617 0.7146C11.6033 0.254829 12.2905 0.0021362 13.001 0.00148773C13.7059 0.00119419 14.3884 0.249123 14.9287 0.701779C15.4691 1.15444 15.8328 1.78291 15.956 2.47695C16.0793 3.17098 15.9542 3.88625 15.6028 4.49728C15.2513 5.10831 14.6959 5.57606 14.034 5.81849V6.99349C14.034 7.78862 13.7183 8.55123 13.1564 9.11375C12.5944 9.67627 11.8321 9.99269 11.037 9.99349L5.00001 9.99949C4.73496 9.99975 4.48087 10.1052 4.29355 10.2927C4.10623 10.4802 4.00101 10.7344 4.00101 10.9995Z"
-                                        fill="#BDBDBD"
+                                        d="M4.99905 8.00198V6.82898C5.66655 6.59307 6.22915 6.12878 6.58741 5.51817C6.94568 4.90756 7.07654 4.18995 6.95686 3.49219C6.83719 2.79442 6.47468 2.16143 5.93342 1.7051C5.39217 1.24877 4.70701 0.998489 3.99905 0.998489C3.2911 0.998489 2.60594 1.24877 2.06468 1.7051C1.52342 2.16143 1.16092 2.79442 1.04124 3.49219C0.921567 4.18995 1.05243 4.90756 1.41069 5.51817C1.76896 6.12878 2.33156 6.59307 2.99905 6.82898V13.171C2.33156 13.4069 1.76896 13.8712 1.41069 14.4818C1.05243 15.0924 0.921567 15.81 1.04124 16.5078C1.16092 17.2055 1.52342 17.8385 2.06468 18.2949C2.60594 18.7512 3.2911 19.0015 3.99905 19.0015C4.70701 19.0015 5.39217 18.7512 5.93342 18.2949C6.47468 17.8385 6.83719 17.2055 6.95686 16.5078C7.07654 15.81 6.94568 15.0924 6.58741 14.4818C6.22915 13.8712 5.66655 13.4069 4.99905 13.171V10.831C5.31105 10.941 5.64605 11.001 5.99605 11.002L12.0331 11.008C12.2981 11.0082 12.5522 11.1137 12.7395 11.3012C12.9268 11.4887 13.0321 11.7429 13.0321 12.008V13.159C12.3597 13.3886 11.7906 13.8492 11.426 14.459C11.0615 15.0688 10.925 15.7882 11.0411 16.4891C11.1571 17.1901 11.5181 17.8271 12.0597 18.2869C12.6014 18.7466 13.2886 18.9993 13.9991 19C14.7039 19.0003 15.3864 18.7523 15.9268 18.2997C16.4671 17.847 16.8308 17.2186 16.9541 16.5245C17.0773 15.8305 16.9523 15.1152 16.6008 14.5042C16.2493 13.8932 15.6939 13.4254 15.0321 13.183V12.008C15.0321 11.2128 14.7164 10.4502 14.1544 9.88772C13.5925 9.32519 12.8302 9.00877 12.0351 9.00798L5.99805 9.00198C5.73301 9.00171 5.47891 8.89624 5.29159 8.70873C5.10427 8.52122 4.99905 8.26702 4.99905 8.00198Z"
+                                        fill="#677695"
                                     />
                                 </svg>
                             </a>

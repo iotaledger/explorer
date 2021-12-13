@@ -17,9 +17,9 @@
     p {
       @include font-size(14px, 21px);
 
+      color: $did-error !important;
       font-family: $inter;
       letter-spacing: 0.5px;
-      color: $did-error !important;
       text-align: center;
     }
   }
@@ -60,14 +60,6 @@
         padding-left: 0;
       }
 
-      p {
-        @include font-size(14px, 21px);
-        color: $gray-10;
-
-        font-family: $inter;
-        letter-spacing: 0.5px;
-      }
-
       .status {
         @include font-size(14px);
       }
@@ -99,10 +91,27 @@
     justify-content: space-between;
     width: 100%;
     padding: 10px;
-    background-color: $gray-light;
+    border: 1px solid $gray-3;
+    border-radius: 6px 6px 0 0;
+    background-color: $gray-daylight;
 
     a {
       color: $gray;
+
+      svg {
+        margin-top: 6px;
+        margin-right: 8px;
+      }
+    }
+  }
+
+  .json-wraper {
+    padding: 8px;
+    border: 1px solid $gray-3;
+    border-top: 0;
+
+    * {
+      word-break: break-all;
     }
   }
 

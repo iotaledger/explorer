@@ -10,12 +10,13 @@ $item-height: 64px;
   min-width: 200px;
   height: $item-height;
   margin-right: 10px;
+  border-radius: 6px;
   overflow: hidden;
   background-color: white;
   cursor: pointer;
 
   &:hover {
-    background: linear-gradient(0deg, #ffffff 10%, $gray-daylight 10% 90%, #ffffff 10%);
+    background: rgba(72, 87, 118, 0.08);
   }
 
   .push-right {
@@ -70,27 +71,45 @@ $item-height: 64px;
     background-color: #eeeeee;
   }
 
+  .no-diff-title {
+    position: absolute;
+    top: 18px;
+    left: 60px;
+    color: $gray-5;
+    font-family: $inter;
+    letter-spacing: 0.5px;
+
+    @include font-size(12px, 18px);
+  }
+
   .content {
     display: flex;
     position: absolute;
-    top: 10px;
+    top: -5px;
     left: 40px;
     justify-content: space-between;
     width: calc(100% - 50px);
-
-    div {
-      margin-top: 10px;
-    }
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 6px;
 
     .title {
-      font-family: $metropolis;
+      color: var(--expanded-color);
+      font-family: $ibm-plex-mono;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+
+      @include font-size(12px, 16px);
     }
 
     .time-stamp {
-      margin-top: 5px;
-      color: $gray-5 !important;
-      font-family: $metropolis;
-      font-size: 0.7em !important;
+      color: $gray-5;
+      font-family: $inter;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+
+      @include font-size(12px, 18px);
     }
 
     .diff-icon-active {
@@ -108,21 +127,13 @@ $item-height: 64px;
       justify-content: center;
       width: 30px;
       height: 30px;
-      margin-top: 8px;
-      margin-left: 10px;
-      padding-top: 3px;
-      padding-left: 3px;
-      border: 1px solid $gray-light;
-      border-radius: 4px;
 
       &:hover {
         svg {
           path {
-            fill: $main-green-highlight;
+            fill: $gray-9;
           }
         }
-
-        border: 1px solid $main-green-highlight;
       }
     }
   }
@@ -172,15 +183,6 @@ $item-height: 64px;
   font-size: 0.8em;
 }
 
-.no-diff-title {
-  position: absolute;
-  top: 22px;
-  left: 60px;
-  color: $gray-5 !important;
-  font-family: $metropolis;
-  font-size: 0.8em;
-}
-
 .expand-animation {
   -webkit-animation-name: expand;
   animation-name: expand;
@@ -211,7 +213,7 @@ $item-height: 64px;
 }
 
 .tree-item-selected {
-  background: linear-gradient(0deg, #ffffff 10%, $light-green 10% 90%, #ffffff 10%);
+  background: rgba(20, 202, 191, 0.08);
 }
 
 .no-select {
