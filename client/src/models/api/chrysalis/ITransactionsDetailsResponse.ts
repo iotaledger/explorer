@@ -1,7 +1,7 @@
 import { ISigLockedDustAllowanceOutput, ISigLockedSingleOutput, IUTXOInput } from "@iota/iota.js";
 import { MessageTangleStatus } from "../../messageTangleStatus";
 import { IResponse } from "../IResponse";
-export interface Output {
+export interface HistoricOutput {
     output: {
         address: {
             type: number;
@@ -13,7 +13,7 @@ export interface Output {
     spendingMessageId: string;
 }
 
-export interface Input {
+export interface HistoricInput {
     transactionId: string;
     transactionOutputIndex: string;
     type: number;
@@ -31,11 +31,11 @@ export interface ITransaction {
     /**
      * The outputs.
      */
-    outputs: Output[];
+    outputs: HistoricOutput[];
     /**
      * The inputs.
      */
-    inputs: Input[];
+    inputs: HistoricInput[];
     /**
      * Date of Milestone Reference.
      */
