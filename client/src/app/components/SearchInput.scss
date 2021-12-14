@@ -50,7 +50,7 @@
 
 .search-input--compact {
   display: none;
-  margin-left: auto;
+  margin-left: 8px;
 
   @include desktop-down {
     display: block;

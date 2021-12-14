@@ -68,6 +68,21 @@ header {
     .inner--main {
       flex: 1;
       padding: 0 14px 0 24px;
+
+      .mobile-fiat {
+        display: none;
+      }
+
+      @include desktop-down {
+        .mobile-fiat {
+          display: block;
+          margin-left: auto;
+        }
+
+        .desktop-fiat {
+          display: none;
+        }
+      }
     }
 
     .inner--networks {
@@ -173,6 +188,21 @@ header {
 
     .select-wrapper {
       margin-left: 16px;
+
+      @include desktop-down {
+        select {
+          height: 32px;
+          padding: 0 20px 0 8px;
+        }
+
+        img {
+          position: absolute;
+          top: 50%;
+          right: 8px;
+          transform: translateY(-50%);
+          pointer-events: none;
+        }
+      }
     }
 
     .theme-toggle {
@@ -201,8 +231,7 @@ header {
     @include desktop-down {
       .navigation--item,
       .utilities--wrapper,
-      .search-input,
-      .select-wrapper {
+      .search-input, {
         display: none;
       }
     }

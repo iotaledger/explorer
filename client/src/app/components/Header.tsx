@@ -122,9 +122,19 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 </React.Fragment>
                             )}
                         </div>
+                        {/* ----- Only visible in mobile ----- */}
+                        <div className="mobile-fiat">
+                            <FiatSelector />
+                        </div>
+                        {/* ---------- */}
+
                         {this.props.search}
 
-                        <FiatSelector />
+                        {/* ----- Only visible in desktop ----- */}
+                        <div className="desktop-fiat">
+                            <FiatSelector />
+                        </div>
+                        {/* ---------- */}
                         <button
                             type="button"
                             className="button--unstyled theme-toggle"
