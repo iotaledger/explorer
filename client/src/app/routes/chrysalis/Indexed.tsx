@@ -102,7 +102,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                         <div className="row middle space-between">
                             <div className="row middle">
                                 <h1>
-                                    Indexed Data
+                                    Indexed
                                 </h1>
                                 <Modal icon={ModalIcon.Dots} data={messageJSON} />
                             </div>
