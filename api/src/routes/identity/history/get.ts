@@ -1,4 +1,4 @@
-import * as identity from "@iota/identity-wasm/node";
+import * as identity from "@iota/identity-wasm-0.4/node";
 
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IIdentityDidHistoryRequest } from "../../../models/api/IIdentityDidHistoryRequest";
@@ -54,12 +54,12 @@ async function resolveHistory(
         // Create a client instance to publish messages to the Tangle.
         const client = identity.Client.fromConfig(config);
 
-        const recepit = await client.resolveHistory(did);
-        const recepitObj = recepit.toJSON();
+        const receipt = await client.resolveHistory(did);
+        const receiptObj = receipt.toJSON();
 
         const integrationChainData = [];
 
-        for (const element of recepit.integrationChainData()) {
+        for (const element of receipt.integrationChainData()) {
             const integrationMessage = {
                 document: element.toJSON(),
                 messageId: element.messageId
@@ -69,8 +69,8 @@ async function resolveHistory(
 
         const history = {
             integrationChainData,
-            diffChainData: recepitObj.diffChainData,
-            diffChainSpam: recepitObj.diffChainSpam
+            diffChainData: receiptObj.diffChainData,
+            diffChainSpam: receiptObj.diffChainSpam
         };
 
         return history;

@@ -1,4 +1,4 @@
-import * as identity from "@iota/identity-wasm/node";
+import * as identity from "@iota/identity-wasm-0.4/node";
 
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IIdentityDiffHistoryBody } from "../../../models/api/IIdentityDiffHistoryBody";
