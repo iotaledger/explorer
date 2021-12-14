@@ -11,6 +11,7 @@ import { INetwork } from "../../models/db/INetwork";
 import { IFeedItem } from "../../models/IFeedItem";
 import { IFilterSettings } from "../../models/services/IFilterSettings";
 import { NetworkService } from "../../services/networkService";
+import { NumberHelper } from "./../../helpers/numberHelper";
 import Feeds from "../components/Feeds";
 import "./Landing.scss";
 import { LandingRouteProps } from "./LandingRouteProps";
@@ -138,11 +139,14 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 : "Messages"
                                         } per sec
                                         </span>
-                                        <span className="info-box--value">
-                                            {this.state.itemsPerSecond} / {
-                                                this.state.confirmedItemsPerSecond
-                                            }
-                                        </span>
+                                        <div className="info-box--value">
+                                            <span className="download-rate">
+                                                {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1)}
+                                            </span>
+                                            <span className="upload-rate">
+                                                /{NumberHelper.roundTo(Number(this.state.confirmedItemsPerSecond), 1)}
+                                            </span>
+                                        </div>
                                     </div>
                                     {this.state.networkConfig.showMarket && (
                                         <div className="info-box">
@@ -153,7 +157,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     {this.state.networkConfig.showMarket && (
                                         <div className="info-box">
                                             <span className="info-box--title">Price / MI</span>
-                                            <span className="info-box--value">{this.state.priceCurrency}</span>
+                                            <span className="info-box--value">
+                                                {this.state.priceCurrency}
+                                            </span>
                                         </div>
                                     )}
                                 </div>

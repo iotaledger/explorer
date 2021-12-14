@@ -122,9 +122,14 @@
               text-decoration: none;
               text-transform: uppercase;
               white-space: break-spaces;
+              margin-top: 18px;
 
               @include tablet-down {
                 text-align: center;
+              }
+
+              .upload-rate {
+                color: $gray-5;
               }
             }
 
