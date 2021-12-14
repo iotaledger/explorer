@@ -49,7 +49,12 @@
 }
 
 .search-input--compact {
+  display: none;
   margin-left: auto;
+
+  @include desktop-down {
+    display: block;
+  }
 
   button {
     border: 0;
