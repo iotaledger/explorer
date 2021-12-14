@@ -26,7 +26,8 @@
 
   .example-did {
     p {
-      color: $gray-7;
+      color: var(--expanded-color);
+      font-family: $inter;
     }
 
     &:hover {
@@ -118,6 +119,7 @@
   .tool-description {
     margin: 30px 0;
     color: $gray !important;
+    font-family: $inter;
     font-size: 1em !important;
     line-height: 1.6;
   }
