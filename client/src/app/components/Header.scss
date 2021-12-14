@@ -179,7 +179,7 @@ header {
       margin-left: 16px;
 
       @include desktop-down {
-        margin-left: auto;
+        margin-left: 0;
       }
 
       svg path {
@@ -243,7 +243,7 @@ header {
 
     @include desktop-down {
       display: block;
-      margin-left: 8px;
+      margin-left: 0;
     }
 
     .hamburger--menu__icon {

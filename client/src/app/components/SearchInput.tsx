@@ -5,6 +5,7 @@ import AsyncComponent from "./AsyncComponent";
 import "./SearchInput.scss";
 import { SearchInputProps } from "./SearchInputProps";
 import { SearchInputState } from "./SearchInputState";
+import { ReactComponent as CloseIcon } from "./../../assets/close.svg";
 
 /**
  * Component which will show the search input page.
@@ -19,7 +20,8 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
 
         this.state = {
             query: "",
-            isValid: false
+            isValid: false,
+            showSearchInput: false
         };
     }
 
@@ -29,32 +31,87 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
      */
     public render(): ReactNode {
         return (
-            <div
-                className="search-input"
-            >
-                <SearchIcon />
-                <input
-                    className="search--text-input"
-                    type="text"
-                    autoFocus
-                    value={this.state.query}
-                    onChange={e => this.setState({
-                        query: this.props.protocolVersion === "og"
-                            ? e.target.value.toUpperCase().trim()
-                            : e.target.value,
-                        isValid: this.isValid(this.props.protocolVersion === "og"
-                            ? e.target.value.toUpperCase().trim()
-                            : e.target.value)
-                    })}
-                    onKeyDown={e => {
-                        if (e.keyCode === 13 && this.state.isValid) {
-                            this.doSearch();
-                        }
-                    }}
-                    placeholder="Search the tangle..."
-                />
+            <React.Fragment>
+                {/* -------------- Desktop Search ---------------- */}
+                <div
+                    className="search-input"
+                >
+                    <SearchIcon />
+                    <input
+                        className="search--text-input"
+                        type="text"
+                        autoFocus
+                        value={this.state.query}
+                        onChange={e => this.setState({
+                            query: this.props.protocolVersion === "og"
+                                ? e.target.value.toUpperCase().trim()
+                                : e.target.value,
+                            isValid: this.isValid(this.props.protocolVersion === "og"
+                                ? e.target.value.toUpperCase().trim()
+                                : e.target.value)
+                        })}
+                        onKeyDown={e => {
+                            if (e.keyCode === 13 && this.state.isValid) {
+                                this.doSearch();
+                            }
+                        }}
+                        placeholder="Search the tangle..."
+                    />
 
-            </div>
+                </div>
+                {/* -------------- Mobile Search ---------------- */}
+                <div className="search-input--compact">
+                    <button
+                        type="button"
+                        onClick={() =>
+                            this.setState({ showSearchInput: !this.state.showSearchInput }
+                            )}
+                    >
+                        <SearchIcon />
+                    </button>
+                    {this.state.showSearchInput && (
+                        <React.Fragment>
+                            <div className="text-input">
+                                <input
+                                    className="search--text-input"
+                                    type="text"
+                                    autoFocus
+                                    value={this.state.query}
+                                    onChange={e => this.setState({
+                                        query: this.props.protocolVersion === "og"
+                                            ? e.target.value.toUpperCase().trim()
+                                            : e.target.value,
+                                        isValid: this.isValid(this.props.protocolVersion === "og"
+                                            ? e.target.value.toUpperCase().trim()
+                                            : e.target.value)
+                                    })}
+                                    onKeyDown={e => {
+                                        if (e.keyCode === 13 && this.state.isValid) {
+                                            this.doSearch();
+                                        }
+                                    }}
+                                    placeholder="Search the tangle..."
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        this.setState({ showSearchInput: false });
+                                    }}
+                                >
+                                    <CloseIcon />
+                                </button>
+                            </div>
+                            <div
+                                className="bg-placeholder"
+                                onClick={() => {
+                                    this.setState({ showSearchInput: false });
+                                }}
+                            />
+                        </React.Fragment>
+                    )}
+                </div>
+            </React.Fragment>
+
         );
     }
 
