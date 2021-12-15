@@ -1,7 +1,7 @@
-@import '../scss/fonts';
-@import '../scss/media-queries';
-@import '../scss/mixins';
-@import '../scss/variables';
+@import "../scss/fonts";
+@import "../scss/media-queries";
+@import "../scss/mixins";
+@import "../scss/variables";
 
 .app {
   display: flex;
@@ -24,6 +24,7 @@
     margin: 100px 0;
 
     .maintenance-inner {
+      color: var(--body-color);
       @include font-size(18px);
 
       max-width: $desktop-width;
