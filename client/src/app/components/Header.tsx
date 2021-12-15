@@ -98,32 +98,31 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     <DropdownIcon />
                                 </div>
                             </div>
-
-                            <div className={classNames("header--expanded", {
-                                opened: this.state.isUtilitiesExpanded
-                            })}
-                            >
-                                <div className="utilities">
-                                    <div className="utilities--label">Utilities</div>
-                                    {this.props.utilities?.map(utility => (
-                                        <div key={utility.url} className="utilities--item">
-                                            <Link
-                                                to={utility.url}
-                                                onClick={() =>
-                                                    this.setState({ isUtilitiesExpanded: false })}
-                                            >
-                                                {utility.label}
-                                            </Link>
+                            {this.state.isUtilitiesExpanded && (
+                                <React.Fragment>
+                                    <div className="header--expanded">
+                                        <div className="utilities">
+                                            <div className="utilities--label">Utilities</div>
+                                            {this.props.utilities?.map(utility => (
+                                                <div key={utility.url} className="utilities--item">
+                                                    <Link
+                                                        to={utility.url}
+                                                        onClick={() =>
+                                                            this.setState({ isUtilitiesExpanded: false })}
+                                                    >
+                                                        {utility.label}
+                                                    </Link>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <div
-                                className="header--expanded--shield"
-                                onClick={() =>
-                                    this.setState({ isUtilitiesExpanded: false })}
-                            />
-
+                                    </div>
+                                    <div
+                                        className="header--expanded--shield"
+                                        onClick={() =>
+                                            this.setState({ isUtilitiesExpanded: false })}
+                                    />
+                                </React.Fragment>
+                            )}
                         </div>
                         {/* ----- Only visible in mobile ----- */}
                         <div className="mobile-fiat">
@@ -154,6 +153,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                             >
                                 {this.state.isMenuExpanded ? <CloseIcon /> : <HamburgerIcon />}
                             </button>
+                            {/* {this.state.isMenuExpanded && ( */}
                             <div
                                 className={classNames("menu--expanded", {
                                     opened: this.state.isMenuExpanded
@@ -170,7 +170,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                                                         this.setState({ isMenuExpanded: false })}
                                                 >
                                                     <span
-                                                        className={`
+                                                        className={` 
                                                     ${page.url ===
                                                                 window.location.pathname
                                                                 ? "active"
@@ -227,6 +227,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     )}
                                 </ul>
                             </div>
+                            {/* )} */}
                         </div>
                     </div>
                     <div className="inner--networks">
