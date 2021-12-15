@@ -62,7 +62,7 @@ export default class IdentityHistory extends Component<
 
                     {/* --------- Resolving History Spinner --------- */}
                     {this.state.loadingHistory && (
-                        <div className="card--content row">
+                        <div className="card--content row history-content">
                             <h3 className="margin-r-s">Resolving History ...</h3>
                             <Spinner />
                         </div>
