@@ -15,6 +15,9 @@
   * {
     word-break: break-all;
   }
+  td {
+    background-color: var(--background-color);
+  }
 }
 
 .json-viewer {
