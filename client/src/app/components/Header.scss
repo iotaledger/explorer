@@ -243,9 +243,15 @@ header {
     top: $navbar-height-desktop;
     left: 0;
     width: 100vw;
-    min-height: 420px;
+    height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
     background: var(--body-background);
     box-shadow: var(--box-shadow-down);
+
+    &.opened {
+      height: 420px;
+    }
 
     @include desktop-down {
       $mobile-navbar-height: calc(2 * #{$navbar-height-mobile});
