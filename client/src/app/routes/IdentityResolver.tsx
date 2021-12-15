@@ -1,6 +1,5 @@
 import { IMessageMetadata } from "@iota/iota.js";
 import React, { Fragment, ReactNode } from "react";
-import { HiDownload } from "react-icons/hi";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
@@ -284,7 +283,8 @@ class IdentityResolver extends AsyncComponent<
                                                                         height="17"
                                                                         viewBox="0 0 18 17"
                                                                         fill="none"
-                                                                        xmlns="http://www.w3.org/2000/svg">
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                    >
                                                                         {/* eslint-disable-next-line max-len */}
                                                                         <path d="M3.34921 8.47354C2.92988 8.11412 2.88132 7.48282 3.24074 7.06349C3.60017 6.64417 4.23147 6.59561 4.65079 6.95503L8 9.82578V1C8 0.447715 8.44771 0 9 0C9.55228 0 10 0.447715 10 1V9.82578L13.3492 6.95503C13.7685 6.59561 14.3998 6.64417 14.7593 7.0635C15.1187 7.48282 15.0701 8.11412 14.6508 8.47354L9 13.3171L3.34921 8.47354Z" fill="#485776" />
                                                                         {/* eslint-disable-next-line max-len */}
