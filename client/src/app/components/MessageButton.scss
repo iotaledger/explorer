@@ -1,6 +1,7 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/variables';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/variables";
+@import "../../scss/media-queries";
 
 .message-button {
   position: relative;
@@ -23,26 +24,23 @@
   }
 
   .message-button--message {
-    @include font-size(12px);
+    @include font-size(10px, 12px);
 
     position: absolute;
-    min-width: 200px;
+    top: 10px;
+    left: 34px;
+    min-width: 40px;
     animation: fade 2s linear;
-    animation-fill-mode: forwards;
     opacity: 1;
     color: $main-green;
     font-family: $metropolis;
     font-weight: bold;
     text-transform: uppercase;
+    animation-fill-mode: forwards;
 
-    &.message-button--message--right {
-      top: 3px;
-      margin-left: 10px;
-    }
-
-    &.message-button--message--top {
-      top: -20px;
-      left: -10px;
+    @include tablet-down {
+      top: -7px;
+      left: 0;
     }
   }
 

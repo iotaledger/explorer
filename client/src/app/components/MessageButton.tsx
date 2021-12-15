@@ -46,11 +46,9 @@ class MessageButton extends Component<MessageButtonProps, MessageButtonState> {
                 </button>
                 {this.state.active && this.state.message && (
                     <span
-                        className={classNames(
-                            "message-button--message",
-                            { "message-button--message--right": this.props.labelPosition === "right" },
-                            { "message-button--message--top": this.props.labelPosition === "top" }
-                        )}
+                        className="
+                            message-button--message"
+
                     >
                         {this.state.message}
                     </span>
