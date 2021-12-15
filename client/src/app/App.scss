@@ -24,11 +24,11 @@
     margin: 100px 0;
 
     .maintenance-inner {
-      color: var(--body-color);
-      @include font-size(18px);
-
       max-width: $desktop-width;
+      color: var(--body-color);
       font-family: $metropolis;
+
+      @include font-size(18px);
     }
   }
 }

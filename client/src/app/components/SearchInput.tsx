@@ -1,11 +1,11 @@
 import React, { ReactNode } from "react";
 import { TrytesHelper } from "../../helpers/trytesHelper";
+import { ReactComponent as CloseIcon } from "./../../assets/close.svg";
 import { ReactComponent as SearchIcon } from "./../../assets/search.svg";
 import AsyncComponent from "./AsyncComponent";
 import "./SearchInput.scss";
 import { SearchInputProps } from "./SearchInputProps";
 import { SearchInputState } from "./SearchInputState";
-import { ReactComponent as CloseIcon } from "./../../assets/close.svg";
 
 /**
  * Component which will show the search input page.
