@@ -1,11 +1,11 @@
 /* eslint-disable max-len */
-import { IUTXOInput, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
+import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
-import { Input, Output, TransactionsHelper } from "../../../helpers/transactionsHelper";
+import { TransactionsHelper } from "../../../helpers/transactionsHelper";
 import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
@@ -178,7 +178,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </div>
                                             </div>
 
-
                                             {this.state.balance !== undefined && this.state.balance === 0 && (
                                                 <div className="section--data">
                                                     <div className="label">
@@ -292,24 +291,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     <th>Amount</th>
                                                     {/* <th>[DEV]: is_spent</th> */}
                                                 </tr>
-                                                {/* Standard Transactions */}
-                                                {this.state.transactions
-                                                    ?.filter(transaction => this.hasPassedFilterCriteria(transaction.amount))
-                                                    .map(transaction =>
-                                                    (
-                                                        <Transaction
-                                                            key={transaction?.messageId}
-                                                            messageId={transaction?.messageId}
-                                                            network={this.props.match.params.network}
-                                                            inputs={transaction?.inputs.length}
-                                                            outputs={transaction?.outputs.length}
-                                                            messageTangleStatus={transaction?.messageTangleStatus}
-                                                            date={transaction?.date}
-                                                            amount={transaction?.amount}
-                                                            tableFormat={true}
-                                                        />
-                                                    ))}
-                                                {/* Historic Transactions */}
                                                 {this.state.transactionHistory
                                                     ?.transactionHistory
                                                     ?.transactions
@@ -325,7 +306,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                     outputs={transaction?.outputs.length}
                                                                     messageTangleStatus={transaction?.messageTangleStatus}
                                                                     date={transaction?.date}
-                                                                    isSpent={transaction?.isSpent}
+                                                                    // isSpent={transaction?.isSpent}
                                                                     amount={transaction?.amount}
                                                                     tableFormat={true}
                                                                 />
@@ -341,6 +322,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                     date={transaction?.relatedSpentTransaction.date}
                                                                     amount={transaction?.relatedSpentTransaction.amount}
                                                                     tableFormat={true}
+                                                                // isSpent={false}
                                                                 />
                                                             )}
                                                         </React.Fragment>
@@ -348,24 +330,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             </table>
                                             {/* Only visible in mobile -- Card transactions*/}
                                             <div className="transaction-cards">
-
-                                                {/* Standard Transactions */}
-                                                {this.state.transactions
-                                                    ?.filter(transaction => this.hasPassedFilterCriteria(transaction.amount))
-                                                    .map(transaction =>
-                                                    (
-                                                        <Transaction
-                                                            key={transaction?.messageId}
-                                                            messageId={transaction?.messageId}
-                                                            network={this.props.match.params.network}
-                                                            inputs={transaction?.inputs.length}
-                                                            outputs={transaction?.outputs.length}
-                                                            messageTangleStatus={transaction?.messageTangleStatus}
-                                                            date={transaction?.date}
-                                                            amount={transaction?.amount}
-                                                        />
-                                                    ))}
-                                                {/* Historic Transactions */}
                                                 {this.state.transactionHistory
                                                     ?.transactionHistory
                                                     ?.transactions
@@ -381,7 +345,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                     outputs={transaction?.outputs.length}
                                                                     messageTangleStatus={transaction?.messageTangleStatus}
                                                                     date={transaction?.date}
-                                                                    isSpent={transaction?.isSpent}
+                                                                    // isSpent={transaction?.isSpent}
                                                                     amount={transaction?.amount}
                                                                 />
 
@@ -410,51 +374,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         );
     }
 
-    private async getTransactions(): Promise<void> {
-        if (this.state.outputIds) {
-            const transactions = [];
-            for (const outputId of this.state.outputIds) {
-                const outputResult = await this._tangleCacheService.outputDetails(
-                    this.props.match.params.network, outputId);
-
-                if (outputResult) {
-                    const messageResult = await this._tangleCacheService.search(
-                        this.props.match.params.network, outputResult.messageId);
-                    const { inputs, outputs } = await
-                        TransactionsHelper.getInputsAndOutputs(messageResult?.message,
-                            this.props.match.params.network, this._bechHrp, this._tangleCacheService);
-                    const { date, messageTangleStatus } = await TransactionsHelper.getMessageStatus(
-                        this.props.match.params.network, outputResult.messageId,
-                        this._tangleCacheService);
-                    const amount = await this.getTransactionAmount(inputs, outputs);
-                    transactions.push({
-                        messageId: outputResult.messageId,
-                        inputs,
-                        outputs,
-                        date,
-                        messageTangleStatus,
-                        amount
-                    });
-                    this.setState({
-                        transactions,
-                        status: `Loading transactions [${transactions.length}/${this.state.outputIds.length}]`
-                    });
-                }
-                if (!this._isMounted) {
-                    break;
-                }
-            }
-        }
-    }
-
     private async getTransactionHistory() {
-        // Standard transactions (Hornet node)
-        await this.getTransactions();
-
-        // Historic transactions (permanode)
+        // Transactions (permanode)
         const transactionsDetails = await this._tangleCacheService.transactionsDetails(
             this.props.match.params.network, this.state.address?.address ?? "");
-
 
         if (transactionsDetails?.transactionHistory.transactions) {
             let i = 0;
@@ -467,7 +390,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                         this._tangleCacheService);
                 transaction.date = date;
                 transaction.messageTangleStatus = messageTangleStatus;
-                const amount = await this.getHistoricTransactionAmount(transaction.messageId);
+                const amount = await this.getTransactionAmount(transaction.messageId);
                 transaction.amount = amount;
 
                 if (amount < 0) {
@@ -477,9 +400,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                 let isTransactionSpent = false;
 
+                let totalTransactions = transactionsDetails.transactionHistory.transactions.length;
                 // Get spent related transaction
                 for (const output of transaction.outputs) {
-                    if (output.output.address.address === this.state.address?.address && output.spendingMessageId) {
+                    if (output.output.address.address === this.state.address?.address && output.spendingMessageId && transaction.amount > 0) {
+                        console.log("Related spent tx:", output.spendingMessageId);
+                        totalTransactions += 1;
                         const transactionsResult = await this._tangleCacheService.search(
                             this.props.match.params.network, output.spendingMessageId);
                         const statusDetails = await TransactionsHelper
@@ -487,7 +413,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 this._tangleCacheService);
 
                         if (transactionsResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                            const totalAmount = await this.getHistoricTransactionAmount(output.spendingMessageId);
+                            const totalAmount = await this.getTransactionAmount(output.spendingMessageId);
                             transaction.relatedSpentTransaction = {
                                 messageId: output.spendingMessageId,
                                 date: statusDetails.date,
@@ -507,8 +433,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 transaction.isSpent = isTransactionSpent;
                 this.setState({
                     transactionHistory: transactionsDetails,
-                    status: `Loading historic transactions 
-                    [${i}/${transactionsDetails.transactionHistory.transactions.length}]`
+                    status: `Loading transactions 
+                    [${i}/${totalTransactions}]`
                 });
             }
         }
@@ -519,22 +445,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     }
 
     private async getTransactionAmount(
-        inputs: (IUTXOInput & Input)[],
-        outputs: Output[]): Promise<number> {
-        const inputsRelated = inputs.filter(input => input.transactionAddress.hex === this.state.address?.address);
-        const outputsRelated = outputs.filter(output => output.address.hex === this.state.address?.address);
-        let fromAmount = 0;
-        let toAmount = 0;
-        for (const input of inputsRelated) {
-            fromAmount += input.amount;
-        }
-        for (const output of outputsRelated) {
-            toAmount += output.amount;
-        }
-        return toAmount - fromAmount;
-    }
-
-    private async getHistoricTransactionAmount(
         messageId: string): Promise<number> {
         const result = await this._tangleCacheService.search(
             this.props.match.params.network, messageId);
