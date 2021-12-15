@@ -1,6 +1,6 @@
-@import '../../../scss/variables';
-@import '../../../scss/fonts';
-@import '../../../scss/layout.scss';
+@import "../../../scss/variables";
+@import "../../../scss/fonts";
+@import "../../../scss/layout.scss";
 
 .identity-compare-dropdown {
   .dropdown-wrapper {
@@ -8,7 +8,7 @@
     padding-left: 12px;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       left: 0;
@@ -57,7 +57,8 @@
         @include font-size(14px);
       }
 
-      svg, img {
+      svg,
+      img {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
@@ -105,8 +106,8 @@
     max-height: 200px;
     overflow-y: auto;
     border-radius: 5px;
-    background-color: $white;
-    // box-shadow: $box-shadow;
+    background-color: var(--body-background);
+    border: 1px solid $gray-3;
   }
 
   .dropdown-item {
@@ -114,7 +115,6 @@
     width: 100%;
     min-height: 52px;
     overflow: hidden;
-    background-color: white;
     cursor: pointer;
 
     &:hover {

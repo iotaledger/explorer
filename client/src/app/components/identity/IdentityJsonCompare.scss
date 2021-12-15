@@ -1,7 +1,7 @@
-@import '../../../scss/variables';
-@import '../../../scss/mixins';
-@import '../../../scss/fonts';
-@import '../../../scss/layout.scss';
+@import "../../../scss/variables";
+@import "../../../scss/mixins";
+@import "../../../scss/fonts";
+@import "../../../scss/layout.scss";
 
 .container {
   width: 100%;
@@ -25,7 +25,7 @@
   white-space: pre-wrap;
 
   .string {
-    color: green;
+    color: $main-green;
   }
 
   .number {
@@ -41,7 +41,7 @@
   }
 
   .key {
-    color: $gray-10;
+    color: var(--did-color);
   }
 }
 
@@ -103,16 +103,11 @@
   overflow: hidden;
   border: 1px solid $gray-3;
   border-radius: 5px;
-  background-color: $white;
   cursor: pointer;
 
-  @include phone-down{
+  @include phone-down {
     height: 50px;
     flex-direction: column;
-  }
-
-  &:hover {
-    border-color: $main-green-highlight;
   }
 }
 
@@ -122,14 +117,12 @@
   color: var(--expanded-color);
   font-family: $inter;
   font-weight: 500;
-
   @include font-size(12px, 18px);
 
-  @include phone-down{
+  @include phone-down {
     text-align: center;
     width: 100%;
   }
-
 }
 
 .toggle-button-active {
@@ -141,7 +134,11 @@
   margin-top: 4px;
   margin-right: 8px;
   margin-left: 19px;
-
+  svg {
+    path {
+      fill: var(--did-color);
+    }
+  }
   @include phone-down {
     height: 60px;
     padding: 0.88em 4px;

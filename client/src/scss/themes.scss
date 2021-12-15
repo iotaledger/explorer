@@ -1,12 +1,12 @@
-@import './variables';
+@import "./variables";
 
 :root {
   --body-background: #{$white};
   --body-color: #{$gray-9};
   --navbar-bg: rgba(255, 255, 255, 0.2);
   --header-bg: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
-  --bubble-1: url('../assets/bubble-1.svg');
-  --bubble-2: url('../assets/bubble-2.svg');
+  --bubble-1: url("../assets/bubble-1.svg");
+  --bubble-2: url("../assets/bubble-2.svg");
   --header-color: #{$gray-6};
   --header-box-bg: rgba(255, 255, 255, 0.6);
   --header-label-color: #{$gray-midnight};
@@ -22,14 +22,16 @@
   --qr-color: #{$gray-9};
   --box-shadow-center: 0 0 4px rgb(132 147 173, 0.3);
   --box-shadow-down: 0 4px 30px rgba(132, 147, 173, 0.1);
+  --header-identity: #{$gray-daylight};
+  --did-color: #{$gray-7};
 
   body.darkmode {
     --body-background: #091326;
     --body-color: #{$white};
     --navbar-bg: rgba(6, 16, 35, 0.2);
     --header-bg: linear-gradient(180deg, #{$gray-7} 0%, #{$gray-9} 100%);
-    --bubble-1: url('../assets/bubble-1-darkmode.svg');
-    --bubble-2: url('../assets/bubble-2-darkmode.svg');
+    --bubble-1: url("../assets/bubble-1-darkmode.svg");
+    --bubble-2: url("../assets/bubble-2-darkmode.svg");
     --header-color: #{$gray-5};
     --header-box-bg: rgba(6, 16, 35, 0.6);
     --header-label-color: #{$gray-3};
@@ -43,5 +45,7 @@
     --modal-color: #{$gray-3};
     --message-referenced-bg: rgba(0, 224, 202, 0.2);
     --qr-color: #{$white};
+    --header-identity: #{$gray-midnight};
+    --did-color: #{$gray-4};
   }
 }
