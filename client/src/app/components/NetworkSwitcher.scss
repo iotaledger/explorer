@@ -1,13 +1,13 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
-@import '../../scss/themes';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .network--switcher {
   @media (max-width: 1200px) {
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: -3px;
       left: -20px;
@@ -20,6 +20,23 @@
   .network--switcher__header {
     font-family: $metropolis;
     cursor: pointer;
+
+    .header--expanded {
+      transition: opacity 0.3s ease-in-out;
+      opacity: 0;
+
+      &.opened {
+        opacity: 1;
+      }
+
+      @include desktop-down {
+        $mobile-navbar-height: calc(2 * #{$navbar-height-mobile});
+
+        top: $mobile-navbar-height;
+        height: calc(100vh - #{$mobile-navbar-height});
+        overflow-y: scroll;
+      }
+    }
 
     &.opened {
       .icon {
