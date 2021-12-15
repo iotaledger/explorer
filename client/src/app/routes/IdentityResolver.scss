@@ -1,7 +1,7 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
 
 .identity {
   display: flex;
@@ -94,7 +94,7 @@
     padding: 10px;
     border: 1px solid $gray-3;
     border-radius: 6px 6px 0 0;
-    background-color: $gray-daylight;
+    background-color: var(--header-identity);
 
     a {
       color: $gray;
@@ -102,6 +102,9 @@
       svg {
         margin-top: 6px;
         margin-right: 8px;
+        path {
+          fill: var(--did-color);
+        }
       }
     }
   }

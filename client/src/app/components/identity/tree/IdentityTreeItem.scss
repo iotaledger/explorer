@@ -1,7 +1,7 @@
-@import '../../../../scss/fonts';
-@import '../../../../scss/mixins';
-@import '../../../../scss/media-queries';
-@import '../../../../scss/variables';
+@import "../../../../scss/fonts";
+@import "../../../../scss/mixins";
+@import "../../../../scss/media-queries";
+@import "../../../../scss/variables";
 
 $item-height: 64px;
 
@@ -12,7 +12,6 @@ $item-height: 64px;
   margin-right: 10px;
   border-radius: 6px;
   overflow: hidden;
-  background-color: white;
   cursor: pointer;
 
   &:hover {
