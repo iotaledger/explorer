@@ -153,7 +153,6 @@ class Header extends Component<HeaderProps, HeaderState> {
                             >
                                 {this.state.isMenuExpanded ? <CloseIcon /> : <HamburgerIcon />}
                             </button>
-                            {/* {this.state.isMenuExpanded && ( */}
                             <div
                                 className={classNames("menu--expanded", {
                                     opened: this.state.isMenuExpanded
@@ -227,7 +226,6 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     )}
                                 </ul>
                             </div>
-                            {/* )} */}
                         </div>
                     </div>
                     <div className="inner--networks">
