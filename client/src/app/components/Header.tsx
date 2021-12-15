@@ -13,7 +13,6 @@ import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
 import NetworkSwitcher from "./NetworkSwitcher";
 
-
 /**
  * Component which will show the header.
  */
@@ -37,18 +36,24 @@ class Header extends Component<HeaderProps, HeaderState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const CHRYSALIS_NETWORKS = this.props.networks?.filter(n => n.protocolVersion === "chrysalis");
-        const LEGACY_NETWORKS = this.props.networks?.filter(n => n.protocolVersion === "og");
+        const CHRYSALIS_NETWORKS = this.props.networks?.filter(
+            n => n.protocolVersion === "chrysalis"
+        );
+        const LEGACY_NETWORKS = this.props.networks?.filter(
+            n => n.protocolVersion === "og"
+        );
 
         const PROTOCOLS = [
             {
                 label: "IOTA 1.5 (Chrysalis)",
-                description: "Short Chrysalis network description that explains what Chrysalis is.",
+                description:
+                    "Short Chrysalis network description that explains what Chrysalis is.",
                 networks: CHRYSALIS_NETWORKS
             },
             {
                 label: "IOTA 1.0 (Legacy)",
-                description: "Short Coordicide network description that explains what Coordicide is.",
+                description:
+                    "Short Coordicide network description that explains what Coordicide is.",
                 networks: LEGACY_NETWORKS
             }
         ];
@@ -64,33 +69,31 @@ class Header extends Component<HeaderProps, HeaderState> {
                         >
                             <LogoHeader />
                         </Link>
-                        {this.props.pages && this.props.pages.length > 0 && this.props.pages.map(page => (
-                            <Link
-                                key={page.url}
-                                to={page.url}
-                                onClick={() => this.setState({ isUtilitiesExpanded: false })}
-                                className={`navigation--item ${page.url === window.location.pathname ? "active" : ""}`}
-                            >
-                                {page.label}
-                            </Link>
-                        ))}
-                        <div
-                            className="utilities--wrapper"
-                        >
+                        {this.props.pages &&
+                            this.props.pages.length > 0 &&
+                            this.props.pages.map(page => (
+                                <Link
+                                    key={page.url}
+                                    to={page.url}
+                                    onClick={() => this.setState({ isUtilitiesExpanded: false })}
+                                    className={`navigation--item ${page.url === window.location.pathname ? "active" : ""
+                                        }`}
+                                >
+                                    {page.label}
+                                </Link>
+                            ))}
+                        <div className="utilities--wrapper">
                             <div
                                 className={classNames("utilities--dropdown", {
                                     opened: this.state.isUtilitiesExpanded
                                 })}
-                                onClick={() => this.setState(
-                                    {
+                                onClick={() =>
+                                    this.setState({
                                         isUtilitiesExpanded: !this.state.isUtilitiesExpanded,
                                         isNetworkSwitcherExpanded: false
-                                    }
-                                )}
+                                    })}
                             >
-                                <div className="label">
-                                    Utilities
-                                </div>
+                                <div className="label">Utilities</div>
                                 <div className="icon">
                                     <DropdownIcon />
                                 </div>
@@ -101,13 +104,11 @@ class Header extends Component<HeaderProps, HeaderState> {
                                         <div className="utilities">
                                             <div className="utilities--label">Utilities</div>
                                             {this.props.utilities?.map(utility => (
-                                                <div
-                                                    key={utility.url}
-                                                    className="utilities--item"
-                                                >
+                                                <div key={utility.url} className="utilities--item">
                                                     <Link
                                                         to={utility.url}
-                                                        onClick={() => this.setState({ isUtilitiesExpanded: false })}
+                                                        onClick={() =>
+                                                            this.setState({ isUtilitiesExpanded: false })}
                                                     >
                                                         {utility.label}
                                                     </Link>
@@ -117,7 +118,8 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     </div>
                                     <div
                                         className="header--expanded--shield"
-                                        onClick={() => this.setState({ isUtilitiesExpanded: false })}
+                                        onClick={() =>
+                                            this.setState({ isUtilitiesExpanded: false })}
                                     />
                                 </React.Fragment>
                             )}
@@ -146,78 +148,86 @@ class Header extends Component<HeaderProps, HeaderState> {
                             <button
                                 type="button"
                                 className="button--unstyled hamburger--menu__icon"
-                                onClick={() => this.setState({ isMenuExpanded: !this.state.isMenuExpanded })}
+                                onClick={() =>
+                                    this.setState({ isMenuExpanded: !this.state.isMenuExpanded })}
                             >
                                 {this.state.isMenuExpanded ? <CloseIcon /> : <HamburgerIcon />}
                             </button>
-                            {this.state.isMenuExpanded && (
-                                <div className="menu--expanded">
-                                    <ul>
-                                        {this.props.pages &&
-                                            this.props.pages.length > 0 && this.props.pages.map(page => (
-                                                <li className="menu--expanded__item" key={page.url}>
-                                                    <Link
-                                                        to={page.url}
-                                                        onClick={() => this.setState({ isMenuExpanded: false })}
+                            {/* {this.state.isMenuExpanded && ( */}
+                            <div
+                                className={classNames("menu--expanded", {
+                                    opened: this.state.isMenuExpanded
+                                })}
+                            >
+                                <ul>
+                                    {this.props.pages &&
+                                        this.props.pages.length > 0 &&
+                                        this.props.pages.map(page => (
+                                            <li className="menu--expanded__item" key={page.url}>
+                                                <Link
+                                                    to={page.url}
+                                                    onClick={() =>
+                                                        this.setState({ isMenuExpanded: false })}
+                                                >
+                                                    <span
+                                                        className={`
+                                                    ${page.url ===
+                                                                window.location.pathname
+                                                                ? "active"
+                                                                : ""
+                                                            }`}
                                                     >
-                                                        <span
-                                                            className={` 
-                                                    ${page.url === window.location.pathname
-                                                                    ? "active" : ""}`}
-                                                        >
-                                                            {page.label}
-                                                        </span>
-                                                    </Link>
-                                                </li>
-                                            ))}
-                                        <li
-                                            className={classNames("menu--expanded__item",
-                                                { opened: this.state.isUtilitiesExpanded }
-                                            )}
-                                            onClick={() => this.setState(
-                                                { isUtilitiesExpanded: !this.state.isUtilitiesExpanded }
-                                            )}
-                                        >
-
-                                            <div className="label">
-                                                Utilities
-                                            </div>
-                                            <div className="icon">
-                                                <DropdownIcon />
-                                            </div>
-                                        </li>
-                                        {this.state.isUtilitiesExpanded && (
-                                            <React.Fragment>
-                                                <div className="utilities">
-                                                    {this.props.utilities?.map(utility => (
-                                                        <li
+                                                        {page.label}
+                                                    </span>
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    <li
+                                        className={classNames("menu--expanded__item", {
+                                            opened: this.state.isUtilitiesExpanded
+                                        })}
+                                        onClick={() =>
+                                            this.setState({
+                                                isUtilitiesExpanded: !this.state.isUtilitiesExpanded
+                                            })}
+                                    >
+                                        <div className="label">Utilities</div>
+                                        <div className="icon">
+                                            <DropdownIcon />
+                                        </div>
+                                    </li>
+                                    {this.state.isUtilitiesExpanded && (
+                                        <React.Fragment>
+                                            <div className="utilities">
+                                                {this.props.utilities?.map(utility => (
+                                                    <li
+                                                        key={utility.url}
+                                                        className="menu--expanded__item margin-l-t"
+                                                    >
+                                                        <Link
                                                             key={utility.url}
-                                                            className="menu--expanded__item margin-l-t"
+                                                            to={utility.url}
+                                                            onClick={() =>
+                                                                this.setState({
+                                                                    isMenuExpanded: false,
+                                                                    isUtilitiesExpanded: false
+                                                                })}
                                                         >
-                                                            <Link
-                                                                key={utility.url}
-                                                                to={utility.url}
-                                                                onClick={() => this.setState(
-                                                                    {
-                                                                        isMenuExpanded: false,
-                                                                        isUtilitiesExpanded: false
-                                                                    }
-                                                                )}
-                                                            >
-                                                                {utility.label}
-                                                            </Link>
-                                                        </li>
-                                                    ))}
-                                                </div>
-                                                <div
-                                                    className="header--expanded--shield"
-                                                    onClick={() => this.setState({ isUtilitiesExpanded: false })}
-                                                />
-                                            </React.Fragment>
-                                        )}
-                                    </ul>
-                                </div>
-                            )}
+                                                            {utility.label}
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </div>
+                                            <div
+                                                className="header--expanded--shield"
+                                                onClick={() =>
+                                                    this.setState({ isUtilitiesExpanded: false })}
+                                            />
+                                        </React.Fragment>
+                                    )}
+                                </ul>
+                            </div>
+                            {/* )} */}
                         </div>
                     </div>
                     <div className="inner--networks">
@@ -226,16 +236,13 @@ class Header extends Component<HeaderProps, HeaderState> {
                             label={this.props.network?.label}
                             protocols={PROTOCOLS}
                             isExpanded={this.state.isNetworkSwitcherExpanded}
-                            onClick={
-                                () => {
-                                    this.setState(
-                                        {
-                                            isNetworkSwitcherExpanded: !this.state.isNetworkSwitcherExpanded,
-                                            isUtilitiesExpanded: false
-                                        }
-                                    );
-                                }
-                            }
+                            onClick={() => {
+                                this.setState({
+                                    isNetworkSwitcherExpanded:
+                                        !this.state.isNetworkSwitcherExpanded,
+                                    isUtilitiesExpanded: false
+                                });
+                            }}
                             onChange={network => {
                                 this.props.history?.push(
                                     this.props.action === "streams"
@@ -247,8 +254,8 @@ class Header extends Component<HeaderProps, HeaderState> {
                             }}
                         />
                     </div>
-                </nav >
-            </header >
+                </nav>
+            </header>
         );
     }
 }
