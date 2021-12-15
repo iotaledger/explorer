@@ -51,7 +51,6 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                     <td className={`amount ${this.props.amount && this.props.amount < 0 ? "negative" : "positive"}`}>
                         {this.props.amount ? UnitsHelper.formatBest(this.props.amount ?? 0) : <Spinner />}
                     </td>
-                    {/* <td>{this.props.isSpent !== undefined ? (this.props.isSpent ? "YES" : "NO") : "-"}</td> */}
                 </tr>
             ) : (
                 <div className="transaction-card">

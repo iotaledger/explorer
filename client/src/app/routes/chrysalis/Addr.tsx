@@ -20,8 +20,7 @@ import Transaction from "./../../components/chrysalis/Transaction";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
-import { AddrState } from "./AddrState";
-
+import { AddrState, FilterValue } from "./AddrState";
 /**
  * Component which will show the address page.
  */
@@ -66,7 +65,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             formatFull: false,
             statusBusy: true,
             status: "Loading transactions...",
-            filterValue: "all",
+            filterValue: FilterValue.All,
             received: 0,
             sent: 0
         };
@@ -79,7 +78,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         super.componentDidMount();
         const result = await this._tangleCacheService.search(
             this.props.match.params.network, this.props.match.params.address);
-
         if (result?.address) {
             window.scrollTo({
                 left: 0,
@@ -139,44 +137,41 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 addressDetails={this.state.bech32AddressDetails}
                                                 advancedMode={true}
                                             />
-                                            <div className="row">
-                                                <div className="section--data margin-r-m">
-                                                    <div className="label">
-                                                        Total received
-                                                    </div>
-                                                    <div className="value">
-                                                        {this.state.statusBusy ? (<Spinner />)
-                                                            : (
-                                                                <React.Fragment>
-                                                                    {UnitsHelper.formatBest(
-                                                                        (this.state.balance ?? 0) - this.state.sent
-                                                                    )}
-                                                                    {" "}(
-                                                                    <FiatValue
-                                                                        value={
-                                                                            (this.state.balance ?? 0) -
-                                                                            this.state.sent
-                                                                        }
-                                                                    />)
-                                                                </React.Fragment>
+                                            {!this.state.statusBusy && (
+                                                <div className="row">
+                                                    <div className="section--data margin-r-m">
+                                                        <div className="label">
+                                                            Total received
+                                                        </div>
+                                                        <div className="value">
+                                                            {UnitsHelper.formatBest(
+                                                                (this.state.balance ?? 0) + this.state.sent
                                                             )}
+                                                            {" "}(
+                                                            <FiatValue
+                                                                value={
+                                                                    (this.state.balance ?? 0) +
+                                                                    this.state.sent
+                                                                }
+                                                            />)
+                                                        </div>
+                                                    </div>
+                                                    <div className="section--data margin-l-m">
+                                                        <div className="label">
+                                                            Total sent
+                                                        </div>
+                                                        <div className="value">
+                                                            {this.state.statusBusy ? (<Spinner />)
+                                                                : (
+                                                                    <React.Fragment>
+                                                                        {UnitsHelper.formatBest(this.state.sent)}
+                                                                        {" "}(<FiatValue value={this.state.sent} />)
+                                                                    </React.Fragment>
+                                                                )}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="section--data margin-l-m">
-                                                    <div className="label">
-                                                        Total sent
-                                                    </div>
-                                                    <div className="value">
-                                                        {this.state.statusBusy ? (<Spinner />)
-                                                            : (
-                                                                <React.Fragment>
-                                                                    {UnitsHelper.formatBest(this.state.sent)}
-                                                                    {" "}(<FiatValue value={this.state.sent} />)
-                                                                </React.Fragment>
-                                                            )}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            )}
 
                                             {this.state.balance !== undefined && this.state.balance === 0 && (
                                                 <div className="section--data">
@@ -233,124 +228,91 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     </div>
                                 )}
 
-                                {((this.state.transactions && this.state.transactions.length > 0) ||
-                                    (this.state.transactionHistory?.transactionHistory.transactions &&
-                                        this.state.transactionHistory?.transactionHistory.transactions.length > 0)) && (
-                                        <div className="section transaction--section">
-                                            <div className="section--header row space-between">
-                                                <div className="row middle">
-                                                    <h2>
-                                                        Transaction History
-                                                    </h2>
-                                                    <Modal icon={ModalIcon.Info} data={messageJSON} />
-                                                </div>
-                                                <div>
-                                                    <div className="transactions-filter">
-                                                        <button
-                                                            className={classNames(
-                                                                { active: this.state.filterValue === "all" }
-                                                            )}
-                                                            type="button"
-                                                            onClick={() => {
-                                                                this.setState({ filterValue: "all" });
-                                                            }}
-                                                        >
-                                                            All
-                                                        </button>
-                                                        <button
-                                                            className={classNames(
-                                                                { active: this.state.filterValue === "incoming" }
-                                                            )} type="button"
-                                                            onClick={() => {
-                                                                this.setState({ filterValue: "incoming" });
-                                                            }}
-                                                        >
-                                                            Incoming
-                                                        </button>
-                                                        <button
-                                                            className={classNames(
-                                                                { active: this.state.filterValue === "outgoing" }
-                                                            )} type="button"
-                                                            onClick={() => {
-                                                                this.setState({ filterValue: "outgoing" });
-                                                            }}
-                                                        >
-                                                            Outgoing
-                                                        </button>
-                                                    </div>
-                                                </div>
-
+                                {(this.state.transactionHistory?.transactionHistory?.transactions?.length ?? -1 > 0) && (
+                                    <div className="section transaction--section">
+                                        <div className="section--header row space-between">
+                                            <div className="row middle">
+                                                <h2>
+                                                    Transaction History
+                                                </h2>
+                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
                                             </div>
-                                            <table className="transaction--table">
-                                                <tr>
-                                                    <th>Message id</th>
-                                                    <th>Date</th>
-                                                    <th>Inputs</th>
-                                                    <th>Outputs</th>
-                                                    <th>Status</th>
-                                                    <th>Amount</th>
-                                                    {/* <th>[DEV]: is_spent</th> */}
-                                                </tr>
-                                                {this.state.transactionHistory
-                                                    ?.transactionHistory
-                                                    ?.transactions
-                                                    ?.map(transaction =>
-                                                    (
-                                                        <React.Fragment key={transaction?.messageId}>
-                                                            {this.hasPassedFilterCriteria(transaction.amount) && (
-                                                                <Transaction
-                                                                    key={transaction?.messageId}
-                                                                    messageId={transaction?.messageId}
-                                                                    network={this.props.match.params.network}
-                                                                    inputs={transaction?.inputs.length}
-                                                                    outputs={transaction?.outputs.length}
-                                                                    messageTangleStatus={transaction?.messageTangleStatus}
-                                                                    date={transaction?.date}
-                                                                    // isSpent={transaction?.isSpent}
-                                                                    amount={transaction?.amount}
-                                                                    tableFormat={true}
-                                                                />
-                                                            )}
-                                                            {transaction?.relatedSpentTransaction && this.hasPassedFilterCriteria(transaction?.relatedSpentTransaction.amount) && (
-                                                                <Transaction
-                                                                    key={transaction?.relatedSpentTransaction.messageId}
-                                                                    messageId={transaction?.relatedSpentTransaction.messageId}
-                                                                    network={this.props.match.params.network}
-                                                                    inputs={transaction?.relatedSpentTransaction.inputs.length}
-                                                                    outputs={transaction?.relatedSpentTransaction.outputs.length}
-                                                                    messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
-                                                                    date={transaction?.relatedSpentTransaction.date}
-                                                                    amount={transaction?.relatedSpentTransaction.amount}
-                                                                    tableFormat={true}
-                                                                // isSpent={false}
-                                                                />
-                                                            )}
-                                                        </React.Fragment>
-                                                    ))}
-                                            </table>
-                                            {/* Only visible in mobile -- Card transactions*/}
-                                            <div className="transaction-cards">
-                                                {this.state.transactionHistory
-                                                    ?.transactionHistory
-                                                    ?.transactions
-                                                    ?.map(transaction =>
-                                                    (
-                                                        <React.Fragment key={transaction?.messageId}>
-                                                            {this.hasPassedFilterCriteria(transaction.amount) && (
-                                                                <Transaction
-                                                                    key={transaction?.messageId}
-                                                                    messageId={transaction?.messageId}
-                                                                    network={this.props.match.params.network}
-                                                                    inputs={transaction?.inputs.length}
-                                                                    outputs={transaction?.outputs.length}
-                                                                    messageTangleStatus={transaction?.messageTangleStatus}
-                                                                    date={transaction?.date}
-                                                                    // isSpent={transaction?.isSpent}
-                                                                    amount={transaction?.amount}
-                                                                />
+                                            <div>
+                                                <div className="transactions-filter">
+                                                    {this.filterButton(FilterValue.All)}
+                                                    {this.filterButton(FilterValue.Incoming)}
+                                                    {this.filterButton(FilterValue.Outgoing)}
+                                                </div>
+                                            </div>
 
-                                                            )}
-                                                            {transaction?.relatedSpentTransaction && this.hasPassedFilterCriteria(transaction?.relatedSpentTransaction.amount) && (
+                                        </div>
+                                        <table className="transaction--table">
+                                            <tr>
+                                                <th>Message id</th>
+                                                <th>Date</th>
+                                                <th>Inputs</th>
+                                                <th>Outputs</th>
+                                                <th>Status</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                            {this.state.transactionHistory
+                                                ?.transactionHistory
+                                                ?.transactions
+                                                ?.map(transaction =>
+                                                (
+                                                    <React.Fragment key={transaction?.messageId}>
+                                                        {this.hasPassedFilterCriteria(this.state.filterValue, transaction.amount) && (
+                                                            <Transaction
+                                                                key={transaction?.messageId}
+                                                                messageId={transaction?.messageId}
+                                                                network={this.props.match.params.network}
+                                                                inputs={transaction?.inputs.length}
+                                                                outputs={transaction?.outputs.length}
+                                                                messageTangleStatus={transaction?.messageTangleStatus}
+                                                                date={transaction?.date}
+                                                                amount={transaction?.amount}
+                                                                tableFormat={true}
+                                                            />
+                                                        )}
+                                                        {transaction?.relatedSpentTransaction && this.hasPassedFilterCriteria(this.state.filterValue, transaction?.relatedSpentTransaction.amount) && (
+                                                            <Transaction
+                                                                key={transaction?.relatedSpentTransaction.messageId}
+                                                                messageId={transaction?.relatedSpentTransaction.messageId}
+                                                                network={this.props.match.params.network}
+                                                                inputs={transaction?.relatedSpentTransaction.inputs.length}
+                                                                outputs={transaction?.relatedSpentTransaction.outputs.length}
+                                                                messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
+                                                                date={transaction?.relatedSpentTransaction.date}
+                                                                amount={transaction?.relatedSpentTransaction.amount}
+                                                                tableFormat={true}
+                                                            />
+                                                        )}
+                                                    </React.Fragment>
+                                                ))}
+                                        </table>
+                                        {/* Only visible in mobile -- Card transactions*/}
+                                        <div className="transaction-cards">
+                                            {this.state.transactionHistory
+                                                ?.transactionHistory
+                                                ?.transactions
+                                                ?.map(transaction =>
+                                                (
+                                                    <React.Fragment key={transaction?.messageId}>
+                                                        {this.hasPassedFilterCriteria(this.state.filterValue, transaction.amount) && (
+                                                            <Transaction
+                                                                key={transaction?.messageId}
+                                                                messageId={transaction?.messageId}
+                                                                network={this.props.match.params.network}
+                                                                inputs={transaction?.inputs.length}
+                                                                outputs={transaction?.outputs.length}
+                                                                messageTangleStatus={transaction?.messageTangleStatus}
+                                                                date={transaction?.date}
+                                                                amount={transaction?.amount}
+                                                            />
+
+                                                        )}
+                                                        {transaction?.relatedSpentTransaction &&
+                                                            this.hasPassedFilterCriteria(this.state.filterValue, transaction?.relatedSpentTransaction.amount) && (
                                                                 <Transaction
                                                                     key={transaction?.relatedSpentTransaction.messageId}
                                                                     messageId={transaction?.relatedSpentTransaction.messageId}
@@ -362,10 +324,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                     amount={transaction?.relatedSpentTransaction.amount}
                                                                 />
                                                             )}
-                                                        </React.Fragment>
-                                                    ))}
-                                            </div>
-                                        </div>)}
+                                                    </React.Fragment>
+                                                ))}
+                                        </div>
+                                    </div>)}
                             </div>
                         </div>
                     </div >
@@ -379,12 +341,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         const transactionsDetails = await this._tangleCacheService.transactionsDetails(
             this.props.match.params.network, this.state.address?.address ?? "");
 
-        if (transactionsDetails?.transactionHistory.transactions) {
-            let i = 0;
-            for (const transaction of transactionsDetails.transactionHistory.transactions) {
-                i++;
+        const transactionIds = transactionsDetails?.transactionHistory?.transactions?.map(transaction => transaction.messageId);
 
+        if (transactionsDetails?.transactionHistory.transactions) {
+            for (const transaction of transactionsDetails.transactionHistory.transactions) {
                 // Get date and message tangle status
+
                 const { date, messageTangleStatus } = await TransactionsHelper
                     .getMessageStatus(this.props.match.params.network, transaction.messageId,
                         this._tangleCacheService);
@@ -399,13 +361,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
 
                 let isTransactionSpent = false;
-
-                let totalTransactions = transactionsDetails.transactionHistory.transactions.length;
                 // Get spent related transaction
+
                 for (const output of transaction.outputs) {
-                    if (output.output.address.address === this.state.address?.address && output.spendingMessageId && transaction.amount > 0) {
-                        console.log("Related spent tx:", output.spendingMessageId);
-                        totalTransactions += 1;
+                    if (output.output.address.address === this.state.address?.address && output.spendingMessageId && !transactionIds?.includes(output.spendingMessageId)) {
+                        transactionIds?.push(output.spendingMessageId);
                         const transactionsResult = await this._tangleCacheService.search(
                             this.props.match.params.network, output.spendingMessageId);
                         const statusDetails = await TransactionsHelper
@@ -413,18 +373,18 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 this._tangleCacheService);
 
                         if (transactionsResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                            const totalAmount = await this.getTransactionAmount(output.spendingMessageId);
+                            const relatedAmount = await this.getTransactionAmount(output.spendingMessageId);
                             transaction.relatedSpentTransaction = {
                                 messageId: output.spendingMessageId,
                                 date: statusDetails.date,
                                 messageTangleStatus: statusDetails.messageTangleStatus,
                                 isSpent: true,
-                                amount: totalAmount,
+                                amount: relatedAmount,
                                 inputs: transactionsResult?.message?.payload?.essence?.inputs,
                                 outputs: transactionsResult?.message?.payload?.essence?.outputs
                             };
-                            if (amount < 0) {
-                                this.setState({ sent: this.state.sent + Math.abs(transaction.amount) });
+                            if (relatedAmount < 0) {
+                                this.setState({ sent: this.state.sent + Math.abs(relatedAmount) });
                             }
                             isTransactionSpent = true;
                         }
@@ -432,9 +392,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 }
                 transaction.isSpent = isTransactionSpent;
                 this.setState({
-                    transactionHistory: transactionsDetails,
-                    status: `Loading transactions 
-                    [${i}/${totalTransactions}]`
+                    transactionHistory: transactionsDetails
                 });
             }
         }
@@ -466,11 +424,31 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         return toAmount - fromAmount;
     }
 
-    private hasPassedFilterCriteria(transactionAmount: number = 0): boolean {
-        return this.state.filterValue === "incoming"
+    private hasPassedFilterCriteria(type: FilterValue, transactionAmount: number = 0): boolean {
+        return type === FilterValue.Incoming
             ? transactionAmount > 0
-            : (this.state.filterValue === "outgoing"
+            : (type === FilterValue.Outgoing
                 ? transactionAmount < 0 : true);
+    }
+
+    private filterButton(type: FilterValue): ReactNode {
+        const disabled = this.state.transactionHistory?.transactionHistory?.transactions?.find(t => (
+            this.hasPassedFilterCriteria(type, t.amount) || this.hasPassedFilterCriteria(type, t.relatedSpentTransaction?.amount)
+        )) === undefined;
+        return (
+            <button
+                className={classNames(
+                    { active: this.state.filterValue === type }
+                )}
+                type="button"
+                onClick={() => {
+                    this.setState({ filterValue: type });
+                }}
+                disabled={disabled}
+            >
+                {type}
+            </button>
+        );
     }
 }
 
