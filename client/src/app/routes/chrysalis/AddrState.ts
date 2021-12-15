@@ -1,7 +1,14 @@
+/* eslint-disable no-shadow */
 import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
-import { INodeTransaction } from "../../../models/api/chrysalis/INodeTransaction";
 import { ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
+
+
+export enum FilterValue {
+    All = "all",
+    Incoming = "incoming",
+    Outgoing = "outgoing",
+}
 
 export interface AddrState {
     /**
@@ -67,10 +74,9 @@ export interface AddrState {
     /**
      * Value of the transaction filter.
      */
-    filterValue: "all" | "incoming" | "outgoing";
+    filterValue: FilterValue;
     /**
      * List of transactions of an address.
      */
     transactionHistory?: ITransactionsDetailsResponse;
-    transactions?: INodeTransaction[];
 }
