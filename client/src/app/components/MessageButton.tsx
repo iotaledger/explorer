@@ -45,11 +45,7 @@ class MessageButton extends Component<MessageButtonProps, MessageButtonState> {
                     )}
                 </button>
                 {this.state.active && this.state.message && (
-                    <span
-                        className="
-                            message-button--message"
-
-                    >
+                    <span className="message-button--message">
                         {this.state.message}
                     </span>
                 )}
