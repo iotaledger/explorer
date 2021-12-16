@@ -343,7 +343,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
         const transactionIds = transactionsDetails?.transactionHistory?.transactions?.map(transaction => transaction.messageId);
 
-        if (transactionsDetails?.transactionHistory.transactions) {
+        if (transactionsDetails?.transactionHistory?.transactions) {
             for (const transaction of transactionsDetails.transactionHistory.transactions) {
                 // Get date and message tangle status
 
