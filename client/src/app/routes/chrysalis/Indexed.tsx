@@ -3,6 +3,7 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { TextHelper } from "../../../helpers/textHelper";
 import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -67,7 +68,9 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
             let utf8Index;
             if (result.indexMessageType === "hex") {
                 hexIndex = this.props.match.params.index;
-                utf8Index = Converter.hexToUtf8(this.props.match.params.index);
+                utf8Index = TextHelper.isUTF8(Converter.hexToBytes(this.props.match.params.index))
+                    ? Converter.hexToUtf8(this.props.match.params.index)
+                    : undefined;
             } else {
                 hexIndex = Converter.utf8ToHex(this.props.match.params.index);
                 utf8Index = this.props.match.params.index;
@@ -95,6 +98,21 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const TOGGLE_INDEX_OPTIONS = this.state.utf8Index ? [
+            {
+                label: "Text", content: this.state.utf8Index
+            },
+            {
+                label: "HEX",
+                content: this.state.hexIndex
+            }
+        ]
+            : [
+                {
+                    label: "HEX",
+                    content: this.state.hexIndex
+                }
+            ];
         return (
             <div className="indexed">
                 <div className="wrapper">
@@ -134,20 +152,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                     </span>
                                 </div>
                                 <DataToggle
-                                    options={
-                                        [
-                                            {
-                                                label: "Text",
-                                                content: this.state.utf8Index,
-                                                // eslint-disable-next-line max-len
-                                                link: `/${this.props.match.params.network}/indexed/${this.state.utf8Index}`
-                                            },
-                                            {
-                                                label: "HEX",
-                                                content: this.state.hexIndex
-                                            }
-                                        ]
-                                    }
+                                    options={TOGGLE_INDEX_OPTIONS}
                                 />
                             </div>
                         </div>

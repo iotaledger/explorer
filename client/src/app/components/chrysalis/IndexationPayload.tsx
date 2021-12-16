@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import { Converter } from "@iota/util.js";
 import React, { Component, ReactNode } from "react";
+import { TextHelper } from "../../../helpers/textHelper";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../ModalProps";
 import messageJSON from "./../../../assets/modals/message.json";
@@ -20,7 +21,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
     constructor(props: IndexationPayloadProps) {
         super(props);
 
-        const utf8Index = Converter.hexToUtf8(props.payload.index);
+        const utf8Index = TextHelper.isUTF8(Converter.hexToBytes(props.payload.index)) ? Converter.hexToUtf8(props.payload.index) : undefined;
         const matchHexIndex = props.payload.index.match(/.{1,2}/g);
         const hexIndex = matchHexIndex ? matchHexIndex.join(" ") : props.payload.index;
 
@@ -32,10 +33,12 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
             const matchHexData = props.payload.data.match(/.{1,2}/g);
 
             hexData = matchHexData ? matchHexData.join(" ") : props.payload.data;
-            utf8Data = Converter.hexToUtf8(props.payload.data);
+            utf8Data = TextHelper.isUTF8(Converter.hexToBytes(props.payload.data)) ? Converter.hexToUtf8(props.payload.data) : undefined;
 
             try {
-                jsonData = JSON.stringify(JSON.parse(utf8Data), undefined, "  ");
+                if (utf8Data) {
+                    jsonData = JSON.stringify(JSON.parse(utf8Data), undefined, "  ");
+                }
             } catch { }
         }
 
@@ -53,6 +56,41 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const TOGGLE_INDEX_OPTIONS = this.state.utf8Index ? [
+            {
+                label: "Text", content: this.state.utf8Index,
+                link: `/${this.props.network}/indexed/${this.props.payload.index}`
+            },
+            {
+                label: "HEX",
+                content: this.state.hexIndex
+            }
+        ]
+            : [
+                {
+                    label: "HEX",
+                    link: `/${this.props.network}/indexed/${this.props.payload.index}`,
+                    content: this.state.hexIndex
+                }
+            ];
+
+        const TOGGLE_DATA_OPTIONS = !this.state.jsonData && this.state.utf8Data ? [
+            {
+                label: "Text",
+                content: this.state.jsonData ? this.state.jsonData : this.state.utf8Data,
+                isJson: this.state.jsonData !== undefined
+            },
+            {
+                label: "HEX",
+                content: this.state.hexData
+            }
+        ]
+            : [
+                {
+                    label: "HEX",
+                    content: this.state.hexData
+                }
+            ];
         return (
             <div>
                 <div className="section--header">
@@ -67,20 +105,20 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                     <div className="label row middle">
                         <span className="margin-r-t">Index</span>
                     </div>
-                    <DataToggle options={[{ label: "Text", content: this.state.utf8Index, link: `/${this.props.network}/indexed/${this.props.payload.index}` }, { label: "HEX", content: this.state.hexIndex }]} />
-                    {(this.state.jsonData || this.state.utf8Data) && (
-                        <React.Fragment>
-                            <div className="label row middle">
-                                <span className="margin-r-t">Data</span>
-                            </div>
-                            <DataToggle
-                                options={[{ label: "Text", content: this.state.jsonData ? this.state.jsonData : this.state.utf8Data, isJson: this.state.jsonData !== undefined }, { label: "HEX", content: this.state.hexData }]}
-                            />
-                        </React.Fragment>)}
+                    <DataToggle options={TOGGLE_INDEX_OPTIONS} />
+
+                    <div className="label row middle">
+                        <span className="margin-r-t">Data</span>
+                    </div>
+                    <DataToggle
+                        options={TOGGLE_DATA_OPTIONS}
+                    />
                 </div>
             </div>
         );
     }
+
+
 }
 
 export default IndexationPayload;
