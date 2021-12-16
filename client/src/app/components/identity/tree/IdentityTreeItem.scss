@@ -130,7 +130,7 @@ $item-height: 64px;
       &:hover {
         svg {
           path {
-            fill: $gray-9;
+            fill: var(--did-color);
           }
         }
       }
