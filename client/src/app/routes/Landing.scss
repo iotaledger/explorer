@@ -1,8 +1,8 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
-@import '../../scss/themes';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .landing {
   display: flex;
@@ -253,7 +253,7 @@
                 border: 0.5px solid rgba(255, 255, 255, 0);
                 border-radius: 6px;
                 background: var(--body-background);
-                box-shadow: -1px 0 9px 0 rgba(123, 148, 186, 75%);
+                box-shadow: 0 0 6px 0 rgba(123, 148, 186, 75%);
 
                 @include tablet-down {
                   position: fixed;
@@ -295,7 +295,7 @@
 
                 .filter-content {
                   input {
-                    &[type='checkbox'] {
+                    &[type="checkbox"] {
                       @include font-size(24px);
 
                       width: 24px;
@@ -311,7 +311,7 @@
                         color: $white;
 
                         &::after {
-                          content: '✓';
+                          content: "✓";
                           position: absolute;
                           top: 45%;
                           left: 50%;
@@ -522,7 +522,7 @@
 
     &::after,
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       z-index: -1;
       width: 250px;

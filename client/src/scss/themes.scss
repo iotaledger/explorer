@@ -24,6 +24,7 @@
   --box-shadow-down: 0 4px 30px rgba(132, 147, 173, 0.1);
   --header-identity: #{$gray-daylight};
   --did-color: #{$gray-7};
+  --search-bg-opacity: 0.6;
 
   body.darkmode {
     --body-background: #091326;
@@ -47,5 +48,6 @@
     --qr-color: #{$white};
     --header-identity: #{$gray-midnight};
     --did-color: #{$gray-4};
+    --search-bg-opacity: 0.2;
   }
 }
