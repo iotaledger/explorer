@@ -178,6 +178,14 @@ header {
       }
     }
 
+    .utilities--mobile {
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      &.opened {
+        opacity: 1;
+      }
+    }
+
     .search-input {
       margin-left: 64px;
 
