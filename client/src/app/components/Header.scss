@@ -261,7 +261,7 @@ header {
     &.opened {
       height: 420px;
 
-      @include tablet-down {
+      @include desktop-down {
         height: calc(100vh - 2 * #{$navbar-height-mobile});
       }
     }
