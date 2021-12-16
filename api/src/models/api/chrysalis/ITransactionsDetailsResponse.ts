@@ -42,5 +42,8 @@ export interface ITransactionsDetailsResponse extends IResponse {
      * The transaction history data.
      */
     transactions?: ITransaction[];
+    /**
+     * The transaction state.
+     */
     state?: number;
 }
