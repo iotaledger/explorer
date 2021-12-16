@@ -148,7 +148,7 @@ footer {
         font-weight: 500;
       }
 
-      @include tablet-down {
+      @include desktop-down {
         padding-bottom: 16px 8px;
 
         span {
