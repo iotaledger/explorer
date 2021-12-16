@@ -153,7 +153,6 @@ class Header extends Component<HeaderProps, HeaderState> {
                             >
                                 {this.state.isMenuExpanded ? <CloseIcon /> : <HamburgerIcon />}
                             </button>
-                            {/* {this.state.isMenuExpanded && ( */}
                             <div
                                 className={classNames("menu--expanded", {
                                     opened: this.state.isMenuExpanded
@@ -196,35 +195,31 @@ class Header extends Component<HeaderProps, HeaderState> {
                                             <DropdownIcon />
                                         </div>
                                     </li>
-                                    {this.state.isUtilitiesExpanded && (
-                                        <React.Fragment>
-                                            <div className="utilities">
-                                                {this.props.utilities?.map(utility => (
-                                                    <li
-                                                        key={utility.url}
-                                                        className="menu--expanded__item margin-l-t"
-                                                    >
-                                                        <Link
-                                                            key={utility.url}
-                                                            to={utility.url}
-                                                            onClick={() =>
-                                                                this.setState({
-                                                                    isMenuExpanded: false,
-                                                                    isUtilitiesExpanded: false
-                                                                })}
-                                                        >
-                                                            {utility.label}
-                                                        </Link>
-                                                    </li>
-                                                ))}
-                                            </div>
-                                            <div
-                                                className="header--expanded--shield"
-                                                onClick={() =>
-                                                    this.setState({ isUtilitiesExpanded: false })}
-                                            />
-                                        </React.Fragment>
-                                    )}
+                                    {/* ----- Only visible in mobile ----- */}
+                                    <div className={classNames("utilities--mobile", {
+                                        opened: this.state.isUtilitiesExpanded
+                                    })}
+                                    >
+                                        {this.props.utilities?.map(utility => (
+                                            <li
+                                                key={utility.url}
+                                                className="menu--expanded__item margin-l-t"
+                                            >
+                                                <Link
+                                                    key={utility.url}
+                                                    to={utility.url}
+                                                    onClick={() =>
+                                                        this.setState({
+                                                            isMenuExpanded: false,
+                                                            isUtilitiesExpanded: false
+                                                        })}
+                                                >
+                                                    {utility.label}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </div>
+                                    {/* ---------- */}
                                 </ul>
                             </div>
                             {/* )} */}
