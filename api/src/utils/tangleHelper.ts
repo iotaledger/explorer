@@ -10,7 +10,7 @@ import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransacti
 import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
 import { INetwork } from "../models/db/INetwork";
-import { AdvancedSingleNodeClient } from "./advancedSingleNodeClient";
+import { ExtendedSingleNodeClient } from "./extendedSingleNodeClient";
 
 /**
  * Helper functions for use with tangle.
@@ -645,10 +645,11 @@ export class TangleHelper {
         address: string): Promise<ITransactionsDetailsResponse | undefined> {
         if (network.permaNodeEndpoint) {
             try {
-                // We use AdvancedSingleNodeClient to get the transactions because SingleNodeClient depends
-                // on @iota/iota.js  methods and @iota/iota.js methods and @iota/iota.js does not support the
-                // address/transactions endpoint. The dependency @iota/iota.js must be updated to offer this new method
-                const client = new AdvancedSingleNodeClient(network.permaNodeEndpoint, {
+                // We use ExtendedSingleNodeClient instead of SingleNodeClient 
+                // because @iota/iota.js does not support the address/transactions endpoint.
+                // The @iota/iota.js dependency must be updated to offer this new feature.
+                // This class must be replaced by SingleNodeClient when suported
+                const client = new ExtendedSingleNodeClient(network.permaNodeEndpoint, {
                     userName: network.permaNodeEndpointUser,
                     password: network.permaNodeEndpointPassword,
                     basePath: "/"
