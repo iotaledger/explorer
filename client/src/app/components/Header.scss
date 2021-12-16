@@ -179,8 +179,9 @@ header {
     }
 
     .utilities--mobile {
-      opacity: 0;
       transition: opacity 0.3s ease-in-out;
+      opacity: 0;
+
       &.opened {
         opacity: 1;
       }
@@ -251,15 +252,24 @@ header {
     top: $navbar-height-desktop;
     left: 0;
     width: 100vw;
-    min-height: 420px;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s ease-in-out;
     background: var(--body-background);
     box-shadow: var(--box-shadow-down);
 
-    @include desktop-down {
+    &.opened {
+      height: 420px;
+
+      @include tablet-down {
+        height: calc(100vh - 2 * #{$navbar-height-mobile});
+      }
+    }
+
+    @include tablet-down {
       $mobile-navbar-height: calc(2 * #{$navbar-height-mobile});
 
       top: $mobile-navbar-height;
-      height: calc(100vh - #{$mobile-navbar-height});
       overflow-y: scroll;
     }
   }

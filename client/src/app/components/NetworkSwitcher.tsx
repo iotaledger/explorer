@@ -30,55 +30,55 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                         <DropdownIcon />
                     </div>
 
-                    {this.props.isExpanded &&
-                        (
-                            <React.Fragment>
-                                <div className="header--expanded">
-                                    <div className="protocols">
-                                        {this.props.protocols.map(protocol => (
-                                            <div className="protocol" key={protocol.label}>
-                                                <div >
-                                                    <div className="protocol--title">{protocol.label}</div>
-                                                    <div className="protocol--description">
-                                                        {protocol.description}
-                                                    </div>
+
+                    <div className={classNames("header--expanded", {
+                        opened: this.props.isExpanded
+                    })}
+                    >
+                        <div className="protocols">
+                            {this.props.protocols.map(protocol => (
+                                <div className="protocol" key={protocol.label}>
+                                    <div >
+                                        <div className="protocol--title">{protocol.label}</div>
+                                        <div className="protocol--description">
+                                            {protocol.description}
+                                        </div>
+                                    </div>
+                                    <div className="network--cards">
+                                        {protocol.networks?.map(n => (
+                                            <div
+                                                className={classNames("network--card row middle",
+                                                    {
+                                                        selected: n.label ===
+                                                            this.props.label
+                                                    })}
+                                                onClick={() => this.props.onChange(n.network)}
+                                                key={n.label}
+                                            >
+                                                <div className="network--icon row middle center">
+                                                    {n.network.includes("mainnet")
+                                                        ? <MainnetIcon />
+                                                        : <DevnetIcon />}
                                                 </div>
-                                                <div className="network--cards">
-                                                    {protocol.networks?.map(n => (
-                                                        <div
-                                                            className={classNames("network--card row middle",
-                                                                {
-                                                                    selected: n.label ===
-                                                                        this.props.label
-                                                                })}
-                                                            onClick={() => this.props.onChange(n.network)}
-                                                            key={n.label}
-                                                        >
-                                                            <div className="network--icon row middle center">
-                                                                {n.network.includes("mainnet")
-                                                                    ? <MainnetIcon />
-                                                                    : <DevnetIcon />}
-                                                            </div>
-                                                            <div className="network--content">
-                                                                <div className="label">{n.label}</div>
-                                                                <div className="description">
-                                                                    {n.description}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                                <div className="network--content">
+                                                    <div className="label">{n.label}</div>
+                                                    <div className="description">
+                                                        {n.description}
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
+                            ))}
+                        </div>
+                    </div>
 
-                                <div
-                                    className="header--expanded--shield"
-                                    onClick={this.props.onClick}
-                                />
-                            </React.Fragment>
-                        )}
+                    <div
+                        className="header--expanded--shield"
+                        onClick={this.props.onClick}
+                    />
+
                 </div>
             </div >
         );
