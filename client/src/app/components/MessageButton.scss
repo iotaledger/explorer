@@ -27,8 +27,8 @@
     @include font-size(10px, 12px);
 
     position: absolute;
-    top: 10px;
-    left: 34px;
+    top: -11px;
+    left: -6px;
     min-width: 40px;
     animation: fade 2s linear;
     opacity: 1;
@@ -39,8 +39,8 @@
     animation-fill-mode: forwards;
 
     @include tablet-down {
-      top: -10px;
-      left: 0;
+      top: -12px;
+      left: -4px;
     }
   }
 
