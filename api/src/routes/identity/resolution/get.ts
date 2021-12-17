@@ -1,4 +1,5 @@
-import * as identity from "@iota/identity-wasm-0.4/node";
+import * as identityLegacy from "@iota/identity-wasm-0.4/node";
+import * as identity from "@iota/identity-wasm/node";
 
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IIdentityDidResolveRequest } from "../../../models/api/IIdentityDidResolveRequest";
@@ -30,7 +31,25 @@ export async function get(config: IConfiguration, request: IIdentityDidResolveRe
     const providerUrl = networkConfig.provider;
     const permanodeUrl = networkConfig.permaNodeEndpoint;
 
-    return resolveIdentity(request.did, providerUrl, permanodeUrl);
+    const identityResult = await resolveIdentity(request.did, providerUrl, permanodeUrl);
+    console.log("identityResult:", identityResult);
+
+    // Error::DIDNotFound("DID not found or pruned".to_owned())
+    // Error::DIDNotFound("no valid root document found".to_owned())
+    // Error::DIDNotFound("no root document confirmed by a milestone found".to_owned())
+    if (identityResult.error !== "DIDNotFound") {
+        return Promise.resolve(identityResult);
+    }
+
+    const legacyIdentityResult = await resolveLegacyIdentity(request.did, providerUrl, permanodeUrl);
+    console.log("legacyIdentityResult:", legacyIdentityResult);
+
+    // if ChainError return "latest" error, else return legacy error
+    if (!legacyIdentityResult.error) {
+        return Promise.resolve(legacyIdentityResult);
+    }
+
+    return Promise.resolve(identityResult);
 }
 
 /**
@@ -54,11 +73,41 @@ async function resolveIdentity(
         const client = identity.Client.fromConfig(config);
         const res = await client.resolve(did);
 
-        return { document: res.toJSON(), messageId: res.messageId };
+        // use version from document
+        return { document: res.toJSON(), version: "latest" };
+        console.log(res);
     } catch (e) {
         return { error: improveErrorMessage(e) };
     }
 }
+
+/**
+ * @param  {string} did DID to be resolved
+ * @param nodeUrl url of the network node.
+ * @param permaNodeUrl url of permanode
+ * @returns Promise
+ */
+ async function resolveLegacyIdentity(
+    did: string,
+    nodeUrl: string,
+    permaNodeUrl: string
+): Promise<IIdentityDidResolveResponse> {
+    try {
+        const config = new identityLegacy.Config();
+        config.setNode(nodeUrl);
+        if (permaNodeUrl) {
+            config.setPermanode(permaNodeUrl);
+        }
+
+        const client = identityLegacy.Client.fromConfig(config);
+        const res = await client.resolve(did);
+
+        return { document: res.toJSON(), messageId: res.messageId, version: "legacy" };
+    } catch (e) {
+        return { error: improveErrorMessage(e) };
+    }
+}
+
 /**
  * @param errorMessage Error object
  * @param errorMessage.name Error name
@@ -75,6 +124,7 @@ function improveErrorMessage(errorMessage: { name: string }): string {
     }
 
     if (errorMessage.name) {
+        console.error(errorMessage);
         return errorMessage.name;
     }
     return JSON.stringify(errorMessage);

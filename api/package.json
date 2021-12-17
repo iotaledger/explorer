@@ -26,8 +26,8 @@
     "dependencies": {
         "@iota/core": "^1.0.0-beta.30",
         "@iota/crypto.js": "^1.8.1",
-        "@iota/identity-wasm": "0.3.10",
-        "@iota/identity-wasm-0.4": "npm:@iota/identity-wasm@~0.4.0",
+        "@iota/identity-wasm": "file:../../identity.rs/bindings/wasm",
+        "@iota/identity-wasm-0.4": "file:../../temp/identity.rs/bindings/wasm",
         "@iota/iota.js": "^1.8.1",
         "@iota/mqtt.js": "^1.8.1",
         "@iota/transaction-converter": "^1.0.0-beta.30",

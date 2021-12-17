@@ -8,4 +8,6 @@ export interface IIdentityDidHistoryRequest {
      * The DID to be resolved.
      */
     did: string;
+
+    version: string;
 }

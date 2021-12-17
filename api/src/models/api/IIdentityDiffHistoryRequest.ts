@@ -8,4 +8,6 @@ export interface IIdentityDiffHistoryRequest {
      * The integration messageId of which the diff history should be resolved.
      */
     integrationMsgId: string;
+
+    version: string;
 }

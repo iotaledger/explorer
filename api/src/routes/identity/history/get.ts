@@ -1,4 +1,5 @@
-import * as identity from "@iota/identity-wasm-0.4/node";
+import * as identityLegacy from "@iota/identity-wasm-0.4/node";
+import * as identity from "@iota/identity-wasm/node";
 
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IIdentityDidHistoryRequest } from "../../../models/api/IIdentityDidHistoryRequest";
@@ -30,6 +31,9 @@ export async function get(config: IConfiguration, request: IIdentityDidHistoryRe
     const providerUrl = networkConfig.provider;
     const permanodeUrl = networkConfig.permaNodeEndpoint;
 
+    if (request.version === "legacy") {
+        return resolveLegacyHistory(request.did, providerUrl, permanodeUrl);
+    }
     return resolveHistory(request.did, providerUrl, permanodeUrl);
 }
 
@@ -53,6 +57,54 @@ async function resolveHistory(
 
         // Create a client instance to publish messages to the Tangle.
         const client = identity.Client.fromConfig(config);
+
+        const receipt = await client.resolveHistory(did);
+        const receiptObj = receipt.toJSON();
+        // was IOTADocument now ResolvedDocument, completely different. Figure it out
+        // map to the old structure?
+
+        const integrationChainData = [];
+
+        for (const element of receipt.integrationChainData()) {
+            const integrationMessage = {
+                document: element.toJSON()
+                // note: messageId is in the document now
+            };
+            integrationChainData.push(integrationMessage);
+        }
+
+        const history = {
+            integrationChainData,
+            diffChainData: receiptObj.diffChainData,
+            diffChainSpam: receiptObj.diffChainSpam
+        };
+
+        return history;
+    } catch (e) {
+        return { error: e as string };
+    }
+}
+
+/**
+ * @param  {string} did DID to be resolved
+ * @param nodeUrl url of the network node.
+ * @param permaNodeUrl url of permanode
+ * @returns Promise
+ */
+async function resolveLegacyHistory(
+    did: string,
+    nodeUrl: string,
+    permaNodeUrl: string
+): Promise<IIdentityDidHistoryResponse> {
+    try {
+        const config = new identityLegacy.Config();
+        config.setNode(nodeUrl);
+        if (permaNodeUrl) {
+            config.setPermanode(permaNodeUrl);
+        }
+
+        // Create a client instance to publish messages to the Tangle.
+        const client = identityLegacy.Client.fromConfig(config);
 
         const receipt = await client.resolveHistory(did);
         const receiptObj = receipt.toJSON();

@@ -59,7 +59,8 @@ class IdentityResolver extends AsyncComponent<
             messageTangleStatus: "pending",
             didExample: undefined,
             resolvedHistory: undefined,
-            historyError: false
+            historyError: false,
+            version: undefined
         };
     }
 
@@ -94,7 +95,8 @@ class IdentityResolver extends AsyncComponent<
             this.setState({
                 resolvedIdentity: res,
                 isIdentityResolved: true,
-                latestMessageId: res.messageId ?? undefined
+                latestMessageId: res.messageId ?? undefined,
+                version: res.version
             });
 
             await this.updateMessageDetails(res.messageId ?? "");
@@ -183,163 +185,170 @@ class IdentityResolver extends AsyncComponent<
                                     </Fragment>
                                 )}
                                 {this.state.did && (
-                                    <div>
-                                        <div className="row space-between wrap  ">
-                                            <div className="identity-title">
-                                                <IdentityIcon />
-                                                <h1>Identity Resolver</h1>
+                                    <Fragment>
+                                        {this.state.version && this.state.version === "legacy" && (
+                                            <div className="legacy-method">
+                                                This DID is using a deprecated metadata structure. If this is your DID you can find information on how to migrate your DID <a href="#">here</a>.
                                             </div>
-                                            <div className="search-compact">
-                                                <IdentitySearchInput
-                                                    compact={true}
-                                                    onSearch={e => {
-                                                        this.props.history.push(e);
-                                                    }}
-                                                    network={this.props.match.params.network}
-                                                />
+                                        )}
+                                        <div>
+                                            <div className="row space-between wrap  ">
+                                                <div className="identity-title">
+                                                    <IdentityIcon />
+                                                    <h1>Identity Resolver</h1>
+                                                </div>
+                                                <div className="search-compact">
+                                                    <IdentitySearchInput
+                                                        compact={true}
+                                                        onSearch={e => {
+                                                            this.props.history.push(e);
+                                                        }}
+                                                        network={this.props.match.params.network}
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="card margin-b-s">
-                                            <div
-                                                className="card--header
-                                            card--header__space-between
-                                            card--header__tablet-responsive
-                                            "
-                                            >
-                                                <h2>General</h2>
-                                                {!this.state.error &&
-                                                    !(this.state.latestMessageId === this.EMPTY_MESSAGE_ID) && (
-                                                        <MessageTangleState
-                                                            network={this.props.match.params.network}
-                                                            status={this.state.messageTangleStatus}
-                                                            milestoneIndex={
-                                                                this.state.metadata?.referencedByMilestoneIndex ??
-                                                                this.state.metadata?.milestoneIndex
-                                                            }
-                                                            onClick={
-                                                                this.state.metadata?.referencedByMilestoneIndex
-                                                                    ? () =>
-                                                                          this.props.history.push(
-                                                                              // eslint-disable-next-line max-len
-                                                                              `/${this.props.match.params.network}/search/${this.state.metadata?.referencedByMilestoneIndex}`
-                                                                          )
-                                                                    : undefined
-                                                            }
-                                                        />
-                                                    )}
-                                            </div>
-                                            <div className="card--content">
-                                                <div className="row middle margin-b-s row--tablet-responsive">
-                                                    <div className="card--value card--value--textarea">
-                                                        <div className="card--label form-label-width">DID</div>
-                                                        <div className="row ">
-                                                            <div className="margin-r-t">{this.state.did}</div>
-                                                            <MessageButton
-                                                                onClick={() => ClipboardHelper.copy(this.state.did)}
-                                                                buttonType="copy"
-                                                                labelPosition="top"
+                                            <div className="card margin-b-s">
+                                                <div
+                                                    className="card--header
+                                                    card--header__space-between
+                                                    card--header__tablet-responsive
+                                                "
+                                                >
+                                                    <h2>General</h2>
+                                                    {!this.state.error &&
+                                                        !(this.state.latestMessageId === this.EMPTY_MESSAGE_ID) && (
+                                                            <MessageTangleState
+                                                                network={this.props.match.params.network}
+                                                                status={this.state.messageTangleStatus}
+                                                                milestoneIndex={
+                                                                    this.state.metadata?.referencedByMilestoneIndex ??
+                                                                    this.state.metadata?.milestoneIndex
+                                                                }
+                                                                onClick={
+                                                                    this.state.metadata?.referencedByMilestoneIndex
+                                                                        ? () =>
+                                                                            this.props.history.push(
+                                                                                // eslint-disable-next-line max-len
+                                                                                `/${this.props.match.params.network}/search/${this.state.metadata?.referencedByMilestoneIndex}`
+                                                                            )
+                                                                        : undefined
+                                                                }
                                                             />
-                                                        </div>
-                                                        {this.state.resolvedIdentity &&
-                                                            !this.state.error &&
-                                                            this.state.resolvedIdentity?.messageId !==
-                                                                this.EMPTY_MESSAGE_ID && (
-                                                                <Fragment>
-                                                                    <div className="card--label">Latest Message Id</div>
-                                                                    <div className="card--value row middle">
-                                                                        <div className="margin-r-t">
-                                                                            {this.state.resolvedIdentity?.messageId}
+                                                        )}
+                                                </div>
+                                                <div className="card--content">
+                                                    <div className="row middle margin-b-s row--tablet-responsive">
+                                                        <div className="card--value card--value--textarea">
+                                                            <div className="card--label form-label-width">DID</div>
+                                                            <div className="row ">
+                                                                <div className="margin-r-t">{this.state.did}</div>
+                                                                <MessageButton
+                                                                    onClick={() => ClipboardHelper.copy(this.state.did)}
+                                                                    buttonType="copy"
+                                                                    labelPosition="top"
+                                                                />
+                                                            </div>
+                                                            {this.state.resolvedIdentity &&
+                                                                !this.state.error &&
+                                                                this.state.resolvedIdentity?.messageId !==
+                                                                    this.EMPTY_MESSAGE_ID && (
+                                                                    <Fragment>
+                                                                        <div className="card--label">Latest Message Id</div>
+                                                                        <div className="card--value row middle">
+                                                                            <div className="margin-r-t">
+                                                                                {this.state.resolvedIdentity?.messageId}
+                                                                            </div>
+                                                                            <MessageButton
+                                                                                onClick={() =>
+                                                                                    ClipboardHelper.copy(
+                                                                                        this.state.resolvedIdentity
+                                                                                            ?.messageId
+                                                                                    )}
+                                                                                buttonType="copy"
+                                                                                labelPosition="top"
+                                                                            />
                                                                         </div>
-                                                                        <MessageButton
-                                                                            onClick={() =>
-                                                                                ClipboardHelper.copy(
-                                                                                    this.state.resolvedIdentity
-                                                                                        ?.messageId
-                                                                                )}
-                                                                            buttonType="copy"
-                                                                            labelPosition="top"
-                                                                        />
-                                                                    </div>
-                                                                </Fragment>
-                                                            )}
+                                                                    </Fragment>
+                                                                )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div className="card">
-                                            <div className="card--header card--header">
-                                                <h2>Current DID Document</h2>
-                                            </div>
-                                            <div className="card--content">
-                                                <div className="row middle margin-b-s row--tablet-responsive">
-                                                    {!this.state.isIdentityResolved && !this.state.error && (
-                                                        <React.Fragment>
-                                                            <h3 className="margin-r-s">Resolving DID ...</h3>
-                                                            <Spinner />
-                                                        </React.Fragment>
-                                                    )}
+                                            <div className="card">
+                                                <div className="card--header card--header">
+                                                    <h2>Current DID Document</h2>
+                                                </div>
+                                                <div className="card--content">
+                                                    <div className="row middle margin-b-s row--tablet-responsive">
+                                                        {!this.state.isIdentityResolved && !this.state.error && (
+                                                            <React.Fragment>
+                                                                <h3 className="margin-r-s">Resolving DID ...</h3>
+                                                                <Spinner />
+                                                            </React.Fragment>
+                                                        )}
 
-                                                    {this.state.resolvedIdentity && (
-                                                        <div className="w100">
-                                                            <div className="identity-json-header">
-                                                                <div>
-                                                                    <IdentityMessageIdOverview
-                                                                        status="integration"
-                                                                        messageId={
-                                                                            this.state.resolvedIdentity.messageId
-                                                                        }
-                                                                        onClick={() => {
-                                                                            this.props.history.push(
-                                                                                // eslint-disable-next-line max-len
-                                                                                `/${this.props.match.params.network}/message/${this.state.resolvedIdentity?.messageId}`
-                                                                            );
-                                                                        }}
+                                                        {this.state.resolvedIdentity && (
+                                                            <div className="w100">
+                                                                <div className="identity-json-header">
+                                                                    <div>
+                                                                        <IdentityMessageIdOverview
+                                                                            status="integration"
+                                                                            messageId={
+                                                                                this.state.resolvedIdentity.messageId
+                                                                            }
+                                                                            onClick={() => {
+                                                                                this.props.history.push(
+                                                                                    // eslint-disable-next-line max-len
+                                                                                    `/${this.props.match.params.network}/message/${this.state.resolvedIdentity?.messageId}`
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                    </div>
+
+                                                                    <a
+                                                                        href={DownloadHelper.createJsonDataUrl(
+                                                                            this.state.resolvedIdentity.document
+                                                                        )}
+                                                                        download={DownloadHelper.filename(
+                                                                            this.state.resolvedIdentity.messageId ?? "did",
+                                                                            "json"
+                                                                            )}
+                                                                        role="button"
+                                                                    >
+                                                                        <HiDownload />
+                                                                    </a>
+                                                                </div>
+                                                                <div
+                                                                    className="
+                                                                    card--value
+                                                                    card--value-textarea
+                                                                card--value-textarea__json
+                                                                "
+                                                                >
+                                                                    <JsonViewer
+                                                                        json={JSON.stringify(
+                                                                            this.state.resolvedIdentity.document,
+                                                                            null,
+                                                                            4
+                                                                            )}
                                                                     />
                                                                 </div>
-
-                                                                <a
-                                                                    href={DownloadHelper.createJsonDataUrl(
-                                                                        this.state.resolvedIdentity.document
-                                                                    )}
-                                                                    download={DownloadHelper.filename(
-                                                                        this.state.resolvedIdentity.messageId ?? "did",
-                                                                        "json"
-                                                                    )}
-                                                                    role="button"
-                                                                >
-                                                                    <HiDownload />
-                                                                </a>
                                                             </div>
-                                                            <div
-                                                                className="
-                                                            card--value
-                                                            card--value-textarea
-                                                            card--value-textarea__json
-                                                            "
-                                                            >
-                                                                <JsonViewer
-                                                                    json={JSON.stringify(
-                                                                        this.state.resolvedIdentity.document,
-                                                                        null,
-                                                                        4
-                                                                    )}
-                                                                />
+                                                        )}
+                                                        {this.state.error && (
+                                                            <div className="identity-json-container did-error">
+                                                                <p className="margin-b-t">ಠ_ಠ </p>
+                                                                <p className="">{this.state.errorMessage}</p>
                                                             </div>
-                                                        </div>
-                                                    )}
-                                                    {this.state.error && (
-                                                        <div className="identity-json-container did-error">
-                                                            <p className="margin-b-t">ಠ_ಠ </p>
-                                                            <p className="">{this.state.errorMessage}</p>
-                                                        </div>
-                                                    )}
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        {this.state.isIdentityResolved && <IdentityHistory {...this.props} />}
-                                    </div>
+                                            {this.state.isIdentityResolved && <IdentityHistory {...this.props} />}
+                                        </div>
+                                    </Fragment>
                                 )}
                             </div>
                         </div>
