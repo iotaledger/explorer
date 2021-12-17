@@ -106,6 +106,7 @@
 
   .bg-placeholder {
     position: absolute;
+    z-index: 3;
     top: $navbar-height-mobile;
     left: 0;
     width: 100%;

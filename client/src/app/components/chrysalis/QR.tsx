@@ -8,15 +8,14 @@ import { QRState } from "./QRState";
  */
 class QR extends Component<QRProps, QRState> {
     /**
-     * Create a new instance of QR.
-     * @param props The props.
-     */
-
-    /**
      * The QR size in pixels.
      */
     private readonly size: number = 150;
 
+    /**
+     * Create a new instance of QR.
+     * @param props The props.
+     */
     constructor(props: QRProps) {
         super(props);
         this.state = {

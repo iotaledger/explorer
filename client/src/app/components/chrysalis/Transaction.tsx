@@ -17,9 +17,8 @@ class Transaction extends Component<TransactionProps, TransactionState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const tableFormat = this.props.tableFormat;
         return (
-            tableFormat ? (
+            this.props.tableFormat ? (
                 <tr>
                     <td className="value code highlight">
                         <Link

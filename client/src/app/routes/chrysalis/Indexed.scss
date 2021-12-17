@@ -23,6 +23,7 @@
         padding-right: 20px;
         padding-left: 20px;
       }
+
       .indexed-number {
         @include font-size(12px);
 
@@ -38,6 +39,7 @@
         font-weight: bold;
         white-space: nowrap;
       }
+
       .indexed-messages {
         &.scroll-limit {
           max-height: 550px;
@@ -47,26 +49,31 @@
             opacity: 0.5;
           }
         }
+
         .indexed-message {
           width: 100%;
+
           &:hover {
             background-color: var(--light-bg);
           }
+
           button {
             @include font-size(14px);
 
+            width: 100%;
+            border: none;
+            background: none;
+            color: var(--body-color);
             font-family: $ibm-plex-mono;
             font-weight: normal;
             letter-spacing: 0.02em;
             line-height: 20px;
-            color: var(--body-color);
-            border: none;
-            background: none;
-            width: 100%;
+
             span {
-              white-space: nowrap;
               overflow: hidden;
               text-overflow: ellipsis;
+              white-space: nowrap;
+
               &:hover {
                 text-decoration: underline;
               }
@@ -74,13 +81,14 @@
           }
         }
       }
+
       .indexed-actions {
         button {
           @include font-size(14px, 21px);
 
           display: flex;
-          justify-content: center;
           position: relative;
+          justify-content: center;
           width: 120px;
           padding: 9px;
           border: 1px solid $gray-3;
