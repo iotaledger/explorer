@@ -1,7 +1,7 @@
-@import '../../../scss/fonts';
-@import '../../../scss/mixins';
-@import '../../../scss/media-queries';
-@import '../../../scss/variables';
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
 
 .addr {
   display: flex;
@@ -50,7 +50,7 @@
       }
 
       .slider::before {
-        content: '';
+        content: "";
         position: absolute;
         bottom: 2.5px;
         left: 2.5px;
@@ -156,35 +156,43 @@
       .section--header {
         flex-direction: column;
         align-items: flex-start;
+
         .transactions-filter {
           margin-top: 24px;
         }
       }
     }
+
     .transactions-filter {
+      display: flex;
       font-family: $inter;
       font-size: 12px;
       font-weight: 500;
-      display: flex;
+
       button {
         @include font-size(12px, 18px);
-        letter-spacing: 0.5px;
-        color: $gray-5;
+
         padding: 3px 12px;
-        background-color: var(--body-background);
-        color: var(--header-color);
-        border-radius: 0;
         border: 0.2px solid var(--input-border-color);
+        border-radius: 0;
+        background-color: var(--body-background);
+        color: $gray-5;
+        color: var(--header-color);
+        letter-spacing: 0.5px;
+
         &:focus {
           box-shadow: none;
         }
+
         &.active {
           background-color: rgba(20, 202, 191, 0.12);
-          color: $gray-7;
+          color: var(--header-color);
         }
+
         &:first-child {
           border-radius: 6px 0 0 6px;
         }
+
         &:last-child {
           border-radius: 0 6px 6px 0;
         }
