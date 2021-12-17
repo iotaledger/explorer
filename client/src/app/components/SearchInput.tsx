@@ -88,6 +88,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                                     onKeyDown={e => {
                                         if (e.keyCode === 13 && this.state.isValid) {
                                             this.doSearch();
+                                            this.setState({ showSearchInput: false });
                                         }
                                     }}
                                     placeholder="Search the tangle..."
