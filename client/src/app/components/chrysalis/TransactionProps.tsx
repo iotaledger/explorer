@@ -31,7 +31,7 @@ export interface TransactionProps {
      */
     network: string;
     /**
-     * True if the transaction is rendered like a table 
+     * True if the transaction is rendered like a table
      */
     tableFormat?: boolean;
 }
