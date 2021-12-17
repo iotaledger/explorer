@@ -10,6 +10,7 @@ import { RouteBuilder } from "../../helpers/routeBuilder";
 import { INetwork } from "../../models/db/INetwork";
 import { IFeedItem } from "../../models/IFeedItem";
 import { IFilterSettings } from "../../models/services/IFilterSettings";
+import { ValueFilter } from "../../models/services/valueFilter";
 import { NetworkService } from "../../services/networkService";
 import Feeds from "../components/Feeds";
 import { NumberHelper } from "./../../helpers/numberHelper";
@@ -21,6 +22,36 @@ import { LandingState } from "./LandingState";
  * Component which will show the landing page.
  */
 class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState> {
+    private readonly DEFAULT_VALUES_FILTER: ValueFilter[] = this._networkConfig?.protocolVersion === "og"
+        ? [
+            {
+                label: "Zero only",
+                isEnabled: true
+            },
+            {
+                label: "Non-zero only",
+                isEnabled: true
+            }
+        ]
+        : [
+            {
+                label: "Transaction",
+                isEnabled: true
+            },
+            {
+                label: "Milestone",
+                isEnabled: true
+            },
+            {
+                label: "Indexed",
+                isEnabled: true
+            },
+            {
+                label: "No payload",
+                isEnabled: true
+            }
+        ];
+
     /**
      * Create a new instance of Landing.
      * @param props The props.
@@ -43,35 +74,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMinimumUnits: "i",
             valueMaximum: "1",
             valueMaximumUnits: "Ti",
-            valuesFilter: network.protocolVersion === "og"
-                ? [
-                    {
-                        label: "Zero only",
-                        isEnabled: true
-                    },
-                    {
-                        label: "Non-zero only",
-                        isEnabled: true
-                    }
-                ]
-                : [
-                    {
-                        label: "Transaction",
-                        isEnabled: true
-                    },
-                    {
-                        label: "Milestone",
-                        isEnabled: true
-                    },
-                    {
-                        label: "Indexed",
-                        isEnabled: true
-                    },
-                    {
-                        label: "No payload",
-                        isEnabled: true
-                    }
-                ],
+            valuesFilter: this.DEFAULT_VALUES_FILTER,
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
@@ -99,6 +102,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
         const settings = this._settingsService.get();
 
+
         let filterSettings: IFilterSettings | undefined;
 
         if (this._networkConfig && settings.filters) {
@@ -110,6 +114,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMinimumUnits: filterSettings?.valueMinimumUnits ?? "i",
             valueMaximum: filterSettings?.valueMaximum ?? "3",
             valueMaximumUnits: filterSettings?.valueMaximumUnits ?? "Pi",
+            valuesFilter: filterSettings?.valuesFilter ?? this.DEFAULT_VALUES_FILTER,
             formatFull: settings.formatFull
         });
     }
@@ -205,36 +210,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                                 className="button--unstyled"
                                                                 type="button"
                                                                 onClick={() => this.setState({
-                                                                    valuesFilter:
-                                                                        this._networkConfig?.protocolVersion === "og"
-                                                                            ? [
-                                                                                {
-                                                                                    label: "Zero only",
-                                                                                    isEnabled: true
-                                                                                },
-                                                                                {
-                                                                                    label: "Non-zero only",
-                                                                                    isEnabled: true
-                                                                                }
-                                                                            ]
-                                                                            : [
-                                                                                {
-                                                                                    label: "Transaction",
-                                                                                    isEnabled: true
-                                                                                },
-                                                                                {
-                                                                                    label: "Milestone",
-                                                                                    isEnabled: true
-                                                                                },
-                                                                                {
-                                                                                    label: "Indexed",
-                                                                                    isEnabled: true
-                                                                                },
-                                                                                {
-                                                                                    label: "No payload",
-                                                                                    isEnabled: true
-                                                                                }
-                                                                            ]
+                                                                    valuesFilter: this.DEFAULT_VALUES_FILTER
                                                                 })}
                                                             >
                                                                 Reset
