@@ -98,31 +98,33 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     <DropdownIcon />
                                 </div>
                             </div>
-                            {this.state.isUtilitiesExpanded && (
-                                <React.Fragment>
-                                    <div className="header--expanded">
-                                        <div className="utilities">
-                                            <div className="utilities--label">Utilities</div>
-                                            {this.props.utilities?.map(utility => (
-                                                <div key={utility.url} className="utilities--item">
-                                                    <Link
-                                                        to={utility.url}
-                                                        onClick={() =>
-                                                            this.setState({ isUtilitiesExpanded: false })}
-                                                    >
-                                                        {utility.label}
-                                                    </Link>
-                                                </div>
-                                            ))}
+
+                            <div className={classNames("header--expanded", {
+                                opened: this.state.isUtilitiesExpanded
+                            })}
+                            >
+                                <div className="utilities">
+                                    <div className="utilities--label">Utilities</div>
+                                    {this.props.utilities?.map(utility => (
+                                        <div key={utility.url} className="utilities--item">
+                                            <Link
+                                                to={utility.url}
+                                                onClick={() =>
+                                                    this.setState({ isUtilitiesExpanded: false })}
+                                            >
+                                                {utility.label}
+                                            </Link>
                                         </div>
-                                    </div>
-                                    <div
-                                        className="header--expanded--shield"
-                                        onClick={() =>
-                                            this.setState({ isUtilitiesExpanded: false })}
-                                    />
-                                </React.Fragment>
-                            )}
+                                    ))}
+                                </div>
+                            </div>
+                            {this.state.isUtilitiesExpanded &&
+                                (<div
+                                    className="header--expanded--shield"
+                                    onClick={() =>
+                                        this.setState({ isUtilitiesExpanded: false })}
+                                />)}
+
                         </div>
                         {/* ----- Only visible in mobile ----- */}
                         <div className="mobile-fiat">

@@ -1,7 +1,7 @@
-@import '../../scss/fonts';
-@import '../../scss/media-queries';
-@import '../../scss/mixins';
-@import '../../scss/variables';
+@import "../../scss/fonts";
+@import "../../scss/media-queries";
+@import "../../scss/mixins";
+@import "../../scss/variables";
 
 footer {
   .footer--content {
@@ -56,10 +56,10 @@ footer {
 
           li {
             @include font-size(12px, 18px);
-            font-weight: 500;
 
             margin-bottom: 8px;
             font-family: $inter;
+            font-weight: 500;
 
             a {
               color: $gray-3;
@@ -148,7 +148,7 @@ footer {
         font-weight: 500;
       }
 
-      @include tablet-down {
+      @include desktop-down {
         padding-bottom: 16px 8px;
 
         span {
