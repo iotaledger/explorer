@@ -117,8 +117,6 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
             </div>
         );
     }
-
-
 }
 
 export default IndexationPayload;

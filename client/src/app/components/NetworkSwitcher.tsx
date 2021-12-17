@@ -74,10 +74,12 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                         </div>
                     </div>
 
-                    {this.props.isExpanded && (<div
-                        className="header--expanded--shield"
-                        onClick={this.props.onClick}
-                    />)}
+                    {this.props.isExpanded && (
+                        <div
+                            className="header--expanded--shield"
+                            onClick={this.props.onClick}
+                        />
+                    )}
 
                 </div>
             </div >

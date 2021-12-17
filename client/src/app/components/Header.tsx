@@ -118,13 +118,13 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     ))}
                                 </div>
                             </div>
-                            {this.state.isUtilitiesExpanded &&
-                                (<div
+                            {this.state.isUtilitiesExpanded && (
+                                <div
                                     className="header--expanded--shield"
                                     onClick={() =>
                                         this.setState({ isUtilitiesExpanded: false })}
-                                />)}
-
+                                />
+                            )}
                         </div>
                         {/* ----- Only visible in mobile ----- */}
                         <div className="mobile-fiat">
