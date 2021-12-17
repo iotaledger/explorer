@@ -503,3 +503,12 @@ header {
     }
   }
 }
+
+/* Backdrop support: very transparent and blurred */
+@supports ((-webkit-backdrop-filter: blur(20px)) or (backdrop-filter: blur(20px))) {
+  header {
+    background: transparent;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+  }
+}
