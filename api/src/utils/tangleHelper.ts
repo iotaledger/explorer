@@ -645,7 +645,7 @@ export class TangleHelper {
         address: string): Promise<ITransactionsDetailsResponse | undefined> {
         if (network.permaNodeEndpoint) {
             try {
-                // We use ExtendedSingleNodeClient instead of SingleNodeClient 
+                // We use ExtendedSingleNodeClient instead of SingleNodeClient
                 // because @iota/iota.js does not support the address/transactions endpoint.
                 // The @iota/iota.js dependency must be updated to offer this new feature.
                 // This class must be replaced by SingleNodeClient when suported
