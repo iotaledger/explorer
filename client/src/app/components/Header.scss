@@ -262,14 +262,13 @@ header {
       height: 420px;
 
       @include desktop-down {
+        top: $navbar-height-mobile * 2;
         height: calc(100vh - 2 * #{$navbar-height-mobile});
       }
     }
 
-    @include tablet-down {
-      $mobile-navbar-height: calc(2 * #{$navbar-height-mobile});
-
-      top: $mobile-navbar-height;
+    @include desktop-down {
+      top: $navbar-height-mobile * 2;
       overflow-y: scroll;
     }
   }
