@@ -150,17 +150,19 @@ class IdentityResolver extends AsyncComponent<
                                                 </p>
                                             </div>
                                             {this.state.didExample && (
-                                                <div
-                                                    className="example-did"
+                                                <button
+                                                    className="load-history-button"
                                                     onClick={() => {
                                                         this.props.history.push(
                                                             // eslint-disable-next-line max-len
                                                             `/${this.props.match.params.network}/identity-resolver/${this.state.didExample}`
                                                         );
                                                     }}
+                                                    type="button"
+
                                                 >
-                                                    <p> DID Example </p>
-                                                </div>
+                                                    DID Example
+                                                </button>
                                             )}
                                         </div>
                                     </Fragment>
