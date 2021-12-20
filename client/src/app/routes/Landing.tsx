@@ -146,10 +146,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         </span>
                                         <div className="info-box--value">
                                             <span className="download-rate">
-                                                {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1)}
+                                                {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1) || "--"}
                                             </span>
                                             <span className="upload-rate">
-                                                /{NumberHelper.roundTo(Number(this.state.confirmedItemsPerSecond), 1)}
+                                                /{NumberHelper.roundTo(Number(this.state.confirmedItemsPerSecond)
+                                                    , 1) || "--"}
                                             </span>
                                         </div>
                                     </div>
