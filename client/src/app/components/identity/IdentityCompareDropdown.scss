@@ -92,22 +92,21 @@
   }
 
   .dropdown-content {
+    display: flex;
+    position: absolute;
+    top: 45px;
+    flex-direction: column;
+    width: 200px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid $gray-3;
+    border-radius: 5px;
+    background-color: var(--body-background);
     scrollbar-width: thin;
 
     &::-webkit-scrollbar {
       width: 6px;
     }
-
-    display: flex;
-    position: absolute;
-    top: 35px;
-    flex-direction: column;
-    width: 200px;
-    max-height: 200px;
-    overflow-y: auto;
-    border-radius: 5px;
-    background-color: var(--body-background);
-    border: 1px solid $gray-3;
   }
 
   .dropdown-item {
