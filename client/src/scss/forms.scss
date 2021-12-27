@@ -1,6 +1,6 @@
-@import './mixins';
-@import './variables';
-@import './themes';
+@import "./mixins";
+@import "./variables";
+@import "./themes";
 
 .select-wrapper {
   display: inline-block;
@@ -8,6 +8,7 @@
 
   img {
     position: absolute;
+    z-index: 2;
     top: 43%;
     right: 18px;
     color: $gray;
