@@ -24,6 +24,7 @@
   --header-identity: #{$gray-daylight};
   --did-color: #{$gray-7};
   --search-bg-opacity: 0.6;
+  --card-color: #{$gray-6};
 
   body.darkmode {
     --body-background: #091326;
@@ -49,5 +50,6 @@
     --header-identity: #{$gray-midnight};
     --did-color: #{$gray-4};
     --search-bg-opacity: 0.2;
+    --card-color: #{$gray-4};
   }
 }
