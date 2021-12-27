@@ -1,7 +1,7 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
 
 .switch-wrapper {
   display: flex;
@@ -37,12 +37,12 @@
       cursor: pointer;
 
       &::before {
-        content: '';
+        content: "";
         position: absolute;
-        top: 2.5px;
-        left: 2.5px;
-        width: 15px;
-        height: 15px;
+        top: 10%;
+        width: 50%;
+        height: 80%;
+        transform: translateX(calc(100% - 4px));
         transition: 0.4s;
         border-radius: 50%;
         background-color: white;
@@ -59,7 +59,7 @@
           background-color: $green-6;
 
           &::before {
-            transform: translateX(10px);
+            transform: translateX(4px);
           }
         }
       }
