@@ -1,6 +1,7 @@
 @import "../../../scss/variables";
 @import "../../../scss/fonts";
 @import "../../../scss/layout.scss";
+@import "../../../scss/themes";
 
 .identity-compare-dropdown {
   .dropdown-wrapper {
@@ -122,7 +123,7 @@
   }
 
   .dropdown-item-selected {
-    background-color: $gray-noon;
+    background-color: var(--header-identity);
   }
 
   .dropdown-item-title {
