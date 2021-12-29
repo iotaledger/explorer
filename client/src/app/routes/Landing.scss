@@ -231,15 +231,13 @@
 
             .filter-wrapper {
               .filter--bg {
-                @include tablet-down {
-                  position: fixed;
-                  z-index: 800;
-                  top: 0;
-                  left: 0;
-                  width: 100%;
-                  height: 100vh;
-                  background: rgba(9, 19, 38, 0.4);
-                }
+                position: fixed;
+                z-index: 700;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: rgba(9, 19, 38, 0.4);
               }
 
               .filter {
