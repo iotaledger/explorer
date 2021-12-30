@@ -210,9 +210,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                             <button
                                                                 className="button--unstyled"
                                                                 type="button"
-                                                                onClick={() => this.setState({
-                                                                    valuesFilter: this.DEFAULT_VALUES_FILTER
-                                                                })}
+                                                                onClick={() => this.resetFilters()}
                                                             >
                                                                 Reset
                                                             </button>
@@ -520,6 +518,19 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             return payload;
         });
         this.setState({ valuesFilter }, async () => this.updateFilters());
+    }
+
+    /**
+     * Reset filters to default values
+     */
+    private resetFilters(): void {
+        this.setState({
+            valueMinimum: "0",
+            valueMinimumUnits: "i",
+            valueMaximum: "1",
+            valueMaximumUnits: "Ti",
+            valuesFilter: this.state.valuesFilter.map(filter => ({ ...filter, isEnabled: true }))
+        }, async () => this.updateFilters());
     }
 
     private transactionDropdown(type: "minimum" | "maximum"): ReactNode {
