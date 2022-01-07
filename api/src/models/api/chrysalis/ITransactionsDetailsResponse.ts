@@ -47,4 +47,3 @@ export interface ITransactionsDetailsResponse extends IResponse {
      */
     state?: number;
 }
-
