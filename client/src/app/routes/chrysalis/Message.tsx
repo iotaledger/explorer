@@ -79,45 +79,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-
-        const result = await this._tangleCacheService.search(
-            this.props.match.params.network, this.props.match.params.messageId);
-
-        if (result?.message) {
-            window.scrollTo({
-                left: 0,
-                top: 0,
-                behavior: "smooth"
-            });
-
-            window.history.replaceState(undefined, window.document.title, `/${this.props.match.params.network
-                }/message/${result.includedMessageId ?? this.props.match.params.messageId}`);
-
-            const { inputs, outputs, unlockAddresses, transferTotal } =
-                await TransactionsHelper.getInputsAndOutputs(result?.message,
-                    this.props.match.params.network,
-                    this._bechHrp,
-                    this._tangleCacheService);
-            this.setState({
-                inputs,
-                outputs,
-                unlockAddresses,
-                transferTotal
-            }, async () => {
-                await this.updateMessageDetails();
-            });
-
-            this.setState({
-                paramMessageId: this.props.match.params.messageId,
-                actualMessageId: result.includedMessageId ?? this.props.match.params.messageId,
-                message: result.message
-            }, async () => {
-                await this.updateMessageDetails();
-            });
-        } else {
-            this.props.history.replace(`/${this.props.match.params.network
-                }/search/${this.props.match.params.messageId}`);
-        }
+        await this.loadMessage(this.props.match.params.messageId, false);
     }
 
     /**
@@ -401,7 +363,17 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             >
                                                 {parent !== "0".repeat(64) && (
                                                     <React.Fragment>
-                                                        <Link
+                                                        <button
+                                                            type="button"
+                                                            className="margin-r-t"
+                                                            onClick={
+                                                                async () =>
+                                                                    this.loadMessage(parent, true)
+                                                            }
+                                                        >
+                                                            {parent}
+                                                        </button>
+                                                        {/* <Link
                                                             className="margin-r-t"
                                                             to={
                                                                 `/${this.props.match.params.network
@@ -409,7 +381,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                             }
                                                         >
                                                             {parent}
-                                                        </Link>
+                                                        </Link> */}
                                                         <MessageButton
                                                             onClick={() => ClipboardHelper.copy(
                                                                 parent
@@ -535,6 +507,63 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
         }
 
         return conflictReason;
+    }
+
+    /**
+     * Load the message with the given id.
+     * @param messageId The index to load.
+     * @param updateUrl Update the url.
+     */
+    private async loadMessage(messageId: string, updateUrl: boolean): Promise<void> {
+        const result = await this._tangleCacheService.search(
+            this.props.match.params.network, messageId);
+
+        if (result?.message) {
+            if (!updateUrl) {
+                window.scrollTo({
+                    left: 0,
+                    top: 0,
+                    behavior: "smooth"
+                });
+            }
+
+            window.history.replaceState(undefined, window.document.title, `/${this.props.match.params.network
+                }/message/${result.includedMessageId ?? messageId}`);
+
+            const { inputs, outputs, unlockAddresses, transferTotal } =
+                await TransactionsHelper.getInputsAndOutputs(result?.message,
+                    this.props.match.params.network,
+                    this._bechHrp,
+                    this._tangleCacheService);
+            this.setState({
+                inputs,
+                outputs,
+                unlockAddresses,
+                transferTotal
+            }, async () => {
+                await this.updateMessageDetails();
+            });
+
+            this.setState({
+                paramMessageId: messageId,
+                actualMessageId: result.includedMessageId ?? messageId,
+                message: result.message
+            }, async () => {
+                await this.updateMessageDetails();
+            });
+            if (updateUrl) {
+                window.history.replaceState(
+                    undefined,
+                    window.document.title,
+                    `/${this.props.match.params.network
+                    }/message/${messageId}`);
+            }
+            console.log(this.state.message?.payload?.type === INDEXATION_PAYLOAD_TYPE
+                ? this.state.message.payload : "no")
+        } else {
+            this.props.history.replace(`/${this.props.match.params.network
+                }/search/${messageId}`);
+        }
     }
 }
 
