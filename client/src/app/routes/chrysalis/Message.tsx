@@ -103,8 +103,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 outputs,
                 unlockAddresses,
                 transferTotal
-            }, async () => {
-                await this.updateMessageDetails();
             });
 
             this.setState({
@@ -172,6 +170,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     status={this.state.messageTangleStatus}
                                     milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
                                         this.state.metadata?.milestoneIndex}
+                                    hasConflicts={this.state.metadata?.ledgerInclusionState === "conflicting"}
                                     onClick={this.state.metadata?.referencedByMilestoneIndex
                                         ? (messageId: string) => this.props.history.push(
                                             `/${this.props.match.params.network

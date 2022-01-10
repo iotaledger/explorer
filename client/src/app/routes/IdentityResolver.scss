@@ -17,7 +17,7 @@
     p {
       @include font-size(14px, 21px);
 
-      color: $did-error !important;
+      color: $error !important;
       font-family: $inter;
       letter-spacing: 0.5px;
       text-align: center;
