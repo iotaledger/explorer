@@ -20,20 +20,13 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
      */
     constructor(props: IndexationPayloadProps) {
         super(props);
-        // this.state = {
-        //     utf8Index: undefined,
-        //     hexIndex: "0",
-        //     utf8Data: undefined,
-        //     hexData: undefined,
-        //     jsonData: undefined
-        // };
-        this.loadPayload();
+        this.state = this.loadPayload();
         console.log("constructor de indexation apyload")
     }
 
     public componentDidUpdate(prevProps: IndexationPayloadProps): void {
         if (prevProps.payload !== this.props.payload) {
-            this.loadPayload();
+            this.setState(this.loadPayload());
         }
     }
 
@@ -104,6 +97,10 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
         );
     }
 
+    /**
+     * Load index and data from payload.
+     * @returns Object with indexes and data in raw and utf-8 format.
+     */
     private loadPayload() {
         const utf8Index = TextHelper.isUTF8(Converter.hexToBytes(this.props.payload.index)) ? Converter.hexToUtf8(this.props.payload.index) : undefined;
         const matchHexIndex = this.props.payload.index.match(/.{1,2}/g);
@@ -125,14 +122,13 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                 }
             } catch { }
         }
-
-        this.setState({
+        return {
             utf8Index,
             hexIndex,
             utf8Data,
             hexData,
             jsonData
-        });
+        };
     }
 }
 
