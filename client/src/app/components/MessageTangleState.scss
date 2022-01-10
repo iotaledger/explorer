@@ -1,15 +1,15 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
-@import '../../scss/themes';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .messages-tangle-state {
   display: flex;
   align-items: center;
 
   @include tablet-down {
-    display: none;
+    margin-top: 4px;
   }
 
   .message-tangle-reference {

@@ -161,7 +161,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                         </div>
 
                         <div className="section">
-                            <div className="section--header row space-between">
+                            <div className="section--header row row--tablet-responsive middle space-between">
                                 <div className="row middle">
                                     <h2>General</h2>
                                     <Modal icon={ModalIcon.Info} data={messageJSON} />
