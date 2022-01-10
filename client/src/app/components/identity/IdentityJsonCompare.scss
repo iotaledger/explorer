@@ -137,19 +137,12 @@
 }
 
 .download-button {
-  margin-top: 4px;
-  margin-right: 8px;
-  margin-left: 19px;
+  margin-left: 8px;
 
   svg {
     path {
       fill: var(--did-color);
     }
-  }
-
-  @include phone-down {
-    height: 60px;
-    padding: 0.88em 4px;
   }
 }
 

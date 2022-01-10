@@ -138,7 +138,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 advancedMode={true}
                                             />
                                             {!this.state.statusBusy && (
-                                                <div className="row">
+                                                <div className="row row--tablet-responsive">
                                                     <div className="section--data margin-r-m">
                                                         <div className="label">
                                                             Total received
@@ -156,7 +156,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                             />)
                                                         </div>
                                                     </div>
-                                                    <div className="section--data margin-l-m">
+                                                    <div className="section--data ">
                                                         <div className="label">
                                                             Total sent
                                                         </div>

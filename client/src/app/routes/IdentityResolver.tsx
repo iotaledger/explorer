@@ -179,7 +179,7 @@ class IdentityResolver extends AsyncComponent<
                                         </div>
                                         <div className="section">
                                             <div className="section--header row space-between">
-                                                <div className="row middle space-between w100">
+                                                <div className="row row--tablet-responsive middle space-between w100">
                                                     <h2>General
                                                         <Modal icon={ModalIcon.Info} data={messageJSON} />
                                                     </h2>
