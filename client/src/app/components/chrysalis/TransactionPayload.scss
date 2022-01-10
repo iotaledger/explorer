@@ -28,6 +28,12 @@
         }
       }
 
+      .dot-separator {
+        @include tablet-down {
+          margin-right: 0;
+        }
+      }
+
       .fiat-value {
         margin-left: 8px;
         white-space: nowrap;
