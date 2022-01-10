@@ -1,7 +1,8 @@
-@import '../../../scss/fonts';
-@import '../../../scss/mixins';
-@import '../../../scss/media-queries';
-@import '../../../scss/variables';
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+@import "../../../scss/themes";
 
 .milestone-payload {
   .milestone-action {
@@ -41,6 +42,10 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+
+      path {
+        stroke: var(--body-color);
+      }
 
       @include tablet-down {
         display: block;
