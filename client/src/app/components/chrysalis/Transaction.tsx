@@ -96,7 +96,10 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                     </div>
                     <div className="field">
                         <div className="label">Amount</div>
-                        <div className="value">
+                        <div className={`amount ${this.props.amount && this.props.amount < 0
+                            ? "negative"
+                            : "positive"}`}
+                        >
                             {this.props.amount ? UnitsHelper.formatBest(this.props.amount ?? 0) : <Spinner />}
                         </div>
                     </div>

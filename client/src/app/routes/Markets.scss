@@ -1,8 +1,8 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
-@import '../../scss/themes';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .markets {
   display: flex;
@@ -22,6 +22,18 @@
 
       .row {
         flex: 1;
+
+        .col.fill {
+          @include tablet-down {
+            margin-left: 12px;
+          }
+
+          &:first-child {
+            @include tablet-down {
+              margin-left: 0;
+            }
+          }
+        }
       }
 
       .cards {

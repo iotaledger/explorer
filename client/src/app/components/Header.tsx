@@ -164,12 +164,13 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     {this.props.pages &&
                                         this.props.pages.length > 0 &&
                                         this.props.pages.map(page => (
-                                            <li className="menu--expanded__item" key={page.url}>
-                                                <Link
-                                                    to={page.url}
-                                                    onClick={() =>
-                                                        this.setState({ isMenuExpanded: false })}
-                                                >
+                                            <Link
+                                                key={page.url}
+                                                to={page.url}
+                                                onClick={() =>
+                                                    this.setState({ isMenuExpanded: false })}
+                                            >
+                                                <li className="menu--expanded__item" key={page.url}>
                                                     <span
                                                         className={` 
                                                     ${page.url ===
@@ -180,8 +181,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                                                     >
                                                         {page.label}
                                                     </span>
-                                                </Link>
-                                            </li>
+                                                </li>
+                                            </Link>
+
                                         ))}
                                     <li
                                         className={classNames("menu--expanded__item", {
@@ -203,22 +205,22 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     })}
                                     >
                                         {this.props.utilities?.map(utility => (
-                                            <li
+                                            <Link
                                                 key={utility.url}
-                                                className="menu--expanded__item margin-l-t"
+                                                to={utility.url}
+                                                onClick={() =>
+                                                    this.setState({
+                                                        isMenuExpanded: false,
+                                                        isUtilitiesExpanded: false
+                                                    })}
                                             >
-                                                <Link
+                                                <li
                                                     key={utility.url}
-                                                    to={utility.url}
-                                                    onClick={() =>
-                                                        this.setState({
-                                                            isMenuExpanded: false,
-                                                            isUtilitiesExpanded: false
-                                                        })}
+                                                    className="menu--expanded__item margin-l-t"
                                                 >
                                                     {utility.label}
-                                                </Link>
-                                            </li>
+                                                </li>
+                                            </Link>
                                         ))}
                                     </div>
                                     {/* ---------- */}

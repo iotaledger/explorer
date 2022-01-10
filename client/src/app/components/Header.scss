@@ -321,6 +321,13 @@ header {
       }
 
       .menu--expanded__item {
+        display: flex;
+        justify-content: space-between;
+        color: $gray-6;
+        font-family: $metropolis;
+        font-weight: 600;
+        cursor: pointer;
+
         a,
         div {
           color: $gray-6;
@@ -329,10 +336,6 @@ header {
 
           @include font-size(16px, 24px);
         }
-
-        display: flex;
-        justify-content: space-between;
-        cursor: pointer;
 
         &:hover {
           border-radius: 0 8px 8px 0;

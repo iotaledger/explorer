@@ -141,6 +141,11 @@ footer {
       letter-spacing: 0.5px;
       text-decoration: none;
 
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+
       @include font-size(16px, 18px);
 
       span {
