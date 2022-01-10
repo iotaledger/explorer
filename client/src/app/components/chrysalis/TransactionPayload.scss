@@ -1,25 +1,36 @@
-@import '../../../scss/fonts';
-@import '../../../scss/mixins';
-@import '../../../scss/media-queries';
-@import '../../../scss/variables';
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
 
 .transaction-payload {
   .section--header {
     .transaction-value {
+      display: flex;
       margin-left: auto;
       color: $gray-5;
       font-family: $inter;
       font-weight: 700;
+      text-align: end;
+
+      @include tablet-down {
+        display: block;
+      }
 
       @include font-size(16px, 24px);
 
       .value {
         margin-right: 8px;
         color: var(--body-color);
+
+        @include tablet-down {
+          margin-right: 0;
+        }
       }
 
       .fiat-value {
         margin-left: 8px;
+        white-space: nowrap;
       }
     }
   }

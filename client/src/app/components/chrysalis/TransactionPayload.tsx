@@ -63,11 +63,13 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         <Modal icon={ModalIcon.Info} data={messageJSON} />
                     </div>
                     <div className="transaction-value">
-                        <span className="value">
-                            {UnitsHelper.formatUnits(this.props.transferTotal,
-                                UnitsHelper.calculateBest(this.props.transferTotal))}
-                        </span>
-                        <span className="dot-separator">•</span>
+                        <div>
+                            <span className="value">
+                                {UnitsHelper.formatUnits(this.props.transferTotal,
+                                    UnitsHelper.calculateBest(this.props.transferTotal))}
+                            </span>
+                            <span className="dot-separator">•</span>
+                        </div>
                         <span className="fiat-value">
                             <FiatValue value={this.props.transferTotal} />
                         </span>
