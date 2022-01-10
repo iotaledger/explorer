@@ -18,7 +18,8 @@
   --input-border-color: #d9e1ef;
   --input-focus-border-color: #{$gray-7};
   --modal-color: #{$gray-7};
-  --message-referenced-bg: #{$mint-green-1};
+  --message-confirmed-bg: #{$mint-green-1};
+  --message-conflicting-bg: rgba(202, 73, 61, 0.24);
   --qr-color: #{$gray-9};
   --box-shadow-down: 0 4px 30px rgba(132, 147, 173, 0.1);
   --header-identity: #{$gray-daylight};
@@ -44,7 +45,7 @@
     --input-border-color: #{$gray-5};
     --input-focus-border-color: #{$gray-3};
     --modal-color: #{$gray-3};
-    --message-referenced-bg: rgba(0, 224, 202, 0.2);
+    --message-confirmed-bg: rgba(0, 224, 202, 0.2);
     --qr-color: #{$white};
     --box-shadow-down: 0 4px 30px rgba(137, 141, 145, 0.1);
     --header-identity: #{$gray-midnight};

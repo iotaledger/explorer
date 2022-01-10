@@ -1,15 +1,15 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
-@import '../../scss/themes';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .messages-tangle-state {
   display: flex;
   align-items: center;
 
   @include tablet-down {
-    display: none;
+    margin-top: 4px;
   }
 
   .message-tangle-reference {
@@ -45,9 +45,14 @@
     white-space: nowrap;
     cursor: pointer;
 
-    &.message-tangle-state__referenced {
-      background-color: var(--message-referenced-bg);
+    &.message-tangle-state__confirmed {
+      background-color: var(--message-confirmed-bg);
       color: $mint-green-7;
+    }
+
+    &.message-tangle-state__conflicting {
+      background-color: var(--message-conflicting-bg);
+      color: $error;
     }
 
     &.message-tangle-state__milestone {

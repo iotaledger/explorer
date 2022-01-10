@@ -123,7 +123,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                         </div>
 
                         <div className="section">
-                            <div className="section--header row space-between">
+                            <div className="section--header row row--tablet-responsive middle space-between">
                                 <div className="row middle">
                                     <h2>General</h2>
                                     <Modal icon={ModalIcon.Info} data={messageJSON} />
@@ -134,6 +134,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     status={this.state.messageTangleStatus}
                                     milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
                                         this.state.metadata?.milestoneIndex}
+                                    hasConflicts={this.state.metadata?.ledgerInclusionState === "conflicting"}
                                     onClick={this.state.metadata?.referencedByMilestoneIndex
                                         ? (messageId: string) => this.props.history.push(
                                             `/${this.props.match.params.network
@@ -202,7 +203,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 </div>
                             )}
                             {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-                                this.state.transferTotal && (
+                                this.state.transferTotal !== undefined && (
                                     <div className="section--data">
                                         <div className="label">
                                             Value
@@ -223,7 +224,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE &&
                                     this.state.inputs &&
                                     this.state.outputs &&
-                                    this.state.transferTotal &&
+                                    this.state.transferTotal !== undefined &&
                                     (
                                         <div className="section">
                                             <TransactionPayload
@@ -233,19 +234,18 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 outputs={this.state.outputs}
                                                 transferTotal={this.state.transferTotal}
                                             />
-
-                                            {this.state.message.payload.essence.payload && (
-                                                <div className="section">
-                                                    <IndexationPayload
-                                                        network={this.props.match.params.network}
-                                                        history={this.props.history}
-                                                        payload={this.state.message.payload.essence.payload}
-                                                        advancedMode={this.state.advancedMode}
-                                                    />
-                                                </div>
-                                            )}
                                         </div>
                                     )}
+                                {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE &&
+                                    this.state.message.payload.essence.payload && (
+                                        <div className="section">
+                                            <IndexationPayload
+                                                network={this.props.match.params.network}
+                                                history={this.props.history}
+                                                payload={this.state.message.payload.essence.payload}
+                                                advancedMode={this.state.advancedMode}
+                                            />
+                                        </div>)}
                                 {this.state.message.payload.type === MILESTONE_PAYLOAD_TYPE && (
                                     <React.Fragment>
                                         <div className="section">
@@ -540,8 +540,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 outputs,
                 unlockAddresses,
                 transferTotal
-            }, async () => {
-                await this.updateMessageDetails();
             });
 
             this.setState({
