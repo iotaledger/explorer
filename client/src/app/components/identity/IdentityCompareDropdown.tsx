@@ -40,7 +40,7 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                 <div className="dropdown-wrapper noselect">
                     {/* ---------  selector --------- */}
                     <div
-                        className="compare-selector"
+                        className={classNames("compare-selector", { opened: this.state.contentShown })}
                         onMouseUp={e => {
                             e.stopPropagation();
                         }}
