@@ -180,6 +180,10 @@
         @media (max-width: 1200px) {
           display: none;
         }
+
+        &.select-wrapper--card-header {
+          display: inline-block;
+        }
       }
     }
 
