@@ -341,7 +341,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                             <div className="section--header">
                                 <div className="row middle">
                                     <h2>
-                                        Messages tree
+                                        Messages tree (in progress 🚧)
                                     </h2>
                                     <Modal icon={ModalIcon.Info} data={messageJSON} />
                                 </div>
