@@ -16,6 +16,7 @@ import FiatValue from "../../components/FiatValue";
 import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
 import MessageTangleState from "../../components/MessageTangleState";
+import MessageTree from "../../components/MessageTree";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
@@ -345,101 +346,14 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     <Modal icon={ModalIcon.Info} data={messageJSON} />
                                 </div>
                             </div>
-                            <div className="section--data">
-                                <div className="section--header">
-                                    <h3>Parent Messages</h3>
-                                    {this.state !== undefined && (
-                                        <span className="messages--number">
-                                            {this.state.message?.parentMessageIds?.length}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="section--data">
-                                    {this.state.message?.parentMessageIds?.map((parent, idx) => (
-                                        <React.Fragment key={idx}>
-                                            <div
-                                                className="value code highlight
-                                                           row middle"
-                                            >
-                                                {parent !== "0".repeat(64) && (
-                                                    <React.Fragment>
-                                                        <button
-                                                            type="button"
-                                                            className="margin-r-t"
-                                                            onClick={
-                                                                async () =>
-                                                                    this.loadMessage(parent, true)
-                                                            }
-                                                        >
-                                                            {parent}
-                                                        </button>
-                                                        {/* <Link
-                                                            className="margin-r-t"
-                                                            to={
-                                                                `/${this.props.match.params.network
-                                                                }/message/${parent}`
-                                                            }
-                                                        >
-                                                            {parent}
-                                                        </Link> */}
-                                                        <MessageButton
-                                                            onClick={() => ClipboardHelper.copy(
-                                                                parent
-                                                            )}
-                                                            buttonType="copy"
-                                                            labelPosition="top"
-                                                        />
-                                                    </React.Fragment>
-                                                )}
-                                                {parent === "0".repeat(64) && (
-                                                    <span>Genesis</span>
-                                                )}
-                                            </div>
-                                        </React.Fragment>
-                                    )
-                                    )}
-                                </div>
-                                <div className="section--header">
-                                    <h3>Child Messages</h3>
-                                    {this.state.childrenIds !== undefined && (
-                                        <span className="messages--number">
-                                            {this.state.childrenIds.length}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="section--data">
-                                    {this.state.childrenBusy && (<Spinner />)}
-                                    {this.state.childrenIds?.map(childId => (
-                                        <div
-                                            className="value
-                                                         code highlight row middle"
-                                            key={childId}
-                                        >
-                                            <Link
-                                                className="margin-r-t"
-                                                to={
-                                                    `/${this.props.match.params.network
-                                                    }/message/${childId}`
-                                                }
-                                            >
-                                                {childId}
-                                            </Link>
-                                            <MessageButton
-                                                onClick={() => ClipboardHelper.copy(
-                                                    childId
-                                                )}
-                                                buttonType="copy"
-                                                labelPosition="top"
-                                            />
-                                        </div>
-                                    ))}
-                                    {!this.state.childrenBusy &&
-                                        this.state.childrenIds &&
-                                        this.state.childrenIds.length === 0 && (
-                                            <p>There are no children for this message.</p>
-                                        )}
-                                </div>
-                            </div>
+                            {this.state.message?.parentMessageIds && this.state.childrenIds && (
+                                <MessageTree
+                                    parentsIds={this.state.message?.parentMessageIds}
+                                    messageId={this.props.match.params.messageId}
+                                    childrenIds={this.state.childrenIds}
+                                    onSelected={async (i, update) => this.loadMessage(i, update)}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -556,8 +470,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                     `/${this.props.match.params.network
                     }/message/${messageId}`);
             }
-            console.log(this.state.message?.payload?.type === INDEXATION_PAYLOAD_TYPE
-                ? this.state.message.payload : "no")
         } else {
             this.props.history.replace(`/${this.props.match.params.network
                 }/search/${messageId}`);
