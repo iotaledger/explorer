@@ -1,6 +1,6 @@
 import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
@@ -440,8 +440,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                     behavior: "smooth"
                 });
             }
-
-
 
             const { inputs, outputs, unlockAddresses, transferTotal } =
                 await TransactionsHelper.getInputsAndOutputs(result?.message,

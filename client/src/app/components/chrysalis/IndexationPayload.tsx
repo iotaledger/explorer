@@ -21,7 +21,6 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
     constructor(props: IndexationPayloadProps) {
         super(props);
         this.state = this.loadPayload();
-        console.log("constructor de indexation apyload")
     }
 
     public componentDidUpdate(prevProps: IndexationPayloadProps): void {
