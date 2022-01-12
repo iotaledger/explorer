@@ -102,14 +102,15 @@
 
       svg {
         margin-right: 8px;
-        stroke: var(--did-color);
-
-        &:hover {
-          stroke: var(--body-color);
-        }
 
         path {
           fill: var(--did-color);
+        }
+
+        &:hover {
+          path {
+            fill: var(--body-color);
+          }
         }
       }
     }

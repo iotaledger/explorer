@@ -57,14 +57,17 @@ class Header extends Component<HeaderProps, HeaderState> {
                 networks: LEGACY_NETWORKS
             }
         ];
-
         return (
             <header>
                 <nav className="inner">
                     <div className="inner--main">
                         <Link
                             to={this.props.rootPath}
-                            onClick={() => this.setState({ isUtilitiesExpanded: false })}
+                            onClick={() => this.setState({
+                                isUtilitiesExpanded: false,
+                                isMenuExpanded: false,
+                                isNetworkSwitcherExpanded: false
+                            })}
                             className="logo-image--wrapper"
                         >
                             <LogoHeader />
@@ -254,7 +257,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                         />
                     </div>
                 </nav>
-            </header>
+            </header >
         );
     }
 }

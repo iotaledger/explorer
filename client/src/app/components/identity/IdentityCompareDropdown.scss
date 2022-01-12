@@ -40,8 +40,15 @@
     min-width: 150px;
     height: 30px;
     padding: 5px 10px;
+    transition: transform 0.2s ease;
     border-radius: 5px;
     white-space: nowrap;
+
+    &.opened {
+      img {
+        transform: rotate(-180deg);
+      }
+    }
 
     .message-selected {
       padding: 2px 8px;
@@ -69,6 +76,7 @@
     img {
       width: 13px;
       margin-left: 10px;
+      transition: transform 0.2s ease;
     }
 
     &:hover {

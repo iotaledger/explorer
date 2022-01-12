@@ -172,7 +172,9 @@ class Markets extends Currency<unknown, MarketsState> {
                                 <div className="card margin-b-s">
                                     <div className="card--header card--header__space-between">
                                         <h2>Current Market</h2>
-                                        <div className="select-wrapper select-wrapper--small">
+                                        <div
+                                            className="select-wrapper select-wrapper--card-header select-wrapper--small"
+                                        >
                                             <select
                                                 value={this.state.currency}
                                                 onChange={e => this.setCurrency(e.target.value)}
@@ -244,7 +246,9 @@ class Markets extends Currency<unknown, MarketsState> {
                                 <div className="card">
                                     <div className="card--header card--header__space-between">
                                         <h2>Price and Volume History</h2>
-                                        <div className="select-wrapper select-wrapper--small">
+                                        <div
+                                            className="select-wrapper select-wrapper--card-header select-wrapper--small"
+                                        >
                                             <select
                                                 value={this.state.currency}
                                                 onChange={e => this.setCurrency(e.target.value)}

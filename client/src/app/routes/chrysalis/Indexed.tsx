@@ -11,7 +11,6 @@ import DataToggle from "../../components/DataToggle";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
-import Switcher from "../../components/Switcher";
 import messageJSON from "./../../../assets/modals/message.json";
 import "./Indexed.scss";
 import { IndexedRouteProps } from "./IndexedRouteProps";
@@ -124,18 +123,6 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                 </h1>
                                 <Modal icon={ModalIcon.Dots} data={messageJSON} />
                             </div>
-
-                            <Switcher
-                                label="Advanced View"
-                                checked={this.state.advancedMode}
-                                onToggle={e => this.setState(
-                                    {
-                                        advancedMode: e.target.checked
-                                    },
-                                    () => this._settingsService.saveSingle(
-                                        "advancedMode",
-                                        this.state.advancedMode))}
-                            />
                         </div>
                         <div className="section">
                             <div className="section--header row space-between">
