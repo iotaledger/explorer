@@ -441,8 +441,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 });
             }
 
-            window.history.replaceState(undefined, window.document.title, `/${this.props.match.params.network
-                }/message/${result.includedMessageId ?? messageId}`);
+
 
             const { inputs, outputs, unlockAddresses, transferTotal } =
                 await TransactionsHelper.getInputsAndOutputs(result?.message,
@@ -464,11 +463,8 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                 await this.updateMessageDetails();
             });
             if (updateUrl) {
-                window.history.replaceState(
-                    undefined,
-                    window.document.title,
-                    `/${this.props.match.params.network
-                    }/message/${messageId}`);
+                window.history.pushState(undefined, window.document.title, `/${this.props.match.params.network
+                    }/message/${result.includedMessageId ?? messageId}`);
             }
         } else {
             this.props.history.replace(`/${this.props.match.params.network
