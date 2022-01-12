@@ -82,6 +82,13 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                 }, () => {
                     this.loadItemsUI();
                 });
+            const top = document?.getElementById("messages-tree")?.offsetTop ?? 0;
+            const OFFSET = 200;
+            window.scrollTo({
+                left: 0,
+                top: top - OFFSET,
+                behavior: "smooth"
+            });
         }
     }
 
@@ -97,6 +104,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
     public render(): ReactNode {
         return (
             <div
+                id="messages-tree"
                 className="tree"
                 style={{
                     height: `${this.state.height}px`,
