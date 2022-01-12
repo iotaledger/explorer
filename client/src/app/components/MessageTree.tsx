@@ -115,13 +115,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
 
                 {/* Parents column */}
                 <div className="tree-parents">
-                    {/* <div className="parent-title row space-between">
-                        <div>
-                            <span>Parents</span></div>
-                        <div>
-                            <span>Children</span></div>
 
-                    </div> */}
                     {this.state.parents?.map(parent => (
                         <div
                             style={{
@@ -138,9 +132,8 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                                 });
                             }}
                         >
-                            {this.state.config === DESKTOP_CONFIG
-                                ? (<React.Fragment>{parent.id.slice(0, 6)}...{parent.id.slice(-6)}</React.Fragment>)
-                                : (<React.Fragment>{parent.id.slice(0, 4)}...{parent.id.slice(-4)}</React.Fragment>)}
+                            {parent.id.slice(0, this.state.config === DESKTOP_CONFIG
+                                ? 6 : 4)}...{parent.id.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
                         </div>
                     ))}
                 </div>
@@ -153,13 +146,8 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                         width: `${this.state.config.itemWidth}px`
                     }}
                 >
-                    {this.state.config === DESKTOP_CONFIG
-                        ? (<React.Fragment>
-                            {this.state.currentMessage.slice(0, 6)}...{this.state.currentMessage.slice(-6)}
-                        </React.Fragment>)
-                        : (<React.Fragment>
-                            {this.state.currentMessage.slice(0, 4)}...{this.state.currentMessage.slice(-4)}
-                        </React.Fragment>)}
+                    {this.state.currentMessage.slice(0, this.state.config === DESKTOP_CONFIG
+                        ? 6 : 4)}...{this.state.currentMessage.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
                 </div>
 
                 {/* Children column */}
@@ -181,10 +169,8 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                                 });
                             }}
                         >
-                            {this.state.config === DESKTOP_CONFIG
-                                ? (<React.Fragment>{child.id.slice(0, 6)}...{child.id.slice(-6)}</React.Fragment>)
-                                : (<React.Fragment>{child.id.slice(0, 4)}...{child.id.slice(-4)}</React.Fragment>)}
-
+                            {child.id.slice(0, this.state.config === DESKTOP_CONFIG
+                                ? 6 : 4)}...{child.id.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
                         </div>
                     ))}
                 </div>
