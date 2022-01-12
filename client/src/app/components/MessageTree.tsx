@@ -1,17 +1,8 @@
 import React, { Component, ReactNode } from "react";
 import "./MessageTree.scss";
 import { MessageTreeProps } from "./MessageTreeProps";
-import { EdgeUI, ItemUI, MessageTreeState } from "./MessageTreeState";
+import { EdgeUI, ItemUI, MessageTreeState, TreeConfig } from "./MessageTreeState";
 
-
-interface TreeConfig {
-    verticalSpace: number;
-    horizontalSpace: number;
-    itemWidth: number;
-    itemHeight: number;
-    width?: number;
-    height?: number;
-}
 
 const DESKTOP_CONFIG: TreeConfig = {
     verticalSpace: 20,
@@ -19,12 +10,14 @@ const DESKTOP_CONFIG: TreeConfig = {
     itemHeight: 32,
     itemWidth: 144
 };
+
 const MOBILE_CONFIG: TreeConfig = {
     verticalSpace: 18,
     horizontalSpace: 16,
     itemHeight: 24,
     itemWidth: 98
 };
+
 /**
  * Component which will show the visualizer page.
  */
@@ -36,7 +29,9 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
     constructor(props: MessageTreeProps) {
         super(props);
         this.state = {
-            isMobile: false,
+            config: { ...DESKTOP_CONFIG },
+            width: 0,
+            height: 0,
             children: [],
             parents: [],
             edges: [],
@@ -61,16 +56,32 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
 
     public resize() {
         const isMobile = window.innerWidth < 768;
-        if (isMobile !== this.state.isMobile) {
-            this.setState({ isMobile }, () => {
-                this.loadItemsUI();
-            });
+        const config = isMobile ? MOBILE_CONFIG : DESKTOP_CONFIG;
+
+        if (config !== this.state.config) {
+            this.setState(
+                {
+                    config,
+                    width: (config.itemWidth * 3) + (config.horizontalSpace * 2),
+                    height: (Math.max(this.props.parentsIds.length, this.props.childrenIds.length) *
+                        (config.itemHeight + config.verticalSpace)) -
+                        config.verticalSpace
+                }, () => {
+                    this.loadItemsUI();
+                });
         }
     }
 
-    public async componentDidUpdate(prevProps: MessageTreeProps): Promise<void> {
-        if (prevProps.parentsIds !== this.props.parentsIds) {
-            this.loadItemsUI();
+    public componentDidUpdate(prevProps: MessageTreeProps): void {
+        if (prevProps !== this.props) {
+            this.setState(
+                {
+                    height: (Math.max(this.props.parentsIds.length, this.props.childrenIds.length) *
+                        (this.state.config.itemHeight + this.state.config.verticalSpace)) -
+                        this.state.config.verticalSpace
+                }, () => {
+                    this.loadItemsUI();
+                });
         }
     }
 
@@ -84,14 +95,12 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const config = this.state.isMobile ? MOBILE_CONFIG : DESKTOP_CONFIG;
-
         return (
             <div
                 className="tree"
                 style={{
-                    height: `${config.height}px`,
-                    width: `${config.width}px`
+                    height: `${this.state.height}px`,
+                    width: `${this.state.width}px`
                 }}
             >
 
@@ -100,8 +109,8 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                     {this.state.parents?.map(parent => (
                         <div
                             style={{
-                                height: `${config.itemHeight}px`,
-                                width: `${config.itemWidth}px`,
+                                height: `${this.state.config.itemHeight}px`,
+                                width: `${this.state.config.itemWidth}px`,
                                 left: 0,
                                 top: `${parent.top}px`
                             }}
@@ -122,8 +131,8 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                 <div
                     className="root"
                     style={{
-                        height: `${config.itemHeight}px`,
-                        width: `${config.itemWidth}px`
+                        height: `${this.state.config.itemHeight}px`,
+                        width: `${this.state.config.itemWidth}px`
                     }}
                 >
                     {this.state.currentMessage.slice(0, 6)}...{this.state.currentMessage.slice(-6)}
@@ -134,8 +143,8 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                     {this.state.children?.map(child => (
                         <div
                             style={{
-                                height: `${config.itemHeight}px`,
-                                width: `${config.itemWidth}px`,
+                                height: `${this.state.config.itemHeight}px`,
+                                width: `${this.state.config.itemWidth}px`,
                                 right: 0,
                                 top: `${child.top}px`
                             }}
@@ -173,30 +182,24 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
 
 
     private loadItemsUI(): void {
-        const config = this.state.isMobile ? MOBILE_CONFIG : DESKTOP_CONFIG;
-        const width: number = (config.itemWidth * 3) + (config.horizontalSpace * 2);
-        const height: number = (Math.max(this.props.parentsIds.length, this.props.childrenIds.length) *
-            (config.itemHeight + config.verticalSpace)) -
-            config.verticalSpace;
-        config.width = width;
-        config.height = height;
-        const parentsHeight = ((config.itemHeight + config.verticalSpace) * this.props.parentsIds.length) -
-            config.verticalSpace;
-        const childrenHeight = ((config.itemHeight + config.verticalSpace) * this.props.childrenIds.length) -
-            config.verticalSpace;
+        const parentsHeight = ((this.state.config.itemHeight + this.state.config.verticalSpace) *
+            this.props.parentsIds.length) - this.state.config.verticalSpace;
+        const childrenHeight = ((this.state.config.itemHeight + this.state.config.verticalSpace) *
+            this.props.childrenIds.length) - this.state.config.verticalSpace;
+
         const parentsOffsetTop = childrenHeight > parentsHeight ? (childrenHeight - parentsHeight) / 2 : 0;
         const childrenOffsetTop = parentsHeight > childrenHeight ? (parentsHeight - childrenHeight) / 2 : 0;
 
         const parents: ItemUI[] = this.props.parentsIds.map((parent, i) => (
             {
-                top: ((config.itemHeight + config.verticalSpace) * i) + parentsOffsetTop,
+                top: ((this.state.config.itemHeight + this.state.config.verticalSpace) * i) + parentsOffsetTop,
                 left: 0,
                 id: parent
             }
         ));
 
         const children: ItemUI[] = this.props.childrenIds.map((child, i) => ({
-            top: ((config.itemHeight + config.verticalSpace) * i) + childrenOffsetTop,
+            top: ((this.state.config.itemHeight + this.state.config.verticalSpace) * i) + childrenOffsetTop,
             right: 0,
             id: child
         }));
@@ -204,18 +207,18 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
         const parentsLinks: EdgeUI[] = parents.map((parent, i) =>
         ({
             id: `edge--parent-${parent.id}`,
-            x1: config.itemWidth,
-            x2: (width - config.itemWidth) * 0.5,
-            y1: parent.top + (config.itemHeight * 0.5),
+            x1: this.state.config.itemWidth,
+            x2: ((this.state.width) - this.state.config.itemWidth) * 0.5,
+            y1: parent.top + (this.state.config.itemHeight * 0.5),
             y2: Math.max(parentsHeight, childrenHeight) * 0.5
         }
         ));
         const childrenLinks: EdgeUI[] = children.map((child, i) => (
             {
                 id: `edge--child-${child.id}`,
-                x1: width - config.itemWidth,
-                x2: (width + config.itemWidth) * 0.5,
-                y1: child.top + (config.itemHeight * 0.5),
+                x1: (this.state.width) - this.state.config.itemWidth,
+                x2: ((this.state.width) + this.state.config.itemWidth) * 0.5,
+                y1: child.top + (this.state.config.itemHeight * 0.5),
                 y2: Math.max(parentsHeight, childrenHeight) * 0.5
             }
         ));

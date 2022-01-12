@@ -11,11 +11,27 @@ export interface EdgeUI {
     x2: number;
     y2: number;
 }
+export interface TreeConfig {
+    verticalSpace: number;
+    horizontalSpace: number;
+    itemWidth: number;
+    itemHeight: number;
+}
 export interface MessageTreeState {
     /**
-     * Is mobile
+     * UI Tree configuration
      */
-    isMobile: boolean;
+    config: TreeConfig;
+
+    /**
+     * UI Tree configuration
+     */
+    width: number;
+
+    /**
+     * UI Tree configuration
+     */
+    height: number;
 
     /**
      * Edges
