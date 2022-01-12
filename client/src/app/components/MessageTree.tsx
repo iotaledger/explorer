@@ -103,93 +103,113 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
      */
     public render(): ReactNode {
         return (
-            <div
-                id="messages-tree"
-                className="tree"
-                style={{
-                    height: `${this.state.height}px`,
-                    width: `${this.state.width}px`
-                }}
-            >
-
-                {/* Parents column */}
-                <div className="tree-parents">
-
-                    {this.state.parents?.map(parent => (
-                        <div
-                            style={{
-                                height: `${this.state.config.itemHeight}px`,
-                                width: `${this.state.config.itemWidth}px`,
-                                left: 0,
-                                top: `${parent.top}px`
-                            }}
-                            className="parent"
-                            key={parent.id}
-                            onClick={() => {
-                                this.setState({ currentMessage: parent.id }, () => {
-                                    this.props.onSelected(parent.id, true);
-                                });
-                            }}
-                        >
-                            {parent.id.slice(0, this.state.config === DESKTOP_CONFIG
-                                ? 6 : 4)}...{parent.id.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
-                        </div>
-                    ))}
-                </div>
-
-                {/* Root */}
+            <React.Fragment>
                 <div
-                    className="root"
+                    className="message-tree-title row margin-b-m"
                     style={{
-                        height: `${this.state.config.itemHeight}px`,
-                        width: `${this.state.config.itemWidth}px`
+                        width: `${this.state.width}px`
                     }}
                 >
-                    {this.state.currentMessage.slice(0, this.state.config === DESKTOP_CONFIG
-                        ? 6 : 4)}...{this.state.currentMessage.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
+                    <div className="title-parents">Parents</div>
+                    <div
+                        className="title-children"
+                        style={{
+                            right: `${this.state.config.itemWidth}px`
+                        }}
+                    >
+                        Children
+                    </div>
+
                 </div>
+                <div
+                    id="messages-tree"
+                    className="tree"
+                    style={{
+                        height: `${this.state.height}px`,
+                        width: `${this.state.width}px`
+                    }}
+                >
 
-                {/* Children column */}
-                <div className="tree-children">
+                    {/* Parents column */}
+                    <div className="tree-parents">
 
-                    {this.state.children?.map(child => (
-                        <div
-                            style={{
-                                height: `${this.state.config.itemHeight}px`,
-                                width: `${this.state.config.itemWidth}px`,
-                                right: 0,
-                                top: `${child.top}px`
-                            }}
-                            className="child"
-                            key={child.id}
-                            onClick={() => {
-                                this.setState({ currentMessage: child.id }, () => {
-                                    this.props.onSelected(child.id, true);
-                                });
-                            }}
-                        >
-                            {child.id.slice(0, this.state.config === DESKTOP_CONFIG
-                                ? 6 : 4)}...{child.id.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
-                        </div>
-                    ))}
+                        {this.state.parents?.map(parent => (
+                            <div
+                                style={{
+                                    height: `${this.state.config.itemHeight}px`,
+                                    width: `${this.state.config.itemWidth}px`,
+                                    left: 0,
+                                    top: `${parent.top}px`
+                                }}
+                                className="parent"
+                                key={parent.id}
+                                onClick={() => {
+                                    this.setState({ currentMessage: parent.id }, () => {
+                                        this.props.onSelected(parent.id, true);
+                                    });
+                                }}
+                            >
+                                {parent.id.slice(0, this.state.config === DESKTOP_CONFIG
+                                    ? 6 : 4)}...{parent.id.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Root */}
+                    <div
+                        className="root"
+                        style={{
+                            height: `${this.state.config.itemHeight}px`,
+                            width: `${this.state.config.itemWidth}px`
+                        }}
+                    >
+                        {this.state.currentMessage.slice(0, this.state.config === DESKTOP_CONFIG
+                            ? 6 : 4)}...{this.state.currentMessage.slice(this.state.config === DESKTOP_CONFIG
+                                ? -6 : -4)}
+                    </div>
+
+                    {/* Children column */}
+                    <div className="tree-children">
+
+                        {this.state.children?.map(child => (
+                            <div
+                                style={{
+                                    height: `${this.state.config.itemHeight}px`,
+                                    width: `${this.state.config.itemWidth}px`,
+                                    right: 0,
+                                    top: `${child.top}px`
+                                }}
+                                className="child"
+                                key={child.id}
+                                onClick={() => {
+                                    this.setState({ currentMessage: child.id }, () => {
+                                        this.props.onSelected(child.id, true);
+                                    });
+                                }}
+                            >
+                                {child.id.slice(0, this.state.config === DESKTOP_CONFIG
+                                    ? 6 : 4)}...{child.id.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Edges */}
+                    <svg className="edge">
+                        {this.state.edges?.map(edge =>
+                        (
+                            <line
+                                key={edge.id}
+                                x1={edge.x1}
+                                x2={edge.x2}
+                                y1={edge.y1}
+                                y2={edge.y2}
+                                stroke="black"
+                            />
+                        )
+                        )}
+                    </svg>
                 </div>
-
-                {/* Edges */}
-                <svg className="edge">
-                    {this.state.edges?.map(edge =>
-                    (
-                        <line
-                            key={edge.id}
-                            x1={edge.x1}
-                            x2={edge.x2}
-                            y1={edge.y1}
-                            y2={edge.y2}
-                            stroke="black"
-                        />
-                    )
-                    )}
-                </svg>
-            </div>
+            </React.Fragment>
         );
     }
 

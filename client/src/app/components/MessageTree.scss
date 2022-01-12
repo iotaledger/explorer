@@ -4,6 +4,29 @@
 @import "../../scss/media-queries";
 @import "../../scss/mixins";
 
+.message-tree-title {
+  @include font-size(12px);
+
+  position: relative;
+  color: var(--header-color);
+  font-family: $inter;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+
+  div {
+    position: absolute;
+    top: 0;
+
+    &.title-parents {
+      left: 0;
+    }
+
+    &.title-children {
+      transform: translateX(100%);
+    }
+  }
+}
+
 .tree {
   position: relative;
 
