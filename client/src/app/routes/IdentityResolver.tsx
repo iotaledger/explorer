@@ -13,6 +13,7 @@ import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import IdentityHistory from "../components/identity/IdentityHistory";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
+import IdentitySearchInput from "../components/identity/IdentitySearchInput";
 import JsonViewer from "../components/JsonViewer";
 import MessageButton from "../components/MessageButton";
 import MessageTangleState from "../components/MessageTangleState";
@@ -23,6 +24,7 @@ import messageJSON from "./../../assets/modals/message.json";
 import "./IdentityResolver.scss";
 import { IdentityResolverProps } from "./IdentityResolverProps";
 import { IdentityResolverState } from "./IdentityResolverState";
+
 
 class IdentityResolver extends AsyncComponent<
     RouteComponentProps<IdentityResolverProps> & { isSupported: boolean },
@@ -149,6 +151,15 @@ class IdentityResolver extends AsyncComponent<
                                                     invalid DID messages.
                                                 </p>
                                             </div>
+                                            <div className="row middle margin-b-s row--tablet-responsive">
+                                                <IdentitySearchInput
+                                                    compact={false}
+                                                    onSearch={e => {
+                                                        this.props.history.push(e);
+                                                    }}
+                                                    network={this.props.match.params.network}
+                                                />
+                                            </div>
                                             {this.state.didExample && (
                                                 <button
                                                     className="load-history-button"
@@ -183,6 +194,7 @@ class IdentityResolver extends AsyncComponent<
                                                     <h2>General
                                                         <Modal icon={ModalIcon.Info} data={messageJSON} />
                                                     </h2>
+
                                                     {!this.state.error &&
                                                         !(this.state.latestMessageId === this.EMPTY_MESSAGE_ID) && (
                                                             <MessageTangleState
