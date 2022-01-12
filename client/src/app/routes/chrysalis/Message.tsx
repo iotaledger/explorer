@@ -339,11 +339,13 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                         )}
                         <div className="section">
                             <div className="section--header">
-                                <div className="row middle">
-                                    <h2>
-                                        Messages tree (in progress 🚧)
-                                    </h2>
-                                    <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                <div>
+                                    <div className="row middle">
+                                        <h2>
+                                            Messages tree
+                                        </h2>
+                                        <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                    </div>
                                 </div>
                             </div>
                             {this.state.message?.parentMessageIds && this.state.childrenIds && (
