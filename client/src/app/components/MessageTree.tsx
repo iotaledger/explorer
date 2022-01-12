@@ -90,7 +90,6 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                 behavior: "smooth"
             });
         }
-        console.log("parents", this.state.parents);
     }
 
     public async componentWillUnmount(): Promise<void> {
