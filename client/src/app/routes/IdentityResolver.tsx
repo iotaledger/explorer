@@ -25,7 +25,6 @@ import "./IdentityResolver.scss";
 import { IdentityResolverProps } from "./IdentityResolverProps";
 import { IdentityResolverState } from "./IdentityResolverState";
 
-
 class IdentityResolver extends AsyncComponent<
     RouteComponentProps<IdentityResolverProps> & { isSupported: boolean },
     IdentityResolverState
@@ -194,7 +193,6 @@ class IdentityResolver extends AsyncComponent<
                                                     <h2>General
                                                         <Modal icon={ModalIcon.Info} data={messageJSON} />
                                                     </h2>
-
                                                     {!this.state.error &&
                                                         !(this.state.latestMessageId === this.EMPTY_MESSAGE_ID) && (
                                                             <MessageTangleState
