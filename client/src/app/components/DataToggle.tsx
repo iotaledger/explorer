@@ -16,7 +16,7 @@ class DataToggle extends Component<DataToggleProps, DataToggleState> {
     constructor(props: DataToggleProps) {
         super(props);
         this.state = {
-            activeTab: 0
+            activeTab: this.props.options.findIndex(o => o.content !== undefined)
         };
     }
 
@@ -40,15 +40,17 @@ class DataToggle extends Component<DataToggleProps, DataToggleState> {
                 )}
                 <div className="data-toggle--tabs">
                     {this.props.options.map((option, index) => (
-                        <div
-                            key={option.label}
-                            className={classNames(
-                                "data-toggle--tab",
-                                { "data-toggle--tab__active": this.state.activeTab === index })}
-                            onClick={() => this.setState({ activeTab: index })}
-                        >
-                            {option.label}
-                        </div>))}
+                        option.content ? (
+                            <div
+                                key={option.label}
+                                className={classNames(
+                                    "data-toggle--tab",
+                                    { "data-toggle--tab__active": this.state.activeTab === index })}
+                                onClick={() => this.setState({ activeTab: index })}
+                            >
+                                {option.label}
+                            </div>) : null
+                    ))}
                 </div>
             </div>
         );

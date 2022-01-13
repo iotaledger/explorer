@@ -74,23 +74,17 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                 }
             ];
 
-        const TOGGLE_DATA_OPTIONS = !this.state.jsonData && this.state.utf8Data ? [
+        const TOGGLE_DATA_OPTIONS = [
             {
-                label: "Text",
-                content: this.state.jsonData ? this.state.jsonData : this.state.utf8Data,
+                label: this.state.jsonData ? "JSON" : "Text",
+                content: this.state.jsonData ?? this.state.utf8Data,
                 isJson: this.state.jsonData !== undefined
             },
             {
                 label: "HEX",
                 content: this.state.hexData
             }
-        ]
-            : [
-                {
-                    label: "HEX",
-                    content: this.state.hexData
-                }
-            ];
+        ];
         return (
             <div>
                 <div className="section--header">
@@ -102,17 +96,25 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                     </div>
                 </div>
                 <div className="section--data">
-                    <div className="label row middle">
-                        <span className="margin-r-t">Index</span>
-                    </div>
-                    <DataToggle options={TOGGLE_INDEX_OPTIONS} />
+                    {TOGGLE_INDEX_OPTIONS.some(option => option.content !== undefined) && (
+                        <React.Fragment>
+                            <div className="label row middle">
+                                <span className="margin-r-t">Index</span>
+                            </div>
+                            <DataToggle options={TOGGLE_INDEX_OPTIONS} />
+                        </React.Fragment>
+                    )}
 
-                    <div className="label row middle">
-                        <span className="margin-r-t">Data</span>
-                    </div>
-                    <DataToggle
-                        options={TOGGLE_DATA_OPTIONS}
-                    />
+                    {TOGGLE_DATA_OPTIONS.some(option => option.content !== undefined) && (
+                        <React.Fragment>
+                            <div className="label row middle">
+                                <span className="margin-r-t">Data</span>
+                            </div>
+                            <DataToggle
+                                options={TOGGLE_DATA_OPTIONS}
+                            />
+                        </React.Fragment>
+                    )}
                 </div>
             </div>
         );
