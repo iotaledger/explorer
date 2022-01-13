@@ -177,7 +177,7 @@
       justify-content: space-between;
 
       .select-wrapper {
-        @media (max-width: 1200px) {
+        @include tablet-down {
           display: none;
         }
 
@@ -300,6 +300,10 @@
     input {
       padding: 0 20px;
       background-color: var(--body-background);
+
+      &[type="checkbox"] {
+        padding: 0;
+      }
     }
 
     margin-bottom: 12px;

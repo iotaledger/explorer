@@ -1,8 +1,8 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
-@import '../../scss/themes';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .visualizer {
   margin: 30px 40px;
@@ -59,7 +59,7 @@
   .filter {
     flex: 1;
 
-    @media (max-width: $tablet-width) {
+    @include tablet-down {
       display: none;
     }
 
@@ -68,9 +68,6 @@
     }
 
     button {
-      // height: 36px;
-      // background: none;
-      // color: $
       white-space: nowrap;
     }
   }
@@ -81,13 +78,8 @@
     border-radius: 6px;
     background-color: transparent;
 
-    @media (max-width: 1000px) {
-      &.tablet-hidden {
-        display: none;
-      }
-    }
-
-    @media (max-width: $tablet-width) {
+    @include tablet-down {
+      &.tablet-hidden,
       &.phone-hidden {
         display: none;
       }

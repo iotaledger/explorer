@@ -31,6 +31,7 @@ class Header extends Component<HeaderProps, HeaderState> {
         };
     }
 
+
     /**
      * Render the component.
      * @returns The node to render.
@@ -63,11 +64,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                     <div className="inner--main">
                         <Link
                             to={this.props.rootPath}
-                            onClick={() => this.setState({
-                                isUtilitiesExpanded: false,
-                                isMenuExpanded: false,
-                                isNetworkSwitcherExpanded: false
-                            })}
+                            onClick={() => this.resetExpandedDropdowns()}
                             className="logo-image--wrapper"
                         >
                             <LogoHeader />
@@ -78,9 +75,12 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 <Link
                                     key={page.url}
                                     to={page.url}
-                                    onClick={() => this.setState({ isUtilitiesExpanded: false })}
-                                    className={`navigation--item ${page.url === window.location.pathname ? "active" : ""
-                                        }`}
+                                    onClick={() => this.setState({
+                                        isUtilitiesExpanded: false,
+                                        isNetworkSwitcherExpanded: false
+                                    })}
+                                    className={classNames("navigation--item",
+                                        { "active-item": page.url === window.location.pathname })}
                                 >
                                     {page.label}
                                 </Link>
@@ -114,6 +114,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                                                 to={utility.url}
                                                 onClick={() =>
                                                     this.setState({ isUtilitiesExpanded: false })}
+                                                className={classNames(
+                                                    { "active-item": utility.url === window.location.pathname }
+                                                )}
                                             >
                                                 {utility.label}
                                             </Link>
@@ -170,17 +173,13 @@ class Header extends Component<HeaderProps, HeaderState> {
                                             <Link
                                                 key={page.url}
                                                 to={page.url}
-                                                onClick={() =>
-                                                    this.setState({ isMenuExpanded: false })}
+                                                onClick={() => this.resetExpandedDropdowns()}
                                             >
                                                 <li className="menu--expanded__item" key={page.url}>
                                                     <span
-                                                        className={` 
-                                                    ${page.url ===
-                                                                window.location.pathname
-                                                                ? "active"
-                                                                : ""
-                                                            }`}
+                                                        className={classNames(
+                                                            { "active-item": page.url === window.location.pathname }
+                                                        )}
                                                     >
                                                         {page.label}
                                                     </span>
@@ -214,12 +213,13 @@ class Header extends Component<HeaderProps, HeaderState> {
                                                 onClick={() =>
                                                     this.setState({
                                                         isMenuExpanded: false,
-                                                        isUtilitiesExpanded: false
+                                                        isNetworkSwitcherExpanded: false
                                                     })}
                                             >
                                                 <li
                                                     key={utility.url}
-                                                    className="menu--expanded__item margin-l-t"
+                                                    className={classNames("menu--expanded__item margin-l-t",
+                                                        { "active-item": utility.url === window.location.pathname })}
                                                 >
                                                     {utility.label}
                                                 </li>
@@ -259,6 +259,17 @@ class Header extends Component<HeaderProps, HeaderState> {
                 </nav>
             </header >
         );
+    }
+
+    /**
+     * Close expanded dropdowns
+     */
+    private resetExpandedDropdowns(): void {
+        this.setState({
+            isUtilitiesExpanded: false,
+            isNetworkSwitcherExpanded: false,
+            isMenuExpanded: false
+        });
     }
 }
 

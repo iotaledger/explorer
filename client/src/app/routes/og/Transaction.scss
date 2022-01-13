@@ -1,7 +1,7 @@
-@import '../../../scss/fonts';
-@import '../../../scss/mixins';
-@import '../../../scss/media-queries';
-@import '../../../scss/variables';
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
 
 .transaction {
   display: flex;
@@ -126,14 +126,6 @@
           .col {
             .card {
               flex: 1;
-            }
-          }
-
-          .col + .col {
-            margin-left: 23px;
-
-            @include tablet-down {
-              margin-left: 0;
             }
           }
         }
