@@ -48,7 +48,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
     /**
      * The component mounted.
      */
-    public async componentDidMount(): Promise<void> {
+    public componentDidMount(): void {
         window.scrollTo({
             left: 0,
             top: 0,
@@ -224,26 +224,15 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
 
         const items: ItemUI[] = parents.concat(children);
 
-        const parentsLinks: EdgeUI[] = parents.map((parent, i) =>
+        const edges: EdgeUI[] = items.map((item, i) =>
         ({
-            id: `edge--parent-${parent.id}`,
-            x1: this.state.config.itemWidth,
-            x2: ((this.state.width) - this.state.config.itemWidth) * 0.5,
-            y1: parent.top + (this.state.config.itemHeight * 0.5),
+            id: `edge--${item.type}-${item.id}`,
+            x1: item.type === "parent" ? this.state.config.itemWidth : (this.state.width) - this.state.config.itemWidth,
+            x2: ((this.state.width) - (this.state.config.itemWidth * (item.type === "parent" ? 1 : -1))) * 0.5,
+            y1: item.top + (this.state.config.itemHeight * 0.5),
             y2: Math.max(parentsHeight, childrenHeight) * 0.5
         }
         ));
-        const childrenLinks: EdgeUI[] = children.map((child, i) => (
-            {
-                id: `edge--child-${child.id}`,
-                x1: (this.state.width) - this.state.config.itemWidth,
-                x2: ((this.state.width) + this.state.config.itemWidth) * 0.5,
-                y1: child.top + (this.state.config.itemHeight * 0.5),
-                y2: Math.max(parentsHeight, childrenHeight) * 0.5
-            }
-        ));
-
-        const edges: EdgeUI[] = parentsLinks.concat(childrenLinks);
         this.setState({ items, edges });
     }
 }
