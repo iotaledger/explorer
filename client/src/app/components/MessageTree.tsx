@@ -1,16 +1,22 @@
+import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import "./MessageTree.scss";
 import { MessageTreeProps } from "./MessageTreeProps";
 import { EdgeUI, ItemUI, MessageTreeState, TreeConfig } from "./MessageTreeState";
 
-
+/**
+ * UI tree configuration in desktop.
+ */
 const DESKTOP_CONFIG: TreeConfig = {
     verticalSpace: 20,
     horizontalSpace: 80,
     itemHeight: 32,
-    itemWidth: 144
+    itemWidth: 205
 };
 
+/**
+ * UI tree configuration in mobile.
+ */
 const MOBILE_CONFIG: TreeConfig = {
     verticalSpace: 18,
     horizontalSpace: 16,
@@ -32,10 +38,10 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
             config: { ...DESKTOP_CONFIG },
             width: 0,
             height: 0,
-            children: [],
-            parents: [],
+            items: [],
             edges: [],
-            currentMessage: this.props.messageId
+            currentMessage: this.props.messageId,
+            isBusy: false
         };
     }
 
@@ -81,14 +87,18 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                         this.state.config.verticalSpace
                 }, () => {
                     this.loadItemsUI();
+                    this.setState({ isBusy: false });
                 });
-            const top = document?.getElementById("messages-tree")?.offsetTop ?? 0;
+
+            // ------- Scroll to messages tree section -------
+            const top = document?.getElementById("message-tree")?.offsetTop ?? 0;
             const OFFSET = 200;
             window.scrollTo({
                 left: 0,
                 top: top - OFFSET,
                 behavior: "smooth"
             });
+            // -----------------------------------------------
         }
     }
 
@@ -110,9 +120,11 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                         width: `${this.state.width}px`
                     }}
                 >
-                    <div className="title-parents">Parents</div>
+
+                    {/* Headings */}
+                    <div className="parents-title">Parents</div>
                     <div
-                        className="title-children"
+                        className="children-title"
                         style={{
                             right: `${this.state.config.itemWidth}px`
                         }}
@@ -122,38 +134,36 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
 
                 </div>
                 <div
-                    id="messages-tree"
-                    className="tree"
+                    id="message-tree"
+                    className={classNames("tree", { busy: this.state.isBusy })}
                     style={{
                         height: `${this.state.height}px`,
                         width: `${this.state.width}px`
                     }}
                 >
 
-                    {/* Parents column */}
-                    <div className="tree-parents">
-
-                        {this.state.parents?.map(parent => (
-                            <div
-                                style={{
-                                    height: `${this.state.config.itemHeight}px`,
-                                    width: `${this.state.config.itemWidth}px`,
-                                    left: 0,
-                                    top: `${parent.top}px`
-                                }}
-                                className="parent"
-                                key={parent.id}
-                                onClick={() => {
-                                    this.setState({ currentMessage: parent.id }, () => {
-                                        this.props.onSelected(parent.id, true);
-                                    });
-                                }}
-                            >
-                                {parent.id.slice(0, this.state.config === DESKTOP_CONFIG
-                                    ? 6 : 4)}...{parent.id.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
-                            </div>
-                        ))}
-                    </div>
+                    {/* Parents and Children */}
+                    {this.state.items?.map(item => (
+                        <div
+                            style={{
+                                height: `${this.state.config.itemHeight}px`,
+                                width: `${this.state.config.itemWidth}px`,
+                                left: item.type === "parent" ? "0" : "none",
+                                right: item.type === "child" ? "0" : "none",
+                                top: `${item.top}px`
+                            }}
+                            className={item.type}
+                            key={item.id}
+                            onClick={() => {
+                                this.setState({ currentMessage: item.id, isBusy: true }, () => {
+                                    this.props.onSelected(item.id, true);
+                                });
+                            }}
+                        >
+                            {item.id.slice(0, this.state.config === DESKTOP_CONFIG
+                                ? 6 : 4)}...{item.id.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
+                        </div>
+                    ))}
 
                     {/* Root */}
                     <div
@@ -166,31 +176,6 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                         {this.state.currentMessage.slice(0, this.state.config === DESKTOP_CONFIG
                             ? 6 : 4)}...{this.state.currentMessage.slice(this.state.config === DESKTOP_CONFIG
                                 ? -6 : -4)}
-                    </div>
-
-                    {/* Children column */}
-                    <div className="tree-children">
-
-                        {this.state.children?.map(child => (
-                            <div
-                                style={{
-                                    height: `${this.state.config.itemHeight}px`,
-                                    width: `${this.state.config.itemWidth}px`,
-                                    right: 0,
-                                    top: `${child.top}px`
-                                }}
-                                className="child"
-                                key={child.id}
-                                onClick={() => {
-                                    this.setState({ currentMessage: child.id }, () => {
-                                        this.props.onSelected(child.id, true);
-                                    });
-                                }}
-                            >
-                                {child.id.slice(0, this.state.config === DESKTOP_CONFIG
-                                    ? 6 : 4)}...{child.id.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
-                            </div>
-                        ))}
                     </div>
 
                     {/* Edges */}
@@ -209,7 +194,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                         )}
                     </svg>
                 </div>
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 
@@ -226,16 +211,18 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
         const parents: ItemUI[] = this.props.parentsIds.map((parent, i) => (
             {
                 top: ((this.state.config.itemHeight + this.state.config.verticalSpace) * i) + parentsOffsetTop,
-                left: 0,
-                id: parent
+                id: parent,
+                type: "parent"
             }
         ));
 
         const children: ItemUI[] = this.props.childrenIds.map((child, i) => ({
             top: ((this.state.config.itemHeight + this.state.config.verticalSpace) * i) + childrenOffsetTop,
-            right: 0,
-            id: child
+            id: child,
+            type: "child"
         }));
+
+        const items: ItemUI[] = parents.concat(children);
 
         const parentsLinks: EdgeUI[] = parents.map((parent, i) =>
         ({
@@ -257,7 +244,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
         ));
 
         const edges: EdgeUI[] = parentsLinks.concat(childrenLinks);
-        this.setState({ parents, children, edges });
+        this.setState({ items, edges });
     }
 }
 

@@ -17,11 +17,11 @@
     position: absolute;
     top: 0;
 
-    &.title-parents {
+    &.parents-title {
       left: 0;
     }
 
-    &.title-children {
+    &.children-title {
       transform: translateX(100%);
     }
   }
@@ -29,16 +29,16 @@
 
 .tree {
   position: relative;
+  opacity: 1;
 
-  .parent-title {
-    position: absolute;
-    top: -30px;
-    width: 100%;
-    color: white;
+  &.busy {
+    opacity: 0.5;
+    cursor: wait;
   }
 
   .parent,
   .child,
+  .item,
   .root {
     @include font-size(12px);
 
@@ -52,6 +52,7 @@
     color: var(--expanded-color);
     font-family: $ibm-plex-mono;
     font-weight: 600;
+    letter-spacing: 0.5px;
     cursor: pointer;
   }
 

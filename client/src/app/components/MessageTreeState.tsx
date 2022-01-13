@@ -1,8 +1,7 @@
 export interface ItemUI {
     top: number;
-    left?: number;
-    right?: number;
     id: string;
+    type: "child" | "parent";
 }
 export interface EdgeUI {
     id: string;
@@ -39,17 +38,17 @@ export interface MessageTreeState {
     edges?: EdgeUI[];
 
     /**
-     * Parents UI
+     * Parents and children
      */
-    parents?: ItemUI[];
-
-    /**
-     * Children UI
-     */
-    children?: ItemUI[];
+    items?: ItemUI[];
 
     /**
      * Current message
      */
     currentMessage: string;
+
+    /**
+     * If tree is loading
+     */
+    isBusy: boolean;
 }
