@@ -13,6 +13,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import QR from "../../components/chrysalis/QR";
 import FiatValue from "../../components/FiatValue";
+import Icon from "../../components/Icon";
 import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
 import messageJSON from "./../../../assets/modals/message.json";
@@ -21,6 +22,7 @@ import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState, FilterValue } from "./AddrState";
+
 /**
  * Component which will show the address page.
  */
@@ -173,31 +175,27 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </div>
                                             )}
 
-                                            {this.state.balance !== undefined && this.state.balance === 0 && (
-                                                <div className="section--data">
-                                                    <div className="label">
-                                                        Final balance
-                                                    </div>
-                                                    <div className="value featured">
-                                                        0
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {this.state.balance !== undefined && this.state.balance !== 0 && (
-                                                <div className="section--data">
-                                                    <div className="label">
-                                                        Final balance
-                                                    </div>
-                                                    <div className="value featured">
-                                                        {UnitsHelper.formatBest(this.state.balance)}
-                                                        {" "}
-                                                        <span>(</span>
-                                                        <FiatValue value={this.state.balance} />
-                                                        <span>)</span>
+                                            {this.state.balance !== undefined && (
+                                                <div className="section--data row middle">
+                                                    <Icon icon="wallet" boxed />
+                                                    <div className="balance">
+                                                        <div className="label">
+                                                            Final balance
+                                                        </div>
+                                                        <div className="value featured">
+                                                            {this.state.balance > 0 ? (
+                                                                <React.Fragment>
+                                                                    {UnitsHelper.formatBest(this.state.balance)}
+                                                                    {" "}
+                                                                    <span>(</span>
+                                                                    <FiatValue value={this.state.balance} />
+                                                                    <span>)</span>
+                                                                </React.Fragment>
+                                                            ) : 0}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             )}
-
 
                                             {this.state.status && (
                                                 <div className="middle row">
