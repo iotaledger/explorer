@@ -106,10 +106,10 @@ class Footer extends Component<FooterProps, FooterState> {
             <footer>
                 <section className="footer--content">
                     <div className="inner">
-                        <div className="row">
+                        <div className="footer-grid">
                             {[this.state.siteFooterSection].concat(this.state.foundationData?.footerSections ?? [])
                                 .map((section, sectionIdx) => (
-                                    <section className="col fill" key={sectionIdx}>
+                                    <section key={sectionIdx}>
                                         <h3>{section.label}</h3>
                                         <ul>
                                             {section.items.map((info, infoIdx) => (

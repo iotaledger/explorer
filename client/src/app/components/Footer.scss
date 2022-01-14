@@ -25,24 +25,22 @@ footer {
         margin-bottom: 28px;
       }
 
-      .row {
-        flex-wrap: wrap;
+      .footer-grid {
+        display: grid;
+        grid-gap: 28px;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr;
+        margin-bottom: 24px;
+
+        @include tablet-down {
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: 1fr 1fr;
+        }
       }
 
       section {
-        margin-right: 28px;
-        margin-bottom: 28px;
         font-weight: 500;
         letter-spacing: 0.5px;
-
-        @include tablet-down {
-          margin-right: 0;
-          padding-right: 12px;
-
-          &:last-child {
-            padding-right: 0;
-          }
-        }
 
         h3 {
           @include font-size(12px, 16px);
@@ -117,6 +115,8 @@ footer {
         }
 
         section {
+          margin-bottom: 28px;
+
           ul {
             li {
               a {
