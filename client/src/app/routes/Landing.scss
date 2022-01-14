@@ -474,6 +474,10 @@
                     font-weight: 700;
                     text-align: left;
                     cursor: pointer;
+
+                    @include tablet-down {
+                      text-transform: uppercase;
+                    }
                   }
                 }
 
