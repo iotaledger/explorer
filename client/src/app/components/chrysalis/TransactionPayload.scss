@@ -3,7 +3,7 @@
 @import "../../../scss/media-queries";
 @import "../../../scss/variables";
 
-.transaction-payload {
+.section .transaction-payload {
   .section--header {
     .transaction-value {
       display: flex;
@@ -15,6 +15,8 @@
 
       @include tablet-down {
         display: block;
+        margin-top: 12px;
+        margin-left: 0;
       }
 
       @include font-size(16px, 24px);
@@ -38,6 +40,11 @@
         margin-left: 8px;
         white-space: nowrap;
       }
+    }
+
+    @include tablet-down {
+      flex-direction: column;
+      align-items: flex-start;
     }
   }
 
