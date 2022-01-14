@@ -123,13 +123,13 @@ class Footer extends Component<FooterProps, FooterState> {
                         </div>
                         <hr className="sep" />
                         <div className="row foundation-data">
-                            <div className="col fill margin-t-m">
+                            <div className="margin-t-m">
                                 <img src={logoFooter} alt="IOTA" />
                             </div>
-                            <section className="col fill line-breaks">
+                            <section className=" line-breaks">
                                 {this.state.foundationData?.registeredAddress.value.join("\n")}
                             </section>
-                            <section className="col fill">
+                            <section className="">
                                 <ul>
                                     {this.state.foundationData?.information.map((info, infoIdx) => (
                                         <li key={infoIdx}>

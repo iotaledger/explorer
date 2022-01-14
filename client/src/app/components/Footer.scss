@@ -98,15 +98,22 @@ footer {
       .foundation-data {
         @include font-size(12px, 20px);
 
+        display: flex;
+        justify-content: space-between;
         color: $gray-6;
         font-family: $inter;
+
+        div {
+          width: 25%;
+        }
 
         @include tablet-down {
           flex-direction: column;
 
           div {
-            align-self: center;
+            width: 100%;
             margin-top: 0;
+            text-align: center;
 
             img {
               margin-bottom: 24px;
@@ -115,7 +122,20 @@ footer {
         }
 
         section {
+          width: 25%;
           margin-bottom: 28px;
+
+          @include tablet-down {
+            width: 100%;
+          }
+
+          &:last-of-type {
+            width: 50%;
+
+            @include tablet-down {
+              width: 100%;
+            }
+          }
 
           ul {
             li {
