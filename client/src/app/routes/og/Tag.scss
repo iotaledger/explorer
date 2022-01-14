@@ -1,7 +1,7 @@
-@import '../../../scss/fonts';
-@import '../../../scss/mixins';
-@import '../../../scss/media-queries';
-@import '../../../scss/variables';
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
 
 .tag {
   display: flex;
@@ -57,6 +57,7 @@
         .svg-navigation {
           width: 16px;
           height: 16px;
+          margin-top: 6px;
         }
 
         .item-details + .item-details {

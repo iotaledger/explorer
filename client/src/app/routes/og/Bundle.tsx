@@ -226,7 +226,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                 </div>
                                 {this.state.status && (
                                     <div className="card margin-t-s">
-                                        <div className="card--content middle row">
+                                        <div className="card--content middle row margin-t-s ">
                                             {this.state.statusBusy && (<Spinner />)}
                                             <p className="status">
                                                 {this.state.status}
@@ -243,7 +243,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                 )}
                                 {!this.state.statusBusy && this.state.groups?.map((group, idx) => (
                                     <React.Fragment key={idx}>
-                                        <div className="row space-between margin-t-s">
+                                        <div className="row space-between margin-t-s middle">
                                             <p>
                                                 {DateHelper.format(group.timestamp)}
                                             </p>

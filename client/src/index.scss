@@ -67,6 +67,10 @@ body {
     .info {
       color: $info;
     }
+
+    .active-item {
+      color: var(--active-item-color);
+    }
   }
 }
 

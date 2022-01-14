@@ -3,6 +3,7 @@
 :root {
   --body-background: #{$white};
   --body-color: #{$gray-9};
+  --active-item-color: #{$gray-midnight};
   --navbar-bg: rgba(255, 255, 255, 0.2);
   --header-bg: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
   --bubble-1: url("../assets/bubble-1.svg");
@@ -30,6 +31,7 @@
   body.darkmode {
     --body-background: #091326;
     --body-color: #{$white};
+    --active-item-color: #{$gray-daylight};
     --navbar-bg: rgba(6, 16, 35, 0.2);
     --header-bg: linear-gradient(180deg, #{$gray-7} 0%, #{$gray-9} 100%);
     --bubble-1: url("../assets/bubble-1-darkmode.svg");
