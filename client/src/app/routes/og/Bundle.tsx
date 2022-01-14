@@ -226,7 +226,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                 </div>
                                 {this.state.status && (
                                     <div className="card margin-t-s">
-                                        <div className="card--content middle row margin-t-s ">
+                                        <div className="card--content middle row margin-t-s">
                                             {this.state.statusBusy && (<Spinner />)}
                                             <p className="status">
                                                 {this.state.status}
