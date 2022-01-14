@@ -25,67 +25,65 @@ footer {
         margin-bottom: 28px;
       }
 
-      .row {
-        flex-wrap: wrap;
-      }
-
-      section {
-        margin-right: 28px;
-        margin-bottom: 28px;
-        font-weight: 500;
-        letter-spacing: 0.5px;
+      .footer-grid {
+        display: grid;
+        grid-gap: 28px;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr;
+        margin-bottom: 24px;
 
         @include tablet-down {
-          margin-right: 0;
-          padding-right: 12px;
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: 1fr 1fr;
+        }
 
-          &:last-child {
-            padding-right: 0;
+        section {
+          font-weight: 500;
+          letter-spacing: 0.5px;
+
+          h3 {
+            @include font-size(12px, 16px);
+
+            margin-bottom: 16px;
+            color: $gray-6;
+            font-family: $metropolis-bold;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            white-space: nowrap;
           }
-        }
 
-        h3 {
-          @include font-size(12px, 16px);
+          ul {
+            list-style: none;
 
-          margin-bottom: 16px;
-          color: $gray-6;
-          font-family: $metropolis-bold;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
-          white-space: nowrap;
-        }
+            li {
+              @include font-size(12px, 18px);
 
-        ul {
-          list-style: none;
+              margin-bottom: 8px;
+              font-family: $inter;
+              font-weight: 500;
 
-          li {
-            @include font-size(12px, 18px);
+              a {
+                color: $gray-3;
+                font-family: inherit;
+                letter-spacing: 0.5px;
+                text-decoration: none;
 
-            margin-bottom: 8px;
-            font-family: $inter;
-            font-weight: 500;
-
-            a {
-              color: $gray-3;
-              font-family: inherit;
-              letter-spacing: 0.5px;
-              text-decoration: none;
-
-              &:hover {
-                text-decoration: underline;
+                &:hover {
+                  text-decoration: underline;
+                }
               }
-            }
 
-            pre {
-              font-family: inherit;
-            }
+              pre {
+                font-family: inherit;
+              }
 
-            &:first-child {
-              color: $gray-3;
-            }
+              &:first-child {
+                color: $gray-3;
+              }
 
-            .data-label {
-              margin-right: 5px;
+              .data-label {
+                margin-right: 5px;
+              }
             }
           }
         }
