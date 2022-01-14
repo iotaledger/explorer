@@ -104,7 +104,7 @@ class Footer extends Component<FooterProps, FooterState> {
     public render(): ReactNode {
         return (
             <footer>
-                <section className="footer--content ">
+                <section className="footer--content">
                     <div className="inner">
                         <div className="row">
                             {[this.state.siteFooterSection].concat(this.state.foundationData?.footerSections ?? [])
