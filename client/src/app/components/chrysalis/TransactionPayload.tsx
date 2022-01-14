@@ -69,10 +69,10 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                     UnitsHelper.calculateBest(this.props.transferTotal))}
                             </span>
                             <span className="dot-separator">•</span>
+                            <span className="fiat-value">
+                                <FiatValue value={this.props.transferTotal} />
+                            </span>
                         </div>
-                        <span className="fiat-value">
-                            <FiatValue value={this.props.transferTotal} />
-                        </span>
                     </div>
                 </div>
                 <div className="row row--tablet-responsive fill">
