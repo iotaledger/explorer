@@ -36,54 +36,54 @@ footer {
           grid-template-columns: 1fr 1fr;
           grid-template-rows: 1fr 1fr;
         }
+      }
 
-        section {
-          font-weight: 500;
-          letter-spacing: 0.5px;
+      section {
+        font-weight: 500;
+        letter-spacing: 0.5px;
 
-          h3 {
-            @include font-size(12px, 16px);
+        h3 {
+          @include font-size(12px, 16px);
 
-            margin-bottom: 16px;
-            color: $gray-6;
-            font-family: $metropolis-bold;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            white-space: nowrap;
-          }
+          margin-bottom: 16px;
+          color: $gray-6;
+          font-family: $metropolis-bold;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          white-space: nowrap;
+        }
 
-          ul {
-            list-style: none;
+        ul {
+          list-style: none;
 
-            li {
-              @include font-size(12px, 18px);
+          li {
+            @include font-size(12px, 18px);
 
-              margin-bottom: 8px;
-              font-family: $inter;
-              font-weight: 500;
+            margin-bottom: 8px;
+            font-family: $inter;
+            font-weight: 500;
 
-              a {
-                color: $gray-3;
-                font-family: inherit;
-                letter-spacing: 0.5px;
-                text-decoration: none;
+            a {
+              color: $gray-3;
+              font-family: inherit;
+              letter-spacing: 0.5px;
+              text-decoration: none;
 
-                &:hover {
-                  text-decoration: underline;
-                }
+              &:hover {
+                text-decoration: underline;
               }
+            }
 
-              pre {
-                font-family: inherit;
-              }
+            pre {
+              font-family: inherit;
+            }
 
-              &:first-child {
-                color: $gray-3;
-              }
+            &:first-child {
+              color: $gray-3;
+            }
 
-              .data-label {
-                margin-right: 5px;
-              }
+            .data-label {
+              margin-right: 5px;
             }
           }
         }
@@ -115,6 +115,8 @@ footer {
         }
 
         section {
+          margin-bottom: 28px;
+
           ul {
             li {
               a {
