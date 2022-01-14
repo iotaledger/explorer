@@ -310,6 +310,7 @@ export class CurrencyService {
      * @param includeSymbol Include the symbol in the formatting.
      * @param numDigits The number of digits to display.
      * @param extendToFindMax Extend the decimal places until non zero or limit.
+     * @param includeSuffix Include the abbreviate value with suffix (k for thousand, M for million, B for billion, ...).
      * @returns The converted fiat.
      */
     public convertFiatBase(
@@ -317,7 +318,9 @@ export class CurrencyService {
         currencyData: ICurrencySettings,
         includeSymbol: boolean,
         numDigits: number,
-        extendToFindMax?: number): string {
+        extendToFindMax?: number,
+        includeSuffix?: boolean
+    ): string {
         let converted = "";
         if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
             const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
@@ -336,14 +339,17 @@ export class CurrencyService {
                         converted += found[0];
                     }
                 } else {
-                    converted += fiat
-                        .toFixed(numDigits)
-                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    converted += includeSuffix
+                        ? this.abbreviate(fiat, numDigits)
+                        : fiat
+                            .toFixed(numDigits)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 }
             }
         }
         return converted;
     }
+
 
     /**
      * Convert from current currency to iota.
@@ -448,6 +454,29 @@ export class CurrencyService {
      */
     public unsubscribe(id: string): void {
         delete this._subscribers[id];
+    }
+
+    /**
+     * Abbreviate currency number and add corresponding symbol.
+     * @param value the number to abbreviate
+     * @param digits the number of digits to show
+     * @returns abbreviated number with symbol
+     */
+    private abbreviate(value: number, digits: number = 2): string {
+        const units = [
+            { value: 1, symbol: "" },
+            { value: 1e3, symbol: "k" },
+            { value: 1e6, symbol: "M" },
+            { value: 1e9, symbol: "B" },
+            { value: 1e12, symbol: "T" },
+            { value: 1e15, symbol: "P" },
+            { value: 1e18, symbol: "E" }
+        ];
+        const regex = /\.0+$|(\.\d*[1-9])0+$/;
+        const item = units.slice().reverse()
+            .find(unit => value >= unit.value);
+
+        return item ? (value / item.value).toFixed(digits).replace(regex, "1") + item.symbol : "0";
     }
 
     /**

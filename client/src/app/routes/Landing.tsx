@@ -363,7 +363,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             this._currencyData.marketCap,
                             this._currencyData,
                             true,
-                            0)
+                            2,
+                            undefined,
+                            true)
                         : "--",
                 priceCurrency: this._currencyData.baseCurrencyRate !== undefined
                     ? this._currencyService.convertFiatBase(
