@@ -8,7 +8,7 @@
 .section {
   display: flex;
   flex-direction: column;
-  padding: 66px 0 32px 0;
+  padding: 66px 0 24px 0;
   border-bottom: 1px solid var(--border-color);
 
   @include tablet-down {

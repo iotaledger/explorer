@@ -176,7 +176,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             )}
 
                                             {this.state.balance !== undefined && (
-                                                <div className="section--data row middle">
+                                                <div className="row middle">
                                                     <Icon icon="wallet" boxed />
                                                     <div className="balance">
                                                         <div className="label">
@@ -198,7 +198,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             )}
 
                                             {this.state.status && (
-                                                <div className="middle row">
+                                                <div className="margin-t-s middle row">
                                                     {this.state.statusBusy && (<Spinner />)}
                                                     <p className="status">
                                                         {this.state.status}
