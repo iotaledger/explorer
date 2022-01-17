@@ -1,4 +1,5 @@
-@import '../../scss/variables';
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .icon {
   &.boxed {
@@ -9,6 +10,12 @@
     height: 40px;
     padding: 5px;
     border-radius: 30px;
-    background: $gray-2;
+    background: var(--header-svg-bg);
+
+    svg {
+      path {
+        fill: var(--body-color);
+      }
+    }
   }
 }
