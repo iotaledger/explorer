@@ -102,7 +102,7 @@ header {
       align-items: center;
       height: 100%;
       margin-left: 40px;
-      color: $gray-6;
+      color: var(--navbar-color);
       font-family: $metropolis;
       font-weight: 600;
       letter-spacing: 0.01em;
@@ -117,7 +117,7 @@ header {
         .label {
           @include font-size(14px, 21px);
 
-          color: $gray-6;
+          color: var(--navbar-color);
           font-weight: 600;
           letter-spacing: 0.01em;
         }
@@ -127,6 +127,10 @@ header {
 
           svg {
             transition: transform 0.2s ease;
+
+            path {
+              stroke: var(--navbar-color);
+            }
           }
         }
 
@@ -155,7 +159,7 @@ header {
         }
 
         .utilities--label {
-          color: $gray-7;
+          color: var(--navbar-color);
           font-family: $metropolis;
           font-weight: 700;
           letter-spacing: 0.15em;
@@ -319,18 +323,24 @@ header {
       .menu--expanded__item {
         display: flex;
         justify-content: space-between;
-        color: $gray-6;
+        color: var(--navbar-color);
         font-family: $metropolis;
         font-weight: 600;
         cursor: pointer;
 
         a,
         div {
-          color: $gray-6;
+          color: var(--navbar-color);
           font-family: $metropolis;
           font-weight: 600;
 
           @include font-size(16px, 24px);
+        }
+
+        svg {
+          path {
+            stroke: var(--navbar-color);
+          }
         }
 
         &:hover {
