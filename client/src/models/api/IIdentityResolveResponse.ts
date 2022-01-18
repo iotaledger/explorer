@@ -13,5 +13,8 @@ export interface IIdentityDidResolveResponse extends IResponse{
      */
     document?: IIdentityDocument;
 
+    /**
+     * version of DID implementation
+     */
     version?: string;
 }

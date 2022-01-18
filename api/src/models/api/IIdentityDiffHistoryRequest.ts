@@ -9,5 +9,8 @@ export interface IIdentityDiffHistoryRequest {
      */
     integrationMsgId: string;
 
+    /**
+     * version of DID implementation
+     */
     version: string;
 }

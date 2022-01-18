@@ -9,5 +9,8 @@ export interface IIdentityDidHistoryRequest {
      */
     did: string;
 
+    /**
+     * version of DID implementation
+     */
     version: string;
 }

@@ -13,6 +13,9 @@ export interface IIdentityDidResolveResponse extends IResponse{
      */
     document?: ILatestDocument;
 
+    /**
+     * version of DID implementation
+     */
     version?: string;
 
     error?: string;
