@@ -402,7 +402,7 @@
                   @include font-size(12px, 18px);
 
                   min-width: 90px;
-                  color: $gray-6;
+                  color: var(--header-color);
                   font-family: $inter;
                   font-weight: 500;
                   text-transform: uppercase;
@@ -476,7 +476,7 @@
                     cursor: pointer;
 
                     @include tablet-down {
-                      color: var(--landing-button-color);
+                      color: var(--type-color);
                       text-transform: uppercase;
                     }
                   }

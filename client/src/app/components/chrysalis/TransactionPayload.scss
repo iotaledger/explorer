@@ -60,6 +60,7 @@
     .card--content {
       .card--value {
         margin-left: auto;
+        color: var(--type-color);
       }
 
       .bech32-address {

@@ -29,7 +29,7 @@
       @include font-size(12px);
 
       margin-bottom: 4px;
-      color: $gray-6;
+      color: var(--header-color);
       font-family: $inter;
       font-weight: 500;
       letter-spacing: 0.5px;
