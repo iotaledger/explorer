@@ -33,17 +33,12 @@ export async function get(config: IConfiguration, request: IIdentityDidResolveRe
     const permanodeUrl = networkConfig.permaNodeEndpoint;
 
     const identityResult = await resolveIdentity(request.did, providerUrl, permanodeUrl);
-    console.log("identityResult:", identityResult);
 
-    // Error::DIDNotFound("DID not found or pruned".to_owned())
-    // Error::DIDNotFound("no valid root document found".to_owned())
-    // Error::DIDNotFound("no root document confirmed by a milestone found".to_owned())
     if (identityResult.error !== "DIDNotFound") {
         return Promise.resolve(identityResult);
     }
 
     const legacyIdentityResult = await resolveLegacyIdentity(request.did, providerUrl, permanodeUrl);
-    console.log("legacyIdentityResult:", legacyIdentityResult);
 
     // if ChainError return "latest" error, else return legacy error
     if (!legacyIdentityResult.error) {

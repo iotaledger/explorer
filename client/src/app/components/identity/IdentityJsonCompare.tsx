@@ -43,7 +43,6 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
         return this.props.selectedMessage?.isDiff ? "diff" : "integration";
     }
 
-
     public render(): ReactNode {
         return (
             <div className="container">
