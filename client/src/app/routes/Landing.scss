@@ -470,12 +470,13 @@
                     padding: 0;
                     border: 0;
                     background: transparent;
-                    color: var(--landing-button-color);
+                    color: var(--header-color);
                     font-weight: 700;
                     text-align: left;
                     cursor: pointer;
 
                     @include tablet-down {
+                      color: var(--landing-button-color);
                       text-transform: uppercase;
                     }
                   }
