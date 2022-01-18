@@ -194,19 +194,19 @@ export class ApiClient {
     }
 
     /**
-     * Get the hitstory of a DID.
+     * Get the history of a DID.
      * @param request The request to send.
      * @returns The response from the request.
      */
     public async didHistory(request: IIdentityDidHistoryRequest): Promise<IIdentityDidHistoryResponse> {
         return this.callApi<unknown, IIdentityDidResolveResponse>(
-            `did/${request.network}/${request.did}/history`,
+            `did/${request.network}/${request.did}/history?version=${request.version}`,
             "get"
         );
     }
 
     /**
-     * Get the hitstory of a an integration message.
+     * Get the history of a an integration message.
      * @param request The request to send.
      * @param payload body of request
      * @returns The response from the request.
@@ -216,7 +216,7 @@ export class ApiClient {
         payload: unknown
     ): Promise<IIdentityDiffHistoryResponse> {
         return this.callApi<unknown, IIdentityDiffHistoryResponse>(
-            `did/${request.network}/diffHistory/${request.integrationMsgId}`,
+            `did/${request.network}/diffHistory/${request.integrationMsgId}?version=${request.version}`,
             "post",
             payload
         );

@@ -91,7 +91,6 @@ class IdentityResolver extends AsyncComponent<
         }
 
         if (res.document) {
-            res.document = IdentityHelper.removeMetaDataFromDocument(res.document);
             this.setState({
                 resolvedIdentity: res,
                 isIdentityResolved: true,
@@ -288,7 +287,7 @@ class IdentityResolver extends AsyncComponent<
                                                             </React.Fragment>
                                                         )}
 
-                                                        {this.state.resolvedIdentity && (
+                                                        {this.state.resolvedIdentity?.document && (
                                                             <div className="w100">
                                                                 <div className="identity-json-header">
                                                                     <div>
@@ -328,7 +327,7 @@ class IdentityResolver extends AsyncComponent<
                                                                 >
                                                                     <JsonViewer
                                                                         json={JSON.stringify(
-                                                                            this.state.resolvedIdentity.document,
+                                                                            this.state.resolvedIdentity.document.doc,
                                                                             null,
                                                                             4
                                                                             )}
@@ -346,7 +345,9 @@ class IdentityResolver extends AsyncComponent<
                                                 </div>
                                             </div>
 
-                                            {this.state.isIdentityResolved && <IdentityHistory {...this.props} />}
+                                            {this.state.isIdentityResolved &&
+                                            this.state.version &&
+                                                <IdentityHistory version={this.state.version} {...this.props} />}
                                         </div>
                                     </Fragment>
                                 )}

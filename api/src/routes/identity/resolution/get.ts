@@ -6,6 +6,7 @@ import { IIdentityDidResolveRequest } from "../../../models/api/IIdentityDidReso
 import { IIdentityDidResolveResponse } from "../../../models/api/IIdentityDidResolveResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NetworkService } from "../../../services/networkService";
+import { IdentityHelper } from "../../../utils/identityHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -73,9 +74,12 @@ async function resolveIdentity(
         const client = identity.Client.fromConfig(config);
         const res = await client.resolve(did);
 
-        // use version from document
-        return { document: res.toJSON(), version: "latest" };
         console.log(res);
+        return {
+            document: res.toJSON(),
+            version: "latest",
+            messageId: res.toJSON().integrationMessageId // is this correct?
+        };
     } catch (e) {
         return { error: improveErrorMessage(e) };
     }
@@ -101,8 +105,12 @@ async function resolveIdentity(
 
         const client = identityLegacy.Client.fromConfig(config);
         const res = await client.resolve(did);
-
-        return { document: res.toJSON(), messageId: res.messageId, version: "legacy" };
+        const document = res.toJSON();
+        return {
+            document: IdentityHelper.convertLegacyDocument(document),
+            messageId: res.messageId,
+            version: "legacy"
+        };
     } catch (e) {
         return { error: improveErrorMessage(e) };
     }

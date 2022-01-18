@@ -6,6 +6,7 @@ import { IIdentityDidHistoryRequest } from "../../../models/api/IIdentityDidHist
 import { IIdentityDidHistoryResponse } from "../../../models/api/IIdentityDidHistoryResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NetworkService } from "../../../services/networkService";
+import { IdentityHelper } from "../../../utils/identityHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -55,20 +56,17 @@ async function resolveHistory(
             config.setPermanode(permaNodeUrl);
         }
 
-        // Create a client instance to publish messages to the Tangle.
         const client = identity.Client.fromConfig(config);
 
         const receipt = await client.resolveHistory(did);
         const receiptObj = receipt.toJSON();
-        // was IOTADocument now ResolvedDocument, completely different. Figure it out
-        // map to the old structure?
 
         const integrationChainData = [];
 
         for (const element of receipt.integrationChainData()) {
             const integrationMessage = {
-                document: element.toJSON()
-                // note: messageId is in the document now
+                document: element.toJSON(),
+                messageId: element.toJSON().integrationMessageId
             };
             integrationChainData.push(integrationMessage);
         }
@@ -103,7 +101,6 @@ async function resolveLegacyHistory(
             config.setPermanode(permaNodeUrl);
         }
 
-        // Create a client instance to publish messages to the Tangle.
         const client = identityLegacy.Client.fromConfig(config);
 
         const receipt = await client.resolveHistory(did);
@@ -113,7 +110,7 @@ async function resolveLegacyHistory(
 
         for (const element of receipt.integrationChainData()) {
             const integrationMessage = {
-                document: element.toJSON(),
+                document: IdentityHelper.convertLegacyDocument(element.toJSON()),
                 messageId: element.messageId
             };
             integrationChainData.push(integrationMessage);

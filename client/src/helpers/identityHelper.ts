@@ -1,5 +1,4 @@
 import { IIdentityDocument } from "./../models/identity/IIdentityDocument";
-
 export class IdentityHelper {
     /**
      * @param msgId messageId to shorten
@@ -13,10 +12,23 @@ export class IdentityHelper {
         return `${msgId.slice(0, 7)}....${msgId.slice(-7)}`;
     }
 
-    public static removeMetaDataFromDocument(document: IIdentityDocument) {
-        const doc = { ...document };
-        delete doc.proof;
-        delete doc.previousMessageId;
-        return doc;
+        /**
+         * transforms a identity document based on messageType and version
+         * @param document document to transform
+         * @param messageType type of message
+         * @param version version of the identity document
+         * @returns transformed document
+         */
+        public static transformDocument(
+        document: unknown, messageType: "diff" | "integration", version: string): Record<string, unknown> {
+            let transformedDocument = document as Record<string, unknown>;
+            if (messageType === "integration" && version === "legacy") {
+                transformedDocument = {
+                    ...(document as IIdentityDocument).doc,
+                    ...(document as IIdentityDocument).meta
+                };
+            }
+
+            return transformedDocument;
     }
 }

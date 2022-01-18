@@ -1,3 +1,4 @@
+import { ILatestDocument } from "./IIdentityLatestDocument";
 import { IResponse } from "./IResponse";
 
 export interface IIdentityDidResolveResponse extends IResponse{
@@ -10,7 +11,7 @@ export interface IIdentityDidResolveResponse extends IResponse{
     /**
      * Resolved DID Document
      */
-    document?: string;
+    document?: ILatestDocument;
 
     version?: string;
 
