@@ -449,7 +449,7 @@
 
                   @include tablet-down {
                     display: block;
-                    color: $gray-6;
+                    color: var(--header-color);
                     font-family: $inter;
                     letter-spacing: 0.5px;
 
@@ -470,7 +470,7 @@
                     padding: 0;
                     border: 0;
                     background: transparent;
-                    color: $gray-6;
+                    color: var(--header-color);
                     font-weight: 700;
                     text-align: left;
                     cursor: pointer;
