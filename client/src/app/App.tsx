@@ -293,47 +293,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
     }
 
     /**
-     * create a tools list. Excludes Identity Resolver if network is not supported.
-     * @returns array of tools
-     */
-    private getTools() {
-        let tools: { label: string; url: string }[] = [];
-
-        if (this.state.networks.length > 0) {
-            tools = [
-                {
-                    label: "Explorer",
-                    url: `/${this.state.networkId}/`
-                },
-                {
-                    label: "Streams v0",
-                    url: `/${this.state.networkId}/streams/0/`
-                },
-                {
-                    label: "Visualizer",
-                    url: `/${this.state.networkId}/visualizer/`
-                },
-                {
-                    label: "Markets",
-                    url: `/${this.state.networkId}/markets/`
-                },
-                {
-                    label: "Currency Converter",
-                    url: `/${this.state.networkId}/currency-converter/`
-                }
-            ];
-
-            if (this.props.config.identityResolverEnabled) {
-                tools.push({
-                    label: "Identity Resolver",
-                    url: `/${this.state.networkId}/identity-resolver/`
-                });
-            }
-        }
-        return tools;
-    }
-
-    /**
      * Creates footer items. Excludes the Identity Resolver if the network is not supported.
      * @returns Array of footer items
      */
