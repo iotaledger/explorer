@@ -158,7 +158,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                             />)
                                                         </div>
                                                     </div>
-                                                    <div className="section--data ">
+                                                    <div className="section--data">
                                                         <div className="label">
                                                             Total sent
                                                         </div>
