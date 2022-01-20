@@ -187,10 +187,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
      */
     public render(): ReactNode {
         return (
-            <div className={
-                classNames("visualizer", { "dark-mode": this.props.darkMode })
-            }
-            >
+            <div className="visualizer">
                 <div className="row middle">
                     <h1 className="margin-r-t margin-b-t">Visualizer</h1>
                     <div className="card margin-b-s filter fill">
@@ -457,7 +454,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 

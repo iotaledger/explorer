@@ -32,7 +32,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: #ffffff;
+      background: var(--visualizer-bg);
     }
 
     .selected-node {
@@ -45,14 +45,6 @@
       color: $main-green-highlight;
       font-family: $metropolis;
       word-break: break-all;
-    }
-  }
-
-  &.dark-mode {
-    .graph-border {
-      .viva {
-        background: $gray-midnight;
-      }
     }
   }
 
