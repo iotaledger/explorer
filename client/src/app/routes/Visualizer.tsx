@@ -1,6 +1,5 @@
 import { UnitsHelper } from "@iota/iota.js";
 import { Converter } from "@iota/util.js";
-import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
