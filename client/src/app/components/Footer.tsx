@@ -57,7 +57,7 @@ class Footer extends Component<FooterProps, FooterState> {
         {
             name: "Instagram",
             icon: <InstagramIcon />,
-            url: " https://www.instagram.com/iotafoundation/",
+            url: "https://www.instagram.com/iotafoundation/",
             color: "#99A5BD"
         }, {
             name: "Facebook",
@@ -126,10 +126,10 @@ class Footer extends Component<FooterProps, FooterState> {
                             <div className="margin-t-m">
                                 <img src={logoFooter} alt="IOTA" />
                             </div>
-                            <section className=" line-breaks">
+                            <section className="line-breaks">
                                 {this.state.foundationData?.registeredAddress.value.join("\n")}
                             </section>
-                            <section className="">
+                            <section>
                                 <ul>
                                     {this.state.foundationData?.information.map((info, infoIdx) => (
                                         <li key={infoIdx}>
