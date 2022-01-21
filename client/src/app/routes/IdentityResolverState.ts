@@ -53,5 +53,8 @@ export interface IdentityResolverState {
      */
     latestMessageId?: string;
 
+    /**
+     * version of DID implementation
+     */
     version?: string;
 }
