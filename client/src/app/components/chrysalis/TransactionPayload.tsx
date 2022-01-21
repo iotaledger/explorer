@@ -149,7 +149,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                             {this.props.outputs.map((output, idx) => (
                                 <React.Fragment key={idx}>
                                     <div
-                                        className="card--content__input "
+                                        className="card--content__input"
                                         onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx })}
                                     >
                                         <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === idx })}>

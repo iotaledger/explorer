@@ -126,7 +126,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
 
                 {/* --------- Item Content --------- */}
                 <div
-                    className={classNames("tree-item-container noselect ", {
+                    className={classNames("tree-item-container noselect", {
                         "tree-item-selected": this.props.selectedMessage.messageId === this.props.itemMessage.messageId
                     })}
                     onClick={() => {

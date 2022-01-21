@@ -1,4 +1,3 @@
-
 export interface IconProps {
     /**
      * The icon name.
