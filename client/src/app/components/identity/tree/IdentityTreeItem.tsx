@@ -323,12 +323,6 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
 
     private removeEscapingBackslash(str: string) {
         // eslint-disable-next-line @typescript-eslint/quotes
-        return str.replace(/"{/g, '{')
-            .replace(/}"/g, "}")
-            .replace(/"\[/g, "[")
-            .replace(/]"/g, "]")
-            .replace(/"\\"/g, "\"")
-            .replace(/\\""/g, "\"")
-            .replace(/\\"/g, "\"");
+        return str.replace(/\\"/g, '"');
     }
 }
