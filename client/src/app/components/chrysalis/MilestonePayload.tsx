@@ -92,7 +92,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         </div>
                     )}
                 </div>
-                <div className="section--data ">
+                <div className="section--data">
                     <div className="label">
                         Index
                     </div>
@@ -100,7 +100,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         {this.props.payload.index}
                     </div>
                 </div>
-                <div className="section--data ">
+                <div className="section--data">
                     <div className="label">
                         Date
                     </div>
@@ -114,7 +114,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                 </div>
                 {this.props.advancedMode && (
                     <React.Fragment>
-                        <div className="section--data ">
+                        <div className="section--data">
                             <div className="label">
                                 Inclusion Merkle Proof
                             </div>
@@ -124,7 +124,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         </div>
                         {this.props.payload.nextPoWScore !== 0 && this.props.payload.nextPoWScoreMilestoneIndex !== 0 && (
                             <React.Fragment>
-                                <div className="section--data ">
+                                <div className="section--data">
                                     <div className="label">
                                         Next PoW Score
                                     </div>
@@ -132,7 +132,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                         {this.props.payload.nextPoWScore}
                                     </div>
                                 </div>
-                                <div className="section--data ">
+                                <div className="section--data">
 
                                     <div className="label">
                                         Next PoW Score Milestone Index
@@ -157,7 +157,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                 </div>
                             </div>
                         )}
-                        <div className="section--data ">
+                        <div className="section--data">
                             <div className="label">
                                 Signatures
                             </div>
