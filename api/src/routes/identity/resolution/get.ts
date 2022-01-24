@@ -14,7 +14,10 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(config: IConfiguration, request: IIdentityDidResolveRequest): Promise<unknown> {
+export async function get(
+    config: IConfiguration,
+    request: IIdentityDidResolveRequest
+): Promise<IIdentityDidResolveResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
 
@@ -35,17 +38,17 @@ export async function get(config: IConfiguration, request: IIdentityDidResolveRe
     const identityResult = await resolveIdentity(request.did, providerUrl, permanodeUrl);
 
     if (identityResult.error !== "DIDNotFound") {
-        return Promise.resolve(identityResult);
+        return identityResult;
     }
 
     const legacyIdentityResult = await resolveLegacyIdentity(request.did, providerUrl, permanodeUrl);
 
     // if ChainError return "latest" error, else return legacy error
     if (!legacyIdentityResult.error) {
-        return Promise.resolve(legacyIdentityResult);
+        return legacyIdentityResult;
     }
 
-    return Promise.resolve(identityResult);
+    return identityResult;
 }
 
 /**
