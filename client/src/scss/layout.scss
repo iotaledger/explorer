@@ -1,4 +1,6 @@
 @import './media-queries';
+@import './mixins';
+@import './variables';
 
 .row {
   display: flex;
@@ -152,6 +154,10 @@
   padding-left: 30px;
 }
 
+.relative {
+  position: relative;
+}
+
 .overflow-hidden {
   overflow: hidden;
 }
@@ -160,4 +166,11 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   word-break: normal !important;
+}
+
+.dot-separator {
+  margin: 0 6px;
+  color: $gray-6;
+
+  @include font-size(20px);
 }

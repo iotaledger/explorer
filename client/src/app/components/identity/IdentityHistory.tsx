@@ -41,8 +41,8 @@ export default class IdentityHistory extends Component<
         return (
             <Fragment>
                 {/* --------- History Card --------- */}
-                <div className="card history-content">
-                    <div className="card--header card--header history-header">
+                <div className="section">
+                    <div className="section--header row space-between">
                         <h2>History</h2>
                         {/* --------- Load History Button --------- */}
                         {!this.state.historyLoaded && !this.state.loadingHistory && !this.state.error && (
@@ -62,7 +62,7 @@ export default class IdentityHistory extends Component<
 
                     {/* --------- Resolving History Spinner --------- */}
                     {this.state.loadingHistory && (
-                        <div className="card--content row">
+                        <div className="card--content row history-content">
                             <h3 className="margin-r-s">Resolving History ...</h3>
                             <Spinner />
                         </div>
@@ -88,8 +88,8 @@ export default class IdentityHistory extends Component<
                                             selectedMessage: selectedItem,
                                             compareWith: compareWith
                                                 ? compareWith.concat(
-                                                      this.getPreviousMessages(selectedItem.parentMessageId ?? "", true)
-                                                  )
+                                                    this.getPreviousMessages(selectedItem.parentMessageId ?? "", true)
+                                                )
                                                 : this.getPreviousMessages(selectedItem.messageId),
                                             selectedComparisonMessage: undefined
                                         });

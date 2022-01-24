@@ -1,7 +1,5 @@
 import "./IdentityMsgIdOverview.scss";
-
 import React, { Component, Fragment, ReactNode } from "react";
-
 import { IdentityHelper } from "../../../helpers/identityHelper";
 import { IdentityMsgIdOverviewProps } from "./IdentityMsgIdOverviewProps";
 import { IdentityMsgOverviewState } from "./IdentityMsgIdOverviewState";
@@ -17,7 +15,7 @@ export default class IdentityMessageIdOverview extends Component<IdentityMsgIdOv
         return (
             <Fragment>
                 {this.props.messageId !== "" && (
-                    <div>
+                    <div className="identity-msg-id">
                         {this.props.messageId !== undefined && this.props.messageId !== this.EMPTY_MESSAGE_ID && (
                             <div
                                 className="msg-id-overview pointer"
@@ -26,7 +24,7 @@ export default class IdentityMessageIdOverview extends Component<IdentityMsgIdOv
                                 }}
                             >
                                 <IdentityMsgStatusIcon status={this.props.status} />
-                                <p>{IdentityHelper.shortenMsgId(this.props.messageId ?? "")}</p>
+                                <p className="code">{IdentityHelper.shortenMsgId(this.props.messageId ?? "")}</p>
                             </div>
                         )}
 

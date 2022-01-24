@@ -1,6 +1,4 @@
-import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
-import "./InclusionState.scss";
 import { InclusionStateProps } from "./InclusionStateProps";
 
 /**
@@ -14,22 +12,6 @@ class InclusionState extends Component<InclusionStateProps> {
     public render(): ReactNode {
         return (
             <div className="inclusion-state">
-                <div
-                    className={
-                        classNames(
-                            "inclusion-state-pill",
-                            { "inclusion__not-included": this.props.state === undefined },
-                            { "inclusion__included": this.props.state === "included" },
-                            { "inclusion__no-transaction": this.props.state === "noTransaction" },
-                            { "inclusion__conflicting": this.props.state === "conflicting" }
-                        )
-                    }
-                >
-                    {this.props.state === undefined && ("Not included")}
-                    {this.props.state === "included" && ("Included")}
-                    {this.props.state === "noTransaction" && ("No Transaction")}
-                    {this.props.state === "conflicting" && ("Conflicting")}
-                </div>
                 {this.props.state === undefined && ("The message is not yet referenced by a milestone.")}
                 {this.props.state === "included" && (
                     "The message is referenced by a milestone, the transaction is included in the ledger."

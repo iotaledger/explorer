@@ -1,16 +1,31 @@
+$white: #ffffff;
+
 $gray: #8493ad;
 $gray-midnight: #131f37;
 $gray-daylight: #f6f8fc;
-$gray-header: #b2c1dc;
+$gray-1: #f2f5fb;
+$gray-2: #e8eefb;
+$gray-3: #d8e1f4;
+$gray-4: #b0bfd9;
+$gray-5: #909fbe;
+$gray-6: #677695;
+$gray-7: #485776;
+$gray-9: #131f37;
 $gray-10: #485776;
+$gray-11: #141e31;
 $gray-light: #eef2fa;
 $gray-noon: #f2f5fb;
-$white: #ffffff;
+
+$blue-5: #108cff;
 
 $main-green: #0fc1b7;
 $main-green-highlight: #00e0ca;
 $panel-green: rgba(0, 224, 202, 0.05);
 $dark-green: #2e8698;
+$mint-green-1: #c8fffa;
+$mint-green-6: #14cabf;
+$mint-green-7: #36a1ac;
+$green-6: #57d087;
 $light-green: rgba(20, 202, 191, 0.08);
 
 $input-border: #d9e1ef;
@@ -20,4 +35,11 @@ $danger: #dc3545;
 $info: #17a2b8;
 $warning: #ffc107;
 
-$box-shadow: 0 4px 30px rgba(132, 147, 173, 0.1);
+$error: #ca493d;
+
+$navbar-height-desktop: 80px;
+$navbar-height-mobile: 56px;
+
+$border-width: 1px;
+
+$inner-padding: 24px;

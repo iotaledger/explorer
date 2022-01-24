@@ -1,40 +1,12 @@
-import { IUTXOInput } from "@iota/iota.js";
-import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
-
 export interface TransactionPayloadState {
-    /**
-     * Format the curreny in full.
-     */
-    formatFull?: boolean;
 
     /**
-     * The unlock addresses for the transactions.
+     * Shows details of the specified input id
      */
-    inputs: (IUTXOInput & {
-        outputHash: string;
-        isGenesis: boolean;
-        transactionUrl: string;
-        transactionAddress: IBech32AddressDetails;
-    })[];
+    showInputDetails: number;
 
     /**
-     * The outputs.
+     * Shows details of the specified output id
      */
-    outputs: {
-        index: number;
-        type: number;
-        address: IBech32AddressDetails;
-        amount: number;
-        isRemainder: boolean;
-    }[];
-
-    /**
-     * The total of the transfer excluding remainders.
-     */
-    transferTotal: number;
-
-    /**
-     * The unlock addresses for the transactions.
-     */
-    unlockAddresses: IBech32AddressDetails[];
+    showOutputDetails: number;
 }

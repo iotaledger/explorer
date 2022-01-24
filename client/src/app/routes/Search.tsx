@@ -139,6 +139,10 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                                         <span>Indexes</span>
                                                         <span>Maximum 64 UTF-8 chars or maximum 128 hex chars</span>
                                                     </li>
+                                                    <li>
+                                                        <span>DiD</span>
+                                                        <span>64 Hex characters starting with did:iota:</span>
+                                                    </li>
                                                 </ul>
                                                 <br />
                                                 <p>Please perform another search with a valid hash.</p>
@@ -300,7 +304,11 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                         objType = "message";
                                         objParam = response.output.messageId;
                                     } else if (response.milestone) {
-                                        objType = "milestone";
+                                        objType = "message";
+                                        objParam = response.milestone?.messageId;
+                                    } else if (response.did) {
+                                        objType = "identity-resolver";
+                                        objParam = response.did;
                                     }
                                     this.setState({
                                         status: "",

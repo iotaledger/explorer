@@ -1,4 +1,4 @@
-/**
- * The filter for values.
- */
-export type ValueFilter = "all" | "zeroOnly" | "nonZeroOnly" | "transaction" | "milestone" | "indexed" | "noPayload";
+export interface ValueFilter {
+    label: "Zero only" | "Non-zero only" | "Transaction" | "Milestone" | "Indexed" | "No payload";
+    isEnabled: boolean;
+}

@@ -1,7 +1,8 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .markets {
   display: flex;
@@ -21,6 +22,18 @@
 
       .row {
         flex: 1;
+
+        .col.fill {
+          @include tablet-down {
+            margin-left: 12px;
+          }
+
+          &:first-child {
+            @include tablet-down {
+              margin-left: 0;
+            }
+          }
+        }
       }
 
       .cards {
@@ -48,9 +61,10 @@
           right: 20px;
           min-width: 150px;
           padding: 10px;
-          border: 2px solid $input-border;
+          border: 2px solid var(--input-border-color);
           border-radius: 5px;
-          background-color: $white;
+          background-color: var(--light-bg);
+          color: var(--header-color);
 
           @include font-size(12px);
 
@@ -78,7 +92,7 @@
 
         &.date-links--secondary {
           border-color: $dark-green;
-          background-color: $white;
+          background-color: var(--light-bg);
           color: $dark-green;
         }
       }
@@ -113,6 +127,7 @@
               &.ct-vertical {
                 @include font-size(10px);
 
+                color: var(--body-color);
                 font-family: $inter;
                 font-weight: bold;
               }

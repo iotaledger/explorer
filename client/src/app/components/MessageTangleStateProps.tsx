@@ -17,7 +17,12 @@ export interface MessageTangleStateProps {
     milestoneIndex?: number;
 
     /**
+     * The message has conflicts.
+     */
+    hasConflicts?: boolean;
+
+    /**
      * The button click.
      */
-    onClick?(): void;
+    onClick?(messageId?: string): void;
 }

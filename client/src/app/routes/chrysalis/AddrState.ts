@@ -1,5 +1,14 @@
+/* eslint-disable no-shadow */
 import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
+import { ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
+
+
+export enum FilterValue {
+    All = "all",
+    Incoming = "incoming",
+    Outgoing = "outgoing",
+}
 
 export interface AddrState {
     /**
@@ -38,6 +47,16 @@ export interface AddrState {
     outputs?: IOutputResponse[];
 
     /**
+     * The received amount.
+     */
+    received: number;
+
+    /**
+     * The total sent amount.
+     */
+    sent: number;
+
+    /**
      * The historic output ids for the address.
      */
     historicOutputIds?: string[];
@@ -48,12 +67,16 @@ export interface AddrState {
     historicOutputs?: IOutputResponse[];
 
     /**
-     * Display advanced mode.
-     */
-    advancedMode: boolean;
-
-    /**
      * Format the amount in full.
      */
     formatFull: boolean;
+
+    /**
+     * Value of the transaction filter.
+     */
+    filterValue: FilterValue;
+    /**
+     * List of transactions of an address.
+     */
+    transactionHistory?: ITransactionsDetailsResponse;
 }

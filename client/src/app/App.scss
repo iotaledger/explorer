@@ -1,6 +1,7 @@
-@import '../scss/fonts';
-@import '../scss/media-queries';
-@import '../scss/mixins';
+@import "../scss/fonts";
+@import "../scss/media-queries";
+@import "../scss/mixins";
+@import "../scss/variables";
 
 .app {
   display: flex;
@@ -10,6 +11,11 @@
   .content {
     flex: 1;
     min-height: 300px;
+    margin-top: $navbar-height-desktop;
+
+    @include desktop-down {
+      margin-top: calc(2 * #{$navbar-height-mobile});
+    }
   }
 
   .maintenance {
@@ -18,10 +24,13 @@
     margin: 100px 0;
 
     .maintenance-inner {
-      @include font-size(18px);
-
       max-width: $desktop-width;
+      color: var(--body-color);
       font-family: $metropolis;
+
+      @include font-size(18px);
     }
   }
+
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }

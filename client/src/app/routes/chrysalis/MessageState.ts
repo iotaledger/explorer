@@ -1,4 +1,5 @@
-import { IMessage, IMessageMetadata } from "@iota/iota.js";
+import { IMessage, IMessageMetadata, IUTXOInput } from "@iota/iota.js";
+import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 
 export interface MessageState {
@@ -48,19 +49,41 @@ export interface MessageState {
     messageTangleStatus: MessageTangleStatus;
 
     /**
-     * The data urls.
-     */
-    dataUrls: {
-        [id: string]: string;
-    };
-
-    /**
-     * The selected data url.
-     */
-    selectedDataUrl: string;
-
-    /**
      * Display advanced mode.
      */
     advancedMode: boolean;
+
+    /**
+     * The unlock addresses for the transactions.
+     */
+    inputs?: (IUTXOInput & {
+        outputHash: string;
+        isGenesis: boolean;
+        transactionUrl: string;
+        transactionAddress: IBech32AddressDetails;
+        signature: string;
+        publicKey: string;
+        amount: number;
+    })[];
+
+    /**
+     * The outputs.
+     */
+    outputs?: {
+        index: number;
+        type: number;
+        address: IBech32AddressDetails;
+        amount: number;
+        isRemainder: boolean;
+    }[];
+
+    /**
+     * The total of the transfer excluding remainders.
+     */
+    transferTotal?: number;
+
+    /**
+     * The unlock addresses for the transactions.
+     */
+    unlockAddresses?: IBech32AddressDetails[];
 }

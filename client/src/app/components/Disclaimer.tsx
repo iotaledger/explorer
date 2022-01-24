@@ -41,7 +41,9 @@ class Disclaimer extends Component<unknown, DisclaimerState> {
         return this.state.ackCookies ? null : (
             <div className="disclaimer">
                 <span className="margin-r-s">
-                    <span className="margin-r-s">This website uses cookies to ensure you get the best experience.</span>
+                    <span className="description">
+                        This website uses cookies to ensure you get the best experience.
+                    </span>
                     <a
                         href="https://www.iota.org/privacy-policy"
                         target="_blank"
