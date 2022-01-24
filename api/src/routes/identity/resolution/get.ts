@@ -69,7 +69,6 @@ async function resolveIdentity(
         const client = identity.Client.fromConfig(config);
         const res = await client.resolve(did);
 
-        console.log(res);
         return {
             document: res.toJSON(),
             version: "latest",
@@ -127,7 +126,6 @@ function improveErrorMessage(errorMessage: { name: string }): string {
     }
 
     if (errorMessage.name) {
-        console.error(errorMessage);
         return errorMessage.name;
     }
     return JSON.stringify(errorMessage);
