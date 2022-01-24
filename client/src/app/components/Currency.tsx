@@ -25,6 +25,11 @@ abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S>
     protected _currencyData?: ICurrencySettings;
 
     /**
+     * Subscription id for currency updates.
+     */
+    protected _subscriptionId?: string;
+
+    /**
      * Create a new instance of Currency.
      * @param props The props.
      */
@@ -42,6 +47,30 @@ abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S>
         super.componentDidMount();
 
         this.buildCurrency();
+
+        this._subscriptionId = this._currencyService.subscribe(() => {
+            const currency = this._currencyService.getSettingsFiatCode();
+            if (this._currencyData && currency) {
+                this._currencyData.fiatCode = currency;
+                this.setState(
+                    {
+                        currency
+                    },
+                    () => {
+                        this.updateCurrency();
+                    });
+            }
+        });
+    }
+
+    /**
+     * The component will unmount so unsubscribe from currency service.
+     */
+     public componentWillUnmount(): void {
+        if (this._subscriptionId) {
+            this._currencyService.unsubscribe(this._subscriptionId);
+            this._subscriptionId = undefined;
+        }
     }
 
     /**

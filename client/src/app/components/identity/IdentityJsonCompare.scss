@@ -7,8 +7,26 @@
   width: 100%;
 }
 
+.diff-wrapper {
+  padding-right: 8px;
+  border: 1px solid $gray-3;
+  border-top: 0;
+
+  * {
+    word-break: break-all;
+  }
+
+  td {
+    background-color: var(--background-color);
+  }
+}
+
 .json-viewer {
-  font-family: "Courier New", Courier, monospace;
+  @include font-size(12px, 20px);
+
+  color: var(--did-color);
+  font-family: $ibm-plex-mono;
+  letter-spacing: 0.02em;
   white-space: pre-wrap;
 
   .string {
@@ -28,20 +46,7 @@
   }
 
   .key {
-    color: $gray-10;
-  }
-}
-
-.difference-select {
-  font-family: $metropolis !important;
-
-  select {
-    height: 26px !important;
-    font-size: 13px !important;
-  }
-
-  img {
-    top: 10px !important;
+    color: var(--did-color);
   }
 }
 
@@ -88,52 +93,50 @@
   margin-right: 5px;
   margin-left: 5px;
   overflow: hidden;
-  border: 1px solid $gray-header;
+  border: 1px solid $gray-3;
   border-radius: 5px;
-  background-color: $white;
   cursor: pointer;
-
-  &:hover {
-    border-color: $main-green-highlight;
-  }
 
   @include phone-down {
     flex-direction: column;
-    height: 60px;
+    height: 50px;
   }
 }
 
 .toggle-button {
   height: 100%;
-  padding: 5px 5px;
-  color: $gray-header;
-  font-family: $metropolis !important;
-  font-size: 0.9em;
+  padding: 3px 8px;
+  color: var(--expanded-color);
+  font-family: $inter;
+  font-weight: 500;
+
+  @include font-size(12px, 18px);
 
   @include phone-down {
-    height: 50%;
-    font-size: 0.7em;
+    width: 100%;
+    text-align: center;
   }
 }
 
 .toggle-button-active {
   background-color: $light-green;
-  color: $gray-midnight;
+  color: var(--body-color);
 }
 
 .download-button {
-  @include phone-down {
-    height: 60px;
-    padding: 0.88em 4px;
-    border: 1px solid $gray-header;
-    border-radius: 5px;
+  margin-left: 8px;
+
+  svg {
+    path {
+      fill: var(--did-color);
+    }
   }
 }
 
 .toggle-separator {
   width: 1px;
   height: 100%;
-  background-color: $gray-header;
+  background-color: $gray-3;
 
   @include phone-down {
     width: 100%;

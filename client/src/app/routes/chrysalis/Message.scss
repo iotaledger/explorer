@@ -16,97 +16,45 @@
       flex: 1;
       flex-direction: column;
       max-width: $desktop-width;
-      margin: 40px 20px;
+      margin: 40px 25px;
 
       @include desktop-down {
+        flex: unset;
+        width: 100%;
         max-width: 100%;
-        padding-right: 20px;
-        padding-left: 20px;
+        margin: 40px 24px;
+        padding-right: 24px;
+        padding-left: 24px;
 
         > .row {
           flex-direction: column;
         }
       }
 
-      h1 {
-        margin-bottom: 20px;
+      @include tablet-down {
+        margin: 28px 0;
       }
 
-      .cards {
-        flex: 1;
-        margin-right: 24px;
-
-        @include desktop-down {
-          flex: unset;
-          width: 100%;
-          margin-right: 0;
-        }
-      }
-
-      .card + .card {
-        margin-top: 23px;
-      }
-
-      .transaction-simple {
-        .card + .card {
-          margin-top: 0;
-          margin-left: 23px;
-        }
-
-        @include tablet-down {
-          .card + .card {
-            margin-top: 23px;
-            margin-left: 0;
-          }
-        }
-      }
-
-      .transaction-payload-wrapper {
-        margin-top: 23px;
-        margin-bottom: 23px;
-      }
-
-      @include desktop-down {
-        flex: unset;
-        width: 100%;
-        margin-right: 0;
-      }
-
-      .value-buttons {
-        .col {
-          flex: 1;
-          width: auto;
-        }
-
-        .col + .col {
-          margin-left: 24px;
-        }
-      }
-
-      @include desktop-down {
-        .value-buttons {
-          flex-direction: column;
-
-          .col {
-            flex: unset;
-            width: 100%;
-          }
-
-          .col + .col {
-            margin-top: 23px;
-            margin-left: 0;
-          }
-        }
-      }
-
-      .side-panel-container {
+      .message--header {
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+      }
 
-        @include desktop-down {
-          flex: 1;
-          width: 100%;
-        }
+      .section .section--header .messages--number {
+        @include font-size(12px);
+
+        display: flex;
+        align-items: center;
+        height: 24px;
+        margin-left: 20px;
+        padding: 0 8px;
+        border-radius: 6px;
+        background-color: var(--light-bg);
+        color: $gray;
+        font-family: $metropolis;
+        font-weight: bold;
+        white-space: nowrap;
       }
     }
   }

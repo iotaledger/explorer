@@ -8,4 +8,9 @@ export interface SearchInputState {
      * Is the content valid.
      */
     isValid: boolean;
+
+    /**
+     * In mobile when a user clicked in search icon
+     */
+    showSearchInput: boolean;
 }

@@ -20,10 +20,15 @@ export interface Bech32AddressProps {
     /**
      * Display advanced mode.
      */
-     advancedMode: boolean;
+    advancedMode: boolean;
 
     /**
      * Hide the label.
      */
-     hideLabel?: boolean;
+    hideLabel?: boolean;
+
+    /**
+     * Truncate address.
+     */
+    truncateAddress?: boolean;
 }

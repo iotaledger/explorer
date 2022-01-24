@@ -5,6 +5,7 @@
 button {
   @include font-size(16px);
 
+  display: flex;
   padding: 6px 10px;
   border: 1px solid $dark-green;
   border-radius: 6px;
@@ -32,5 +33,14 @@ button {
     border-color: $danger;
     background-color: $danger;
     color: $white;
+  }
+
+  &.button--unstyled {
+    border: none;
+    background-color: transparent;
+
+    &:focus {
+      box-shadow: none;
+    }
   }
 }

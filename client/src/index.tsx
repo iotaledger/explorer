@@ -6,7 +6,6 @@ import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
 import App from "./app/App";
 import { AppRouteProps } from "./app/AppRouteProps";
 import { ServiceFactory } from "./factories/serviceFactory";
-import { PaletteHelper } from "./helpers/paletteHelper";
 import "./index.scss";
 import { IConfiguration } from "./models/config/IConfiguration";
 import { ApiClient } from "./services/apiClient";
@@ -61,10 +60,6 @@ async function initialiseServices(): Promise<void> {
     const networks = networkService.networks();
 
     if (networks.length > 0) {
-        if (networks[0].primaryColor && networks[0].secondaryColor) {
-            PaletteHelper.setPalette(networks[0].primaryColor, networks[0].secondaryColor);
-        }
-
         for (const netConfig of networks) {
             ServiceFactory.register(
                 `feed-${netConfig.network}`,
