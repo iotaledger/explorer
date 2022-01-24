@@ -49,8 +49,7 @@ export async function get(
 }
 
 /**
- * @param did DID of cocument
- * @param document
+ * @param document integration document.
  * @param nodeUrl url of the network node.
  * @param permaNodeUrl url of permanode
  * @returns resolved diff chain and spam messages
@@ -58,7 +57,7 @@ export async function get(
 async function resolveDiff(
     document: IIdentityDiffHistoryBody,
     nodeUrl: string,
-    permaNodeUrl: string
+    permaNodeUrl?: string
 ): Promise<IIdentityDiffHistoryResponse> {
     try {
         const config = new identity.Config();
@@ -105,7 +104,7 @@ async function resolveDiff(
 async function resolveLegacyDiff(
     document: identityLegacy.Document,
     nodeUrl: string,
-    permaNodeUrl: string
+    permaNodeUrl?: string
 ): Promise<IIdentityDiffHistoryResponse> {
     try {
         const config = new identityLegacy.Config();

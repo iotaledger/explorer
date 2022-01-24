@@ -60,7 +60,7 @@ export async function get(
 async function resolveIdentity(
     did: string,
     nodeUrl: string,
-    permaNodeUrl: string
+    permaNodeUrl?: string
 ): Promise<IIdentityDidResolveResponse> {
     try {
         const config = new identity.Config();
@@ -91,7 +91,7 @@ async function resolveIdentity(
  async function resolveLegacyIdentity(
     did: string,
     nodeUrl: string,
-    permaNodeUrl: string
+    permaNodeUrl?: string
 ): Promise<IIdentityDidResolveResponse> {
     try {
         const config = new identityLegacy.Config();

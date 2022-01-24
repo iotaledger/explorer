@@ -47,7 +47,7 @@ export async function get(config: IConfiguration, request: IIdentityDidHistoryRe
 async function resolveHistory(
     did: string,
     nodeUrl: string,
-    permaNodeUrl: string
+    permaNodeUrl?: string
 ): Promise<IIdentityDidHistoryResponse> {
     try {
         const config = new identity.Config();
@@ -92,7 +92,7 @@ async function resolveHistory(
 async function resolveLegacyHistory(
     did: string,
     nodeUrl: string,
-    permaNodeUrl: string
+    permaNodeUrl?: string
 ): Promise<IIdentityDidHistoryResponse> {
     try {
         const config = new identityLegacy.Config();
