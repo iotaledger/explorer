@@ -52,10 +52,10 @@ export async function get(
 }
 
 /**
- * @param did DID to be resolved
+ * @param did DID to be resolved.
  * @param nodeUrl url of the network node.
- * @param permaNodeUrl url of permanode
- * @returns Promise
+ * @param permaNodeUrl url of permanode.
+ * @returns The response.
  */
 async function resolveIdentity(
     did: string,
@@ -83,10 +83,10 @@ async function resolveIdentity(
 }
 
 /**
- * @param did DID to be resolved
+ * @param did DID to be resolved.
  * @param nodeUrl url of the network node.
- * @param permaNodeUrl url of permanode
- * @returns Promise
+ * @param permaNodeUrl url of permanode.
+ * @returns The response.
  */
  async function resolveLegacyIdentity(
     did: string,

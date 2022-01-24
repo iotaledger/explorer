@@ -14,7 +14,7 @@ import { IIdentityDiffHistoryResponse } from "./../../../models/api/IIdentityDif
 /**
  * @param config The configuration.
  * @param request The request.
- * @param body The request body
+ * @param body The request body.
  * @returns The response.
  */
 export async function get(
@@ -51,8 +51,8 @@ export async function get(
 /**
  * @param document integration document.
  * @param nodeUrl url of the network node.
- * @param permaNodeUrl url of permanode
- * @returns resolved diff chain and spam messages
+ * @param permaNodeUrl url of permanode.
+ * @returns resolved diff chain and spam messages.
  */
 async function resolveDiff(
     document: IIdentityDiffHistoryBody,
@@ -98,8 +98,8 @@ async function resolveDiff(
 /**
  * @param document integration document.
  * @param nodeUrl url of the network node.
- * @param permaNodeUrl url of permanode
- * @returns resolved diff chain and spam messages
+ * @param permaNodeUrl url of permanode.
+ * @returns resolved diff chain and spam messages.
  */
 async function resolveLegacyDiff(
     document: identityLegacy.Document,

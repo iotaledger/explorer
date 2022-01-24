@@ -39,10 +39,10 @@ export async function get(config: IConfiguration, request: IIdentityDidHistoryRe
 }
 
 /**
- * @param did DID to be resolved
+ * @param did DID to be resolved.
  * @param nodeUrl url of the network node.
- * @param permaNodeUrl url of permanode
- * @returns Promise
+ * @param permaNodeUrl url of permanode.
+ * @returns The response.
  */
 async function resolveHistory(
     did: string,
@@ -84,10 +84,10 @@ async function resolveHistory(
 }
 
 /**
- * @param did DID to be resolved
+ * @param did DID to be resolved.
  * @param nodeUrl url of the network node.
- * @param permaNodeUrl url of permanode
- * @returns Promise object
+ * @param permaNodeUrl url of permanode.
+ * @returns The response.
  */
 async function resolveLegacyHistory(
     did: string,
