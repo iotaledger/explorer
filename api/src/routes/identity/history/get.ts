@@ -79,7 +79,7 @@ async function resolveHistory(
 
         return history;
     } catch (e) {
-        return { error: typeof e === "string" ? e : e.toString() };
+        return { error: e.message };
     }
 }
 
@@ -87,7 +87,7 @@ async function resolveHistory(
  * @param did DID to be resolved
  * @param nodeUrl url of the network node.
  * @param permaNodeUrl url of permanode
- * @returns Promise
+ * @returns Promise object
  */
 async function resolveLegacyHistory(
     did: string,
@@ -124,6 +124,6 @@ async function resolveLegacyHistory(
 
         return history;
     } catch (e) {
-        return { error: typeof e === "string" ? e : e.toString() };
+        return { error: e.message };
     }
 }

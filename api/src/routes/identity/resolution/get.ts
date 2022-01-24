@@ -75,7 +75,7 @@ async function resolveIdentity(
         return {
             document: res.toJSON(),
             version: "latest",
-            messageId: res.toJSON().integrationMessageId // is this correct?
+            messageId: res.toJSON().integrationMessageId
         };
     } catch (e) {
         return { error: improveErrorMessage(e) };
