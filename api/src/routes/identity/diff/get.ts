@@ -92,7 +92,7 @@ async function resolveDiff(
 
         return { chainData: diffChainData, spam: receiptObj.spam };
     } catch (e) {
-        return { error: e as string };
+        return { error: typeof e === "string" ? e : e.toString() };
     }
 }
 
@@ -137,6 +137,6 @@ async function resolveLegacyDiff(
 
         return { chainData: diffChainData, spam: receiptObj.spam };
     } catch (e) {
-        return { error: e as string };
+        return { error: typeof e === "string" ? e : e.toString() };
     }
 }

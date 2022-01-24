@@ -79,7 +79,7 @@ async function resolveHistory(
 
         return history;
     } catch (e) {
-        return { error: e as string };
+        return { error: typeof e === "string" ? e : e.toString() };
     }
 }
 
@@ -124,6 +124,6 @@ async function resolveLegacyHistory(
 
         return history;
     } catch (e) {
-        return { error: e as string };
+        return { error: typeof e === "string" ? e : e.toString() };
     }
 }
