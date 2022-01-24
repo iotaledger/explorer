@@ -39,7 +39,7 @@ export async function get(config: IConfiguration, request: IIdentityDidHistoryRe
 }
 
 /**
- * @param  {string} did DID to be resolved
+ * @param did DID to be resolved
  * @param nodeUrl url of the network node.
  * @param permaNodeUrl url of permanode
  * @returns Promise
@@ -84,7 +84,7 @@ async function resolveHistory(
 }
 
 /**
- * @param  {string} did DID to be resolved
+ * @param did DID to be resolved
  * @param nodeUrl url of the network node.
  * @param permaNodeUrl url of permanode
  * @returns Promise
