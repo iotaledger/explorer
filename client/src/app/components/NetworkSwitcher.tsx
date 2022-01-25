@@ -19,7 +19,8 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
         return (
             <div className="network--switcher">
                 <div
-                    className={classNames("network--switcher__header row middle", { opened: this.props.isExpanded })}
+                    className={classNames("network--switcher__header row middle space-between",
+                        { opened: this.props.isExpanded })}
                     onClick={this.props.onClick}
                 >
                     <div className="network--switcher__dropdown">

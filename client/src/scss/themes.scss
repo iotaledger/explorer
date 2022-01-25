@@ -3,16 +3,19 @@
 :root {
   --body-background: #{$white};
   --body-color: #{$gray-9};
+  --active-item-color: #{$gray-midnight};
   --navbar-bg: rgba(255, 255, 255, 0.2);
+  --navbar-color: #{$gray-6};
   --header-bg: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
   --bubble-1: url("../assets/bubble-1.svg");
   --bubble-2: url("../assets/bubble-2.svg");
   --header-color: #{$gray-6};
+  --type-color: #{$gray-7};
   --header-box-bg: rgba(255, 255, 255, 0.6);
   --header-label-color: #{$gray-midnight};
   --header-icon-color: #{$gray-7};
   --header-svg-bg: #{$gray-2};
-  --border-color: #{$gray-2};
+  --border-color: #{$gray-3};
   --expanded-color: #{$gray-7};
   --light-bg: #{$gray-1};
   --input-border-color: #d9e1ef;
@@ -26,15 +29,19 @@
   --did-color: #{$gray-7};
   --search-bg-opacity: 0.6;
   --card-color: #{$gray-6};
+  --visualizer-bg: #{$white};
 
   body.darkmode {
     --body-background: #091326;
-    --body-color: #{$white};
+    --body-color: #fcfcfc;
+    --active-item-color: #{$gray-daylight};
     --navbar-bg: rgba(6, 16, 35, 0.2);
+    --navbar-color: #{$gray-5};
     --header-bg: linear-gradient(180deg, #{$gray-7} 0%, #{$gray-9} 100%);
     --bubble-1: url("../assets/bubble-1-darkmode.svg");
     --bubble-2: url("../assets/bubble-2-darkmode.svg");
     --header-color: #{$gray-5};
+    --type-color: #{$gray-3};
     --header-box-bg: rgba(6, 16, 35, 0.6);
     --header-label-color: #{$gray-3};
     --header-icon-color: #{$gray-5};
@@ -52,5 +59,6 @@
     --did-color: #{$gray-4};
     --search-bg-opacity: 0.2;
     --card-color: #{$gray-4};
+    --visualizer-bg: #{$gray-midnight};
   }
 }

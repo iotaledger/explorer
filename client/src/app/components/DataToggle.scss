@@ -41,7 +41,7 @@
     .data-toggle--tab {
       margin: 0 2px;
       padding: 2px 12px;
-      color: $gray-7;
+      color: var(--type-color);
       cursor: pointer;
 
       &.data-toggle--tab__active {

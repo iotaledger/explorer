@@ -1,0 +1,21 @@
+@import "../../scss/variables";
+@import "../../scss/themes";
+
+.icon {
+  &.boxed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 5px;
+    border-radius: 30px;
+    background: var(--header-svg-bg);
+
+    svg {
+      path {
+        fill: var(--body-color);
+      }
+    }
+  }
+}
