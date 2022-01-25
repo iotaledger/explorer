@@ -24,7 +24,6 @@ export class IdentityService {
      * @param  {string} did DID of which the history to be resolved
      * @param  {string} network network name
      * @param  {string} version version of the DID
-     * @param version
      * @returns Promise
      */
     public async resolveHistory(did: string, network: string, version: string): Promise<IIdentityDidHistoryResponse> {
