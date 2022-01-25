@@ -187,7 +187,7 @@ class IdentityResolver extends AsyncComponent<
                                     <Fragment>
                                         {this.state.version && this.state.version === "legacy" && (
                                             <div className="legacy-method">
-                                                This DID is using a deprecated metadata structure. If this is your DID you can find information on how to migrate your DID <a href="#">here</a>.
+                                                This DID was created by a deprecated version of the identity library. If this is your DID you can recreate it using the  <a href="https://github.com/iotaledger/identity.rs/releases" target="_blank" rel="noreferrer">latest version</a>.
                                             </div>
                                         )}
                                         <div>
