@@ -67,6 +67,10 @@ body {
     .info {
       color: $info;
     }
+
+    .active-item {
+      color: var(--active-item-color);
+    }
   }
 }
 
@@ -83,9 +87,4 @@ body {
 ::-webkit-scrollbar-thumb {
   border-radius: 0;
   background-color: var(--header-color);
-}
-
-:root {
-  --context-primary: #131f37;
-  --context-secondary: #485776;
 }

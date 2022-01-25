@@ -1,4 +1,3 @@
-
 import { CurrencyState } from "./CurrencyState";
 
 export interface CurrencyButtonState extends CurrencyState {

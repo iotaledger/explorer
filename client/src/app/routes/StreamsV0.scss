@@ -1,7 +1,7 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
 
 .streams-v0 {
   display: flex;
@@ -59,6 +59,12 @@
 
         .item-details {
           @include font-size(14px);
+
+          padding-top: 20px;
+
+          @include phone-down {
+            padding-top: 0;
+          }
 
           font-family: $metropolis;
 

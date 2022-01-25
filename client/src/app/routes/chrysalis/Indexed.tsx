@@ -131,6 +131,8 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                     <h2>General</h2>
                                     <Modal icon={ModalIcon.Info} data={messageJSON} />
                                 </div>
+                                {this.state.statusBusy && (<Spinner compact />)}
+
                             </div>
                             <div className="section--data">
                                 <div className="label row middle">
@@ -153,7 +155,6 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                         </span>
                                     )}
                                 </div>
-                                {this.state.statusBusy && (<Spinner compact />)}
                             </div>
 
                             <div
@@ -174,7 +175,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                     this.state.messageIds.map(messageId => (
                                         <div
                                             key={messageId}
-                                            className="indexed-message "
+                                            className="indexed-message"
                                         >
                                             <button
                                                 type="button"
@@ -189,7 +190,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                             </div>
 
                             {this.state.cursor && (
-                                <div className="indexed-actions flex row margin-t-m margin-b-m ">
+                                <div className="indexed-actions flex row margin-t-m margin-b-m">
                                     <button
                                         type="button"
                                         onClick={() => this.loadNextChunk(true)}

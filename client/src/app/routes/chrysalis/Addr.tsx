@@ -13,6 +13,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import QR from "../../components/chrysalis/QR";
 import FiatValue from "../../components/FiatValue";
+import Icon from "../../components/Icon";
 import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
 import messageJSON from "./../../../assets/modals/message.json";
@@ -21,6 +22,7 @@ import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState, FilterValue } from "./AddrState";
+
 /**
  * Component which will show the address page.
  */
@@ -156,7 +158,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                             />)
                                                         </div>
                                                     </div>
-                                                    <div className="section--data ">
+                                                    <div className="section--data">
                                                         <div className="label">
                                                             Total sent
                                                         </div>
@@ -173,34 +175,30 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </div>
                                             )}
 
-                                            {this.state.balance !== undefined && this.state.balance === 0 && (
-                                                <div className="section--data">
-                                                    <div className="label">
-                                                        Final balance
-                                                    </div>
-                                                    <div className="value featured">
-                                                        0
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {this.state.balance !== undefined && this.state.balance !== 0 && (
-                                                <div className="section--data">
-                                                    <div className="label">
-                                                        Final balance
-                                                    </div>
-                                                    <div className="value featured">
-                                                        {UnitsHelper.formatBest(this.state.balance)}
-                                                        {" "}
-                                                        <span>(</span>
-                                                        <FiatValue value={this.state.balance} />
-                                                        <span>)</span>
+                                            {this.state.balance !== undefined && (
+                                                <div className="row middle">
+                                                    <Icon icon="wallet" boxed />
+                                                    <div className="balance">
+                                                        <div className="label">
+                                                            Final balance
+                                                        </div>
+                                                        <div className="value featured">
+                                                            {this.state.balance > 0 ? (
+                                                                <React.Fragment>
+                                                                    {UnitsHelper.formatBest(this.state.balance)}
+                                                                    {" "}
+                                                                    <span>(</span>
+                                                                    <FiatValue value={this.state.balance} />
+                                                                    <span>)</span>
+                                                                </React.Fragment>
+                                                            ) : 0}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             )}
-
 
                                             {this.state.status && (
-                                                <div className="middle row">
+                                                <div className="margin-t-s middle row">
                                                     {this.state.statusBusy && (<Spinner />)}
                                                     <p className="status">
                                                         {this.state.status}
@@ -247,48 +245,52 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                                         </div>
                                         <table className="transaction--table">
-                                            <tr>
-                                                <th>Message id</th>
-                                                <th>Date</th>
-                                                <th>Inputs</th>
-                                                <th>Outputs</th>
-                                                <th>Status</th>
-                                                <th>Amount</th>
-                                            </tr>
-                                            {this.state.transactionHistory
-                                                ?.transactionHistory
-                                                ?.transactions
-                                                ?.map(transaction =>
-                                                (
-                                                    <React.Fragment key={transaction?.messageId}>
-                                                        {this.hasPassedFilterCriteria(this.state.filterValue, transaction.amount) && (
-                                                            <Transaction
-                                                                key={transaction?.messageId}
-                                                                messageId={transaction?.messageId}
-                                                                network={this.props.match.params.network}
-                                                                inputs={transaction?.inputs.length}
-                                                                outputs={transaction?.outputs.length}
-                                                                messageTangleStatus={transaction?.messageTangleStatus}
-                                                                date={transaction?.date}
-                                                                amount={transaction?.amount}
-                                                                tableFormat={true}
-                                                            />
-                                                        )}
-                                                        {transaction?.relatedSpentTransaction && this.hasPassedFilterCriteria(this.state.filterValue, transaction?.relatedSpentTransaction.amount) && (
-                                                            <Transaction
-                                                                key={transaction?.relatedSpentTransaction.messageId}
-                                                                messageId={transaction?.relatedSpentTransaction.messageId}
-                                                                network={this.props.match.params.network}
-                                                                inputs={transaction?.relatedSpentTransaction.inputs.length}
-                                                                outputs={transaction?.relatedSpentTransaction.outputs.length}
-                                                                messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
-                                                                date={transaction?.relatedSpentTransaction.date}
-                                                                amount={transaction?.relatedSpentTransaction.amount}
-                                                                tableFormat={true}
-                                                            />
-                                                        )}
-                                                    </React.Fragment>
-                                                ))}
+                                            <thead>
+                                                <tr>
+                                                    <th>Message id</th>
+                                                    <th>Date</th>
+                                                    <th>Inputs</th>
+                                                    <th>Outputs</th>
+                                                    <th>Status</th>
+                                                    <th>Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {this.state.transactionHistory
+                                                    ?.transactionHistory
+                                                    ?.transactions
+                                                    ?.map(transaction =>
+                                                    (
+                                                        <React.Fragment key={transaction?.messageId}>
+                                                            {this.hasPassedFilterCriteria(this.state.filterValue, transaction.amount) && (
+                                                                <Transaction
+                                                                    key={transaction?.messageId}
+                                                                    messageId={transaction?.messageId}
+                                                                    network={this.props.match.params.network}
+                                                                    inputs={transaction?.inputs.length}
+                                                                    outputs={transaction?.outputs.length}
+                                                                    messageTangleStatus={transaction?.messageTangleStatus}
+                                                                    date={transaction?.date}
+                                                                    amount={transaction?.amount}
+                                                                    tableFormat={true}
+                                                                />
+                                                            )}
+                                                            {transaction?.relatedSpentTransaction && this.hasPassedFilterCriteria(this.state.filterValue, transaction?.relatedSpentTransaction.amount) && (
+                                                                <Transaction
+                                                                    key={transaction?.relatedSpentTransaction.messageId}
+                                                                    messageId={transaction?.relatedSpentTransaction.messageId}
+                                                                    network={this.props.match.params.network}
+                                                                    inputs={transaction?.relatedSpentTransaction.inputs.length}
+                                                                    outputs={transaction?.relatedSpentTransaction.outputs.length}
+                                                                    messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
+                                                                    date={transaction?.relatedSpentTransaction.date}
+                                                                    amount={transaction?.relatedSpentTransaction.amount}
+                                                                    tableFormat={true}
+                                                                />
+                                                            )}
+                                                        </React.Fragment>
+                                                    ))}
+                                            </tbody>
                                         </table>
                                         {/* Only visible in mobile -- Card transactions*/}
                                         <div className="transaction-cards">
