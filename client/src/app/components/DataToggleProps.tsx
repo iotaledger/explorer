@@ -1,4 +1,3 @@
-
 /**
  * The props for the DataToggle component.
  */

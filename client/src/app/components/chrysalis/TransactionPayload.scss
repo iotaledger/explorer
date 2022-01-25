@@ -3,7 +3,7 @@
 @import "../../../scss/media-queries";
 @import "../../../scss/variables";
 
-.transaction-payload {
+.section .transaction-payload {
   .section--header {
     .transaction-value {
       display: flex;
@@ -14,7 +14,7 @@
       text-align: end;
 
       @include tablet-down {
-        display: block;
+        display: none;
       }
 
       @include font-size(16px, 24px);
@@ -39,6 +39,11 @@
         white-space: nowrap;
       }
     }
+
+    @include tablet-down {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 
   .card {
@@ -55,6 +60,7 @@
     .card--content {
       .card--value {
         margin-left: auto;
+        color: var(--type-color);
       }
 
       .bech32-address {

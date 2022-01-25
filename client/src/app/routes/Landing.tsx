@@ -277,7 +277,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             <p>There are no items with the current filter.</p>
                                         )}
                                         {this.state.filteredItems.map(item => (
-                                            <div className=" feed-item" key={item.id}>
+                                            <div className="feed-item" key={item.id}>
                                                 <div className="feed-item__content">
                                                     <span className="feed-item--label">
                                                         {this.state.networkConfig.protocolVersion === "og"

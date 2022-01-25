@@ -11,7 +11,7 @@
     @include font-size(12px, 18px);
 
     margin-right: 16px;
-    color: $gray-6;
+    color: var(--header-color);
     font-family: $inter;
     font-weight: 500;
 
