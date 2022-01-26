@@ -57,7 +57,7 @@ class Footer extends Component<FooterProps, FooterState> {
         {
             name: "Instagram",
             icon: <InstagramIcon />,
-            url: " https://www.instagram.com/iotafoundation/",
+            url: "https://www.instagram.com/iotafoundation/",
             color: "#99A5BD"
         }, {
             name: "Facebook",
@@ -104,12 +104,12 @@ class Footer extends Component<FooterProps, FooterState> {
     public render(): ReactNode {
         return (
             <footer>
-                <section className="footer--content ">
+                <section className="footer--content">
                     <div className="inner">
-                        <div className="row">
+                        <div className="footer-grid">
                             {[this.state.siteFooterSection].concat(this.state.foundationData?.footerSections ?? [])
                                 .map((section, sectionIdx) => (
-                                    <section className="col fill" key={sectionIdx}>
+                                    <section key={sectionIdx}>
                                         <h3>{section.label}</h3>
                                         <ul>
                                             {section.items.map((info, infoIdx) => (
@@ -123,13 +123,13 @@ class Footer extends Component<FooterProps, FooterState> {
                         </div>
                         <hr className="sep" />
                         <div className="row foundation-data">
-                            <div className="col fill margin-t-m">
+                            <div className="margin-t-m">
                                 <img src={logoFooter} alt="IOTA" />
                             </div>
-                            <section className="col fill line-breaks">
+                            <section className="line-breaks">
                                 {this.state.foundationData?.registeredAddress.value.join("\n")}
                             </section>
-                            <section className="col fill">
+                            <section>
                                 <ul>
                                     {this.state.foundationData?.information.map((info, infoIdx) => (
                                         <li key={infoIdx}>

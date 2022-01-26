@@ -5,7 +5,7 @@
 @import "../../scss/themes";
 
 .network--switcher {
-  @media (max-width: 1200px) {
+  @include tablet-down {
     &::before {
       content: "";
       position: absolute;
@@ -68,7 +68,9 @@
   }
 
   .protocols {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
     max-width: 1400px;
     margin: auto;
     padding: 40px;
@@ -84,7 +86,9 @@
     }
 
     .protocol {
-      width: 33%;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
       padding: 0 24px;
 
       .protocol--title {
@@ -106,9 +110,13 @@
       }
 
       .network--cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
         padding-top: 44px;
 
         .network--card {
+          min-height: 86px;
           margin-bottom: 16px;
           padding: 4px;
           border-radius: 12px;

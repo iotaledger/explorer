@@ -102,14 +102,10 @@ header {
       align-items: center;
       height: 100%;
       margin-left: 40px;
-      color: $gray-6;
+      color: var(--navbar-color);
       font-family: $metropolis;
       font-weight: 600;
       letter-spacing: 0.01em;
-
-      &.active {
-        color: var(--body-color);
-      }
     }
 
     .utilities--wrapper {
@@ -121,7 +117,7 @@ header {
         .label {
           @include font-size(14px, 21px);
 
-          color: $gray-6;
+          color: var(--navbar-color);
           font-weight: 600;
           letter-spacing: 0.01em;
         }
@@ -131,12 +127,16 @@ header {
 
           svg {
             transition: transform 0.2s ease;
+
+            path {
+              stroke: var(--navbar-color);
+            }
           }
         }
 
         &.opened {
           .label {
-            color: var(--header-color);
+            color: var(--active-item-color);
           }
 
           .icon {
@@ -144,7 +144,7 @@ header {
               transform: rotate(-180deg);
 
               path {
-                stroke: var(--header-color);
+                stroke: var(--active-item-color);
               }
             }
           }
@@ -159,7 +159,7 @@ header {
         }
 
         .utilities--label {
-          color: $gray-7;
+          color: var(--navbar-color);
           font-family: $metropolis;
           font-weight: 700;
           letter-spacing: 0.15em;
@@ -252,14 +252,15 @@ header {
     top: $navbar-height-desktop;
     left: 0;
     width: 100vw;
-    height: 0;
+    max-height: 0;
     overflow: hidden;
-    transition: height 0.3s ease-in-out;
+    transition: max-height 0.3s ease-in-out;
     background: var(--body-background);
     box-shadow: var(--box-shadow-down);
 
     &.opened {
-      height: 420px;
+      height: auto;
+      max-height: 1000px;
 
       @include desktop-down {
         top: $navbar-height-mobile * 2;
@@ -323,18 +324,24 @@ header {
       .menu--expanded__item {
         display: flex;
         justify-content: space-between;
-        color: $gray-6;
+        color: var(--navbar-color);
         font-family: $metropolis;
         font-weight: 600;
         cursor: pointer;
 
         a,
         div {
-          color: $gray-6;
+          color: var(--navbar-color);
           font-family: $metropolis;
           font-weight: 600;
 
           @include font-size(16px, 24px);
+        }
+
+        svg {
+          path {
+            stroke: var(--navbar-color);
+          }
         }
 
         &:hover {
@@ -349,9 +356,17 @@ header {
         }
 
         &.opened {
+          .label {
+            color: var(--active-item-color);
+          }
+
           .icon {
             svg {
               transform: rotate(-180deg);
+
+              path {
+                stroke: var(--active-item-color);
+              }
             }
           }
         }
@@ -363,143 +378,6 @@ header {
 
         li {
           padding: 12px 15px;
-        }
-      }
-    }
-  }
-
-  .tools {
-    &.tools--large {
-      @include font-size(14px);
-
-      display: flex;
-      position: absolute;
-      top: 0;
-      right: 0;
-      align-items: center;
-      justify-content: center;
-      width: 150px;
-      height: 100%;
-      border: 0;
-      border-radius: 0;
-      outline: 0;
-      background: rgba(72, 87, 118, 0.1);
-      color: $white;
-      font-family: $metropolis;
-      font-weight: normal;
-
-      @media (max-width: 1360px) {
-        display: none;
-      }
-
-      &:focus {
-        box-shadow: none;
-      }
-    }
-
-    &.tools--small {
-      position: relative;
-      margin-left: 20px;
-      background: none;
-
-      @media (min-width: 1361px) {
-        display: none;
-      }
-
-      @include tablet-down {
-        position: absolute;
-        top: 24px;
-        right: 24px;
-      }
-    }
-
-    button {
-      border: 0;
-      background: none;
-    }
-  }
-
-  .tools-panel-shield {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    opacity: 0.1;
-    background-color: $gray-midnight;
-
-    &.tools-panel-shield__active {
-      display: block;
-    }
-  }
-
-  .tools-panel {
-    display: none;
-    position: fixed;
-    z-index: 5;
-    top: 0;
-    right: 0;
-    left: 0;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 60px 60px 60px;
-    background: var(--context-primary);
-    color: $white;
-    font-family: $metropolis;
-
-    &.tools-panel__active {
-      display: flex;
-    }
-
-    .tools-panel-inner {
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      max-width: 1024px;
-
-      .tools-panel-close-container {
-        display: flex;
-        justify-content: flex-end;
-        padding-bottom: 20px;
-
-        .button-close {
-          border: 0;
-          background: none;
-        }
-      }
-
-      .tools-panel-links {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-
-        a {
-          @include font-size(14px);
-
-          display: flex;
-          align-items: center;
-          justify-content: flex-start;
-          min-width: 270px;
-          padding: 20px;
-          border: 0;
-          background: none;
-          color: $white;
-          font-family: $metropolis;
-          font-weight: bold;
-          text-decoration: none;
-
-          &:hover {
-            background: rgba(72, 87, 118, 0.1);
-          }
-        }
-
-        .icon {
-          color: rgba(255, 255, 255, 0.8);
         }
       }
     }

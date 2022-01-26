@@ -103,7 +103,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
             <div className="message">
                 <div className="wrapper">
                     <div className="inner">
-                        <div className="message--header ">
+                        <div className="message--header">
                             <div className="row middle">
                                 <h1>
                                     Message

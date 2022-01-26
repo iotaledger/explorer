@@ -267,7 +267,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                 </div>
                                 {this.state.status && (
                                     <div className="card margin-t-s">
-                                        <div className="card--content middle row">
+                                        <div className="card--content middle row margin-t-s">
                                             {this.state.statusBusy === 0 && (<Spinner />)}
                                             <p className="status">
                                                 {this.state.status}

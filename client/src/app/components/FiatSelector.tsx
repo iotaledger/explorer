@@ -13,7 +13,7 @@ class FiatSelector extends Currency<unknown, CurrencyState> {
      */
     public render(): ReactNode {
         return (
-            <div className="select-wrapper ">
+            <div className="select-wrapper">
                 <select
                     value={this.state?.currency}
                     onChange={e => {
