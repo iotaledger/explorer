@@ -3,7 +3,6 @@ import "../../../scss/layout.scss";
 import React, { Component, Fragment, ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IdentityHelper } from "../../../helpers/identityHelper";
 import { IIdentityMessageWrapper } from "../../../models/identity/IIdentityMessageWrapper";
 import { IdentityDiffStorageService } from "../../../services/identityDiffStorageService";
 import { IdentityService } from "../../../services/identityService";

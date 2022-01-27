@@ -1,8 +1,6 @@
 import "./IdentityTree.scss";
 
 import React, { Component, ReactNode } from "react";
-
-import { IdentityHelper } from "../../../../helpers/identityHelper";
 import IdentityTreeItem from "./IdentityTreeItem";
 import { IdentityTreeProps } from "./IdentityTreeProps";
 import { IdentityTreeState } from "./IdentityTreeState";

@@ -6,7 +6,6 @@ import { ReactComponent as IdentityIcon } from "../../assets/identity-icon-hex.s
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../helpers/downloadHelper";
-import { IdentityHelper } from "../../helpers/identityHelper";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
 import { IdentityDiffStorageService } from "../../services/identityDiffStorageService";
 import { IdentityService } from "../../services/identityService";
@@ -187,7 +186,19 @@ class IdentityResolver extends AsyncComponent<
                                     <Fragment>
                                         {this.state.version && this.state.version === "legacy" && (
                                             <div className="legacy-method">
-                                                This DID was created by a deprecated version of the identity library. If this is your DID you can recreate it using the  <a href="https://github.com/iotaledger/identity.rs/releases" target="_blank" rel="noreferrer">latest version</a>.
+                                                <span>
+                                                    This DID was created by a deprecated version of the identity
+                                                    {" "}
+                                                    library. If this is your DID you can recreate it using the
+                                                    {" "}
+                                                </span>
+                                                <a
+                                                    href="https://github.com/iotaledger/identity.rs/releases"
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                >
+                                                    latest version
+                                                </a>.
                                             </div>
                                         )}
                                         <div>
@@ -250,9 +261,11 @@ class IdentityResolver extends AsyncComponent<
                                                             {this.state.resolvedIdentity &&
                                                                 !this.state.error &&
                                                                 this.state.resolvedIdentity?.messageId !==
-                                                                    this.EMPTY_MESSAGE_ID && (
+                                                                this.EMPTY_MESSAGE_ID && (
                                                                     <Fragment>
-                                                                        <div className="card--label">Latest Message Id</div>
+                                                                        <div className="card--label">
+                                                                            Latest Message Id
+                                                                        </div>
                                                                         <div className="card--value row middle">
                                                                             <div className="margin-r-t">
                                                                                 {this.state.resolvedIdentity?.messageId}
@@ -310,9 +323,10 @@ class IdentityResolver extends AsyncComponent<
                                                                             this.state.resolvedIdentity.document
                                                                         )}
                                                                         download={DownloadHelper.filename(
-                                                                            this.state.resolvedIdentity.messageId ?? "did",
+                                                                            this.state.resolvedIdentity
+                                                                                .messageId ?? "did",
                                                                             "json"
-                                                                            )}
+                                                                        )}
                                                                         role="button"
                                                                     >
                                                                         <HiDownload />
@@ -330,7 +344,7 @@ class IdentityResolver extends AsyncComponent<
                                                                             this.state.resolvedIdentity.document.doc,
                                                                             null,
                                                                             4
-                                                                            )}
+                                                                        )}
                                                                     />
                                                                 </div>
                                                             </div>
@@ -346,7 +360,7 @@ class IdentityResolver extends AsyncComponent<
                                             </div>
 
                                             {this.state.isIdentityResolved &&
-                                            this.state.version &&
+                                                this.state.version &&
                                                 <IdentityHistory version={this.state.version} {...this.props} />}
                                         </div>
                                     </Fragment>
