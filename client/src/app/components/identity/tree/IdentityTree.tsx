@@ -20,7 +20,7 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
         this.state = {
             selectedMessage: {
                 message: firstMsg.document,
-                document: IdentityHelper.removeMetaDataFromDocument(firstMsg.document),
+                document: firstMsg.document,
                 messageId: firstMsg.messageId,
                 isDiff: false
             }
@@ -33,9 +33,10 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
                 {this.props.history?.integrationChainData?.map((value, index) => (
                     <IdentityTreeItem
                         network={this.props.network}
+                        version={this.props.version}
                         itemMessage={{
                             message: value.document,
-                            document: IdentityHelper.removeMetaDataFromDocument(value.document),
+                            document: value.document,
                             messageId: value.messageId,
                             isDiff: false
                         }}

@@ -1,6 +1,9 @@
 export interface IIdentityDocument {
-    created?: string;
-    updated?: string;
-    previousMessageId?: string;
-    proof?: string;
+    doc: Record<string, unknown>;
+    meta: {
+        created?: string;
+        updated?: string;
+        previousMessageId?: string;
+        proof?: string;
+    };
 }

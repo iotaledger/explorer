@@ -7,6 +7,11 @@ export interface IdentityTreeItemProps {
     network: string;
 
     /**
+     * version of did implementation
+     */
+    version: string;
+
+    /**
      * If item is nested (Diff message, Error Message, No Diffs, Diffs are loading)
      */
     nested?: boolean;

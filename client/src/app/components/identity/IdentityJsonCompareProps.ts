@@ -21,8 +21,14 @@ export interface IdentityJsonCompareProps {
     compareWith: IIdentityMessageWrapper[];
 
     /**
+     * version of did implementation
+     */
+    version: string;
+
+    /**
      * on message click from the compare dropdown menu.
      * @param message message that has been clicked.
      */
     onCompareSelectionChange(message?: IIdentityMessageWrapper): void;
+
 }

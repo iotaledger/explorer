@@ -3,6 +3,7 @@ import { IIdentityMessageWrapper } from "../../../../models/identity/IIdentityMe
 
 export interface IdentityTreeProps {
     network: string;
+    version: string;
     history?: IIdentityDidHistoryResponse | undefined;
 
     onItemClick(selectedItem: IIdentityMessageWrapper, compareWith?: IIdentityMessageWrapper[]): void;
