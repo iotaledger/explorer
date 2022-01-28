@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+/* eslint-disable camelcase */
 import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
@@ -340,8 +341,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
     private async getTransactionHistory() {
         // Transactions (permanode)
-        const transactionsDetails = await this._tangleCacheService.transactionsDetails(
-            this.props.match.params.network, this.state.address?.address ?? "");
+        const transactionsDetails = await this._tangleCacheService.transactionsDetails({
+            network: this.props.match.params.network,
+            address: this.state.address?.address ?? "",
+            query: { page_size: 6000 }
+        }, true);
 
         const transactionIds = transactionsDetails?.transactionHistory?.transactions?.map(transaction => transaction.messageId);
 

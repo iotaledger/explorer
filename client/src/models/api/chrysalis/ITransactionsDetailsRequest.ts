@@ -8,4 +8,9 @@ export interface ITransactionsDetailsRequest {
      * The address get the transactions for.
      */
     address: string;
+
+    /**
+     * The query parameters.
+     */
+     query?: { [key: string]: unknown };
 }

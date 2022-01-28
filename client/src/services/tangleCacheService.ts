@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable camelcase */
 import { IMessageMetadata, IMilestoneResponse, IOutputResponse } from "@iota/iota.js";
 import { mamFetch as mamFetchOg, MamMode } from "@iota/mam-legacy";
 import { mamFetch as mamFetchChrysalis } from "@iota/mam.js";
@@ -5,6 +7,7 @@ import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
@@ -829,25 +832,41 @@ export class TangleCacheService {
 
     /**
      * Get the milestone details.
-     * @param networkId The network to search
-     * @param address The address to get the transactions for.
+     * @param request The request.
+     * @param skipCache Skip looking in the cache.
      * @returns The transactions response.
      */
     public async transactionsDetails(
-        networkId: string,
-        address: string): Promise<ITransactionsDetailsResponse | undefined> {
-        if (!this._chrysalisSearchCache[networkId][address]?.data?.transactionHistory) {
+        request: ITransactionsDetailsRequest,
+        skipCache: boolean = false
+        ): Promise<ITransactionsDetailsResponse | undefined> {
+        if (!this._chrysalisSearchCache[request.network][request.address]?.data?.transactionHistory || skipCache) {
             const apiClient = ServiceFactory.get<ApiClient>("api-client");
-            const response = await apiClient.transactionsDetails({ network: networkId, address });
+            const response = await apiClient.transactionsDetails(request);
             if (response) {
-                this._chrysalisSearchCache[networkId][address] = {
-                    data: { transactionHistory: response },
-                    cached: Date.now()
-                };
+                if (response.transactionHistory.transactions) {
+                    const cachedTransaction = this._chrysalisSearchCache[request.network][request.address]?.data?.transactionHistory?.transactionHistory.transactions ?? [];
+
+                    this._chrysalisSearchCache[request.network][request.address] = {
+                        data: { transactionHistory: { ...response,
+                                    transactionHistory: { ...response.transactionHistory,
+                                        transactions: [...cachedTransaction, ...response.transactionHistory.transactions] } } },
+                        cached: Date.now()
+                    };
+                }
+
+                if (response.transactionHistory?.transactions?.length === request.query?.page_size) {
+                    return this.transactionsDetails({
+                        network: request.network,
+                        address: request.address,
+                        query: { page_size: request.query?.page_size, state: response.transactionHistory.state }
+                    },
+                    skipCache);
+                }
             }
         }
 
-        return this._chrysalisSearchCache[networkId][address]?.data?.transactionHistory;
+        return this._chrysalisSearchCache[request.network][request.address]?.data?.transactionHistory;
     }
 
     /**

@@ -6,6 +6,7 @@ import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
@@ -638,11 +639,11 @@ export class TangleHelper {
     /**
      * Get the transactions of an address.
      * @param network The network to find the items on.
-     * @param address The address to get the transactions associated to.
+     * @param request The request.
      * @returns The transactions.
      */
     public static async transactionsDetails(network: INetwork,
-        address: string): Promise<ITransactionsDetailsResponse | undefined> {
+        request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse | undefined> {
         if (network.permaNodeEndpoint) {
             try {
                 // We use ExtendedSingleNodeClient instead of SingleNodeClient
@@ -654,7 +655,7 @@ export class TangleHelper {
                     password: network.permaNodeEndpointPassword,
                     basePath: "/"
                 });
-                return await client.transactionHistory(address);
+                return await client.transactionHistory(request);
             } catch {
                 return { error: "Failed to fetch" };
             }

@@ -166,8 +166,9 @@ export class ApiClient {
      * @returns The response from the request.
      */
     public async transactionsDetails(request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse> {
+        const { network, address, query } = request;
         return this.callApi<unknown, ITransactionsDetailsResponse>(
-            `transactionhistory/${request.network}/${request.address}`,
+            `transactionhistory/${network}/${address}${query ? FetchHelper.urlParams(query) : ""}`,
             "get"
         );
     }
