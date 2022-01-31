@@ -310,7 +310,7 @@ export class CurrencyService {
      * @param includeSymbol Include the symbol in the formatting.
      * @param numDigits The number of digits to display.
      * @param extendToFindMax Extend the decimal places until non zero or limit.
-     * @param includeSuffix Include the abbreviate value with suffix (k for thousand, M for million, B for billion, ...).
+     * @param includeSuffix Use abbreviated value with suffix (k for thousand, M for million, B for billion, ...).
      * @returns The converted fiat.
      */
     public convertFiatBase(
