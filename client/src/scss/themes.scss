@@ -10,6 +10,10 @@
   --bubble-1: url("../assets/bubble-1.svg");
   --bubble-2: url("../assets/bubble-2.svg");
   --header-color: #{$gray-6};
+  --pagination-color: #{$gray-6};
+  --pagination-selected-color: #{$white};
+  --pagination-arrrow-color: #{$gray-8};
+  --pagination-disabled-color: #{$gray-5};
   --type-color: #{$gray-7};
   --header-box-bg: rgba(255, 255, 255, 0.6);
   --header-label-color: #{$gray-midnight};
@@ -41,6 +45,10 @@
     --bubble-1: url("../assets/bubble-1-darkmode.svg");
     --bubble-2: url("../assets/bubble-2-darkmode.svg");
     --header-color: #{$gray-5};
+    --pagination-color: #{$gray-5};
+    --pagination-selected-color: #{$gray-9};
+    --pagination-arrrow-color: #{$gray-1};
+    --pagination-disabled-color: #{$gray-3};
     --type-color: #{$gray-3};
     --header-box-bg: rgba(6, 16, 35, 0.6);
     --header-label-color: #{$gray-3};

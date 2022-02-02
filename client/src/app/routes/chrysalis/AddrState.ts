@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
-import { ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { ITransaction, ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 
 
@@ -79,4 +79,19 @@ export interface AddrState {
      * List of transactions of an address.
      */
     transactionHistory?: ITransactionsDetailsResponse;
+
+    /**
+     * Current page in transaction history table.
+     */
+    currentPage: number;
+
+    /**
+     * Page size in transaction history table.
+     */
+    pageSize: number;
+
+    /**
+     * Page size in transaction history table.
+     */
+     currentPageTransactions: ITransaction[];
 }
