@@ -18,10 +18,7 @@ jobs:
     env:
       # Build specific env vars
       CONFIG_ID: prod
-      CONFIG_API_ENDPOINT: ${{ secrets.PROD_CONFIG_API_ENDPOINT }}
-      CONFIG_FEED_ENDPOINT: ${{ secrets.PROD_CONFIG_FEED_ENDPOINT }}
-      CONFIG_GOOGLE_ANALYTICS_ID: ${{ secrets.PROD_CONFIG_GOOGLE_ANALYTICS_ID }}
-      CONFIG_IDENTITY_RESOLVER_ENABLED: ${{ secrets.PROD_CONFIG_IDENTITY_RESOLVER_ENABLED }}
+      CONFIG_JSON: ${{ secrets.CLIENT_PROD_CONFIG }}
       VERCEL_DOMAIN: ${{ secrets.VERCEL_CLIENT_PROD_DOMAIN }}
 
       # Global Vercel env vars
@@ -32,12 +29,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Client Config
-        run: |
-          cd client/src/assets/config/
-          mv config.template config.$CONFIG_ID.json
-          sed -i "s/API-ENDPOINT/${{ env.CONFIG_API_ENDPOINT }}/g" config.$CONFIG_ID.json
-          sed -i "s/GOOGLE-ANALYTICS-ID/${{ env.CONFIG_GOOGLE_ANALYTICS_ID }}/g" config.$CONFIG_ID.json
-          sed -i "s/IDENTITY-RESOLVER-ENABLED/${{ env.CONFIG_IDENTITY_RESOLVER_ENABLED }}/g" config.$CONFIG_ID.json
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const fs = require('fs')
+            fs.writeFileSync('./client/src/data/assets/config.prod.json', process.env.CONFIG_JSON)
       - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:
