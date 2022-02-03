@@ -35,7 +35,10 @@ class DataToggle extends Component<DataToggleProps, DataToggleState> {
                     </a>
                 ) : (
                     activeOption.isJson
-                        ? (<JsonViewer json={activeOption.content} />)
+                        ? (
+                            <div className="data-toggle--content">
+                                <JsonViewer json={activeOption.content} />
+                            </div>)
                         : (<div className="data-toggle--content">{activeOption.content}</div>)
                 )}
                 <div className="data-toggle--tabs">
