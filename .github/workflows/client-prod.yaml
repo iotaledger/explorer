@@ -33,7 +33,7 @@ jobs:
         with:
           script: |
             const fs = require('fs')
-            fs.writeFileSync('./client/src/data/assets/config.prod.json', process.env.CONFIG_JSON)
+            fs.writeFileSync('./client/src/assets/config.prod.json', process.env.CONFIG_JSON)
       - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:

@@ -34,8 +34,8 @@ jobs:
           script: |
             const fs = require('fs')
             fs.writeFileSync('./api/src/data/config.prod.json', process.env.CONFIG_JSON)
-            fs.writeFileSync('./dispatch.yaml', process.env.DISPATCH_YAML)
-            fs.writeFileSync('./app.yaml', process.env.APP_YAML)
+            fs.writeFileSync('./api/dispatch.yaml', process.env.DISPATCH_YAML)
+            fs.writeFileSync('./api/app.yaml', process.env.APP_YAML)
       - uses: google-github-actions/setup-gcloud@master
         with:
           version: latest
