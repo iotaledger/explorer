@@ -16,29 +16,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # Build specific env vars
-      CONFIG_ID: prod
-      CONFIG_FIXER_API_KEY: ${{ secrets.PROD_CONFIG_FIXER_API_KEY }}
-      CONFIG_DB_AWS_REGION: ${{ secrets.PROD_CONFIG_DB_AWS_REGION }}
-      CONFIG_DB_AWS_ACCESS_KEY_ID: ${{ secrets.PROD_CONFIG_DB_AWS_ACCESS_KEY_ID }}
-      CONFIG_DB_AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_CONFIG_DB_AWS_SECRET_ACCESS_KEY }}
-      CONFIG_DB_TABLE_PREFIX: ${{ secrets.PROD_CONFIG_DB_TABLE_PREFIX }}
-      CONFIG_ALLOWED_DOMAINS: ${{ secrets.PROD_CONFIG_ALLOWED_DOMAINS }}
-      CONFIG_ROUTE_CORS: ${{ secrets.PROD_CONFIG_ROUTE_CORS }}
-      CONFIG_VERBOSE_LOGGING: ${{ secrets.PROD_VERBOSE_LOGGING }}
-      CONFIG_PRIVATE_KEY_ED25519: ${{ secrets.PROD_PRIVATE_KEY_ED25519 }}
-      CONFIG_ITEMS_FEED_API_URL: ${{ secrets.PROD_CONFIG_FEED_ENDPOINT }}
-      GCP_SERVICE_ID: ${{ secrets.GCP_PROD_SERVICE_ID }}
-      GCP_PROD_SERVICE_ID: ${{ secrets.GCP_PROD_SERVICE_ID }}
-      GCP_PROD_DOMAIN: ${{ secrets.GCP_PROD_DOMAIN }}
-      GCP_STAGING_SERVICE_ID: ${{ secrets.GCP_STAGING_SERVICE_ID }}
-      GCP_STAGING_DOMAIN: ${{ secrets.GCP_STAGING_DOMAIN }}
-      GCP_PROD_FEED_SERVICE_ID: ${{ secrets.GCP_PROD_FEED_SERVICE_ID }}
-      GCP_PROD_FEED_DOMAIN: ${{ secrets.GCP_PROD_FEED_DOMAIN }}
-      GCP_STAGING_FEED_SERVICE_ID: ${{ secrets.GCP_STAGING_FEED_SERVICE_ID }}
-      GCP_STAGING_FEED_DOMAIN: ${{ secrets.GCP_STAGING_FEED_DOMAIN }}
-      GCP_BOT_PROD_SERVICE_ID: ${{ secrets.GCP_BOT_PROD_SERVICE_ID }}
-      GCP_BOT_PROD_DOMAIN: ${{ secrets.GCP_BOT_PROD_DOMAIN }}
+      CONFIG_JSON: ${{ secrets.API_PROD_CONFIG }}
+      APP_YAML: ${{ secrets.API_PROD_GCP_APP_YAML }}
+      DISPATCH_YAML: ${{ secrets.COMMON_GCP_DISPATCH_YAML }}
 
     steps:
       - uses: actions/checkout@v2
@@ -48,32 +28,14 @@ jobs:
           node-version: "14"
       - name: npm 7
         run: npm install -g npm@7
-      - name: API Config
-        run: |
-          cd api/src/data/
-          mv config.template config.$CONFIG_ID.json
-          sed -i 's/FIXER-API-KEY/${{ env.CONFIG_FIXER_API_KEY }}/g' config.$CONFIG_ID.json
-          sed -i 's/DB-AWS-REGION/${{ env.CONFIG_DB_AWS_REGION }}/g' config.$CONFIG_ID.json
-          sed -i 's/DB-AWS-ACCESS-KEY-ID/${{ env.CONFIG_DB_AWS_ACCESS_KEY_ID }}/g' config.$CONFIG_ID.json
-          sed -i 's/DB-AWS-SECRET-ACCESS-KEY/${{ env.CONFIG_DB_AWS_SECRET_ACCESS_KEY }}/g' config.$CONFIG_ID.json
-          sed -i 's/DB-TABLE-PREFIX/${{ env.CONFIG_DB_TABLE_PREFIX }}/g' config.$CONFIG_ID.json
-          sed -i 's/ALLOWED-DOMAINS/${{ env.CONFIG_ALLOWED_DOMAINS }}/g' config.$CONFIG_ID.json
-          sed -i 's/ROUTE-CORS/${{ env.CONFIG_ROUTE_CORS }}/g' config.$CONFIG_ID.json
-          sed -i 's/VERBOSE-LOGGING/${{ env.CONFIG_VERBOSE_LOGGING }}/g' config.$CONFIG_ID.json
-          sed -i 's/PRIVATE-KEY-ED25519/${{ env.CONFIG_PRIVATE_KEY_ED25519 }}/g' config.$CONFIG_ID.json
-      - name: GCP Config
-        run: |
-          cd api
-          mv app.template.prod.yaml app.yaml
-          sed -i 's/%SERVICE-ID%/${{ env.GCP_SERVICE_ID }}/g' app.yaml
-          sed -i 's/%CONFIG-ID%/${{ env.CONFIG_ID }}/g' app.yaml
-          mv dispatch.template.yaml dispatch.yaml
-          sed -i 's/%GCP-PROD-DOMAIN%/${{ env.GCP_PROD_DOMAIN }}/g' dispatch.yaml
-          sed -i 's/%GCP-PROD-SERVICE-ID%/${{ env.GCP_PROD_SERVICE_ID }}/g' dispatch.yaml
-          sed -i 's/%GCP-STAGING-DOMAIN%/${{ env.GCP_STAGING_DOMAIN }}/g' dispatch.yaml
-          sed -i 's/%GCP-STAGING-SERVICE-ID%/${{ env.GCP_STAGING_SERVICE_ID }}/g' dispatch.yaml
-          sed -i 's/%GCP-BOT-PROD-DOMAIN%/${{ env.GCP_BOT_PROD_DOMAIN }}/g' dispatch.yaml
-          sed -i 's/%GCP-BOT-PROD-SERVICE-ID%/${{ env.GCP_BOT_PROD_SERVICE_ID }}/g' dispatch.yaml
+      - name: API and GCP Config
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const fs = require('fs')
+            fs.writeFileSync('./api/src/data/config.prod.json', process.env.CONFIG_JSON)
+            fs.writeFileSync('./dispatch.yaml', process.env.DISPATCH_YAML)
+            fs.writeFileSync('./app.yaml', process.env.APP_YAML)
       - uses: google-github-actions/setup-gcloud@master
         with:
           version: latest
