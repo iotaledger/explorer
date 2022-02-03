@@ -28,8 +28,8 @@ jobs:
           script: |
             const fs = require('fs')
             fs.writeFileSync('./discord-bot/src/data/config.prod.json', process.env.CONFIG_JSON)
-            fs.writeFileSync('./dispatch.yaml', process.env.DISPATCH_YAML)
-            fs.writeFileSync('./app.yaml', process.env.APP_YAML)      
+            fs.writeFileSync('./discord-bot/dispatch.yaml', process.env.DISPATCH_YAML)
+            fs.writeFileSync('./discord-bot/app.yaml', process.env.APP_YAML)      
       - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:
