@@ -4,12 +4,14 @@ import "./Pagination.scss";
 import { PaginationProps } from "./PaginationProps";
 import { PaginationState } from "./PaginationState";
 
-
 /**
  * Component which will display pagination.
  */
 class Pagination extends Component<PaginationProps, PaginationState> {
-    private readonly DOTS = "...";
+    /**
+     * Dots for pagination.
+     */
+     private static readonly DOTS: string = "...";
 
     /**
      * Create a new instance of Pagination.
@@ -55,13 +57,13 @@ class Pagination extends Component<PaginationProps, PaginationState> {
                   disabled: this.props.currentPage === 1
                 })}
                     onClick={() => {
- this.onPrevious();
-}}
+                        this.onPrevious();
+                    }}
                 >
                     <div className="arrow left" />
                 </li>
                 {this.state.paginationRange.map((pageNumber: (number|string), idx: number) => {
-                if (pageNumber === this.DOTS) {
+                if (pageNumber === Pagination.DOTS) {
                   return <li key={idx} className="pagination-item dots">&#8230;</li>;
                 }
 
@@ -82,8 +84,8 @@ class Pagination extends Component<PaginationProps, PaginationState> {
                   disabled: this.props.currentPage === this.state.lastPage
                 })}
                     onClick={() => {
- this.onNext();
-}}
+                        this.onNext();
+                    }}
                 >
                     <div className="arrow right" />
                 </li>
@@ -117,8 +119,8 @@ class Pagination extends Component<PaginationProps, PaginationState> {
         );
 
         /*
-         *  Do not want to show dots if there is only one position left
-         *  after/before the left/right page coun.
+         *  Do not show dots if there is only one position left
+         *  after/before the left/right page count.
          */
         const shouldShowLeftDots = leftSiblingIndex > 2;
         const shouldShowRightDots = rightSiblingIndex < totalPageCount - 2;
@@ -130,7 +132,7 @@ class Pagination extends Component<PaginationProps, PaginationState> {
             const leftItemCount = 3 + (2 * this.props.siblingsCount);
             const leftRange = this.range(1, leftItemCount);
 
-            return [...leftRange, this.DOTS, totalPageCount];
+            return [...leftRange, Pagination.DOTS, totalPageCount];
         }
 
         if (shouldShowLeftDots && !shouldShowRightDots) {
@@ -140,12 +142,12 @@ class Pagination extends Component<PaginationProps, PaginationState> {
               totalPageCount
             );
 
-            return [firstPageIndex, this.DOTS, ...rightRange];
+            return [firstPageIndex, Pagination.DOTS, ...rightRange];
         }
 
         if (shouldShowLeftDots && shouldShowRightDots) {
             const middleRange = this.range(leftSiblingIndex, rightSiblingIndex);
-            return [firstPageIndex, this.DOTS, ...middleRange, this.DOTS, lastPageIndex];
+            return [firstPageIndex, Pagination.DOTS, ...middleRange, Pagination.DOTS, lastPageIndex];
         }
 
         return [];

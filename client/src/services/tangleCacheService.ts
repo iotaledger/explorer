@@ -854,7 +854,6 @@ export class TangleCacheService {
                                         state: response.transactionHistory.state } } },
                         cached: Date.now()
                     };
-                    console.log(this._chrysalisSearchCache[request.network][request.address]?.data?.transactionHistory);
                 }
                 // Fetch next page if returned page size equals requested page size
                 if (response.transactionHistory?.transactions?.length === request.query?.page_size) {
