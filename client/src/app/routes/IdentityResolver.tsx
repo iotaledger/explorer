@@ -13,6 +13,7 @@ import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import IdentityHistory from "../components/identity/IdentityHistory";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
+import IdentitySearchInput from "../components/identity/IdentitySearchInput";
 import JsonViewer from "../components/JsonViewer";
 import MessageButton from "../components/MessageButton";
 import MessageTangleState from "../components/MessageTangleState";
@@ -148,6 +149,15 @@ class IdentityResolver extends AsyncComponent<
                                                     capabilities to view the entire history of a DID Document, including
                                                     invalid DID messages.
                                                 </p>
+                                            </div>
+                                            <div className="row middle margin-b-s row--tablet-responsive">
+                                                <IdentitySearchInput
+                                                    compact={false}
+                                                    onSearch={e => {
+                                                        this.props.history.push(e);
+                                                    }}
+                                                    network={this.props.match.params.network}
+                                                />
                                             </div>
                                             {this.state.didExample && (
                                                 <button

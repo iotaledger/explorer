@@ -1,6 +1,6 @@
 import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
@@ -16,6 +16,7 @@ import FiatValue from "../../components/FiatValue";
 import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
 import MessageTangleState from "../../components/MessageTangleState";
+import MessageTree from "../../components/MessageTree";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
@@ -79,43 +80,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-
-        const result = await this._tangleCacheService.search(
-            this.props.match.params.network, this.props.match.params.messageId);
-
-        if (result?.message) {
-            window.scrollTo({
-                left: 0,
-                top: 0,
-                behavior: "smooth"
-            });
-
-            window.history.replaceState(undefined, window.document.title, `/${this.props.match.params.network
-                }/message/${result.includedMessageId ?? this.props.match.params.messageId}`);
-
-            const { inputs, outputs, unlockAddresses, transferTotal } =
-                await TransactionsHelper.getInputsAndOutputs(result?.message,
-                    this.props.match.params.network,
-                    this._bechHrp,
-                    this._tangleCacheService);
-            this.setState({
-                inputs,
-                outputs,
-                unlockAddresses,
-                transferTotal
-            });
-
-            this.setState({
-                paramMessageId: this.props.match.params.messageId,
-                actualMessageId: result.includedMessageId ?? this.props.match.params.messageId,
-                message: result.message
-            }, async () => {
-                await this.updateMessageDetails();
-            });
-        } else {
-            this.props.history.replace(`/${this.props.match.params.network
-                }/search/${this.props.match.params.messageId}`);
-        }
+        await this.loadMessage(this.props.match.params.messageId, false);
     }
 
     /**
@@ -374,98 +339,23 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                         )}
                         <div className="section">
                             <div className="section--header">
-                                <div className="row middle">
-                                    <h2>
-                                        Messages tree
-                                    </h2>
-                                    <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                <div>
+                                    <div className="row middle">
+                                        <h2>
+                                            Messages tree
+                                        </h2>
+                                        <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                    </div>
                                 </div>
                             </div>
-                            <div className="section--data">
-                                <div className="section--header">
-                                    <h3>Parent Messages</h3>
-                                    {this.state !== undefined && (
-                                        <span className="messages--number">
-                                            {this.state.message?.parentMessageIds?.length}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="section--data">
-                                    {this.state.message?.parentMessageIds?.map((parent, idx) => (
-                                        <React.Fragment key={idx}>
-                                            <div
-                                                className="value code highlight
-                                                           row middle"
-                                            >
-                                                {parent !== "0".repeat(64) && (
-                                                    <React.Fragment>
-                                                        <Link
-                                                            className="margin-r-t"
-                                                            to={
-                                                                `/${this.props.match.params.network
-                                                                }/message/${parent}`
-                                                            }
-                                                        >
-                                                            {parent}
-                                                        </Link>
-                                                        <MessageButton
-                                                            onClick={() => ClipboardHelper.copy(
-                                                                parent
-                                                            )}
-                                                            buttonType="copy"
-                                                            labelPosition="top"
-                                                        />
-                                                    </React.Fragment>
-                                                )}
-                                                {parent === "0".repeat(64) && (
-                                                    <span>Genesis</span>
-                                                )}
-                                            </div>
-                                        </React.Fragment>
-                                    )
-                                    )}
-                                </div>
-                                <div className="section--header">
-                                    <h3>Child Messages</h3>
-                                    {this.state.childrenIds !== undefined && (
-                                        <span className="messages--number">
-                                            {this.state.childrenIds.length}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="section--data">
-                                    {this.state.childrenBusy && (<Spinner />)}
-                                    {this.state.childrenIds?.map(childId => (
-                                        <div
-                                            className="value
-                                                         code highlight row middle"
-                                            key={childId}
-                                        >
-                                            <Link
-                                                className="margin-r-t"
-                                                to={
-                                                    `/${this.props.match.params.network
-                                                    }/message/${childId}`
-                                                }
-                                            >
-                                                {childId}
-                                            </Link>
-                                            <MessageButton
-                                                onClick={() => ClipboardHelper.copy(
-                                                    childId
-                                                )}
-                                                buttonType="copy"
-                                                labelPosition="top"
-                                            />
-                                        </div>
-                                    ))}
-                                    {!this.state.childrenBusy &&
-                                        this.state.childrenIds &&
-                                        this.state.childrenIds.length === 0 && (
-                                            <p>There are no children for this message.</p>
-                                        )}
-                                </div>
-                            </div>
+                            {this.state.message?.parentMessageIds && this.state.childrenIds && (
+                                <MessageTree
+                                    parentsIds={this.state.message?.parentMessageIds}
+                                    messageId={this.props.match.params.messageId}
+                                    childrenIds={this.state.childrenIds}
+                                    onSelected={async (i, update) => this.loadMessage(i, update)}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -533,6 +423,53 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
         }
 
         return conflictReason;
+    }
+
+    /**
+     * Load the message with the given id.
+     * @param messageId The index to load.
+     * @param updateUrl Update the url.
+     */
+    private async loadMessage(messageId: string, updateUrl: boolean): Promise<void> {
+        const result = await this._tangleCacheService.search(
+            this.props.match.params.network, messageId);
+
+        if (result?.message) {
+            if (!updateUrl) {
+                window.scrollTo({
+                    left: 0,
+                    top: 0,
+                    behavior: "smooth"
+                });
+            }
+
+            const { inputs, outputs, unlockAddresses, transferTotal } =
+                await TransactionsHelper.getInputsAndOutputs(result?.message,
+                    this.props.match.params.network,
+                    this._bechHrp,
+                    this._tangleCacheService);
+            this.setState({
+                inputs,
+                outputs,
+                unlockAddresses,
+                transferTotal
+            });
+
+            this.setState({
+                paramMessageId: messageId,
+                actualMessageId: result.includedMessageId ?? messageId,
+                message: result.message
+            }, async () => {
+                await this.updateMessageDetails();
+            });
+            if (updateUrl) {
+                window.history.pushState(undefined, window.document.title, `/${this.props.match.params.network
+                    }/message/${result.includedMessageId ?? messageId}`);
+            }
+        } else {
+            this.props.history.replace(`/${this.props.match.params.network
+                }/search/${messageId}`);
+        }
     }
 }
 

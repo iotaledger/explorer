@@ -33,6 +33,9 @@
   .identity-search--button {
     @include font-size(14px);
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 117px;
     border: 2px solid $main-green-highlight;
     border-radius: 0 6px 6px 0;

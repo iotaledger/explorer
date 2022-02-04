@@ -33,6 +33,7 @@
   --did-color: #{$gray-7};
   --search-bg-opacity: 0.6;
   --card-color: #{$gray-6};
+  --message-tree-bg: #{$gray-2};
   --visualizer-bg: #{$white};
 
   body.darkmode {
@@ -67,6 +68,7 @@
     --did-color: #{$gray-4};
     --search-bg-opacity: 0.2;
     --card-color: #{$gray-4};
+    --message-tree-bg: #ffffff1f;
     --visualizer-bg: #{$gray-midnight};
   }
 }
