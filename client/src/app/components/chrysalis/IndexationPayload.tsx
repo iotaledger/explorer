@@ -20,35 +20,13 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
      */
     constructor(props: IndexationPayloadProps) {
         super(props);
+        this.state = this.loadPayload();
+    }
 
-        const utf8Index = TextHelper.isUTF8(Converter.hexToBytes(props.payload.index)) ? Converter.hexToUtf8(props.payload.index) : undefined;
-        const matchHexIndex = props.payload.index.match(/.{1,2}/g);
-        const hexIndex = matchHexIndex ? matchHexIndex.join(" ") : props.payload.index;
-
-        let hexData;
-        let utf8Data;
-        let jsonData;
-
-        if (props.payload.data) {
-            const matchHexData = props.payload.data.match(/.{1,2}/g);
-
-            hexData = matchHexData ? matchHexData.join(" ") : props.payload.data;
-            utf8Data = TextHelper.isUTF8(Converter.hexToBytes(props.payload.data)) ? Converter.hexToUtf8(props.payload.data) : undefined;
-
-            try {
-                if (utf8Data) {
-                    jsonData = JSON.stringify(JSON.parse(utf8Data), undefined, "  ");
-                }
-            } catch { }
+    public componentDidUpdate(prevProps: IndexationPayloadProps): void {
+        if (prevProps.payload !== this.props.payload) {
+            this.setState(this.loadPayload());
         }
-
-        this.state = {
-            utf8Index,
-            hexIndex,
-            utf8Data,
-            hexData,
-            jsonData
-        };
     }
 
     /**
@@ -116,6 +94,40 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                 </div>
             </div>
         );
+    }
+
+    /**
+     * Load index and data from payload.
+     * @returns Object with indexes and data in raw and utf-8 format.
+     */
+    private loadPayload() {
+        const utf8Index = TextHelper.isUTF8(Converter.hexToBytes(this.props.payload.index)) ? Converter.hexToUtf8(this.props.payload.index) : undefined;
+        const matchHexIndex = this.props.payload.index.match(/.{1,2}/g);
+        const hexIndex = matchHexIndex ? matchHexIndex.join(" ") : this.props.payload.index;
+
+        let hexData;
+        let utf8Data;
+        let jsonData;
+
+        if (this.props.payload.data) {
+            const matchHexData = this.props.payload.data.match(/.{1,2}/g);
+
+            hexData = matchHexData ? matchHexData.join(" ") : this.props.payload.data;
+            utf8Data = TextHelper.isUTF8(Converter.hexToBytes(this.props.payload.data)) ? Converter.hexToUtf8(this.props.payload.data) : undefined;
+
+            try {
+                if (utf8Data) {
+                    jsonData = JSON.stringify(JSON.parse(utf8Data), undefined, "  ");
+                }
+            } catch { }
+        }
+        return {
+            utf8Index,
+            hexIndex,
+            utf8Data,
+            hexData,
+            jsonData
+        };
     }
 }
 
