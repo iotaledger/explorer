@@ -134,16 +134,17 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                 {this.state.statusBusy && (<Spinner compact />)}
 
                             </div>
-                            <div className="section--data">
-                                <div className="label row middle">
-                                    <span className="margin-r-t">
-                                        Index
-                                    </span>
-                                </div>
-                                <DataToggle
-                                    options={TOGGLE_INDEX_OPTIONS}
-                                />
-                            </div>
+                            {TOGGLE_INDEX_OPTIONS.some(option => option.content !== undefined) && (
+                                <div className="section--data">
+                                    <div className="label row middle">
+                                        <span className="margin-r-t">
+                                            Index
+                                        </span>
+                                    </div>
+                                    <DataToggle
+                                        options={TOGGLE_INDEX_OPTIONS}
+                                    />
+                                </div>)}
                         </div>
                         <div className="section margin-t-s">
                             <div className="section--header row space-between">
