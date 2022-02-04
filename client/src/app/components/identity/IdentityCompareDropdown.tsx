@@ -109,7 +109,7 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                                     </div>
                                     {/* --------- timestamp --------- */}
                                     <p className="dropdown-item-timestamp">
-                                        {moment(value.document?.updated).format("MMM D  hh:mm:ss a")}
+                                        {moment(value.document?.meta.updated).format("MMM D  hh:mm:ss a")}
                                     </p>
                                 </div>
                             ))}
