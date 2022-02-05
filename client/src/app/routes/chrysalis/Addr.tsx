@@ -318,14 +318,14 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             pageSize={this.state.pageSize}
                                             siblingsCount={1}
                                             onPageChange={page =>
-                                                    this.setState({ currentPage: page },
-                                                        () => {
-                                                            const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
-                                                            // Check if last page
-                                                            const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
-                                                            this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
-                                                            .catch(err => console.error(err));
-                                                    })}
+                                                this.setState({ currentPage: page },
+                                                    () => {
+                                                        const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
+                                                        // Check if last page
+                                                        const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
+                                                        this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
+                                                        .catch(err => console.error(err));
+                                                })}
                                         />
                                     </div>)}
                             </div>
@@ -389,8 +389,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
             for (let i = startIndex; i < endIndex; i++) {
                 if (updatingPage !== this.state.currentPage) {
-break;
-}
+                    break;
+                }
 
                 const tsx = { ...this.txsHistory[i] };
                 let isUpdated = false;
