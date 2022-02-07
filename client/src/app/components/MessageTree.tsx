@@ -89,16 +89,18 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                     this.loadItemsUI();
                     this.setState({ isBusy: false });
                 });
+            if (prevProps.messageId !== this.props.messageId) {
+                // ------- Scroll to messages tree section -------
+                const top = document?.getElementById("message-tree")?.offsetTop ?? 0;
+                const OFFSET = 200;
 
-            // ------- Scroll to messages tree section -------
-            const top = document?.getElementById("message-tree")?.offsetTop ?? 0;
-            const OFFSET = 200;
-            window.scrollTo({
-                left: 0,
-                top: top - OFFSET,
-                behavior: "smooth"
-            });
-            // -----------------------------------------------
+                window.scrollTo({
+                    left: 0,
+                    top: top - OFFSET,
+                    behavior: "smooth"
+                });
+                // -----------------------------------------------
+            }
         }
     }
 
