@@ -2,6 +2,7 @@
 @import "../../../scss/mixins";
 @import "../../../scss/media-queries";
 @import "../../../scss/variables";
+@import "../../../scss/themes";
 
 .identity-search-input {
   display: flex;
@@ -17,10 +18,21 @@
     flex: 1;
     height: 48px;
     padding: 0 24px;
-    border: 1px solid $input-border;
+    transition: border-color 0.2s ease;
+    border: 1px solid var(--input-border-color);
     border-radius: 6px 0 0 6px;
-    color: $gray-10;
+    background-color: transparent;
+    box-shadow: none;
+    color: var(--body-color);
     font-family: $inter;
+
+    &::placeholder {
+      color: var(--input-border-color);
+    }
+
+    &:focus {
+      border-color: var(--input-focus-border-color);
+    }
 
     @include phone-down {
       @include font-size(12px);
