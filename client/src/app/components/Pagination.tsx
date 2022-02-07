@@ -96,7 +96,7 @@ class Pagination extends Component<PaginationProps, PaginationState> {
 
     /**
      * Update pagination range.
-     *  @returns The range of available pages.
+     * @returns The range of available pages.
      */
     protected updatePaginationRange(): (string|number)[] {
         const totalPageCount: number = Math.ceil(this.props.totalCount / this.props.pageSize);
@@ -153,15 +153,27 @@ class Pagination extends Component<PaginationProps, PaginationState> {
         return [];
     }
 
+    /**
+     * Creates an array of elements from start value to end value.
+     * @param start Start value.
+     * @param end End value.
+     * @returns Array of elements from start to end value.
+     */
     private range(start: number, end: number): number[] {
         const length = end - start + 1;
         return Array.from({ length }, (_, idx) => idx + start);
     }
 
+    /**
+     * Navigate to next page.
+     */
     private onNext(): void {
         this.props.onPageChange(this.props.currentPage + 1);
     }
 
+    /**
+     * Navigate to previous page.
+     */
     private onPrevious(): void {
         this.props.onPageChange(this.props.currentPage - 1);
     }

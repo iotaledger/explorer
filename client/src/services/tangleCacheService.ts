@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 /* eslint-disable camelcase */
 import { IMessageMetadata, IMilestoneResponse, IOutputResponse } from "@iota/iota.js";
 import { mamFetch as mamFetchOg, MamMode } from "@iota/mam-legacy";
@@ -843,27 +842,27 @@ export class TangleCacheService {
         if (!this._chrysalisSearchCache[request.network][request.address]?.data?.transactionHistory || skipCache) {
             const apiClient = ServiceFactory.get<ApiClient>("api-client");
             const response = await apiClient.transactionsDetails(request);
-            if (response) {
-                if (response.transactionHistory.transactions) {
-                    const cachedTransaction = this._chrysalisSearchCache[request.network][request.address]?.data?.transactionHistory?.transactionHistory.transactions ?? [];
+            if (response?.transactionHistory?.transactions) {
+                const cachedTransaction = this._chrysalisSearchCache[request.network][request.address]
+                                                ?.data?.transactionHistory?.transactionHistory.transactions ?? [];
 
-                    this._chrysalisSearchCache[request.network][request.address] = {
-                        data: { transactionHistory: { ...response,
-                                    transactionHistory: { ...response.transactionHistory,
-                                        transactions: [...cachedTransaction, ...response.transactionHistory.transactions],
-                                        state: response.transactionHistory.state } } },
-                        cached: Date.now()
-                    };
-                }
-                // Fetch next page if returned page size equals requested page size
-                if (response.transactionHistory?.transactions?.length === request.query?.page_size) {
-                    return this.transactionsDetails({
-                        network: request.network,
-                        address: request.address,
-                        query: { page_size: request.query?.page_size, state: response.transactionHistory.state }
-                    },
-                    skipCache);
-                }
+                this._chrysalisSearchCache[request.network][request.address] = {
+                    data: { transactionHistory: { ...response,
+                                transactionHistory: { ...response.transactionHistory,
+                                    transactions:
+                                    [...cachedTransaction, ...response.transactionHistory.transactions],
+                                    state: response.transactionHistory.state } } },
+                    cached: Date.now()
+                };
+            }
+            // Fetch next page if returned page size equals requested page size
+            if (response?.transactionHistory?.transactions?.length === request.query?.page_size) {
+                return this.transactionsDetails({
+                    network: request.network,
+                    address: request.address,
+                    query: { page_size: request.query?.page_size, state: response.transactionHistory.state }
+                },
+                skipCache);
             }
         }
 
