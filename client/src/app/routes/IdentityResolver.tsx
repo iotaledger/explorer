@@ -336,6 +336,12 @@ class IdentityResolver extends AsyncComponent<
                                                                 </div>
                                                             </div>
                                                         )}
+                                                        {this.state.error && (
+                                                            <div className="identity-json-container did-error">
+                                                                <p className="margin-b-t">ಠ_ಠ </p>
+                                                                <p className="">{this.state.errorMessage}</p>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
