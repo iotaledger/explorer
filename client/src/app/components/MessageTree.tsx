@@ -90,15 +90,17 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                     this.setState({ isBusy: false });
                 });
 
-            // ------- Scroll to messages tree section -------
-            const top = document?.getElementById("message-tree")?.offsetTop ?? 0;
-            const OFFSET = 200;
-            window.scrollTo({
-                left: 0,
-                top: top - OFFSET,
-                behavior: "smooth"
-            });
-            // -----------------------------------------------
+            if (this.props.parentsIds !== prevProps.parentsIds || this.props.childrenIds !== prevProps.childrenIds) {
+                // ------- Scroll to messages tree section -------
+                const top = document?.getElementById("message-tree")?.offsetTop ?? 0;
+                const OFFSET = 200;
+                window.scrollTo({
+                    left: 0,
+                    top: top - OFFSET,
+                    behavior: "smooth"
+                });
+                // -----------------------------------------------
+            }
         }
     }
 
