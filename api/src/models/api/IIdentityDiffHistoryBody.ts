@@ -1,5 +1,8 @@
-export interface IIdentityDiffHistoryBody {
-    id: string;
-    authentication: unknown;
-    messageId?: string;
-}
+import { ILatestDocument } from "./IIdentityLatestDocument";
+
+export type IIdentityDiffHistoryBody = ILatestDocument & {
+    /**
+     * version of DID implementation
+     */
+    version: string;
+};

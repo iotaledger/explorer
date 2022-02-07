@@ -52,4 +52,9 @@ export interface IdentityResolverState {
      * messageId of latest message. (zeros if latest message is a diff message)
      */
     latestMessageId?: string;
+
+    /**
+     * version of DID implementation
+     */
+    version?: string;
 }

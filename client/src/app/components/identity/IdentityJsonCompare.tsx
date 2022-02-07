@@ -2,6 +2,7 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import ReactDiffViewer from "react-diff-viewer";
 import { DownloadHelper } from "../../../helpers/downloadHelper";
+import { IdentityHelper } from "../../../helpers/identityHelper";
 import { JsonSyntaxHelper } from "../../../helpers/jsonSyntaxHelper";
 import IdentityCompareDropdown from "./IdentityCompareDropdown";
 import "./IdentityJsonCompare.scss";
@@ -18,6 +19,10 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
         };
     }
 
+    private get mode(): "diff" | "integration" {
+        return this.props.selectedMessage?.isDiff ? "diff" : "integration";
+    }
+
     public render(): ReactNode {
         return (
             <div className="container">
@@ -25,7 +30,7 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                 <div className="identity-json-header">
                     <div className="compare-elements">
                         <IdentityMessageIdOverview
-                            status={this.props.selectedMessage?.isDiff ? "diff" : "integration"}
+                            status={this.mode}
                             messageId={this.props.selectedMessage?.messageId}
                             onClick={() => {
                                 // eslint-disable-next-line max-len
@@ -118,8 +123,12 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                     <ReactDiffViewer
                         newValue={JSON.stringify(
                             this.state.toggleState === "doc"
-                                ? this.props.selectedMessage?.document
-                                : this.props.selectedMessage?.message,
+                                ? this.props.selectedMessage?.document.doc
+                                : IdentityHelper.transformDocument(
+                                    this.props.selectedMessage?.message,
+                                    this.mode,
+                                    this.props.version
+                                ),
                             null,
                             4
                         )}
@@ -128,15 +137,23 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                                 this.props.selectedComparisonMessage.document
                                 ? JSON.stringify(
                                     this.state.toggleState === "doc"
-                                        ? this.props.selectedComparisonMessage.document
-                                        : this.props.selectedComparisonMessage.message,
+                                        ? this.props.selectedComparisonMessage.document.doc
+                                        : IdentityHelper.transformDocument(
+                                            this.props.selectedComparisonMessage.message,
+                                            this.mode,
+                                            this.props.version
+                                        ),
                                     null,
                                     4
                                 )
                                 : JSON.stringify(
                                     this.state.toggleState === "doc"
-                                        ? this.props.selectedMessage?.document
-                                        : this.props.selectedMessage?.message,
+                                        ? this.props.selectedMessage?.document.doc
+                                        : IdentityHelper.transformDocument(
+                                            this.props.selectedMessage?.message,
+                                            this.mode,
+                                            this.props.version
+                                        ),
                                     null,
                                     4
                                 )

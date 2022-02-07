@@ -2,7 +2,6 @@ import classNames from "classnames";
 import moment from "moment";
 import React, { Component, Fragment, ReactNode } from "react";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { IdentityHelper } from "../../../../helpers/identityHelper";
 import { DiffMessage } from "../../../../models/api/IIdentityDiffHistoryResponse";
 import { IIdentityMessageWrapper } from "../../../../models/identity/IIdentityMessageWrapper";
 import { IdentityDiffStorageService } from "../../../../services/identityDiffStorageService";
@@ -99,12 +98,13 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                                 <div key={index} className="expand-animation">
                                     <IdentityTreeItem
                                         network={this.props.network}
+                                        version={this.props.version}
                                         lastMsg={index === (this.state.diffHistory?.chainData?.length ?? 0) - 1}
                                         nested={true}
                                         firstMsg={index === 0}
                                         selectedMessage={this.props.selectedMessage}
                                         itemMessage={{
-                                            document: IdentityHelper.removeMetaDataFromDocument(value.document),
+                                            document: value.document,
                                             message: value.message,
                                             messageId: value.messageId,
                                             isDiff: true,
@@ -172,9 +172,9 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                         {/* --------- Title and timestamp --------- */}
                         <div>
                             <p className="title">{this.shortenMsgId(this.props.itemMessage.messageId ?? "")}</p>
-                            {this.props.itemMessage.document.updated ? (
+                            {this.props.itemMessage.document?.meta?.updated ? (
                                 <p className="time-stamp">
-                                    {moment(this.props.itemMessage.document.updated).format("MMM D  hh:mm:ss a")}
+                                    {moment(this.props.itemMessage.document.meta.updated).format("MMM D  hh:mm:ss a")}
                                 </p>
                             ) : (
                                 <p className="time-stamp"> n.a.</p>
@@ -249,7 +249,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
             previousMessages.push({
                 messageId: diffChainData[i].messageId,
                 message: diffChainData[i].document,
-                document: IdentityHelper.removeMetaDataFromDocument(diffChainData[i].document),
+                document: diffChainData[i].document,
                 isDiff: true
             });
         }
@@ -280,6 +280,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
         const res = await ServiceFactory.get<IdentityService>("identity").resolveDiffHistory(
             this.props.itemMessage.messageId,
             this.props.network,
+            this.props.version,
             this.props.itemMessage.message
         );
 
@@ -305,7 +306,6 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                     this.removeEscapingBackslash((diff?.message as DiffMessage).diff as string) ?? ""
                 );
                 res.chainData[i].isDiff = true;
-                res.chainData[i].document = IdentityHelper.removeMetaDataFromDocument(res.chainData[i].document);
             }
         }
 

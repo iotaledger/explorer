@@ -23,12 +23,13 @@ export class IdentityService {
      * resolves history of DID
      * @param  {string} did DID of which the history to be resolved
      * @param  {string} network network name
+     * @param  {string} version version of the DID
      * @returns Promise
      */
-    public async resolveHistory(did: string, network: string): Promise<IIdentityDidHistoryResponse> {
+    public async resolveHistory(did: string, network: string, version: string): Promise<IIdentityDidHistoryResponse> {
         const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-        const response = await apiClient.didHistory({ network, did });
+        const response = await apiClient.didHistory({ network, did, version });
 
         return response;
     }
@@ -37,17 +38,19 @@ export class IdentityService {
      * resolves Diff history of and integration message
      * @param  {string} integrationMsgId MessageId of the parent integration message
      * @param  {string} network network name
+     * @param  {string} version DID version
      * @param payload the body of the request
      * @returns Promise
      */
     public async resolveDiffHistory(
         integrationMsgId: string,
         network: string,
+        version: string,
         payload: unknown
     ): Promise<IIdentityDiffHistoryResponse> {
         const apiClient = ServiceFactory.get<ApiClient>("api-client");
 
-        const response = await apiClient.diffHistory({ network, integrationMsgId }, payload);
+        const response = await apiClient.diffHistory({ network, integrationMsgId, version }, payload);
 
         return response;
     }

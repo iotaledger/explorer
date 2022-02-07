@@ -1,10 +1,11 @@
+/* eslint-disable max-len */
 import { IMessageMetadata } from "@iota/iota.js";
 import React, { Fragment, ReactNode } from "react";
+import { HiDownload } from "react-icons/hi";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../helpers/downloadHelper";
-import { IdentityHelper } from "../../helpers/identityHelper";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
 import { IdentityDiffStorageService } from "../../services/identityDiffStorageService";
 import { IdentityService } from "../../services/identityService";
@@ -24,6 +25,7 @@ import messageJSON from "./../../assets/modals/message.json";
 import "./IdentityResolver.scss";
 import { IdentityResolverProps } from "./IdentityResolverProps";
 import { IdentityResolverState } from "./IdentityResolverState";
+
 
 class IdentityResolver extends AsyncComponent<
     RouteComponentProps<IdentityResolverProps> & { isSupported: boolean },
@@ -59,7 +61,8 @@ class IdentityResolver extends AsyncComponent<
             messageTangleStatus: "pending",
             didExample: undefined,
             resolvedHistory: undefined,
-            historyError: false
+            historyError: false,
+            version: undefined
         };
     }
 
@@ -90,11 +93,11 @@ class IdentityResolver extends AsyncComponent<
         }
 
         if (res.document) {
-            res.document = IdentityHelper.removeMetaDataFromDocument(res.document);
             this.setState({
                 resolvedIdentity: res,
                 isIdentityResolved: true,
-                latestMessageId: res.messageId ?? undefined
+                latestMessageId: res.messageId ?? undefined,
+                version: res.version
             });
 
             await this.updateMessageDetails(res.messageId ?? "");
@@ -178,7 +181,7 @@ class IdentityResolver extends AsyncComponent<
                                     </Fragment>
                                 )}
                                 {this.state.did && (
-                                    <div>
+                                    <Fragment>
                                         <div className="row space-between wrap  ">
                                             <div className="row middle">
                                                 <h1>
@@ -193,6 +196,24 @@ class IdentityResolver extends AsyncComponent<
                                                     <h2>General
                                                         <Modal icon={ModalIcon.Info} data={messageJSON} />
                                                     </h2>
+                                                    {this.state.version && this.state.version === "legacy" && (
+                                                        <div className="legacy-method">
+                                                            <span>
+                                                                This DID was created by a deprecated version of the identity
+                                                                {" "}
+                                                                library. If this is your DID you can recreate it using the
+                                                                {" "}
+                                                            </span>
+                                                            <a
+                                                                href="https://github.com/iotaledger/identity.rs/releases"
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                            >
+                                                                latest version
+                                                            </a>.
+                                                        </div>
+                                                    )}
+
                                                     {!this.state.error &&
                                                         !(this.state.latestMessageId === this.EMPTY_MESSAGE_ID) && (
                                                             <MessageTangleState
@@ -245,50 +266,60 @@ class IdentityResolver extends AsyncComponent<
                                                         </Fragment>
                                                     )}
                                             </div>
-                                        </div>
 
-                                        <div className="section">
-                                            <div className="section--header">
-                                                <h2>Content
-                                                    <Modal icon={ModalIcon.Info} data={messageJSON} />
-                                                </h2>
-                                            </div>
-                                            <div className="section--data">
-                                                <div className="row middle margin-b-s row--tablet-responsive">
-                                                    {!this.state.isIdentityResolved && !this.state.error && (
-                                                        <React.Fragment>
-                                                            <h3 className="margin-r-s">Resolving DID ...</h3>
-                                                            <Spinner />
-                                                        </React.Fragment>
-                                                    )}
+                                            <div className="section">
+                                                <div className="section--header">
+                                                    <h2>Content
+                                                        <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                                    </h2>
+                                                </div>
+                                                <div className="section--data">
+                                                    <div className="row middle margin-b-s row--tablet-responsive">
+                                                        {!this.state.isIdentityResolved && !this.state.error && (
+                                                            <React.Fragment>
+                                                                <h3 className="margin-r-s">Resolving DID ...</h3>
+                                                                <Spinner />
+                                                            </React.Fragment>
+                                                        )}
 
-                                                    {this.state.resolvedIdentity && (
-                                                        <div className="w100">
-                                                            <div className="identity-json-header">
-                                                                <div>
-                                                                    <IdentityMessageIdOverview
-                                                                        status="integration"
-                                                                        messageId={
-                                                                            this.state.resolvedIdentity.messageId
-                                                                        }
-                                                                        onClick={() => {
-                                                                            this.props.history.push(
-                                                                                // eslint-disable-next-line max-len
-                                                                                `/${this.props.match.params.network}/message/${this.state.resolvedIdentity?.messageId}`
-                                                                            );
-                                                                        }}
-                                                                    />
+                                                        {this.state.resolvedIdentity && (
+                                                            <div className="w100">
+                                                                <div className="identity-json-header">
+                                                                    <div>
+                                                                        <IdentityMessageIdOverview
+                                                                            status="integration"
+                                                                            messageId={
+                                                                                this.state.resolvedIdentity.messageId
+                                                                            }
+                                                                            onClick={() => {
+                                                                                this.props.history.push(
+                                                                                    // eslint-disable-next-line max-len
+                                                                                    `/${this.props.match.params.network}/message/${this.state.resolvedIdentity?.messageId}`
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                    </div>
+
+                                                                    <a
+                                                                        href={DownloadHelper.createJsonDataUrl(
+                                                                            this.state.resolvedIdentity.document
+                                                                        )}
+                                                                        download={DownloadHelper.filename(
+                                                                            this.state.resolvedIdentity
+                                                                                .messageId ?? "did",
+                                                                            "json"
+                                                                        )}
+                                                                        role="button"
+                                                                    >
+                                                                        <HiDownload />
+                                                                    </a>
                                                                 </div>
-
-                                                                <a
-                                                                    href={DownloadHelper.createJsonDataUrl(
-                                                                        this.state.resolvedIdentity.document
-                                                                    )}
-                                                                    download={DownloadHelper.filename(
-                                                                        this.state.resolvedIdentity.messageId ?? "did",
-                                                                        "json"
-                                                                    )}
-                                                                    role="button"
+                                                                <div
+                                                                    className="
+                                                                    card--value
+                                                                    card--value-textarea
+                                                                card--value-textarea__json
+                                                                "
                                                                 >
                                                                     <svg
                                                                         width="18"
@@ -302,38 +333,34 @@ class IdentityResolver extends AsyncComponent<
                                                                         {/* eslint-disable-next-line max-len */}
                                                                         <path d="M2 14C2 13.4477 1.55228 13 1 13C0.447715 13 0 13.4477 0 14V15C0 16.1046 0.895431 17 2 17H16C17.1046 17 18 16.1046 18 15V14C18 13.4477 17.5523 13 17 13C16.4477 13 16 13.4477 16 14V15H2V14Z" fill="#485776" />
                                                                     </svg>
-                                                                </a>
-                                                            </div>
-                                                            <div
-                                                                className="
+                                                                </div>
+                                                                <div
+                                                                    className="
                                                             json-wraper
                                                             card--value
                                                             card--value-textarea
                                                             card--value-textarea__json
                                                             "
-                                                            >
-                                                                <JsonViewer
-                                                                    json={JSON.stringify(
-                                                                        this.state.resolvedIdentity.document,
-                                                                        null,
-                                                                        4
-                                                                    )}
-                                                                />
+                                                                >
+                                                                    <JsonViewer
+                                                                        json={JSON.stringify(
+                                                                            this.state.resolvedIdentity.document,
+                                                                            null,
+                                                                            4
+                                                                        )}
+                                                                    />
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    )}
-                                                    {this.state.error && (
-                                                        <div className="identity-json-container did-error">
-                                                            <p className="margin-b-t">ಠ_ಠ </p>
-                                                            <p className="">{this.state.errorMessage}</p>
-                                                        </div>
-                                                    )}
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        {this.state.isIdentityResolved && <IdentityHistory {...this.props} />}
-                                    </div>
+                                            {this.state.isIdentityResolved &&
+                                                this.state.version &&
+                                                <IdentityHistory version={this.state.version} {...this.props} />}
+                                        </div>
+                                    </Fragment>
                                 )}
                             </div>
                         </div>

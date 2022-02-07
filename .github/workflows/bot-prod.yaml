@@ -16,40 +16,20 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # Build specific env vars
-      CONFIG_ID: prod
-      BOT_CONFIG_JSON: ${{ secrets.PROD_BOT_CONFIG_JSON }}
-      GCP_SERVICE_ID: ${{ secrets.GCP_BOT_PROD_SERVICE_ID }}
-      GCP_PROD_SERVICE_ID: ${{ secrets.GCP_PROD_SERVICE_ID }}
-      GCP_PROD_DOMAIN: ${{ secrets.GCP_PROD_DOMAIN }}
-      GCP_STAGING_SERVICE_ID: ${{ secrets.GCP_STAGING_SERVICE_ID }}
-      GCP_STAGING_DOMAIN: ${{ secrets.GCP_STAGING_DOMAIN }}
-      GCP_PROD_FEED_SERVICE_ID: ${{ secrets.GCP_PROD_FEED_SERVICE_ID }}
-      GCP_PROD_FEED_DOMAIN: ${{ secrets.GCP_PROD_FEED_DOMAIN }}
-      GCP_STAGING_FEED_SERVICE_ID: ${{ secrets.GCP_STAGING_FEED_SERVICE_ID }}
-      GCP_STAGING_FEED_DOMAIN: ${{ secrets.GCP_STAGING_FEED_DOMAIN }}
-      GCP_BOT_PROD_SERVICE_ID: ${{ secrets.GCP_BOT_PROD_SERVICE_ID }}
-      GCP_BOT_PROD_DOMAIN: ${{ secrets.GCP_BOT_PROD_DOMAIN }}
+      CONFIG_JSON: ${{ secrets.BOT_CONFIG }}
+      APP_YAML: ${{ secrets.BOT_GCP_APP_YAML }}
+      DISPATCH_YAML: ${{ secrets.COMMON_GCP_DISPATCH_YAML }}
 
     steps:
       - uses: actions/checkout@v2
-      - name: Bot Config
-        run: |
-          cd discord-bot/src/data/
-          echo ${{ env.BOT_CONFIG_JSON }} > config.$CONFIG_ID.json
-      - name: GCP Config
-        run: |
-          cd discord-bot
-          mv app.template.prod.yaml app.yaml
-          sed -i 's/%SERVICE-ID%/${{ env.GCP_SERVICE_ID }}/g' app.yaml
-          sed -i 's/%CONFIG-ID%/${{ env.CONFIG_ID }}/g' app.yaml
-          mv dispatch.template.prod.yaml dispatch.yaml
-          sed -i 's/%GCP-PROD-DOMAIN%/${{ env.GCP_PROD_DOMAIN }}/g' dispatch.yaml
-          sed -i 's/%GCP-PROD-SERVICE-ID%/${{ env.GCP_PROD_SERVICE_ID }}/g' dispatch.yaml
-          sed -i 's/%GCP-STAGING-DOMAIN%/${{ env.GCP_STAGING_DOMAIN }}/g' dispatch.yaml
-          sed -i 's/%GCP-STAGING-SERVICE-ID%/${{ env.GCP_STAGING_SERVICE_ID }}/g' dispatch.yaml
-          sed -i 's/%GCP-BOT-PROD-DOMAIN%/${{ env.GCP_BOT_PROD_DOMAIN }}/g' dispatch.yaml
-          sed -i 's/%GCP-BOT-PROD-SERVICE-ID%/${{ env.GCP_BOT_PROD_SERVICE_ID }}/g' dispatch.yaml
+      - name: API and GCP Config
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const fs = require('fs')
+            fs.writeFileSync('./discord-bot/src/data/config.prod.json', process.env.CONFIG_JSON)
+            fs.writeFileSync('./discord-bot/dispatch.yaml', process.env.DISPATCH_YAML)
+            fs.writeFileSync('./discord-bot/app.yaml', process.env.APP_YAML)      
       - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:
