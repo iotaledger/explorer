@@ -140,7 +140,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                                         <span>Maximum 64 UTF-8 chars or maximum 128 hex chars</span>
                                                     </li>
                                                     <li>
-                                                        <span>DiD</span>
+                                                        <span>DID</span>
                                                         <span>64 Hex characters starting with did:iota:</span>
                                                     </li>
                                                 </ul>
