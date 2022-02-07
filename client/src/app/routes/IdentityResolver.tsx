@@ -181,7 +181,7 @@ class IdentityResolver extends AsyncComponent<
                                     </Fragment>
                                 )}
                                 {this.state.did && (
-                                    <Fragment>
+                                    <div>
                                         <div className="row space-between wrap  ">
                                             <div className="row middle">
                                                 <h1>
@@ -190,81 +190,84 @@ class IdentityResolver extends AsyncComponent<
                                                 <Modal icon={ModalIcon.Dots} data={messageJSON} />
                                             </div>
                                         </div>
-                                        <div className="section">
-                                            <div className="section--header row space-between">
-                                                <div className="row row--tablet-responsive middle space-between w100">
-                                                    <h2>General
-                                                        <Modal icon={ModalIcon.Info} data={messageJSON} />
-                                                    </h2>
-                                                    {this.state.version && this.state.version === "legacy" && (
-                                                        <div className="legacy-method">
-                                                            <span>
-                                                                This DID was created by a deprecated version of the identity
-                                                                {" "}
-                                                                library. If this is your DID you can recreate it using the
-                                                                {" "}
-                                                            </span>
-                                                            <a
-                                                                href="https://github.com/iotaledger/identity.rs/releases"
-                                                                target="_blank"
-                                                                rel="noreferrer"
-                                                            >
-                                                                latest version
-                                                            </a>.
-                                                        </div>
-                                                    )}
+                                        <div>
+                                            {this.state.version && this.state.version === "legacy" && (
+                                                <div className="section">
+                                                    <div className="legacy-method">
+                                                        <span>
+                                                            This DID was created by a deprecated version of the identity
+                                                            {" "}
+                                                            library. If this is your DID you can recreate it using the
+                                                            {" "}
+                                                        </span>
+                                                        <a
+                                                            href="https://github.com/iotaledger/identity.rs/releases"
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                        >
+                                                            latest version
+                                                        </a>.
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <div className="section">
+                                                <div className="section--header row space-between">
+                                                    <div className="row row--tablet-responsive middle space-between w100">
+                                                        <h2>General
+                                                            <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                                        </h2>
+                                                        {!this.state.error &&
+                                                            !(this.state.latestMessageId === this.EMPTY_MESSAGE_ID) && (
+                                                                <MessageTangleState
+                                                                    network={this.props.match.params.network}
+                                                                    status={this.state.messageTangleStatus}
+                                                                    milestoneIndex={
+                                                                        this.state.metadata?.referencedByMilestoneIndex ??
+                                                                        this.state.metadata?.milestoneIndex
+                                                                    }
+                                                                    onClick={this.state.metadata?.referencedByMilestoneIndex
+                                                                        ? (messageId: string) => this.props.history.push(
+                                                                            `/${this.props.match.params.network
+                                                                            }/search/${messageId}`)
+                                                                        : undefined}
+                                                                />
+                                                            )}
+                                                    </div>
 
-                                                    {!this.state.error &&
-                                                        !(this.state.latestMessageId === this.EMPTY_MESSAGE_ID) && (
-                                                            <MessageTangleState
-                                                                network={this.props.match.params.network}
-                                                                status={this.state.messageTangleStatus}
-                                                                milestoneIndex={
-                                                                    this.state.metadata?.referencedByMilestoneIndex ??
-                                                                    this.state.metadata?.milestoneIndex
-                                                                }
-                                                                onClick={this.state.metadata?.referencedByMilestoneIndex
-                                                                    ? (messageId: string) => this.props.history.push(
-                                                                        `/${this.props.match.params.network
-                                                                        }/search/${messageId}`)
-                                                                    : undefined}
-                                                            />
+                                                </div>
+                                                <div className="section--data">
+                                                    <div className="label">DID</div>
+                                                    <div className="row middle value code highlight margin-b-s">
+                                                        <div className="margin-r-t">{this.state.did}</div>
+                                                        <MessageButton
+                                                            onClick={() => ClipboardHelper.copy(this.state.did)}
+                                                            buttonType="copy"
+                                                            labelPosition="top"
+                                                        />
+                                                    </div>
+                                                    {this.state.resolvedIdentity &&
+                                                        !this.state.error &&
+                                                        this.state.resolvedIdentity?.messageId !==
+                                                        this.EMPTY_MESSAGE_ID && (
+                                                            <Fragment>
+                                                                <div className="label">Latest Message Id</div>
+                                                                <div className="value code row middle">
+                                                                    <div className="margin-r-t">
+                                                                        {this.state.resolvedIdentity?.messageId}
+                                                                    </div>
+                                                                    <MessageButton
+                                                                        onClick={() =>
+                                                                            ClipboardHelper.copy(
+                                                                                this.state.resolvedIdentity
+                                                                                    ?.messageId
+                                                                            )}
+                                                                        buttonType="copy"
+                                                                        labelPosition="top"
+                                                                    />
+                                                                </div>
+                                                            </Fragment>
                                                         )}
                                                 </div>
-
-                                            </div>
-                                            <div className="section--data">
-                                                <div className="label">DID</div>
-                                                <div className="row middle value code highlight margin-b-s">
-                                                    <div className="margin-r-t">{this.state.did}</div>
-                                                    <MessageButton
-                                                        onClick={() => ClipboardHelper.copy(this.state.did)}
-                                                        buttonType="copy"
-                                                        labelPosition="top"
-                                                    />
-                                                </div>
-                                                {this.state.resolvedIdentity &&
-                                                    !this.state.error &&
-                                                    this.state.resolvedIdentity?.messageId !==
-                                                    this.EMPTY_MESSAGE_ID && (
-                                                        <Fragment>
-                                                            <div className="label">Latest Message Id</div>
-                                                            <div className="value code row middle">
-                                                                <div className="margin-r-t">
-                                                                    {this.state.resolvedIdentity?.messageId}
-                                                                </div>
-                                                                <MessageButton
-                                                                    onClick={() =>
-                                                                        ClipboardHelper.copy(
-                                                                            this.state.resolvedIdentity
-                                                                                ?.messageId
-                                                                        )}
-                                                                    buttonType="copy"
-                                                                    labelPosition="top"
-                                                                />
-                                                            </div>
-                                                        </Fragment>
-                                                    )}
                                             </div>
 
                                             <div className="section">
@@ -314,26 +317,7 @@ class IdentityResolver extends AsyncComponent<
                                                                         <HiDownload />
                                                                     </a>
                                                                 </div>
-                                                                <div
-                                                                    className="
-                                                                    card--value
-                                                                    card--value-textarea
-                                                                card--value-textarea__json
-                                                                "
-                                                                >
-                                                                    <svg
-                                                                        width="18"
-                                                                        height="17"
-                                                                        viewBox="0 0 18 17"
-                                                                        fill="none"
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                    >
-                                                                        {/* eslint-disable-next-line max-len */}
-                                                                        <path d="M3.34921 8.47354C2.92988 8.11412 2.88132 7.48282 3.24074 7.06349C3.60017 6.64417 4.23147 6.59561 4.65079 6.95503L8 9.82578V1C8 0.447715 8.44771 0 9 0C9.55228 0 10 0.447715 10 1V9.82578L13.3492 6.95503C13.7685 6.59561 14.3998 6.64417 14.7593 7.0635C15.1187 7.48282 15.0701 8.11412 14.6508 8.47354L9 13.3171L3.34921 8.47354Z" fill="#485776" />
-                                                                        {/* eslint-disable-next-line max-len */}
-                                                                        <path d="M2 14C2 13.4477 1.55228 13 1 13C0.447715 13 0 13.4477 0 14V15C0 16.1046 0.895431 17 2 17H16C17.1046 17 18 16.1046 18 15V14C18 13.4477 17.5523 13 17 13C16.4477 13 16 13.4477 16 14V15H2V14Z" fill="#485776" />
-                                                                    </svg>
-                                                                </div>
+
                                                                 <div
                                                                     className="
                                                             json-wraper
@@ -360,7 +344,7 @@ class IdentityResolver extends AsyncComponent<
                                                 this.state.version &&
                                                 <IdentityHistory version={this.state.version} {...this.props} />}
                                         </div>
-                                    </Fragment>
+                                    </div>
                                 )}
                             </div>
                         </div>
