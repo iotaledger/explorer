@@ -31,6 +31,10 @@
   --card-color: #{$gray-6};
   --message-tree-bg: #{$gray-2};
   --visualizer-bg: #{$white};
+  --pagination-color: #{$gray-6};
+  --pagination-selected-color: #{$white};
+  --pagination-arrrow-color: #{$gray-8};
+  --pagination-disabled-color: #{$gray-5};
 
   body.darkmode {
     --body-background: #091326;
@@ -62,5 +66,9 @@
     --card-color: #{$gray-4};
     --message-tree-bg: #ffffff1f;
     --visualizer-bg: #{$gray-midnight};
+    --pagination-color: #{$gray-5};
+    --pagination-selected-color: #{$gray-9};
+    --pagination-arrrow-color: #{$gray-1};
+    --pagination-disabled-color: #{$gray-3};
   }
 }

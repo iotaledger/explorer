@@ -1,0 +1,82 @@
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/media-queries';
+@import '../../scss/variables';
+@import '../../scss/themes';
+
+.pagination {
+    display: flex;
+    align-self: center;
+    list-style-type: none;
+
+    &.hidden {
+        display: none;
+    }
+    .pagination-item {
+        @include font-size(14px);
+
+        padding: 0 12px;
+        height: 32px;
+        min-width: 32px;
+        text-align: center;
+        margin: auto 4px;
+        color: var(--pagination-color);
+        display: flex;
+        box-sizing: border-box;
+        align-items: center;
+        border-radius: 6px;
+        font-family: $metropolis;
+
+        &.dots:hover {
+            background-color: transparent;
+            cursor: default;
+        }
+        &:hover {
+            background-color: $mint-green-1;
+            cursor: pointer;
+        }
+
+        &.selected {
+            background-color: $mint-green-6;
+            color: var(--pagination-selected-color);
+        }
+
+        .arrow {
+            &::before {
+                position: relative;
+                content: '';
+                display: inline-block;
+                width: 0.4em;
+                height: 0.4em;
+                border-right: 0.12em solid;
+                border-top: 0.12em solid;
+                border-right-color: var(--pagination-arrow-color);
+                border-top-color: var(--pagination-arrow-color);
+            }
+
+            &.left {
+                transform: rotate(-135deg) translate(-25%);
+            }
+
+            &.right {
+                transform: rotate(45deg);
+            }
+        }
+
+        &.disabled {
+            pointer-events: none;
+
+            .arrow::before {
+                border-right: 0.12em solid;
+                border-top: 0.12em solid;
+                border-right-color: var(--pagination-disabled-color);
+                border-top-color: var(--pagination-disabled-color);
+            }
+
+            &:hover {
+                background-color: transparent;
+                cursor: default;
+            }
+        }
+    }
+}
