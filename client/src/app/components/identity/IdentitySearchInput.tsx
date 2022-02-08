@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import { FaSearch } from "react-icons/fa";
 import AsyncComponent from "../AsyncComponent";
+import { ReactComponent as SearchIcon } from "./../../../assets/search.svg";
 import "./IdentitySearchInput.scss";
 import { IdentitySearchInputProps } from "./IdentitySearchInputProps";
 import { IdentitySearchInputState } from "./IdentitySearchInputState";
@@ -35,6 +35,7 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
                     "identity-search-input--compact": this.props.compact
                 })}
             >
+                <SearchIcon />
                 <input
                     autoFocus={!this.props.compact}
                     className="identity-search--text-input"
@@ -53,15 +54,6 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
                         }
                     }}
                 />
-
-                <button
-                    className="identity-search--button"
-                    type="submit"
-                    onClick={() => this.doSearch()}
-                    disabled={!this.state.isValid}
-                >
-                    {this.props.compact ? <FaSearch /> : "Search"}
-                </button>
                 {this.state.networkMismatch && <p>Selected Network may not match DID Network</p>}
             </div>
         );

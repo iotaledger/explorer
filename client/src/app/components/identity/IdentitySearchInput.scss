@@ -6,8 +6,10 @@
 
 .identity-search-input {
   display: flex;
+  position: relative;
   flex: 1;
   flex-direction: row;
+  align-items: center;
   width: 100%;
   margin: 0;
   backdrop-filter: blur(1px);
@@ -17,10 +19,10 @@
 
     flex: 1;
     height: 48px;
-    padding: 0 24px;
+    padding: 12px 12px 12px 52px;
     transition: border-color 0.2s ease;
     border: 1px solid var(--input-border-color);
-    border-radius: 6px 0 0 6px;
+    border-radius: 6px;
     background-color: transparent;
     box-shadow: none;
     color: var(--body-color);
@@ -36,49 +38,8 @@
 
     @include phone-down {
       @include font-size(12px);
-
       height: 32px;
-      padding: 0 12px;
     }
-  }
-
-  .identity-search--button {
-    @include font-size(14px);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 117px;
-    border: 2px solid $main-green-highlight;
-    border-radius: 0 6px 6px 0;
-    background-color: $main-green-highlight;
-    color: $white;
-    font-family: $inter;
-    font-weight: bold;
-    text-align: center;
-    cursor: pointer;
-
-    @include phone-down {
-      @include font-size(12px);
-
-      width: 64px;
-    }
-
-    &:focus {
-      box-shadow: 0 0 3px 0 $white;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-
-      @include phone-down {
-        opacity: 0.5;
-      }
-    }
-  }
-
-  .identity-search--button:hover {
-    color: $white;
   }
 
   p {
@@ -91,15 +52,7 @@
   &.identity-search-input--compact {
     .identity-search--text-input {
       @include font-size(12px);
-
       height: 38px;
-      padding: 0 12px;
-    }
-
-    .identity-search--button {
-      @include font-size(12px);
-
-      width: 38px;
     }
 
     p {
@@ -108,5 +61,14 @@
       margin: 10px 0 !important;
       color: $warning !important;
     }
+
+    svg path {
+      fill: var(--header-icon-color);
+    }
+  }
+
+  svg {
+    position: absolute;
+    left: 16px;
   }
 }
