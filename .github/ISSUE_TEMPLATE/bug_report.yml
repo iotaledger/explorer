@@ -71,7 +71,7 @@ body:
           label: Duplicate declaration
           description: Please confirm that you are not creating a duplicate issue.
           options:
-              - label: I have searched for the issues tracker this issue and there is none
+              - label: I have searched the issues tracker for this issue and there is none
                 required: true
 
     - type: checkboxes
