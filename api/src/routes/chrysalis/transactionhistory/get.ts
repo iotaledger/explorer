@@ -26,6 +26,6 @@ export async function get(
         return {};
     }
     return {
-        transactionHistory: await TangleHelper.transactionsDetails(networkConfig, request.address)
+        transactionHistory: await TangleHelper.transactionsDetails(networkConfig, request)
     };
 }

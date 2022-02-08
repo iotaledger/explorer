@@ -3,8 +3,6 @@ import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../AsyncComponent";
 import FiatValue from "../FiatValue";
 import Modal from "../Modal";
@@ -22,18 +20,12 @@ import { TransactionPayloadState } from "./TransactionPayloadState";
  */
 class TransactionPayload extends AsyncComponent<TransactionPayloadProps, TransactionPayloadState> {
     /**
-     * API Client for tangle requests.
-     */
-    private readonly _tangleCacheService: TangleCacheService;
-    /**
      * Create a new instance of TransactionPayload.
      * @param props The props.
      */
 
     constructor(props: TransactionPayloadProps) {
         super(props);
-
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
         this.state = {
             showInputDetails: -1,
