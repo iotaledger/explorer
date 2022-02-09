@@ -164,4 +164,8 @@
   background-color: rgb(250, 247, 208);
   color: $warning;
   font-family: $metropolis;
+
+  a {
+    color: $blue-5 !important;
+  }
 }
