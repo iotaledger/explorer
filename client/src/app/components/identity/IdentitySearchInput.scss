@@ -38,6 +38,7 @@
 
     @include phone-down {
       @include font-size(12px);
+
       height: 32px;
     }
   }
@@ -52,6 +53,7 @@
   &.identity-search-input--compact {
     .identity-search--text-input {
       @include font-size(12px);
+
       height: 38px;
     }
 
@@ -61,14 +63,14 @@
       margin: 10px 0 !important;
       color: $warning !important;
     }
-
-    svg path {
-      fill: var(--header-icon-color);
-    }
   }
 
   svg {
     position: absolute;
     left: 16px;
+
+    path {
+      fill: var(--header-icon-color);
+    }
   }
 }
