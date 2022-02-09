@@ -1,7 +1,8 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .search {
   display: flex;
@@ -36,6 +37,7 @@
 
         li {
           margin-bottom: 10px;
+          color: var(--body-color);
 
           > span {
             &:first-child {

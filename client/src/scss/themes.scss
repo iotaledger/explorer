@@ -35,6 +35,7 @@
   --pagination-selected-color: #{$white};
   --pagination-arrrow-color: #{$gray-8};
   --pagination-disabled-color: #{$gray-5};
+  --search-svg: #{$gray-6};
 
   body.darkmode {
     --body-background: #091326;
@@ -70,5 +71,6 @@
     --pagination-selected-color: #{$gray-9};
     --pagination-arrrow-color: #{$gray-1};
     --pagination-disabled-color: #{$gray-3};
+    --search-svg: #{$gray-5};
   }
 }

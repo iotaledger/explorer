@@ -16,6 +16,10 @@
   svg {
     position: absolute;
     left: 16px;
+
+    path {
+      fill: var(--search-svg);
+    }
   }
 
   .search--text-input {
