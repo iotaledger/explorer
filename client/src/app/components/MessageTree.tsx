@@ -78,7 +78,17 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
         }
     }
 
-    public componentDidUpdate(prevProps: MessageTreeProps): void {
+    public scrollToMessageTree() {
+        const top = document?.getElementById("message-tree")?.offsetTop ?? 0;
+        const OFFSET = 200;
+        window.scrollTo({
+            left: 0,
+            top: top - OFFSET,
+            behavior: "smooth"
+        });
+    }
+
+    public componentDidUpdate(prevProps: MessageTreeProps, prevState: MessageTreeState): void {
         if (prevProps !== this.props) {
             this.setState(
                 {
@@ -89,18 +99,6 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                     this.loadItemsUI();
                     this.setState({ isBusy: false });
                 });
-
-            if (this.props.parentsIds !== prevProps.parentsIds || this.props.childrenIds !== prevProps.childrenIds) {
-                // ------- Scroll to messages tree section -------
-                const top = document?.getElementById("message-tree")?.offsetTop ?? 0;
-                const OFFSET = 200;
-                window.scrollTo({
-                    left: 0,
-                    top: top - OFFSET,
-                    behavior: "smooth"
-                });
-                // -----------------------------------------------
-            }
         }
     }
 
@@ -157,6 +155,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                             className={item.type}
                             key={item.id}
                             onClick={() => {
+                                this.scrollToMessageTree();
                                 this.setState({ currentMessage: item.id, isBusy: true }, () => {
                                     this.props.onSelected(item.id, true);
                                 });
