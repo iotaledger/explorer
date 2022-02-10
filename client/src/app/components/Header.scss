@@ -67,7 +67,14 @@ header {
 
     .inner--main {
       flex: 1;
+      justify-content: space-between;
       padding: 0 14px 0 24px;
+
+      .inner-wrapper {
+        display: flex;
+        align-items: center;
+        width: 100%;
+      }
 
       .mobile-fiat {
         display: none;
