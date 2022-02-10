@@ -153,15 +153,18 @@ class IdentityResolver extends AsyncComponent<
                                                     invalid DID messages.
                                                 </p>
                                             </div>
-                                            <div className="row middle margin-b-s row--tablet-responsive">
-                                                <IdentitySearchInput
-                                                    compact={false}
-                                                    onSearch={e => {
-                                                        this.props.history.push(e);
-                                                    }}
-                                                    network={this.props.match.params.network}
-                                                />
-                                            </div>
+                                            {this.props.isSupported && (
+                                                <div className="row middle margin-b-s row--tablet-responsive">
+                                                    <IdentitySearchInput
+                                                        compact={false}
+                                                        onSearch={e => {
+                                                            this.props.history.push(e);
+                                                        }}
+                                                        network={this.props.match.params.network}
+                                                    />
+                                                </div>
+                                            )}
+
                                             {this.state.didExample && (
                                                 <button
                                                     className="load-history-button"
