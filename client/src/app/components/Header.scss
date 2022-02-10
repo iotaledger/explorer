@@ -92,6 +92,10 @@ header {
       @include desktop-down {
         padding: 0 24px;
       }
+
+      @media (max-width: 380px) {
+        padding: 0 32px;
+      }
     }
 
     .navigation--item,
