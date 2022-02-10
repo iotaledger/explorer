@@ -145,6 +145,9 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
         this.props.onSearch(this.props.protocolVersion === "og"
             ? this.state.query.trim().toUpperCase()
             : this.state.query.trim());
+
+        // Clear search input field when a search has been made.
+        this.setState({ query: "" });
     }
 }
 
