@@ -276,6 +276,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             />
                                         </Switch>
                                     )}
+                                <div className="copyright">
+                                    <div className="copyright-inner">
+                                        This explorer implementation is heavily inspired
+                                        by <a href="https://thetangle.org">thetangle.org</a>.
+                                    </div>
+                                </div>
                             </React.Fragment>
                         )
                         : (

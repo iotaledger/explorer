@@ -32,5 +32,23 @@
     }
   }
 
+  .copyright {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+
+    .copyright-inner {
+      max-width: $desktop-width;
+      color: var(--body-color);
+      font-family: $metropolis;
+
+      @include font-size(12px);
+
+      a {
+        color: $main-green-highlight;
+      }
+    }
+  }
+
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
