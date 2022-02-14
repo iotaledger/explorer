@@ -36,6 +36,8 @@
   --pagination-arrrow-color: #{$gray-8};
   --pagination-disabled-color: #{$gray-5};
   --search-svg: #{$gray-6};
+  --identity-added: #e6ffed;
+  --identity-removed: #ffeef0;
 
   body.darkmode {
     --body-background: #091326;
@@ -72,5 +74,7 @@
     --pagination-arrrow-color: #{$gray-1};
     --pagination-disabled-color: #{$gray-3};
     --search-svg: #{$gray-5};
+    --identity-added: rgba(20, 202, 191, 0.08);
+    --identity-removed: rgba(118, 45, 52, 0.49);
   }
 }

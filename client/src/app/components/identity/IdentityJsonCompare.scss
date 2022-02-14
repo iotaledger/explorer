@@ -8,16 +8,11 @@
 }
 
 .diff-wrapper {
-  padding-right: 8px;
   border: 1px solid $gray-3;
   border-top: 0;
 
   * {
     word-break: break-all;
-  }
-
-  td {
-    background-color: var(--background-color);
   }
 }
 

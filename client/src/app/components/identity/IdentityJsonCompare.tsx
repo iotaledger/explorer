@@ -166,7 +166,11 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                         styles={{
                             variables: {
                                 light: {
-                                    diffViewerBackground: "var(--body-background)"
+                                    diffViewerBackground: "var(--body-background)",
+                                    addedBackground: "var(--identity-added)",
+                                    removedBackground: "var(--identity-removed)",
+                                    addedColor: "var(--body-color)",
+                                    removedColor: "var(--body-color)"
                                 }
                             }
                         }}
