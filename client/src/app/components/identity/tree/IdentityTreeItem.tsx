@@ -305,8 +305,8 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
                 (res.chainData[i].message as DiffMessage).diff = JSON.parse(
                     this.removeEscapingBackslash((diff?.message as DiffMessage).diff as string) ?? ""
                 );
-                res.chainData[i].isDiff = true;
             }
+            res.chainData[i].isDiff = true;
         }
 
         this.setState({
