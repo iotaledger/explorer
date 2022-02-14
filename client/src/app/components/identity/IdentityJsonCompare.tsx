@@ -70,7 +70,7 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                                     "toggle-button-active": this.state.toggleState === "doc"
                                 })}
                             >
-                                Raw
+                                Doc
                             </div>
                             <div className="toggle-separator" />
                             <div
@@ -78,7 +78,7 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                                     "toggle-button-active": this.state.toggleState === "msg"
                                 })}
                             >
-                                Normal
+                                Msg
                             </div>
                         </div>
                         {/* --------- Download Icon --------- */}
@@ -166,7 +166,11 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                         styles={{
                             variables: {
                                 light: {
-                                    diffViewerBackground: "var(--body-background)"
+                                    diffViewerBackground: "var(--body-background)",
+                                    addedBackground: "var(--identity-added)",
+                                    removedBackground: "var(--identity-removed)",
+                                    addedColor: "var(--body-color)",
+                                    removedColor: "var(--body-color)"
                                 }
                             }
                         }}

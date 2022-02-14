@@ -71,9 +71,9 @@ class MessageTangleState extends AsyncComponent<MessageTangleStateProps, Message
                                                 this.props.onClick(this.state.messageId);
                                             }
                                         }}
-                                    >Milestone
+                                    >Milestone {this.props.milestoneIndex}
                                     </span>
-                                    {" "} {this.props.milestoneIndex} {this.state.timestamp}
+                                    {" "} {this.state.timestamp}
                                 </div>
                             ) : ""}
                     </div>}
