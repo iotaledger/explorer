@@ -4,7 +4,7 @@
   --body-background: #{$white};
   --body-color: #{$gray-9};
   --active-item-color: #{$gray-midnight};
-  --navbar-bg: rgba(255, 255, 255, 0.2);
+  --navbar-bg: rgba(255, 255, 255, 0.7);
   --navbar-color: #{$gray-6};
   --header-bg: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
   --bubble-1: url("../assets/bubble-1.svg");
@@ -41,14 +41,14 @@
     --body-background: #091326;
     --body-color: #fcfcfc;
     --active-item-color: #{$gray-daylight};
-    --navbar-bg: rgba(6, 16, 35, 0.2);
+    --navbar-bg: rgba(6, 16, 35, 0.7);
     --navbar-color: #{$gray-5};
     --header-bg: linear-gradient(180deg, #{$gray-7} 0%, #{$gray-9} 100%);
     --bubble-1: url("../assets/bubble-1-darkmode.svg");
     --bubble-2: url("../assets/bubble-2-darkmode.svg");
     --header-color: #{$gray-5};
     --type-color: #{$gray-3};
-    --header-box-bg: rgba(6, 16, 35, 0.6);
+    --header-box-bg: rgba(6, 16, 35, 0.7);
     --header-label-color: #{$gray-3};
     --header-icon-color: #{$gray-5};
     --header-svg-bg: #202e4a;
