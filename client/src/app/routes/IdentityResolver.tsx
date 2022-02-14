@@ -288,7 +288,7 @@ class IdentityResolver extends AsyncComponent<
                                                             </React.Fragment>
                                                         )}
 
-                                                        {this.state.resolvedIdentity && (
+                                                        {this.state.resolvedIdentity?.document && (
                                                             <div className="w100">
                                                                 <div className="identity-json-header">
                                                                     <div>
@@ -331,7 +331,7 @@ class IdentityResolver extends AsyncComponent<
                                                                 >
                                                                     <JsonViewer
                                                                         json={JSON.stringify(
-                                                                            this.state.resolvedIdentity.document,
+                                                                            this.state.resolvedIdentity.document.doc,
                                                                             null,
                                                                             4
                                                                         )}
