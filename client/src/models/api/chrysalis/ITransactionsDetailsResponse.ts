@@ -85,6 +85,10 @@ export interface ITransaction {
          */
         amount?: number;
     };
+    /**
+     * Is transaction included in ledger.
+     */
+    ledgerInclusionState: string;
 }
 
 export interface ITransactionsDetailsResponse extends IResponse {

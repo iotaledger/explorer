@@ -249,9 +249,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                { this.currentPageTransactions.map(transaction =>
+                                                { this.currentPageTransactions.map((transaction, k) =>
                                                     (
-                                                        <React.Fragment key={transaction?.messageId}>
+                                                        <React.Fragment key={`${transaction?.messageId}${k}`}>
                                                             <Transaction
                                                                 key={transaction?.messageId}
                                                                 messageId={transaction?.messageId}
@@ -262,6 +262,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 date={transaction?.date}
                                                                 amount={transaction?.amount}
                                                                 tableFormat={true}
+                                                                hasConflicts={!transaction.ledgerInclusionState || transaction.ledgerInclusionState === "conflicting"}
                                                             />
                                                             {transaction?.relatedSpentTransaction && (
                                                                 <Transaction
@@ -283,9 +284,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                                         {/* Only visible in mobile -- Card transactions*/}
                                         <div className="transaction-cards">
-                                            {this.currentPageTransactions.map(transaction =>
+                                            {this.currentPageTransactions.map((transaction, k) =>
                                                 (
-                                                    <React.Fragment key={transaction?.messageId}>
+                                                    <React.Fragment key={`${transaction?.messageId}${k}`}>
                                                         <Transaction
                                                             key={transaction?.messageId}
                                                             messageId={transaction?.messageId}
@@ -357,21 +358,25 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         this.setState({ transactionHistory: transactionsDetails },
             async () => {
                 const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
-                const lastPageIndex = firstPageIndex + this.state.pageSize;
+                const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize))
+                    ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
                 this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
                     .catch(err => console.error(err));
 
-                const allTransactionsDetails = await this._tangleCacheService.transactionsDetails({
-                    network: this.props.match.params.network,
-                    address: this.state.address?.address ?? "",
-                    query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
-                }, true);
+                if (transactionsDetails?.transactionHistory?.state) {
+                    const allTransactionsDetails = await this._tangleCacheService.transactionsDetails({
+                        network: this.props.match.params.network,
+                        address: this.state.address?.address ?? "",
+                        query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
+                    }, true);
 
-                if (allTransactionsDetails?.transactionHistory.transactions) {
-                    this.setState({ transactionHistory: { ...allTransactionsDetails,
-                        transactionHistory: { ...allTransactionsDetails.transactionHistory,
-                            transactions: [...this.txsHistory, ...allTransactionsDetails.transactionHistory.transactions],
-                            state: allTransactionsDetails.transactionHistory.state } } });
+                    if (allTransactionsDetails?.transactionHistory.transactions) {
+                        this.setState({ transactionHistory: { ...allTransactionsDetails,
+                            transactionHistory: { ...allTransactionsDetails.transactionHistory,
+                                transactions: allTransactionsDetails.transactionHistory
+                                    .transactions?.map(t1 => ({ ...t1, ...this.txsHistory.find(t2 => t2.messageId === t1.messageId) })),
+                                state: allTransactionsDetails.transactionHistory.state } } });
+                    }
                 }
 
                 this.setState({
