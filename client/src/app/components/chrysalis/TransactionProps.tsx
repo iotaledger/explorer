@@ -34,4 +34,8 @@ export interface TransactionProps {
      * True if the transaction is rendered like a table
      */
     tableFormat?: boolean;
+    /**
+     * The message has conflicts.
+     */
+    hasConflicts?: boolean;
 }

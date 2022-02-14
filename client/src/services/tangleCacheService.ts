@@ -843,6 +843,7 @@ export class TangleCacheService {
             ?.data?.transactionHistory || skipCache) {
             const apiClient = ServiceFactory.get<ApiClient>("api-client");
             const response = await apiClient.transactionsDetails(request);
+
             if (response?.transactionHistory?.transactions) {
                 const cachedTransaction =
                     this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
@@ -863,8 +864,8 @@ export class TangleCacheService {
                     cached: Date.now()
                 };
             }
-            // Fetch next page if returned page size equals requested page size
-            if (response?.transactionHistory?.transactions?.length === request.query?.page_size) {
+
+            if (response?.transactionHistory?.state) {
                 return this.transactionsDetails({
                     network: request.network,
                     address: request.address,

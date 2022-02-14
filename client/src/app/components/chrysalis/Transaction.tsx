@@ -43,6 +43,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                                 <MessageTangleState
                                     network={this.props.network}
                                     status={this.props.messageTangleStatus}
+                                    hasConflicts={this.props.hasConflicts}
                                 />
                             )
                             : <Spinner />}
