@@ -838,20 +838,28 @@ export class TangleCacheService {
     public async transactionsDetails(
         request: ITransactionsDetailsRequest,
         skipCache: boolean = false
-        ): Promise<ITransactionsDetailsResponse | undefined> {
-        if (!this._chrysalisSearchCache[request.network][request.address]?.data?.transactionHistory || skipCache) {
+    ): Promise<ITransactionsDetailsResponse | undefined> {
+        if (!this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
+            ?.data?.transactionHistory || skipCache) {
             const apiClient = ServiceFactory.get<ApiClient>("api-client");
             const response = await apiClient.transactionsDetails(request);
             if (response?.transactionHistory?.transactions) {
-                const cachedTransaction = this._chrysalisSearchCache[request.network][request.address]
-                                                ?.data?.transactionHistory?.transactionHistory.transactions ?? [];
+                const cachedTransaction =
+                    this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
+                        ?.data?.transactionHistory?.transactionHistory.transactions ?? [];
 
-                this._chrysalisSearchCache[request.network][request.address] = {
-                    data: { transactionHistory: { ...response,
-                                transactionHistory: { ...response.transactionHistory,
-                                    transactions:
+                this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`] = {
+                    data: {
+                        transactionHistory: {
+                            ...response,
+                            transactionHistory: {
+                                ...response.transactionHistory,
+                                transactions:
                                     [...cachedTransaction, ...response.transactionHistory.transactions],
-                                    state: response.transactionHistory.state } } },
+                                state: response.transactionHistory.state
+                            }
+                        }
+                    },
                     cached: Date.now()
                 };
             }
@@ -862,11 +870,13 @@ export class TangleCacheService {
                     address: request.address,
                     query: { page_size: request.query?.page_size, state: response.transactionHistory.state }
                 },
-                skipCache);
+                    skipCache);
             }
         }
 
-        return this._chrysalisSearchCache[request.network][request.address]?.data?.transactionHistory;
+        return this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
+            ?.data
+            ?.transactionHistory;
     }
 
     /**
