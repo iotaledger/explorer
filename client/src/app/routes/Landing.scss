@@ -94,6 +94,7 @@
             padding: 24px;
 
             @include tablet-down {
+              height: 100%;
               padding: 12px;
             }
 
