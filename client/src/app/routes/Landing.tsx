@@ -1,4 +1,5 @@
 import { Units, UnitsHelper } from "@iota/iota.js";
+import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import dropdown from "../../assets/dropdown.svg";
@@ -141,15 +142,19 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         <span className="info-box--title">{
                                             this.state.networkConfig.protocolVersion === "og"
                                                 ? "Transactions"
-                                                : "Messages"
-                                        } per sec
+                                                : "Messages / Confirmations"
+                                        }
+                                            { this.state.networkConfig.protocolVersion !== "og" ? <br /> : "" }
+                                            {" "}per sec
                                         </span>
-                                        <div className="info-box--value">
+                                        <div className={classNames("info-box--value",
+                                            { "margin-t-0": this.state.networkConfig.protocolVersion !== "og" })}
+                                        >
                                             <span className="download-rate">
                                                 {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1) || "--"}
                                             </span>
                                             <span className="upload-rate">
-                                                /{NumberHelper.roundTo(Number(this.state.confirmedItemsPerSecond)
+                                                {" "}/ {NumberHelper.roundTo(Number(this.state.confirmedItemsPerSecond)
                                                     , 1) || "--"}
                                             </span>
                                         </div>
