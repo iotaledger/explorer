@@ -1,5 +1,7 @@
 import classNames from "classnames";
-import React, { Component, ReactNode } from "react";
+import React, { ReactNode } from "react";
+import AsyncComponent from "../components/AsyncComponent";
+
 import "./Pagination.scss";
 import { PaginationProps } from "./PaginationProps";
 import { PaginationState } from "./PaginationState";
@@ -7,7 +9,7 @@ import { PaginationState } from "./PaginationState";
 /**
  * Component which will display pagination.
  */
-class Pagination extends Component<PaginationProps, PaginationState> {
+class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
     /**
      * Dots for pagination.
      */
@@ -21,7 +23,8 @@ class Pagination extends Component<PaginationProps, PaginationState> {
         super(props);
         this.state = {
             paginationRange: [],
-            lastPage: 0
+            lastPage: 0,
+            isMobile: false
         };
     }
 
@@ -41,6 +44,38 @@ class Pagination extends Component<PaginationProps, PaginationState> {
     }
 
     /**
+     * The component mounted.
+     */
+    public componentDidMount(): void {
+        super.componentDidMount();
+
+        window.addEventListener("resize", this.resize.bind(this));
+        this.resize();
+    }
+
+    public resize() {
+        const isMobileViewPort = window.innerWidth < 768
+
+        if ((this.state.isMobile && !isMobileViewPort) ||
+            (!this.state.isMobile && isMobileViewPort)) {
+            if (this._isMounted) {
+                this.setState({ isMobile: isMobileViewPort },
+                    () => {
+                        this.setState({ paginationRange: this.updatePaginationRange() });
+                    });
+            }
+        }
+    }
+    /**
+     * The component will unmounted.
+     */
+    public async componentWillUnmount(): Promise<void> {
+        super.componentWillUnmount();
+        // eslint-disable-next-line unicorn/no-invalid-remove-event-listener
+        window.removeEventListener("resize", this.resize.bind(this));
+    }
+
+    /**
      * Render the component.
      * @returns The node to render.
      */
@@ -52,12 +87,24 @@ class Pagination extends Component<PaginationProps, PaginationState> {
                     "hidden": (this.props.currentPage === 0 || this.state.paginationRange.length < 2)
                 })}
             >
-                <li
+                 <li
                     className={classNames("pagination-item", {
-                  disabled: this.props.currentPage === 1
+                  disabled: this.props.currentPage < 11,
+                  "hidden": this.state.isMobile
                 })}
                     onClick={() => {
-                        this.onPrevious();
+                        this.props.onPageChange(this.props.currentPage - 10);
+                    }}
+                >
+                    <div className="arrow left" />
+                    <div className="arrow left" />
+                </li>
+                <li
+                    className={classNames("pagination-item", {
+                  disabled: this.props.currentPage === 1 
+                })}
+                    onClick={() => {
+                        this.props.onPageChange(this.props.currentPage - 1);
                     }}
                 >
                     <div className="arrow left" />
@@ -84,9 +131,21 @@ class Pagination extends Component<PaginationProps, PaginationState> {
                   disabled: this.props.currentPage === this.state.lastPage
                 })}
                     onClick={() => {
-                        this.onNext();
+                        this.props.onPageChange(this.props.currentPage + 1);
                     }}
                 >
+                    <div className="arrow right" />
+                </li>
+                <li
+                    className={classNames("pagination-item", {
+                  disabled: this.props.currentPage > this.state.lastPage - 10,
+                  "hidden": this.state.isMobile
+                })}
+                    onClick={() => {
+                        this.props.onPageChange(this.props.currentPage + 10);
+                    }}
+                >
+                    <div className="arrow right" />
                     <div className="arrow right" />
                 </li>
             </ul>
@@ -104,12 +163,13 @@ class Pagination extends Component<PaginationProps, PaginationState> {
         // Pages count is determined as siblingsCount + firstPage + lastPage + currentPage + 2*DOTS
         const totalPageNumbers: number = this.props.siblingsCount + 5;
 
+        let paginationRange: (string|number)[] = [];
         /**
          * If the number of pages is less than the page numbers we want to show in our
          * paginationComponent, we return the range [1..totalPageCount].
          */
         if (totalPageNumbers >= totalPageCount) {
-            return this.range(1, totalPageCount);
+            paginationRange = this.range(1, totalPageCount);
         }
 
         const leftSiblingIndex = Math.max(this.props.currentPage - this.props.siblingsCount, 1);
@@ -132,7 +192,7 @@ class Pagination extends Component<PaginationProps, PaginationState> {
             const leftItemCount = 3 + (2 * this.props.siblingsCount);
             const leftRange = this.range(1, leftItemCount);
 
-            return [...leftRange, Pagination.DOTS, totalPageCount];
+            paginationRange = [...leftRange, Pagination.DOTS, totalPageCount];
         }
 
         if (shouldShowLeftDots && !shouldShowRightDots) {
@@ -142,15 +202,36 @@ class Pagination extends Component<PaginationProps, PaginationState> {
               totalPageCount
             );
 
-            return [firstPageIndex, Pagination.DOTS, ...rightRange];
+            paginationRange = [firstPageIndex, Pagination.DOTS, ...rightRange];
         }
 
         if (shouldShowLeftDots && shouldShowRightDots) {
             const middleRange = this.range(leftSiblingIndex, rightSiblingIndex);
-            return [firstPageIndex, Pagination.DOTS, ...middleRange, Pagination.DOTS, lastPageIndex];
+
+            paginationRange =  [firstPageIndex, Pagination.DOTS, ...middleRange, Pagination.DOTS, lastPageIndex];
         }
 
-        return [];
+        /*
+         *  Add extra range for large number of pages
+         */
+        let rightRemainingPages = totalPageCount - (this.props.currentPage + this.props.siblingsCount)
+        let leftRemainingPages = this.props.currentPage - this.props.siblingsCount
+
+        if(!this.state.isMobile && this.props.extraPageRangeLimit && rightRemainingPages > this.props.extraPageRangeLimit){
+            const remainderMidPoint = Math.floor((rightRemainingPages) / 2) + this.props.currentPage;
+            const rMiddleRange = this.range(remainderMidPoint - 1, remainderMidPoint + 1);
+
+            paginationRange.splice(paginationRange.length - 1, 0, ...[...rMiddleRange, Pagination.DOTS]);
+        }
+
+        if(!this.state.isMobile && this.props.extraPageRangeLimit && leftRemainingPages > this.props.extraPageRangeLimit){
+            const remainderMidPoint = Math.floor(leftRemainingPages / 2);
+            const lMiddleRange = this.range(remainderMidPoint - 1, remainderMidPoint + 1);
+
+            paginationRange.splice(1, 0, ...[Pagination.DOTS, ...lMiddleRange]);
+        }
+
+        return paginationRange;
     }
 
     /**
@@ -162,20 +243,6 @@ class Pagination extends Component<PaginationProps, PaginationState> {
     private range(start: number, end: number): number[] {
         const length = end - start + 1;
         return Array.from({ length }, (_, idx) => idx + start);
-    }
-
-    /**
-     * Navigate to next page.
-     */
-    private onNext(): void {
-        this.props.onPageChange(this.props.currentPage + 1);
-    }
-
-    /**
-     * Navigate to previous page.
-     */
-    private onPrevious(): void {
-        this.props.onPageChange(this.props.currentPage - 1);
     }
 }
 

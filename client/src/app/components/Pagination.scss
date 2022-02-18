@@ -9,9 +9,6 @@
     align-self: center;
     list-style-type: none;
 
-    &.hidden {
-        display: none;
-    }
     .pagination-item {
         @include font-size(14px);
 

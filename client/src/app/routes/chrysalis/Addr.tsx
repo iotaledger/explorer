@@ -317,6 +317,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             currentPage={this.state.currentPage}
                                             totalCount={this.txsHistory.length}
                                             pageSize={this.state.pageSize}
+                                            extraPageRangeLimit={20}
                                             siblingsCount={1}
                                             onPageChange={page =>
                                                 this.setState({ currentPage: page },

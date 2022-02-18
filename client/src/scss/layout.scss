@@ -168,6 +168,10 @@
   word-break: normal !important;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .dot-separator {
   margin: 0 6px;
   color: $gray-6;
