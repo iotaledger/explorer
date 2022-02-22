@@ -123,7 +123,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
 
                     {/* Headings */}
                     <div className="parents-title">Parents</div>
-                    {this.state.items?.some(itme => itme.type === "child") && (
+                    {this.state.items?.some(item => item.type === "child") && (
                         <div
                             className="children-title"
                             style={{
@@ -133,7 +133,6 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                             Children
                         </div>
                     )}
-
                 </div>
                 <div
                     id="message-tree"
