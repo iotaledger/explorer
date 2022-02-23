@@ -108,7 +108,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 <h1>
                                     Message
                                 </h1>
-                                <Modal icon={ModalIcon.Dots} data={messageJSON} />
+                                <Modal icon={ModalIcon.Info} data={messageJSON} />
                             </div>
                             <Switcher
                                 label="Advanced View"
@@ -127,7 +127,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                             <div className="section--header row row--tablet-responsive middle space-between">
                                 <div className="row middle">
                                     <h2>General</h2>
-                                    <Modal icon={ModalIcon.Info} data={messageJSON} />
                                 </div>
 
                                 <MessageTangleState

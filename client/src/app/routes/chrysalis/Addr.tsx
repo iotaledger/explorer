@@ -120,7 +120,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 <h1>
                                     Address
                                 </h1>
-                                <Modal icon={ModalIcon.Dots} data={messageJSON} />
+                                <Modal icon={ModalIcon.Info} data={messageJSON} />
                             </div>
                         </div>
                         <div className="top">
@@ -131,7 +131,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             <h2>
                                                 General
                                             </h2>
-                                            <Modal icon={ModalIcon.Info} data={messageJSON} />
                                         </div>
                                     </div>
                                     <div className="row space-between general-content">

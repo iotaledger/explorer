@@ -141,7 +141,7 @@ class IdentityResolver extends AsyncComponent<
                                                 <h1>
                                                     Decentralized Identifier
                                                 </h1>
-                                                <Modal icon={ModalIcon.Dots} data={messageJSON} />
+                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
                                             </div>
 
                                             <div>
@@ -190,7 +190,7 @@ class IdentityResolver extends AsyncComponent<
                                                 <h1>
                                                     Decentralized Identifier
                                                 </h1>
-                                                <Modal icon={ModalIcon.Dots} data={messageJSON} />
+                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
                                             </div>
                                         </div>
                                         <div>
@@ -216,9 +216,7 @@ class IdentityResolver extends AsyncComponent<
                                             <div className="section">
                                                 <div className="section--header row space-between">
                                                     <div className="row row--tablet-responsive middle space-between w100">
-                                                        <h2>General
-                                                            <Modal icon={ModalIcon.Info} data={messageJSON} />
-                                                        </h2>
+                                                        <h2>General</h2>
                                                         {!this.state.error &&
                                                             !(this.state.latestMessageId === this.EMPTY_MESSAGE_ID) && (
                                                                 <MessageTangleState

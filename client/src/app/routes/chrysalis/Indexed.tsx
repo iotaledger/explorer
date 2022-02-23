@@ -121,7 +121,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                 <h1>
                                     Indexed
                                 </h1>
-                                <Modal icon={ModalIcon.Dots} data={messageJSON} />
+                                <Modal icon={ModalIcon.Info} data={messageJSON} />
                             </div>
                         </div>
                         <div className="section">
@@ -129,7 +129,6 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
 
                                 <div className="row middle">
                                     <h2>General</h2>
-                                    <Modal icon={ModalIcon.Info} data={messageJSON} />
                                 </div>
                                 {this.state.statusBusy && (<Spinner compact />)}
 
