@@ -3,6 +3,8 @@ import { Converter } from "@iota/util.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
+import { ReactComponent as PauseIcon } from "../../assets/pause.svg";
+import { ReactComponent as PlayIcon } from "../../assets/play.svg";
 import { buildCircleNodeShader } from "../../helpers/circleNodeShader";
 import { RouteBuilder } from "../../helpers/routeBuilder";
 import { IFeedItemMetadata } from "../../models/api/IFeedItemMetadata";
@@ -152,7 +154,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
             currencies: [],
             itemCount: 0,
             selectedFeedItem: undefined,
-            filter: ""
+            filter: "",
+            isActive: true
         };
     }
 
@@ -400,6 +403,17 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                             }}
                             ref={r => this.setupGraph(r)}
                         />
+                        <div className="action-panel-container">
+                            <div className="card">
+                                <button
+                                    className="pause-button"
+                                    type="button"
+                                    onClick={() => this.toggleActivity()}
+                                >
+                                    {this.state.isActive ? <PauseIcon /> : <PlayIcon />}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="row middle margin-t-s">
@@ -827,6 +841,21 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                 y: this._graphElement.clientHeight / 2
             });
         }
+    }
+
+    /**
+     * The pause button was clicked
+     */
+    private toggleActivity(): void {
+        if (this._renderer) {
+            if (this.state.isActive) {
+                this._renderer.pause();
+            } else {
+                this._renderer.resume();
+            }
+        }
+
+        this.setState({ isActive: !this.state.isActive });
     }
 
     /**
