@@ -123,15 +123,16 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
 
                     {/* Headings */}
                     <div className="parents-title">Parents</div>
-                    <div
-                        className="children-title"
-                        style={{
-                            right: `${this.state.config.itemWidth}px`
-                        }}
-                    >
-                        Children
-                    </div>
-
+                    {this.state.items?.some(item => item.type === "child") && (
+                        <div
+                            className="children-title"
+                            style={{
+                                right: `${this.state.config.itemWidth}px`
+                            }}
+                        >
+                            Children
+                        </div>
+                    )}
                 </div>
                 <div
                     id="message-tree"
