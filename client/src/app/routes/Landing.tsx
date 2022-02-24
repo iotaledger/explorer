@@ -142,20 +142,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         <span className="info-box--title">{
                                             this.state.networkConfig.protocolVersion === "og"
                                                 ? "Transactions"
-                                                : "Messages / Confirmations"
-                                        }
-                                            { this.state.networkConfig.protocolVersion !== "og" ? <br /> : "" }
+                                                : "Messages"
+                                            }
                                             {" "}per sec
                                         </span>
-                                        <div className={classNames("info-box--value",
-                                            { "margin-t-0": this.state.networkConfig.protocolVersion !== "og" })}
-                                        >
+                                        <div className="info-box--value">
                                             <span className="download-rate">
                                                 {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1) || "--"}
-                                            </span>
-                                            <span className="upload-rate">
-                                                {" "}/ {NumberHelper.roundTo(Number(this.state.confirmedItemsPerSecond)
-                                                    , 1) || "--"}
                                             </span>
                                         </div>
                                     </div>
