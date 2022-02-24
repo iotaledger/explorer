@@ -142,8 +142,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             this.state.networkConfig.protocolVersion === "og"
                                                 ? "Transactions"
                                                 : "Messages"
-                                            }
-                                            {" "}per sec
+                                        } per sec
                                         </span>
                                         <div className="info-box--value">
                                             <span className="download-rate">
