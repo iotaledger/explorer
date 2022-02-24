@@ -1,5 +1,4 @@
 import { Units, UnitsHelper } from "@iota/iota.js";
-import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import dropdown from "../../assets/dropdown.svg";
