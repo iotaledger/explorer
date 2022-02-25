@@ -206,7 +206,6 @@
 
           .feed {
             flex: 1;
-            margin-right: 30px;
             overflow: hidden;
 
             @include desktop-down {
@@ -584,5 +583,8 @@
 
   .feeds-wrapper {
     padding: 0px $inner-padding 44px;
+    .inner {
+       max-width: 960px; 
+    }
   }
 }
