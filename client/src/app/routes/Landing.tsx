@@ -1,9 +1,6 @@
 import { Units, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { ReactComponent as FilterIcon } from "../../assets/filter.svg";
-import { ReactComponent as PauseIcon } from "../../assets/pause.svg";
-import { ReactComponent as PlayIcon } from "../../assets/play.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { RouteBuilder } from "../../helpers/routeBuilder";
 import { INetwork } from "../../models/db/INetwork";
@@ -190,7 +187,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     });
                                                 }}
                                             >
-                                                {this.state.isFeedPaused ? <PlayIcon /> : <PauseIcon />}
+                                                {this.state.isFeedPaused
+                                                    ? <span className="material-icons">play_arrow</span>
+                                                    : <span className="material-icons">pause</span>}
                                             </button>
                                             <button
                                                 type="button"
@@ -199,7 +198,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     this.setState({ isFilterExpanded: !this.state.isFilterExpanded });
                                                 }}
                                             >
-                                                <FilterIcon />
+                                                <span className="material-icons">
+                                                    tune
+                                                </span>
                                             </button>
                                             {this.state.isFilterExpanded && (
                                                 <div className="filter-wrapper">
