@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import AsyncComponent from "../AsyncComponent";
-import { ReactComponent as SearchIcon } from "./../../../assets/search.svg";
 import "./IdentitySearchInput.scss";
 import { IdentitySearchInputProps } from "./IdentitySearchInputProps";
 import { IdentitySearchInputState } from "./IdentitySearchInputState";
@@ -35,8 +34,9 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
                     "identity-search-input--compact": this.props.compact
                 })}
             >
-                <SearchIcon />
-                <input
+                <span className="material-icons">
+                    search
+                </span>                   <input
                     autoFocus={!this.props.compact}
                     className="identity-search--text-input"
                     type="text"
