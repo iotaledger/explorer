@@ -304,10 +304,8 @@ header {
     .hamburger--menu__icon {
       cursor: pointer;
 
-      svg {
-        path {
-          fill: var(--header-icon-color);
-        }
+      span {
+        color: var(--header-icon-color);
       }
     }
 

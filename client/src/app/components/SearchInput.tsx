@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react";
 import { TrytesHelper } from "../../helpers/trytesHelper";
-import { ReactComponent as CloseIcon } from "./../../assets/close.svg";
 import AsyncComponent from "./AsyncComponent";
 import "./SearchInput.scss";
 import { SearchInputProps } from "./SearchInputProps";
@@ -101,7 +100,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                                         this.setState({ showSearchInput: false });
                                     }}
                                 >
-                                    <CloseIcon />
+                                    <span className="material-icons">close</span>
                                 </button>
                             </div>
                             <div

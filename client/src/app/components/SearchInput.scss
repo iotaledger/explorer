@@ -94,15 +94,12 @@
       }
     }
 
-    svg {
+    span {
       position: absolute;
       top: 50%;
       right: 16px;
       transform: translateY(-50%);
-
-      path {
-        fill: var(--header-icon-color);
-      }
+      color: var(--header-icon-color);
     }
   }
 

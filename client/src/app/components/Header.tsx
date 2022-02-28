@@ -2,8 +2,6 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
-import { ReactComponent as CloseIcon } from "./../../assets/close.svg";
-import { ReactComponent as HamburgerIcon } from "./../../assets/hamburger.svg";
 import FiatSelector from "./FiatSelector";
 import "./Header.scss";
 import { HeaderProps } from "./HeaderProps";
@@ -161,7 +159,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 onClick={() =>
                                     this.setState({ isMenuExpanded: !this.state.isMenuExpanded })}
                             >
-                                {this.state.isMenuExpanded ? <CloseIcon /> : <HamburgerIcon />}
+                                {this.state.isMenuExpanded
+                                    ? <span className="material-icons">close</span>
+                                    : <span className="material-icons"> menu</span>}
                             </button>
                             <div
                                 className={classNames("menu--expanded", {
