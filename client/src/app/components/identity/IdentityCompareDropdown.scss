@@ -44,8 +44,13 @@
     border-radius: 5px;
     white-space: nowrap;
 
+    span {
+      transition: transform 0.2s ease;
+      color: var(--expanded-color);
+    }
+
     &.opened {
-      img {
+      span {
         transform: rotate(-180deg);
       }
     }

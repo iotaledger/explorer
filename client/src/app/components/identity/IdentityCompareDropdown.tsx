@@ -3,7 +3,6 @@ import moment from "moment";
 import React, { Component, ReactNode } from "react";
 import { IoWarningOutline } from "react-icons/io5";
 import { IconContext } from "react-icons/lib";
-import dropdown from "../../../assets/dropdown.svg";
 import { IdentityHelper } from "../../../helpers/identityHelper";
 import closeIcon from "./../../../assets/close.svg";
 import "./IdentityCompareDropdown.scss";
@@ -79,7 +78,9 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                             </div>
                         )}
 
-                        <img src={dropdown} alt="expand" />
+                        <span className="material-icons">
+                            arrow_drop_down
+                        </span>
                     </div>
 
                     {/* --------- dropdown content --------- */}

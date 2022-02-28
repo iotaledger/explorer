@@ -1,7 +1,6 @@
 import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import chevronDownGray from "../../../assets/chevron-down-gray.svg";
 import chevronLeftGreen from "../../../assets/chevron-left-green.svg";
 import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -206,7 +205,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                     <option value={cur} key={cur}>{cur}</option>
                                                 ))}
                                             </select>
-                                            <img src={chevronDownGray} alt="expand" />
+                                            <span className="material-icons">
+                                                expand_more
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="card--content">

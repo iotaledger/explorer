@@ -1,18 +1,23 @@
 @import "./mixins";
 @import "./variables";
 @import "./themes";
+@import "./media-queries";
 
 .select-wrapper {
   display: inline-block;
   position: relative;
 
-  img {
+  span {
     position: absolute;
     z-index: 2;
-    top: 43%;
-    right: 18px;
+    top: 20%;
+    right: 5%;
     color: $gray;
     pointer-events: none;
+
+    @include desktop-down {
+      top: 15%;
+    }
   }
 
   select {
@@ -73,8 +78,8 @@
       height: 32px;
     }
 
-    img {
-      top: 12px;
+    span {
+      top: 15%;
     }
   }
 }

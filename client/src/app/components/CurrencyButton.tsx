@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import Currency from "./Currency";
 import "./CurrencyButton.scss";
 import { CurrencyButtonProps } from "./CurrencyButtonProps";
@@ -67,7 +66,9 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
                                 <option value={cur} key={cur}>{cur}</option>
                             ))}
                         </select>
-                        <img src={chevronDownGray} alt="expand" />
+                        <span className="material-icons">
+                            expand_more
+                        </span>
                     </div>
                 </div>
             </div>

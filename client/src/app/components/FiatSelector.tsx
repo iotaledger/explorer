@@ -1,5 +1,4 @@
 import React, { ReactNode } from "react";
-import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import Currency from "./Currency";
 import "./CurrencyButton.scss";
 import { CurrencyState } from "./CurrencyState";
@@ -25,7 +24,9 @@ class FiatSelector extends Currency<unknown, CurrencyState> {
                         <option value={cur} key={cur}>{cur}</option>
                     ))}
                 </select>
-                <img src={chevronDownGray} alt="expand" />
+                <span className="material-icons">
+                    expand_more
+                </span>
             </div>
         );
     }

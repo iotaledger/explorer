@@ -1,7 +1,6 @@
 import { Units, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import dropdown from "../../assets/dropdown.svg";
 import { ReactComponent as FilterIcon } from "../../assets/filter.svg";
 import { ReactComponent as PauseIcon } from "../../assets/pause.svg";
 import { ReactComponent as PlayIcon } from "../../assets/play.svg";
@@ -597,10 +596,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 Pi
                             </option>
                         </select>
-                        <img
-                            src={dropdown}
-                            alt="expand"
-                        />
+                        <span className="material-icons">
+                            arrow_drop_down
+                        </span>
                     </div>
                 </span>
             </div>

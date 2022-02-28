@@ -5,7 +5,6 @@ import classNames from "classnames";
 import moment from "moment";
 import React, { ReactNode } from "react";
 import ChartistGraph from "react-chartist";
-import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { DateHelper } from "../../helpers/dateHelper";
 import { ApiClient } from "../../services/apiClient";
@@ -183,7 +182,9 @@ class Markets extends Currency<unknown, MarketsState> {
                                                     <option value={cur} key={cur}>{cur}</option>
                                                 ))}
                                             </select>
-                                            <img src={chevronDownGray} alt="expand" />
+                                            <span className="material-icons">
+                                                expand_more
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="card--content">
@@ -257,7 +258,9 @@ class Markets extends Currency<unknown, MarketsState> {
                                                     <option value={cur} key={cur}>{cur}</option>
                                                 ))}
                                             </select>
-                                            <img src={chevronDownGray} alt="expand" />
+                                            <span className="material-icons">
+                                                expand_more
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="card--content">
