@@ -122,6 +122,7 @@ header {
     .utilities--wrapper {
       .utilities--dropdown {
         display: flex;
+        align-items: center;
         font-family: $metropolis;
         cursor: pointer;
 
@@ -134,14 +135,13 @@ header {
         }
 
         .icon {
+          display: flex;
+          align-items: center;
           margin-left: 8px;
 
-          svg {
+          span {
             transition: transform 0.2s ease;
-
-            path {
-              stroke: var(--navbar-color);
-            }
+            color: var(--navbar-color);
           }
         }
 
@@ -151,12 +151,9 @@ header {
           }
 
           .icon {
-            svg {
+            span {
               transform: rotate(-180deg);
-
-              path {
-                stroke: var(--active-item-color);
-              }
+              color: var(--active-item-color);
             }
           }
         }
@@ -232,8 +229,8 @@ header {
         margin-left: 0;
       }
 
-      svg path {
-        fill: var(--header-icon-color);
+      span {
+        color: var(--header-icon-color);
       }
     }
 
@@ -361,7 +358,7 @@ header {
         }
 
         .icon {
-          svg {
+          span {
             transition: transform 0.2s ease;
           }
         }
@@ -372,12 +369,9 @@ header {
           }
 
           .icon {
-            svg {
+            span {
               transform: rotate(-180deg);
-
-              path {
-                stroke: var(--active-item-color);
-              }
+              color: var(--active-item-color);
             }
           }
         }
