@@ -6,8 +6,6 @@ import { asTransactionTrytes } from "@iota/transaction-converter";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import chevronLeftGreen from "../../../assets/chevron-left-green.svg";
-import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -356,11 +354,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             { disabled: this.state.previousTransaction === undefined }
                                                         )}
                                                     >
-                                                        <img
-                                                            src={chevronLeftGreen}
-                                                            alt="Previous"
-                                                            className="svg-navigation margin-r-t"
-                                                        />
+                                                        <span className="material-icons arrow">
+                                                            chevron_left
+                                                        </span>
                                                     </Link>
                                                     <span>
                                                         {this.state.details.tx.currentIndex + 1}
@@ -377,11 +373,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             { disabled: this.state.nextTransaction === undefined }
                                                         )}
                                                     >
-                                                        <img
-                                                            src={chevronRightGreen}
-                                                            alt="Next"
-                                                            className="svg-navigation margin-l-t"
-                                                        />
+                                                        <span className="material-icons arrow">
+                                                            chevron_right
+                                                        </span>
                                                     </Link>
                                                 </div>
                                             </div>

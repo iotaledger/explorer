@@ -1,8 +1,6 @@
 import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import chevronLeftGreen from "../../../assets/chevron-left-green.svg";
-import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -300,11 +298,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                                         }/address/${item.details.tx.address}`
                                                                     }
                                                                 >
-                                                                    <img
-                                                                        src={chevronLeftGreen}
-                                                                        alt="address"
-                                                                        className="svg-navigation margin-r-t"
-                                                                    />
+                                                                    <span className="material-icons arrow">
+                                                                        chevron_left
+                                                                    </span>
                                                                 </Link>
                                                                 <Link
                                                                     className="card--value__tertiary"
@@ -379,11 +375,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                                         }/address/${item.details.tx.address}`
                                                                     }
                                                                 >
-                                                                    <img
-                                                                        src={chevronRightGreen}
-                                                                        alt="address"
-                                                                        className="svg-navigation margin-l-t"
-                                                                    />
+                                                                    <span className="material-icons arrow">
+                                                                        chevron_right
+                                                                    </span>
                                                                 </Link>
                                                             </div>
                                                         </div>
