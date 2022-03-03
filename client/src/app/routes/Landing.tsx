@@ -182,7 +182,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         <h2>Latest messages</h2>
                                         <div className="feed--actions">
                                             <button
-                                                className="button--unstyled pause-button"
+                                                className="button--unstyled"
                                                 type="button"
                                                 onClick={() => {
                                                     this.setState({
@@ -203,7 +203,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 >
                                                     <FilterIcon />
                                                 </button>
-                                                <div className="active-filters-counter">
+                                                <div className="filters-button-wrapper__counter">
                                                     {this.state.valuesFilter.filter(f => f.isEnabled).length}
                                                 </div>
                                             </div>
