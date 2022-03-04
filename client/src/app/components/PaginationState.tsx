@@ -8,7 +8,7 @@ export interface PaginationState {
      * Pagination range.
      */
     paginationRange: (number|string)[];
-    
+
     /**
      * Is mobile view.
      */

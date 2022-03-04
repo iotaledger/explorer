@@ -24,7 +24,7 @@ export interface PaginationProps {
      * Define limit of remaining pages above which the extra page range will be shown.
      */
     extraPageRangeLimit?: number;
-    
+
     /**
      * The optional additional CSS classes.
      */
