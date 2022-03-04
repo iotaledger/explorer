@@ -24,14 +24,14 @@
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        min-height: 446px;
+        min-height: 280px;
         padding: 50px 0;
 
         @include desktop-down {
           flex-direction: column;
           align-items: inherit;
           justify-content: space-between;
-          padding-top: 133px;
+          padding-top: 96px;
           padding-bottom: 0;
         }
 
@@ -551,7 +551,6 @@
     }
 
     &::before {
-      top: 75px;
       right: 50%;
       transform: translateX(300%);
       background: var(--bubble-2);
@@ -567,7 +566,7 @@
     }
 
     &::after {
-      bottom: 25px;
+      bottom: -25px;
       left: 50%;
       transform: translateX(-100%);
       background: var(--bubble-1);
