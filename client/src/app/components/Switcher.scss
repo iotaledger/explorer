@@ -42,7 +42,7 @@
         top: 10%;
         width: 50%;
         height: 80%;
-        transform: translateX(4px);
+        transform: translateX(2px);
         transition: 0.4s;
         border-radius: 50%;
         background-color: white;
@@ -59,7 +59,7 @@
           background-color: $green-6;
 
           &::before {
-            transform: translateX(calc(100% - 4px));
+            transform: translateX(calc(100% - 2px));
           }
         }
       }
