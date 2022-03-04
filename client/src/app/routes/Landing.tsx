@@ -178,7 +178,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         <div className="feeds-section">
                             <div className="row wrap feeds">
                                 <div className="feed section">
-                                    <div className="section--header row space-between">
+                                    <div className="section--header row space-between padding-l-8">
                                         <h2>Latest messages</h2>
                                         <div className="feed--actions">
                                             <button
