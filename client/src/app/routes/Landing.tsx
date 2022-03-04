@@ -193,26 +193,38 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             >
                                                 {this.state.isFeedPaused ? <PlayIcon /> : <PauseIcon />}
                                             </button>
-                                            <button
-                                                type="button"
-                                                className="button--unstyled"
-                                                onClick={() => {
-                                                    this.setState({ isFilterExpanded: !this.state.isFilterExpanded });
-                                                }}
-                                            >
-                                                <FilterIcon />
-                                            </button>
+                                            <div className="filters-button-wrapper">
+                                                <button
+                                                    type="button"
+                                                    className="button--unstyled toggle-filters-button"
+                                                    onClick={() => {
+                                                        this.setState({ isFilterExpanded: !this.state.isFilterExpanded });
+                                                    }}
+                                                >
+                                                    <FilterIcon />
+                                                </button>
+                                                <div className="filters-button-wrapper__counter">
+                                                    {this.state.valuesFilter.filter(f => f.isEnabled).length}
+                                                </div>
+                                            </div>
                                             {this.state.isFilterExpanded && (
                                                 <div className="filter-wrapper">
                                                     <div className="filter">
                                                         <div className="filter-header row space-between middle">
-                                                            <span>Payload Filter</span>
                                                             <button
                                                                 className="button--unstyled"
                                                                 type="button"
                                                                 onClick={() => this.resetFilters()}
                                                             >
                                                                 Reset
+                                                            </button>
+                                                            <span>Payload Filter</span>
+                                                            <button 
+                                                                className="done-button"
+                                                                type="button"
+                                                                onClick={() => this.setState({ isFilterExpanded: false })}
+                                                            >
+                                                                Done
                                                             </button>
                                                         </div>
 
