@@ -48,13 +48,13 @@ class Header extends Component<HeaderProps, HeaderState> {
             {
                 label: "IOTA 1.5 (Chrysalis)",
                 description:
-                    "Short Chrysalis network description that explains what Chrysalis is.",
+                    "The latest IOTA network deployed in April 2021.",
                 networks: CHRYSALIS_NETWORKS
             },
             {
                 label: "IOTA 1.0 (Legacy)",
                 description:
-                    "Short Coordicide network description that explains what Coordicide is.",
+                    "Legacy network that only accepts migrations to the IOTA 1.5 (Chrysalis) network.",
                 networks: LEGACY_NETWORKS
             }
         ];
