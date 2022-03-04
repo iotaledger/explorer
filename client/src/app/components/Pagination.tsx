@@ -108,7 +108,7 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
                 </li>
                 {this.state.paginationRange.map((pageNumber: (number|string), idx: number) => {
                     if (pageNumber === Pagination.DOTS) {
-                        return <li key={idx} className="pagination-item dots">&#8230;</li>;
+                        return <li key={idx} className="pagination-item dots">{pageNumber}</li>;
                     }
 
                     return (
