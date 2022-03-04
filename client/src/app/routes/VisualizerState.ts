@@ -17,4 +17,9 @@ export interface VisualizerState extends FeedsState {
      * Filter on a specific tag/address/hash/bundle.
      */
     filter: string;
+
+    /**
+     * Is Visualizer active flag.
+     */
+    isActive: boolean;
 }
