@@ -59,11 +59,6 @@ class Footer extends Component<FooterProps, FooterState> {
             icon: <InstagramIcon />,
             url: "https://www.instagram.com/iotafoundation/",
             color: "#99A5BD"
-        }, {
-            name: "Facebook",
-            icon: <FacebookIcon />,
-            url: "https://www.facebook.com/iotafoundation/",
-            color: "#BAC6DE"
         }
     ];
 
