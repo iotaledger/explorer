@@ -198,7 +198,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     type="button"
                                                     className="button--unstyled toggle-filters-button"
                                                     onClick={() => {
-                                                        this.setState({ isFilterExpanded: !this.state.isFilterExpanded });
+                                                        this.setState(
+                                                            { isFilterExpanded: !this.state.isFilterExpanded }
+                                                        );
                                                     }}
                                                 >
                                                     <FilterIcon />
@@ -219,10 +221,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                                 Reset
                                                             </button>
                                                             <span>Payload Filter</span>
-                                                            <button 
+                                                            <button
                                                                 className="done-button"
                                                                 type="button"
-                                                                onClick={() => this.setState({ isFilterExpanded: false })}
+                                                                onClick={
+                                                                    () => this.setState({ isFilterExpanded: false })
+                                                                }
                                                             >
                                                                 Done
                                                             </button>
