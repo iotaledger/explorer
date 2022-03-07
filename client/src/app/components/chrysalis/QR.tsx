@@ -2,11 +2,17 @@ import QRCode from "qr.js/lib/QRCode";
 import React, { Component, ReactNode } from "react";
 import { QRProps } from "./QRProps";
 import { QRState } from "./QRState";
+import "./QR.scss";
 
 /**
  * Component which will display a QR code.
  */
 class QR extends Component<QRProps, QRState> {
+    /**
+     * The label under QR code.
+     */
+    private static readonly LABEL: string = "Scan the address QR code to send payment";
+
     /**
      * The QR size in pixels.
      */
@@ -38,25 +44,28 @@ class QR extends Component<QRProps, QRState> {
      */
     public render(): ReactNode {
         return (
-            <svg
-                width={this.size}
-                height={this.size}
-                viewBox={`0 0 ${this.state.cells.length} ${this.state.cells.length}`}
-            >
-                {this.state.cells.map((row, rowIndex) => (
-                    row.map((cell, cellIndex) => (
-                        <rect
-                            height={1}
-                            key={cellIndex}
-                            style={{ fill: cell ? "var(--qr-color)" : "none" }}
-                            width={1}
-                            x={cellIndex}
-                            y={rowIndex}
-                        />)
-                    )
-                ))}
-            </svg>
-
+            <div className="qr-container">
+                <svg
+                    className="qr-container__image"
+                    width={this.size}
+                    height={this.size}
+                    viewBox={`0 0 ${this.state.cells.length} ${this.state.cells.length}`}
+                >
+                    {this.state.cells.map((row, rowIndex) => (
+                        row.map((cell, cellIndex) => (
+                            <rect
+                                height={1}
+                                key={cellIndex}
+                                style={{ fill: cell ? "var(--qr-color)" : "none" }}
+                                width={1}
+                                x={cellIndex}
+                                y={rowIndex}
+                            />)
+                               )
+                    ))}
+                </svg>
+                <div className="qr-container__label">{QR.LABEL}</div>
+            </div>
         );
     }
 }
