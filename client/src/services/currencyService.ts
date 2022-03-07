@@ -252,6 +252,26 @@ export class CurrencyService {
     }
 
     /**
+     * Load the currency names data.
+     * @returns currencyNames The currency names map.
+     */
+    public async loadCurrencyNames(): Promise<{ [id: string]: string } | undefined> {
+        const settings = this._settingsService.get();
+
+        if (settings.currencyNames) {
+            return settings.currencyNames;
+        }
+
+        try {
+            const data = await this._apiClient.currencyNames();
+            settings.currencyNames = data.currencyNames;
+            return data.currencyNames;
+        } catch {
+            return undefined;
+        }
+    }
+
+    /**
      * Save the fiat code to settings.
      * @param fiatCode The fiat code to save.
      */
