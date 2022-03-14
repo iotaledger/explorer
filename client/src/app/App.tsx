@@ -278,7 +278,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                     )}
                                 <div className="copyright">
                                     <div className="copyright-inner">
-                                        This explorer implementation is heavily inspired
+                                        This explorer implementation is inspired
                                         by <a href="https://thetangle.org">thetangle.org</a>.
                                     </div>
                                 </div>
