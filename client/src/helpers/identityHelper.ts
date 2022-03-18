@@ -25,7 +25,8 @@ export class IdentityHelper {
             if (messageType === "integration" && version === "legacy") {
                 transformedDocument = {
                     ...(document as IIdentityDocument).doc,
-                    ...(document as IIdentityDocument).meta
+                    ...(document as IIdentityDocument).meta,
+                    proof: (document as IIdentityDocument).proof
                 };
             }
 

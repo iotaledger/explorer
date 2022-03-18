@@ -5,5 +5,5 @@ export interface IIdentityDocument {
         updated?: string;
         previousMessageId?: string;
     };
-    proof?: string;
+    proof?: Record<string, unknown>;
 }
