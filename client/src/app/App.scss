@@ -47,6 +47,14 @@
       font-family: $metropolis;
       @include font-size(12px);
 
+      @include phone-down {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 300px;
+          line-height: 20px;
+      }
+        
       a {
         text-decoration: none;
         color: $main-green-highlight;
