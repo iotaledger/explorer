@@ -92,10 +92,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 address: result.address,
                 bech32AddressDetails: Bech32AddressHelper.buildAddress(
                     this._bechHrp,
-                    result.address.address,
-                    result.address.addressType
+                    result.address,
+                    result.addressDetails?.type ? result.addressDetails.type.type : 0
                 ),
-                balance: result.address.balance,
+                balance: result.addressDetails?.balance.toJSNumber(),
                 outputIds: result.addressOutputIds,
                 historicOutputIds: result.historicAddressOutputIds
             }, async () => {
@@ -350,7 +350,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     private async getTransactionHistory() {
         const transactionsDetails = await this._tangleCacheService.transactionsDetails({
             network: this.props.match.params.network,
-            address: this.state.address?.address ?? "",
+            address: this.state.address ?? "",
             query: { page_size: this.state.pageSize }
         }, false);
 
@@ -365,7 +365,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 if (transactionsDetails?.transactionHistory?.state) {
                     const allTransactionsDetails = await this._tangleCacheService.transactionsDetails({
                         network: this.props.match.params.network,
-                        address: this.state.address?.address ?? "",
+                        address: this.state.address ?? "",
                         query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
                     }, true);
 
@@ -424,7 +424,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                     // Get spent related transaction
                     for (const output of tsx.outputs) {
-                        if (output.output.address.address === this.state.address?.address && output.spendingMessageId && !transactionIds?.includes(output.spendingMessageId)) {
+                        if (output.output.address.address === this.state.address && output.spendingMessageId && !transactionIds?.includes(output.spendingMessageId)) {
                             transactionIds?.push(output.spendingMessageId);
                             const transactionsResult = await this._tangleCacheService.search(
                                 this.props.match.params.network, output.spendingMessageId);
@@ -471,8 +471,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 this.props.match.params.network,
                 this._bechHrp,
                 this._tangleCacheService);
-        const inputsRelated = inputs.filter(input => input.transactionAddress.hex === this.state.address?.address);
-        const outputsRelated = outputs.filter(output => output.address.hex === this.state.address?.address);
+        const inputsRelated = inputs.filter(input => input.transactionAddress.hex === this.state.address);
+        const outputsRelated = outputs.filter(output => output.address.hex === this.state.address);
         let fromAmount = 0;
         let toAmount = 0;
         for (const input of inputsRelated) {

@@ -1,5 +1,5 @@
 import { Blake2b } from "@iota/crypto.js";
-import { deserializeMessage, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
+import { BASIC_OUTPUT_TYPE, deserializeMessage, MILESTONE_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { Converter, ReadStream } from "@iota/util.js";
 import { io, Socket } from "socket.io-client";
@@ -241,20 +241,20 @@ export class FeedClient {
                     value = 0;
 
                     for (const output of message.payload.essence.outputs) {
-                        if (output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE) {
-                            value += output.amount;
+                        if (output.type === BASIC_OUTPUT_TYPE) {
+                            value += Number(output.amount);
                         }
                     }
 
                     if (message.payload.essence.payload) {
-                        properties.Index = message.payload.essence.payload.index;
+                        properties.Index = message.payload.essence.payload.tag;
                     }
                 } else if (message.payload?.type === MILESTONE_PAYLOAD_TYPE) {
                     payloadType = "MS";
                     properties.MS = message.payload.index;
-                } else if (message.payload?.type === INDEXATION_PAYLOAD_TYPE) {
+                } else if (message.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
                     payloadType = "Index";
-                    properties.Index = message.payload.index;
+                    properties.Index = message.payload.tag;
                 }
             } catch (err) {
                 console.error(err);

@@ -1,4 +1,19 @@
-import { Ed25519Address, ED25519_ADDRESS_TYPE, IMessage, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
+import { 
+    IBasicOutput,
+    BASIC_OUTPUT_TYPE,
+    IAddressUnlockCondition,
+    Ed25519Address,
+    ED25519_ADDRESS_TYPE,
+    IMessage,
+    IReferenceUnlockBlock,
+    ISignatureUnlockBlock,
+    IUTXOInput,
+    REFERENCE_UNLOCK_BLOCK_TYPE,
+    SIGNATURE_UNLOCK_BLOCK_TYPE,
+    TRANSACTION_PAYLOAD_TYPE,
+    ADDRESS_UNLOCK_CONDITION_TYPE,
+    IEd25519Address
+} from "@iota/iota.js";
 import { Converter, WriteStream } from "@iota/util.js";
 import { DateHelper } from "../helpers/dateHelper";
 import { IBech32AddressDetails } from "../models/IBech32AddressDetails";
@@ -17,9 +32,10 @@ export interface Input {
 }
 
 export interface Output {
-    index: number; type: 0 | 1; address: IBech32AddressDetails; amount: number; isRemainder: boolean;
+    index: number; type: 2 | 3 | 4 | 5 | 6; address: IBech32AddressDetails; amount: number; isRemainder: boolean;
 }
 export class TransactionsHelper {
+
     public static async getInputsAndOutputs(
         transactionMessage: IMessage | undefined,
         network: string, _bechHrp: string, tangleCacheService: TangleCacheService):
@@ -76,7 +92,7 @@ export class TransactionsHelper {
                 let amount = 0;
                 if (transactionResult?.message && transactionResult?.message.payload?.type ===
                     TRANSACTION_PAYLOAD_TYPE) {
-                    amount = transactionResult.message.payload?.essence.outputs[transactionOutputIndex].amount;
+                    amount = Number(transactionResult.message.payload?.essence.outputs[transactionOutputIndex].amount);
                 }
                 inputs.push({
                     ...input,
@@ -92,22 +108,30 @@ export class TransactionsHelper {
 
             let remainderIndex = 1000;
             for (let i = 0; i < transactionMessage.payload.essence.outputs.length; i++) {
-                if (transactionMessage.payload.essence.outputs[i].type === SIG_LOCKED_SINGLE_OUTPUT_TYPE ||
-                    transactionMessage.payload.essence.outputs[i].type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) {
-                    const address = Bech32AddressHelper.buildAddress(
-                        _bechHrp,
-                        transactionMessage.payload.essence.outputs[i].address.address,
-                        transactionMessage.payload.essence.outputs[i].address.type);
-                    const isRemainder = inputs.some(input => input.transactionAddress.bech32 === address.bech32);
+                if (transactionMessage.payload.essence.outputs[i].type === BASIC_OUTPUT_TYPE) {
+                    const basicOutput = transactionMessage.payload.essence.outputs[i] as IBasicOutput;
+                    const addressUnlockConditions = basicOutput.unlockConditions?.filter(ot => ot.type = ADDRESS_UNLOCK_CONDITION_TYPE).
+                        map(ot => ot as IAddressUnlockCondition);
+                    
+                    // TODO change to support multiple unlock addresses & multiple address types
+                    const address = addressUnlockConditions.length > 0 &&
+                        typeof addressUnlockConditions[0].address.type === ED25519_ADDRESS_TYPE.toString() ?
+                        Bech32AddressHelper.buildAddress(
+                            _bechHrp,
+                            (addressUnlockConditions[0].address as IEd25519Address).pubKeyHash,
+                            (addressUnlockConditions[0].address as IEd25519Address).type)
+                            : Bech32AddressHelper.buildAddress(_bechHrp, "", ED25519_ADDRESS_TYPE);
+
+                    const isRemainder = address !== null && inputs.some(input => input.transactionAddress.bech32 === address.bech32);
                     outputs.push({
                         index: isRemainder ? (remainderIndex++) + i : i,
                         type: transactionMessage.payload.essence.outputs[i].type,
                         address,
-                        amount: transactionMessage.payload.essence.outputs[i].amount,
+                        amount: Number(transactionMessage.payload.essence.outputs[i].amount),
                         isRemainder
                     });
                     if (!isRemainder) {
-                        transferTotal += transactionMessage.payload.essence.outputs[i].amount;
+                        transferTotal += Number(transactionMessage.payload.essence.outputs[i].amount);
                     }
                 }
             }
@@ -117,14 +141,22 @@ export class TransactionsHelper {
                     network, inputs[i].outputHash
                 );
 
-                if (outputResponse?.output) {
-                    inputs[i].transactionAddress = Bech32AddressHelper.buildAddress(
-                        _bechHrp,
-                        outputResponse.output.address.address,
-                        outputResponse.output.address.type
-                    );
-                    inputs[i].transactionUrl =
-                        `/${network}/message/${outputResponse.messageId}`;
+                if (outputResponse?.output && outputResponse.output.type === BASIC_OUTPUT_TYPE) {
+                    const addressUnlockConditions = outputResponse.output.unlockConditions?.filter(ot => ot.type = ADDRESS_UNLOCK_CONDITION_TYPE).
+                        map(ot => ot as IAddressUnlockCondition);
+                    
+                    // TODO change to support multiple unlock addresses & multiple address types
+                    // TODO Remove copypasta
+                    const address = addressUnlockConditions.length > 0 &&
+                        typeof addressUnlockConditions[0].address.type === ED25519_ADDRESS_TYPE.toString() ?
+                        Bech32AddressHelper.buildAddress(
+                            _bechHrp,
+                            (addressUnlockConditions[0].address as IEd25519Address).pubKeyHash,
+                            (addressUnlockConditions[0].address as IEd25519Address).type)
+                            : Bech32AddressHelper.buildAddress(_bechHrp, "", ED25519_ADDRESS_TYPE);
+                            
+                    inputs[i].transactionAddress = address;
+                    inputs[i].transactionUrl = `/${network}/message/${outputResponse.messageId}`;
                 }
             }
 

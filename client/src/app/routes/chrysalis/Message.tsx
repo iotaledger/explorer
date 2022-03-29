@@ -1,4 +1,4 @@
-import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
+import { CONFLICT_REASON_STRINGS, IMessageMetadata, ITaggedDataPayload, MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -8,7 +8,7 @@ import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
-import IndexationPayload from "../../components/chrysalis/IndexationPayload";
+import TaggedDataPayload from "../../components/chrysalis/TaggedDataPayload";
 import MilestonePayload from "../../components/chrysalis/MilestonePayload";
 import ReceiptPayload from "../../components/chrysalis/ReceiptPayload";
 import TransactionPayload from "../../components/chrysalis/TransactionPayload";
@@ -186,7 +186,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         ("Transaction")}
                                     {this.state.message?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
                                         ("Milestone")}
-                                    {this.state.message?.payload?.type === INDEXATION_PAYLOAD_TYPE &&
+                                    {this.state.message?.payload?.type === TAGGED_DATA_PAYLOAD_TYPE &&
                                         ("Index")}
                                     {this.state.message?.payload?.type === undefined &&
                                         ("No Payload")}
@@ -239,7 +239,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE &&
                                     this.state.message.payload.essence.payload && (
                                         <div className="section">
-                                            <IndexationPayload
+                                            <TaggedDataPayload
                                                 network={this.props.match.params.network}
                                                 history={this.props.history}
                                                 payload={this.state.message.payload.essence.payload}
@@ -268,12 +268,12 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         )}
                                     </React.Fragment>
                                 )}
-                                {this.state.message.payload.type === INDEXATION_PAYLOAD_TYPE && (
+                                {this.state.message.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (
                                     <div className="section">
-                                        <IndexationPayload
+                                        <TaggedDataPayload
                                             network={this.props.match.params.network}
                                             history={this.props.history}
-                                            payload={this.state.message.payload}
+                                            payload={this.state.message.payload as ITaggedDataPayload}
                                             advancedMode={this.state.advancedMode}
                                         />
                                     </div>

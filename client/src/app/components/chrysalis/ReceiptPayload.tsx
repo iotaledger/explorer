@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { UnitsHelper } from "@iota/iota.js";
+import { IEd25519Address, UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
@@ -78,7 +78,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                                     addressDetails={
                                         Bech32AddressHelper.buildAddress(
                                             this._bech32Hrp,
-                                            f.address.address,
+                                            (f.address as IEd25519Address).pubKeyHash,
                                             f.address.type
                                         )
                                     }
@@ -101,7 +101,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                                     )}
                                 >
                                     {this.state.formatFull
-                                        ? `${f.deposit} i` : UnitsHelper.formatBest(f.deposit)}
+                                        ? `${f.deposit} i` : UnitsHelper.formatBest(Number(f.deposit))}
                                 </button>
                             </div>
                         </div>
@@ -127,7 +127,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                         >
                             {this.state.formatFull
                                 ? `${this.props.payload.transaction.output.amount} i`
-                                : UnitsHelper.formatBest(this.props.payload.transaction.output.amount)}
+                                : UnitsHelper.formatBest(Number(this.props.payload.transaction.output.amount))}
                         </button>
                     </div>
                 </div>

@@ -1,8 +1,10 @@
+import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
 import { IFindTransactionsRequest } from "../models/clients/chronicle/IFindTransactionsRequest";
 import { IFindTransactionsResponse } from "../models/clients/chronicle/IFindTransactionsResponse";
 import { IGetTrytesRequest } from "../models/clients/chronicle/IGetTrytesRequest";
 import { IGetTrytesResponse } from "../models/clients/chronicle/IGetTrytesResponse";
 import { FetchHelper } from "../utils/fetchHelper";
+import { ITransactionsDetailsResponse } from "./../models/api/chrysalis/ITransactionsDetailsResponse";
 
 /**
  * Class to handle api communications with Chronicle.
@@ -19,6 +21,27 @@ export class ChronicleClient {
      */
     constructor(endpoint: string) {
         this._endpoint = endpoint;
+    }
+
+    /**
+     * Find the translation History for the given request object.
+     * @param request The transaction details request object.
+     * @returns The translaction details response.
+     */
+    public async transactionHistory(request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse> {
+        try {
+            // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+            const { network, address, ...params } = request;
+
+            const res = await FetchHelper.json<never, ITransactionsDetailsResponse>(
+                this._endpoint,
+                `transactions/ed25519/${address}${params ? `${FetchHelper.urlParams(params)}` : ""}`,
+                "get"
+            );
+            return res;
+        } catch (e) {
+            return { error: e };
+        }
     }
 
     /**

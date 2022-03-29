@@ -1,4 +1,16 @@
-import { REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TREASURY_INPUT_TYPE, TREASURY_OUTPUT_TYPE, UTXO_INPUT_TYPE } from "@iota/iota.js";
+import { 
+    ALIAS_OUTPUT_TYPE,
+    ALIAS_UNLOCK_BLOCK_TYPE,
+    BASIC_OUTPUT_TYPE,
+    FOUNDRY_OUTPUT_TYPE,
+    NFT_OUTPUT_TYPE,
+    NFT_UNLOCK_BLOCK_TYPE,
+    REFERENCE_UNLOCK_BLOCK_TYPE,
+    SIGNATURE_UNLOCK_BLOCK_TYPE,
+    TREASURY_INPUT_TYPE,
+    TREASURY_OUTPUT_TYPE,
+    UTXO_INPUT_TYPE
+} from "@iota/iota.js";
 
 export class NameHelper {
     /**
@@ -21,14 +33,20 @@ export class NameHelper {
      * @returns The output type name.
      */
     public static getOutputTypeName(type: number): string {
-        if (type === SIG_LOCKED_SINGLE_OUTPUT_TYPE) {
-            return "Signature Locked Single Output";
-        } else if (type === SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE) {
-            return "Signature Locked Dust Allowance Output";
-        } else if (type === TREASURY_OUTPUT_TYPE) {
-            return "Treasury Output";
+        switch(type) {
+            case BASIC_OUTPUT_TYPE:
+                return "Basic Output"
+            case ALIAS_OUTPUT_TYPE:
+                return "Alias Output"
+            case FOUNDRY_OUTPUT_TYPE:
+                return "Foundry Output"
+            case NFT_OUTPUT_TYPE:
+                return "NFT Output"
+            case TREASURY_OUTPUT_TYPE:
+                return "Treasury Output";
+            default:
+                return "Unknown Output";
         }
-        return "Unknown Output";
     }
 
     /**
@@ -37,12 +55,18 @@ export class NameHelper {
      * @returns The unlock block type name.
      */
     public static getUnlockBlockTypeName(type: number): string {
-        if (type === SIGNATURE_UNLOCK_BLOCK_TYPE) {
-            return "Signature Unlock Block";
-        } else if (type === REFERENCE_UNLOCK_BLOCK_TYPE) {
-            return "Reference Unlock Block";
+        switch (type) {
+            case ALIAS_UNLOCK_BLOCK_TYPE:
+                return "Alias Unlock Block"
+            case NFT_UNLOCK_BLOCK_TYPE:
+                return "NFT Unlock Block"
+            case SIGNATURE_UNLOCK_BLOCK_TYPE:
+                return "Signature Unlock Block";
+            case REFERENCE_UNLOCK_BLOCK_TYPE:
+                return "Reference Unlock Block";
+            default:
+                return "Unknown Unlock Block";
         }
-        return "Unknown Unlock Block";
     }
 }
 

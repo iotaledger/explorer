@@ -174,7 +174,7 @@ export class ChrysalisItemsService implements IItemsService {
                 this._items.push(Converter.bytesToHex(message));
             });
 
-        this._metadataSubscriptionId = this._mqttClient.messagesMetadata(
+        this._metadataSubscriptionId = this._mqttClient.messagesReferenced(
             (topic: string, metadata: IMessageMetadata) => {
                 this._itemMetadata[metadata.messageId] = {
                     milestone: metadata.milestoneIndex,

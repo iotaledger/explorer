@@ -1,14 +1,20 @@
 /* eslint-disable no-shadow */
-import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
+import { IOutputResponse } from "@iota/iota.js";
 import { ITransaction, ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
+import AddressDetails from "../../../models/api/chrysalis/IAddressDetails";
 
 
 export interface AddrState {
     /**
      * Address.
      */
-    address?: IAddressResponse;
+    address?: string;
+
+    /**
+     * The Address Details.
+     */
+    addressDetails?: AddressDetails;
 
     /**
      * The addres in bech 32 format.

@@ -1,16 +1,16 @@
-import { IIndexationPayload } from "@iota/iota.js";
+import { ITaggedDataPayload } from "@iota/iota.js";
 import * as H from "history";
 
-export interface IndexationPayloadProps {
+export interface TaggedDataPayloadProps {
     /**
      * The network to lookup.
      */
     network: string;
 
     /**
-     * The indexation payload.
+     * The tagged data payload.
      */
-    payload: IIndexationPayload;
+    payload: ITaggedDataPayload;
 
     /**
      * History for navigation.

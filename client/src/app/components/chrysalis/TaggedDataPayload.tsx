@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+
 import { Converter } from "@iota/util.js";
 import React, { Component, ReactNode } from "react";
 import { TextHelper } from "../../../helpers/textHelper";
@@ -6,24 +7,23 @@ import Modal from "../../components/Modal";
 import { ModalIcon } from "../ModalProps";
 import messageJSON from "./../../../assets/modals/message.json";
 import DataToggle from "./../DataToggle";
-import { IndexationPayloadProps } from "./IndexationPayloadProps";
-import { IndexationPayloadState } from "./IndexationPayloadState";
-
+import { TaggedDataPayloadProps } from "./TaggedDataPayloadProps";
+import { TaggedDataPayloadState } from "./TaggedDataPayloadState";
 
 /**
  * Component which will display a indexation payload.
  */
-class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayloadState> {
+class TaggedDataPayload extends Component<TaggedDataPayloadProps, TaggedDataPayloadState> {
     /**
      * Create a new instance of IndexationPayload.
      * @param props The props.
      */
-    constructor(props: IndexationPayloadProps) {
+    constructor(props: TaggedDataPayloadProps) {
         super(props);
         this.state = this.loadPayload();
     }
 
-    public componentDidUpdate(prevProps: IndexationPayloadProps): void {
+    public componentDidUpdate(prevProps: TaggedDataPayloadProps): void {
         if (prevProps.payload !== this.props.payload) {
             this.setState(this.loadPayload());
         }
@@ -37,7 +37,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
         const TOGGLE_INDEX_OPTIONS = this.state.utf8Index ? [
             {
                 label: "Text", content: this.state.utf8Index,
-                link: `/${this.props.network}/indexed/${this.props.payload.index}`
+                link: `/${this.props.network}/indexed/${this.props.payload.tag}`
             },
             {
                 label: "HEX",
@@ -47,7 +47,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
             : [
                 {
                     label: "HEX",
-                    link: `/${this.props.network}/indexed/${this.props.payload.index}`,
+                    link: `/${this.props.network}/indexed/${this.props.payload.tag}`,
                     content: this.state.hexIndex
                 }
             ];
@@ -103,9 +103,10 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
      * @returns Object with indexes and data in raw and utf-8 format.
      */
     private loadPayload() {
-        const utf8Index = TextHelper.isUTF8(Converter.hexToBytes(this.props.payload.index)) ? Converter.hexToUtf8(this.props.payload.index) : undefined;
-        const matchHexIndex = this.props.payload.index.match(/.{1,2}/g);
-        const hexIndex = matchHexIndex ? matchHexIndex.join(" ") : this.props.payload.index;
+        const tag = this.props.payload.tag ? this.props.payload.tag : "";
+        const utf8Index = TextHelper.isUTF8(Converter.hexToBytes(tag)) ? Converter.hexToUtf8(tag) : undefined;
+        const matchHexIndex = tag.match(/.{1,2}/g);
+        const hexIndex = matchHexIndex ? matchHexIndex.join(" ") : tag;
 
         let hexData;
         let utf8Data;
@@ -133,4 +134,4 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
     }
 }
 
-export default IndexationPayload;
+export default TaggedDataPayload;

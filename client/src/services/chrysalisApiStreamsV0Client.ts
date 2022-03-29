@@ -1,5 +1,6 @@
-import { IMessage, IMessagesResponse } from "@iota/iota.js";
+import { IMessage } from "@iota/iota.js";
 import { Converter } from "@iota/util.js";
+import IMessageDetails from "../models/api/chrysalis/IMessageDetails"
 import { ServiceFactory } from "../factories/serviceFactory";
 import { ApiClient } from "./apiClient";
 
@@ -31,7 +32,7 @@ export class ChrysalisApiStreamsV0Client {
      * @param indexationKey The index value.
      * @returns The messageId.
      */
-    public async messagesFind(indexationKey: Uint8Array): Promise<IMessagesResponse> {
+    public async messagesFind(indexationKey: Uint8Array): Promise<IMessageDetails> {
         const hex = Converter.bytesToHex(indexationKey);
         const result = await this._apiClient.search({
             network: this._network,

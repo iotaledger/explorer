@@ -1,4 +1,4 @@
-export interface IndexationPayloadState {
+export interface TaggedDataPayloadState {
     /**
      * Hex view of index.
      */
@@ -8,7 +8,6 @@ export interface IndexationPayloadState {
      * UTF8 view of index.
      */
     utf8Index?: string;
-
 
     /**
      * Hex view of data.

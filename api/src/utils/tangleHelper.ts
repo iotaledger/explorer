@@ -1,7 +1,8 @@
 import { composeAPI, Transaction } from "@iota/core";
 import { Blake2b } from "@iota/crypto.js";
-import { Bech32Helper, ED25519_ADDRESS_TYPE, IAddressOutputsResponse, IMessagesResponse, IMilestoneResponse, IOutputResponse, serializeMessage, SingleNodeClient } from "@iota/iota.js";
+import { addressBalance, Bech32Helper, ED25519_ADDRESS_TYPE, IMilestoneResponse, IOutputResponse, IOutputsResponse, serializeMessage, SingleNodeClient, IndexerPluginClient } from "@iota/iota.js";
 import { Converter, WriteStream } from "@iota/util.js";
+import bigInt from "big-integer";
 import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
@@ -11,7 +12,6 @@ import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransacti
 import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
 import { INetwork } from "../models/db/INetwork";
-import { ExtendedSingleNodeClient } from "./extendedSingleNodeClient";
 
 /**
  * Helper functions for use with tangle.
@@ -392,6 +392,7 @@ export class TangleHelper {
             password,
             basePath: isPermanode ? "/" : undefined
         });
+        const indexerPlugin = new IndexerPluginClient(client);
         let queryLower = query.toLowerCase();
 
         try {
@@ -428,13 +429,16 @@ export class TangleHelper {
                         queryLower = Converter.bytesToHex(converted.addressBytes);
                     }
                 } else {
-                    const address = await client.address(queryLower);
-                    if (address) {
-                        const addressOutputs = await client.addressOutputs(queryLower);
+                    const addressDetails = await addressBalance(client, queryLower);
+                    // TO DO: confirm address.ledgerIndex > 0 condition is valid way to decide if address exists?
+                    // Address object will always be retrieved even for bech32 addresses that dont exist.
+                    if (addressDetails && addressDetails.ledgerIndex > 0) {
+                        const addressOutputs = await indexerPlugin.outputs({ addressBech32: queryLower });
 
                         return {
-                            address,
-                            addressOutputIds: addressOutputs.outputIds
+                            address: queryLower,
+                            addressDetails,
+                            addressOutputIds: addressOutputs.items
                         };
                     }
                 }
@@ -493,68 +497,32 @@ export class TangleHelper {
                 // Permanode does not support the address/ed25519 endpoint
                 // as it does not maintain utxo state, so we create a dummy
                 // for permanode, but we can still get outputs for the address
-                const address = isPermanode ? {
+                const addressBech32 = Bech32Helper.toBech32(
+                    ED25519_ADDRESS_TYPE,
+                    Converter.hexToBytes(queryLower),
+                    bechHrp
+                );
+                const addressDetails = isPermanode ? {
                     addressType: ED25519_ADDRESS_TYPE,
                     address: queryLower,
-                    balance: 0,
+                    balance: bigInt(0),
                     dustAllowed: false,
-                    ledgerIndex: 0
-                } : await client.addressEd25519(queryLower);
+                    ledgerIndex: 0,
+                    nativeTokens: {}
+                } : await addressBalance(client, addressBech32);
 
-                const addressOutputs = await client.addressEd25519Outputs(queryLower);
+                const addressOutputs = await indexerPlugin.outputs({ addressBech32 });
 
-                if (addressOutputs.count > 0) {
-                    const state = (addressOutputs as (IAddressOutputsResponse & {
+                if (addressOutputs.items.length > 0) {
+                    const state = (addressOutputs as (IOutputsResponse & {
                         state?: unknown;
                     })).state;
 
                     return {
-                        address,
-                        addressOutputIds: addressOutputs.outputIds,
+                        address: addressBech32,
+                        addressDetails,
+                        addressOutputIds: addressOutputs.items,
                         cursor: state ? Converter.utf8ToHex(JSON.stringify(state)) : undefined
-                    };
-                }
-            }
-        } catch {
-        }
-
-        try {
-            if (query.length > 0) {
-                let messages: IMessagesResponse & { state?: string };
-                let indexMessageType: "utf8" | "hex" | undefined;
-                let cursorParam = "";
-
-                if (cursor) {
-                    cursorParam = `&state=${cursor}`;
-                }
-
-                // If the query is between 2 and 128 hex chars assume hex encoded bytes
-                if (query.length >= 2 && query.length <= 128 && Converter.isHex(queryLower)) {
-                    messages = await client.fetchJson<never, IMessagesResponse & { state?: string }>(
-                        "get",
-                        `messages?index=${queryLower}${cursorParam}`);
-
-                    if (messages.count > 0) {
-                        indexMessageType = "hex";
-                    }
-                }
-
-                // If not already found and query less than 64 bytes assume its UTF8
-                if (!indexMessageType && query.length <= 64) {
-                    messages = await client.fetchJson<never, IMessagesResponse & { state?: string }>(
-                        "get",
-                        `messages?index=${Converter.utf8ToHex(query)}${cursorParam}`);
-
-                    if (messages.count > 0) {
-                        indexMessageType = "utf8";
-                    }
-                }
-
-                if (messages && messages.count > 0) {
-                    return {
-                        indexMessageIds: messages.messageIds,
-                        indexMessageType,
-                        cursor: messages.state
                     };
                 }
             }
@@ -646,16 +614,8 @@ export class TangleHelper {
         request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse | undefined> {
         if (network.permaNodeEndpoint) {
             try {
-                // We use ExtendedSingleNodeClient instead of SingleNodeClient
-                // because @iota/iota.js does not support the address/transactions endpoint.
-                // The @iota/iota.js dependency must be updated to offer this new feature.
-                // This class must be replaced by SingleNodeClient when suported
-                const client = new ExtendedSingleNodeClient(network.permaNodeEndpoint, {
-                    userName: network.permaNodeEndpointUser,
-                    password: network.permaNodeEndpointPassword,
-                    basePath: "/"
-                });
-                return await client.transactionHistory(request);
+                const chronicleClient = new ChronicleClient(network.permaNodeEndpoint);
+                return await chronicleClient.transactionHistory(request);
             } catch {
                 return { error: "Failed to fetch" };
             }

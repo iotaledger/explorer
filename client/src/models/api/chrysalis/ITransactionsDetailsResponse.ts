@@ -1,4 +1,4 @@
-import { ISigLockedDustAllowanceOutput, ISigLockedSingleOutput, IUTXOInput } from "@iota/iota.js";
+import { OutputTypes, IUTXOInput } from "@iota/iota.js";
 import { MessageTangleStatus } from "../../messageTangleStatus";
 import { IResponse } from "../IResponse";
 export interface HistoricOutput {
@@ -75,7 +75,7 @@ export interface ITransaction {
         /**
          * The outputs.
          */
-        outputs: (ISigLockedDustAllowanceOutput | ISigLockedSingleOutput)[];
+        outputs: OutputTypes[];
         /**
          * Show if a transation is spent or not.
          */
