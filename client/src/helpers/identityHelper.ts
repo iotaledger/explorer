@@ -30,6 +30,10 @@ export class IdentityHelper {
                 };
             }
 
+            if (messageType === "integration") {
+                delete transformedDocument.integrationMessageId;
+            }
+
             return transformedDocument;
     }
 }
