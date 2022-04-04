@@ -18,10 +18,13 @@ import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import messageJSON from "./../../../assets/modals/message.json";
 import Transaction from "./../../components/chrysalis/Transaction";
+import Asset from "./../../components/chrysalis/Asset";
+import NFT from "./../../components/chrysalis/NFT";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState } from "./AddrState";
+import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 
 /**
  * Component which will show the address page.
@@ -66,11 +69,21 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             formatFull: false,
             statusBusy: true,
             status: "Loading transactions...",
+            assetStatusBusy: true,
+            assetStatus: "Loading Assets...",
+            nftStatusBusy: true,
+            nftStatus: "Loading NFTs...",
             received: 0,
             sent: 0,
             currentPage: 1,
             pageSize: 10,
-            currentPageTransactions: []
+            currentPageTransactions: [],
+            assetCurrentPage: 1,
+            assetPageSize: 10,
+            currentPageAssets: [],
+            nftCurrentPage: 1,
+            nftPageSize: 10,
+            currentPageNFTs: []
         };
     }
 
@@ -100,6 +113,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 historicOutputIds: result.historicAddressOutputIds
             }, async () => {
                 await this.getTransactionHistory();
+                await this.getAssetsHistory();
+                await this.getNFTsHistory();
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
@@ -205,7 +220,36 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 )}
                                         </div>
                                     </div>
-
+                                    {this.props.match.params.network === 'stardust-testnet-4' && (
+                                        <div className="asset-cards row">
+                                            <div className="section--assets">
+                                                <div className="inner--asset">
+                                                    <div className="section--data assets">
+                                                        <span className="label">Assets in wallet (12)</span>
+                                                        <span className="value">{this.state.balance}</span>
+                                                    </div>
+                                                    <img
+                                                        src={chevronRightGray}
+                                                        alt="bundle"
+                                                        className="svg-navigation"
+                                                    />                
+                                                </div>
+                                            </div>
+                                            <div className="section--NFT">
+                                                <div className="inner--asset">
+                                                    <div className="section--data assets">
+                                                        <span className="label">NFTs in wallet (37)</span>
+                                                        <span className="value">-</span>
+                                                    </div>
+                                                    <img
+                                                        src={chevronRightGray}
+                                                        alt="bundle"
+                                                        className="svg-navigation"
+                                                    />                
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
                                     <div className="section">
@@ -328,6 +372,131 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 })}
                                         />
                                     </div>)}
+                                    {this.props.match.params.network === 'stardust-testnet-4' && (
+                                    <div className="section transaction--section">
+                                        <div className="section--header row space-between">
+                                            <div className="row middle">
+                                                <h2>
+                                                    Assets in Wallet ({this.assetHistory.length})
+                                                </h2>
+                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                            </div>
+                                            {this.state.assetStatus && (
+                                                <div className="margin-t-s middle row">
+                                                    {this.state.assetStatusBusy && (<Spinner />)}
+                                                    <p className="status">
+                                                        {this.state.assetStatus}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <table className="transaction--table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Asset</th>
+                                                    <th>Symbol</th>
+                                                    <th>Quantity</th>
+                                                    <th>Price</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                { this.currentPageAssets.map((asset, k) =>
+                                                    (
+                                                        <React.Fragment key={`${asset?.asset}${k}`}>
+                                                            <Asset
+                                                                key={k}
+                                                                asset={asset?.asset}
+                                                                network={this.props.match.params.network}
+                                                                symbol={asset?.symbol}
+                                                                quantity={asset?.quantity}
+                                                                price={asset?.price}
+                                                                value={asset?.value}
+                                                                tableFormat={true}
+                                                            />
+                                                        </React.Fragment>
+                                                    ))}
+                                            </tbody>
+                                        </table>
+
+                                        {/* Only visible in mobile -- Card assets*/}
+                                        <div className="transaction-cards">
+                                            {this.currentPageAssets.map((asset, k) =>
+                                                (
+                                                    <React.Fragment key={`${asset?.asset}${k}`}>
+                                                        <Asset
+                                                            key={k}
+                                                            asset={asset?.asset}
+                                                            network={this.props.match.params.network}
+                                                            symbol={asset?.symbol}
+                                                            quantity={asset?.quantity}
+                                                            price={asset?.price}
+                                                            value={asset?.value}
+                                                        />
+                                                    </React.Fragment>
+                                                ))}
+                                        </div>
+                                        <Pagination
+                                            currentPage={this.state.assetCurrentPage}
+                                            totalCount={this.assetHistory.length}
+                                            pageSize={this.state.assetPageSize}
+                                            siblingsCount={1}
+                                            onPageChange={page =>
+                                                this.setState({ assetCurrentPage: page },
+                                                    () => {
+                                                        const firstPageIndex = (this.state.assetCurrentPage - 1) * this.state.assetPageSize;
+                                                        // Check if last page
+                                                        const lastPageIndex = (this.state.assetCurrentPage === Math.ceil(this.assetHistory.length / this.state.assetPageSize)) ? this.assetHistory.length : firstPageIndex + this.state.assetPageSize;
+                                                })}
+                                        />
+                                    </div>
+                                    )}
+                                    {this.props.match.params.network === 'stardust-testnet-4' && (
+                                    <div className="section transaction--section">
+                                        <div className="section--header row space-between">
+                                            <div className="row middle">
+                                                <h2>
+                                                    NFTs in Wallet ({this.nftHistory.length})
+                                                </h2>
+                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                            </div>
+                                            {this.state.nftStatus && (
+                                                <div className="margin-t-s middle row">
+                                                    {this.state.nftStatusBusy && (<Spinner />)}
+                                                    <p className="status">
+                                                        {this.state.nftStatus}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="nft--section">
+                                            { this.currentPageNFTs.map((nfts, k) =>
+                                            (
+                                                <React.Fragment key={`${nfts?.tokenID}${k}`}>
+                                                    <NFT
+                                                        key={k}
+                                                        image={nfts?.image}
+                                                        tokenName={nfts?.tokenName}
+                                                        tokenID={nfts?.tokenID}
+                                                    />
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                        <Pagination
+                                            currentPage={this.state.nftCurrentPage}
+                                            totalCount={this.nftHistory.length}
+                                            pageSize={this.state.nftPageSize}
+                                            siblingsCount={1}
+                                            onPageChange={page =>
+                                                this.setState({ nftCurrentPage: page },
+                                                    () => {
+                                                        const firstPageIndex = (this.state.nftCurrentPage - 1) * this.state.nftPageSize;
+                                                        // Check if last page
+                                                        const lastPageIndex = (this.state.nftCurrentPage === Math.ceil(this.nftHistory.length / this.state.nftPageSize)) ? this.nftHistory.length : firstPageIndex + this.state.nftPageSize;
+                                                })}
+                                        />
+                                    </div>
+                                    )}
                             </div>
                         </div>
                     </div >
@@ -343,8 +512,115 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         return this.txsHistory.slice(firstPageIndex, lastPageIndex);
     }
 
+    private get currentPageAssets() {
+        const firstPageIndex = (this.state.assetCurrentPage - 1) * this.state.assetPageSize;
+        const lastPageIndex = firstPageIndex + this.state.assetPageSize;
+
+        return this.assetHistory.slice(firstPageIndex, lastPageIndex);
+    }
+
+    private get currentPageNFTs() {
+        const firstPageIndex = (this.state.nftCurrentPage - 1) * this.state.nftPageSize;
+        const lastPageIndex = firstPageIndex + this.state.nftPageSize;
+
+        return this.nftHistory.slice(firstPageIndex, lastPageIndex);
+    }
+
     private get txsHistory() {
         return this.state.transactionHistory?.transactionHistory?.transactions ?? [];
+    }
+
+    private get assetHistory() {
+        return [
+            {
+                asset: "Dogey Inu",
+                symbol: "DINU",
+                quantity: 1322212,
+                price: 10303925,
+                value: 363960,
+                network: "stardust-testnet-4",
+                tableFormat: true
+            },
+            {
+                asset: "Dogey Inu",
+                symbol: "DINU",
+                quantity: 1322212,
+                price: 10303925,
+                value: 363960,
+                network: "stardust-testnet-4",
+                tableFormat: true
+            }
+        ];
+    }
+
+    private get nftHistory() {
+        return [
+            {
+                image: "https://s3-alpha-sig.figma.com/img/7ee2/1c44/513c2eecf385851f2e3404fd252f3ada?Expires=1650240000&Signature=GB12NLwh~TJMo-kjwimpL0f69PN8OpJ3BtQFH-InK6CIZTq1VkHPEgNQ4YbxCwxMaW907mD2UQvGaomvRFd50byPp3H0MMq3w7FA3EUKWe-Y81jlQTMW4lsz~D4X5OIrqZztqd051D-ii1MMIV8S5Ck1aOJzZbN1vJQkxyZ0BsnJLjiH0M~sBJ8fg6OrB4PWQaOXXkcry2rddbJh3rX4KFMdXVSnk~RGQUdNXI0K6MZaofwbRrPllbNIrm6JoHBfjuwSmkMVdnN3mExv0ClbPu8fA6tHJbh4x7EKe30nUS4Wq8AesDI4yCQ7wkXHKr0OtOzuRFcPHP3Wh2F4p-gPLA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 43792
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/6ded/2ee1/ae99a8eca45babc4b90cef71c24f663e?Expires=1650240000&Signature=FahPYNpfU4lZ08GMb6eaHwUnp0uNi8SUbLj0i4k9dItoN8R5OsZd9R45uJIpaht0Kxra2W3f9nn3AKepVCNk9ixdh~QZgaQStdn8mee7JeLt4dcl2dKlHHFxqStd3kvnawrpEkUJWxAbz0bFr7B4AEi2ancRgEIIg-hHroOhfPAyuiIKvSIHjk1iyuaktGPtplaps8bVN1WNFQi7Jt8crvlxr5m~ROxFCa4~RE0E7WxYVVy6iWo-Ts9s8XAPCA1OOEj9UBTPD6gAIGd4XjE9iSi~2GOohqCGp-H-neZYm1F1pUe1T9OJBzhVAWGeforVjwn36-ejVGqqlS~0tDkr5g__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 73355
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/9abe/b4d7/1a14ea658041bddc55c11e032e44331e?Expires=1650240000&Signature=P50SOA24dQytW30P0nAa-pxrmFST6rIDQXIX8OjU1QEviKPVwsd3-MuCIELg-hTEdeWM5GH53dgu7v9~ZXe-j0DRtVQXFHp6vtyQWHOrhGe5J8swzn~AIExDKKHcX8Fup3p-n6ZYXIYRqbfAbjvJnqyNO9CioL~UHxDgLl7oGR0dZhXnXdyo-I3Izv3wkIk5Iad7yG~R5b7Egg73IfkpWr47dxy9CqxdpdbBMBEra6vwmDVzH8OecIUgPP3Wx~XmnYwt~zaa-UcAOA12SC5bMXleoWSBGU1sTG9oNnk0WXGUnaHW38mrIeZvr8~HmH37QPf1SqTuq8hWhCH3kFnamA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 23355
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/1661/31ac/578fa42b700f897791f592c00db6d63a?Expires=1650240000&Signature=GM3kJ5fA-GkQ1xMraS3tQGVfVFUIWAT618qcbwPRoWaSlv5eDl7HXrYNs70nMPhgitoEJRtdNVwe4u4~F4vD83fdiyXskmJ0Gz0qXhvPhy5iAgwC8AeslJpaK4xra4bAhbVqMACa7LLsDbkCd0fK2QYlVX-Z1NHPpfY0SKBmvHuodePEmEu381oaNEArQsEz97pAPbd~PWmAaXP42jXI9dlZ~f-ktjfvo5WxPSfvL5H2q9KNZ7rmPi5ZNw7cqAAwFHgh4O3uPCjFfASOOD56om3UXdxEChb-nG9sA-UfYfAytgc36ehOfubS0Nee2j3XB95IAQKgFgLDPRy2rGNOrQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 23433
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/1661/31ac/578fa42b700f897791f592c00db6d63a?Expires=1650240000&Signature=GM3kJ5fA-GkQ1xMraS3tQGVfVFUIWAT618qcbwPRoWaSlv5eDl7HXrYNs70nMPhgitoEJRtdNVwe4u4~F4vD83fdiyXskmJ0Gz0qXhvPhy5iAgwC8AeslJpaK4xra4bAhbVqMACa7LLsDbkCd0fK2QYlVX-Z1NHPpfY0SKBmvHuodePEmEu381oaNEArQsEz97pAPbd~PWmAaXP42jXI9dlZ~f-ktjfvo5WxPSfvL5H2q9KNZ7rmPi5ZNw7cqAAwFHgh4O3uPCjFfASOOD56om3UXdxEChb-nG9sA-UfYfAytgc36ehOfubS0Nee2j3XB95IAQKgFgLDPRy2rGNOrQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 23478
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/7ee2/1c44/513c2eecf385851f2e3404fd252f3ada?Expires=1650240000&Signature=GB12NLwh~TJMo-kjwimpL0f69PN8OpJ3BtQFH-InK6CIZTq1VkHPEgNQ4YbxCwxMaW907mD2UQvGaomvRFd50byPp3H0MMq3w7FA3EUKWe-Y81jlQTMW4lsz~D4X5OIrqZztqd051D-ii1MMIV8S5Ck1aOJzZbN1vJQkxyZ0BsnJLjiH0M~sBJ8fg6OrB4PWQaOXXkcry2rddbJh3rX4KFMdXVSnk~RGQUdNXI0K6MZaofwbRrPllbNIrm6JoHBfjuwSmkMVdnN3mExv0ClbPu8fA6tHJbh4x7EKe30nUS4Wq8AesDI4yCQ7wkXHKr0OtOzuRFcPHP3Wh2F4p-gPLA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 43792
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/6ded/2ee1/ae99a8eca45babc4b90cef71c24f663e?Expires=1650240000&Signature=FahPYNpfU4lZ08GMb6eaHwUnp0uNi8SUbLj0i4k9dItoN8R5OsZd9R45uJIpaht0Kxra2W3f9nn3AKepVCNk9ixdh~QZgaQStdn8mee7JeLt4dcl2dKlHHFxqStd3kvnawrpEkUJWxAbz0bFr7B4AEi2ancRgEIIg-hHroOhfPAyuiIKvSIHjk1iyuaktGPtplaps8bVN1WNFQi7Jt8crvlxr5m~ROxFCa4~RE0E7WxYVVy6iWo-Ts9s8XAPCA1OOEj9UBTPD6gAIGd4XjE9iSi~2GOohqCGp-H-neZYm1F1pUe1T9OJBzhVAWGeforVjwn36-ejVGqqlS~0tDkr5g__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 73355
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/9abe/b4d7/1a14ea658041bddc55c11e032e44331e?Expires=1650240000&Signature=P50SOA24dQytW30P0nAa-pxrmFST6rIDQXIX8OjU1QEviKPVwsd3-MuCIELg-hTEdeWM5GH53dgu7v9~ZXe-j0DRtVQXFHp6vtyQWHOrhGe5J8swzn~AIExDKKHcX8Fup3p-n6ZYXIYRqbfAbjvJnqyNO9CioL~UHxDgLl7oGR0dZhXnXdyo-I3Izv3wkIk5Iad7yG~R5b7Egg73IfkpWr47dxy9CqxdpdbBMBEra6vwmDVzH8OecIUgPP3Wx~XmnYwt~zaa-UcAOA12SC5bMXleoWSBGU1sTG9oNnk0WXGUnaHW38mrIeZvr8~HmH37QPf1SqTuq8hWhCH3kFnamA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 23355
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/1661/31ac/578fa42b700f897791f592c00db6d63a?Expires=1650240000&Signature=GM3kJ5fA-GkQ1xMraS3tQGVfVFUIWAT618qcbwPRoWaSlv5eDl7HXrYNs70nMPhgitoEJRtdNVwe4u4~F4vD83fdiyXskmJ0Gz0qXhvPhy5iAgwC8AeslJpaK4xra4bAhbVqMACa7LLsDbkCd0fK2QYlVX-Z1NHPpfY0SKBmvHuodePEmEu381oaNEArQsEz97pAPbd~PWmAaXP42jXI9dlZ~f-ktjfvo5WxPSfvL5H2q9KNZ7rmPi5ZNw7cqAAwFHgh4O3uPCjFfASOOD56om3UXdxEChb-nG9sA-UfYfAytgc36ehOfubS0Nee2j3XB95IAQKgFgLDPRy2rGNOrQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 23433
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/1661/31ac/578fa42b700f897791f592c00db6d63a?Expires=1650240000&Signature=GM3kJ5fA-GkQ1xMraS3tQGVfVFUIWAT618qcbwPRoWaSlv5eDl7HXrYNs70nMPhgitoEJRtdNVwe4u4~F4vD83fdiyXskmJ0Gz0qXhvPhy5iAgwC8AeslJpaK4xra4bAhbVqMACa7LLsDbkCd0fK2QYlVX-Z1NHPpfY0SKBmvHuodePEmEu381oaNEArQsEz97pAPbd~PWmAaXP42jXI9dlZ~f-ktjfvo5WxPSfvL5H2q9KNZ7rmPi5ZNw7cqAAwFHgh4O3uPCjFfASOOD56om3UXdxEChb-nG9sA-UfYfAytgc36ehOfubS0Nee2j3XB95IAQKgFgLDPRy2rGNOrQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 23478
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/7ee2/1c44/513c2eecf385851f2e3404fd252f3ada?Expires=1650240000&Signature=GB12NLwh~TJMo-kjwimpL0f69PN8OpJ3BtQFH-InK6CIZTq1VkHPEgNQ4YbxCwxMaW907mD2UQvGaomvRFd50byPp3H0MMq3w7FA3EUKWe-Y81jlQTMW4lsz~D4X5OIrqZztqd051D-ii1MMIV8S5Ck1aOJzZbN1vJQkxyZ0BsnJLjiH0M~sBJ8fg6OrB4PWQaOXXkcry2rddbJh3rX4KFMdXVSnk~RGQUdNXI0K6MZaofwbRrPllbNIrm6JoHBfjuwSmkMVdnN3mExv0ClbPu8fA6tHJbh4x7EKe30nUS4Wq8AesDI4yCQ7wkXHKr0OtOzuRFcPHP3Wh2F4p-gPLA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 43792
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/6ded/2ee1/ae99a8eca45babc4b90cef71c24f663e?Expires=1650240000&Signature=FahPYNpfU4lZ08GMb6eaHwUnp0uNi8SUbLj0i4k9dItoN8R5OsZd9R45uJIpaht0Kxra2W3f9nn3AKepVCNk9ixdh~QZgaQStdn8mee7JeLt4dcl2dKlHHFxqStd3kvnawrpEkUJWxAbz0bFr7B4AEi2ancRgEIIg-hHroOhfPAyuiIKvSIHjk1iyuaktGPtplaps8bVN1WNFQi7Jt8crvlxr5m~ROxFCa4~RE0E7WxYVVy6iWo-Ts9s8XAPCA1OOEj9UBTPD6gAIGd4XjE9iSi~2GOohqCGp-H-neZYm1F1pUe1T9OJBzhVAWGeforVjwn36-ejVGqqlS~0tDkr5g__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 73355
+            },
+            {
+                image: "https://s3-alpha-sig.figma.com/img/9abe/b4d7/1a14ea658041bddc55c11e032e44331e?Expires=1650240000&Signature=P50SOA24dQytW30P0nAa-pxrmFST6rIDQXIX8OjU1QEviKPVwsd3-MuCIELg-hTEdeWM5GH53dgu7v9~ZXe-j0DRtVQXFHp6vtyQWHOrhGe5J8swzn~AIExDKKHcX8Fup3p-n6ZYXIYRqbfAbjvJnqyNO9CioL~UHxDgLl7oGR0dZhXnXdyo-I3Izv3wkIk5Iad7yG~R5b7Egg73IfkpWr47dxy9CqxdpdbBMBEra6vwmDVzH8OecIUgPP3Wx~XmnYwt~zaa-UcAOA12SC5bMXleoWSBGU1sTG9oNnk0WXGUnaHW38mrIeZvr8~HmH37QPf1SqTuq8hWhCH3kFnamA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+                tokenName: "Rarebits",
+                tokenID: 23355
+            }
+        ];
     }
 
     private async getTransactionHistory() {
@@ -384,6 +660,36 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 });
             }
         );
+    }
+
+    private async getAssetsHistory() {
+
+        /**
+         * Fetch assets history here
+        */
+
+        /**
+         * After successfully fetching history set asset status and busy status
+         */
+        this.setState({
+            assetStatus: "",
+            assetStatusBusy: false
+        });
+    }
+
+    private async getNFTsHistory() {
+
+        /**
+         * Fetch NFTs history here
+        */
+
+        /**
+         * After successfully fetching history set NFT status and busy status
+         */
+        this.setState({
+            nftStatus: "",
+            nftStatusBusy: false
+        });
     }
 
     private async updateTransactionHistoryDetails(startIndex: number, endIndex: number) {
