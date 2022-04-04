@@ -3,7 +3,7 @@ import { ITrytesRetrieveRequest } from "../../../models/api/og/ITrytesRetrieveRe
 import { ITrytesRetrieveResponse } from "../../../models/api/og/ITrytesRetrieveResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NetworkService } from "../../../services/networkService";
-import { TangleHelper } from "../../../utils/tangleHelper";
+import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -26,7 +26,7 @@ export async function post(
         return {};
     }
 
-    const { trytes, milestoneIndexes } = await TangleHelper.getTrytes(networkConfig, request.hashes);
+    const { trytes, milestoneIndexes } = await ChrysalisTangleHelper.getTrytes(networkConfig, request.hashes);
 
     return {
         trytes,

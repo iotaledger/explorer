@@ -1,0 +1,61 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.message {
+  display: flex;
+  flex-direction: column;
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+
+    .inner {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      max-width: $desktop-width;
+      margin: 40px 25px;
+
+      @include desktop-down {
+        flex: unset;
+        width: 100%;
+        max-width: 100%;
+        margin: 40px 24px;
+        padding-right: 24px;
+        padding-left: 24px;
+
+        > .row {
+          flex-direction: column;
+        }
+      }
+
+      @include tablet-down {
+        margin: 28px 0;
+      }
+
+      .message--header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .section .section--header .messages--number {
+        @include font-size(12px);
+
+        display: flex;
+        align-items: center;
+        height: 24px;
+        margin-left: 20px;
+        padding: 0 8px;
+        border-radius: 6px;
+        background-color: var(--light-bg);
+        color: $gray;
+        font-family: $metropolis;
+        font-weight: bold;
+        white-space: nowrap;
+      }
+    }
+  }
+}

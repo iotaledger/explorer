@@ -6,18 +6,19 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../helpers/downloadHelper";
+import { CHRYSALIS } from "../../models/db/protocolVersion";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
+import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import { IdentityDiffStorageService } from "../../services/identityDiffStorageService";
 import { IdentityService } from "../../services/identityService";
 import { NetworkService } from "../../services/networkService";
-import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
+import MessageTangleState from "../components/chrysalis/MessageTangleState";
 import IdentityHistory from "../components/identity/IdentityHistory";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
 import JsonViewer from "../components/JsonViewer";
 import MessageButton from "../components/MessageButton";
-import MessageTangleState from "../components/MessageTangleState";
 import Modal from "../components/Modal";
 import { ModalIcon } from "../components/ModalProps";
 import Spinner from "../components/Spinner";
@@ -39,7 +40,7 @@ class IdentityResolver extends AsyncComponent<
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * placeholder when messageId is not available.
@@ -49,7 +50,7 @@ class IdentityResolver extends AsyncComponent<
     constructor(props: RouteComponentProps<IdentityResolverProps> & { isSupported: boolean }) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
 
         this.state = {
             isIdentityResolved: false,

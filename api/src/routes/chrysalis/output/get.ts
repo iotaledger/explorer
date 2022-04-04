@@ -3,7 +3,7 @@ import { IOutputDetailsRequest } from "../../../models/api/chrysalis/IOutputDeta
 import { IOutputDetailsResponse } from "../../../models/api/chrysalis/IOutputDetailsResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NetworkService } from "../../../services/networkService";
-import { TangleHelper } from "../../../utils/tangleHelper";
+import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -28,6 +28,6 @@ export async function get(
     }
 
     return {
-        output: await TangleHelper.outputDetails(networkConfig, request.outputId)
+        output: await ChrysalisTangleHelper.outputDetails(networkConfig, request.outputId)
     };
 }

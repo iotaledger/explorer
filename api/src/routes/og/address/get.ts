@@ -3,7 +3,7 @@ import { IAddressGetRequest } from "../../../models/api/og/IAddressGetRequest";
 import { IAddressGetResponse } from "../../../models/api/og/IAddressGetResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NetworkService } from "../../../services/networkService";
-import { TangleHelper } from "../../../utils/tangleHelper";
+import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -27,7 +27,7 @@ export async function get(
         return {};
     }
 
-    const balance = await TangleHelper.getAddressBalance(networkConfig, request.hash);
+    const balance = await ChrysalisTangleHelper.getAddressBalance(networkConfig, request.hash);
 
     return {
         balance

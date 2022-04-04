@@ -7,12 +7,12 @@ import AsyncComponent from "../AsyncComponent";
 import FiatValue from "../FiatValue";
 import Modal from "../Modal";
 import { ModalIcon } from "../ModalProps";
+import { TransactionPayloadState } from "../TransactionPayloadState";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import messageJSON from "./../../../assets/modals/message.json";
 import Bech32Address from "./Bech32Address";
 import "./TransactionPayload.scss";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
-import { TransactionPayloadState } from "./TransactionPayloadState";
 
 
 /**

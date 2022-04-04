@@ -1,6 +1,7 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { INetwork } from "../models/db/INetwork";
-import { ApiClient } from "./apiClient";
+import { CHRYSALIS } from "../models/db/protocolVersion";
+import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 
 /**
  * Service to handle networks.
@@ -23,7 +24,7 @@ export class NetworkService {
      */
     public async buildCache(): Promise<void> {
         this._cache = {};
-        const apiClient = ServiceFactory.get<ApiClient>("api-client");
+        const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
         const response = await apiClient.networks();
 
         if (response.networks) {

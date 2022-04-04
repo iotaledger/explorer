@@ -1,5 +1,5 @@
 import { IUTXOInput } from "@iota/iota.js";
-import { Input, Output } from "../../../helpers/transactionsHelper";
+import { Input, Output } from "../../../helpers/chrysalis/transactionsHelper";
 import { MessageTangleStatus } from "../../messageTangleStatus";
 export interface INodeTransaction {
     /**

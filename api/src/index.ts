@@ -119,13 +119,9 @@ socketServer.on("connection", socket => {
 });
 
 server.listen(port, async () => {
-    console.log(`Running Config '${configId}'`);
-    console.log(`API port ${port}`);
-
     try {
         console.log("Initializing Services");
         await initServices(config);
-        console.log("Services Initialized");
     } catch (err) {
         console.error(err);
     }

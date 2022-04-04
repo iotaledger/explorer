@@ -3,6 +3,7 @@ import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IConfiguration } from "../models/config/IConfiguration";
+import { CHRYSALIS, OG, STARDUST } from "../models/db/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { SettingsService } from "../services/settingsService";
 import "./App.scss";
@@ -12,18 +13,20 @@ import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import SearchInput from "./components/SearchInput";
+import { AddrRouteProps } from "./routes/AddrRouteProps";
 import Addr from "./routes/chrysalis/Addr";
-import { AddrRouteProps } from "./routes/chrysalis/AddrRouteProps";
 import Indexed from "./routes/chrysalis/Indexed";
 import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
+import ChrysalisLanding from "./routes/chrysalis/Landing";
 import Message from "./routes/chrysalis/Message";
-import { MessageRouteProps } from "./routes/chrysalis/MessageRouteProps";
+import ChrysalisSearch from "./routes/chrysalis/Search";
+import ChrysalisVisualizer from "./routes/chrysalis/Visualizer";
 import CurrencyConverter from "./routes/CurrencyConverter";
 import IdentityResolver from "./routes/IdentityResolver";
 import { IdentityResolverProps } from "./routes/IdentityResolverProps";
-import Landing from "./routes/Landing";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
+import { MessageProps } from "./routes/MessageProps";
 import Address from "./routes/og/Address";
 import { AddressRouteProps } from "./routes/og/AddressRouteProps";
 import Bundle from "./routes/og/Bundle";
@@ -32,11 +35,12 @@ import Tag from "./routes/og/Tag";
 import { TagRouteProps } from "./routes/og/TagRouteProps";
 import Transaction from "./routes/og/Transaction";
 import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
-import Search from "./routes/Search";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
+import StardustLanding from "./routes/stardust/Landing";
+import StardustSearch from "./routes/stardust/Search";
+import StardustVisualizer from "./routes/stardust/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
-import Visualizer from "./routes/Visualizer";
 import { VisualizerProps, VisualizerRouteProps } from "./routes/VisualizerRouteProps";
 
 /**
@@ -95,6 +99,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     public render(): ReactNode {
         const currentNetworkConfig = this.state.networks.find(n => n.network === this.state.networkId);
+        const isStardust = currentNetworkConfig?.protocolVersion === STARDUST;
 
         return (
             <div className="app">
@@ -109,7 +114,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                     search={
                         <SearchInput
                             onSearch={query => this.setQuery(query)}
-                            protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
+                            protocolVersion={currentNetworkConfig?.protocolVersion ?? OG}
                         />
                     }
                     pages={this.state.networks.length > 0 ? [
@@ -177,9 +182,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 path="/:network?"
                                                 component={(props: RouteComponentProps<LandingRouteProps>) =>
                                                 (
-                                                    <Landing
-                                                        {...props}
-                                                    />
+                                                    isStardust
+                                                        ? <StardustLanding {...props} />
+                                                        : <ChrysalisLanding {...props} />
                                                 )}
                                             />
                                             <Route
@@ -195,7 +200,15 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                     (props:
                                                         RouteComponentProps<VisualizerRouteProps> & VisualizerProps) =>
                                                     (
-                                                        <Visualizer darkMode={this.state.darkMode} {...props} />
+                                                        isStardust
+                                                            ? <StardustVisualizer
+                                                                    darkMode={this.state.darkMode}
+                                                                    {...props}
+                                                              />
+                                                              : <ChrysalisVisualizer
+                                                                      darkMode={this.state.darkMode}
+                                                                      {...props}
+                                                                />
                                                     )
                                                 }
                                             />
@@ -233,7 +246,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 path="/:network/search/:query?"
                                                 component={(props: RouteComponentProps<SearchRouteProps>) =>
                                                 (
-                                                    <Search {...props} />
+                                                    isStardust
+                                                        ? <StardustSearch {...props} />
+                                                        : <ChrysalisSearch {...props} />
                                                 )}
                                             />
                                             <Route
@@ -247,7 +262,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             />
                                             <Route
                                                 path="/:network/message/:messageId"
-                                                component={(props: RouteComponentProps<MessageRouteProps>) =>
+                                                component={(props: RouteComponentProps<MessageProps>) =>
                                                 (
                                                     <Message
                                                         {...props}
@@ -269,7 +284,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                     <IdentityResolver
                                                         {...props}
                                                         isSupported={
-                                                            this.state.networkConfig?.protocolVersion === "chrysalis"
+                                                            this.state.networkConfig?.protocolVersion === CHRYSALIS
                                                         }
                                                     />
                                                 )}

@@ -8,7 +8,8 @@ import ChartistGraph from "react-chartist";
 import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { DateHelper } from "../../helpers/dateHelper";
-import { ApiClient } from "../../services/apiClient";
+import { CHRYSALIS } from "../../models/db/protocolVersion";
+import { ChrysalisApiClient } from "../../services/chrysalis/chrysalisApiClient";
 import Currency from "../components/Currency";
 import Spinner from "../components/Spinner";
 import "./Markets.scss";
@@ -21,7 +22,7 @@ class Markets extends Currency<unknown, MarketsState> {
     /**
      * The api client.
      */
-    private readonly _apiClient: ApiClient;
+    private readonly _apiClient: ChrysalisApiClient;
 
     /**
      * Point data for the charts.
@@ -42,7 +43,7 @@ class Markets extends Currency<unknown, MarketsState> {
     constructor(props: unknown) {
         super(props);
 
-        this._apiClient = ServiceFactory.get<ApiClient>("api-client");
+        this._apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
 
         this._points = [];
 

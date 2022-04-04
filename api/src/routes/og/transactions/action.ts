@@ -3,7 +3,7 @@ import { ITransactionActionRequest } from "../../../models/api/og/ITransactionAc
 import { ITransactionActionResponse } from "../../../models/api/og/ITransactionActionResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NetworkService } from "../../../services/networkService";
-import { TangleHelper } from "../../../utils/tangleHelper";
+import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -30,12 +30,12 @@ export async function action(
     let result;
 
     if (request.action === "isPromotable") {
-        const canPromote = await TangleHelper.canPromoteTransaction(networkConfig, request.hash);
+        const canPromote = await ChrysalisTangleHelper.canPromoteTransaction(networkConfig, request.hash);
         result = canPromote ? "yes" : "no";
     } else if (request.action === "promote") {
-        result = await TangleHelper.promoteTransaction(networkConfig, request.hash);
+        result = await ChrysalisTangleHelper.promoteTransaction(networkConfig, request.hash);
     } else if (request.action === "replay") {
-        result = await TangleHelper.replayBundle(networkConfig, request.hash);
+        result = await ChrysalisTangleHelper.replayBundle(networkConfig, request.hash);
     }
 
     return {

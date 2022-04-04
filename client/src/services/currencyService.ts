@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { ICurrencySettings } from "../models/services/ICurrencySettings";
-import { ApiClient } from "./apiClient";
+import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 import { SettingsService } from "./settingsService";
 /**
  * Class to handle currency settings.
@@ -199,7 +199,7 @@ export class CurrencyService {
     /**
      * The api client.
      */
-    private readonly _apiClient: ApiClient;
+    private readonly _apiClient: ChrysalisApiClient;
 
     /**
      * Subsribers to settings updates.
@@ -211,7 +211,7 @@ export class CurrencyService {
      * @param apiEndpoint The api endpoint.
      */
     constructor(apiEndpoint: string) {
-        this._apiClient = new ApiClient(apiEndpoint);
+        this._apiClient = new ChrysalisApiClient(apiEndpoint);
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
         this._subscribers = {};
     }
