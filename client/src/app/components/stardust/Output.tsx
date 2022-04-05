@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { BASIC_OUTPUT_TYPE, UnitsHelper } from "@iota/iota.js-stardust";
-import { WriteStream } from "@iota/util.js";
+import { WriteStream } from "@iota/util.js-stardust";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";

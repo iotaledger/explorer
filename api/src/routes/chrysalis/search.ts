@@ -27,5 +27,5 @@ export async function search(
         return {};
     }
 
-    return ChrysalisTangleHelper.search(networkConfig, request.query, request.cursor ?? "0");
+    return ChrysalisTangleHelper.search(networkConfig, request.query, request.cursor);
 }

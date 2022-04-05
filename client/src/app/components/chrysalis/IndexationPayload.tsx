@@ -109,7 +109,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
 
         let hexData;
         let utf8Data;
-       let jsonData;
+        let jsonData;
 
         if (this.props.payload.data) {
             const matchHexData = this.props.payload.data.match(/.{1,2}/g);

@@ -1,8 +1,9 @@
-import { IMessage, IMessagesResponse } from "@iota/iota.js";
-import { Converter } from "@iota/util.js";
+import { IMessage } from "@iota/iota.js-stardust";
+import { Converter } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import IMessageDetails from "../../models/api/stardust/IMessageDetails";
 import { STARDUST } from "../../models/db/protocolVersion";
-import { ChrysalisApiClient } from ".././chrysalis/chrysalisApiClient";
+import { StardustApiClient } from "./stardustApiClient";
 
 /**
  * Class to handle api communications to api for mam.
@@ -11,7 +12,7 @@ export class StardustApiStreamsV0Client {
     /**
      * The base api client.
      */
-    private readonly _apiClient: ChrysalisApiClient;
+    private readonly _apiClient: StardustApiClient;
 
     /**
      * The network.
@@ -23,7 +24,7 @@ export class StardustApiStreamsV0Client {
      * @param network The network to use.
      */
     constructor(network: string) {
-        this._apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${STARDUST}`);
+        this._apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
         this._network = network;
     }
 
@@ -32,7 +33,7 @@ export class StardustApiStreamsV0Client {
      * @param indexationKey The index value.
      * @returns The messageId.
      */
-    public async messagesFind(indexationKey: Uint8Array): Promise<IMessagesResponse> {
+    public async messagesFind(indexationKey: Uint8Array): Promise<IMessageDetails> {
         const hex = Converter.bytesToHex(indexationKey);
         const result = await this._apiClient.search({
             network: this._network,

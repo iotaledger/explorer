@@ -2,6 +2,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ITransactionsDetailsRequest } from "../../../models/api/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../../models/api/ITransactionsDetailsResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
@@ -22,7 +23,7 @@ export async function get(
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== "stardust") {
+    if (networkConfig.protocolVersion !== STARDUST) {
         return {};
     }
     return {

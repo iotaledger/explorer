@@ -5,6 +5,7 @@ import { ITransactionsGetRequest } from "../../../models/api/og/ITransactionsGet
 import { ITransactionsGetResponse } from "../../../models/api/og/ITransactionsGetResponse";
 import { TransactionsGetMode } from "../../../models/api/og/transactionsGetMode";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { OG } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
@@ -26,7 +27,7 @@ export async function get(
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== "og") {
+    if (networkConfig.protocolVersion !== OG) {
         return {};
     }
 
