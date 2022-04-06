@@ -2,8 +2,9 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IMessageDetailsRequest } from "../../../models/api/chrysalis/IMessageDetailsRequest";
 import { IMessageDetailsResponse } from "../../../models/api/chrysalis/IMessageDetailsResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { TangleHelper } from "../../../utils/tangleHelper";
+import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -23,9 +24,9 @@ export async function get(
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== "chrysalis") {
+    if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {};
     }
 
-    return TangleHelper.messageDetails(networkConfig, request.messageId);
+    return ChrysalisTangleHelper.messageDetails(networkConfig, request.messageId);
 }

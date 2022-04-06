@@ -4,8 +4,9 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { TextHelper } from "../../../helpers/textHelper";
+import { CHRYSALIS } from "../../../models/db/protocolVersion";
+import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { SettingsService } from "../../../services/settingsService";
-import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import DataToggle from "../../components/DataToggle";
 import Modal from "../../components/Modal";
@@ -23,7 +24,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * Settings service.
@@ -37,7 +38,9 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
     constructor(props: RouteComponentProps<IndexedRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
+            `tangle-cache-${CHRYSALIS}`
+        );
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         this.state = {

@@ -3,11 +3,11 @@ import { SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, U
 import { WriteStream } from "@iota/util.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { NameHelper } from "../../../helpers/chrysalis/nameHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { NameHelper } from "../../../helpers/nameHelper";
 import MessageButton from "../MessageButton";
+import { OutputState } from "../OutputState";
 import { OutputProps } from "./OutputProps";
-import { OutputState } from "./OutputState";
 
 /**
  * Component which will display an output.
@@ -146,3 +146,4 @@ class Output extends Component<OutputProps, OutputState> {
 }
 
 export default Output;
+

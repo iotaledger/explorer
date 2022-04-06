@@ -43,9 +43,10 @@ export class MilestonesClient {
     /**
      * Create a new instance of MilestonesClient.
      * @param networkId The network configurations.
+     * @param protocolVersion The protocol Version.
      */
-    constructor(networkId: string) {
-        this._apiClient = ServiceFactory.get<ApiClient>("api-client");
+    constructor(networkId: string, protocolVersion: string) {
+        this._apiClient = ServiceFactory.get<ApiClient>(`api-client-${protocolVersion}`);
         this._networkId = networkId;
 
         this._milestones = [];

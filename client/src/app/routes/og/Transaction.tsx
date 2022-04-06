@@ -12,15 +12,16 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
+import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { ICachedTransaction } from "../../../models/ICachedTransaction";
+import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
-import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
+import SidePanel from "../../components/chrysalis/SidePanel";
 import Confirmation from "../../components/Confirmation";
 import CurrencyButton from "../../components/CurrencyButton";
 import JsonViewer from "../../components/JsonViewer";
 import MessageButton from "../../components/MessageButton";
-import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
 import ValueButton from "../../components/ValueButton";
 import "./Transaction.scss";
@@ -34,7 +35,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * Timer to check to state update.
@@ -48,7 +49,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     constructor(props: RouteComponentProps<TransactionRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
+            `tangle-cache-${CHRYSALIS}`
+        );
 
         let hash;
         if (this.props.match.params.hash.length === 81 &&

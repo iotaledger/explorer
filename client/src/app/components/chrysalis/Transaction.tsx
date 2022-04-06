@@ -2,11 +2,10 @@ import { UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import Spinner from "../../components/Spinner";
-import MessageTangleState from "../MessageTangleState";
 import "./Transaction.scss";
-import { TransactionProps } from "./TransactionProps";
-import { TransactionState } from "./TransactionState";
-
+import { TransactionProps } from "../TransactionProps";
+import { TransactionState } from "../TransactionState";
+import MessageTangleState from "./MessageTangleState";
 
 /**
  * Component which will display a transaction.

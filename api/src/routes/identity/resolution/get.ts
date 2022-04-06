@@ -5,6 +5,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IIdentityDidResolveRequest } from "../../../models/api/IIdentityDidResolveRequest";
 import { IIdentityDidResolveResponse } from "../../../models/api/IIdentityDidResolveResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { IdentityHelper } from "../../../utils/identityHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
@@ -25,7 +26,7 @@ export async function get(
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== "chrysalis") {
+    if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {
             // eslint-disable-next-line max-len
             error: "Network is not supported. IOTA Identity only supports chrysalis phase 2 networks, such as the IOTA main network. "

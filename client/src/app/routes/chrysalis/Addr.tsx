@@ -5,9 +5,10 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
-import { TransactionsHelper } from "../../../helpers/transactionsHelper";
+import { TransactionsHelper } from "../../../helpers/chrysalis/transactionsHelper";
+import { CHRYSALIS } from "../../../models/db/protocolVersion";
+import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
-import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import QR from "../../components/chrysalis/QR";
@@ -16,15 +17,15 @@ import Icon from "../../components/Icon";
 import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
+import { AddrRouteProps } from "../AddrRouteProps";
 import messageJSON from "./../../../assets/modals/message.json";
 import Transaction from "./../../components/chrysalis/Transaction";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
-import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState } from "./AddrState";
 
 /**
- * Component which will show the address page.
+ * Component which will show the address page for chrysalis and older.
  */
 class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState> {
     /**
@@ -35,7 +36,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * The hrp of bech addresses.
@@ -49,12 +50,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     constructor(props: RouteComponentProps<AddrRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
-
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networkConfig = this.props.match.params.network
             ? networkService.get(this.props.match.params.network)
             : undefined;
+
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
 
         this._bechHrp = networkConfig?.bechHrp ?? "iot";
 
@@ -330,9 +331,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     </div>)}
                             </div>
                         </div>
-                    </div >
-                </div >
-            </div >
+                    </div>
+                </div>
+            </div>
         );
     }
 
@@ -486,3 +487,4 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 }
 
 export default Addr;
+

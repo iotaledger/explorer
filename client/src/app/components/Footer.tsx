@@ -2,7 +2,6 @@ import React, { Component, ReactNode } from "react";
 import logoFooter from "../../assets/logo-footer.svg";
 import { FoundationDataHelper } from "../../helpers/foundationDataHelper";
 import { ReactComponent as DiscordIcon } from "./../../assets/discord.svg";
-import { ReactComponent as FacebookIcon } from "./../../assets/facebook.svg";
 import { ReactComponent as GithubIcon } from "./../../assets/github.svg";
 import { ReactComponent as InstagramIcon } from "./../../assets/instagram.svg";
 import { ReactComponent as LinkedinIcon } from "./../../assets/linkedin.svg";

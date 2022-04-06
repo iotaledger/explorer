@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { TrytesHelper } from "../../helpers/trytesHelper";
+import { OG } from "../../models/db/protocolVersion";
 import { ReactComponent as CloseIcon } from "./../../assets/close.svg";
 import { ReactComponent as SearchIcon } from "./../../assets/search.svg";
 import AsyncComponent from "./AsyncComponent";
@@ -43,10 +44,10 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                         autoFocus
                         value={this.state.query}
                         onChange={e => this.setState({
-                            query: this.props.protocolVersion === "og"
+                            query: this.props.protocolVersion === OG
                                 ? e.target.value.toUpperCase().trim()
                                 : e.target.value,
-                            isValid: this.isValid(this.props.protocolVersion === "og"
+                            isValid: this.isValid(this.props.protocolVersion === OG
                                 ? e.target.value.toUpperCase().trim()
                                 : e.target.value)
                         })}
@@ -78,10 +79,10 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                                     autoFocus
                                     value={this.state.query}
                                     onChange={e => this.setState({
-                                        query: this.props.protocolVersion === "og"
+                                        query: this.props.protocolVersion === OG
                                             ? e.target.value.toUpperCase().trim()
                                             : e.target.value,
-                                        isValid: this.isValid(this.props.protocolVersion === "og"
+                                        isValid: this.isValid(this.props.protocolVersion === OG
                                             ? e.target.value.toUpperCase().trim()
                                             : e.target.value)
                                     })}
@@ -126,7 +127,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
             return false;
         }
 
-        if (this.props.protocolVersion === "og") {
+        if (this.props.protocolVersion === OG) {
             if (!TrytesHelper.isTrytes(query)) {
                 return false;
             }
@@ -142,7 +143,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
      * Perform the search.
      */
     private doSearch(): void {
-        this.props.onSearch(this.props.protocolVersion === "og"
+        this.props.onSearch(this.props.protocolVersion === OG
             ? this.state.query.trim().toUpperCase()
             : this.state.query.trim());
 
