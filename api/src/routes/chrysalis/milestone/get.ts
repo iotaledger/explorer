@@ -2,6 +2,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IMilestoneDetailsRequest } from "../../../models/api/chrysalis/IMilestoneDetailsRequest";
 import { IMilestoneDetailsResponse } from "../../../models/api/chrysalis/IMilestoneDetailsResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
@@ -23,7 +24,7 @@ export async function get(
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== "chrysalis") {
+    if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {};
     }
 

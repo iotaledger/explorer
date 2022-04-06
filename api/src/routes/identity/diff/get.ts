@@ -5,6 +5,7 @@ import * as identity from "@iota/identity-wasm/node";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IIdentityDiffHistoryBody } from "../../../models/api/IIdentityDiffHistoryBody";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { IdentityHelper } from "../../../utils/identityHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
@@ -28,7 +29,7 @@ export async function get(
     ValidationHelper.oneOf(request.network, networks, "network");
 
     const networkConfig = networkService.get(request.network);
-    if (networkConfig.protocolVersion !== "chrysalis") {
+    if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {
             error: `Network is not supported. IOTA Identity only supports
             chrysalis phase 2 networks, such as the IOTA main network.`
