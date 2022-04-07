@@ -221,7 +221,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 )}
                                         </div>
                                     </div>
-                                    {this.props.match.params.network === 'stardust-testnet-4' && (
+                                    {this.props.match.params.network === 'alphanet-1' && (
                                         <div className="asset-cards row">
                                             <div className="section--assets">
                                                 <div className="inner--asset">
@@ -373,7 +373,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 })}
                                         />
                                     </div>)}
-                                    {this.props.match.params.network === 'stardust-testnet-4' && (
+                                    {this.props.match.params.network === 'alphanet-1' && (
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
                                             <div className="row middle">
@@ -452,7 +452,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         />
                                     </div>
                                     )}
-                                    {this.props.match.params.network === 'stardust-testnet-4' && (
+                                    {this.props.match.params.network === 'alphanet-1' && (
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
                                             <div className="row middle">
@@ -539,7 +539,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 quantity: 1322212,
                 price: 10303925,
                 value: 363960,
-                network: "stardust-testnet-4",
+                network: "alphanet-1",
                 tableFormat: true
             },
             {
@@ -548,7 +548,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 quantity: 1322212,
                 price: 10303925,
                 value: 363960,
-                network: "stardust-testnet-4",
+                network: "aplhanet-1",
                 tableFormat: true
             }
         ];
