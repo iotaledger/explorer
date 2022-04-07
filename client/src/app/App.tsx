@@ -18,6 +18,8 @@ import Indexed from "./routes/chrysalis/Indexed";
 import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
 import Message from "./routes/chrysalis/Message";
 import { MessageRouteProps } from "./routes/chrysalis/MessageRouteProps";
+import NFTDetails from "./routes/chrysalis/NFTDetails";
+import { NFTDetailsRouteProps } from "./routes/chrysalis/NFTDetailsRouteProps";
 import CurrencyConverter from "./routes/CurrencyConverter";
 import IdentityResolver from "./routes/IdentityResolver";
 import { IdentityResolverProps } from "./routes/IdentityResolverProps";
@@ -250,6 +252,15 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 component={(props: RouteComponentProps<MessageRouteProps>) =>
                                                 (
                                                     <Message
+                                                        {...props}
+                                                    />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/nft/:tokenId"
+                                                component={(props: RouteComponentProps<NFTDetailsRouteProps>) =>
+                                                (
+                                                    <NFTDetails
                                                         {...props}
                                                     />
                                                 )}

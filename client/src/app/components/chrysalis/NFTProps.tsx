@@ -1,5 +1,9 @@
 export interface NFTProps {
     /**
+     * network.
+     */
+    network: string;
+    /**
      * The image of a NFT.
      */
     image: string;
