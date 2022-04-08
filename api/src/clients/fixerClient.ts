@@ -1,4 +1,5 @@
 import { ILatestResponse } from "../models/clients/fixer/ILatestResponse";
+import { ISymbolsResponse } from "../models/clients/fixer/ISymbolsResponse";
 import { FetchHelper } from "../utils/fetchHelper";
 
 /**
@@ -40,6 +41,24 @@ export class FixerClient {
             );
         } catch {
         }
+
+        return response;
+    }
+
+    /**
+     * Get the latest api currency names.
+     * @returns The currency names.
+     */
+    public async symbols(): Promise<ISymbolsResponse> {
+        let response: ISymbolsResponse;
+
+        try {
+            response = await FetchHelper.json<unknown, ISymbolsResponse>(
+                this._endpoint,
+                `symbols?access_key=${this._apiKey}`,
+                "get"
+            );
+        } catch { }
 
         return response;
     }
