@@ -1,7 +1,7 @@
 import { composeAPI, Transaction } from "@iota/core";
 import { Blake2b } from "@iota/crypto.js-stardust";
 import { addressBalance, Bech32Helper, ED25519_ADDRESS_TYPE, IMilestoneResponse, IOutputResponse, IOutputsResponse, serializeMessage, SingleNodeClient, IndexerPluginClient } from "@iota/iota.js-stardust";
-import { Converter, WriteStream } from "@iota/util.js-stardust";
+import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import { ChronicleClient } from "../../clients/chronicleClient";
 import { HornetClient } from "../../clients/hornetClient";
@@ -405,6 +405,7 @@ export class StardustTangleHelper {
             }
         } catch {
         }
+
         try {
             // If the query is an integer then lookup a milestone
             if (/^\d+$/.test(query)) {
@@ -433,7 +434,7 @@ export class StardustTangleHelper {
                     const addressDetails = await addressBalance(client, queryLower);
                     // TO DO: confirm address.ledgerIndex > 0 condition is valid way to decide if address exists?
                     // Address object will always be retrieved even for bech32 addresses that dont exist.
-                    if (addressDetails && addressDetails.ledgerIndex > 0) {
+                    if (addressDetails) {
                         const addressOutputs = await indexerPlugin.outputs({ addressBech32: queryLower });
 
                         return {
@@ -448,9 +449,15 @@ export class StardustTangleHelper {
         }
 
         // If the query is 64 bytes hex, try and look for a message
-        if (Converter.isHex(queryLower) && queryLower.length === 64) {
+        if (Converter.isHex(queryLower, true) &&
+            (queryLower.length === 64 ||
+             // Already hex prefixed
+             queryLower.length === 66
+            )) {
             try {
-                const message = await client.message(queryLower);
+                const message = await client.message(
+                    HexHelper.addPrefix(queryLower)
+                );
 
                 if (Object.keys(message).length > 0) {
                     return {
@@ -462,7 +469,9 @@ export class StardustTangleHelper {
 
             // If the query is 64 bytes hex, try and look for a transaction included message
             try {
-                const message = await client.transactionIncludedMessage(queryLower);
+                const message = await client.transactionIncludedMessage(
+                    HexHelper.addPrefix(queryLower)
+                );
 
                 if (Object.keys(message).length > 0) {
                     const writeStream = new WriteStream();
@@ -546,6 +555,7 @@ export class StardustTangleHelper {
                 password: network.password
             });
 
+            messageId = HexHelper.addPrefix(messageId);
             const metadata = await client.messageMetadata(messageId);
             const children = await client.messageChildren(messageId);
 
