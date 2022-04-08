@@ -31,26 +31,6 @@ export interface AddrState {
     status: string;
 
     /**
-     * Is the component assets status busy.
-     */
-    assetStatusBusy: boolean;
-
-    /**
-     * The assets status.
-     */
-    assetStatus: string;
-
-    /**
-     * Is the component NFTs status busy.
-     */
-    nftStatusBusy: boolean;
-
-    /**
-     * The assets status.
-     */
-    nftStatus: string;
-
-    /**
      * The output ids for the address.
      */
     outputIds?: string[];
@@ -104,34 +84,4 @@ export interface AddrState {
      * Page size in transaction history table.
      */
     currentPageTransactions: ITransaction[];
-
-     /**
-     * Current page in asset history table.
-     */
-    assetCurrentPage: number;
-
-    /**
-     * Page size in asset history table.
-     */
-    assetPageSize: number;
-
-    /**
-     * Page size in asset history table.
-     */
-     currentPageAssets: string[];
-
-    /**
-     * Current page in nft history table.
-     */
-    nftCurrentPage: number;
-
-    /**
-     * Page size in nft history table.
-     */
-    nftPageSize: number;
-
-    /**
-     * Page size in nft history table.
-     */
-    currentPageNFTs: string[];
 }
