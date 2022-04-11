@@ -119,10 +119,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             <span className="download-rate">
                                                 {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1) || "--"}
                                             </span>
-                                            <span className="upload-rate">
-                                                /{NumberHelper.roundTo(Number(this.state.confirmedItemsPerSecond)
-                                                    , 1) || "--"}
-                                            </span>
                                         </div>
                                     </div>
                                     {this.state.networkConfig.showMarket && (

@@ -106,7 +106,8 @@
               font-weight: 500;
               letter-spacing: 0.5px;
               text-decoration: none;
-
+              text-align: center;
+                         	
               @include tablet-down {
                 margin-bottom: 16px;
                 padding: 15px 5px 0 5px;
