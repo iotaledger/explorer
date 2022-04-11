@@ -12,9 +12,9 @@ export class IdentityHelper {
                 doc: legacyDocument,
                 meta: {
                     updated: legacyDocument.updated,
-                    created: legacyDocument.created,
-                    proof: legacyDocument.proof
-                }
+                    created: legacyDocument.created
+                },
+                proof: legacyDocument.proof
             };
             delete transformedDocument.doc.updated;
             delete transformedDocument.doc.created;
