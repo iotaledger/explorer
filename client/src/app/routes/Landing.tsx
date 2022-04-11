@@ -79,8 +79,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             filterSettings = settings.filters[this._networkConfig.network];
         }
 
-        console.log(settings.filters);
-        
         this.setState({
             valueMinimum: filterSettings?.valueMinimum ?? "0",
             valueMinimumUnits: filterSettings?.valueMinimumUnits ?? "i",
