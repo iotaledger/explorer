@@ -186,36 +186,34 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 )}
                                         </div>
                                     </div>
-                                    {this.props.match.params.network === 'alphanet-1' && (
-                                        <div className="asset-cards row">
-                                            <div className="section--assets">
-                                                <div className="inner--asset">
-                                                    <div className="section--data assets">
-                                                        <span className="label">Assets in wallet (12)</span>
-                                                        <span className="value">{this.state.balance}</span>
-                                                    </div>
-                                                    <img
-                                                        src={chevronRightGray}
-                                                        alt="bundle"
-                                                        className="svg-navigation"
-                                                    />                
+                                    <div className="asset-cards row">
+                                        <div className="section--assets">
+                                            <div className="inner--asset">
+                                                <div className="section--data assets">
+                                                    <span className="label">Assets in wallet (12)</span>
+                                                    <span className="value">{this.state.balance}</span>
                                                 </div>
-                                            </div>
-                                            <div className="section--NFT">
-                                                <div className="inner--asset">
-                                                    <div className="section--data assets">
-                                                        <span className="label">NFTs in wallet (37)</span>
-                                                        <span className="value">-</span>
-                                                    </div>
-                                                    <img
-                                                        src={chevronRightGray}
-                                                        alt="bundle"
-                                                        className="svg-navigation"
-                                                    />                
-                                                </div>
+                                                <img
+                                                    src={chevronRightGray}
+                                                    alt="bundle"
+                                                    className="svg-navigation"
+                                                />
                                             </div>
                                         </div>
-                                    )}
+                                        <div className="section--NFT">
+                                            <div className="inner--asset">
+                                                <div className="section--data assets">
+                                                    <span className="label">NFTs in wallet (37)</span>
+                                                    <span className="value">-</span>
+                                                </div>
+                                                <img
+                                                    src={chevronRightGray}
+                                                    alt="bundle"
+                                                    className="svg-navigation"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
                                     <div className="section">
@@ -338,7 +336,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 })}
                                         />
                                     </div>)}
-                                    {this.props.match.params.network === 'alphanet-1' && (
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
                                             <div className="row middle">
@@ -416,8 +413,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 })}
                                         />
                                     </div>
-                                    )}
-                                    {this.props.match.params.network === 'alphanet-1' && (
                                     <div className="section transaction--section no-border">
                                         <div className="section--header row space-between">
                                             <div className="row middle">
@@ -462,7 +457,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 })}
                                         />
                                     </div>
-                                    )}
                             </div>
                         </div>
                     </div >
@@ -513,7 +507,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 quantity: 1322212,
                 price: 10303925,
                 value: 363960,
-                network: "aplhanet-1",
+                network: "alphanet-1",
                 tableFormat: true
             }
         ];
