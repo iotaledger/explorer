@@ -206,7 +206,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 )}
                                         </div>
                                     </div>
-
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
                                     <div className="section">
