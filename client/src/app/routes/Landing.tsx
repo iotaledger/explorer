@@ -1,10 +1,6 @@
 import { Units, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import dropdown from "../../assets/dropdown.svg";
-import { ReactComponent as FilterIcon } from "../../assets/filter.svg";
-import { ReactComponent as PauseIcon } from "../../assets/pause.svg";
-import { ReactComponent as PlayIcon } from "../../assets/play.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { RouteBuilder } from "../../helpers/routeBuilder";
 import { INetwork } from "../../models/db/INetwork";
@@ -158,7 +154,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     });
                                                 }}
                                             >
-                                                {this.state.isFeedPaused ? <PlayIcon /> : <PauseIcon />}
+                                                {this.state.isFeedPaused
+                                                    ? <span className="material-icons">play_arrow</span>
+                                                    : <span className="material-icons">pause</span>}
                                             </button>
                                             <div className="filters-button-wrapper">
                                                 <button
@@ -170,80 +168,84 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                         );
                                                     }}
                                                 >
-                                                    <FilterIcon />
+                                                    <span className="material-icons">
+                                                        tune
+                                                    </span>
                                                 </button>
                                                 <div className="filters-button-wrapper__counter">
                                                     {this.state.valuesFilter.filter(f => f.isEnabled).length}
                                                 </div>
                                             </div>
-                                            {this.state.isFilterExpanded && (
-                                                <div className="filter-wrapper">
-                                                    <div className="filter">
-                                                        <div className="filter-header row space-between middle">
-                                                            <button
-                                                                className="button--unstyled"
-                                                                type="button"
-                                                                onClick={() => this.resetFilters()}
-                                                            >
-                                                                Reset
-                                                            </button>
-                                                            <span>Payload Filter</span>
-                                                            <button
-                                                                className="done-button"
-                                                                type="button"
-                                                                onClick={() => this.setState(
-                                                                    { isFilterExpanded: false }
-                                                                )}
-                                                            >
-                                                                Done
-                                                            </button>
-                                                        </div>
+                                            {
+                                                this.state.isFilterExpanded && (
+                                                    <div className="filter-wrapper">
+                                                        <div className="filter">
+                                                            <div className="filter-header row space-between middle">
+                                                                <button
+                                                                    className="button--unstyled"
+                                                                    type="button"
+                                                                    onClick={() => this.resetFilters()}
+                                                                >
+                                                                    Reset
+                                                                </button>
+                                                                <span>Payload Filter</span>
+                                                                <button
+                                                                    className="done-button"
+                                                                    type="button"
+                                                                    onClick={() => this.setState(
+                                                                        { isFilterExpanded: false }
+                                                                    )}
+                                                                >
+                                                                    Done
+                                                                </button>
+                                                            </div>
 
-                                                        <div className="filter-content">
-                                                            {this.state.valuesFilter.map(payload => (
-                                                                <React.Fragment key={payload.label}>
-                                                                    <label >
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={payload.isEnabled}
-                                                                            onChange={
-                                                                                () => (
-                                                                                    this.toggleFilter(payload.label)
-                                                                                )
-                                                                            }
-                                                                        />
-                                                                        {payload.label}
-                                                                    </label>
-                                                                    {((this.state
-                                                                        .networkConfig
-                                                                        .protocolVersion === "og" &&
-                                                                        payload.label === "Non-zero only" &&
-                                                                        payload.isEnabled) ||
-                                                                        (this.state.networkConfig.protocolVersion ===
-                                                                            "chrysalis" &&
-                                                                            payload.label === "Transaction" &&
-                                                                            payload.isEnabled)) && (
-                                                                            <div className="row">
-                                                                                {this.transactionDropdown("minimum")}
-                                                                                {this.transactionDropdown("maximum")}
-                                                                            </div>
-                                                                        )}
-                                                                </React.Fragment>
-                                                            ))}
+                                                            <div className="filter-content">
+                                                                {this.state.valuesFilter.map(payload => (
+                                                                    <React.Fragment key={payload.label}>
+                                                                        <label >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={payload.isEnabled}
+                                                                                onChange={
+                                                                                    () => (
+                                                                                        this.toggleFilter(payload.label)
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                            {payload.label}
+                                                                        </label>
+                                                                        {((this.state
+                                                                            .networkConfig
+                                                                            .protocolVersion === "og" &&
+                                                                            payload.label === "Non-zero only" &&
+                                                                            payload.isEnabled) ||
+                                                                            (this.state.networkConfig.protocolVersion ===
+                                                                                "chrysalis" &&
+                                                                                payload.label === "Transaction" &&
+                                                                                payload.isEnabled)) && (
+                                                                                <div className="row">
+                                                                                    {this.transactionDropdown("minimum")}
+                                                                                    {this.transactionDropdown("maximum")}
+                                                                                </div>
+                                                                            )}
+                                                                    </React.Fragment>
+                                                                ))}
+                                                            </div>
                                                         </div>
+                                                        <div
+                                                            className="filter--bg"
+                                                            onClick={() => {
+                                                                this.setState(
+                                                                    { isFilterExpanded: !this.state.isFilterExpanded }
+                                                                );
+                                                            }}
+                                                        />
                                                     </div>
-                                                    <div
-                                                        className="filter--bg"
-                                                        onClick={() => {
-                                                            this.setState(
-                                                                { isFilterExpanded: !this.state.isFilterExpanded }
-                                                            );
-                                                        }}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
+                                                )
+                                            }
+                                        </div >
+                                    </div >
 
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
@@ -297,8 +299,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             </div>
                                         ))}
                                     </div>
-                                </div>
-                            </div>
+                                </div >
+                            </div >
                             <div className="card margin-t-m">
                                 <div className="card--content description">
                                     {this.state.networkConfig.description}
@@ -317,19 +319,21 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     </div>
                                 )}
                             </div>
-                            {!this.state.networkConfig.isEnabled && (
-                                <div className="card margin-t-m">
-                                    <div className="card--content description">
-                                        {this.state.networkConfig.isEnabled === undefined
-                                            ? "This network is not recognised."
-                                            : "This network is currently disabled in explorer."}
+                            {
+                                !this.state.networkConfig.isEnabled && (
+                                    <div className="card margin-t-m">
+                                        <div className="card--content description">
+                                            {this.state.networkConfig.isEnabled === undefined
+                                                ? "This network is not recognised."
+                                                : "This network is currently disabled in explorer."}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
+                                )
+                            }
+                        </div >
 
-                    </div>
-                </div>
+                    </div >
+                </div >
             </div >
         );
     }
@@ -580,10 +584,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 Pi
                             </option>
                         </select>
-                        <img
-                            src={dropdown}
-                            alt="expand"
-                        />
+                        <span className="material-icons">
+                            arrow_drop_down
+                        </span>
                     </div>
                 </span>
             </div>

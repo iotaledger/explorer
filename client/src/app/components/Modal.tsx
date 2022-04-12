@@ -1,7 +1,5 @@
 import React, { Component, ReactNode } from "react";
-import closeIcon from "../../assets/close.svg";
 import { ReactComponent as DotsIcon } from "./../../assets/dots.svg";
-import { ReactComponent as InfoIcon } from "./../../assets/info.svg";
 import "./Modal.scss";
 import { ModalProps } from "./ModalProps";
 import { ModalState } from "./ModalState";
@@ -35,10 +33,13 @@ class Modal extends Component<ModalProps, ModalState> {
                     onClick={() => this.handleShow()}
                 >
                     {this.props.icon === "dots" && (
-                        <DotsIcon />
-                    )}
+                        <span className="material-icons">
+                            more_horiz
+                        </span>)}
                     {this.props.icon === "info" && (
-                        <InfoIcon />
+                        <span className="material-icons">
+                            info
+                        </span>
                     )}
                 </button>
                 {this.state.show && (
@@ -51,7 +52,7 @@ class Modal extends Component<ModalProps, ModalState> {
                                         type="button"
                                         onClick={() => this.handleHide()}
                                     >
-                                        <img src={closeIcon} alt="Close modal" />
+                                        <span className="material-icons">close</span>
                                     </button>
                                 </div>
                             </div>

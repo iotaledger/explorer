@@ -5,103 +5,102 @@
 @import "./../../scss/themes";
 
 .fiat-selector {
-    position: relative;
-    margin-left: 16px;
-    font-family: $inter;
+  position: relative;
+  margin-left: 16px;
+  font-family: $inter;
 
-    .fiat-selector__button {
-        @include font-size(14px);
+  .fiat-selector__button {
+    @include font-size(14px);
 
-        display: flex;
-        align-items: center;
-        height: 40px;
-        margin: 0;
-        padding: 0 48px 0 20px;
-        transition: border-color 0.2s ease;
-        border: 1px solid var(--input-border-color);
-        border-radius: 8px;
-        outline: none;
-        background-color: transparent;
-        color: var(--body-color);
-        appearance: none;
-        box-shadow: none;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    margin: 0;
+    padding: 0 48px 0 20px;
+    transition: border-color 0.2s ease;
+    border: 1px solid var(--input-border-color);
+    border-radius: 8px;
+    outline: none;
+    background-color: transparent;
+    box-shadow: none;
+    color: var(--body-color);
+    appearance: none;
 
-        &:focus {
-          border-color: var(--input-focus-border-color);
-        }
-
-        &:-ms-expand {
-          display: none;
-        }
-
-        &:-moz-focusring {
-          color: transparent;
-          text-shadow: 0 0 0 $gray-10;
-
-          * {
-            color: $gray-10;
-            text-shadow: none;
-          }
-        }
+    &:focus {
+      border-color: var(--input-focus-border-color);
     }
 
-    .fiat-selector__entries {
-        z-index: 5;
-        position: absolute;
-        width: 356px;
-        max-height: 500px;
-
-        @include font-size(14px);
-        border: 1px solid var(--input-border-color);
-        border-radius: 6px;
-        background-color: var(--body-background);
-        color: var(--body-color);
-        overflow: auto;
-
-        @include desktop-down {
-            right: 0;
-        }
-
-        @include phone-down {
-            position: fixed;
-            width: 100%;
-        }
-
-        .group-header {
-            color: $gray-5;
-            font-weight: 500;
-            padding: 24px 20px 14px;
-            cursor: default;
-        }
-
-        .fiat-selector__currency {
-            display: flex;
-            margin: 0 20px;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--input-border-color);
-            cursor: pointer;
-
-            .acronym {
-                width: 38px;
-                margin-right: 8px;
-                color: $gray-11;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-            }
-
-            .full-name {
-                color: $gray-7;
-            }
-        }
+    &:-ms-expand {
+      display: none;
     }
 
-    img {
-        position: absolute;
-        z-index: 2;
-        top: 43%;
-        right: 18px;
-        color: $gray;
-        pointer-events: none;
+    &:-moz-focusring {
+      color: transparent;
+      text-shadow: 0 0 0 $gray-10;
+
+      * {
+        color: $gray-10;
+        text-shadow: none;
+      }
     }
-  
+  }
+
+  .fiat-selector__entries {
+    position: absolute;
+    z-index: 5;
+    width: 356px;
+    max-height: 500px;
+    overflow: auto;
+    border: 1px solid var(--input-border-color);
+    border-radius: 6px;
+    background-color: var(--body-background);
+    color: var(--body-color);
+
+    @include font-size(14px);
+
+    @include desktop-down {
+      right: 0;
+    }
+
+    @include phone-down {
+      position: fixed;
+      width: 100%;
+    }
+
+    .group-header {
+      padding: 24px 20px 14px;
+      color: $gray-5;
+      font-weight: 500;
+      cursor: default;
+    }
+
+    .fiat-selector__currency {
+      display: flex;
+      margin: 0 20px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--input-border-color);
+      cursor: pointer;
+
+      .acronym {
+        width: 38px;
+        margin-right: 8px;
+        color: $gray-11;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .full-name {
+        color: $gray-7;
+      }
+    }
+  }
+
+  .chevron {
+    position: absolute;
+    z-index: 2;
+    top: 19%;
+    right: 10px;
+    color: $gray;
+    pointer-events: none;
+  }
 }

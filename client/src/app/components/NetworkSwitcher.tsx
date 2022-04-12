@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
-import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
 import { ReactComponent as DevnetIcon } from "./../../assets/devnet.svg";
 import { ReactComponent as MainnetIcon } from "./../../assets/mainnet.svg";
 import "./NetworkSwitcher.scss";
@@ -28,7 +27,9 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                         <div className="label">{this.props.label}</div>
                     </div>
                     <div className="icon">
-                        <DropdownIcon />
+                        <span className="material-icons">
+                            expand_more
+                        </span>
                     </div>
 
 

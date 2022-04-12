@@ -44,8 +44,18 @@
     border-radius: 5px;
     white-space: nowrap;
 
+    .close {
+      color: var(--expanded-color);
+      font-size: 16px;
+    }
+
+    .dropdown {
+      transition: transform 0.2s ease;
+      color: var(--expanded-color);
+    }
+
     &.opened {
-      img {
+      span {
         transform: rotate(-180deg);
       }
     }
@@ -65,8 +75,7 @@
         @include font-size(14px);
       }
 
-      svg,
-      img {
+      .dropdown {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);

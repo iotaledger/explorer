@@ -1,5 +1,4 @@
 import React, { ReactNode, RefObject } from "react";
-import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import Currency from "./Currency";
 import { FiatSelectorState } from "./FiatSelectorState";
 import "./FiatSelector.scss";
@@ -44,11 +43,12 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
 
         document.addEventListener("mousedown", this.outsideClickHandler);
         this._currencyService.loadCurrencyNames().then(currencyNames => {
+            console.log("currencyNames", currencyNames);
             if (currencyNames) {
                 this.setState({ currencyNames });
             }
         })
-        .catch(_ => {});
+            .catch(_ => { });
     }
 
     /**
@@ -74,7 +74,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                 }}
             >
                 <span className="acronym">{currency}</span>
-                <span className="full-name">{this.state?.currencyNames[currency]}</span>
+                <span className="full-name">{this.state?.currencyNames?.[currency]}</span>
             </div>
         );
         const hasCurrencies = this.state?.currencies.length > 0;
@@ -88,7 +88,9 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                 >
                     {this.state?.currency}
                 </button>
-                <img src={chevronDownGray} alt="expand" />
+                <span className="material-icons chevron">
+                    expand_more
+                </span>
                 {
                     this.state?.isExpanded &&
                         <div className="fiat-selector__entries" ref={this.dropdown}>
@@ -103,7 +105,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                             </div>
                         </div>
                 }
-            </div>
+            </div >
         );
     }
 
@@ -120,7 +122,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
         const target = event.target as HTMLElement;
         if (this.dropdown.current &&
             !this.dropdown.current.contains(target) &&
-                target.className !== FiatSelector.BUTTON_CLASSNAME) {
+            target.className !== FiatSelector.BUTTON_CLASSNAME) {
             this.closeDropdown();
         }
     };

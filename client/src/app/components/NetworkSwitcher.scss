@@ -23,7 +23,7 @@
 
     &.opened {
       .icon {
-        svg {
+        span {
           transform: rotate(-180deg);
         }
       }
@@ -55,14 +55,9 @@
     .icon {
       margin-left: 40px;
 
-      svg {
-        width: 16px;
-        height: 16px;
+      span {
         transition: transform 0.2s ease;
-
-        path {
-          stroke: var(--header-icon-color);
-        }
+        color: var(--header-icon-color);
       }
     }
   }

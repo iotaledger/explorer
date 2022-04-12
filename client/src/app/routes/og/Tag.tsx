@@ -350,11 +350,9 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                                                     }/bundle/${item.details?.tx.bundle}`
                                                                 }
                                                             >
-                                                                <img
-                                                                    src={chevronRightGreen}
-                                                                    alt="bundle"
-                                                                    className="svg-navigation margin-r-t"
-                                                                />
+                                                                <span className="material-icons arrow">
+                                                                    chevron_right
+                                                                </span>
                                                             </Link>
                                                             <Link
                                                                 className="card--value__tertiary"

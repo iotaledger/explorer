@@ -105,9 +105,9 @@
               font-family: $inter;
               font-weight: 500;
               letter-spacing: 0.5px;
-              text-decoration: none;
               text-align: center;
-                         	
+              text-decoration: none;
+
               @include tablet-down {
                 margin-bottom: 16px;
                 padding: 15px 5px 0 5px;
@@ -225,21 +225,26 @@
               display: flex;
               position: relative;
 
+              span {
+                color: #677695;
+              }
+
               .filters-button-wrapper {
-                  position: relative;
-                  .filters-button-wrapper__counter {
-                      font-family: $inter;
-                      position: absolute;
-                      top: 2px;
-                      right: 2px;
-                      width: 12px;
-                      font-size: 10px;
-                      background: var(--mint-green-bg);
-                      text-align: center;
-                      color: $white;
-                      border-radius: 8px;
-                      font-weight: 700;
-                  }
+                position: relative;
+
+                .filters-button-wrapper__counter {
+                  position: absolute;
+                  top: 2px;
+                  right: 2px;
+                  width: 12px;
+                  border-radius: 8px;
+                  background: var(--mint-green-bg);
+                  color: $white;
+                  font-family: $inter;
+                  font-size: 10px;
+                  font-weight: 700;
+                  text-align: center;
+                }
               }
             }
 
@@ -302,10 +307,11 @@
                     color: var(--header-color);
                     font-family: $inter;
                     font-weight: 400;
+
                     &.done-button {
-                        background: var(--mint-green-bg);
-                        color: $white;
-                        border: none;
+                      border: none;
+                      background: var(--mint-green-bg);
+                      color: $white;
                     }
                   }
                 }
@@ -583,9 +589,10 @@
   }
 
   .feeds-wrapper {
-    padding: 0px $inner-padding 44px;
+    padding: 0 $inner-padding 44px;
+
     .inner {
-       max-width: 960px; 
+      max-width: 960px;
     }
   }
 }

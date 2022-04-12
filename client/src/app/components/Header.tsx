@@ -2,11 +2,6 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
-import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
-import { ReactComponent as CloseIcon } from "./../../assets/close.svg";
-import { ReactComponent as DarkModeIcon } from "./../../assets/dark-mode.svg";
-import { ReactComponent as HamburgerIcon } from "./../../assets/hamburger.svg";
-import { ReactComponent as LightModeIcon } from "./../../assets/light-mode.svg";
 import FiatSelector from "./FiatSelector";
 import "./Header.scss";
 import { HeaderProps } from "./HeaderProps";
@@ -99,7 +94,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 >
                                     <div className="label">Utilities</div>
                                     <div className="icon">
-                                        <DropdownIcon />
+                                        <span className="material-icons">
+                                            expand_more
+                                        </span>
                                     </div>
                                 </div>
 
@@ -152,7 +149,8 @@ class Header extends Component<HeaderProps, HeaderState> {
                             className="button--unstyled theme-toggle"
                             onClick={this.props?.toggleMode}
                         >
-                            {this.props.darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+                            {this.props.darkMode ? <span className="material-icons">light_mode</span>
+                                : <span className="material-icons">dark_mode</span>}
                         </button>
                         <div className="hamburger--menu">
                             <button
@@ -161,7 +159,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 onClick={() =>
                                     this.setState({ isMenuExpanded: !this.state.isMenuExpanded })}
                             >
-                                {this.state.isMenuExpanded ? <CloseIcon /> : <HamburgerIcon />}
+                                {this.state.isMenuExpanded
+                                    ? <span className="material-icons">close</span>
+                                    : <span className="material-icons"> menu</span>}
                             </button>
                             <div
                                 className={classNames("menu--expanded", {
@@ -200,7 +200,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     >
                                         <div className="label">Utilities</div>
                                         <div className="icon">
-                                            <DropdownIcon />
+                                            <span className="material-icons">
+                                                expand_more
+                                            </span>
                                         </div>
                                     </li>
                                     {/* ----- Only visible in mobile ----- */}
