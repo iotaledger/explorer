@@ -6,7 +6,7 @@ import { RouteBuilder } from "../../helpers/routeBuilder";
 import { INetwork } from "../../models/db/INetwork";
 import { IFeedItem } from "../../models/IFeedItem";
 import { IFilterSettings } from "../../models/services/IFilterSettings";
-import { ValueFilter } from "../../models/services/valueFilter";
+import { getDefaultValueFilter } from "../../models/services/valueFilter";
 import { NetworkService } from "../../services/networkService";
 import Feeds from "../components/Feeds";
 import { NumberHelper } from "./../../helpers/numberHelper";
@@ -18,36 +18,6 @@ import { LandingState } from "./LandingState";
  * Component which will show the landing page.
  */
 class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState> {
-    private readonly DEFAULT_VALUES_FILTER: ValueFilter[] = this._networkConfig?.protocolVersion === "og"
-        ? [
-            {
-                label: "Zero only",
-                isEnabled: true
-            },
-            {
-                label: "Non-zero only",
-                isEnabled: true
-            }
-        ]
-        : [
-            {
-                label: "Transaction",
-                isEnabled: true
-            },
-            {
-                label: "Milestone",
-                isEnabled: true
-            },
-            {
-                label: "Indexed",
-                isEnabled: true
-            },
-            {
-                label: "No payload",
-                isEnabled: true
-            }
-        ];
-
     /**
      * Create a new instance of Landing.
      * @param props The props.
@@ -70,7 +40,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMinimumUnits: "i",
             valueMaximum: "1",
             valueMaximumUnits: "Ti",
-            valuesFilter: this.DEFAULT_VALUES_FILTER,
+            valuesFilter: getDefaultValueFilter(network.protocolVersion),
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
@@ -110,7 +80,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMinimumUnits: filterSettings?.valueMinimumUnits ?? "i",
             valueMaximum: filterSettings?.valueMaximum ?? "3",
             valueMaximumUnits: filterSettings?.valueMaximumUnits ?? "Pi",
-            valuesFilter: filterSettings?.valuesFilter ?? this.DEFAULT_VALUES_FILTER,
+            valuesFilter: filterSettings?.valuesFilter ??
+                getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "chrysalis"),
             formatFull: settings.formatFull
         });
     }
@@ -144,10 +115,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             <span className="download-rate">
                                                 {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1) || "--"}
                                             </span>
-                                            <span className="upload-rate">
-                                                /{NumberHelper.roundTo(Number(this.state.confirmedItemsPerSecond)
-                                                    , 1) || "--"}
-                                            </span>
                                         </div>
                                     </div>
                                     {this.state.networkConfig.showMarket && (
@@ -174,7 +141,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         <div className="feeds-section">
                             <div className="row wrap feeds">
                                 <div className="feed section">
-                                    <div className="section--header row space-between">
+                                    <div className="section--header row space-between padding-l-8">
                                         <h2>Latest messages</h2>
                                         <div className="feed--actions">
                                             <button
@@ -191,76 +158,94 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     ? <span className="material-icons">play_arrow</span>
                                                     : <span className="material-icons">pause</span>}
                                             </button>
-                                            <button
-                                                type="button"
-                                                className="button--unstyled"
-                                                onClick={() => {
-                                                    this.setState({ isFilterExpanded: !this.state.isFilterExpanded });
-                                                }}
-                                            >
-                                                <span className="material-icons">
-                                                    tune
-                                                </span>
-                                            </button>
-                                            {this.state.isFilterExpanded && (
-                                                <div className="filter-wrapper">
-                                                    <div className="filter">
-                                                        <div className="filter-header row space-between middle">
-                                                            <span>Payload Filter</span>
-                                                            <button
-                                                                className="button--unstyled"
-                                                                type="button"
-                                                                onClick={() => this.resetFilters()}
-                                                            >
-                                                                Reset
-                                                            </button>
-                                                        </div>
-
-                                                        <div className="filter-content">
-                                                            {this.state.valuesFilter.map(payload => (
-                                                                <React.Fragment key={payload.label}>
-                                                                    <label >
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={payload.isEnabled}
-                                                                            onChange={
-                                                                                () => (
-                                                                                    this.toggleFilter(payload.label)
-                                                                                )
-                                                                            }
-                                                                        />
-                                                                        {payload.label}
-                                                                    </label>
-                                                                    {((this.state
-                                                                        .networkConfig
-                                                                        .protocolVersion === "og" &&
-                                                                        payload.label === "Non-zero only" &&
-                                                                        payload.isEnabled) ||
-                                                                        (this.state.networkConfig.protocolVersion ===
-                                                                            "chrysalis" &&
-                                                                            payload.label === "Transaction" &&
-                                                                            payload.isEnabled)) && (
-                                                                            <div className="row">
-                                                                                {this.transactionDropdown("minimum")}
-                                                                                {this.transactionDropdown("maximum")}
-                                                                            </div>
-                                                                        )}
-                                                                </React.Fragment>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                    <div
-                                                        className="filter--bg"
-                                                        onClick={() => {
-                                                            this.setState(
-                                                                { isFilterExpanded: !this.state.isFilterExpanded }
-                                                            );
-                                                        }}
-                                                    />
+                                            <div className="filters-button-wrapper">
+                                                <button
+                                                    type="button"
+                                                    className="button--unstyled toggle-filters-button"
+                                                    onClick={() => {
+                                                        this.setState(
+                                                            { isFilterExpanded: !this.state.isFilterExpanded }
+                                                        );
+                                                    }}
+                                                >
+                                                    <span className="material-icons">
+                                                        tune
+                                                    </span>
+                                                </button>
+                                                <div className="filters-button-wrapper__counter">
+                                                    {this.state.valuesFilter.filter(f => f.isEnabled).length}
                                                 </div>
-                                            )}
-                                        </div>
-                                    </div>
+                                            </div>
+                                            {
+                                                this.state.isFilterExpanded && (
+                                                    <div className="filter-wrapper">
+                                                        <div className="filter">
+                                                            <div className="filter-header row space-between middle">
+                                                                <button
+                                                                    className="button--unstyled"
+                                                                    type="button"
+                                                                    onClick={() => this.resetFilters()}
+                                                                >
+                                                                    Reset
+                                                                </button>
+                                                                <span>Payload Filter</span>
+                                                                <button
+                                                                    className="done-button"
+                                                                    type="button"
+                                                                    onClick={() => this.setState(
+                                                                        { isFilterExpanded: false }
+                                                                    )}
+                                                                >
+                                                                    Done
+                                                                </button>
+                                                            </div>
+
+                                                            <div className="filter-content">
+                                                                {this.state.valuesFilter.map(payload => (
+                                                                    <React.Fragment key={payload.label}>
+                                                                        <label >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={payload.isEnabled}
+                                                                                onChange={
+                                                                                    () => (
+                                                                                        this.toggleFilter(payload.label)
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                            {payload.label}
+                                                                        </label>
+                                                                        {((this.state
+                                                                            .networkConfig
+                                                                            .protocolVersion === "og" &&
+                                                                            payload.label === "Non-zero only" &&
+                                                                            payload.isEnabled) ||
+                                                                            (this.state.networkConfig.protocolVersion ===
+                                                                                "chrysalis" &&
+                                                                                payload.label === "Transaction" &&
+                                                                                payload.isEnabled)) && (
+                                                                                <div className="row">
+                                                                                    {this.transactionDropdown("minimum")}
+                                                                                    {this.transactionDropdown("maximum")}
+                                                                                </div>
+                                                                            )}
+                                                                    </React.Fragment>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className="filter--bg"
+                                                            onClick={() => {
+                                                                this.setState(
+                                                                    { isFilterExpanded: !this.state.isFilterExpanded }
+                                                                );
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )
+                                            }
+                                        </div >
+                                    </div >
 
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
@@ -314,8 +299,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             </div>
                                         ))}
                                     </div>
-                                </div>
-                            </div>
+                                </div >
+                            </div >
                             <div className="card margin-t-m">
                                 <div className="card--content description">
                                     {this.state.networkConfig.description}
@@ -334,19 +319,21 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     </div>
                                 )}
                             </div>
-                            {!this.state.networkConfig.isEnabled && (
-                                <div className="card margin-t-m">
-                                    <div className="card--content description">
-                                        {this.state.networkConfig.isEnabled === undefined
-                                            ? "This network is not recognised."
-                                            : "This network is currently disabled in explorer."}
+                            {
+                                !this.state.networkConfig.isEnabled && (
+                                    <div className="card margin-t-m">
+                                        <div className="card--content description">
+                                            {this.state.networkConfig.isEnabled === undefined
+                                                ? "This network is not recognised."
+                                                : "This network is currently disabled in explorer."}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
+                                )
+                            }
+                        </div >
 
-                    </div>
-                </div>
+                    </div >
+                </div >
             </div >
         );
     }

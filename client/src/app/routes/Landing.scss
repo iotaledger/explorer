@@ -24,14 +24,14 @@
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        min-height: 446px;
+        min-height: 280px;
         padding: 50px 0;
 
         @include desktop-down {
           flex-direction: column;
           align-items: inherit;
           justify-content: space-between;
-          padding-top: 133px;
+          padding-top: 96px;
           padding-bottom: 0;
         }
 
@@ -105,6 +105,7 @@
               font-family: $inter;
               font-weight: 500;
               letter-spacing: 0.5px;
+              text-align: center;
               text-decoration: none;
 
               @include tablet-down {
@@ -206,7 +207,6 @@
 
           .feed {
             flex: 1;
-            margin-right: 30px;
             overflow: hidden;
 
             @include desktop-down {
@@ -229,8 +229,22 @@
                 color: #677695;
               }
 
-              button:first-child {
-                margin-right: 16px;
+              .filters-button-wrapper {
+                position: relative;
+
+                .filters-button-wrapper__counter {
+                  position: absolute;
+                  top: 2px;
+                  right: 2px;
+                  width: 12px;
+                  border-radius: 8px;
+                  background: var(--mint-green-bg);
+                  color: $white;
+                  font-family: $inter;
+                  font-size: 10px;
+                  font-weight: 700;
+                  text-align: center;
+                }
               }
             }
 
@@ -276,7 +290,7 @@
 
                 .filter-header {
                   margin-bottom: 8px;
-                  padding: 8px;
+                  padding: 8px 10px;
                   border-bottom: 1px solid var(--input-border-color);
                   color: $gray-7;
                   font-family: $inter;
@@ -293,6 +307,12 @@
                     color: var(--header-color);
                     font-family: $inter;
                     font-weight: 400;
+
+                    &.done-button {
+                      border: none;
+                      background: var(--mint-green-bg);
+                      color: $white;
+                    }
                   }
                 }
 
@@ -392,7 +412,7 @@
 
             .feed-items {
               min-height: 440px;
-              padding: 24px 0;
+              padding: 15px 0;
 
               p {
                 color: var(--body-color);
@@ -422,7 +442,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                padding: 14px 8px;
+                padding: 8px 8px;
 
                 @include tablet-down {
                   flex-direction: column;
@@ -537,7 +557,6 @@
     }
 
     &::before {
-      top: 75px;
       right: 50%;
       transform: translateX(300%);
       background: var(--bubble-2);
@@ -553,7 +572,7 @@
     }
 
     &::after {
-      bottom: 25px;
+      bottom: -25px;
       left: 50%;
       transform: translateX(-100%);
       background: var(--bubble-1);
@@ -570,6 +589,10 @@
   }
 
   .feeds-wrapper {
-    padding: 44px $inner-padding;
+    padding: 0 $inner-padding 44px;
+
+    .inner {
+      max-width: 960px;
+    }
   }
 }

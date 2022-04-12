@@ -26,6 +26,11 @@
 
   .data-toggle--content {
     word-break: break-all;
+
+    .json-viewer {
+      max-height: 400px;
+      overflow-y: auto;
+    }
   }
 
   .data-toggle--tabs {

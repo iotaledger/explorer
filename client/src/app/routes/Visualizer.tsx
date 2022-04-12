@@ -152,7 +152,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
             currencies: [],
             itemCount: 0,
             selectedFeedItem: undefined,
-            filter: ""
+            filter: "",
+            isActive: true
         };
     }
 
@@ -400,6 +401,19 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                             }}
                             ref={r => this.setupGraph(r)}
                         />
+                        <div className="action-panel-container">
+                            <div className="card">
+                                <button
+                                    className="pause-button"
+                                    type="button"
+                                    onClick={() => this.toggleActivity()}
+                                >
+                                    {this.state.isActive
+                                        ? <span className="material-icons">pause</span>
+                                        : <span className="material-icons">play_arrow</span>}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="row middle margin-t-s">
@@ -827,6 +841,21 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                 y: this._graphElement.clientHeight / 2
             });
         }
+    }
+
+    /**
+     * The pause button was clicked
+     */
+    private toggleActivity(): void {
+        if (this._renderer) {
+            if (this.state.isActive) {
+                this._renderer.pause();
+            } else {
+                this._renderer.resume();
+            }
+        }
+
+        this.setState({ isActive: !this.state.isActive });
     }
 
     /**

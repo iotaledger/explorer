@@ -46,6 +46,23 @@
       font-family: $metropolis;
       word-break: break-all;
     }
+
+    .action-panel-container {
+      display: flex;
+      position: absolute;
+      z-index: 2;
+      top: 20px;
+      right: 20px;
+
+      .pause-button {
+        padding: 6px;
+        color: var(--header-icon-color);
+
+        &:hover {
+          color: $main-green-highlight;
+        }
+      }
+    }
   }
 
   .filter {

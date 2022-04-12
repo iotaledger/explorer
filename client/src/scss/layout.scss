@@ -58,6 +58,10 @@
   white-space: pre;
 }
 
+.margin-t-0 {
+  margin-top: 0 !important;
+}
+
 .margin-b-2 {
   margin-bottom: 2px !important;
 }
@@ -122,6 +126,10 @@
   margin-left: 30px;
 }
 
+.padding-l-8 {
+  padding-left: 8px;
+}
+
 .padding-b-s {
   padding-bottom: 20px;
 }
@@ -166,6 +174,10 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   word-break: normal !important;
+}
+
+.hidden {
+  display: none !important;
 }
 
 .dot-separator {
