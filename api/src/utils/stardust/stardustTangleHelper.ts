@@ -489,8 +489,14 @@ export class StardustTangleHelper {
 
         try {
             // If the query is 68 bytes hex, try and look for an output
-            if (Converter.isHex(queryLower) && queryLower.length === 68) {
-                const output = await client.output(queryLower);
+            if (Converter.isHex(queryLower) &&
+                queryLower.length === 68 ||
+                    // Already hex prefixed
+                    queryLower.length === 70
+               ) {
+                const output = await client.output(
+                    HexHelper.addPrefix(queryLower)
+                );
 
                 return {
                     output
@@ -501,7 +507,10 @@ export class StardustTangleHelper {
 
         try {
             // If the query is bech format lookup address
-            if (Converter.isHex(queryLower) && queryLower.length === 64) {
+            if (Converter.isHex(queryLower) && queryLower.length === 64 ||
+                // Already hex prefixed
+                queryLower.length === 66
+               ) {
                 // We have 64 characters hex so could possible be a raw ed25519 address
 
                 // Permanode does not support the address/ed25519 endpoint
@@ -509,7 +518,9 @@ export class StardustTangleHelper {
                 // for permanode, but we can still get outputs for the address
                 const addressBech32 = Bech32Helper.toBech32(
                     ED25519_ADDRESS_TYPE,
-                    Converter.hexToBytes(queryLower),
+                    Converter.hexToBytes(
+                        HexHelper.addPrefix(queryLower)
+                    ),
                     bechHrp
                 );
                 const addressDetails = isPermanode ? {

@@ -425,6 +425,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             const filteredMessages = this.state.isFeedPaused
                 ? this.state.frozenMessages
                 : this._feedClient.getItems();
+
             this.setState({
                 filteredItems: filteredMessages
                     .filter(item => {
