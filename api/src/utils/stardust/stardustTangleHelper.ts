@@ -489,7 +489,7 @@ export class StardustTangleHelper {
 
         try {
             // If the query is 68 bytes hex, try and look for an output
-            if (Converter.isHex(queryLower) &&
+            if (Converter.isHex(queryLower, true) &&
                 (queryLower.length === 68 ||
                  // Already hex prefixed
                  queryLower.length === 70
@@ -506,8 +506,8 @@ export class StardustTangleHelper {
         }
 
         try {
-            // If the query is bech format lookup address
-            if (Converter.isHex(queryLower) &&
+            // If the query is hex format lookup address
+            if (Converter.isHex(queryLower, true) &&
                 (queryLower.length === 64 ||
                  // Already hex prefixed
                  queryLower.length === 66
