@@ -64,7 +64,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
         );
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
-
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networkConfig = this.props.match.params.network
             ? networkService.get(this.props.match.params.network)

@@ -58,7 +58,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
-        this._bechHrp = networkConfig?.bechHrp ?? "iot";
+        this._bechHrp = networkConfig?.bechHrp ?? "iota";
 
         this.state = {
             ...Bech32AddressHelper.buildAddress(
@@ -97,7 +97,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                     result.address,
                     result.addressDetails?.type ? result.addressDetails.type.type : 0
                 ),
-                balance: result.addressDetails?.balance.toJSNumber(),
+                balance: Number(result.addressDetails?.balance),
                 outputIds: result.addressOutputIds,
                 historicOutputIds: result.historicAddressOutputIds
             }, async () => {
@@ -141,42 +141,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 addressDetails={this.state.bech32AddressDetails}
                                                 advancedMode={true}
                                             />
-                                            {/* {!this.state.statusBusy && (
-                                                <div className="row row--tablet-responsive">
-                                                    <div className="section--data margin-r-m">
-                                                        <div className="label">
-                                                            Total received
-                                                        </div>
-                                                        <div className="value">
-                                                            {UnitsHelper.formatBest(
-                                                                (this.state.balance ?? 0) + this.state.sent
-                                                            )}
-                                                            {" "}(
-                                                            <FiatValue
-                                                                value={
-                                                                    (this.state.balance ?? 0) +
-                                                                    this.state.sent
-                                                                }
-                                                            />)
-                                                        </div>
-                                                    </div>
-                                                    <div className="section--data">
-                                                        <div className="label">
-                                                            Total sent
-                                                        </div>
-                                                        <div className="value">
-                                                            {this.state.statusBusy ? (<Spinner />)
-                                                                : (
-                                                                    <React.Fragment>
-                                                                        {UnitsHelper.formatBest(this.state.sent)}
-                                                                        {" "}(<FiatValue value={this.state.sent} />)
-                                                                    </React.Fragment>
-                                                                )}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )} */}
-
                                             {this.state.balance !== undefined && (
                                                 <div className="row middle">
                                                     <Icon icon="wallet" boxed />

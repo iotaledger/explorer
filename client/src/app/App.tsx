@@ -14,11 +14,11 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import SearchInput from "./components/SearchInput";
 import { AddrRouteProps } from "./routes/AddrRouteProps";
-import Addr from "./routes/chrysalis/Addr";
+import ChrysalisAddress from "./routes/chrysalis/Addr";
 import Indexed from "./routes/chrysalis/Indexed";
 import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
 import ChrysalisLanding from "./routes/chrysalis/Landing";
-import Message from "./routes/chrysalis/Message";
+import ChrysalisMessage from "./routes/chrysalis/Message";
 import ChrysalisSearch from "./routes/chrysalis/Search";
 import ChrysalisVisualizer from "./routes/chrysalis/Visualizer";
 import CurrencyConverter from "./routes/CurrencyConverter";
@@ -36,7 +36,9 @@ import { TagRouteProps } from "./routes/og/TagRouteProps";
 import Transaction from "./routes/og/Transaction";
 import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
+import StardustAddress from "./routes/stardust/Addr";
 import StardustLanding from "./routes/stardust/Landing";
+import StardustMessage from "./routes/stardust/Message";
 import StardustSearch from "./routes/stardust/Search";
 import StardustVisualizer from "./routes/stardust/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
@@ -255,18 +257,18 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 path="/:network/addr/:address"
                                                 component={(props: RouteComponentProps<AddrRouteProps>) =>
                                                 (
-                                                    <Addr
-                                                        {...props}
-                                                    />
+                                                    isStardust
+                                                        ? <StardustAddress {...props} />
+                                                        : <ChrysalisAddress {...props} />
                                                 )}
                                             />
                                             <Route
                                                 path="/:network/message/:messageId"
                                                 component={(props: RouteComponentProps<MessageProps>) =>
                                                 (
-                                                    <Message
-                                                        {...props}
-                                                    />
+                                                    isStardust
+                                                        ? <StardustMessage {...props} />
+                                                        : <ChrysalisMessage {...props} />
                                                 )}
                                             />
                                             <Route

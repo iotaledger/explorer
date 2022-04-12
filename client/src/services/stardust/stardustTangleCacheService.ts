@@ -120,7 +120,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         }
 
         if (doLookup) {
-            const apiClient = ServiceFactory.get<StardustApiClient>("api-client");
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
             const response = await apiClient.transactionsGet({
                 network: networkId,
@@ -187,7 +187,7 @@ export class StardustTangleCacheService extends TangleCacheService {
 
             if (unknownHashes.length > 0) {
                 try {
-                    const apiClient = ServiceFactory.get<StardustApiClient>("api-client");
+                    const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
                     const response = await apiClient.trytesRetrieve({
                         network: networkId,
@@ -282,7 +282,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         Promise<string[]> {
         if (!this._transactionCache[networkId]?.[hash]?.children) {
             try {
-                const apiClient = ServiceFactory.get<StardustApiClient>("api-client");
+                const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
                 const response = await apiClient.transactionsGet({
                     network: networkId,
@@ -370,7 +370,7 @@ export class StardustTangleCacheService extends TangleCacheService {
             if (!addrBalance[addressHash] ||
                 now - addrBalance[addressHash].balance > 30000) {
                 try {
-                    const apiClient = ServiceFactory.get<StardustApiClient>("api-client");
+                    const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
                     const response = await apiClient.addressGet({
                         network: networkId,
@@ -526,7 +526,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         networkId: string,
         tailHash: string): Promise<boolean> {
         try {
-            const apiClient = ServiceFactory.get<StardustApiClient>("api-client");
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
             const response = await apiClient.transactionAction({
                 network: networkId,
@@ -550,7 +550,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         networkId: string,
         tailHash: string): Promise<string | undefined> {
         try {
-            const apiClient = ServiceFactory.get<StardustApiClient>("api-client");
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
             const response = await apiClient.transactionAction({
                 network: networkId,
@@ -574,7 +574,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         networkId: string,
         tailHash: string): Promise<string | undefined> {
         try {
-            const apiClient = ServiceFactory.get<StardustApiClient>("api-client");
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
             const response = await apiClient.transactionAction({
                 network: networkId,
@@ -636,7 +636,7 @@ export class StardustTangleCacheService extends TangleCacheService {
             childrenIds?: string[];
             error?: string;
         }> {
-        const apiClient = ServiceFactory.get<StardustApiClient>("api-client");
+        const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
         const response = await apiClient.messageDetails({ network: networkId, messageId });
 
@@ -661,7 +661,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         networkId: string,
         outputId: string): Promise<IOutputResponse | undefined> {
         if (!this._stardustSearchCache[networkId][outputId]?.data?.output) {
-            const apiClient = ServiceFactory.get<StardustApiClient>("api-client");
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
             const response = await apiClient.outputDetails({ network: networkId, outputId });
 
@@ -686,7 +686,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         networkId: string,
         milestoneIndex: number): Promise<IMilestoneResponse | undefined> {
         if (!this._stardustSearchCache[networkId][milestoneIndex]?.data?.milestone) {
-            const apiClient = ServiceFactory.get<StardustApiClient>("api-client");
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
             const response = await apiClient.milestoneDetails({ network: networkId, milestoneIndex });
 

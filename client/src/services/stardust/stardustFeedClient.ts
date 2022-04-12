@@ -8,7 +8,7 @@ import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
 import { IFeedSubscriptionMessage } from "../../models/api/IFeedSubscriptionMessage";
 import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
-import { OG, STARDUST } from "../../models/db/protocolVersion";
+import { STARDUST } from "../../models/db/protocolVersion";
 import { IFeedItem } from "../../models/IFeedItem";
 import { FeedClient } from "../feedClient";
 
@@ -60,41 +60,27 @@ export class StardustFeedClient extends FeedClient {
 
                             let removeItems: IFeedItem[] = [];
 
-                            if (this._networkConfig?.protocolVersion === OG) {
-                                const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
-                                const zeroToRemoveCount = zero.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (zeroToRemoveCount > 0) {
-                                    removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
-                                }
-                                const nonZero = this._items.filter(t => t.payloadType === "Transaction" &&
-                                    t.value !== 0 && t.value !== undefined);
-                                const nonZeroToRemoveCount = nonZero.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (nonZeroToRemoveCount > 0) {
-                                    removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
-                                }
-                            } else {
-                                const transactionPayload = this._items.filter(t => t.payloadType === "Transaction");
-                                const transactionPayloadToRemoveCount =
-                                    transactionPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (transactionPayloadToRemoveCount > 0) {
-                                    removeItems =
-                                        removeItems.concat(transactionPayload.slice(-transactionPayloadToRemoveCount));
-                                }
-                                const indexPayload = this._items.filter(t => t.payloadType === "Index");
-                                const indexPayloadToRemoveCount = indexPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (indexPayloadToRemoveCount > 0) {
-                                    removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
-                                }
-                                const msPayload = this._items.filter(t => t.payloadType === "MS");
-                                const msPayloadToRemoveCount = msPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (msPayloadToRemoveCount > 0) {
-                                    removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
-                                }
-                                const nonePayload = this._items.filter(t => t.payloadType === "None");
-                                const nonePayloadToRemoveCount = nonePayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (nonePayloadToRemoveCount > 0) {
-                                    removeItems = removeItems.concat(nonePayload.slice(-nonePayloadToRemoveCount));
-                                }
+                            const transactionPayload = this._items.filter(t => t.payloadType === "Transaction");
+                            const transactionPayloadToRemoveCount =
+                                transactionPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (transactionPayloadToRemoveCount > 0) {
+                                removeItems =
+                                    removeItems.concat(transactionPayload.slice(-transactionPayloadToRemoveCount));
+                            }
+                            const indexPayload = this._items.filter(t => t.payloadType === "Index");
+                            const indexPayloadToRemoveCount = indexPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (indexPayloadToRemoveCount > 0) {
+                                removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
+                            }
+                            const msPayload = this._items.filter(t => t.payloadType === "MS");
+                            const msPayloadToRemoveCount = msPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (msPayloadToRemoveCount > 0) {
+                                removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
+                            }
+                            const nonePayload = this._items.filter(t => t.payloadType === "None");
+                            const nonePayloadToRemoveCount = nonePayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (nonePayloadToRemoveCount > 0) {
+                                removeItems = removeItems.concat(nonePayload.slice(-nonePayloadToRemoveCount));
                             }
 
                             this._items = this._items.filter(t => !removeItems.includes(t));
