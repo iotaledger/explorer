@@ -7,7 +7,7 @@ import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import messageJSON from "../../../assets/modals/message.json";
-import Activity from "../../components/chrysalis/Activity";
+import { Activity } from "../../components/stardust/Activity";
 import Modal from "../../components/Modal";
 import { NFTDetailsRouteProps } from "./NFTDetailsRouteProps";
 import { NFTDetailsState } from "./NFTDetailsState";

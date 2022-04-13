@@ -22,7 +22,7 @@ export interface ActivityProps {
     /**
      * Network
      */
-    network: string;
+    network?: string;
     /**
       * True if the activity is rendered like a table
       */
