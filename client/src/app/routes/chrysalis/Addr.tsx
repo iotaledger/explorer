@@ -20,12 +20,9 @@ import Spinner from "../../components/Spinner";
 import { AddrRouteProps } from "../AddrRouteProps";
 import messageJSON from "./../../../assets/modals/message.json";
 import Transaction from "./../../components/chrysalis/Transaction";
-import Asset from "./../../components/chrysalis/Asset";
-import NFT from "./../../components/chrysalis/NFT";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrState } from "./AddrState";
-import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 
 /**
  * Component which will show the address page for chrysalis and older.
@@ -70,10 +67,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             formatFull: false,
             statusBusy: true,
             status: "Loading transactions...",
-            assetStatusBusy: true,
-            assetStatus: "Loading Assets...",
-            nftStatusBusy: true,
-            nftStatus: "Loading NFTs...",
             received: 0,
             sent: 0,
             currentPage: 1,
