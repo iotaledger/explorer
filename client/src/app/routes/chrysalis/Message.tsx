@@ -3,37 +3,38 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
+import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
-import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import IndexationPayload from "../../components/chrysalis/IndexationPayload";
+import MessageTangleState from "../../components/chrysalis/MessageTangleState";
 import MilestonePayload from "../../components/chrysalis/MilestonePayload";
 import ReceiptPayload from "../../components/chrysalis/ReceiptPayload";
 import TransactionPayload from "../../components/chrysalis/TransactionPayload";
 import FiatValue from "../../components/FiatValue";
 import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
-import MessageTangleState from "../../components/MessageTangleState";
 import MessageTree from "../../components/MessageTree";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
 import Switcher from "../../components/Switcher";
+import { MessageProps } from "../MessageProps";
 import messageJSON from "./../../../assets/modals/message.json";
-import { TransactionsHelper } from "./../../../helpers/transactionsHelper";
+import { TransactionsHelper } from "./../../../helpers/chrysalis/transactionsHelper";
 import "./Message.scss";
-import { MessageRouteProps } from "./MessageRouteProps";
 import { MessageState } from "./MessageState";
 /**
  * Component which will show the message page.
  */
-class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, MessageState> {
+class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageState> {
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * Settings service.
@@ -54,10 +55,12 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
      * Create a new instance of Message.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<MessageRouteProps>) {
+    constructor(props: RouteComponentProps<MessageProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
+            `tangle-cache-${CHRYSALIS}`
+        );
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
 
@@ -473,3 +476,4 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
 }
 
 export default Message;
+

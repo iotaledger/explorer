@@ -1,7 +1,7 @@
 // Remove when supported by SingleNodeClient
 import { SingleNodeClient } from "@iota/iota.js";
-import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "./../models/api/chrysalis/ITransactionsDetailsResponse";
+import { ITransactionsDetailsRequest } from "../models/api/ITransactionsDetailsRequest";
+import { ITransactionsDetailsResponse } from "./../models/api/ITransactionsDetailsResponse";
 import { FetchHelper } from "./fetchHelper";
 
 export class ExtendedSingleNodeClient extends SingleNodeClient {

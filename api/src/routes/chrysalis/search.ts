@@ -1,9 +1,10 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { ISearchRequest } from "../../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
+import { ISearchRequest } from "../../models/api/ISearchRequest";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
+import { CHRYSALIS } from "../../models/db/protocolVersion";
 import { NetworkService } from "../../services/networkService";
-import { TangleHelper } from "../../utils/tangleHelper";
+import { ChrysalisTangleHelper } from "../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
@@ -23,9 +24,9 @@ export async function search(
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== "chrysalis") {
+    if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {};
     }
 
-    return TangleHelper.search(networkConfig, request.query, request.cursor);
+    return ChrysalisTangleHelper.search(networkConfig, request.query, request.cursor);
 }

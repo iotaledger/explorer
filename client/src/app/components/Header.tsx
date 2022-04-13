@@ -2,6 +2,7 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
+import { CHRYSALIS, OG, STARDUST } from "../../models/db/protocolVersion";
 import { ReactComponent as DropdownIcon } from "./../../assets/chevron-down-gray.svg";
 import { ReactComponent as CloseIcon } from "./../../assets/close.svg";
 import { ReactComponent as DarkModeIcon } from "./../../assets/dark-mode.svg";
@@ -37,14 +38,22 @@ class Header extends Component<HeaderProps, HeaderState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const STARDUST_NETWORKS = this.props.networks?.filter(
+            n => n.protocolVersion === STARDUST
+        );
         const CHRYSALIS_NETWORKS = this.props.networks?.filter(
-            n => n.protocolVersion === "chrysalis"
+            n => n.protocolVersion === CHRYSALIS
         );
         const LEGACY_NETWORKS = this.props.networks?.filter(
-            n => n.protocolVersion === "og"
+            n => n.protocolVersion === OG
         );
 
         const PROTOCOLS = [
+            {
+                label: "IOTA 2.0 (Stardust)",
+                description: "Stardust Testnet (alphanet)",
+                networks: STARDUST_NETWORKS
+            },
             {
                 label: "IOTA 1.5 (Chrysalis)",
                 description:

@@ -2,8 +2,9 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ITrytesRetrieveRequest } from "../../../models/api/og/ITrytesRetrieveRequest";
 import { ITrytesRetrieveResponse } from "../../../models/api/og/ITrytesRetrieveResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { OG } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { TangleHelper } from "../../../utils/tangleHelper";
+import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -22,11 +23,11 @@ export async function post(
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== "og") {
+    if (networkConfig.protocolVersion !== OG) {
         return {};
     }
 
-    const { trytes, milestoneIndexes } = await TangleHelper.getTrytes(networkConfig, request.hashes);
+    const { trytes, milestoneIndexes } = await ChrysalisTangleHelper.getTrytes(networkConfig, request.hashes);
 
     return {
         trytes,

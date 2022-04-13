@@ -1,4 +1,5 @@
 import { INetwork } from "../models/db/INetwork";
+import { OG } from "../models/db/protocolVersion";
 
 /**
  * Class for helping to build routes.
@@ -26,7 +27,7 @@ export class RouteBuilder {
         if (networkConfig) {
             parts.push(networkConfig.network);
         }
-        if (networkConfig?.protocolVersion === "og") {
+        if (networkConfig?.protocolVersion === OG) {
             parts.push("transaction");
             parts.push(item.id);
         } else {
@@ -47,7 +48,7 @@ export class RouteBuilder {
         if (networkConfig) {
             parts.push(networkConfig.network);
         }
-        if (networkConfig?.protocolVersion === "og") {
+        if (networkConfig?.protocolVersion === OG) {
             parts.push("transaction");
             parts.push(id);
         } else {

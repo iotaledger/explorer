@@ -8,12 +8,12 @@ import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../../models/ICachedTransaction";
+import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { SettingsService } from "../../../services/settingsService";
-import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
+import SidePanel from "../../components/chrysalis/SidePanel";
 import Confirmation from "../../components/Confirmation";
 import MessageButton from "../../components/MessageButton";
-import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
 import "./Tag.scss";
 import { TagRouteProps } from "./TagRouteProps";
@@ -26,7 +26,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * The settings service.
@@ -40,7 +40,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
     constructor(props: RouteComponentProps<TagRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>("tangle-cache");
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         let tag;

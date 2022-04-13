@@ -4,7 +4,8 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { TrytesHelper } from "../../helpers/trytesHelper";
-import { TangleCacheService } from "../../services/tangleCacheService";
+import { CHRYSALIS } from "../../models/db/protocolVersion";
+import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import JsonViewer from "../components/JsonViewer";
 import MessageButton from "../components/MessageButton";
@@ -20,7 +21,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * Update timer.
@@ -44,7 +45,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
     constructor(props: RouteComponentProps<StreamsV0RouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
         this._timeout = 100;
 
         this.state = {

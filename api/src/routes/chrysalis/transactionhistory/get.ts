@@ -1,9 +1,10 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ITransactionsDetailsRequest } from "../../../models/api/chrysalis/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { ITransactionsDetailsRequest } from "../../../models/api/ITransactionsDetailsRequest";
+import { ITransactionsDetailsResponse } from "../../../models/api/ITransactionsDetailsResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { TangleHelper } from "../../../utils/tangleHelper";
+import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -22,10 +23,10 @@ export async function get(
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== "chrysalis") {
+    if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {};
     }
     return {
-        transactionHistory: await TangleHelper.transactionsDetails(networkConfig, request)
+        transactionHistory: await ChrysalisTangleHelper.transactionsDetails(networkConfig, request)
     };
 }
