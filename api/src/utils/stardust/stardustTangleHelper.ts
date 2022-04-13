@@ -380,7 +380,7 @@ export class StardustTangleHelper {
      * @param cursor Cursor data to send with the request.
      * @returns The item found.
      */
-    public static async searchApi(
+    private static async searchApi(
         provider: string,
         user: string | undefined,
         password: string | undefined,
@@ -549,6 +549,42 @@ export class StardustTangleHelper {
                 }
             }
         } catch {
+        }
+
+        const queryLowerNoPrefix = HexHelper.stripPrefix(queryLower);
+        // Stardust specific searches
+        // 40 -> AliasId or NftId -> 6457f5f1bc2c3ec696889309cee0665c298f6394
+        // 42 -> AliasAddress or NftAddress -> 086457f5f1bc2c3ec696889309cee0665c298f6394
+        if (Converter.isHex(queryLower, true) &&
+            (queryLowerNoPrefix.length === 42 || queryLowerNoPrefix.length === 40)) {
+            const maybeAliasOrNftId = queryLowerNoPrefix.length === 42 ? queryLowerNoPrefix.slice(2)
+                : queryLowerNoPrefix;
+
+            const queryLowerWithPrefix = HexHelper.addPrefix(maybeAliasOrNftId);
+            // Nft
+            try {
+                const nftOutputs = await indexerPlugin.nft(queryLowerWithPrefix);
+                if (nftOutputs.items.length > 0) {
+                    console.log(queryLowerWithPrefix);
+                    const nftOutput = await client.output(nftOutputs.items[nftOutputs.items.length - 1]);
+
+                    return {
+                        output: nftOutput
+                    };
+                }
+            } catch {}
+            // Alias
+            try {
+                const aliasOutputs = await indexerPlugin.alias(queryLowerWithPrefix);
+                if (aliasOutputs.items.length > 0) {
+                    console.log(queryLowerWithPrefix);
+                    const aliasOutput = await client.output(aliasOutputs.items[aliasOutputs.items.length - 1]);
+
+                    return {
+                        output: aliasOutput
+                    };
+                }
+            } catch {}
         }
 
         return {};
