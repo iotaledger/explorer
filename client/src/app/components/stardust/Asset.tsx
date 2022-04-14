@@ -1,9 +1,11 @@
-import { FunctionComponent } from 'react';
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable react/function-component-definition */
+import React from "react";
 import "./Transaction.scss";
 import { AssetProps } from "./AssetProps";
 
-export const Asset: FunctionComponent<AssetProps> = ({ asset, symbol, quantity, price, value, tableFormat  }) => 
-    tableFormat ? (
+export const Asset: React.FC<AssetProps> = ({ asset, symbol, quantity, price, value, tableFormat }) =>
+    (tableFormat ? (
         <tr>
             <td className="value code highlight">
                 {asset}
@@ -40,4 +42,4 @@ export const Asset: FunctionComponent<AssetProps> = ({ asset, symbol, quantity, 
                 </div>
             </div>
         </div >
-    )
+    ));

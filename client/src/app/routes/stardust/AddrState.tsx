@@ -111,7 +111,7 @@ export interface AddrState {
      */
      currentPageTransactions: ITransaction[];
 
-     /**
+    /**
      * Current page in asset history table.
      */
     assetCurrentPage: number;

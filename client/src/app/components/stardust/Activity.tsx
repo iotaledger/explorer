@@ -1,9 +1,12 @@
-import { FunctionComponent } from 'react';
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable react/function-component-definition */
+import React from "react";
 import "./Transaction.scss";
 import { ActivityProps } from "./ActivityProps";
 
-export const Activity: FunctionComponent<ActivityProps> = ({ hash, date, action, status, price, tableFormat  }) => 
-    tableFormat ? (
+export const Activity: React.FC<ActivityProps> = ({ hash, date, action, status, price, tableFormat }) =>
+    (tableFormat ? (
         <tr>
             <td className="value code highlight">
                 {hash}
@@ -40,4 +43,4 @@ export const Activity: FunctionComponent<ActivityProps> = ({ hash, date, action,
                 </div>
             </div>
         </div>
-    )
+    ));

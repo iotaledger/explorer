@@ -1,14 +1,18 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable max-len */
+/* eslint-disable react/no-unescaped-entities */
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import messageJSON from "../../../assets/modals/message.json";
 import AsyncComponent from "../../components/AsyncComponent";
 import Icon from "../../components/Icon";
+import Modal from "../../components/Modal";
 import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import messageJSON from "../../../assets/modals/message.json";
 import { Activity } from "../../components/stardust/Activity";
-import Modal from "../../components/Modal";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import { NFTDetailsRouteProps } from "./NFTDetailsRouteProps";
 import { NFTDetailsState } from "./NFTDetailsState";
 import "./NFTDetails.scss";
@@ -17,7 +21,6 @@ import "./NFTDetails.scss";
  * Component which will show the nft detail page.
  */
 class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps>, NFTDetailsState> {
-
     /**
      * Create a new instance of Indexed.
      * @param props The props.
@@ -73,14 +76,17 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                 Buying Price
                                             </div>
                                             <div className="value featured">
-                                                <React.Fragment>
-                                                    <span>0</span>
-                                                </React.Fragment>
+                                                <span>0</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="nft-list">
-                                        <div className={classNames("list--dropdown", "item", {opened: this.state.showGeneralItems})} onClick={() => this.setState({showGeneralItems: !this.state.showGeneralItems})}>
+                                        <div
+                                            className={classNames("list--dropdown", "item",
+                                            { opened: this.state.showGeneralItems })}
+                                            onClick={() =>
+                                                this.setState({ showGeneralItems: !this.state.showGeneralItems })}
+                                        >
                                             <div className="margin-r-t icon">
                                                 <DropdownIcon />
                                             </div>
@@ -116,84 +122,91 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                     <span className="label name">Network</span>
                                                     <span className="label value">Layer 2 network</span>
                                                 </li>
-                                            </ul>
-                                        }
-                                        <div className={classNames("list--dropdown", "item", {opened: this.state.showAttributes})} onClick={() => this.setState({showAttributes: !this.state.showAttributes})}>
+                                            </ul>}
+                                        <div
+                                            className={classNames("list--dropdown", "item",
+                                            { opened: this.state.showAttributes })}
+                                            onClick={() =>
+                                                this.setState({ showAttributes: !this.state.showAttributes })}
+                                        >
                                             <div className="margin-r-t icon">
                                                 <DropdownIcon />
                                             </div>
                                             <span>Attributes</span>
                                         </div>
                                         {this.state.showAttributes &&
-                                            <ul className="general-items">
-                                                <li className="list">
-                                                    <span className="label name">Token Standard</span>
-                                                    <span className="label value">ERC-1155</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">Token ID</span>
-                                                    <span className="label value">21391039</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">Contact Address</span>
-                                                    <span className="label value">0x57b0...59</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">Creator Address</span>
-                                                    <span className="label value">0x57b0...44</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">Sender Address</span>
-                                                    <span className="label value">0x57b0...44</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">File Type</span>
-                                                    <span className="label value">JPG</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">Network</span>
-                                                    <span className="label value">Layer 2 network</span>
-                                                </li>
-                                            </ul>
-                                        }
-                                        <div className={classNames("list--dropdown", "item", {opened: this.state.showDescription})} onClick={() => this.setState({showDescription: !this.state.showDescription})}>
+                                        <ul className="general-items">
+                                            <li className="list">
+                                                <span className="label name">Token Standard</span>
+                                                <span className="label value">ERC-1155</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">Token ID</span>
+                                                <span className="label value">21391039</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">Contact Address</span>
+                                                <span className="label value">0x57b0...59</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">Creator Address</span>
+                                                <span className="label value">0x57b0...44</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">Sender Address</span>
+                                                <span className="label value">0x57b0...44</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">File Type</span>
+                                                <span className="label value">JPG</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">Network</span>
+                                                <span className="label value">Layer 2 network</span>
+                                            </li>
+                                        </ul>}
+                                        <div
+                                            className={classNames("list--dropdown", "item",
+                                            { opened: this.state.showDescription })}
+                                            onClick={() =>
+                                            this.setState({ showDescription: !this.state.showDescription })}
+                                        >
                                             <div className="margin-r-t icon">
                                                 <DropdownIcon />
                                             </div>
                                             <span>Description</span>
                                         </div>
                                         {this.state.showDescription &&
-                                            <ul className="general-items">
-                                                <li className="list">
-                                                    <span className="label name">Token Standard</span>
-                                                    <span className="label value">ERC-1155</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">Token ID</span>
-                                                    <span className="label value">21391039</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">Contact Address</span>
-                                                    <span className="label value">0x57b0...59</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">Creator Address</span>
-                                                    <span className="label value">0x57b0...44</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">Sender Address</span>
-                                                    <span className="label value">0x57b0...44</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">File Type</span>
-                                                    <span className="label value">JPG</span>
-                                                </li>
-                                                <li className="list">
-                                                    <span className="label name">Network</span>
-                                                    <span className="label value">Layer 2 network</span>
-                                                </li>
-                                            </ul>
-                                        }
+                                        <ul className="general-items">
+                                            <li className="list">
+                                                <span className="label name">Token Standard</span>
+                                                <span className="label value">ERC-1155</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">Token ID</span>
+                                                <span className="label value">21391039</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">Contact Address</span>
+                                                <span className="label value">0x57b0...59</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">Creator Address</span>
+                                                <span className="label value">0x57b0...44</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">Sender Address</span>
+                                                <span className="label value">0x57b0...44</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">File Type</span>
+                                                <span className="label value">JPG</span>
+                                            </li>
+                                            <li className="list">
+                                                <span className="label name">Network</span>
+                                                <span className="label value">Layer 2 network</span>
+                                            </li>
+                                        </ul>}
                                     </div>
                                 </div>
                             </div>

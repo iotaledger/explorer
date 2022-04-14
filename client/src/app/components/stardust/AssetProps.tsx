@@ -24,7 +24,7 @@ export interface AssetProps {
      */
     network?: string;
     /**
-      * True if the asset is rendered like a table
-      */
+     * True if the asset is rendered like a table
+     */
     tableFormat?: boolean;
 }

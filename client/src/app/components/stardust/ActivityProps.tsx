@@ -24,7 +24,7 @@ export interface ActivityProps {
      */
     network?: string;
     /**
-      * True if the activity is rendered like a table
-      */
+     * True if the activity is rendered like a table
+     */
     tableFormat?: boolean;
 }
