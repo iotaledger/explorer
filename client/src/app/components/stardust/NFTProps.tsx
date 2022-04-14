@@ -11,4 +11,8 @@ export interface NFTProps {
      * ID of a NFT
      */
     tokenID: number;
+    /**
+     * ID of a NFT
+     */
+    network: string;
 }

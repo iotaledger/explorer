@@ -1,5 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/jsx-pascal-case */
 import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -17,8 +20,8 @@ import Icon from "../../components/Icon";
 import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
-import Asset from "../../components/stardust/Asset";
-import NFT from "../../components/stardust/NFT";
+import { Asset } from "../../components/stardust/Asset";
+import { NFT } from "../../components/stardust/NFT";
 import { AddrRouteProps } from "../AddrRouteProps";
 import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 import messageJSON from "./../../../assets/modals/message.json";
@@ -365,39 +368,39 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </thead>
                                         <tbody>
                                             { this.currentPageAssets.map((asset, k) =>
-                                                                         (
-                                                                             <React.Fragment key={`${asset?.asset}${k}`}>
-                                                                                 <Asset
-                                                                                     key={k}
-                                                                                     asset={asset?.asset}
-                                                                                     network={this.props.match.params.network}
-                                                                                     symbol={asset?.symbol}
-                                                                                     quantity={asset?.quantity}
-                                                                                     price={asset?.price}
-                                                                                     value={asset?.value}
-                                                                                     tableFormat={true}
-                                                                                 />
-                                                                             </React.Fragment>
-                                            ))}
+                                                (
+                                                    <React.Fragment key={`${asset?.asset}${k}`}>
+                                                        <Asset
+                                                            key={k}
+                                                            asset={asset?.asset}
+                                                            network={this.props.match.params.network}
+                                                            symbol={asset?.symbol}
+                                                            quantity={asset?.quantity}
+                                                            price={asset?.price}
+                                                            value={asset?.value}
+                                                            tableFormat={true}
+                                                        />
+                                                    </React.Fragment>
+                                                ))}
                                         </tbody>
                                     </table>
 
                                     {/* Only visible in mobile -- Card assets*/}
                                     <div className="transaction-cards">
                                         {this.currentPageAssets.map((asset, k) =>
-                                                                    (
-                                                                        <React.Fragment key={`${asset?.asset}${k}`}>
-                                                                            <Asset
-                                                                                key={k}
-                                                                                asset={asset?.asset}
-                                                                                network={this.props.match.params.network}
-                                                                                symbol={asset?.symbol}
-                                                                                quantity={asset?.quantity}
-                                                                                price={asset?.price}
-                                                                                value={asset?.value}
-                                                                            />
-                                                                        </React.Fragment>
-                                        ))}
+                                            (
+                                                <React.Fragment key={`${asset?.asset}${k}`}>
+                                                    <Asset
+                                                        key={k}
+                                                        asset={asset?.asset}
+                                                        network={this.props.match.params.network}
+                                                        symbol={asset?.symbol}
+                                                        quantity={asset?.quantity}
+                                                        price={asset?.price}
+                                                        value={asset?.value}
+                                                    />
+                                                </React.Fragment>
+                                            ))}
                                     </div>
                                     <Pagination
                                         currentPage={this.state.assetCurrentPage}
@@ -406,11 +409,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         siblingsCount={1}
                                         onPageChange={page =>
                                             this.setState({ assetCurrentPage: page },
-                                                          () => {
-                                                              const firstPageIndex = (this.state.assetCurrentPage - 1) * this.state.assetPageSize;
-                                                              // Check if last page
-                                                              const lastPageIndex = (this.state.assetCurrentPage === Math.ceil(this.assetHistory.length / this.state.assetPageSize)) ? this.assetHistory.length : firstPageIndex + this.state.assetPageSize;
-                                                          })}
+                                                () => {
+                                                    const firstPageIndex = (this.state.assetCurrentPage - 1) * this.state.assetPageSize;
+                                                    // Check if last page
+                                                    const lastPageIndex = (this.state.assetCurrentPage === Math.ceil(this.assetHistory.length / this.state.assetPageSize)) ? this.assetHistory.length : firstPageIndex + this.state.assetPageSize;
+                                            })}
                                     />
                                 </div>
                                 <div className="section transaction--section no-border">
@@ -432,15 +435,16 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     </div>
                                     <div className="nft--section">
                                         { this.currentPageNFTs.map((nfts, k) =>
-                                                                   (
-                                                                       <React.Fragment key={`${nfts?.tokenID}${k}`}>
-                                                                           <NFT
-                                                                               key={k}
-                                                                               image={nfts?.image}
-                                                                               tokenName={nfts?.tokenName}
-                                                                               tokenID={nfts?.tokenID}
-                                                                           />
-                                                                       </React.Fragment>
+                                        (
+                                            <React.Fragment key={`${nfts?.tokenID}${k}`}>
+                                                <NFT
+                                                    key={k}
+                                                    image={nfts?.image}
+                                                    tokenName={nfts?.tokenName}
+                                                    tokenID={nfts?.tokenID}
+                                                    network={this.props.match.params.network}
+                                                />
+                                            </React.Fragment>
                                         ))}
                                     </div>
                                     <Pagination
@@ -450,11 +454,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         siblingsCount={1}
                                         onPageChange={page =>
                                             this.setState({ nftCurrentPage: page },
-                                                          () => {
-                                                              const firstPageIndex = (this.state.nftCurrentPage - 1) * this.state.nftPageSize;
-                                                              // Check if last page
-                                                              const lastPageIndex = (this.state.nftCurrentPage === Math.ceil(this.nftHistory.length / this.state.nftPageSize)) ? this.nftHistory.length : firstPageIndex + this.state.nftPageSize;
-                                                          })}
+                                                () => {
+                                                    const firstPageIndex = (this.state.nftCurrentPage - 1) * this.state.nftPageSize;
+                                                    // Check if last page
+                                                    const lastPageIndex = (this.state.nftCurrentPage === Math.ceil(this.nftHistory.length / this.state.nftPageSize)) ? this.nftHistory.length : firstPageIndex + this.state.nftPageSize;
+                                            })}
                                     />
                                 </div>
                             </div>

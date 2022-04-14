@@ -22,7 +22,7 @@ export interface AssetProps {
     /**
      * Network
      */
-    network: string;
+    network?: string;
     /**
      * True if the asset is rendered like a table
      */

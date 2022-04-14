@@ -141,4 +141,3 @@ export interface AddrState {
      */
     currentPageNFTs: string[];
 }
-

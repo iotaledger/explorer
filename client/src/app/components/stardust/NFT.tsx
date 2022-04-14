@@ -1,28 +1,25 @@
-import React, { Component, ReactNode } from "react";
+/* eslint-disable react/function-component-definition */
+import React from "react";
 import "./NFT.scss";
+import { Link } from "react-router-dom";
 import { NFTProps } from "./NFTProps";
 
-/**
- * Component which will display a NFT.
- */
-class NFT extends Component<NFTProps> {
-    /**
-     * Render the component.
-     * @returns The node to render.
-     */
-    public render(): ReactNode {
-        return (
-            <div className="NFT-row">
-                <img
-                    src={this.props.image}
-                    alt="bundle"
-                    className="nft-image"
-                />
-                <span className="nft-name">Token: {this.props.tokenName}</span>
-                <span className="nft-id">Token ID: {this.props.tokenID}</span>
-            </div>
-        );
-    }
-}
-
-export default NFT;
+export const NFT: React.FC<NFTProps> = ({ image, tokenName, tokenID, network }) => (
+    <div className="NFT-row">
+        <Link
+            to={
+            `/${network}/nft/
+            ${tokenID}`
+            }
+            className="margin-r-t"
+        >
+            <img
+                src={image}
+                alt="bundle"
+                className="nft-image"
+            />
+        </Link>
+        <span className="nft-name">Token: {tokenName}</span>
+        <span className="nft-id">Token ID: {tokenID}</span>
+    </div>
+);

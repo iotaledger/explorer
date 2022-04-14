@@ -34,30 +34,31 @@
 
   .copyright {
     display: flex;
-    height: 52px;
-    letter-spacing: 0.1em;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    height: 52px;
     background-color: var(--header-identity);
+    letter-spacing: 0.1em;
 
     .copyright-inner {
       max-width: $desktop-width;
-      font-weight: 600;
       color: $gray-6;
       font-family: $metropolis;
+      font-weight: 600;
+
       @include font-size(12px);
 
       @include phone-down {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          width: 300px;
-          line-height: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 300px;
+        line-height: 20px;
       }
-        
+
       a {
-        text-decoration: none;
         color: $main-green-highlight;
+        text-decoration: none;
       }
     }
   }
