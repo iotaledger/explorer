@@ -51,13 +51,12 @@ async function resolveHistory(
     permaNodeUrl?: string
 ): Promise<IIdentityDidHistoryResponse> {
     try {
-        const config = new identity.Config();
-        config.setNode(nodeUrl);
-        if (permaNodeUrl) {
-            config.setPermanode(permaNodeUrl);
-        }
+        const config: identity.IClientConfig = {
+            nodes: [nodeUrl],
+            permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined
+        };
 
-        const client = identity.Client.fromConfig(config);
+        const client = await identity.Client.fromConfig(config);
 
         const receipt = await client.resolveHistory(did);
         const receiptObj = receipt.toJSON();

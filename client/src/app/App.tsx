@@ -105,6 +105,18 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
         const currentNetworkConfig = this.state.networks.find(n => n.network === this.state.networkId);
         const isStardust = currentNetworkConfig?.protocolVersion === STARDUST;
 
+        const copyrightInnerContent = "This explorer implementation is inspired by ";
+        const copyrightInner = (
+            <React.Fragment>
+                {copyrightInnerContent}
+                <span>
+                    <a href="https://thetangle.org">
+                        thetangle.org
+                    </a>.
+                </span>
+            </React.Fragment>
+        );
+
         return (
             <div className="app">
                 <Header
@@ -304,6 +316,11 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             />
                                         </Switch>
                                     )}
+                                <div className="copyright">
+                                    <div className="copyright-inner">
+                                        {copyrightInner}
+                                    </div>
+                                </div>
                             </React.Fragment>
                         )
                         : (

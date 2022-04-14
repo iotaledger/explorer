@@ -26,9 +26,9 @@ export async function init(config: IConfiguration): Promise<string[]> {
             log += await marketStorageService.create();
         }
 
-        const stateStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
-        if (stateStorageService) {
-            log += await stateStorageService.create();
+        const currencyStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
+        if (currencyStorageService) {
+            log += await currencyStorageService.create();
         }
 
         const milestoneStorageService = ServiceFactory.get<IStorageService<IMilestoneStore>>("milestone-storage");
@@ -39,6 +39,7 @@ export async function init(config: IConfiguration): Promise<string[]> {
         const currencyService = new CurrencyService(config);
         if (currencyService) {
             log += await currencyService.update(true);
+            log += await currencyService.updateCurrencyNames();
         }
     } catch (err) {
         log += `Failed\n${err.toString()}\n`;

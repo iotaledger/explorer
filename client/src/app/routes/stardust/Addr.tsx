@@ -630,7 +630,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         /**
          * Fetch assets history here
          */
-
         /**
          * After successfully fetching history set asset status and busy status
          */
@@ -644,7 +643,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         /**
          * Fetch NFTs history here
          */
-
         /**
          * After successfully fetching history set NFT status and busy status
          */

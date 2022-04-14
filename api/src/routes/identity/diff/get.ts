@@ -61,16 +61,14 @@ async function resolveDiff(
     permaNodeUrl?: string
 ): Promise<IIdentityDiffHistoryResponse> {
     try {
-        const config = new identity.Config();
-        config.setNode(nodeUrl);
+        const config: identity.IClientConfig = {
+            nodes: [nodeUrl],
+            permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined
+        };
 
-        if (permaNodeUrl) {
-            config.setPermanode(permaNodeUrl);
-        }
-        const client = identity.Client.fromConfig(config);
+        const client = await identity.Client.fromConfig(config);
 
         const resolvedDocument = identity.ResolvedDocument.fromJSON(document);
-
         const receipt = await client.resolveDiffHistory(resolvedDocument);
 
         const receiptObj = receipt.toJSON();
@@ -84,8 +82,8 @@ async function resolveDiff(
 
             const integrationMessage = {
                 message: receiptObj.chainData[i],
-                document: resolvedDocument.document.toJSON(),
-                messageId: chainData[i].messageId
+                document: resolvedDocument.document(),
+                messageId: chainData[i].messageId()
             };
             diffChainData.push(integrationMessage);
         }

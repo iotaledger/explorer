@@ -1,10 +1,6 @@
 import { Units, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import dropdown from "../../../assets/dropdown.svg";
-import { ReactComponent as FilterIcon } from "../../../assets/filter.svg";
-import { ReactComponent as PauseIcon } from "../../../assets/pause.svg";
-import { ReactComponent as PlayIcon } from "../../../assets/play.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
@@ -12,7 +8,7 @@ import { INetwork } from "../../../models/db/INetwork";
 import { CHRYSALIS, OG } from "../../../models/db/protocolVersion";
 import { IFeedItem } from "../../../models/IFeedItem";
 import { IFilterSettings } from "../../../models/services/IFilterSettings";
-import { ValueFilter } from "../../../models/services/valueFilter";
+import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/chrysalis/Feeds";
 import "../Landing.scss";
@@ -23,36 +19,6 @@ import { LandingState } from "../LandingState";
  * Component which will show the landing page.
  */
 class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState> {
-    private readonly DEFAULT_VALUES_FILTER: ValueFilter[] = this._networkConfig?.protocolVersion === OG
-        ? [
-            {
-                label: "Zero only",
-                isEnabled: true
-            },
-            {
-                label: "Non-zero only",
-                isEnabled: true
-            }
-        ]
-        : [
-            {
-                label: "Transaction",
-                isEnabled: true
-            },
-            {
-                label: "Milestone",
-                isEnabled: true
-            },
-            {
-                label: "Indexed",
-                isEnabled: true
-            },
-            {
-                label: "No payload",
-                isEnabled: true
-            }
-        ];
-
     /**
      * Create a new instance of Landing.
      * @param props The props.
@@ -75,7 +41,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMinimumUnits: "i",
             valueMaximum: "1",
             valueMaximumUnits: "Ti",
-            valuesFilter: this.DEFAULT_VALUES_FILTER,
+            valuesFilter: getDefaultValueFilter(network.protocolVersion),
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
@@ -115,7 +81,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMinimumUnits: filterSettings?.valueMinimumUnits ?? "i",
             valueMaximum: filterSettings?.valueMaximum ?? "3",
             valueMaximumUnits: filterSettings?.valueMaximumUnits ?? "Pi",
-            valuesFilter: filterSettings?.valuesFilter ?? this.DEFAULT_VALUES_FILTER,
+            valuesFilter: filterSettings?.valuesFilter ??
+                getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "chrysalis"),
             formatFull: settings.formatFull
         });
     }
@@ -148,10 +115,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         <div className="info-box--value">
                                             <span className="download-rate">
                                                 {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1) || "--"}
-                                            </span>
-                                            <span className="upload-rate">
-                                                /{NumberHelper.roundTo(Number(this.state.confirmedItemsPerSecond)
-                                                    , 1) || "--"}
                                             </span>
                                         </div>
                                     </div>
@@ -192,7 +155,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     });
                                                 }}
                                             >
-                                                {this.state.isFeedPaused ? <PlayIcon /> : <PauseIcon />}
+                                                {this.state.isFeedPaused
+                                                    ? <span className="material-icons">play_arrow</span>
+                                                    : <span className="material-icons">pause</span>}
                                             </button>
                                             <div className="filters-button-wrapper">
                                                 <button
@@ -204,7 +169,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                         });
                                                     }}
                                                 >
-                                                    <FilterIcon />
+                                                    <span className="material-icons">
+                                                        tune
+                                                    </span>
                                                 </button>
                                                 <div className="filters-button-wrapper__counter">
                                                     {this.state.valuesFilter.filter(f => f.isEnabled).length}
@@ -331,8 +298,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             </div>
                                         ))}
                                     </div>
-                                </div>
-                            </div>
+                                </div >
+                            </div >
                             <div className="card margin-t-m">
                                 <div className="card--content description">
                                     {this.state.networkConfig.description}
@@ -351,19 +318,21 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     </div>
                                 )}
                             </div>
-                            {!this.state.networkConfig.isEnabled && (
-                                <div className="card margin-t-m">
-                                    <div className="card--content description">
-                                        {this.state.networkConfig.isEnabled === undefined
-                                            ? "This network is not recognised."
-                                            : "This network is currently disabled in explorer."}
+                            {
+                                !this.state.networkConfig.isEnabled && (
+                                    <div className="card margin-t-m">
+                                        <div className="card--content description">
+                                            {this.state.networkConfig.isEnabled === undefined
+                                                ? "This network is not recognised."
+                                                : "This network is currently disabled in explorer."}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
+                                )
+                            }
+                        </div >
 
-                    </div>
-                </div>
+                    </div >
+                </div >
             </div >
         );
     }
@@ -614,10 +583,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 Pi
                             </option>
                         </select>
-                        <img
-                            src={dropdown}
-                            alt="expand"
-                        />
+                        <span className="material-icons">
+                            arrow_drop_down
+                        </span>
                     </div>
                 </span>
             </div>

@@ -12,12 +12,13 @@
     background: none;
     cursor: pointer;
 
-    svg {
+    span {
       color: $gray-10;
+      font-size: 16px;
     }
 
     &:hover {
-      svg {
+      span {
         color: $main-green-highlight;
       }
     }

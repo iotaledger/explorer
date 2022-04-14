@@ -84,6 +84,14 @@
           }
         }
 
+        .card--content {
+          .arrow {
+            color: $main-green;
+            font-size: 30px;
+            line-height: 60%;
+          }
+        }
+
         .children-container {
           max-height: 200px;
           margin: 20px 30px 30px 10px;

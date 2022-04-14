@@ -2,7 +2,6 @@ import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -350,11 +349,9 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                                                     }/bundle/${item.details?.tx.bundle}`
                                                                 }
                                                             >
-                                                                <img
-                                                                    src={chevronRightGreen}
-                                                                    alt="bundle"
-                                                                    className="svg-navigation margin-r-t"
-                                                                />
+                                                                <span className="material-icons arrow">
+                                                                    chevron_right
+                                                                </span>
                                                             </Link>
                                                             <Link
                                                                 className="card--value__tertiary"

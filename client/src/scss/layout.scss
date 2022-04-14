@@ -58,6 +58,10 @@
   white-space: pre;
 }
 
+.margin-t-0 {
+  margin-top: 0 !important;
+}
+
 .margin-b-2 {
   margin-bottom: 2px !important;
 }
@@ -170,6 +174,10 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   word-break: normal !important;
+}
+
+.hidden {
+  display: none !important;
 }
 
 .dot-separator {

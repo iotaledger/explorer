@@ -109,7 +109,7 @@ export interface AddrState {
     /**
      * Page size in transaction history table.
      */
-     currentPageTransactions: ITransaction[];
+    currentPageTransactions: ITransaction[];
 
     /**
      * Current page in asset history table.
