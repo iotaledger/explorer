@@ -65,12 +65,9 @@
     }
   }
 
-  svg {
+  span {
     position: absolute;
     left: 16px;
-
-    path {
-      fill: var(--search-svg);
-    }
+    color: var(--search-svg);
   }
 }

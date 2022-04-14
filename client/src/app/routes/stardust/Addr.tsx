@@ -17,15 +17,15 @@ import Icon from "../../components/Icon";
 import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
-import { AddrRouteProps } from "../AddrRouteProps";
-import messageJSON from "./../../../assets/modals/message.json";
-import Transaction from "./../../components/chrysalis/Transaction";
 import Asset from "../../components/stardust/Asset";
 import NFT from "../../components/stardust/NFT";
+import { AddrRouteProps } from "../AddrRouteProps";
+import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
+import messageJSON from "./../../../assets/modals/message.json";
+import Transaction from "./../../components/chrysalis/Transaction";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrState } from "./AddrState";
-import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 
 /**
  * Component which will show the address page for stardust.
@@ -336,127 +336,127 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 })}
                                         />
                                     </div>)}
-                                    <div className="section transaction--section">
-                                        <div className="section--header row space-between">
-                                            <div className="row middle">
-                                                <h2>
-                                                    Assets in Wallet ({this.assetHistory.length})
-                                                </h2>
-                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                <div className="section transaction--section">
+                                    <div className="section--header row space-between">
+                                        <div className="row middle">
+                                            <h2>
+                                                Assets in Wallet ({this.assetHistory.length})
+                                            </h2>
+                                            <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                        </div>
+                                        {this.state.assetStatus && (
+                                            <div className="margin-t-s middle row">
+                                                {this.state.assetStatusBusy && (<Spinner />)}
+                                                <p className="status">
+                                                    {this.state.assetStatus}
+                                                </p>
                                             </div>
-                                            {this.state.assetStatus && (
-                                                <div className="margin-t-s middle row">
-                                                    {this.state.assetStatusBusy && (<Spinner />)}
-                                                    <p className="status">
-                                                        {this.state.assetStatus}
-                                                    </p>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <table className="transaction--table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Asset</th>
-                                                    <th>Symbol</th>
-                                                    <th>Quantity</th>
-                                                    <th>Price</th>
-                                                    <th>Value</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                { this.currentPageAssets.map((asset, k) =>
-                                                    (
-                                                        <React.Fragment key={`${asset?.asset}${k}`}>
-                                                            <Asset
-                                                                key={k}
-                                                                asset={asset?.asset}
-                                                                network={this.props.match.params.network}
-                                                                symbol={asset?.symbol}
-                                                                quantity={asset?.quantity}
-                                                                price={asset?.price}
-                                                                value={asset?.value}
-                                                                tableFormat={true}
-                                                            />
-                                                        </React.Fragment>
-                                                    ))}
-                                            </tbody>
-                                        </table>
-
-                                        {/* Only visible in mobile -- Card assets*/}
-                                        <div className="transaction-cards">
-                                            {this.currentPageAssets.map((asset, k) =>
-                                                (
-                                                    <React.Fragment key={`${asset?.asset}${k}`}>
-                                                        <Asset
-                                                            key={k}
-                                                            asset={asset?.asset}
-                                                            network={this.props.match.params.network}
-                                                            symbol={asset?.symbol}
-                                                            quantity={asset?.quantity}
-                                                            price={asset?.price}
-                                                            value={asset?.value}
-                                                        />
-                                                    </React.Fragment>
-                                                ))}
-                                        </div>
-                                        <Pagination
-                                            currentPage={this.state.assetCurrentPage}
-                                            totalCount={this.assetHistory.length}
-                                            pageSize={this.state.assetPageSize}
-                                            siblingsCount={1}
-                                            onPageChange={page =>
-                                                this.setState({ assetCurrentPage: page },
-                                                    () => {
-                                                        const firstPageIndex = (this.state.assetCurrentPage - 1) * this.state.assetPageSize;
-                                                        // Check if last page
-                                                        const lastPageIndex = (this.state.assetCurrentPage === Math.ceil(this.assetHistory.length / this.state.assetPageSize)) ? this.assetHistory.length : firstPageIndex + this.state.assetPageSize;
-                                                })}
-                                        />
+                                        )}
                                     </div>
-                                    <div className="section transaction--section no-border">
-                                        <div className="section--header row space-between">
-                                            <div className="row middle">
-                                                <h2>
-                                                    NFTs in Wallet ({this.nftHistory.length})
-                                                </h2>
-                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
-                                            </div>
-                                            {this.state.nftStatus && (
-                                                <div className="margin-t-s middle row">
-                                                    {this.state.nftStatusBusy && (<Spinner />)}
-                                                    <p className="status">
-                                                        {this.state.nftStatus}
-                                                    </p>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="nft--section">
-                                            { this.currentPageNFTs.map((nfts, k) =>
-                                            (
-                                                <React.Fragment key={`${nfts?.tokenID}${k}`}>
-                                                    <NFT
-                                                        key={k}
-                                                        image={nfts?.image}
-                                                        tokenName={nfts?.tokenName}
-                                                        tokenID={nfts?.tokenID}
-                                                    />
-                                                </React.Fragment>
+                                    <table className="transaction--table">
+                                        <thead>
+                                            <tr>
+                                                <th>Asset</th>
+                                                <th>Symbol</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            { this.currentPageAssets.map((asset, k) =>
+                                                                         (
+                                                                             <React.Fragment key={`${asset?.asset}${k}`}>
+                                                                                 <Asset
+                                                                                     key={k}
+                                                                                     asset={asset?.asset}
+                                                                                     network={this.props.match.params.network}
+                                                                                     symbol={asset?.symbol}
+                                                                                     quantity={asset?.quantity}
+                                                                                     price={asset?.price}
+                                                                                     value={asset?.value}
+                                                                                     tableFormat={true}
+                                                                                 />
+                                                                             </React.Fragment>
                                             ))}
-                                        </div>
-                                        <Pagination
-                                            currentPage={this.state.nftCurrentPage}
-                                            totalCount={this.nftHistory.length}
-                                            pageSize={this.state.nftPageSize}
-                                            siblingsCount={1}
-                                            onPageChange={page =>
-                                                this.setState({ nftCurrentPage: page },
-                                                    () => {
-                                                        const firstPageIndex = (this.state.nftCurrentPage - 1) * this.state.nftPageSize;
-                                                        // Check if last page
-                                                        const lastPageIndex = (this.state.nftCurrentPage === Math.ceil(this.nftHistory.length / this.state.nftPageSize)) ? this.nftHistory.length : firstPageIndex + this.state.nftPageSize;
-                                                })}
-                                        />
+                                        </tbody>
+                                    </table>
+
+                                    {/* Only visible in mobile -- Card assets*/}
+                                    <div className="transaction-cards">
+                                        {this.currentPageAssets.map((asset, k) =>
+                                                                    (
+                                                                        <React.Fragment key={`${asset?.asset}${k}`}>
+                                                                            <Asset
+                                                                                key={k}
+                                                                                asset={asset?.asset}
+                                                                                network={this.props.match.params.network}
+                                                                                symbol={asset?.symbol}
+                                                                                quantity={asset?.quantity}
+                                                                                price={asset?.price}
+                                                                                value={asset?.value}
+                                                                            />
+                                                                        </React.Fragment>
+                                        ))}
                                     </div>
+                                    <Pagination
+                                        currentPage={this.state.assetCurrentPage}
+                                        totalCount={this.assetHistory.length}
+                                        pageSize={this.state.assetPageSize}
+                                        siblingsCount={1}
+                                        onPageChange={page =>
+                                            this.setState({ assetCurrentPage: page },
+                                                          () => {
+                                                              const firstPageIndex = (this.state.assetCurrentPage - 1) * this.state.assetPageSize;
+                                                              // Check if last page
+                                                              const lastPageIndex = (this.state.assetCurrentPage === Math.ceil(this.assetHistory.length / this.state.assetPageSize)) ? this.assetHistory.length : firstPageIndex + this.state.assetPageSize;
+                                                          })}
+                                    />
+                                </div>
+                                <div className="section transaction--section no-border">
+                                    <div className="section--header row space-between">
+                                        <div className="row middle">
+                                            <h2>
+                                                NFTs in Wallet ({this.nftHistory.length})
+                                            </h2>
+                                            <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                        </div>
+                                        {this.state.nftStatus && (
+                                            <div className="margin-t-s middle row">
+                                                {this.state.nftStatusBusy && (<Spinner />)}
+                                                <p className="status">
+                                                    {this.state.nftStatus}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="nft--section">
+                                        { this.currentPageNFTs.map((nfts, k) =>
+                                                                   (
+                                                                       <React.Fragment key={`${nfts?.tokenID}${k}`}>
+                                                                           <NFT
+                                                                               key={k}
+                                                                               image={nfts?.image}
+                                                                               tokenName={nfts?.tokenName}
+                                                                               tokenID={nfts?.tokenID}
+                                                                           />
+                                                                       </React.Fragment>
+                                        ))}
+                                    </div>
+                                    <Pagination
+                                        currentPage={this.state.nftCurrentPage}
+                                        totalCount={this.nftHistory.length}
+                                        pageSize={this.state.nftPageSize}
+                                        siblingsCount={1}
+                                        onPageChange={page =>
+                                            this.setState({ nftCurrentPage: page },
+                                                          () => {
+                                                              const firstPageIndex = (this.state.nftCurrentPage - 1) * this.state.nftPageSize;
+                                                              // Check if last page
+                                                              const lastPageIndex = (this.state.nftCurrentPage === Math.ceil(this.nftHistory.length / this.state.nftPageSize)) ? this.nftHistory.length : firstPageIndex + this.state.nftPageSize;
+                                                          })}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div >
@@ -623,11 +623,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     }
 
     private async getAssetsHistory() {
-
         /**
          * Fetch assets history here
-        */
-
+         */
         /**
          * After successfully fetching history set asset status and busy status
          */
@@ -638,11 +636,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     }
 
     private async getNFTsHistory() {
-
         /**
          * Fetch NFTs history here
-        */
-
+         */
         /**
          * After successfully fetching history set NFT status and busy status
          */

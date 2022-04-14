@@ -1,8 +1,8 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
-@import '../../scss/themes';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .modal {
   display: inline-block;
@@ -20,6 +20,11 @@
     display: flex;
     align-items: center;
     padding: 0 8px;
+
+    span {
+      color: #b0bfd9;
+      font-size: 20px;
+    }
   }
 
   .modal--bg {
@@ -66,7 +71,7 @@
       letter-spacing: 0.02em;
 
       button {
-        color: black;
+        color: var(--body-color);
       }
     }
 

@@ -1,8 +1,6 @@
 import React, { ReactNode } from "react";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import { OG } from "../../models/db/protocolVersion";
-import { ReactComponent as CloseIcon } from "./../../assets/close.svg";
-import { ReactComponent as SearchIcon } from "./../../assets/search.svg";
 import AsyncComponent from "./AsyncComponent";
 import "./SearchInput.scss";
 import { SearchInputProps } from "./SearchInputProps";
@@ -37,7 +35,9 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                 <div
                     className="search-input"
                 >
-                    <SearchIcon />
+                    <span className="material-icons">
+                        search
+                    </span>
                     <input
                         className="search--text-input"
                         type="text"
@@ -47,9 +47,9 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                             query: this.props.protocolVersion === OG
                                 ? e.target.value.toUpperCase().trim()
                                 : e.target.value,
-                            isValid: this.isValid(this.props.protocolVersion === OG
-                                ? e.target.value.toUpperCase().trim()
-                                : e.target.value)
+                                isValid: this.isValid(this.props.protocolVersion === OG
+                                    ? e.target.value.toUpperCase().trim()
+                                    : e.target.value)
                         })}
                         onKeyDown={e => {
                             if (e.keyCode === 13 && this.state.isValid) {
@@ -68,7 +68,9 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                             this.setState({ showSearchInput: !this.state.showSearchInput }
                             )}
                     >
-                        <SearchIcon />
+                        <span className="material-icons">
+                            search
+                        </span>
                     </button>
                     {this.state.showSearchInput && (
                         <React.Fragment>
@@ -100,7 +102,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                                         this.setState({ showSearchInput: false });
                                     }}
                                 >
-                                    <CloseIcon />
+                                    <span className="material-icons">close</span>
                                 </button>
                             </div>
                             <div

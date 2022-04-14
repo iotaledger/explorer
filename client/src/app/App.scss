@@ -32,5 +32,35 @@
     }
   }
 
+  .copyright {
+    display: flex;
+    height: 52px;
+    letter-spacing: 0.1em;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--header-identity);
+
+    .copyright-inner {
+      max-width: $desktop-width;
+      font-weight: 600;
+      color: $gray-6;
+      font-family: $metropolis;
+      @include font-size(12px);
+
+      @include phone-down {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 300px;
+          line-height: 20px;
+      }
+        
+      a {
+        text-decoration: none;
+        color: $main-green-highlight;
+      }
+    }
+  }
+
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }

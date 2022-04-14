@@ -3,8 +3,6 @@ import { Converter } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
-import { ReactComponent as PauseIcon } from "../../../assets/pause.svg";
-import { ReactComponent as PlayIcon } from "../../../assets/play.svg";
 import { buildCircleNodeShader } from "../../../helpers/circleNodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { IFeedItemMetadata } from "../../../models/api/IFeedItemMetadata";
@@ -347,7 +345,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                                     type="button"
                                     onClick={() => this.toggleActivity()}
                                 >
-                                    {this.state.isActive ? <PauseIcon /> : <PlayIcon />}
+                                    {this.state.isActive
+                                        ? <span className="material-icons">pause</span>
+                                        : <span className="material-icons">play_arrow</span>}
                                 </button>
                             </div>
                         </div>

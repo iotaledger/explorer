@@ -13,13 +13,10 @@
   max-width: 400px;
   height: 40px;
 
-  svg {
+  span {
     position: absolute;
     left: 16px;
-
-    path {
-      fill: var(--search-svg);
-    }
+    color: var(--search-svg);
   }
 
   .search--text-input {
@@ -69,8 +66,8 @@
       box-shadow: none;
     }
 
-    svg path {
-      fill: var(--header-icon-color);
+    span {
+      color: var(--header-icon-color);
     }
   }
 
@@ -97,15 +94,12 @@
       }
     }
 
-    svg {
+    span {
       position: absolute;
       top: 50%;
       right: 16px;
       transform: translateY(-50%);
-
-      path {
-        fill: var(--header-icon-color);
-      }
+      color: var(--header-icon-color);
     }
   }
 

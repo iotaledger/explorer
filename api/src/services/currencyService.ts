@@ -26,6 +26,20 @@ export class CurrencyService {
     private static readonly CG_CALLS_PER_MINUTE: number = 50;
 
     /**
+     * Service initial state.
+     */
+    private static readonly INITIAL_STATE: ICurrencyState = {
+        id: "default",
+        lastCurrencyUpdate: 0,
+        lastFxUpdate: 0,
+        currentPriceEUR: 0,
+        marketCapEUR: 0,
+        volumeEUR: 0,
+        exchangeRatesEUR: {},
+        currencyNames: {}
+    };
+
+    /**
      * Is the service already updating.
      */
     private _isUpdating: boolean;
@@ -64,15 +78,7 @@ export class CurrencyService {
                     currentState = await currencyStorageService.get("default");
                 }
 
-                currentState = currentState || {
-                    id: "default",
-                    lastCurrencyUpdate: 0,
-                    lastFxUpdate: 0,
-                    currentPriceEUR: 0,
-                    marketCapEUR: 0,
-                    volumeEUR: 0,
-                    exchangeRatesEUR: {}
-                };
+                currentState = currentState || CurrencyService.INITIAL_STATE;
 
                 // If now date, default to 2 days ago
                 const lastCurrencyUpdate = currentState.lastCurrencyUpdate
@@ -169,6 +175,41 @@ export class CurrencyService {
             log += `Error updating currencies ${err.toString()}\n`;
             this._isUpdating = false;
         }
+        return log;
+    }
+
+    /**
+     * Update the stored currency names.
+     * @returns Log of operations.
+     */
+    public async updateCurrencyNames(): Promise<string> {
+        let log = "Updating Currency names\n";
+
+        const currencyStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
+        let currentState: ICurrencyState;
+
+        if (currencyStorageService) {
+            currentState = await currencyStorageService.get("default");
+        }
+
+        if (currentState && (!currentState.currencyNames || Object.keys(currentState.currencyNames).length === 0)) {
+            const fixerClient = new FixerClient(this._config.fixerApiKey);
+
+            const data = await fixerClient.symbols();
+            if (data?.success) {
+                currentState.currencyNames = data.symbols;
+                if (currencyStorageService) {
+                    await currencyStorageService.set(currentState);
+                }
+
+                log += `${JSON.stringify(currentState.currencyNames)}\n`;
+            } else {
+                log += `${JSON.stringify(data)}\n`;
+            }
+        } else {
+            log += "No update required\n";
+        }
+
         return log;
     }
 

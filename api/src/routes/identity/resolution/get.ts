@@ -64,13 +64,12 @@ async function resolveIdentity(
     permaNodeUrl?: string
 ): Promise<IIdentityDidResolveResponse> {
     try {
-        const config = new identity.Config();
-        config.setNode(nodeUrl);
-        if (permaNodeUrl) {
-            config.setPermanode(permaNodeUrl);
-        }
+        const config: identity.IClientConfig = {
+            nodes: [nodeUrl],
+            permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined
+        };
 
-        const client = identity.Client.fromConfig(config);
+        const client = await identity.Client.fromConfig(config);
         const res = await client.resolve(did);
 
         return {

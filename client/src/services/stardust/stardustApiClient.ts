@@ -1,5 +1,6 @@
 import { FetchHelper } from "../../helpers/fetchHelper";
 import { ICurrenciesResponse } from "../../models/api/ICurrenciesResponse";
+import { ICurrencyNamesResponse } from "../../models/api/ICurrencyNamesResponse";
 import { IIdentityDidHistoryRequest } from "../../models/api/IIdentityDidHistoryRequest";
 import { IIdentityDidHistoryResponse } from "../../models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveRequest } from "../../models/api/IIdentityDidResolveRequest";
@@ -49,6 +50,14 @@ export class StardustApiClient extends ApiClient {
      */
     public async currencies(): Promise<ICurrenciesResponse> {
         return this.callApi<unknown, ICurrenciesResponse>("currencies", "get");
+    }
+
+    /**
+     * Perform a request to get currency names.
+     * @returns The response from the request.
+     */
+    public async currencyNames(): Promise<ICurrencyNamesResponse> {
+        return this.callApi<unknown, ICurrencyNamesResponse>("currency/names", "get");
     }
 
     /**

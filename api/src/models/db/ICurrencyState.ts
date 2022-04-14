@@ -33,4 +33,9 @@ export interface ICurrencyState {
      * Exchange rates based on EUR.
      */
     exchangeRatesEUR: { [id: string]: number };
+
+    /**
+     * Full currency names
+     */
+    currencyNames: { [id: string]: string };
 }

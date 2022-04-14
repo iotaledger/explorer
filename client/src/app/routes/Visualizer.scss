@@ -48,15 +48,20 @@
     }
 
     .action-panel-container {
-        display: flex;
-        position: absolute;
-        z-index: 2;
-        top: 20px;
-        right: 20px;
+      display: flex;
+      position: absolute;
+      z-index: 2;
+      top: 20px;
+      right: 20px;
 
-        .pause-button {
-            padding: 6px;
+      .pause-button {
+        padding: 6px;
+        color: var(--header-icon-color);
+
+        &:hover {
+          color: $main-green-highlight;
         }
+      }
     }
   }
 

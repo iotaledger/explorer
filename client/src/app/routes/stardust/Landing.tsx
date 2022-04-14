@@ -1,10 +1,6 @@
 import { Units, UnitsHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import dropdown from "../../../assets/dropdown.svg";
-import { ReactComponent as FilterIcon } from "../../../assets/filter.svg";
-import { ReactComponent as PauseIcon } from "../../../assets/pause.svg";
-import { ReactComponent as PlayIcon } from "../../../assets/play.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
@@ -177,7 +173,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     });
                                                 }}
                                             >
-                                                {this.state.isFeedPaused ? <PlayIcon /> : <PauseIcon />}
+                                                {this.state.isFeedPaused
+                                                    ? <span className="material-icons">play_arrow</span>
+                                                    : <span className="material-icons">pause</span>}
                                             </button>
                                             <div className="filters-button-wrapper">
                                                 <button
@@ -189,7 +187,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                         });
                                                     }}
                                                 >
-                                                    <FilterIcon />
+                                                    <span className="material-icons">
+                                                        tune
+                                                    </span>
                                                 </button>
                                                 <div className="filters-button-wrapper__counter">
                                                     {this.state.valuesFilter.filter(f => f.isEnabled).length}
@@ -583,10 +583,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 Pi
                             </option>
                         </select>
-                        <img
-                            src={dropdown}
-                            alt="expand"
-                        />
+                        <span className="material-icons">
+                            arrow_drop_down
+                        </span>
                     </div>
                 </span>
             </div>

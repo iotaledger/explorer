@@ -3,9 +3,7 @@ import moment from "moment";
 import React, { Component, ReactNode } from "react";
 import { IoWarningOutline } from "react-icons/io5";
 import { IconContext } from "react-icons/lib";
-import dropdown from "../../../assets/dropdown.svg";
 import { IdentityHelper } from "../../../helpers/identityHelper";
-import closeIcon from "./../../../assets/close.svg";
 import "./IdentityCompareDropdown.scss";
 import { IdentityCompareDropdownProps } from "./IdentityCompareDropdownProps";
 import { IdentityCompareDropdownState } from "./IdentityCompareDropdownState";
@@ -54,7 +52,7 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                         {!this.props.selectedMessage?.messageId ? (
                             <p className="dropdown-placeholder">Compare with</p>
                         ) : (
-                            <div className="row message-selected">
+                            <div className="row middle message-selected">
 
                                 <IdentityMsgStatusIcon
                                     status={this.props.selectedMessage.isDiff ? "diff" : "integration"}
@@ -72,14 +70,16 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                                             this.props.onSelectionChange();
                                         }}
                                     >
-                                        <img src={closeIcon} alt="Close modal" />
+                                        <span className="material-icons close">close</span>
 
                                     </button>
                                 )}
                             </div>
                         )}
 
-                        <img src={dropdown} alt="expand" />
+                        <span className="material-icons dropdown">
+                            arrow_drop_down
+                        </span>
                     </div>
 
                     {/* --------- dropdown content --------- */}
