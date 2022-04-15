@@ -1,4 +1,4 @@
-import { ALIAS_ADDRESS_TYPE, Bech32Helper, ED25519_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, Bech32Helper, ED25519_ADDRESS_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 
 export interface MaybeAddress {
@@ -54,6 +54,10 @@ export interface SearchQuery {
      * The nftId query.
      */
     nftId?: string;
+    /**
+     * The foundryId query.
+     */
+    foundryId?: string;
 }
 
 /**
@@ -95,18 +99,19 @@ export class SearchQueryBuilder {
         let output: string;
         let aliasId: string;
         let nftId: string;
+        let foundryId: string 
 
         const did = this.queryLower.startsWith("did:iota:") ? this.query : undefined;
         const milestone = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
         const address = this.buildAddress();
 
-        // if the hex without prefix has 40 bytes, it might be an Alias or Nft Id
+        // if the hex without prefix has 40 characters it might be an Alias or Nft Id
         if (address?.hexNoPrefix && address.hexNoPrefix.length === 40) {
             aliasId = address.hex;
             nftId = address.hex;
         }
 
-        // if the hex without prefix has 42 bytes, if might be and Alias or Nft Address
+        // if the hex without prefix has 42 characters, if might be and Alias or Nft Address
         if (address?.hexNoPrefix && address.hexNoPrefix.length === 42) {
             const typeByte = address.hexNoPrefix.slice(0, 2);
             const maybeAddress = address.hexNoPrefix.slice(2);
@@ -119,13 +124,25 @@ export class SearchQueryBuilder {
                 nftId = HexHelper.addPrefix(maybeAddress);
             }
         }
+        
+        const hexWithPrefix = HexHelper.addPrefix(this.queryLower);
+        const hexNoPrefix = HexHelper.stripPrefix(this.queryLower);
+        // if the hex without prefix is 52 or 76 characters and first byte is 08,
+        // it can be a FoundryId (52) or TokenId (76)
+        if (Converter.isHex(hexWithPrefix, true) &&
+            Number.parseInt(hexNoPrefix.slice(0, 2), 16) === ALIAS_ADDRESS_TYPE &&
+                (hexNoPrefix.length === 52 || hexNoPrefix.length === 76)) {
+            
+            foundryId = hexNoPrefix.length === 52 ? hexWithPrefix :
+                HexHelper.addPrefix( hexNoPrefix.slice(0, 52) )
+        }
 
-        // if the hex has 66 bytes, it might be a message or transaction id
+        // if the hex has 66 characters, it might be a message or transaction id
         if (address?.hex && address.hex.length === 66) {
             messageIdOrTransactionId = address.hex;
         }
 
-        // if the hex is 70 bytes, try and look for an output
+        // if the hex is 70 characters, try and look for an output
         if (address?.hex && address.hex.length === 70) {
             output = address.hex;
         }
@@ -138,7 +155,8 @@ export class SearchQueryBuilder {
             messageIdOrTransactionId,
             output,
             aliasId,
-            nftId
+            nftId,
+            foundryId
         };
     }
 
