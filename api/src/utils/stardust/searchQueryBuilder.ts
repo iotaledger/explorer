@@ -2,36 +2,94 @@ import { ALIAS_ADDRESS_TYPE, Bech32Helper, ED25519_ADDRESS_TYPE, NFT_ADDRESS_TYP
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 
 export interface MaybeAddress {
+    /**
+     * The bech32 of the address.
+     */
     bech32?: string;
+    /**
+     * The full hex of the address.
+     */
     hex?: string;
+    /*
+     * The hex of the address without prefix.
+     */
     hexNoPrefix?: string;
+    /**
+     * The type of the address.
+     */
     addressType: number;
 }
 
+
 export interface SearchQuery {
+    /**
+     * The query string in lower case.
+     */
     queryLower: string;
+    /**
+     * The did query.
+     */
     did?: string;
+    /**
+     * The milestone query.
+     */
     milestone?: number;
+    /**
+     * The MaybeAddress query.
+     */
     address?: MaybeAddress;
+    /**
+     * The messageId or transactionId query.
+     */
     messageIdOrTransactionId?: string;
+    /**
+     * The outputId query.
+     */
     output?: string;
+    /**
+     * The aliasId query.
+     */
     aliasId?: string;
+    /**
+     * The nftId query.
+     */
     nftId?: string;
 }
 
+/**
+ * Builds SearchQuery object from query stirng
+ */
 export class SearchQueryBuilder {
+    /**
+     * The query string.
+     */
     private readonly query: string;
 
+    /**
+     * The query string in lower case.
+     */
     private readonly queryLower: string;
 
+    /**
+     * Thed human readable part to use for bech32.
+     */
     private readonly networkBechHrp: string;
 
+    /**
+     * Creates a new instance of SearchQueryBuilder.
+     * @param query The query string.
+     * @param networkBechHrp The network bechHrp.
+     */
     constructor(query: string, networkBechHrp: string) {
         this.query = query;
         this.queryLower = query.toLowerCase();
         this.networkBechHrp = networkBechHrp;
     }
 
+    /**
+     * Builds the SearchQuery.
+     * @returns the SearchQuery object.
+     */
     public build(): SearchQuery {
         let messageIdOrTransactionId: string;
         let output: string;
@@ -84,6 +142,9 @@ export class SearchQueryBuilder {
         };
     }
 
+    /**
+     * @returns the MaybeAddress object.
+     */
     private buildAddress(): MaybeAddress {
         let bech32: string;
         let hex: string;
