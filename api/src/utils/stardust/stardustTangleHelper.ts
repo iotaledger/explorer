@@ -1,6 +1,6 @@
 import { composeAPI, Transaction } from "@iota/core";
 import { Blake2b } from "@iota/crypto.js-stardust";
-import { addressBalance, Bech32Helper, ED25519_ADDRESS_TYPE, IMilestoneResponse, IOutputResponse, IOutputsResponse, serializeMessage, SingleNodeClient, IndexerPluginClient } from "@iota/iota.js-stardust";
+import { addressBalance, ED25519_ADDRESS_TYPE, IMilestoneResponse, IOutputResponse, IOutputsResponse, serializeMessage, SingleNodeClient, IndexerPluginClient } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import { ChronicleClient } from "../../clients/chronicleClient";
@@ -13,6 +13,7 @@ import { IMessageDetailsResponse } from "../../models/api/stardust/IMessageDetai
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../fetchHelper";
+import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
 
 /**
  * Helper functions for use with tangle.
@@ -370,191 +371,6 @@ export class StardustTangleHelper {
     }
 
     /**
-     * Find item on the chrysalis network.
-     * @param provider The provider for the REST API.
-     * @param user The user for the for the REST API.
-     * @param password The password for the REST API.
-     * @param isPermanode Is this a permanode endpoint.
-     * @param bechHrp The bech32 hrp for the network.
-     * @param query The query to use for finding items.
-     * @param cursor Cursor data to send with the request.
-     * @returns The item found.
-     */
-    public static async searchApi(
-        provider: string,
-        user: string | undefined,
-        password: string | undefined,
-        isPermanode: boolean,
-        bechHrp: string,
-        query: string,
-        cursor?: string): Promise<ISearchResponse> {
-        const client = new SingleNodeClient(provider, {
-            userName: user,
-            password,
-            basePath: isPermanode ? "/" : undefined
-        });
-        const indexerPlugin = new IndexerPluginClient(client);
-        let queryLower = query.toLowerCase();
-
-        try {
-            // If the query starts with did:iota: then lookup a Decentralized identifier
-            if (queryLower.startsWith("did:iota:")) {
-                return {
-                    did: query
-                };
-            }
-        } catch {
-        }
-
-        try {
-            // If the query is an integer then lookup a milestone
-            if (/^\d+$/.test(query)) {
-                const milestone = await client.milestone(Number.parseInt(query, 10));
-
-                return {
-                    milestone
-                };
-            }
-        } catch {
-        }
-
-        try {
-            // If the query is bech format lookup address
-            if (Bech32Helper.matches(queryLower, bechHrp)) {
-                // Permanode doesn't support the bech32 address endpoint so convert
-                // the query to ed25519 format if thats what the type is
-                // it will then be tried using the ed25519 address/outputs endpoint
-                // later in this process
-                if (isPermanode) {
-                    const converted = Bech32Helper.fromBech32(queryLower, bechHrp);
-                    if (converted.addressType === ED25519_ADDRESS_TYPE) {
-                        queryLower = Converter.bytesToHex(converted.addressBytes);
-                    }
-                } else {
-                    const addressDetails = await addressBalance(client, queryLower);
-                    // TO DO: confirm address.ledgerIndex > 0 condition is valid way to decide if address exists?
-                    // Address object will always be retrieved even for bech32 addresses that dont exist.
-                    if (addressDetails) {
-                        const addressOutputs = await indexerPlugin.outputs({ addressBech32: queryLower });
-
-                        return {
-                            address: queryLower,
-                            addressDetails,
-                            addressOutputIds: addressOutputs.items
-                        };
-                    }
-                }
-            }
-        } catch {
-        }
-
-        // If the query is 64 bytes hex, try and look for a message
-        if (Converter.isHex(queryLower, true) &&
-            (queryLower.length === 64 ||
-             // Already hex prefixed
-             queryLower.length === 66
-            )) {
-            try {
-                const message = await client.message(
-                    HexHelper.addPrefix(queryLower)
-                );
-
-                if (Object.keys(message).length > 0) {
-                    return {
-                        message
-                    };
-                }
-            } catch {
-            }
-
-            // If the query is 64 bytes hex, try and look for a transaction included message
-            try {
-                const message = await client.transactionIncludedMessage(
-                    HexHelper.addPrefix(queryLower)
-                );
-
-                if (Object.keys(message).length > 0) {
-                    const writeStream = new WriteStream();
-                    serializeMessage(writeStream, message);
-                    const includedMessageId = Converter.bytesToHex(Blake2b.sum256(writeStream.finalBytes()));
-
-                    return {
-                        message,
-                        includedMessageId
-                    };
-                }
-            } catch {
-            }
-        }
-
-        try {
-            // If the query is 68 bytes hex, try and look for an output
-            if (Converter.isHex(queryLower, true) &&
-                (queryLower.length === 68 ||
-                 // Already hex prefixed
-                 queryLower.length === 70
-                )) {
-                const output = await client.output(
-                    HexHelper.addPrefix(queryLower)
-                );
-
-                return {
-                    output
-                };
-            }
-        } catch {
-        }
-
-        try {
-            // If the query is hex format lookup address
-            if (Converter.isHex(queryLower, true) &&
-                (queryLower.length === 64 ||
-                 // Already hex prefixed
-                 queryLower.length === 66
-                )) {
-                // We have 64 characters hex so could possible be a raw ed25519 address
-
-                // Permanode does not support the address/ed25519 endpoint
-                // as it does not maintain utxo state, so we create a dummy
-                // for permanode, but we can still get outputs for the address
-                const addressBech32 = Bech32Helper.toBech32(
-                    ED25519_ADDRESS_TYPE,
-                    Converter.hexToBytes(
-                        HexHelper.addPrefix(queryLower)
-                    ),
-                    bechHrp
-                );
-                const addressDetails = isPermanode ? {
-                    addressType: ED25519_ADDRESS_TYPE,
-                    address: queryLower,
-                    balance: bigInt(0),
-                    dustAllowed: false,
-                    ledgerIndex: 0,
-                    nativeTokens: {}
-                } : await addressBalance(client, addressBech32);
-
-                const addressOutputs = await indexerPlugin.outputs({ addressBech32 });
-
-                if (addressOutputs.items.length > 0) {
-                    const state = (addressOutputs as (IOutputsResponse & {
-                        state?: unknown;
-                    })).state;
-
-                    return {
-                        address: addressBech32,
-                        addressDetails,
-                        addressOutputIds: addressOutputs.items,
-                        cursor: state ? Converter.utf8ToHex(JSON.stringify(state)) : undefined
-                    };
-                }
-            }
-        } catch {
-        }
-
-        return {};
-    }
-
-    /**
      * Get the message details.
      * @param network The network to find the items on.
      * @param messageId The message id to get the details.
@@ -685,6 +501,195 @@ export class StardustTangleHelper {
             } catch {
             }
         }
+    }
+
+    /**
+     * Find item on the stardust network.
+     * @param provider The provider for the REST API.
+     * @param user The user for the for the REST API.
+     * @param password The password for the REST API.
+     * @param isPermanode Is this a permanode endpoint.
+     * @param bechHrp The bech32 hrp for the network.
+     * @param query The query to use for finding items.
+     * @param cursor Cursor data to send with the request.
+     * @returns The item found.
+     */
+    private static async searchApi(
+        provider: string,
+        user: string | undefined,
+        password: string | undefined,
+        isPermanode: boolean,
+        bechHrp: string,
+        query: string): Promise<ISearchResponse> {
+        const client = new SingleNodeClient(provider, {
+            userName: user,
+            password,
+            basePath: isPermanode ? "/" : undefined
+        });
+        const indexerPlugin = new IndexerPluginClient(client);
+        const searchQuery: SearchQuery = new SearchQueryBuilder(query, bechHrp).build();
+
+        if (searchQuery.did) {
+            return {
+                did: searchQuery.did
+            };
+        }
+
+        if (searchQuery.milestone) {
+            try {
+                return {
+                    milestone: await client.milestone(searchQuery.milestone)
+                };
+            } catch {
+            }
+        }
+
+        if (searchQuery.address?.bech32) {
+            try {
+                if (isPermanode && searchQuery.address.addressType === ED25519_ADDRESS_TYPE) {
+                    // Permanode doesn't support the bech32 address endpoint so convert
+                    // the query to ed25519 format if thats what the type is
+                    // it will then be tried using the ed25519 address/outputs endpoint
+                    //
+                    // TODO: Check this part when permanode is available
+                    const addressDetails = {
+                        addressType: ED25519_ADDRESS_TYPE,
+                        address: searchQuery.address.hex,
+                        balance: bigInt(0),
+                        dustAllowed: false,
+                        ledgerIndex: 0,
+                        nativeTokens: {}
+                    };
+
+                    const addressOutputs = await indexerPlugin.outputs({ addressBech32: searchQuery.address.bech32 });
+
+                    if (addressOutputs.items.length > 0) {
+                        const state = (addressOutputs as (IOutputsResponse & {
+                            state?: unknown;
+                        })).state;
+
+                        return {
+                            address: searchQuery.address.bech32,
+                            addressDetails,
+                            addressOutputIds: addressOutputs.items,
+                            cursor: state ? Converter.utf8ToHex(JSON.stringify(state)) : undefined
+                        };
+                    }
+                } else {
+                    const addressDetails = await addressBalance(client, searchQuery.address.bech32);
+                    // TO DO: confirm address.ledgerIndex > 0 condition is valid way to decide if address exists?
+                    // Address object will always be retrieved even for bech32 addresses that dont exist.
+                    if (addressDetails && addressDetails.ledgerIndex > 0) {
+                        const addressOutputs = await indexerPlugin.outputs(
+                            { addressBech32: searchQuery.address.bech32 }
+                        );
+
+                        return {
+                            address: searchQuery.address.bech32,
+                            addressDetails,
+                            addressOutputIds: addressOutputs.items
+                        };
+                    }
+                }
+            } catch {}
+        }
+
+        if (searchQuery.messageIdOrTransactionId) {
+            try {
+                const message = await client.message(searchQuery.messageIdOrTransactionId);
+
+                if (Object.keys(message).length > 0) {
+                    return {
+                        message
+                    };
+                }
+            } catch {
+            }
+
+            try {
+                const message = await client.transactionIncludedMessage(searchQuery.address.hex);
+
+                if (Object.keys(message).length > 0) {
+                    const writeStream = new WriteStream();
+                    serializeMessage(writeStream, message);
+                    const includedMessageId = Converter.bytesToHex(Blake2b.sum256(writeStream.finalBytes()));
+
+                    return {
+                        message,
+                        includedMessageId
+                    };
+                }
+            } catch {
+            }
+        }
+
+        if (searchQuery.output) {
+            try {
+                return {
+                    output: await client.output(searchQuery.output)
+                };
+            } catch {
+            }
+        }
+
+        // Stardust specific searches
+        if (searchQuery.aliasId) {
+            try {
+                const aliasOutputs = await indexerPlugin.alias(searchQuery.aliasId);
+                if (aliasOutputs.items.length > 0) {
+                    // TODO Only taking last item, check how to do it properly
+                    const aliasOutput = await client.output(aliasOutputs.items[aliasOutputs.items.length - 1]);
+
+                    return {
+                        output: aliasOutput
+                    };
+                }
+            } catch {}
+        }
+
+        if (searchQuery.nftId) {
+            try {
+                const nftOutputs = await indexerPlugin.nft(searchQuery.nftId);
+                if (nftOutputs.items.length > 0) {
+                    // TODO Only taking last item, check how to do it properly
+                    const nftOutput = await client.output(nftOutputs.items[nftOutputs.items.length - 1]);
+
+                    return {
+                        output: nftOutput
+                    };
+                }
+            } catch {}
+        }
+
+        if (searchQuery.foundryId) {
+            try {
+                const foundryOutputs = await indexerPlugin.foundry(searchQuery.foundryId);
+
+                if (foundryOutputs.items.length > 0) {
+                    const foundryOutput = await client.output(foundryOutputs.items[0]);
+
+                    return {
+                        output: foundryOutput
+                    };
+                }
+            } catch {}
+        }
+
+        if (searchQuery.tag) {
+            try {
+                const taggedOutputs = await indexerPlugin.outputs({ tagHex: searchQuery.tag });
+
+                if (taggedOutputs.items.length > 0) {
+                    const output = await client.output(taggedOutputs.items[0]);
+
+                    return {
+                        output
+                    };
+                }
+            } catch {}
+        }
+
+        return {};
     }
 }
 
