@@ -520,8 +520,7 @@ export class StardustTangleHelper {
         password: string | undefined,
         isPermanode: boolean,
         bechHrp: string,
-        query: string,
-        cursor?: string): Promise<ISearchResponse> {
+        query: string): Promise<ISearchResponse> {
         const client = new SingleNodeClient(provider, {
             userName: user,
             password,
@@ -551,7 +550,8 @@ export class StardustTangleHelper {
                     // Permanode doesn't support the bech32 address endpoint so convert
                     // the query to ed25519 format if thats what the type is
                     // it will then be tried using the ed25519 address/outputs endpoint
-                    // later in this process
+                    //
+                    // TODO: Check this part when permanode is available
                     const addressDetails = {
                         addressType: ED25519_ADDRESS_TYPE,
                         address: searchQuery.address.hex,
