@@ -1,4 +1,4 @@
-import { ALIAS_ADDRESS_TYPE, Bech32Helper, ED25519_ADDRESS_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, Bech32Helper, ED25519_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 
 export interface MaybeAddress {
@@ -58,6 +58,10 @@ export interface SearchQuery {
      * The foundryId query.
      */
     foundryId?: string;
+    /**
+     * The tag of an output.
+     */
+    tag?: string;
 }
 
 /**
@@ -99,7 +103,7 @@ export class SearchQueryBuilder {
         let output: string;
         let aliasId: string;
         let nftId: string;
-        let foundryId: string 
+        let foundryId: string;
 
         const did = this.queryLower.startsWith("did:iota:") ? this.query : undefined;
         const milestone = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
@@ -124,7 +128,7 @@ export class SearchQueryBuilder {
                 nftId = HexHelper.addPrefix(maybeAddress);
             }
         }
-        
+
         const hexWithPrefix = HexHelper.addPrefix(this.queryLower);
         const hexNoPrefix = HexHelper.stripPrefix(this.queryLower);
         // if the hex without prefix is 52 or 76 characters and first byte is 08,
@@ -132,9 +136,8 @@ export class SearchQueryBuilder {
         if (Converter.isHex(hexWithPrefix, true) &&
             Number.parseInt(hexNoPrefix.slice(0, 2), 16) === ALIAS_ADDRESS_TYPE &&
                 (hexNoPrefix.length === 52 || hexNoPrefix.length === 76)) {
-            
-            foundryId = hexNoPrefix.length === 52 ? hexWithPrefix :
-                HexHelper.addPrefix( hexNoPrefix.slice(0, 52) )
+            foundryId = hexNoPrefix.length === 52 ? hexWithPrefix
+                : HexHelper.addPrefix(hexNoPrefix.slice(0, 52));
         }
 
         // if the hex has 66 characters, it might be a message or transaction id
@@ -147,6 +150,8 @@ export class SearchQueryBuilder {
             output = address.hex;
         }
 
+        const tag = Converter.utf8ToHex(this.query, true);
+
         return {
             queryLower: this.queryLower,
             did,
@@ -156,7 +161,8 @@ export class SearchQueryBuilder {
             output,
             aliasId,
             nftId,
-            foundryId
+            foundryId,
+            tag
         };
     }
 
