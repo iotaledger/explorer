@@ -1,3 +1,6 @@
+/* eslint-disable jsdoc/require-param */
+/* eslint-disable jsdoc/require-returns */
+/* eslint-disable @typescript-eslint/naming-convention */
 import React from "react";
 import { Link } from "react-router-dom";
 import "./Nft.scss";
@@ -29,6 +32,6 @@ const Nft: React.FC<NftProps> = ({ id, name, network, image }) => {
             </Link>
         </div>
     );
-}
+};
 
 export default Nft;

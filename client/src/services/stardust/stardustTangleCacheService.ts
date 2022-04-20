@@ -8,8 +8,9 @@ import { TrytesHelper } from "../../helpers/trytesHelper";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
-import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
+import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
+import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionsDetailsResponse } from "../../models/api/stardust/ITransactionsDetailsResponse";
 import { CHRYSALIS, OG, STARDUST } from "../../models/db/protocolVersion";
 import { ICachedTransaction } from "../../models/ICachedTransaction";
@@ -18,7 +19,6 @@ import { OgApiStreamsV0Client } from "../og/ogApiStreamsV0Client";
 import { TangleCacheService } from "../tangleCacheService";
 import { StardustApiClient } from "./stardustApiClient";
 import { StardustApiStreamsV0Client } from "./stardustApiStreamsV0Client";
-import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 
 /**
  * Cache tangle requests for stardust.
@@ -480,8 +480,10 @@ export class StardustTangleCacheService extends TangleCacheService {
                                 cached: Date.now()
                             };
                         }
-                    } else if (this._networkProtocols[network] === CHRYSALIS || this._networkProtocols[network] === STARDUST) {
-                        const api = this._networkProtocols[network] === CHRYSALIS ? new ChrysalisApiStreamsV0Client(network)
+                    } else if (this._networkProtocols[network] === CHRYSALIS ||
+                               this._networkProtocols[network] === STARDUST) {
+                        const api = this._networkProtocols[network] === CHRYSALIS
+                            ? new ChrysalisApiStreamsV0Client(network)
                             : new StardustApiStreamsV0Client(network);
 
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -761,12 +763,12 @@ export class StardustTangleCacheService extends TangleCacheService {
             this._stardustSearchCache[request.network][`${request.address}--nft-outputs`] = {
                 data: { outputs: nftOutputs.outputs },
                 cached: Date.now()
-            }
+            };
         }
 
         return {
             outputs: this._stardustSearchCache[request.network][`${request.address}--nft-outputs`]?.data?.outputs
-        }
+        };
     }
 
     /**

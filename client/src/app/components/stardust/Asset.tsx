@@ -1,7 +1,10 @@
+/* eslint-disable jsdoc/require-param */
+/* eslint-disable jsdoc/require-returns */
+/* eslint-disable @typescript-eslint/naming-convention */
 import React from "react";
 import "./Transaction.scss";
-import { AssetProps } from "./AssetProps";
 import { Link } from "react-router-dom";
+import { AssetProps } from "./AssetProps";
 
 /**
  * Component which will display an asset.
@@ -62,7 +65,7 @@ const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, val
             </div >
         )
     );
-}
+};
 
 export default Asset;
 

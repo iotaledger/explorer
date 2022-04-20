@@ -524,7 +524,7 @@ export class StardustTangleHelper {
             const nftOutputs = await indexerPlugin.nfts({ addressBech32: address });
             return {
                 outputs: nftOutputs
-            }
+            };
         } catch {}
     }
 
@@ -536,7 +536,6 @@ export class StardustTangleHelper {
      * @param isPermanode Is this a permanode endpoint.
      * @param bechHrp The bech32 hrp for the network.
      * @param query The query to use for finding items.
-     * @param cursor Cursor data to send with the request.
      * @returns The item found.
      */
     private static async searchApi(

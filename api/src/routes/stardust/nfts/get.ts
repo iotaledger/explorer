@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { INftOutputsRequest } from "../../../models/api/stardust/INftOutputsRequest";
 import { INftOutputsResponse } from "../../../models/api/stardust/INftOutputsResponse";
+import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelper";

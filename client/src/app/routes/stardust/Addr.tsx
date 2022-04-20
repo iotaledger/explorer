@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
-import { BASIC_OUTPUT_TYPE, IBasicOutput, INftOutput, NFT_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js-stardust";
+import { BASIC_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js-stardust";
+import { HexHelper } from "@iota/util.js-stardust";
+import bigInt from "big-integer";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -17,17 +19,15 @@ import Icon from "../../components/Icon";
 import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
-import { AddrRouteProps } from "../AddrRouteProps";
-import messageJSON from "./../../../assets/modals/message.json";
-import Transaction from "./../../components/chrysalis/Transaction";
 import Asset from "../../components/stardust/Asset";
 import Nft from "../../components/stardust/Nft";
+import { AddrRouteProps } from "../AddrRouteProps";
+import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
+import messageJSON from "./../../../assets/modals/message.json";
+import Transaction from "./../../components/chrysalis/Transaction";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrState, NftDetails, TokenDetails } from "./AddrState";
-import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
-import { HexHelper } from "@iota/util.js-stardust";
-import bigInt from "big-integer";
 
 /**
  * Component which will show the address page for stardust.
@@ -386,38 +386,38 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                { this.currentTokensPage?.map((token, k) =>
+                                                { this.currentTokensPage?.map((token, k) => (
+                                                    <React.Fragment key={`${token?.name}${k}`}>
+                                                        <Asset
+                                                            key={k}
+                                                            name={token?.name}
+                                                            network={networkId}
+                                                            symbol={token?.symbol}
+                                                            amount={token.amount}
+                                                            price={token?.price}
+                                                            value={token?.value}
+                                                            tableFormat={true}
+                                                        />
+                                                    </React.Fragment>
+                                                ))}
+                                            </tbody>
+                                        </table>
+
+                                        {/* Only visible in mobile -- Card assets*/}
+                                        <div className="transaction-cards">
+                                            {this.currentTokensPage?.map((token, k) => (
                                                 <React.Fragment key={`${token?.name}${k}`}>
                                                     <Asset
                                                         key={k}
                                                         name={token?.name}
                                                         network={networkId}
                                                         symbol={token?.symbol}
-                                                        amount={token.amount}
+                                                        amount={token?.amount}
                                                         price={token?.price}
                                                         value={token?.value}
-                                                        tableFormat={true}
                                                     />
                                                 </React.Fragment>
-                                                )}
-                                            </tbody>
-                                        </table>
-
-                                        {/* Only visible in mobile -- Card assets*/}
-                                        <div className="transaction-cards">
-                                            {this.currentTokensPage?.map((token, k) =>
-                                            <React.Fragment key={`${token?.name}${k}`}>
-                                                <Asset
-                                                    key={k}
-                                                    name={token?.name}
-                                                    network={networkId}
-                                                    symbol={token?.symbol}
-                                                    amount={token?.amount}
-                                                    price={token?.price}
-                                                    value={token?.value}
-                                                />
-                                            </React.Fragment>
-                                            )}
+                                            ))}
                                         </div>
                                         <Pagination
                                             currentPage={this.state.tokensPageNumber}
@@ -545,35 +545,39 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     }
 
     private async getOutputs() {
-        if (!this.state.outputIds || this.state.outputIds?.length == 0) return;
+        if (!this.state.outputIds || this.state.outputIds?.length === 0) {
+            return;
+        }
         const networkId = this.props.match.params.network;
-        const outputResponses = [];
+        const outputs: IOutputResponse[] = [];
 
-        for (let outputId of this.state.outputIds) {
+        for (const outputId of this.state.outputIds) {
             const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
             if (outputDetails) {
-                outputResponses.push(outputDetails);
+                outputs.push(outputDetails);
             }
         }
 
-        this.setState({ outputs: outputResponses });
+        this.setState({ outputs });
     }
 
     private async getNativeTokens() {
-        if (!this.state.outputs || this.state.outputs?.length == 0) return;
-        let tokens: TokenDetails[] = [];
+        if (!this.state.outputs || this.state.outputs?.length === 0) {
+            return;
+        }
+        const tokens: TokenDetails[] = [];
 
-        this.state.outputs?.forEach((output) => {
-            if (!output.isSpent && output.output.type === BASIC_OUTPUT_TYPE && (output.output as IBasicOutput).nativeTokens.length > 0) {
-                const basicOutput = output.output as IBasicOutput;
-                for (let token of basicOutput.nativeTokens) {
+        for (const output of this.state.outputs) {
+            if (!output.isSpent && output.output.type === BASIC_OUTPUT_TYPE && output.output.nativeTokens.length > 0) {
+                const basicOutput = output.output;
+                for (const token of basicOutput.nativeTokens) {
                     tokens.push({
                         name: token.id,
-                        amount: Number.parseInt(token.amount)
+                        amount: Number.parseInt(token.amount, 10)
                     });
                 }
             }
-        });
+        }
 
         this.setState({
             tokens,
@@ -582,10 +586,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     }
 
     private async getNfts() {
-        if (!this.state.bech32AddressDetails?.bech32) return;
+        if (!this.state.bech32AddressDetails?.bech32) {
+            return;
+        }
         const networkId = this.props.match.params.network;
 
-        let nfts: NftDetails[] = [];
+        const nfts: NftDetails[] = [];
 
         const nftOutputs = await this._tangleCacheService.nfts({
             network: networkId,
@@ -593,18 +599,16 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         });
 
         if (nftOutputs?.outputs && nftOutputs?.outputs?.items.length > 0) {
-            for (let outputId of nftOutputs.outputs.items) {
+            for (const outputId of nftOutputs.outputs.items) {
                 const output = await this._tangleCacheService.outputDetails(networkId, outputId);
-                if (output) {
-                    if (!output.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
-                        const nftOutput = output.output as INftOutput;
-                        const nftId = HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero) ? outputId : nftOutput.nftId;
+                if (output && !output.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
+                    const nftOutput = output.output;
+                    const nftId = HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero) ? outputId : nftOutput.nftId;
 
-                        nfts.push({
-                            id: nftId,
-                            image: "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png"
-                        })
-                    }
+                    nfts.push({
+                        id: nftId,
+                        image: "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png"
+                    });
                 }
             }
         }
@@ -630,9 +634,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                 if (!tsx.date || !tsx.messageTangleStatus) {
                     isUpdated = true;
-                    const { date, messageTangleStatus } = await TransactionsHelper
-                        .getMessageStatus(this.props.match.params.network, tsx.messageId,
-                            this._tangleCacheService);
+                    const { date, messageTangleStatus } = await TransactionsHelper.getMessageStatus(
+                        this.props.match.params.network, tsx.messageId, this._tangleCacheService
+                    );
                     tsx.date = date;
                     tsx.messageTangleStatus = messageTangleStatus;
                 }
@@ -694,12 +698,14 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     private async getTransactionAmount(
         messageId: string): Promise<number> {
         const result = await this._tangleCacheService.search(
-            this.props.match.params.network, messageId);
-        const { inputs, outputs } =
-            await TransactionsHelper.getInputsAndOutputs(result?.message,
-                this.props.match.params.network,
-                this._bechHrp,
-                this._tangleCacheService);
+            this.props.match.params.network, messageId
+        );
+        const { inputs, outputs } = await TransactionsHelper.getInputsAndOutputs(
+            result?.message,
+            this.props.match.params.network,
+            this._bechHrp,
+            this._tangleCacheService
+        );
         const inputsRelated = inputs.filter(input => input.transactionAddress.hex === this.state.address);
         const outputsRelated = outputs.filter(output => output.address.hex === this.state.address);
         let fromAmount = 0;
