@@ -1,4 +1,4 @@
-export interface INftDetailsRequest {
+export interface INftOutputsRequest {
     /**
      * The network to search on.
      */
@@ -9,3 +9,4 @@ export interface INftDetailsRequest {
      */
     address: string;
 }
+

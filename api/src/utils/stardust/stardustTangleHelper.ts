@@ -510,21 +510,22 @@ export class StardustTangleHelper {
      * @param address The address to get the details for.
      * @returns The nft details.
      */
-    public static async nftDetails(
+    public static async nftOutputs(
         network: INetwork,
         address: string
     ): Promise<INftOutputsResponse | undefined> {
-        const client = new SingleNodeClient(network.provider, {
-            userName: network.user,
-            password: network.password
-        });
-        const indexerPlugin = new IndexerPluginClient(client);
+        try {
+            const client = new SingleNodeClient(network.provider, {
+                userName: network.user,
+                password: network.password
+            });
+            const indexerPlugin = new IndexerPluginClient(client);
 
-        const nftOutputs = await indexerPlugin.nfts({ addressBech32: address });
-
-        return {
-            outputs: nftOutputs
-        }
+            const nftOutputs = await indexerPlugin.nfts({ addressBech32: address });
+            return {
+                outputs: nftOutputs
+            }
+        } catch {}
     }
 
     /**

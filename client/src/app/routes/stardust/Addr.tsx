@@ -80,21 +80,19 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             formatFull: false,
             statusBusy: true,
             status: "Loading transactions...",
-            assetStatusBusy: true,
-            assetStatus: "Loading Assets...",
-            nftStatusBusy: true,
-            nftStatus: "Loading NFTs...",
+            areTokensLoading: true,
+            areNftsLoading: true,
             received: 0,
             sent: 0,
-            currentPage: 1,
-            pageSize: 10,
-            currentPageTransactions: [],
+            transactionsPageNumber: 1,
+            transactionsPageSize: 10,
+            transactionsPage: [],
             tokens: [],
-            tokenPageNumber: 1,
-            tokenPage: [],
+            tokensPageNumber: 1,
+            tokensPage: [],
             nfts: [],
-            nftPageNumber: 1,
-            nftPage: []
+            nftsPageNumber: 1,
+            nftsPage: []
         };
     }
 
@@ -130,7 +128,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 // await this.getTransactionHistory();
                 await this.getOutputs();
                 await this.getNativeTokens();
-                await this.getNFTs();
+                await this.getNfts();
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
@@ -204,9 +202,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 )}
                                         </div>
                                     </div>
-                                    {(hasNativeTokens || hasNfts) &&
+                                    {(hasNativeTokens || hasNfts) && (
                                         <div className="asset-cards row">
-                                            {hasNativeTokens &&
+                                            {hasNativeTokens && (
                                                 <div className="section--assets">
                                                     <div className="inner--asset">
                                                         <div className="section--data assets">
@@ -219,8 +217,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                         />
                                                     </div>
                                                 </div>
-                                            }
-                                            {hasNfts &&
+                                            )}
+                                            {hasNfts && (
                                                 <div className="section--NFT">
                                                     <div className="inner--asset">
                                                         <div className="section--data assets">
@@ -233,9 +231,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                         />
                                                     </div>
                                                 </div>
-                                            }
+                                            )}
                                         </div>
-                                    }
+                                    )}
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
                                     <div className="section">
@@ -278,7 +276,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                { this.currentPageTransactions.map((transaction, k) =>
+                                                { this.transactionsPage.map((transaction, k) =>
                                                     (
                                                         <React.Fragment key={`${transaction?.messageId}${k}`}>
                                                             <Transaction
@@ -313,7 +311,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                                         {/* Only visible in mobile -- Card transactions*/}
                                         <div className="transaction-cards">
-                                            {this.currentPageTransactions.map((transaction, k) =>
+                                            {this.transactionsPage.map((transaction, k) =>
                                                 (
                                                     <React.Fragment key={`${transaction?.messageId}${k}`}>
                                                         <Transaction
@@ -343,21 +341,21 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 ))}
                                         </div>
                                         <Pagination
-                                            currentPage={this.state.currentPage}
+                                            currentPage={this.state.transactionsPageNumber}
                                             totalCount={this.txsHistory.length}
-                                            pageSize={this.state.pageSize}
+                                            pageSize={this.state.transactionsPageSize}
                                             siblingsCount={1}
                                             onPageChange={page =>
-                                                this.setState({ currentPage: page },
+                                                this.setState({ transactionsPageNumber: page },
                                                     () => {
-                                                        const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
+                                                        const firstPageIndex = (this.state.transactionsPageNumber - 1) * this.state.transactionsPageSize;
                                                         // Check if last page
-                                                        const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
+                                                        const lastPageIndex = (this.state.transactionsPageNumber === Math.ceil(this.txsHistory.length / this.state.transactionsPageSize)) ? this.txsHistory.length : firstPageIndex + this.state.transactionsPageSize;
                                                         this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex).catch(err => console.error(err));
                                                 })}
                                         />
                                     </div>)}
-                                {hasNativeTokens &&
+                                {hasNativeTokens && (
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
                                             <div className="row middle">
@@ -366,12 +364,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </h2>
                                                 <Modal icon={ModalIcon.Info} data={messageJSON} />
                                             </div>
-                                            {this.state.assetStatus && (
+                                            {this.state.areTokensLoading && (
                                                 <div className="margin-t-s middle row">
-                                                    {this.state.assetStatusBusy && (<Spinner />)}
-                                                    <p className="status">
-                                                        {this.state.assetStatus}
-                                                    </p>
+                                                    <Spinner />
+                                                    <p className="status">Loading Assets...</p>
                                                 </div>
                                             )}
                                         </div>
@@ -420,16 +416,16 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             )}
                                         </div>
                                         <Pagination
-                                            currentPage={this.state.tokenPageNumber}
+                                            currentPage={this.state.tokensPageNumber}
                                             totalCount={this.state.tokens?.length ?? 0}
                                             pageSize={Addr.TOKENS_PAGE_SIZE}
                                             siblingsCount={1}
                                             onPageChange={page =>
-                                                this.setState({ tokenPageNumber: page })}
+                                                this.setState({ tokensPageNumber: page })}
                                         />
                                     </div>
-                                }
-                                {hasNfts &&
+                                )}
+                                {hasNfts && (
                                     <div className="section transaction--section no-border">
                                         <div className="section--header row space-between">
                                             <div className="row middle">
@@ -438,37 +434,35 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </h2>
                                                 <Modal icon={ModalIcon.Info} data={messageJSON} />
                                             </div>
-                                            {this.state.nftStatus && (
+                                            {this.state.areNftsLoading && (
                                                 <div className="margin-t-s middle row">
-                                                    {this.state.nftStatusBusy && (<Spinner />)}
-                                                    <p className="status">
-                                                        {this.state.nftStatus}
-                                                    </p>
+                                                    <Spinner />
+                                                    <p className="status">Loading NFTs...</p>
                                                 </div>
                                             )}
                                         </div>
                                         <div className="nft--section">
-                                            { this.currentNftsPage?.map((nft, k) =>
-                                            <React.Fragment key={`${nft.id}${k}`}>
-                                                <Nft
-                                                    key={k}
-                                                    id={nft.id}
-                                                    name={nft.name}
-                                                    network={networkId}
-                                                    image={nft.image}
-                                                />
-                                            </React.Fragment>
-                                            )}
+                                            { this.currentNftsPage?.map((nft, k) => (
+                                                <React.Fragment key={`${nft.id}${k}`}>
+                                                    <Nft
+                                                        key={k}
+                                                        id={nft.id}
+                                                        name={nft.name}
+                                                        network={networkId}
+                                                        image={nft.image}
+                                                    />
+                                                </React.Fragment>
+                                            ))}
                                         </div>
                                         <Pagination
-                                            currentPage={this.state.nftPageNumber}
+                                            currentPage={this.state.nftsPageNumber}
                                             totalCount={this.state.nfts?.length ?? 0}
                                             pageSize={Addr.NFTS_PAGE_SIZE}
                                             siblingsCount={1}
-                                            onPageChange={page => this.setState({ nftPageNumber: page })}
+                                            onPageChange={page => this.setState({ nftsPageNumber: page })}
                                         />
                                     </div>
-                                }
+                                )}
                             </div>
                         </div>
                     </div >
@@ -478,22 +472,22 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     }
 
     // TO DO DRY these three into one function
-    private get currentPageTransactions() {
-        const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
-        const lastPageIndex = firstPageIndex + this.state.pageSize;
+    private get transactionsPage() {
+        const firstPageIndex = (this.state.transactionsPageNumber - 1) * this.state.transactionsPageSize;
+        const lastPageIndex = firstPageIndex + this.state.transactionsPageSize;
 
         return this.txsHistory.slice(firstPageIndex, lastPageIndex);
     }
 
     private get currentTokensPage() {
-        const from = (this.state.tokenPageNumber - 1) * Addr.TOKENS_PAGE_SIZE;
+        const from = (this.state.tokensPageNumber - 1) * Addr.TOKENS_PAGE_SIZE;
         const to = from + Addr.TOKENS_PAGE_SIZE;
 
         return this.state.tokens?.slice(from, to);
     }
 
     private get currentNftsPage() {
-        const from = (this.state.nftPageNumber - 1) * Addr.NFTS_PAGE_SIZE;
+        const from = (this.state.nftsPageNumber - 1) * Addr.NFTS_PAGE_SIZE;
         const to = from + Addr.NFTS_PAGE_SIZE;
 
         return this.state.nfts?.slice(from, to);
@@ -507,14 +501,14 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         const transactionsDetails = await this._tangleCacheService.transactionsDetails({
             network: this.props.match.params.network,
             address: this.state.address ?? "",
-            query: { page_size: this.state.pageSize }
+            query: { page_size: this.state.transactionsPageSize }
         }, false);
 
         this.setState({ transactionHistory: transactionsDetails },
             async () => {
-                const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
-                const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize))
-                    ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
+                const firstPageIndex = (this.state.transactionsPageNumber - 1) * this.state.transactionsPageSize;
+                const lastPageIndex = (this.state.transactionsPageNumber === Math.ceil(this.txsHistory.length / this.state.transactionsPageSize))
+                    ? this.txsHistory.length : firstPageIndex + this.state.transactionsPageSize;
                 this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
                     .catch(err => console.error(err));
 
@@ -575,12 +569,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
         this.setState({
             tokens,
-            assetStatus: "",
-            assetStatusBusy: false
+            areTokensLoading: false
         });
     }
 
-    private async getNFTs() {
+    private async getNfts() {
         if (!this.state.bech32AddressDetails?.bech32) return;
         const networkId = this.props.match.params.network;
 
@@ -608,18 +601,17 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
         this.setState({
             nfts,
-            nftStatus: "",
-            nftStatusBusy: false
+            areNftsLoading: false
         });
     }
 
     private async updateTransactionHistoryDetails(startIndex: number, endIndex: number) {
         if (this.txsHistory.length > 0) {
             const transactionIds = this.txsHistory.map(transaction => transaction.messageId);
-            const updatingPage = this.state.currentPage;
+            const updatingPage = this.state.transactionsPageNumber;
 
             for (let i = startIndex; i < endIndex; i++) {
-                if (updatingPage !== this.state.currentPage) {
+                if (updatingPage !== this.state.transactionsPageNumber) {
                     break;
                 }
 

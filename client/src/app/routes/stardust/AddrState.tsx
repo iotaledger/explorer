@@ -51,24 +51,14 @@ export interface AddrState {
     status: string;
 
     /**
-     * Is the component assets status busy.
+     * Are the component native tokens loading.
      */
-    assetStatusBusy: boolean;
+    areTokensLoading: boolean;
 
     /**
-     * The assets status.
+     * Are the component NFTs loading.
      */
-    assetStatus: string;
-
-    /**
-     * Is the component NFTs status busy.
-     */
-    nftStatusBusy: boolean;
-
-    /**
-     * The assets status.
-     */
-    nftStatus: string;
+    areNftsLoading: boolean;
 
     /**
      * The output ids for the address.
@@ -113,17 +103,17 @@ export interface AddrState {
     /**
      * Current page number in transaction history table.
      */
-    currentPage: number;
+    transactionsPageNumber: number;
 
     /**
      * Page size in transaction history table.
      */
-    pageSize: number;
+    transactionsPageSize: number;
 
     /**
      * Current page in transaction history table.
      */
-    currentPageTransactions: ITransaction[];
+    transactionsPage: ITransaction[];
 
     /**
      * List of native tokens of the address.
@@ -133,26 +123,26 @@ export interface AddrState {
     /**
      * Current page number in native tokens table.
      */
-    tokenPageNumber: number;
+    tokensPageNumber: number;
 
     /**
      * Current page in tokens table.
      */
-    tokenPage: TokenDetails[];
+    tokensPage: TokenDetails[];
 
     /**
      * List of nfts of the address.
      */
     nfts?: NftDetails[];
-    
+
     /**
      * Current page number in nft history table.
      */
-    nftPageNumber: number;
+    nftsPageNumber: number;
 
     /**
      * Current page in nft history table.
      */
-    nftPage: NftDetails[];
+    nftsPage: NftDetails[];
 }
 

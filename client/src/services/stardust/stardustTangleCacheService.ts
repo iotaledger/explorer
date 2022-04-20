@@ -9,7 +9,7 @@ import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetai
 import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
-import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
+import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/stardust/ITransactionsDetailsResponse";
 import { CHRYSALIS, OG, STARDUST } from "../../models/db/protocolVersion";
 import { ICachedTransaction } from "../../models/ICachedTransaction";
@@ -749,7 +749,7 @@ export class StardustTangleCacheService extends TangleCacheService {
      * @returns The NFT outputs response.
      */
     public async nfts(
-        request: INftDetailsRequest,
+        request: INftOutputsRequest,
         skipCache: boolean = false
     ): Promise<INftOutputsResponse | undefined> {
         const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
