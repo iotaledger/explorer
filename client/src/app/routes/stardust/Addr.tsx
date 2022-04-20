@@ -26,6 +26,8 @@ import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrState, NftDetails, TokenDetails } from "./AddrState";
 import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
+import { HexHelper } from "@iota/util.js-stardust";
+import bigInt from "big-integer";
 
 /**
  * Component which will show the address page for stardust.
@@ -244,7 +246,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </div>
                                     </div>
                                 )}
-
                                 {this.txsHistory.length > 0 && (
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
@@ -308,7 +309,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     ))}
                                             </tbody>
                                         </table>
-
                                         {/* Only visible in mobile -- Card transactions*/}
                                         <div className="transaction-cards">
                                             {this.transactionsPage.map((transaction, k) =>
@@ -355,6 +355,16 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 })}
                                         />
                                     </div>)}
+                                {this.state.areTokensLoading && (
+                                    <div className="section transaction--section">
+                                        <div className="section--header row space-between">
+                                            <div className="margin-t-s middle row">
+                                                <Spinner />
+                                                <p className="status">Loading Assets...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 {hasNativeTokens && (
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
@@ -364,12 +374,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </h2>
                                                 <Modal icon={ModalIcon.Info} data={messageJSON} />
                                             </div>
-                                            {this.state.areTokensLoading && (
-                                                <div className="margin-t-s middle row">
-                                                    <Spinner />
-                                                    <p className="status">Loading Assets...</p>
-                                                </div>
-                                            )}
                                         </div>
                                         <table className="transaction--table">
                                             <thead>
@@ -425,6 +429,16 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         />
                                     </div>
                                 )}
+                                {this.state.areNftsLoading && (
+                                    <div className="section transaction--section no-border">
+                                        <div className="section--header row space-between">
+                                            <div className="margin-t-s middle row">
+                                                <Spinner />
+                                                <p className="status">Loading NFTs...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 {hasNfts && (
                                     <div className="section transaction--section no-border">
                                         <div className="section--header row space-between">
@@ -434,12 +448,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 </h2>
                                                 <Modal icon={ModalIcon.Info} data={messageJSON} />
                                             </div>
-                                            {this.state.areNftsLoading && (
-                                                <div className="margin-t-s middle row">
-                                                    <Spinner />
-                                                    <p className="status">Loading NFTs...</p>
-                                                </div>
-                                            )}
                                         </div>
                                         <div className="nft--section">
                                             { this.currentNftsPage?.map((nft, k) => (
@@ -590,8 +598,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 if (output) {
                     if (!output.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
                         const nftOutput = output.output as INftOutput;
+                        const nftId = HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero) ? outputId : nftOutput.nftId;
+
                         nfts.push({
-                            id: nftOutput.nftId,
+                            id: nftId,
                             image: "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png"
                         })
                     }

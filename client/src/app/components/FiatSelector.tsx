@@ -43,7 +43,6 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
 
         document.addEventListener("mousedown", this.outsideClickHandler);
         this._currencyService.loadCurrencyNames().then(currencyNames => {
-            console.log("currencyNames", currencyNames);
             if (currencyNames) {
                 this.setState({ currencyNames });
             }

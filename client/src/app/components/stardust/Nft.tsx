@@ -23,7 +23,7 @@ const Nft: React.FC<NftProps> = ({ id, name, network, image }) => {
             {name && <span className="nft-name">Token: {name}</span>}
             <Link
                 to={`/${network}/search/${id}`}
-                className="nft-id"
+                className="margin-r-t nft-id"
             >
                 {shortId}
             </Link>

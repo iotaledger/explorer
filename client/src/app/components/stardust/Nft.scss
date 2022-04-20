@@ -1,3 +1,7 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/variables";
+
 .NFT-row {
     display: flex;
     flex-direction: column;
@@ -9,7 +13,7 @@
         height: 180px;
         margin-top: 6px;
     }
-    
+
     .nft-name {
         margin-top: 12px;
         font-weight: 600;
@@ -18,8 +22,12 @@
     .nft-id {
         margin-top: 12px;
         text-align: center;
-        font-size: 12px;
-        line-height: 16px;
+        @include font-size(12px);
+        font-family: $ibm-plex-mono;
+        font-weight: normal;
         letter-spacing: 0.02em;
+        line-height: 20px;
+        color: $blue-5;
+        line-height: 16px;
     }
 }
