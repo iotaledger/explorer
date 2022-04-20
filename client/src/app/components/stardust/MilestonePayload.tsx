@@ -144,15 +144,15 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                 </div>
                             </React.Fragment>
                         )}
-                        {this.props.payload.publicKeys && (
+                        {this.props.payload.signatures && (
                             <div className="section--data">
                                 <div className="label">
                                     Public Keys
                                 </div>
                                 <div className="value code">
-                                    {this.props.payload.publicKeys?.map(pubKey => (
-                                        <div key={pubKey} className="margin-b-s">
-                                            {pubKey}
+                                    {this.props.payload.signatures.map(signature => (
+                                        <div key={signature.publicKey} className="margin-b-s">
+                                            {signature.publicKey}
                                         </div>
                                     ))}
                                 </div>
@@ -163,9 +163,9 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                 Signatures
                             </div>
                             <div className="value code">
-                                {this.props.payload.signatures.map(sig => (
-                                    <div key={sig} className="margin-b-s">
-                                        {sig}
+                                {this.props.payload.signatures.map(signature => (
+                                    <div key={signature.signature} className="margin-b-s">
+                                        {signature.signature}
                                     </div>
                                 ))}
                             </div>
