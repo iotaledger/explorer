@@ -4,6 +4,20 @@ import IAddressDetails from "../../../models/api/stardust/IAddressDetails";
 import { ITransaction, ITransactionsDetailsResponse } from "../../../models/api/stardust/ITransactionsDetailsResponse";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 
+// TO DO Extract
+export interface TokenDetails {
+    name: string;
+    symbol?: string;
+    amount: number;
+    price?: number;
+    value?: number;
+}
+
+export interface NftDetails {
+    image?: string;
+    name?: string;
+    id: string;
+}
 
 export interface AddrState {
     /**
@@ -97,7 +111,7 @@ export interface AddrState {
     transactionHistory?: ITransactionsDetailsResponse;
 
     /**
-     * Current page in transaction history table.
+     * Current page number in transaction history table.
      */
     currentPage: number;
 
@@ -107,37 +121,38 @@ export interface AddrState {
     pageSize: number;
 
     /**
-     * Page size in transaction history table.
+     * Current page in transaction history table.
      */
     currentPageTransactions: ITransaction[];
 
     /**
-     * Current page in asset history table.
+     * List of native tokens of the address.
      */
-    assetCurrentPage: number;
+    tokens?: TokenDetails[];
 
     /**
-     * Page size in asset history table.
+     * Current page number in native tokens table.
      */
-    assetPageSize: number;
+    tokenPageNumber: number;
 
     /**
-     * Page size in asset history table.
+     * Current page in tokens table.
      */
-    currentPageAssets: string[];
+    tokenPage: TokenDetails[];
+
+    /**
+     * List of nfts of the address.
+     */
+    nfts?: NftDetails[];
+    
+    /**
+     * Current page number in nft history table.
+     */
+    nftPageNumber: number;
 
     /**
      * Current page in nft history table.
      */
-    nftCurrentPage: number;
-
-    /**
-     * Page size in nft history table.
-     */
-    nftPageSize: number;
-
-    /**
-     * Page size in nft history table.
-     */
-    currentPageNFTs: string[];
+    nftPage: NftDetails[];
 }
+

@@ -10,6 +10,7 @@ import { ITransactionsDetailsResponse } from "../../models/api/ITransactionsDeta
 import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
 import { IMessageDetailsResponse } from "../../models/api/stardust/IMessageDetailsResponse";
+import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../fetchHelper";
@@ -476,7 +477,7 @@ export class StardustTangleHelper {
     /**
      * Get the milestone details.
      * @param network The network to find the items on.
-     * @param milestoneIndex The milestone iindex to get the details.
+     * @param milestoneIndex The milestone index to get the details.
      * @returns The item details.
      */
     public static async milestoneDetails(
@@ -500,6 +501,29 @@ export class StardustTangleHelper {
                 return await client.milestone(milestoneIndex);
             } catch {
             }
+        }
+    }
+
+    /**
+     * Get the nft details.
+     * @param network The network to find the items on.
+     * @param address The address to get the details for.
+     * @returns The nft details.
+     */
+    public static async nftDetails(
+        network: INetwork,
+        address: string
+    ): Promise<INftOutputsResponse | undefined> {
+        const client = new SingleNodeClient(network.provider, {
+            userName: network.user,
+            password: network.password
+        });
+        const indexerPlugin = new IndexerPluginClient(client);
+
+        const nftOutputs = await indexerPlugin.nfts({ addressBech32: address });
+
+        return {
+            outputs: nftOutputs
         }
     }
 

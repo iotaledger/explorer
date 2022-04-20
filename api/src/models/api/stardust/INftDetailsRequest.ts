@@ -1,4 +1,4 @@
-export interface ITransactionsDetailsRequest {
+export interface INftDetailsRequest {
     /**
      * The network to search on.
      */
@@ -8,9 +8,4 @@ export interface ITransactionsDetailsRequest {
      * The address get the transactions for.
      */
     address: string;
-
-    /**
-     * The query parameters.
-     */
-    query?: { [key: string]: unknown };
 }

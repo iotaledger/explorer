@@ -1,9 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react/jsx-pascal-case */
-import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js-stardust";
+import { BASIC_OUTPUT_TYPE, IBasicOutput, INftOutput, NFT_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -20,15 +17,15 @@ import Icon from "../../components/Icon";
 import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
-import { Asset } from "../../components/stardust/Asset";
-import { NFT } from "../../components/stardust/NFT";
 import { AddrRouteProps } from "../AddrRouteProps";
-import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 import messageJSON from "./../../../assets/modals/message.json";
 import Transaction from "./../../components/chrysalis/Transaction";
+import Asset from "../../components/stardust/Asset";
+import Nft from "../../components/stardust/Nft";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
-import { AddrState } from "./AddrState";
+import { AddrState, NftDetails, TokenDetails } from "./AddrState";
+import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 
 /**
  * Component which will show the address page for stardust.
@@ -37,7 +34,17 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     /**
      * Maximum page size for permanode request.
      */
-     private static readonly MAX_PAGE_SIZE: number = 6000;
+    private static readonly MAX_PAGE_SIZE: number = 6000;
+
+    /**
+     * Native Tokens page size.
+     */
+    private static readonly TOKENS_PAGE_SIZE: number = 10;
+
+    /**
+     * Nfts page size.
+     */
+    private static readonly NFTS_PAGE_SIZE: number = 10;
 
     /**
      * API Client for tangle requests.
@@ -55,7 +62,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      */
     constructor(props: RouteComponentProps<AddrRouteProps>) {
         super(props);
-
 
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networkConfig = this.props.match.params.network
@@ -83,12 +89,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             currentPage: 1,
             pageSize: 10,
             currentPageTransactions: [],
-            assetCurrentPage: 1,
-            assetPageSize: 10,
-            currentPageAssets: [],
-            nftCurrentPage: 1,
-            nftPageSize: 10,
-            currentPageNFTs: []
+            tokens: [],
+            tokenPageNumber: 1,
+            tokenPage: [],
+            nfts: [],
+            nftPageNumber: 1,
+            nftPage: []
         };
     }
 
@@ -97,8 +103,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
+
         const result = await this._tangleCacheService.search(
-            this.props.match.params.network, this.props.match.params.address);
+            this.props.match.params.network, this.props.match.params.address
+        );
+
         if (result?.address) {
             window.scrollTo({
                 left: 0,
@@ -117,9 +126,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 outputIds: result.addressOutputIds,
                 historicOutputIds: result.historicAddressOutputIds
             }, async () => {
-                await this.getTransactionHistory();
-                await this.getAssetsHistory();
-                await this.getNFTsHistory();
+                // TO DO This need permanode
+                // await this.getTransactionHistory();
+                await this.getOutputs();
+                await this.getNativeTokens();
+                await this.getNFTs();
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
@@ -131,6 +142,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const networkId = this.props.match.params.network;
+
         return (
             <div className="addr">
                 <div className="wrapper">
@@ -265,7 +278,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                             <Transaction
                                                                 key={transaction?.messageId}
                                                                 messageId={transaction?.messageId}
-                                                                network={this.props.match.params.network}
+                                                                network={networkId}
                                                                 inputs={transaction?.inputs.length}
                                                                 outputs={transaction?.outputs.length}
                                                                 messageTangleStatus={transaction?.messageTangleStatus}
@@ -278,7 +291,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 <Transaction
                                                                     key={transaction?.relatedSpentTransaction.messageId}
                                                                     messageId={transaction?.relatedSpentTransaction.messageId}
-                                                                    network={this.props.match.params.network}
+                                                                    network={networkId}
                                                                     inputs={transaction?.relatedSpentTransaction.inputs.length}
                                                                     outputs={transaction?.relatedSpentTransaction.outputs.length}
                                                                     messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
@@ -300,7 +313,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                         <Transaction
                                                             key={transaction?.messageId}
                                                             messageId={transaction?.messageId}
-                                                            network={this.props.match.params.network}
+                                                            network={networkId}
                                                             inputs={transaction?.inputs.length}
                                                             outputs={transaction?.outputs.length}
                                                             messageTangleStatus={transaction?.messageTangleStatus}
@@ -312,7 +325,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                             <Transaction
                                                                 key={transaction?.relatedSpentTransaction.messageId}
                                                                 messageId={transaction?.relatedSpentTransaction.messageId}
-                                                                network={this.props.match.params.network}
+                                                                network={networkId}
                                                                 inputs={transaction?.relatedSpentTransaction.inputs.length}
                                                                 outputs={transaction?.relatedSpentTransaction.outputs.length}
                                                                 messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
@@ -334,133 +347,132 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                         const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
                                                         // Check if last page
                                                         const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
-                                                        this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
-                                                        .catch(err => console.error(err));
+                                                        this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex).catch(err => console.error(err));
                                                 })}
                                         />
                                     </div>)}
-                                <div className="section transaction--section">
-                                    <div className="section--header row space-between">
-                                        <div className="row middle">
-                                            <h2>
-                                                Assets in Wallet ({this.assetHistory.length})
-                                            </h2>
-                                            <Modal icon={ModalIcon.Info} data={messageJSON} />
-                                        </div>
-                                        {this.state.assetStatus && (
-                                            <div className="margin-t-s middle row">
-                                                {this.state.assetStatusBusy && (<Spinner />)}
-                                                <p className="status">
-                                                    {this.state.assetStatus}
-                                                </p>
+                                    <div className="section transaction--section">
+                                        <div className="section--header row space-between">
+                                            <div className="row middle">
+                                                <h2>
+                                                    Assets in Wallet ({this.state.tokens?.length})
+                                                </h2>
+                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
                                             </div>
-                                        )}
-                                    </div>
-                                    <table className="transaction--table">
-                                        <thead>
-                                            <tr>
-                                                <th>Asset</th>
-                                                <th>Symbol</th>
-                                                <th>Quantity</th>
-                                                <th>Price</th>
-                                                <th>Value</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            { this.currentPageAssets.map((asset, k) =>
+                                            {this.state.assetStatus && (
+                                                <div className="margin-t-s middle row">
+                                                    {this.state.assetStatusBusy && (<Spinner />)}
+                                                    <p className="status">
+                                                        {this.state.assetStatus}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <table className="transaction--table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Asset</th>
+                                                    <th>Symbol</th>
+                                                    <th>Quantity</th>
+                                                    <th>Price</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                { this.currentTokensPage?.map((token, k) =>
+                                                    (
+                                                        <React.Fragment key={`${token?.name}${k}`}>
+                                                            <Asset
+                                                                key={k}
+                                                                name={token?.name}
+                                                                network={networkId}
+                                                                symbol={token?.symbol}
+                                                                amount={token.amount}
+                                                                price={token?.price}
+                                                                value={token?.value}
+                                                                tableFormat={true}
+                                                            />
+                                                        </React.Fragment>
+                                                    ))}
+                                            </tbody>
+                                        </table>
+
+                                        {/* Only visible in mobile -- Card assets*/}
+                                        <div className="transaction-cards">
+                                            {this.currentTokensPage?.map((token, k) =>
                                                 (
-                                                    <React.Fragment key={`${asset?.asset}${k}`}>
+                                                    <React.Fragment key={`${token?.name}${k}`}>
                                                         <Asset
                                                             key={k}
-                                                            asset={asset?.asset}
-                                                            network={this.props.match.params.network}
-                                                            symbol={asset?.symbol}
-                                                            quantity={asset?.quantity}
-                                                            price={asset?.price}
-                                                            value={asset?.value}
-                                                            tableFormat={true}
+                                                            name={token?.name}
+                                                            network={networkId}
+                                                            symbol={token?.symbol}
+                                                            amount={token?.amount}
+                                                            price={token?.price}
+                                                            value={token?.value}
                                                         />
                                                     </React.Fragment>
                                                 ))}
-                                        </tbody>
-                                    </table>
-
-                                    {/* Only visible in mobile -- Card assets*/}
-                                    <div className="transaction-cards">
-                                        {this.currentPageAssets.map((asset, k) =>
+                                        </div>
+                                        <Pagination
+                                            currentPage={this.state.tokenPageNumber}
+                                            totalCount={this.state.tokens?.length ?? 0}
+                                            pageSize={Addr.TOKENS_PAGE_SIZE}
+                                            siblingsCount={1}
+                                            onPageChange={page =>
+                                                this.setState({ tokenPageNumber: page },
+                                                    () => {
+                                                        const firstPageIndex = (this.state.tokenPageNumber - 1) * Addr.TOKENS_PAGE_SIZE;
+                                                        // Check if last page
+                                                        const lastPageIndex = (this.state.tokenPageNumber === Math.ceil((this.state.tokens?.length ?? 0) / Addr.TOKENS_PAGE_SIZE)) ? this.state.tokens?.length : firstPageIndex + Addr.TOKENS_PAGE_SIZE;
+                                                })}
+                                        />
+                                    </div>
+                                    <div className="section transaction--section no-border">
+                                        <div className="section--header row space-between">
+                                            <div className="row middle">
+                                                <h2>
+                                                    NFTs in Wallet ({this.state.nfts?.length})
+                                                </h2>
+                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                            </div>
+                                            {this.state.nftStatus && (
+                                                <div className="margin-t-s middle row">
+                                                    {this.state.nftStatusBusy && (<Spinner />)}
+                                                    <p className="status">
+                                                        {this.state.nftStatus}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="nft--section">
+                                            { this.currentNftsPage?.map((nft, k) =>
                                             (
-                                                <React.Fragment key={`${asset?.asset}${k}`}>
-                                                    <Asset
+                                                <React.Fragment key={`${nft.id}${k}`}>
+                                                    <Nft
                                                         key={k}
-                                                        asset={asset?.asset}
-                                                        network={this.props.match.params.network}
-                                                        symbol={asset?.symbol}
-                                                        quantity={asset?.quantity}
-                                                        price={asset?.price}
-                                                        value={asset?.value}
+                                                        id={nft.id}
+                                                        name={nft.name}
+                                                        network={networkId}
+                                                        image={nft.image}
                                                     />
                                                 </React.Fragment>
                                             ))}
-                                    </div>
-                                    <Pagination
-                                        currentPage={this.state.assetCurrentPage}
-                                        totalCount={this.assetHistory.length}
-                                        pageSize={this.state.assetPageSize}
-                                        siblingsCount={1}
-                                        onPageChange={page =>
-                                            this.setState({ assetCurrentPage: page },
-                                                () => {
-                                                    const firstPageIndex = (this.state.assetCurrentPage - 1) * this.state.assetPageSize;
-                                                    // Check if last page
-                                                    const lastPageIndex = (this.state.assetCurrentPage === Math.ceil(this.assetHistory.length / this.state.assetPageSize)) ? this.assetHistory.length : firstPageIndex + this.state.assetPageSize;
-                                            })}
-                                    />
-                                </div>
-                                <div className="section transaction--section no-border">
-                                    <div className="section--header row space-between">
-                                        <div className="row middle">
-                                            <h2>
-                                                NFTs in Wallet ({this.nftHistory.length})
-                                            </h2>
-                                            <Modal icon={ModalIcon.Info} data={messageJSON} />
                                         </div>
-                                        {this.state.nftStatus && (
-                                            <div className="margin-t-s middle row">
-                                                {this.state.nftStatusBusy && (<Spinner />)}
-                                                <p className="status">
-                                                    {this.state.nftStatus}
-                                                </p>
-                                            </div>
-                                        )}
+                                        <Pagination
+                                            currentPage={this.state.nftPageNumber}
+                                            totalCount={this.state.nfts?.length ?? 0}
+                                            pageSize={Addr.NFTS_PAGE_SIZE}
+                                            siblingsCount={1}
+                                            onPageChange={page =>
+                                                this.setState({ nftPageNumber: page },
+                                                    () => {
+                                                        const firstPageIndex = (this.state.nftPageNumber - 1) * Addr.NFTS_PAGE_SIZE;
+                                                        // Check if last page
+                                                        const lastPageIndex = (this.state.nftPageNumber === Math.ceil((this.state.nfts?.length ?? 0) / Addr.NFTS_PAGE_SIZE)) ? this.state.nfts?.length : firstPageIndex + Addr.NFTS_PAGE_SIZE;
+                                                })}
+                                        />
                                     </div>
-                                    <div className="nft--section">
-                                        { this.currentPageNFTs.map((nfts, k) =>
-                                        (
-                                            <React.Fragment key={`${nfts?.tokenID}${k}`}>
-                                                <NFT
-                                                    key={k}
-                                                    image={nfts?.image}
-                                                    tokenName={nfts?.tokenName}
-                                                    tokenID={nfts?.tokenID}
-                                                    network={this.props.match.params.network}
-                                                />
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
-                                    <Pagination
-                                        currentPage={this.state.nftCurrentPage}
-                                        totalCount={this.nftHistory.length}
-                                        pageSize={this.state.nftPageSize}
-                                        siblingsCount={1}
-                                        onPageChange={page =>
-                                            this.setState({ nftCurrentPage: page },
-                                                () => {
-                                                    const firstPageIndex = (this.state.nftCurrentPage - 1) * this.state.nftPageSize;
-                                                    // Check if last page
-                                                    const lastPageIndex = (this.state.nftCurrentPage === Math.ceil(this.nftHistory.length / this.state.nftPageSize)) ? this.nftHistory.length : firstPageIndex + this.state.nftPageSize;
-                                            })}
-                                    />
-                                </div>
                             </div>
                         </div>
                     </div >
@@ -469,6 +481,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         );
     }
 
+    // TO DO DRY these three into one function
     private get currentPageTransactions() {
         const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
         const lastPageIndex = firstPageIndex + this.state.pageSize;
@@ -476,115 +489,22 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         return this.txsHistory.slice(firstPageIndex, lastPageIndex);
     }
 
-    private get currentPageAssets() {
-        const firstPageIndex = (this.state.assetCurrentPage - 1) * this.state.assetPageSize;
-        const lastPageIndex = firstPageIndex + this.state.assetPageSize;
+    private get currentTokensPage() {
+        const from = (this.state.tokenPageNumber - 1) * Addr.TOKENS_PAGE_SIZE;
+        const to = from + Addr.TOKENS_PAGE_SIZE;
 
-        return this.assetHistory.slice(firstPageIndex, lastPageIndex);
+        return this.state.tokens?.slice(from, to);
     }
 
-    private get currentPageNFTs() {
-        const firstPageIndex = (this.state.nftCurrentPage - 1) * this.state.nftPageSize;
-        const lastPageIndex = firstPageIndex + this.state.nftPageSize;
+    private get currentNftsPage() {
+        const from = (this.state.nftPageNumber - 1) * Addr.NFTS_PAGE_SIZE;
+        const to = from + Addr.NFTS_PAGE_SIZE;
 
-        return this.nftHistory.slice(firstPageIndex, lastPageIndex);
+        return this.state.nfts?.slice(from, to);
     }
 
     private get txsHistory() {
         return this.state.transactionHistory?.transactionHistory?.transactions ?? [];
-    }
-
-    private get assetHistory() {
-        return [
-            {
-                asset: "Dogey Inu",
-                symbol: "DINU",
-                quantity: 1322212,
-                price: 10303925,
-                value: 363960,
-                network: "alphanet-1",
-                tableFormat: true
-            },
-            {
-                asset: "Dogey Inu",
-                symbol: "DINU",
-                quantity: 1322212,
-                price: 10303925,
-                value: 363960,
-                network: "alphanet-1",
-                tableFormat: true
-            }
-        ];
-    }
-
-    private get nftHistory() {
-        return [
-            {
-                image: "https://s3-alpha-sig.figma.com/img/7ee2/1c44/513c2eecf385851f2e3404fd252f3ada?Expires=1650240000&Signature=GB12NLwh~TJMo-kjwimpL0f69PN8OpJ3BtQFH-InK6CIZTq1VkHPEgNQ4YbxCwxMaW907mD2UQvGaomvRFd50byPp3H0MMq3w7FA3EUKWe-Y81jlQTMW4lsz~D4X5OIrqZztqd051D-ii1MMIV8S5Ck1aOJzZbN1vJQkxyZ0BsnJLjiH0M~sBJ8fg6OrB4PWQaOXXkcry2rddbJh3rX4KFMdXVSnk~RGQUdNXI0K6MZaofwbRrPllbNIrm6JoHBfjuwSmkMVdnN3mExv0ClbPu8fA6tHJbh4x7EKe30nUS4Wq8AesDI4yCQ7wkXHKr0OtOzuRFcPHP3Wh2F4p-gPLA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 43792
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/6ded/2ee1/ae99a8eca45babc4b90cef71c24f663e?Expires=1650240000&Signature=FahPYNpfU4lZ08GMb6eaHwUnp0uNi8SUbLj0i4k9dItoN8R5OsZd9R45uJIpaht0Kxra2W3f9nn3AKepVCNk9ixdh~QZgaQStdn8mee7JeLt4dcl2dKlHHFxqStd3kvnawrpEkUJWxAbz0bFr7B4AEi2ancRgEIIg-hHroOhfPAyuiIKvSIHjk1iyuaktGPtplaps8bVN1WNFQi7Jt8crvlxr5m~ROxFCa4~RE0E7WxYVVy6iWo-Ts9s8XAPCA1OOEj9UBTPD6gAIGd4XjE9iSi~2GOohqCGp-H-neZYm1F1pUe1T9OJBzhVAWGeforVjwn36-ejVGqqlS~0tDkr5g__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 73355
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/9abe/b4d7/1a14ea658041bddc55c11e032e44331e?Expires=1650240000&Signature=P50SOA24dQytW30P0nAa-pxrmFST6rIDQXIX8OjU1QEviKPVwsd3-MuCIELg-hTEdeWM5GH53dgu7v9~ZXe-j0DRtVQXFHp6vtyQWHOrhGe5J8swzn~AIExDKKHcX8Fup3p-n6ZYXIYRqbfAbjvJnqyNO9CioL~UHxDgLl7oGR0dZhXnXdyo-I3Izv3wkIk5Iad7yG~R5b7Egg73IfkpWr47dxy9CqxdpdbBMBEra6vwmDVzH8OecIUgPP3Wx~XmnYwt~zaa-UcAOA12SC5bMXleoWSBGU1sTG9oNnk0WXGUnaHW38mrIeZvr8~HmH37QPf1SqTuq8hWhCH3kFnamA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 23355
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/1661/31ac/578fa42b700f897791f592c00db6d63a?Expires=1650240000&Signature=GM3kJ5fA-GkQ1xMraS3tQGVfVFUIWAT618qcbwPRoWaSlv5eDl7HXrYNs70nMPhgitoEJRtdNVwe4u4~F4vD83fdiyXskmJ0Gz0qXhvPhy5iAgwC8AeslJpaK4xra4bAhbVqMACa7LLsDbkCd0fK2QYlVX-Z1NHPpfY0SKBmvHuodePEmEu381oaNEArQsEz97pAPbd~PWmAaXP42jXI9dlZ~f-ktjfvo5WxPSfvL5H2q9KNZ7rmPi5ZNw7cqAAwFHgh4O3uPCjFfASOOD56om3UXdxEChb-nG9sA-UfYfAytgc36ehOfubS0Nee2j3XB95IAQKgFgLDPRy2rGNOrQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 23433
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/1661/31ac/578fa42b700f897791f592c00db6d63a?Expires=1650240000&Signature=GM3kJ5fA-GkQ1xMraS3tQGVfVFUIWAT618qcbwPRoWaSlv5eDl7HXrYNs70nMPhgitoEJRtdNVwe4u4~F4vD83fdiyXskmJ0Gz0qXhvPhy5iAgwC8AeslJpaK4xra4bAhbVqMACa7LLsDbkCd0fK2QYlVX-Z1NHPpfY0SKBmvHuodePEmEu381oaNEArQsEz97pAPbd~PWmAaXP42jXI9dlZ~f-ktjfvo5WxPSfvL5H2q9KNZ7rmPi5ZNw7cqAAwFHgh4O3uPCjFfASOOD56om3UXdxEChb-nG9sA-UfYfAytgc36ehOfubS0Nee2j3XB95IAQKgFgLDPRy2rGNOrQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 23478
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/7ee2/1c44/513c2eecf385851f2e3404fd252f3ada?Expires=1650240000&Signature=GB12NLwh~TJMo-kjwimpL0f69PN8OpJ3BtQFH-InK6CIZTq1VkHPEgNQ4YbxCwxMaW907mD2UQvGaomvRFd50byPp3H0MMq3w7FA3EUKWe-Y81jlQTMW4lsz~D4X5OIrqZztqd051D-ii1MMIV8S5Ck1aOJzZbN1vJQkxyZ0BsnJLjiH0M~sBJ8fg6OrB4PWQaOXXkcry2rddbJh3rX4KFMdXVSnk~RGQUdNXI0K6MZaofwbRrPllbNIrm6JoHBfjuwSmkMVdnN3mExv0ClbPu8fA6tHJbh4x7EKe30nUS4Wq8AesDI4yCQ7wkXHKr0OtOzuRFcPHP3Wh2F4p-gPLA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 43792
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/6ded/2ee1/ae99a8eca45babc4b90cef71c24f663e?Expires=1650240000&Signature=FahPYNpfU4lZ08GMb6eaHwUnp0uNi8SUbLj0i4k9dItoN8R5OsZd9R45uJIpaht0Kxra2W3f9nn3AKepVCNk9ixdh~QZgaQStdn8mee7JeLt4dcl2dKlHHFxqStd3kvnawrpEkUJWxAbz0bFr7B4AEi2ancRgEIIg-hHroOhfPAyuiIKvSIHjk1iyuaktGPtplaps8bVN1WNFQi7Jt8crvlxr5m~ROxFCa4~RE0E7WxYVVy6iWo-Ts9s8XAPCA1OOEj9UBTPD6gAIGd4XjE9iSi~2GOohqCGp-H-neZYm1F1pUe1T9OJBzhVAWGeforVjwn36-ejVGqqlS~0tDkr5g__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 73355
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/9abe/b4d7/1a14ea658041bddc55c11e032e44331e?Expires=1650240000&Signature=P50SOA24dQytW30P0nAa-pxrmFST6rIDQXIX8OjU1QEviKPVwsd3-MuCIELg-hTEdeWM5GH53dgu7v9~ZXe-j0DRtVQXFHp6vtyQWHOrhGe5J8swzn~AIExDKKHcX8Fup3p-n6ZYXIYRqbfAbjvJnqyNO9CioL~UHxDgLl7oGR0dZhXnXdyo-I3Izv3wkIk5Iad7yG~R5b7Egg73IfkpWr47dxy9CqxdpdbBMBEra6vwmDVzH8OecIUgPP3Wx~XmnYwt~zaa-UcAOA12SC5bMXleoWSBGU1sTG9oNnk0WXGUnaHW38mrIeZvr8~HmH37QPf1SqTuq8hWhCH3kFnamA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 23355
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/1661/31ac/578fa42b700f897791f592c00db6d63a?Expires=1650240000&Signature=GM3kJ5fA-GkQ1xMraS3tQGVfVFUIWAT618qcbwPRoWaSlv5eDl7HXrYNs70nMPhgitoEJRtdNVwe4u4~F4vD83fdiyXskmJ0Gz0qXhvPhy5iAgwC8AeslJpaK4xra4bAhbVqMACa7LLsDbkCd0fK2QYlVX-Z1NHPpfY0SKBmvHuodePEmEu381oaNEArQsEz97pAPbd~PWmAaXP42jXI9dlZ~f-ktjfvo5WxPSfvL5H2q9KNZ7rmPi5ZNw7cqAAwFHgh4O3uPCjFfASOOD56om3UXdxEChb-nG9sA-UfYfAytgc36ehOfubS0Nee2j3XB95IAQKgFgLDPRy2rGNOrQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 23433
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/1661/31ac/578fa42b700f897791f592c00db6d63a?Expires=1650240000&Signature=GM3kJ5fA-GkQ1xMraS3tQGVfVFUIWAT618qcbwPRoWaSlv5eDl7HXrYNs70nMPhgitoEJRtdNVwe4u4~F4vD83fdiyXskmJ0Gz0qXhvPhy5iAgwC8AeslJpaK4xra4bAhbVqMACa7LLsDbkCd0fK2QYlVX-Z1NHPpfY0SKBmvHuodePEmEu381oaNEArQsEz97pAPbd~PWmAaXP42jXI9dlZ~f-ktjfvo5WxPSfvL5H2q9KNZ7rmPi5ZNw7cqAAwFHgh4O3uPCjFfASOOD56om3UXdxEChb-nG9sA-UfYfAytgc36ehOfubS0Nee2j3XB95IAQKgFgLDPRy2rGNOrQ__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 23478
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/7ee2/1c44/513c2eecf385851f2e3404fd252f3ada?Expires=1650240000&Signature=GB12NLwh~TJMo-kjwimpL0f69PN8OpJ3BtQFH-InK6CIZTq1VkHPEgNQ4YbxCwxMaW907mD2UQvGaomvRFd50byPp3H0MMq3w7FA3EUKWe-Y81jlQTMW4lsz~D4X5OIrqZztqd051D-ii1MMIV8S5Ck1aOJzZbN1vJQkxyZ0BsnJLjiH0M~sBJ8fg6OrB4PWQaOXXkcry2rddbJh3rX4KFMdXVSnk~RGQUdNXI0K6MZaofwbRrPllbNIrm6JoHBfjuwSmkMVdnN3mExv0ClbPu8fA6tHJbh4x7EKe30nUS4Wq8AesDI4yCQ7wkXHKr0OtOzuRFcPHP3Wh2F4p-gPLA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 43792
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/6ded/2ee1/ae99a8eca45babc4b90cef71c24f663e?Expires=1650240000&Signature=FahPYNpfU4lZ08GMb6eaHwUnp0uNi8SUbLj0i4k9dItoN8R5OsZd9R45uJIpaht0Kxra2W3f9nn3AKepVCNk9ixdh~QZgaQStdn8mee7JeLt4dcl2dKlHHFxqStd3kvnawrpEkUJWxAbz0bFr7B4AEi2ancRgEIIg-hHroOhfPAyuiIKvSIHjk1iyuaktGPtplaps8bVN1WNFQi7Jt8crvlxr5m~ROxFCa4~RE0E7WxYVVy6iWo-Ts9s8XAPCA1OOEj9UBTPD6gAIGd4XjE9iSi~2GOohqCGp-H-neZYm1F1pUe1T9OJBzhVAWGeforVjwn36-ejVGqqlS~0tDkr5g__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 73355
-            },
-            {
-                image: "https://s3-alpha-sig.figma.com/img/9abe/b4d7/1a14ea658041bddc55c11e032e44331e?Expires=1650240000&Signature=P50SOA24dQytW30P0nAa-pxrmFST6rIDQXIX8OjU1QEviKPVwsd3-MuCIELg-hTEdeWM5GH53dgu7v9~ZXe-j0DRtVQXFHp6vtyQWHOrhGe5J8swzn~AIExDKKHcX8Fup3p-n6ZYXIYRqbfAbjvJnqyNO9CioL~UHxDgLl7oGR0dZhXnXdyo-I3Izv3wkIk5Iad7yG~R5b7Egg73IfkpWr47dxy9CqxdpdbBMBEra6vwmDVzH8OecIUgPP3Wx~XmnYwt~zaa-UcAOA12SC5bMXleoWSBGU1sTG9oNnk0WXGUnaHW38mrIeZvr8~HmH37QPf1SqTuq8hWhCH3kFnamA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-                tokenName: "Rarebits",
-                tokenID: 23355
-            }
-        ];
     }
 
     private async getTransactionHistory() {
@@ -626,27 +546,72 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         );
     }
 
-    private async getAssetsHistory() {
-        /**
-         * Fetch assets history here
-         */
-        /**
-         * After successfully fetching history set asset status and busy status
-         */
+    private async getOutputs() {
+        if (!this.state.outputIds || this.state.outputIds?.length == 0) return;
+        const networkId = this.props.match.params.network;
+        const outputResponses = [];
+
+        for (let outputId of this.state.outputIds) {
+            const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
+            if (outputDetails) {
+                outputResponses.push(outputDetails);
+            }
+        }
+
+        this.setState({ outputs: outputResponses });
+    }
+
+    private async getNativeTokens() {
+        if (!this.state.outputs || this.state.outputs?.length == 0) return;
+        let tokens: TokenDetails[] = [];
+
+        this.state.outputs?.forEach((output) => {
+            if (!output.isSpent && output.output.type === BASIC_OUTPUT_TYPE && (output.output as IBasicOutput).nativeTokens.length > 0) {
+                const basicOutput = output.output as IBasicOutput;
+                for (let token of basicOutput.nativeTokens) {
+                    tokens.push({
+                        name: token.id,
+                        amount: Number.parseInt(token.amount)
+                    });
+                }
+            }
+        });
+
         this.setState({
+            tokens,
             assetStatus: "",
             assetStatusBusy: false
         });
     }
 
-    private async getNFTsHistory() {
-        /**
-         * Fetch NFTs history here
-         */
-        /**
-         * After successfully fetching history set NFT status and busy status
-         */
+    private async getNFTs() {
+        if (!this.state.bech32AddressDetails?.bech32) return;
+        const networkId = this.props.match.params.network;
+
+        let nfts: NftDetails[] = [];
+
+        const nftOutputs = await this._tangleCacheService.nfts({
+            network: networkId,
+            address: this.state.bech32AddressDetails?.bech32
+        });
+
+        if (nftOutputs?.outputs && nftOutputs?.outputs?.items.length > 0) {
+            for (let outputId of nftOutputs.outputs.items) {
+                const output = await this._tangleCacheService.outputDetails(networkId, outputId);
+                if (output) {
+                    if (!output.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
+                        const nftOutput = output.output as INftOutput;
+                        nfts.push({
+                            id: nftOutput.nftId,
+                            image: "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png"
+                        })
+                    }
+                }
+            }
+        }
+
         this.setState({
+            nfts,
             nftStatus: "",
             nftStatusBusy: false
         });

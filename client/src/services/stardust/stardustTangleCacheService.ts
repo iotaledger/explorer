@@ -9,6 +9,7 @@ import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetai
 import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/stardust/ITransactionsDetailsResponse";
 import { CHRYSALIS, OG, STARDUST } from "../../models/db/protocolVersion";
 import { ICachedTransaction } from "../../models/ICachedTransaction";
@@ -17,6 +18,7 @@ import { OgApiStreamsV0Client } from "../og/ogApiStreamsV0Client";
 import { TangleCacheService } from "../tangleCacheService";
 import { StardustApiClient } from "./stardustApiClient";
 import { StardustApiStreamsV0Client } from "./stardustApiStreamsV0Client";
+import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 
 /**
  * Cache tangle requests for stardust.
@@ -478,22 +480,9 @@ export class StardustTangleCacheService extends TangleCacheService {
                                 cached: Date.now()
                             };
                         }
-                    } else if (this._networkProtocols[network] === CHRYSALIS) {
-                        const api = new ChrysalisApiStreamsV0Client(network);
-
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const result = await mamFetchChrysalis(api as any, root, mode, key);
-
-                        if (result) {
-                            streamsV0Cache[root] = {
-                                payload: result.message,
-                                nextRoot: result.nextRoot,
-                                tag: result.tag,
-                                cached: Date.now()
-                            };
-                        }
-                    } else if (this._networkProtocols[network] === STARDUST) {
-                        const api = new StardustApiStreamsV0Client(network);
+                    } else if (this._networkProtocols[network] === CHRYSALIS || this._networkProtocols[network] === STARDUST) {
+                        const api = this._networkProtocols[network] === CHRYSALIS ? new ChrysalisApiStreamsV0Client(network)
+                            : new StardustApiStreamsV0Client(network);
 
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const result = await mamFetchChrysalis(api as any, root, mode, key);
@@ -711,15 +700,16 @@ export class StardustTangleCacheService extends TangleCacheService {
         request: ITransactionsDetailsRequest,
         skipCache: boolean = false
     ): Promise<ITransactionsDetailsResponse | undefined> {
-        if (!this._stardustSearchCache[request.network][`${request.address}--transaction-history`]
-            ?.data?.transactionHistory || skipCache) {
+        const addressTransactionHistoryCacheEntry =
+            this._stardustSearchCache[request.network][`${request.address}--transaction-history`];
+
+        if (!addressTransactionHistoryCacheEntry?.data?.transactionHistory || skipCache) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
             const response = await apiClient.transactionsDetails(request);
 
             if (response?.transactionHistory?.transactions) {
-                const cachedTransaction =
-                    this._stardustSearchCache[request.network][`${request.address}--transaction-history`]
-                        ?.data?.transactionHistory?.transactionHistory.transactions ?? [];
+                const cachedTransaction = addressTransactionHistoryCacheEntry?.data
+                    ?.transactionHistory?.transactionHistory.transactions ?? [];
 
                 this._stardustSearchCache[request.network][`${request.address}--transaction-history`] = {
                     data: {
@@ -752,6 +742,23 @@ export class StardustTangleCacheService extends TangleCacheService {
             ?.transactionHistory;
     }
 
+    /**
+     * Get the NFT outputs.
+     * @param request The request.
+     * @param skipCache Skip looking in the cache.
+     * @returns The NFT outputs response.
+     */
+    public async nfts(
+        request: INftDetailsRequest,
+        skipCache: boolean = false
+    ): Promise<INftOutputsResponse | undefined> {
+        const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+
+        // TO DO Add cache
+        const nftOutputs = await apiClient.nftOutputs(request);
+
+        return nftOutputs;
+    }
 
     /**
      * Check all the cached items and remove any stale items.
