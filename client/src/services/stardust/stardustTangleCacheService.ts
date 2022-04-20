@@ -752,12 +752,21 @@ export class StardustTangleCacheService extends TangleCacheService {
         request: INftOutputsRequest,
         skipCache: boolean = false
     ): Promise<INftOutputsResponse | undefined> {
-        const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+        const cacheEntry = this._stardustSearchCache[request.network][`${request.address}--nft-outputs`];
 
-        // TO DO Add cache
-        const nftOutputs = await apiClient.nftOutputs(request);
+        if (!cacheEntry?.data?.outputs || skipCache) {
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+            const nftOutputs = await apiClient.nftOutputs(request);
 
-        return nftOutputs;
+            this._stardustSearchCache[request.network][`${request.address}--nft-outputs`] = {
+                data: { outputs: nftOutputs.outputs },
+                cached: Date.now()
+            }
+        }
+
+        return {
+            outputs: this._stardustSearchCache[request.network][`${request.address}--nft-outputs`]?.data?.outputs
+        }
     }
 
     /**
