@@ -143,6 +143,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      */
     public render(): ReactNode {
         const networkId = this.props.match.params.network;
+        const hasNativeTokens = this.state.tokens && this.state.tokens.length > 0;
+        const hasNfts = this.state.nfts && this.state.nfts.length > 0;
 
         return (
             <div className="addr">
@@ -202,34 +204,38 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 )}
                                         </div>
                                     </div>
-                                    <div className="asset-cards row">
-                                        <div className="section--assets">
-                                            <div className="inner--asset">
-                                                <div className="section--data assets">
-                                                    <span className="label">Assets in wallet (12)</span>
-                                                    <span className="value">{this.state.balance}</span>
+                                    {(hasNativeTokens || hasNfts) &&
+                                        <div className="asset-cards row">
+                                            {hasNativeTokens &&
+                                                <div className="section--assets">
+                                                    <div className="inner--asset">
+                                                        <div className="section--data assets">
+                                                            <span className="label">Assets in wallet {this.state.tokens?.length}</span>
+                                                        </div>
+                                                        <img
+                                                            src={chevronRightGray}
+                                                            alt="bundle"
+                                                            className="svg-navigation"
+                                                        />
+                                                    </div>
                                                 </div>
-                                                <img
-                                                    src={chevronRightGray}
-                                                    alt="bundle"
-                                                    className="svg-navigation"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="section--NFT">
-                                            <div className="inner--asset">
-                                                <div className="section--data assets">
-                                                    <span className="label">NFTs in wallet (37)</span>
-                                                    <span className="value">-</span>
+                                            }
+                                            {hasNfts &&
+                                                <div className="section--NFT">
+                                                    <div className="inner--asset">
+                                                        <div className="section--data assets">
+                                                            <span className="label">NFTs in wallet {this.state.nfts?.length}</span>
+                                                        </div>
+                                                        <img
+                                                            src={chevronRightGray}
+                                                            alt="bundle"
+                                                            className="svg-navigation"
+                                                        />
+                                                    </div>
                                                 </div>
-                                                <img
-                                                    src={chevronRightGray}
-                                                    alt="bundle"
-                                                    className="svg-navigation"
-                                                />
-                                            </div>
+                                            }
                                         </div>
-                                    </div>
+                                    }
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
                                     <div className="section">
@@ -351,6 +357,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 })}
                                         />
                                     </div>)}
+                                {hasNativeTokens &&
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
                                             <div className="row middle">
@@ -380,39 +387,37 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             </thead>
                                             <tbody>
                                                 { this.currentTokensPage?.map((token, k) =>
-                                                    (
-                                                        <React.Fragment key={`${token?.name}${k}`}>
-                                                            <Asset
-                                                                key={k}
-                                                                name={token?.name}
-                                                                network={networkId}
-                                                                symbol={token?.symbol}
-                                                                amount={token.amount}
-                                                                price={token?.price}
-                                                                value={token?.value}
-                                                                tableFormat={true}
-                                                            />
-                                                        </React.Fragment>
-                                                    ))}
+                                                <React.Fragment key={`${token?.name}${k}`}>
+                                                    <Asset
+                                                        key={k}
+                                                        name={token?.name}
+                                                        network={networkId}
+                                                        symbol={token?.symbol}
+                                                        amount={token.amount}
+                                                        price={token?.price}
+                                                        value={token?.value}
+                                                        tableFormat={true}
+                                                    />
+                                                </React.Fragment>
+                                                )}
                                             </tbody>
                                         </table>
 
                                         {/* Only visible in mobile -- Card assets*/}
                                         <div className="transaction-cards">
                                             {this.currentTokensPage?.map((token, k) =>
-                                                (
-                                                    <React.Fragment key={`${token?.name}${k}`}>
-                                                        <Asset
-                                                            key={k}
-                                                            name={token?.name}
-                                                            network={networkId}
-                                                            symbol={token?.symbol}
-                                                            amount={token?.amount}
-                                                            price={token?.price}
-                                                            value={token?.value}
-                                                        />
-                                                    </React.Fragment>
-                                                ))}
+                                            <React.Fragment key={`${token?.name}${k}`}>
+                                                <Asset
+                                                    key={k}
+                                                    name={token?.name}
+                                                    network={networkId}
+                                                    symbol={token?.symbol}
+                                                    amount={token?.amount}
+                                                    price={token?.price}
+                                                    value={token?.value}
+                                                />
+                                            </React.Fragment>
+                                            )}
                                         </div>
                                         <Pagination
                                             currentPage={this.state.tokenPageNumber}
@@ -420,14 +425,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             pageSize={Addr.TOKENS_PAGE_SIZE}
                                             siblingsCount={1}
                                             onPageChange={page =>
-                                                this.setState({ tokenPageNumber: page },
-                                                    () => {
-                                                        const firstPageIndex = (this.state.tokenPageNumber - 1) * Addr.TOKENS_PAGE_SIZE;
-                                                        // Check if last page
-                                                        const lastPageIndex = (this.state.tokenPageNumber === Math.ceil((this.state.tokens?.length ?? 0) / Addr.TOKENS_PAGE_SIZE)) ? this.state.tokens?.length : firstPageIndex + Addr.TOKENS_PAGE_SIZE;
-                                                })}
+                                                this.setState({ tokenPageNumber: page })}
                                         />
                                     </div>
+                                }
+                                {hasNfts &&
                                     <div className="section transaction--section no-border">
                                         <div className="section--header row space-between">
                                             <div className="row middle">
@@ -447,32 +449,26 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </div>
                                         <div className="nft--section">
                                             { this.currentNftsPage?.map((nft, k) =>
-                                            (
-                                                <React.Fragment key={`${nft.id}${k}`}>
-                                                    <Nft
-                                                        key={k}
-                                                        id={nft.id}
-                                                        name={nft.name}
-                                                        network={networkId}
-                                                        image={nft.image}
-                                                    />
-                                                </React.Fragment>
-                                            ))}
+                                            <React.Fragment key={`${nft.id}${k}`}>
+                                                <Nft
+                                                    key={k}
+                                                    id={nft.id}
+                                                    name={nft.name}
+                                                    network={networkId}
+                                                    image={nft.image}
+                                                />
+                                            </React.Fragment>
+                                            )}
                                         </div>
                                         <Pagination
                                             currentPage={this.state.nftPageNumber}
                                             totalCount={this.state.nfts?.length ?? 0}
                                             pageSize={Addr.NFTS_PAGE_SIZE}
                                             siblingsCount={1}
-                                            onPageChange={page =>
-                                                this.setState({ nftPageNumber: page },
-                                                    () => {
-                                                        const firstPageIndex = (this.state.nftPageNumber - 1) * Addr.NFTS_PAGE_SIZE;
-                                                        // Check if last page
-                                                        const lastPageIndex = (this.state.nftPageNumber === Math.ceil((this.state.nfts?.length ?? 0) / Addr.NFTS_PAGE_SIZE)) ? this.state.nfts?.length : firstPageIndex + Addr.NFTS_PAGE_SIZE;
-                                                })}
+                                            onPageChange={page => this.setState({ nftPageNumber: page })}
                                         />
                                     </div>
+                                }
                             </div>
                         </div>
                     </div >
