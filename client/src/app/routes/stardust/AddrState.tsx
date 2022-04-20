@@ -6,16 +6,40 @@ import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 
 // TO DO Extract
 export interface TokenDetails {
+    /**
+     * Token name.
+     */
     name: string;
+    /**
+     * Token symbol.
+     */
     symbol?: string;
+    /**
+     * Token held amount.
+     */
     amount: number;
+    /**
+     * Token price.
+     */
     price?: number;
+    /**
+     * Token total value held.
+     */
     value?: number;
 }
 
 export interface NftDetails {
+    /**
+     * NFT image.
+     */
     image?: string;
+    /**
+     * NFT name.
+     */
     name?: string;
+    /**
+     * NFT id.
+     */
     id: string;
 }
 
