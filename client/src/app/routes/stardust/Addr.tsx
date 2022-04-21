@@ -29,7 +29,9 @@ import messageJSON from "./../../../assets/modals/message.json";
 import Transaction from "./../../components/chrysalis/Transaction";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
-import { AddrState, NftDetails, TokenDetails } from "./AddrState";
+import { AddrState } from "./AddrState";
+import INftDetails from "./INftDetails";
+import ITokenDetails from "./ITokenDetails";
 
 /**
  * Component which will show the address page for stardust.
@@ -566,7 +568,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         if (!this.state.outputs || this.state.outputs?.length === 0) {
             return;
         }
-        const tokens: TokenDetails[] = [];
+        const tokens: ITokenDetails[] = [];
 
         for (const output of this.state.outputs) {
             if (!output.isSpent && output.output.type === BASIC_OUTPUT_TYPE && output.output.nativeTokens.length > 0) {
@@ -592,7 +594,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         }
         const networkId = this.props.match.params.network;
 
-        const nfts: NftDetails[] = [];
+        const nfts: INftDetails[] = [];
 
         const nftOutputs = await this._tangleCacheService.nfts({
             network: networkId,

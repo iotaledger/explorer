@@ -3,45 +3,8 @@ import { IOutputResponse } from "@iota/iota.js-stardust";
 import IAddressDetails from "../../../models/api/stardust/IAddressDetails";
 import { ITransaction, ITransactionsDetailsResponse } from "../../../models/api/stardust/ITransactionsDetailsResponse";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
-
-// TO DO Extract
-export interface TokenDetails {
-    /**
-     * Token name.
-     */
-    name: string;
-    /**
-     * Token symbol.
-     */
-    symbol?: string;
-    /**
-     * Token held amount.
-     */
-    amount: number;
-    /**
-     * Token price.
-     */
-    price?: number;
-    /**
-     * Token total value held.
-     */
-    value?: number;
-}
-
-export interface NftDetails {
-    /**
-     * NFT image.
-     */
-    image?: string;
-    /**
-     * NFT name.
-     */
-    name?: string;
-    /**
-     * NFT id.
-     */
-    id: string;
-}
+import INftDetails from "./INftDetails";
+import ITokenDetails from "./ITokenDetails";
 
 export interface AddrState {
     /**
@@ -142,7 +105,7 @@ export interface AddrState {
     /**
      * List of native tokens of the address.
      */
-    tokens?: TokenDetails[];
+    tokens?: ITokenDetails[];
 
     /**
      * Current page number in native tokens table.
@@ -152,12 +115,12 @@ export interface AddrState {
     /**
      * Current page in tokens table.
      */
-    tokensPage: TokenDetails[];
+    tokensPage: ITokenDetails[];
 
     /**
      * List of nfts of the address.
      */
-    nfts?: NftDetails[];
+    nfts?: INftDetails[];
 
     /**
      * Current page number in nft history table.
@@ -167,6 +130,6 @@ export interface AddrState {
     /**
      * Current page in nft history table.
      */
-    nftsPage: NftDetails[];
+    nftsPage: INftDetails[];
 }
 
