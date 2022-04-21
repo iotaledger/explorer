@@ -601,9 +601,7 @@ export class StardustTangleHelper {
                     }
                 } else {
                     const addressDetails = await addressBalance(client, searchQuery.address.bech32);
-                    // TO DO: confirm address.ledgerIndex > 0 condition is valid way to decide if address exists?
-                    // Address object will always be retrieved even for bech32 addresses that dont exist.
-                    if (addressDetails && addressDetails.ledgerIndex > 0) {
+                    if (addressDetails) {
                         const addressOutputs = await indexerPlugin.outputs(
                             { addressBech32: searchQuery.address.bech32 }
                         );
