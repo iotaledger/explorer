@@ -565,6 +565,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
     private async getNativeTokens() {
         if (!this.state.outputs || this.state.outputs?.length === 0) {
+            this.setState({ areTokensLoading: false });
             return;
         }
         const tokens: ITokenDetails[] = [];
@@ -589,6 +590,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
     private async getNfts() {
         if (!this.state.bech32AddressDetails?.bech32) {
+            this.setState({ areNftsLoading: false });
             return;
         }
         const networkId = this.props.match.params.network;
