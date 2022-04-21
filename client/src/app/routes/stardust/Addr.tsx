@@ -482,7 +482,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         );
     }
 
-    // TO DO DRY these three into one function
     private get transactionsPage() {
         const firstPageIndex = (this.state.transactionsPageNumber - 1) * this.state.transactionsPageSize;
         const lastPageIndex = firstPageIndex + this.state.transactionsPageSize;

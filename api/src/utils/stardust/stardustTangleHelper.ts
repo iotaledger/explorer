@@ -656,16 +656,12 @@ export class StardustTangleHelper {
             }
         }
 
-        // Stardust specific searches
         if (searchQuery.aliasId) {
             try {
                 const aliasOutputs = await indexerPlugin.alias(searchQuery.aliasId);
                 if (aliasOutputs.items.length > 0) {
-                    // TODO Only taking last item, check how to do it properly
-                    const aliasOutput = await client.output(aliasOutputs.items[aliasOutputs.items.length - 1]);
-
                     return {
-                        output: aliasOutput
+                        output: await client.output(aliasOutputs.items[0])
                     };
                 }
             } catch {}
@@ -675,11 +671,8 @@ export class StardustTangleHelper {
             try {
                 const nftOutputs = await indexerPlugin.nft(searchQuery.nftId);
                 if (nftOutputs.items.length > 0) {
-                    // TODO Only taking last item, check how to do it properly
-                    const nftOutput = await client.output(nftOutputs.items[nftOutputs.items.length - 1]);
-
                     return {
-                        output: nftOutput
+                        output: await client.output(nftOutputs.items[0])
                     };
                 }
             } catch {}
