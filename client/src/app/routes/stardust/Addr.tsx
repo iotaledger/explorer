@@ -212,7 +212,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <div className="section--assets">
                                                     <div className="inner--asset">
                                                         <div className="section--data assets">
-                                                            <span className="label">Assets in wallet {this.state.tokens?.length}</span>
+                                                            <span className="label">Assets in wallet ({this.state.tokens?.length})</span>
                                                         </div>
                                                         <img
                                                             src={chevronRightGray}
@@ -226,7 +226,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <div className="section--NFT">
                                                     <div className="inner--asset">
                                                         <div className="section--data assets">
-                                                            <span className="label">NFTs in wallet {this.state.nfts?.length}</span>
+                                                            <span className="label">NFTs in wallet ({this.state.nfts?.length})</span>
                                                         </div>
                                                         <img
                                                             src={chevronRightGray}
