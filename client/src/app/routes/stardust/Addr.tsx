@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
+import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js-stardust";
+import { Converter } from "@iota/util.js";
 import { HexHelper } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import React, { ReactNode } from "react";
@@ -424,8 +426,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             totalCount={this.state.tokens?.length ?? 0}
                                             pageSize={Addr.TOKENS_PAGE_SIZE}
                                             siblingsCount={1}
-                                            onPageChange={page =>
-                                                this.setState({ tokensPageNumber: page })}
+                                            onPageChange={page => this.setState({ tokensPageNumber: page })}
                                         />
                                     </div>
                                 )}
@@ -573,7 +574,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 for (const token of basicOutput.nativeTokens) {
                     tokens.push({
                         name: token.id,
-                        amount: Number.parseInt(token.amount, 10)
+                        amount: Number.parseInt(token.amount, 16)
                     });
                 }
             }
@@ -603,7 +604,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 const output = await this._tangleCacheService.outputDetails(networkId, outputId);
                 if (output && !output.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
                     const nftOutput = output.output;
-                    const nftId = HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero) ? outputId : nftOutput.nftId;
+                    const nftId = !HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero)
+                        ? nftOutput.nftId
+                        // NFT has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
+                        : HexHelper.addPrefix(Converter.bytesToHex(
+                            Blake2b.sum160(Converter.hexToBytes(HexHelper.stripPrefix(outputId)))
+                        ));
 
                     nfts.push({
                         id: nftId,
