@@ -223,6 +223,10 @@
     .card--content__input {
       display: flex;
 
+      .color {
+        color: #108CFF;
+      }
+
       .card--content__input--dropdown {
         cursor: pointer;
 

@@ -144,7 +144,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                 </div>
                             </React.Fragment>
                         )}
-                        {this.props.payload.publicKeys && (
+                        {/* {this.props.payload.publicKeys && (
                             <div className="section--data">
                                 <div className="label">
                                     Public Keys
@@ -169,6 +169,37 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                     </div>
                                 ))}
                             </div>
+                        </div> */}
+                        {this.props.payload.metadata && (
+                            <React.Fragment>
+                                <div className="card--label">
+                                    Metadata
+                                </div>
+                                <div className="card--value card--value__mono">
+                                    {this.props.payload.metadata}
+                                </div>
+                            </React.Fragment>
+                        )}
+                        <div className="card--label">
+                            Signatures
+                        </div>
+                        <div className="card--value card--value__mono">
+                            {this.props.payload.signatures.map((sig, i) => (
+                                <div key={i} className="margin-b-s">
+                                    <div className="card--label">
+                                        Public Key
+                                    </div>
+                                    <div className="card--value card--value__mono">
+                                        {sig.publicKey}
+                                    </div>
+                                    <div className="card--label">
+                                        Signature
+                                    </div>
+                                    <div className="card--value card--value__mono">
+                                        {sig.signature}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </React.Fragment>
                 )}

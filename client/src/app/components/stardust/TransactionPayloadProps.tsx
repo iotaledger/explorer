@@ -1,4 +1,4 @@
-import { IUTXOInput } from "@iota/iota.js-stardust";
+import { IUTXOInput, IOutputResponse, OutputTypes} from "@iota/iota.js-stardust";
 import * as H from "history";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 export interface TransactionPayloadProps {
@@ -24,11 +24,11 @@ export interface TransactionPayloadProps {
      * The outputs.
      */
     outputs: {
-        index: number;
-        type: number;
-        address: IBech32AddressDetails;
+        index: number; 
+        type: 2 | 3 | 4 | 5 | 6; 
+        id?: string;
+        output: OutputTypes;
         amount: number;
-        isRemainder: boolean;
     }[];
 
     /**
