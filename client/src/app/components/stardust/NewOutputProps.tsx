@@ -1,4 +1,4 @@
-import { IOutputResponse, OutputTypes } from "@iota/iota.js-stardust";
+import { OutputTypes } from "@iota/iota.js-stardust";
 
 export interface NewOutputProps {
     /**
@@ -24,5 +24,5 @@ export interface NewOutputProps {
     /**
      * Hide the label.
      */
-     hideLabel?: boolean;
+    hideLabel?: boolean;
 }

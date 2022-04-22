@@ -1,3 +1,4 @@
+/* eslint-disable no-warning-comments */
 import { composeAPI, Transaction } from "@iota/core";
 import { Blake2b } from "@iota/crypto.js-stardust";
 import { addressBalance, ED25519_ADDRESS_TYPE, IMilestoneResponse, IOutputResponse, IOutputsResponse, serializeMessage, SingleNodeClient, IndexerPluginClient } from "@iota/iota.js-stardust";
@@ -511,7 +512,6 @@ export class StardustTangleHelper {
      * @param isPermanode Is this a permanode endpoint.
      * @param bechHrp The bech32 hrp for the network.
      * @param query The query to use for finding items.
-     * @param cursor Cursor data to send with the request.
      * @returns The item found.
      */
     private static async searchApi(

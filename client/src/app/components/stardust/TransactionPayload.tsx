@@ -3,6 +3,7 @@ import { UnitsHelper } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import AsyncComponent from "../AsyncComponent";
 import Bech32Address from "../chrysalis/Bech32Address";
 import FiatValue from "../FiatValue";
@@ -12,9 +13,8 @@ import { TransactionPayloadState } from "../TransactionPayloadState";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import messageJSON from "./../../../assets/modals/message.json";
 import "./TransactionPayload.scss";
-import { TransactionPayloadProps } from "./TransactionPayloadProps";
 import NewOutput from "./NewOutput";
-import { NameHelper } from "../../../helpers/stardust/nameHelper";
+import { TransactionPayloadProps } from "./TransactionPayloadProps";
 
 /**
  * Component which will display a transaction payload.
@@ -148,28 +148,27 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === idx })}>
                                             <DropdownIcon />
                                         </div>
-                                            <button
-                                                type="button"
-                                                className="margin-r-t color"
-                                            >
-                                                {NameHelper.getOutputTypeName(output.type)} {output.index}
-                                            </button>
+                                        <button
+                                            type="button"
+                                            className="margin-r-t color"
+                                        >
+                                            {NameHelper.getOutputTypeName(output.type)} {output.index}
+                                        </button>
                                         <div className="card--value">
                                             {UnitsHelper.formatBest(output.amount)}
                                         </div>
                                     </div>
 
                                     {this.state.showOutputDetails === idx && (
-                                        <React.Fragment>
-                                            <div className="card--value">
-                                                <NewOutput
-                                                    key={idx}
-                                                    index={idx + 1}
-                                                    output={output.output}
-                                                    amount={output.amount}
-                                                />
-                                            </div>
-                                        </React.Fragment>)}
+                                        <div className="card--value">
+                                            <NewOutput
+                                                key={idx}
+                                                index={idx + 1}
+                                                output={output.output}
+                                                amount={output.amount}
+                                            />
+                                        </div>
+                                    )}
                                 </React.Fragment>
                             ))}
                         </div>

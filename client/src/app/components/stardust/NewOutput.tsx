@@ -1,9 +1,8 @@
-import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE, TREASURY_OUTPUT_TYPE, UnitsHelper, IOutputResponse, SIMPLE_TOKEN_SCHEME_TYPE } from "@iota/iota.js-stardust";
+import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
+    TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE } from "@iota/iota.js-stardust";
+import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
-import { Link } from "react-router-dom";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { NameHelper } from "../../../helpers/stardust/nameHelper";
-import MessageButton from "../MessageButton";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import FeatureBlock from "./FeatureBlock";
 import { NewOutputProps } from "./NewOutputProps";
 import { NewOutputState } from "./NewOutputState";
@@ -21,9 +20,9 @@ class NewOutput extends Component<NewOutputProps, NewOutputState> {
         super(props);
 
         this.state = {
-            output: (this.isOutputResponse(props.output)) ? props.output.output : props.output
+            output: props.output,
+            showOutputDetails: -1
         };
-        console.log('this.state', this.state, this.props)
     }
 
     /**
@@ -146,19 +145,37 @@ class NewOutput extends Component<NewOutputProps, NewOutputState> {
                         {this.state.output.nativeTokens.map((token, idx) => (
                             <React.Fragment key={idx}>
                                 <div className="native-token padding-t-s">
-                                    <h3>Native token</h3>
-                                    <div className="card--label">
-                                        Token id:
+                                    <div
+                                        className="card--content__input card--value row middle"
+                                        onClick={() => this.setState({ showOutputDetails:
+                                            this.state.showOutputDetails === 1 ? -1 : 1 })}
+                                    >
+                                        <div className={classNames("margin-r-t", "card--content__input--dropdown",
+                                            "card--content__flex_between",
+                                            { opened: this.state.showOutputDetails === 1 })}
+                                        >
+                                            <DropdownIcon />
+                                        </div>
+                                        <div className="card--label">
+                                            Native token
+                                        </div>
                                     </div>
-                                    <div className="card--value row">
-                                        {token.id}
+                                    {this.state.showOutputDetails === 1 && (
+                                    <div className="margin-l-t">
+                                        <div className="card--label">
+                                            Token id:
+                                        </div>
+                                        <div className="card--value row">
+                                            {token.id}
+                                        </div>
+                                        <div className="card--label">
+                                            Amount:
+                                        </div>
+                                        <div className="card--value row">
+                                            {token.amount}
+                                        </div>
                                     </div>
-                                    <div className="card--label">
-                                        Amount:
-                                    </div>
-                                    <div className="card--value row">
-                                        {token.amount}
-                                    </div>
+                                    )}
                                 </div>
                             </React.Fragment>
                         ))}
@@ -167,15 +184,6 @@ class NewOutput extends Component<NewOutputProps, NewOutputState> {
 
             </div>
         );
-    }
-
-    /**
-     * Check if object is type of IOutputResponse.
-     * @param object The object to check.
-     * @returns True of object is IOutputResponse.
-     */
-    private isOutputResponse(object: unknown): object is IOutputResponse {
-        return Object.prototype.hasOwnProperty.call(object, "messageId");
     }
 }
 

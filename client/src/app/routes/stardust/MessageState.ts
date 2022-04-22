@@ -1,4 +1,4 @@
-import { IMessage, IMessageMetadata, IUTXOInput, IOutputResponse, OutputTypes } from "@iota/iota.js-stardust";
+import { IMessage, IMessageMetadata, IUTXOInput, OutputTypes } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 
@@ -70,8 +70,8 @@ export interface MessageState {
      * The outputs.
      */
     outputs?: {
-        index: number; 
-        type: 2 | 3 | 4 | 5 | 6; 
+        index: number;
+        type: number;
         id?: string;
         output: OutputTypes;
         amount: number;

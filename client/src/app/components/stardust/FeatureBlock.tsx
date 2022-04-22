@@ -1,18 +1,17 @@
 import { ISSUER_FEATURE_BLOCK_TYPE, METADATA_FEATURE_BLOCK_TYPE, SENDER_FEATURE_BLOCK_TYPE, TAG_FEATURE_BLOCK_TYPE } from "@iota/iota.js-stardust";
-import React, { ReactNode } from "react";
-import AsyncComponent from "../AsyncComponent";
 import classNames from "classnames";
+import React, { ReactNode } from "react";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
+import AsyncComponent from "../AsyncComponent";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Address from "./Address";
 import { FeatureBlockProps } from "./FeatureBlockProps";
 import { FeatureBlockState } from "./FeatureBlockState";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 
 /**
  * Component which will display an Feature Block.
  */
 class FeatureBlock extends AsyncComponent<FeatureBlockProps, FeatureBlockState> {
-
     constructor(props: FeatureBlockProps) {
         super(props);
 
@@ -39,7 +38,9 @@ class FeatureBlock extends AsyncComponent<FeatureBlockProps, FeatureBlockState> 
                     className="card--content__input card--value row middle"
                     onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === 1 ? -1 : 1 })}
                 >
-                    <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === 1 })}>
+                    <div className={classNames("margin-r-t", "card--content__input--dropdown",
+                        "card--content__flex_between", { opened: this.state.showOutputDetails === 1 })}
+                    >
                         <DropdownIcon />
                     </div>
                     <div className="card--label">

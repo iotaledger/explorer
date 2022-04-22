@@ -1,18 +1,17 @@
 import { ADDRESS_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
-import React, { ReactNode } from "react";
-import AsyncComponent from "../AsyncComponent";
 import classNames from "classnames";
+import React, { ReactNode } from "react";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
+import AsyncComponent from "../AsyncComponent";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Address from "./Address";
 import { UnlockConditionProps } from "./UnlockConditionProps";
 import { UnlockConditionState } from "./UnlockConditionState";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 
 /**
  * Component which will display an unlock condition.
  */
 class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditionState> {
-
     constructor(props: UnlockConditionProps) {
         super(props);
 
@@ -39,7 +38,9 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                     className="card--content__input card--value row middle"
                     onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === 1 ? -1 : 1 })}
                 >
-                    <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === 1 })}>
+                    <div className={classNames("margin-r-t", "card--content__input--dropdown",
+                        "card--content__flex_between", { opened: this.state.showOutputDetails === 1 })}
+                    >
                         <DropdownIcon />
                     </div>
                     <div className="card--label">
