@@ -18,18 +18,18 @@ const Nft: React.FC<NftProps> = ({ id, name, network, image }) => {
      */
     return (
         <div className="NFT-row">
-            <img
-                src={image}
-                alt="bundle"
-                className="nft-image"
-            />
-            {name && <span className="nft-name">Token: {name}</span>}
             <Link
-                to={`/${network}/search/${id}`}
-                className="margin-r-t nft-id"
+                to={`/${network}/nft/${id}`}
+                className="margin-r-t"
             >
-                {shortId}
+                <img
+                    src={image}
+                    alt="bundle"
+                    className="nft-image"
+                />
             </Link>
+            {name && <span className="nft-name">Token: {name}</span>}
+            <span className="nft-id">NFT Id: {shortId}</span>
         </div>
     );
 };
