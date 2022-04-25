@@ -569,54 +569,6 @@ export class StardustTangleHelper {
             }
         }
 
-        if (searchQuery.address?.bech32) {
-            try {
-                if (isPermanode && searchQuery.address.addressType === ED25519_ADDRESS_TYPE) {
-                    // Permanode doesn't support the bech32 address endpoint so convert
-                    // the query to ed25519 format if thats what the type is
-                    // it will then be tried using the ed25519 address/outputs endpoint
-                    //
-                    // TODO: Check this part when permanode is available
-                    const addressDetails = {
-                        addressType: ED25519_ADDRESS_TYPE,
-                        address: searchQuery.address.hex,
-                        balance: bigInt(0),
-                        dustAllowed: false,
-                        ledgerIndex: 0,
-                        nativeTokens: {}
-                    };
-
-                    const addressOutputs = await indexerPlugin.outputs({ addressBech32: searchQuery.address.bech32 });
-
-                    if (addressOutputs.items.length > 0) {
-                        const state = (addressOutputs as (IOutputsResponse & {
-                            state?: unknown;
-                        })).state;
-
-                        return {
-                            address: searchQuery.address.bech32,
-                            addressDetails,
-                            addressOutputIds: addressOutputs.items,
-                            cursor: state ? Converter.utf8ToHex(JSON.stringify(state)) : undefined
-                        };
-                    }
-                } else {
-                    const addressDetails = await addressBalance(client, searchQuery.address.bech32);
-                    if (addressDetails) {
-                        const addressOutputs = await indexerPlugin.outputs(
-                            { addressBech32: searchQuery.address.bech32 }
-                        );
-
-                        return {
-                            address: searchQuery.address.bech32,
-                            addressDetails,
-                            addressOutputIds: addressOutputs.items
-                        };
-                    }
-                }
-            } catch {}
-        }
-
         if (searchQuery.messageIdOrTransactionId) {
             try {
                 const message = await client.message(searchQuery.messageIdOrTransactionId);
@@ -701,6 +653,54 @@ export class StardustTangleHelper {
                     return {
                         output
                     };
+                }
+            } catch {}
+        }
+
+        if (searchQuery.address?.bech32) {
+            try {
+                if (isPermanode && searchQuery.address.addressType === ED25519_ADDRESS_TYPE) {
+                    // Permanode doesn't support the bech32 address endpoint so convert
+                    // the query to ed25519 format if thats what the type is
+                    // it will then be tried using the ed25519 address/outputs endpoint
+                    //
+                    // TODO: Check this part when permanode is available
+                    const addressDetails = {
+                        addressType: ED25519_ADDRESS_TYPE,
+                        address: searchQuery.address.hex,
+                        balance: bigInt(0),
+                        dustAllowed: false,
+                        ledgerIndex: 0,
+                        nativeTokens: {}
+                    };
+
+                    const addressOutputs = await indexerPlugin.outputs({ addressBech32: searchQuery.address.bech32 });
+
+                    if (addressOutputs.items.length > 0) {
+                        const state = (addressOutputs as (IOutputsResponse & {
+                            state?: unknown;
+                        })).state;
+
+                        return {
+                            address: searchQuery.address.bech32,
+                            addressDetails,
+                            addressOutputIds: addressOutputs.items,
+                            cursor: state ? Converter.utf8ToHex(JSON.stringify(state)) : undefined
+                        };
+                    }
+                } else {
+                    const addressDetails = await addressBalance(client, searchQuery.address.bech32);
+                    if (addressDetails) {
+                        const addressOutputs = await indexerPlugin.outputs(
+                            { addressBech32: searchQuery.address.bech32 }
+                        );
+
+                        return {
+                            address: searchQuery.address.bech32,
+                            addressDetails,
+                            addressOutputIds: addressOutputs.items
+                        };
+                    }
                 }
             } catch {}
         }
