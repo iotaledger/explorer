@@ -84,7 +84,7 @@
       .acronym {
         width: 38px;
         margin-right: 8px;
-        color: $white;
+        color: var(--fiat-acronym-color);
         font-weight: 600;
         letter-spacing: 0.5px;
       }
