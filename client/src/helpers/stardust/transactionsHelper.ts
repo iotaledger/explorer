@@ -21,7 +21,7 @@ export interface Input {
 
 export interface Output {
     index: number;
-    type: number;
+    type: 2 | 3 | 4 | 5 | 6;
     id?: string;
     output: OutputTypes;
     amount: number;

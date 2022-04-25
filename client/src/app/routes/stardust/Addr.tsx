@@ -738,7 +738,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 this._bechHrp,
                 this._tangleCacheService);
         const inputsRelated = inputs.filter(input => input.transactionAddress.hex === this.state.address);
-        const outputsRelated = outputs.filter(output => output);
+        const outputsRelated = outputs.map(output => output);
         let fromAmount = 0;
         let toAmount = 0;
         for (const input of inputsRelated) {
