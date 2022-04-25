@@ -1,7 +1,8 @@
-import { IMessage, IMilestoneResponse, IOutputResponse } from "@iota/iota.js-stardust";
+import { IMessage, IMilestoneResponse, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
 import { IResponse } from "../IResponse";
 import IAddressDetails from "./IAddressDetails";
 import { ITransactionsDetailsResponse } from "./ITransactionsDetailsResponse";
+
 export interface ISearchResponse extends IResponse {
     /**
      * Message if it was found.
@@ -42,6 +43,11 @@ export interface ISearchResponse extends IResponse {
      * Output if it was found (message will also be populated).
      */
     output?: IOutputResponse;
+
+    /**
+     * Outputs if they were found.
+     */
+    outputs?: IOutputsResponse;
 
     /**
      * Milestone if it was found.

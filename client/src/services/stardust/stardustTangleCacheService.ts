@@ -8,6 +8,8 @@ import { TrytesHelper } from "../../helpers/trytesHelper";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
+import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
+import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionsDetailsResponse } from "../../models/api/stardust/ITransactionsDetailsResponse";
 import { CHRYSALIS, OG, STARDUST } from "../../models/db/protocolVersion";
@@ -478,22 +480,11 @@ export class StardustTangleCacheService extends TangleCacheService {
                                 cached: Date.now()
                             };
                         }
-                    } else if (this._networkProtocols[network] === CHRYSALIS) {
-                        const api = new ChrysalisApiStreamsV0Client(network);
-
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const result = await mamFetchChrysalis(api as any, root, mode, key);
-
-                        if (result) {
-                            streamsV0Cache[root] = {
-                                payload: result.message,
-                                nextRoot: result.nextRoot,
-                                tag: result.tag,
-                                cached: Date.now()
-                            };
-                        }
-                    } else if (this._networkProtocols[network] === STARDUST) {
-                        const api = new StardustApiStreamsV0Client(network);
+                    } else if (this._networkProtocols[network] === CHRYSALIS ||
+                               this._networkProtocols[network] === STARDUST) {
+                        const api = this._networkProtocols[network] === CHRYSALIS
+                            ? new ChrysalisApiStreamsV0Client(network)
+                            : new StardustApiStreamsV0Client(network);
 
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const result = await mamFetchChrysalis(api as any, root, mode, key);
@@ -711,15 +702,16 @@ export class StardustTangleCacheService extends TangleCacheService {
         request: ITransactionsDetailsRequest,
         skipCache: boolean = false
     ): Promise<ITransactionsDetailsResponse | undefined> {
-        if (!this._stardustSearchCache[request.network][`${request.address}--transaction-history`]
-            ?.data?.transactionHistory || skipCache) {
+        const addressTransactionHistoryCacheEntry =
+            this._stardustSearchCache[request.network][`${request.address}--transaction-history`];
+
+        if (!addressTransactionHistoryCacheEntry?.data?.transactionHistory || skipCache) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
             const response = await apiClient.transactionsDetails(request);
 
             if (response?.transactionHistory?.transactions) {
-                const cachedTransaction =
-                    this._stardustSearchCache[request.network][`${request.address}--transaction-history`]
-                        ?.data?.transactionHistory?.transactionHistory.transactions ?? [];
+                const cachedTransaction = addressTransactionHistoryCacheEntry?.data
+                    ?.transactionHistory?.transactionHistory.transactions ?? [];
 
                 this._stardustSearchCache[request.network][`${request.address}--transaction-history`] = {
                     data: {
@@ -752,6 +744,32 @@ export class StardustTangleCacheService extends TangleCacheService {
             ?.transactionHistory;
     }
 
+    /**
+     * Get the NFT outputs.
+     * @param request The request.
+     * @param skipCache Skip looking in the cache.
+     * @returns The NFT outputs response.
+     */
+    public async nfts(
+        request: INftOutputsRequest,
+        skipCache: boolean = false
+    ): Promise<INftOutputsResponse | undefined> {
+        const cacheEntry = this._stardustSearchCache[request.network][`${request.address}--nft-outputs`];
+
+        if (!cacheEntry?.data?.outputs || skipCache) {
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+            const nftOutputs = await apiClient.nftOutputs(request);
+
+            this._stardustSearchCache[request.network][`${request.address}--nft-outputs`] = {
+                data: { outputs: nftOutputs.outputs },
+                cached: Date.now()
+            };
+        }
+
+        return {
+            outputs: this._stardustSearchCache[request.network][`${request.address}--nft-outputs`]?.data?.outputs
+        };
+    }
 
     /**
      * Check all the cached items and remove any stale items.

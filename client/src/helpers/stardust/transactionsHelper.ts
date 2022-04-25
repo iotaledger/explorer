@@ -95,8 +95,8 @@ export class TransactionsHelper {
                     outputHash,
                     transactionUrl: `/${network}/search/${outputHash}`,
                     transactionAddress: unlockAddresses[i],
-                    signature: signatureBlocks[i].signature.signature,
-                    publicKey: signatureBlocks[i].signature.publicKey
+                    signature: signatureBlocks[i]?.signature.signature,
+                    publicKey: signatureBlocks[i]?.signature.publicKey
                 });
             }
 

@@ -25,6 +25,8 @@ import { ITrytesRetrieveRequest } from "../../models/api/og/ITrytesRetrieveReque
 import { ITrytesRetrieveResponse } from "../../models/api/og/ITrytesRetrieveResponse";
 import { IMessageDetailsResponse } from "../../models/api/stardust/IMessageDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
+import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
+import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionsDetailsResponse } from "../../models/api/stardust/ITransactionsDetailsResponse";
@@ -170,6 +172,18 @@ export class StardustApiClient extends ApiClient {
     public async milestoneDetails(request: IMilestoneDetailsRequest): Promise<IMilestoneDetailsResponse> {
         return this.callApi<unknown, IMilestoneDetailsResponse>(
             `stardust/milestone/${request.network}/${request.milestoneIndex}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the nft details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async nftOutputs(request: INftOutputsRequest): Promise<INftOutputsResponse> {
+        return this.callApi<unknown, INftOutputsResponse>(
+            `stardust/nfts/${request.network}/${request.address}`,
             "get"
         );
     }

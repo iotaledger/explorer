@@ -3,7 +3,8 @@ import { IOutputResponse } from "@iota/iota.js-stardust";
 import IAddressDetails from "../../../models/api/stardust/IAddressDetails";
 import { ITransaction, ITransactionsDetailsResponse } from "../../../models/api/stardust/ITransactionsDetailsResponse";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
-
+import INftDetails from "./INftDetails";
+import ITokenDetails from "./ITokenDetails";
 
 export interface AddrState {
     /**
@@ -37,24 +38,14 @@ export interface AddrState {
     status: string;
 
     /**
-     * Is the component assets status busy.
+     * Are the component native tokens loading.
      */
-    assetStatusBusy: boolean;
+    areTokensLoading: boolean;
 
     /**
-     * The assets status.
+     * Are the component NFTs loading.
      */
-    assetStatus: string;
-
-    /**
-     * Is the component NFTs status busy.
-     */
-    nftStatusBusy: boolean;
-
-    /**
-     * The assets status.
-     */
-    nftStatus: string;
+    areNftsLoading: boolean;
 
     /**
      * The output ids for the address.
@@ -97,47 +88,48 @@ export interface AddrState {
     transactionHistory?: ITransactionsDetailsResponse;
 
     /**
+     * Current page number in transaction history table.
+     */
+    transactionsPageNumber: number;
+
+    /**
+     * Page size in transaction history table.
+     */
+    transactionsPageSize: number;
+
+    /**
      * Current page in transaction history table.
      */
-    currentPage: number;
+    transactionsPage: ITransaction[];
 
     /**
-     * Page size in transaction history table.
+     * List of native tokens of the address.
      */
-    pageSize: number;
+    tokens?: ITokenDetails[];
 
     /**
-     * Page size in transaction history table.
+     * Current page number in native tokens table.
      */
-    currentPageTransactions: ITransaction[];
+    tokensPageNumber: number;
 
     /**
-     * Current page in asset history table.
+     * Current page in tokens table.
      */
-    assetCurrentPage: number;
+    tokensPage: ITokenDetails[];
 
     /**
-     * Page size in asset history table.
+     * List of nfts of the address.
      */
-    assetPageSize: number;
+    nfts?: INftDetails[];
 
     /**
-     * Page size in asset history table.
+     * Current page number in nft history table.
      */
-    currentPageAssets: string[];
+    nftsPageNumber: number;
 
     /**
      * Current page in nft history table.
      */
-    nftCurrentPage: number;
-
-    /**
-     * Page size in nft history table.
-     */
-    nftPageSize: number;
-
-    /**
-     * Page size in nft history table.
-     */
-    currentPageNFTs: string[];
+    nftsPage: INftDetails[];
 }
+

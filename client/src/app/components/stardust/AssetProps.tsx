@@ -2,27 +2,27 @@ export interface AssetProps {
     /**
      * The name of an asset.
      */
-    asset: string;
+    name: string;
     /**
      * The symbol of an asset
      */
-    symbol: string;
+    symbol?: string;
     /**
      * Total quantity related to an asset
      */
-    quantity: number;
+    amount: number;
     /**
      * Price of an asset
      */
-    price: number;
+    price?: number;
     /**
      * Value of an asset
      */
-    value: number;
+    value?: number;
     /**
      * Network
      */
-    network?: string;
+    network: string;
     /**
      * True if the asset is rendered like a table
      */
