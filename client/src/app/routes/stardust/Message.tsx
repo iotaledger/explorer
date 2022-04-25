@@ -18,7 +18,6 @@ import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
 import MessageTangleState from "../../components/stardust/MessageTangleState";
 import MilestonePayload from "../../components/stardust/MilestonePayload";
-import ReceiptPayload from "../../components/stardust/ReceiptPayload";
 import TaggedDataPayload from "../../components/stardust/TaggedDataPayload";
 import TransactionPayload from "../../components/stardust/TransactionPayload";
 import Switcher from "../../components/Switcher";
@@ -259,16 +258,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                                 advancedMode={this.state.advancedMode}
                                             />
                                         </div>
-                                        {this.state.message.payload.receipt && (
-                                            <div className="section">
-                                                <ReceiptPayload
-                                                    network={this.props.match.params.network}
-                                                    history={this.props.history}
-                                                    payload={this.state.message.payload.receipt}
-                                                    advancedMode={this.state.advancedMode}
-                                                />
-                                            </div>
-                                        )}
+                                        // TODO: Fix this with new ReceiptPayload inside MilestonePayloadOption
                                     </React.Fragment>
                                 )}
                                 {this.state.message.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (

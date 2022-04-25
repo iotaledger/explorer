@@ -11,6 +11,7 @@ import messageJSON from "./../../../assets/modals/message.json";
 import "./MilestonePayload.scss";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
+import { IPoWMilestoneOption, POW_MILESTONE_OPTION_TYPE } from "@iota/iota.js-stardust";
 
 /**
  * Component which will display a milestone payload.
@@ -117,20 +118,22 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                     <React.Fragment>
                         <div className="section--data">
                             <div className="label">
-                                Inclusion Merkle Proof
+                                Confirmed Merkle Root
                             </div>
                             <div className="value code">
-                                {this.props.payload.inclusionMerkleProof}
+                                {this.props.payload.confirmedMerkleRoot}
                             </div>
                         </div>
-                        {this.props.payload.nextPoWScore !== 0 && this.props.payload.nextPoWScoreMilestoneIndex !== 0 && (
+                        {this.props.payload.options &&
+                            this.props.payload.options?.length > 0 &&
+                            this.props.payload.options?.some(opt => opt.type === POW_MILESTONE_OPTION_TYPE) && (
                             <React.Fragment>
                                 <div className="section--data">
                                     <div className="label">
                                         Next PoW Score
                                     </div>
                                     <div className="value code">
-                                        {this.props.payload.nextPoWScore}
+                                        {(this.props.payload.options.find(opt => opt.type === POW_MILESTONE_OPTION_TYPE) as IPoWMilestoneOption).nextPoWScore}
                                     </div>
                                 </div>
                                 <div className="section--data">
@@ -139,7 +142,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                         Next PoW Score Milestone Index
                                     </div>
                                     <div className="value code">
-                                        {this.props.payload.nextPoWScoreMilestoneIndex}
+                                        {(this.props.payload.options.find(opt => opt.type === POW_MILESTONE_OPTION_TYPE) as IPoWMilestoneOption).nextPoWScoreMilestoneIndex}
                                     </div>
                                 </div>
                             </React.Fragment>

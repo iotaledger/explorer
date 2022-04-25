@@ -1,4 +1,4 @@
-import { IReceiptPayload } from "@iota/iota.js-stardust";
+// import { IReceiptPayload } from "@iota/iota.js-stardust";
 import * as H from "history";
 
 export interface ReceiptPayloadProps {
@@ -10,7 +10,7 @@ export interface ReceiptPayloadProps {
     /**
      * The receipt payload.
      */
-    payload: IReceiptPayload;
+    // payload: IReceiptPayload;
 
     /**
      * Display advanced mode.
