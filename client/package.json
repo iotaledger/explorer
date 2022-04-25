@@ -12,7 +12,7 @@
         "@iota/crypto.js": "^1.8.6",
         "@iota/crypto.js-stardust": "npm:@iota/crypto.js@^1.9.0-stardust.4",
         "@iota/iota.js": "^1.8.6",
-        "@iota/iota.js-stardust": "npm:@iota/iota.js@^1.9.0-stardust.6",
+        "@iota/iota.js-stardust": "npm:@iota/iota.js@^1.9.0-stardust.7",
         "@iota/mam-legacy": "github:iotaledger/mam.js#fddc95f60539b9a31a4db1b5b56e0dedb8994883",
         "@iota/mam.js": "^1.6.2",
         "@iota/util.js": "^1.8.6",
