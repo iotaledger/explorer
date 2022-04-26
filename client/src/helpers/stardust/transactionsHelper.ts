@@ -1,43 +1,32 @@
 /* eslint-disable no-warning-comments */
 import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, Ed25519Address, ED25519_ADDRESS_TYPE, IMessage,
     IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE,
-    TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, OutputTypes } from "@iota/iota.js-stardust";
+    TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
 import { Converter, WriteStream } from "@iota/util.js-stardust";
 import { DateHelper } from "../../helpers/dateHelper";
+import { IInput } from "../../models/api/stardust/IInput";
+import { IOutput } from "../../models/api/stardust/IOutput";
 import { IBech32AddressDetails } from "../../models/IBech32AddressDetails";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
 import { Bech32AddressHelper } from ".././bech32AddressHelper";
 
-export interface Input {
-    outputHash: string;
-    isGenesis: boolean;
-    transactionUrl: string;
-    transactionAddress: IBech32AddressDetails;
-    signature: string;
-    publicKey: string;
-    amount: number;
+interface TransactionHelperResponse {
+    inputs: (IUTXOInput & IInput)[];
+    outputs: IOutput[];
+    unlockAddresses: IBech32AddressDetails[];
+    transferTotal: number;
 }
 
-export interface Output {
-    index: number;
-    type: 2 | 3 | 4 | 5 | 6;
-    id?: string;
-    output: OutputTypes;
-    amount: number;
-}
 export class TransactionsHelper {
     public static async getInputsAndOutputs(
         transactionMessage: IMessage | undefined,
-        network: string, _bechHrp: string, tangleCacheService: StardustTangleCacheService):
-        Promise<{
-            inputs: (IUTXOInput & Input)[];
-            outputs: Output[];
-            unlockAddresses: IBech32AddressDetails[];
-            transferTotal: number;
-        }> {
-        const inputs: (IUTXOInput & Input)[] = [];
-        const outputs: Output[] = [];
+        network: string,
+        _bechHrp: string,
+        tangleCacheService: StardustTangleCacheService
+    ): Promise<TransactionHelperResponse> {
+        const inputs: (IUTXOInput & IInput)[] = [];
+        const outputs: IOutput[] = [];
         const transferTotal = 0;
         const unlockAddresses: IBech32AddressDetails[] = [];
 
@@ -178,3 +167,4 @@ export class TransactionsHelper {
         return { messageTangleStatus, date };
     }
 }
+

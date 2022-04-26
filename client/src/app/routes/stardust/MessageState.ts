@@ -1,4 +1,6 @@
-import { IMessage, IMessageMetadata, IUTXOInput, OutputTypes } from "@iota/iota.js-stardust";
+import { IMessage, IMessageMetadata, IUTXOInput } from "@iota/iota.js-stardust";
+import { IInput } from "../../../models/api/stardust/IInput";
+import { IOutput } from "../../../models/api/stardust/IOutput";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 
@@ -56,26 +58,12 @@ export interface MessageState {
     /**
      * The unlock addresses for the transactions.
      */
-    inputs?: (IUTXOInput & {
-        outputHash: string;
-        isGenesis: boolean;
-        transactionUrl: string;
-        transactionAddress: IBech32AddressDetails;
-        signature: string;
-        publicKey: string;
-        amount: number;
-    })[];
+    inputs?: (IUTXOInput & IInput)[];
 
     /**
      * The outputs.
      */
-    outputs?: {
-        index: number;
-        type: 2 | 3 | 4 | 5 | 6;
-        id?: string;
-        output: OutputTypes;
-        amount: number;
-    }[];
+    outputs?: IOutput[];
 
     /**
      * The total of the transfer excluding remainders.
