@@ -59,26 +59,41 @@ export class TransactionsHelper {
 
             // Inputs
             for (let i = 0; i < payload.essence.inputs.length; i++) {
+                let transactionUrl;
+                let transactionAddress = unlockAddresses[i];
                 const input = payload.essence.inputs[i];
                 const isGenesis = input.transactionId === GENESIS_HASH;
 
                 const transactionOutputIndex = input.transactionOutputIndex;
-                const outputIndexWriteStream = new WriteStream();
-                outputIndexWriteStream.writeUInt16("transactionOutputIndex", transactionOutputIndex);
-                const outputHash = input.transactionId + outputIndexWriteStream.finalHex();
+                const toiWriteStream = new WriteStream();
+                toiWriteStream.writeUInt16("transactionOutputIndex", transactionOutputIndex);
+                const outputHash = input.transactionId + toiWriteStream.finalHex();
+
+                transactionUrl = `/${network}/search/${outputHash}`;
 
                 const inputSearchResponse = await tangleCacheService.search(network, input.transactionId);
                 const inputTransaction = inputSearchResponse?.message;
                 const amount = (inputTransaction?.payload?.type === TRANSACTION_PAYLOAD_TYPE)
                     ? Number(inputTransaction.payload?.essence.outputs[transactionOutputIndex].amount) : 0;
 
+                const outputResponse = await tangleCacheService.outputDetails(network, outputHash);
+                if (outputResponse?.output.type === BASIC_OUTPUT_TYPE) {
+                    const address: IBech32AddressDetails = TransactionsHelper
+                    .bechAddressFromAddressUnlockCondition(outputResponse.output.unlockConditions, _bechHrp);
+
+                    if (address.bech32 !== "") {
+                        transactionAddress = address;
+                        transactionUrl = `/${network}/message/${outputResponse.messageId}`;
+                    }
+                }
+
                 inputs.push({
                     ...input,
                     amount,
                     isGenesis,
                     outputHash,
-                    transactionUrl: `/${network}/search/${outputHash}`,
-                    transactionAddress: unlockAddresses[i],
+                    transactionUrl,
+                    transactionAddress,
                     signature: signatureBlocks[i]?.signature.signature,
                     publicKey: signatureBlocks[i]?.signature.publicKey
                 });
@@ -106,22 +121,6 @@ export class TransactionsHelper {
 
                     if (!isRemainder) {
                         transferTotal += Number(transactionMessage.payload.essence.outputs[i].amount);
-                    }
-                }
-            }
-
-            for (let i = 0; i < inputs.length; i++) {
-                const outputResponse = await tangleCacheService.outputDetails(
-                    network, inputs[i].outputHash
-                );
-
-                if (outputResponse?.output.type === BASIC_OUTPUT_TYPE) {
-                    const address: IBech32AddressDetails = TransactionsHelper
-                    .bechAddressFromAddressUnlockCondition(outputResponse.output.unlockConditions, _bechHrp);
-
-                    if (address.bech32 !== "") {
-                        inputs[i].transactionAddress = address;
-                        inputs[i].transactionUrl = `/${network}/message/${outputResponse.messageId}`;
                     }
                 }
             }
