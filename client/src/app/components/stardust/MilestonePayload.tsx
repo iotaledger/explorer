@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import { IMilestonePayload, IPoWMilestoneOption, IReceiptMilestoneOption, POW_MILESTONE_OPTION_TYPE, RECEIPT_MILESTONE_OPTION_TYPE } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -7,11 +8,11 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../ModalProps";
+import ReceiptPayload from "../stardust/ReceiptPayload";
 import messageJSON from "./../../../assets/modals/message.json";
 import "./MilestonePayload.scss";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
-import { IPoWMilestoneOption, POW_MILESTONE_OPTION_TYPE } from "@iota/iota.js-stardust";
 
 /**
  * Component which will display a milestone payload.
@@ -54,6 +55,21 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { index, timestamp, lastMilestoneId,
+            parentMessageIds, confirmedMerkleRoot, appliedMerkleRoot,
+            metadata, options, signatures }: IMilestonePayload = this.props.payload;
+
+        let receiptMilestoneOption: IReceiptMilestoneOption | null = null;
+        let powMilestoneOption: IPoWMilestoneOption | null = null;
+
+        if (options?.some((option => option.type === RECEIPT_MILESTONE_OPTION_TYPE))) {
+            receiptMilestoneOption = options.find(option => option.type === RECEIPT_MILESTONE_OPTION_TYPE) as IReceiptMilestoneOption;
+        }
+
+        if (options?.some((option => option.type === POW_MILESTONE_OPTION_TYPE))) {
+            powMilestoneOption = options.find(option => option.type === POW_MILESTONE_OPTION_TYPE) as IPoWMilestoneOption;
+        }
+
         return (
             <div className="milestone-payload">
                 <div className="section--header row space-between">
@@ -99,7 +115,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         Index
                     </div>
                     <div className="value">
-                        {this.props.payload.index}
+                        {index}
                     </div>
                 </div>
                 <div className="section--data">
@@ -107,13 +123,33 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         Date
                     </div>
                     <div className="value">
-                        {this.props.payload.timestamp && DateHelper.format(
+                        {timestamp && DateHelper.format(
                             DateHelper.milliseconds(
-                                this.props.payload.timestamp
+                                timestamp
                             )
                         )}
                     </div>
                 </div>
+                <div className="section--data">
+                    <div className="label">
+                        Last milestone Id
+                    </div>
+                    <div className="value">
+                        {lastMilestoneId}
+                    </div>
+                </div>
+                {parentMessageIds?.length > 0 && (
+                    <div className="section--data">
+                        <div className="label">
+                            Parent message Ids
+                        </div>
+                        {parentMessageIds.map((id, idx) => (
+                            <div key={idx} className="value code">
+                                {id}
+                            </div>
+                        ))}
+                    </div>
+                )}
                 {this.props.advancedMode && (
                     <React.Fragment>
                         <div className="section--data">
@@ -121,62 +157,79 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                 Confirmed Merkle Root
                             </div>
                             <div className="value code">
-                                {this.props.payload.confirmedMerkleRoot}
+                                {confirmedMerkleRoot}
                             </div>
                         </div>
-                        {this.props.payload.options &&
-                            this.props.payload.options?.length > 0 &&
-                            this.props.payload.options?.some(opt => opt.type === POW_MILESTONE_OPTION_TYPE) && (
+                        <div className="section--data">
+                            <div className="label">
+                                Applied Merkle Root
+                            </div>
+                            <div className="value code">
+                                {appliedMerkleRoot}
+                            </div>
+                        </div>
+                        {metadata && (
+                            <React.Fragment>
+                                <div className="card--label">
+                                    Metadata
+                                </div>
+                                <div className="card--value card--value__mono">
+                                    {metadata}
+                                </div>
+                            </React.Fragment>
+                        )}
+                        {powMilestoneOption && (
                             <React.Fragment>
                                 <div className="section--data">
                                     <div className="label">
                                         Next PoW Score
                                     </div>
                                     <div className="value code">
-                                        {(this.props.payload.options.find(opt => opt.type === POW_MILESTONE_OPTION_TYPE) as IPoWMilestoneOption).nextPoWScore}
+                                        {powMilestoneOption?.nextPoWScore}
                                     </div>
                                 </div>
                                 <div className="section--data">
-
                                     <div className="label">
                                         Next PoW Score Milestone Index
                                     </div>
                                     <div className="value code">
-                                        {(this.props.payload.options.find(opt => opt.type === POW_MILESTONE_OPTION_TYPE) as IPoWMilestoneOption).nextPoWScoreMilestoneIndex}
+                                        {powMilestoneOption?.nextPoWScoreMilestoneIndex}
                                     </div>
                                 </div>
                             </React.Fragment>
                         )}
-                        {this.props.payload.metadata && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Metadata
-                                </div>
-                                <div className="card--value card--value__mono">
-                                    {this.props.payload.metadata}
-                                </div>
-                            </React.Fragment>
+                        {receiptMilestoneOption && (
+                            <div className="section">
+                                <ReceiptPayload
+                                    network={this.props.network}
+                                    history={this.props.history}
+                                    payload={receiptMilestoneOption}
+                                    advancedMode={this.props.advancedMode}
+                                />
+                            </div>
                         )}
-                        <div className="card--label">
-                            Signatures
-                        </div>
-                        <div className="card--value card--value__mono">
-                            {this.props.payload.signatures.map((sig, i) => (
-                                <div key={i} className="margin-b-s">
-                                    <div className="card--label">
-                                        Public Key
+                        <div className="section--data" >
+                            <div className="label">
+                                Signatures
+                            </div>
+                            <div className="section--data margin-t-s">
+                                {signatures.map((signature, idx) => (
+                                    <div key={idx} className="margin-b-s">
+                                        <div className="label indent">
+                                            Public Key
+                                        </div>
+                                        <div className="value code indent">
+                                            {signature.publicKey}
+                                        </div>
+                                        <div className="label indent margin-t-2">
+                                            Signature
+                                        </div>
+                                        <div className="value code indent">
+                                            {signature.signature}
+                                        </div>
                                     </div>
-                                    <div className="card--value card--value__mono">
-                                        {sig.publicKey}
-                                    </div>
-                                    <div className="card--label">
-                                        Signature
-                                    </div>
-                                    <div className="card--value card--value__mono">
-                                        {sig.signature}
-                                    </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     </React.Fragment>
                 )}
