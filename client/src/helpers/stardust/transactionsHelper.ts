@@ -27,6 +27,7 @@ export class TransactionsHelper {
         const GENESIS_HASH = "0".repeat(64);
         const inputs: (IUTXOInput & IInput)[] = [];
         const outputs: IOutput[] = [];
+        const remainderOutputs: IOutput[] = [];
         const unlockAddresses: IBech32AddressDetails[] = [];
         let transferTotal = 0;
 
@@ -100,7 +101,6 @@ export class TransactionsHelper {
             }
 
             // Outputs
-            let remainderIndex = 1000;
             for (let i = 0; i < payload.essence.outputs.length; i++) {
                 if (payload.essence.outputs[i].type === BASIC_OUTPUT_TYPE) {
                     const basicOutput = payload.essence.outputs[i] as IBasicOutput;
@@ -110,25 +110,32 @@ export class TransactionsHelper {
 
                     const isRemainder = inputs.some(input => input.transactionAddress.bech32 === address.bech32);
 
-                    outputs.push({
-                        index: isRemainder ? (remainderIndex++) + i : i,
-                        type: transactionMessage.payload.essence.outputs[i].type,
-                        address,
-                        amount: Number(transactionMessage.payload.essence.outputs[i].amount),
-                        isRemainder,
-                        output: basicOutput
-                    });
+                    if (isRemainder) {
+                        remainderOutputs.push({
+                            type: transactionMessage.payload.essence.outputs[i].type,
+                            address,
+                            amount: Number(transactionMessage.payload.essence.outputs[i].amount),
+                            isRemainder,
+                            output: basicOutput
+                        });
+                    } else {
+                        outputs.push({
+                            type: transactionMessage.payload.essence.outputs[i].type,
+                            address,
+                            amount: Number(transactionMessage.payload.essence.outputs[i].amount),
+                            isRemainder,
+                            output: basicOutput
+                        });
+                    }
 
                     if (!isRemainder) {
                         transferTotal += Number(transactionMessage.payload.essence.outputs[i].amount);
                     }
                 }
             }
-
-            outputs.sort((a, b) => a.index - b.index);
         }
 
-        return { inputs, outputs, unlockAddresses, transferTotal };
+        return { inputs, outputs: [...outputs, ...remainderOutputs], unlockAddresses, transferTotal };
     }
 
     public static async getMessageStatus(

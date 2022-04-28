@@ -3,10 +3,6 @@ import { IBech32AddressDetails } from "../../IBech32AddressDetails";
 
 export interface IOutput {
     /**
-     * The output index.
-     */
-    index: number;
-    /**
      * The output id.
      */
     id?: string;

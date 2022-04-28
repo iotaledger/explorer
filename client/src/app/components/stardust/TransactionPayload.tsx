@@ -152,7 +152,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             type="button"
                                             className="margin-r-t color"
                                         >
-                                            {NameHelper.getOutputTypeName(output.type)} {output.index}
+                                            {NameHelper.getOutputTypeName(output.type)}
                                         </button>
                                         <div className="card--value">
                                             {UnitsHelper.formatBest(output.amount)}
