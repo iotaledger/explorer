@@ -2,24 +2,25 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-len */
 /* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-warning-comments */
+import { NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import messageJSON from "../../../assets/modals/message.json";
+import { ServiceFactory } from "../../../factories/serviceFactory";
+import { STARDUST } from "../../../models/db/protocolVersion";
+import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Icon from "../../components/Icon";
 import Modal from "../../components/Modal";
-import { NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import { ModalIcon } from "../../components/ModalProps";
-import { STARDUST } from "../../../models/db/protocolVersion";
-import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import { ServiceFactory } from "../../../factories/serviceFactory";
 import Pagination from "../../components/Pagination";
 import { Activity } from "../../components/stardust/Activity";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import { NFTDetailsRouteProps } from "../NFTDetailsRouteProps";
-import { NFTDetailsState } from "./NFTDetailsState";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import INftDetails from "./INftDetails";
+import { NFTDetailsState } from "./NFTDetailsState";
 import "./NFTDetails.scss";
 
 /**
@@ -55,7 +56,6 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        
         await this.getNftDetails();
     }
 
@@ -313,7 +313,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
 
         const nftOutputs = await this._tangleCacheService.nftDetails({
             network: networkId,
-            nftId: nftId
+            nftId
         });
 
         if (nftOutputs?.outputs && nftOutputs?.outputs?.items.length > 0) {

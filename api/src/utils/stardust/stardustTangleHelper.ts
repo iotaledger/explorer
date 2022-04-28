@@ -549,8 +549,8 @@ export class StardustTangleHelper {
             const nftOutputs = await indexerPlugin.nft(nftId);
             return {
                 outputs: nftOutputs
-            }; 
-            return {}
+            };
+            return {};
         } catch {}
     }
 
