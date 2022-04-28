@@ -9,12 +9,17 @@ import messageJSON from "../../../assets/modals/message.json";
 import AsyncComponent from "../../components/AsyncComponent";
 import Icon from "../../components/Icon";
 import Modal from "../../components/Modal";
+import { NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import { ModalIcon } from "../../components/ModalProps";
+import { STARDUST } from "../../../models/db/protocolVersion";
+import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
+import { ServiceFactory } from "../../../factories/serviceFactory";
 import Pagination from "../../components/Pagination";
 import { Activity } from "../../components/stardust/Activity";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import { NFTDetailsRouteProps } from "./NFTDetailsRouteProps";
+import { NFTDetailsRouteProps } from "../NFTDetailsRouteProps";
 import { NFTDetailsState } from "./NFTDetailsState";
+import INftDetails from "./INftDetails";
 import "./NFTDetails.scss";
 
 /**
@@ -22,11 +27,18 @@ import "./NFTDetails.scss";
  */
 class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps>, NFTDetailsState> {
     /**
+     * API Client for tangle requests.
+     */
+     private readonly _tangleCacheService: StardustTangleCacheService;
+
+    /**
      * Create a new instance of Indexed.
      * @param props The props.
      */
     constructor(props: RouteComponentProps<NFTDetailsRouteProps>) {
         super(props);
+
+        this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
         this.state = {
             currentPage: 1,
@@ -43,6 +55,8 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
+        
+        await this.getNftDetails();
     }
 
     /**
@@ -64,7 +78,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                         <div className="section">
                             <div className="section--data section-nft-detail">
                                 <img
-                                    src="https://s3-alpha-sig.figma.com/img/7ee2/1c44/513c2eecf385851f2e3404fd252f3ada?Expires=1650240000&Signature=GB12NLwh~TJMo-kjwimpL0f69PN8OpJ3BtQFH-InK6CIZTq1VkHPEgNQ4YbxCwxMaW907mD2UQvGaomvRFd50byPp3H0MMq3w7FA3EUKWe-Y81jlQTMW4lsz~D4X5OIrqZztqd051D-ii1MMIV8S5Ck1aOJzZbN1vJQkxyZ0BsnJLjiH0M~sBJ8fg6OrB4PWQaOXXkcry2rddbJh3rX4KFMdXVSnk~RGQUdNXI0K6MZaofwbRrPllbNIrm6JoHBfjuwSmkMVdnN3mExv0ClbPu8fA6tHJbh4x7EKe30nUS4Wq8AesDI4yCQ7wkXHKr0OtOzuRFcPHP3Wh2F4p-gPLA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA"
+                                    src="https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png"
                                     alt="bundle"
                                     className="nft-image"
                                 />
@@ -291,6 +305,27 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
         const lastPageIndex = firstPageIndex + this.state.pageSize;
 
         return this.activityHistory.slice(firstPageIndex, lastPageIndex);
+    }
+
+    private async getNftDetails() {
+        const networkId = this.props.match.params.network;
+        const nftId = this.props.match.params.nftId;
+
+        const nftOutputs = await this._tangleCacheService.nftDetails({
+            network: networkId,
+            nftId: nftId
+        });
+
+        if (nftOutputs?.outputs && nftOutputs?.outputs?.items.length > 0) {
+            for (const outputId of nftOutputs.outputs.items) {
+                const output = await this._tangleCacheService.outputDetails(networkId, outputId);
+
+                if (output && !output.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
+                    const nftDetails = output.output;
+                    // TODO: Code here to map the data on the page
+                }
+            }
+        }
     }
 
     private get activityHistory() {

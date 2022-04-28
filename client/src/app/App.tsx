@@ -40,7 +40,7 @@ import StardustAddress from "./routes/stardust/Addr";
 import StardustLanding from "./routes/stardust/Landing";
 import StardustMessage from "./routes/stardust/Message";
 import NFTDetails from "./routes/stardust/NFTDetails";
-import { NFTDetailsRouteProps } from "./routes/stardust/NFTDetailsRouteProps";
+import { NFTDetailsRouteProps } from "./routes/NFTDetailsRouteProps";
 import StardustSearch from "./routes/stardust/Search";
 import StardustVisualizer from "./routes/stardust/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
@@ -286,7 +286,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 )}
                                             />
                                             <Route
-                                                path="/:network/nft/:tokenId"
+                                                path="/:network/nft/:nftId"
                                                 component={(props: RouteComponentProps<NFTDetailsRouteProps>) =>
                                                 (
                                                     <NFTDetails
