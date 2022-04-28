@@ -22,7 +22,7 @@ export interface NewOutputProps {
     amount: number;
 
     /**
-     * Hide the label.
+     * Should hide the label.
      */
     hideLabel?: boolean;
 }
