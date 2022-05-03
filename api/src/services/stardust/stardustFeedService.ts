@@ -1,4 +1,4 @@
-import { SingleNodeClient } from "@iota/iota.js-stardust";
+import { messageIdFromMilestonePayload, SingleNodeClient } from "@iota/iota.js-stardust";
 import type { IMqttClient } from "@iota/mqtt.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedService } from "../../models/services/IFeedService";
@@ -61,8 +61,10 @@ export class StardustFeedService implements IFeedService {
                     userName: this._user,
                     password: this._password
                 });
-                const ms = await apiClient.milestone(message.index);
-                callback(message.index, ms.messageId, message.timestamp * 1000);
+                const milestonePayload = await apiClient.milestoneByIndex(message.index);
+                const messageId = messageIdFromMilestonePayload(2, milestonePayload);
+
+                callback(message.index, messageId, message.timestamp * 1000);
             } catch (err) {
                 console.error(err);
             }

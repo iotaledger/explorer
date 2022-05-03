@@ -1,4 +1,4 @@
-FROM node:12.14.1-alpine3.11
+FROM node:16-alpine3.14
 RUN apk add -U --no-cache git nginx
 
 # Working DIR
@@ -16,13 +16,12 @@ RUN echo 'server {\
         index  index.html index.htm;\
         try_files $uri /index.html;\
     }\
-  }' > /etc/nginx/conf.d/default.conf
+  }' > /etc/nginx/http.d/default.conf
 
 # Running required steps to prepare the web app prod build
 RUN npm install
 RUN npm run build
 
-RUN mkdir /run/nginx
 EXPOSE 80
 
 # Serve the prod build

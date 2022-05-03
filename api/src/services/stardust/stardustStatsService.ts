@@ -18,8 +18,8 @@ export class StardustStatsService extends BaseStatsService {
                     itemsPerSecond: info.metrics.messagesPerSecond,
                     confirmedItemsPerSecond: info.metrics.referencedMessagesPerSecond,
                     confirmationRate: info.metrics.referencedRate,
-                    latestMilestoneIndex: info.status.latestMilestoneIndex,
-                    latestMilestoneIndexTime: info.status.latestMilestoneTimestamp * 1000
+                    latestMilestoneIndex: info.status.latestMilestone.index,
+                    latestMilestoneIndexTime: info.status.latestMilestone.timestamp * 1000
                 });
 
                 if (this._statistics.length > 30) {
