@@ -1,6 +1,6 @@
 import { OutputTypes } from "@iota/iota.js-stardust";
 
-export interface NewOutputState {
+export interface OutputState {
     /**
      * The output.
      */

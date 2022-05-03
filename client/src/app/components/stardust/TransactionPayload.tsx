@@ -13,7 +13,7 @@ import { TransactionPayloadState } from "../TransactionPayloadState";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import messageJSON from "./../../../assets/modals/message.json";
 import "./TransactionPayload.scss";
-import NewOutput from "./NewOutput";
+import Output from "./Output";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
 
 /**
@@ -161,7 +161,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
 
                                     {this.state.showOutputDetails === idx && (
                                         <div className="card--value">
-                                            <NewOutput
+                                            <Output
                                                 key={idx}
                                                 index={idx + 1}
                                                 output={output.output}
