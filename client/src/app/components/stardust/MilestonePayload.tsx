@@ -55,7 +55,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { index, timestamp, lastMilestoneId,
+        const { index, timestamp, previousMilestoneId,
             parentMessageIds, confirmedMerkleRoot, appliedMerkleRoot,
             metadata, options, signatures }: IMilestonePayload = this.props.payload;
 
@@ -132,10 +132,10 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                 </div>
                 <div className="section--data">
                     <div className="label">
-                        Last milestone Id
+                        Previous milestone Id
                     </div>
                     <div className="value">
-                        {lastMilestoneId}
+                        {previousMilestoneId}
                     </div>
                 </div>
                 {parentMessageIds?.length > 0 && (
@@ -244,7 +244,8 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
      */
     private async loadIndex(index: string, updateUrl: boolean): Promise<void> {
         const result = await this._tangleCacheService.milestoneDetails(
-            this.props.network, Number.parseInt(index, 10));
+            this.props.network, Number.parseInt(index, 10)
+        );
 
         if (result) {
             window.scrollTo({
@@ -254,15 +255,16 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
             });
 
             this.setState({
-                milestone: result
+                messageId: result.messageId,
+                milestoneId: result.milestoneId,
+                milestone: result.milestone
             }, async () => this.checkForAdjacentMilestones());
 
             if (updateUrl) {
-                window.location.href = `/${this.props.network}/message/${this.state.milestone?.messageId}`;
+                window.location.href = `/${this.props.network}/message/${this.state.messageId}`;
             }
         } else {
-            this.props.history.replace(`/${this.props.network
-                }/search/${index}`);
+            this.props.history.replace(`/${this.props.network}/search/${index}`);
         }
     }
 

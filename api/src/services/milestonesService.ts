@@ -131,8 +131,7 @@ export class MilestonesService {
             async (milestoneIndex: number, id: string, timestamp: number) => {
                 this._lastUpdate = Date.now();
 
-                if (this._milestones
-                        .findIndex(p => p.milestoneIndex === milestoneIndex) === -1) {
+                if (this._milestones.findIndex(p => p.milestoneIndex === milestoneIndex) === -1) {
                     this._milestones.unshift({
                         id,
                         milestoneIndex,

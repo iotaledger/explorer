@@ -1,7 +1,7 @@
 /* eslint-disable no-warning-comments */
 import { composeAPI, Transaction } from "@iota/core";
 import { Blake2b } from "@iota/crypto.js-stardust";
-import { addressBalance, ED25519_ADDRESS_TYPE, IMilestoneResponse, IOutputResponse, IOutputsResponse, serializeMessage, SingleNodeClient, IndexerPluginClient } from "@iota/iota.js-stardust";
+import { addressBalance, ED25519_ADDRESS_TYPE, IOutputResponse, IOutputsResponse, serializeMessage, SingleNodeClient, IndexerPluginClient, messageIdFromMilestonePayload, milestoneIdFromMilestonePayload } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import { ChronicleClient } from "../../clients/chronicleClient";
@@ -11,6 +11,7 @@ import { ITransactionsDetailsResponse } from "../../models/api/ITransactionsDeta
 import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
 import { IMessageDetailsResponse } from "../../models/api/stardust/IMessageDetailsResponse";
+import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { INetwork } from "../../models/db/INetwork";
@@ -337,20 +338,13 @@ export class StardustTangleHelper {
      */
     public static async search(network: INetwork, query: string, cursor?: string): Promise<ISearchResponse> {
         // If we have a cursor this must be next page of permanode, so don't do the node lookup
-        let nodeResult = cursor ? {} : await StardustTangleHelper.searchApi(
-            network.provider, network.user, network.password, false, network.bechHrp, query);
+        let nodeResult = cursor ? {} : await StardustTangleHelper.searchApi(network, false, query);
 
         // If there were no results from regular node and we have a permanode
         // or if there were output ids get any additional historic ones
         if (network.permaNodeEndpoint &&
             (Object.keys(nodeResult).length === 0 || nodeResult.addressOutputIds || nodeResult.indexMessageIds)) {
-            const permaResult = await StardustTangleHelper.searchApi(
-                network.permaNodeEndpoint,
-                network.permaNodeEndpointUser,
-                network.permaNodeEndpointPassword,
-                true,
-                network.bechHrp,
-                query);
+            const permaResult = await StardustTangleHelper.searchApi(network, true, query);
 
             if (nodeResult.addressOutputIds) {
                 if (permaResult.addressOutputIds) {
@@ -482,28 +476,36 @@ export class StardustTangleHelper {
      * @returns The item details.
      */
     public static async milestoneDetails(
-        network: INetwork, milestoneIndex: number): Promise<IMilestoneResponse | undefined> {
+        network: INetwork, milestoneIndex: number): Promise<IMilestoneDetailsResponse | undefined> {
         try {
-            const client = new SingleNodeClient(network.provider, {
-                userName: network.user,
-                password: network.password
-            });
-            return await client.milestone(milestoneIndex);
-        } catch {
-        }
-
-        if (network.permaNodeEndpoint) {
-            try {
-                const client = new SingleNodeClient(network.permaNodeEndpoint, {
+            const client: SingleNodeClient = network.permaNodeEndpoint
+                /* eslint-disable-next-line no-warning-comments */
+                // TODO Test this when permanode exists
+                ? new SingleNodeClient(network.permaNodeEndpoint, {
                     userName: network.permaNodeEndpointUser,
                     password: network.permaNodeEndpointPassword,
                     basePath: "/"
-                });
-                return await client.milestone(milestoneIndex);
-            } catch {
-            }
+                })
+                    : new SingleNodeClient(network.provider, {
+                        userName: network.user,
+                        password: network.password
+                    });
+
+            const milestonePayload = await client.milestoneByIndex(milestoneIndex);
+            /* eslint-disable-next-line no-warning-comments */
+            // TODO Fetch protocol version from config/node
+            const messageId = messageIdFromMilestonePayload(2, milestonePayload);
+            const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
+
+            return {
+                messageId,
+                milestoneId,
+                milestone: milestonePayload
+            };
+        } catch {
         }
     }
+
 
     /**
      * Get the nft details.
@@ -531,21 +533,17 @@ export class StardustTangleHelper {
 
     /**
      * Find item on the stardust network.
-     * @param provider The provider for the REST API.
-     * @param user The user for the for the REST API.
-     * @param password The password for the REST API.
+     * @param network The network config.
      * @param isPermanode Is this a permanode endpoint.
-     * @param bechHrp The bech32 hrp for the network.
      * @param query The query to use for finding items.
      * @returns The item found.
      */
     private static async searchApi(
-        provider: string,
-        user: string | undefined,
-        password: string | undefined,
+        network: INetwork,
         isPermanode: boolean,
-        bechHrp: string,
-        query: string): Promise<ISearchResponse> {
+        query: string
+    ): Promise<ISearchResponse> {
+        const { provider, bechHrp, user, password } = network;
         const client = new SingleNodeClient(provider, {
             userName: user,
             password,
@@ -562,8 +560,9 @@ export class StardustTangleHelper {
 
         if (searchQuery.milestone) {
             try {
+                const milestoneDetails = await this.milestoneDetails(network, searchQuery.milestone);
                 return {
-                    milestone: await client.milestone(searchQuery.milestone)
+                    milestone: milestoneDetails
                 };
             } catch {
             }

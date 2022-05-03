@@ -109,8 +109,8 @@ export class SearchQueryBuilder {
         const milestone = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
         const address = this.buildAddress();
 
-        // if the hex without prefix has 40 characters it might be an Alias or Nft Id
-        if (address?.hexNoPrefix && address.hexNoPrefix.length === 40) {
+        // if the hex without prefix has 64 characters it might be an Alias or Nft Id
+        if (address?.hexNoPrefix && address.hexNoPrefix.length === 64) {
             aliasId = address.hex;
             nftId = address.hex;
         }

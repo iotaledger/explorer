@@ -161,8 +161,8 @@ export class TransactionsHelper {
             if (milestoneIndex) {
                 const result = await tangleCacheService.milestoneDetails(
                     network, milestoneIndex);
-                if (result?.timestamp) {
-                    date = DateHelper.formatShort(DateHelper.milliseconds(result.timestamp));
+                if (result?.milestone?.timestamp) {
+                    date = DateHelper.formatShort(DateHelper.milliseconds(result.milestone.timestamp));
                 }
             }
         }
