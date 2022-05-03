@@ -10,6 +10,7 @@ import { ITransactionsDetailsResponse } from "../../models/api/ITransactionsDeta
 import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
 import { IMessageDetailsResponse } from "../../models/api/stardust/IMessageDetailsResponse";
+import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../fetchHelper";
@@ -476,7 +477,7 @@ export class StardustTangleHelper {
     /**
      * Get the milestone details.
      * @param network The network to find the items on.
-     * @param milestoneIndex The milestone iindex to get the details.
+     * @param milestoneIndex The milestone index to get the details.
      * @returns The item details.
      */
     public static async milestoneDetails(
@@ -504,6 +505,30 @@ export class StardustTangleHelper {
     }
 
     /**
+     * Get the nft details.
+     * @param network The network to find the items on.
+     * @param address The address to get the details for.
+     * @returns The nft details.
+     */
+    public static async nftOutputs(
+        network: INetwork,
+        address: string
+    ): Promise<INftOutputsResponse | undefined> {
+        try {
+            const client = new SingleNodeClient(network.provider, {
+                userName: network.user,
+                password: network.password
+            });
+            const indexerPlugin = new IndexerPluginClient(client);
+
+            const nftOutputs = await indexerPlugin.nfts({ addressBech32: address });
+            return {
+                outputs: nftOutputs
+            };
+        } catch {}
+    }
+
+    /**
      * Find item on the stardust network.
      * @param provider The provider for the REST API.
      * @param user The user for the for the REST API.
@@ -511,7 +536,6 @@ export class StardustTangleHelper {
      * @param isPermanode Is this a permanode endpoint.
      * @param bechHrp The bech32 hrp for the network.
      * @param query The query to use for finding items.
-     * @param cursor Cursor data to send with the request.
      * @returns The item found.
      */
     private static async searchApi(
@@ -577,9 +601,7 @@ export class StardustTangleHelper {
                     }
                 } else {
                     const addressDetails = await addressBalance(client, searchQuery.address.bech32);
-                    // TO DO: confirm address.ledgerIndex > 0 condition is valid way to decide if address exists?
-                    // Address object will always be retrieved even for bech32 addresses that dont exist.
-                    if (addressDetails && addressDetails.ledgerIndex > 0) {
+                    if (addressDetails) {
                         const addressOutputs = await indexerPlugin.outputs(
                             { addressBech32: searchQuery.address.bech32 }
                         );
@@ -632,16 +654,12 @@ export class StardustTangleHelper {
             }
         }
 
-        // Stardust specific searches
         if (searchQuery.aliasId) {
             try {
                 const aliasOutputs = await indexerPlugin.alias(searchQuery.aliasId);
                 if (aliasOutputs.items.length > 0) {
-                    // TODO Only taking last item, check how to do it properly
-                    const aliasOutput = await client.output(aliasOutputs.items[aliasOutputs.items.length - 1]);
-
                     return {
-                        output: aliasOutput
+                        output: await client.output(aliasOutputs.items[0])
                     };
                 }
             } catch {}
@@ -651,11 +669,8 @@ export class StardustTangleHelper {
             try {
                 const nftOutputs = await indexerPlugin.nft(searchQuery.nftId);
                 if (nftOutputs.items.length > 0) {
-                    // TODO Only taking last item, check how to do it properly
-                    const nftOutput = await client.output(nftOutputs.items[nftOutputs.items.length - 1]);
-
                     return {
-                        output: nftOutput
+                        output: await client.output(nftOutputs.items[0])
                     };
                 }
             } catch {}
