@@ -208,7 +208,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     } else if (response.output) {
                                         objType = "message";
                                         objParam = response.output.messageId;
-                                    } else if (response.milestone) {
+                                    } else if (response.milestone?.messageId) {
                                         objType = "message";
                                         objParam = response.milestone?.messageId;
                                     } else if (response.did) {

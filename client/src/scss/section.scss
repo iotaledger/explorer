@@ -34,6 +34,10 @@
       font-weight: 500;
       letter-spacing: 0.5px;
       white-space: nowrap;
+
+      &.indent {
+        margin-left: 8px;
+      }
     }
 
     .value {
@@ -67,6 +71,10 @@
         span {
           color: $gray-6;
         }
+      }
+
+      &.indent {
+        margin-left: 8px;
       }
     }
 

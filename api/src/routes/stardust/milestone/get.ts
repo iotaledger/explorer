@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IMilestoneDetailsRequest } from "../../../models/api/chrysalis/IMilestoneDetailsRequest";
-import { IMilestoneDetailsResponse } from "../../../models/api/chrysalis/IMilestoneDetailsResponse";
+import { IMilestoneDetailsRequest } from "../../../models/api/stardust/IMilestoneDetailsRequest";
+import { IMilestoneDetailsResponse } from "../../../models/api/stardust/IMilestoneDetailsResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
@@ -27,8 +27,7 @@ export async function get(
     if (networkConfig.protocolVersion !== STARDUST) {
         return {};
     }
+    const milestoneDetails = await StardustTangleHelper.milestoneDetails(networkConfig, Number(request.milestoneIndex));
 
-    return {
-        milestone: await StardustTangleHelper.milestoneDetails(networkConfig, Number(request.milestoneIndex))
-    };
+    return milestoneDetails;
 }

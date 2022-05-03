@@ -1,6 +1,8 @@
 import { IUTXOInput } from "@iota/iota.js-stardust";
 import * as H from "history";
-import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
+import { IInput } from "../../../models/api/stardust/IInput";
+import { IOutput } from "../../../models/api/stardust/IOutput";
+
 export interface TransactionPayloadProps {
     /**
      * The network to lookup.
@@ -10,26 +12,12 @@ export interface TransactionPayloadProps {
     /**
      * The unlock addresses for the transactions.
      */
-    inputs: (IUTXOInput & {
-        outputHash: string;
-        isGenesis: boolean;
-        transactionUrl: string;
-        transactionAddress: IBech32AddressDetails;
-        signature: string;
-        publicKey: string;
-        amount: number;
-    })[];
+    inputs: (IUTXOInput & IInput)[];
 
     /**
      * The outputs.
      */
-    outputs: {
-        index: number;
-        type: number;
-        address: IBech32AddressDetails;
-        amount: number;
-        isRemainder: boolean;
-    }[];
+    outputs: IOutput[];
 
     /**
      * The total of the transfer excluding remainders.
@@ -41,3 +29,4 @@ export interface TransactionPayloadProps {
      */
     history: H.History;
 }
+

@@ -3,6 +3,7 @@ import { UnitsHelper } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import AsyncComponent from "../AsyncComponent";
 import Bech32Address from "../chrysalis/Bech32Address";
 import FiatValue from "../FiatValue";
@@ -12,8 +13,8 @@ import { TransactionPayloadState } from "../TransactionPayloadState";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import messageJSON from "./../../../assets/modals/message.json";
 import "./TransactionPayload.scss";
+import Output from "./Output";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
-
 
 /**
  * Component which will display a transaction payload.
@@ -141,39 +142,33 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                             {this.props.outputs.map((output, idx) => (
                                 <React.Fragment key={idx}>
                                     <div
-                                        className="card--content__input"
+                                        className="card--content__input card--value"
                                         onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx })}
                                     >
                                         <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === idx })}>
                                             <DropdownIcon />
                                         </div>
-                                        <Bech32Address
-                                            network={this.props.network}
-                                            history={this.props.history}
-                                            addressDetails={output.address}
-                                            advancedMode={false}
-                                            hideLabel
-                                            truncateAddress
-                                        />
+                                        <button
+                                            type="button"
+                                            className="margin-r-t color"
+                                        >
+                                            {NameHelper.getOutputTypeName(output.type)}
+                                        </button>
                                         <div className="card--value">
                                             {UnitsHelper.formatBest(output.amount)}
                                         </div>
                                     </div>
 
                                     {this.state.showOutputDetails === idx && (
-                                        <React.Fragment>
-                                            <div className="card--label"> Address</div>
-                                            <div className="card--value">
-                                                <Bech32Address
-                                                    network={this.props.network}
-                                                    history={this.props.history}
-                                                    addressDetails={output.address}
-                                                    advancedMode
-                                                    hideLabel
-                                                    truncateAddress={false}
-                                                />
-                                            </div>
-                                        </React.Fragment>)}
+                                        <div className="card--value">
+                                            <Output
+                                                key={idx}
+                                                index={idx + 1}
+                                                output={output.output}
+                                                amount={output.amount}
+                                            />
+                                        </div>
+                                    )}
                                 </React.Fragment>
                             ))}
                         </div>

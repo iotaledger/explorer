@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { IMessageMetadata, IMilestoneResponse, IOutputResponse } from "@iota/iota.js-stardust";
+import { IMessageMetadata, IOutputResponse } from "@iota/iota.js-stardust";
 import { mamFetch as mamFetchOg, MamMode } from "@iota/mam-legacy";
 import { mamFetch as mamFetchChrysalis } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
@@ -8,6 +8,7 @@ import { TrytesHelper } from "../../helpers/trytesHelper";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
+import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -675,21 +676,25 @@ export class StardustTangleCacheService extends TangleCacheService {
      */
     public async milestoneDetails(
         networkId: string,
-        milestoneIndex: number): Promise<IMilestoneResponse | undefined> {
-        if (!this._stardustSearchCache[networkId][milestoneIndex]?.data?.milestone) {
+        milestoneIndex: number
+    ): Promise<IMilestoneDetailsResponse | undefined> {
+        const index = milestoneIndex.toString();
+        if (!this._stardustSearchCache[networkId][index]?.data?.milestone) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
             const response = await apiClient.milestoneDetails({ network: networkId, milestoneIndex });
 
             if (response?.milestone) {
-                this._stardustSearchCache[networkId][milestoneIndex] = {
-                    data: { milestone: response.milestone },
+                this._stardustSearchCache[networkId][index] = {
+                    data: {
+                        milestone: response
+                    },
                     cached: Date.now()
                 };
             }
         }
 
-        return this._stardustSearchCache[networkId][milestoneIndex.toString()]?.data?.milestone;
+        return this._stardustSearchCache[networkId][index]?.data?.milestone;
     }
 
     /**

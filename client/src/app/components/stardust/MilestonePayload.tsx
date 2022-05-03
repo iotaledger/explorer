@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import { IMilestonePayload, IPoWMilestoneOption, IReceiptMilestoneOption, POW_MILESTONE_OPTION_TYPE, RECEIPT_MILESTONE_OPTION_TYPE } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -7,6 +8,7 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../ModalProps";
+import ReceiptPayload from "../stardust/ReceiptPayload";
 import messageJSON from "./../../../assets/modals/message.json";
 import "./MilestonePayload.scss";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
@@ -53,6 +55,21 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { index, timestamp, previousMilestoneId,
+            parentMessageIds, confirmedMerkleRoot, appliedMerkleRoot,
+            metadata, options, signatures }: IMilestonePayload = this.props.payload;
+
+        let receiptMilestoneOption: IReceiptMilestoneOption | null = null;
+        let powMilestoneOption: IPoWMilestoneOption | null = null;
+
+        if (options?.some((option => option.type === RECEIPT_MILESTONE_OPTION_TYPE))) {
+            receiptMilestoneOption = options.find(option => option.type === RECEIPT_MILESTONE_OPTION_TYPE) as IReceiptMilestoneOption;
+        }
+
+        if (options?.some((option => option.type === POW_MILESTONE_OPTION_TYPE))) {
+            powMilestoneOption = options.find(option => option.type === POW_MILESTONE_OPTION_TYPE) as IPoWMilestoneOption;
+        }
+
         return (
             <div className="milestone-payload">
                 <div className="section--header row space-between">
@@ -98,7 +115,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         Index
                     </div>
                     <div className="value">
-                        {this.props.payload.index}
+                        {index}
                     </div>
                 </div>
                 <div className="section--data">
@@ -106,66 +123,110 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         Date
                     </div>
                     <div className="value">
-                        {this.props.payload.timestamp && DateHelper.format(
+                        {timestamp && DateHelper.format(
                             DateHelper.milliseconds(
-                                this.props.payload.timestamp
+                                timestamp
                             )
                         )}
                     </div>
                 </div>
+                <div className="section--data">
+                    <div className="label">
+                        Previous milestone Id
+                    </div>
+                    <div className="value">
+                        {previousMilestoneId}
+                    </div>
+                </div>
+                {parentMessageIds?.length > 0 && (
+                    <div className="section--data">
+                        <div className="label">
+                            Parent message Ids
+                        </div>
+                        {parentMessageIds.map((id, idx) => (
+                            <div key={idx} className="value code">
+                                {id}
+                            </div>
+                        ))}
+                    </div>
+                )}
                 {this.props.advancedMode && (
                     <React.Fragment>
                         <div className="section--data">
                             <div className="label">
-                                Inclusion Merkle Proof
+                                Confirmed Merkle Root
                             </div>
                             <div className="value code">
-                                {this.props.payload.inclusionMerkleProof}
+                                {confirmedMerkleRoot}
                             </div>
                         </div>
-                        {this.props.payload.nextPoWScore !== 0 && this.props.payload.nextPoWScoreMilestoneIndex !== 0 && (
+                        <div className="section--data">
+                            <div className="label">
+                                Applied Merkle Root
+                            </div>
+                            <div className="value code">
+                                {appliedMerkleRoot}
+                            </div>
+                        </div>
+                        {metadata && (
+                            <React.Fragment>
+                                <div className="card--label">
+                                    Metadata
+                                </div>
+                                <div className="card--value card--value__mono">
+                                    {metadata}
+                                </div>
+                            </React.Fragment>
+                        )}
+                        {powMilestoneOption && (
                             <React.Fragment>
                                 <div className="section--data">
                                     <div className="label">
                                         Next PoW Score
                                     </div>
                                     <div className="value code">
-                                        {this.props.payload.nextPoWScore}
+                                        {powMilestoneOption?.nextPoWScore}
                                     </div>
                                 </div>
                                 <div className="section--data">
-
                                     <div className="label">
                                         Next PoW Score Milestone Index
                                     </div>
                                     <div className="value code">
-                                        {this.props.payload.nextPoWScoreMilestoneIndex}
+                                        {powMilestoneOption?.nextPoWScoreMilestoneIndex}
                                     </div>
                                 </div>
                             </React.Fragment>
                         )}
-                        {this.props.payload.signatures && (
-                            <div className="section--data">
-                                <div className="label">
-                                    Public Keys
-                                </div>
-                                <div className="value code">
-                                    {this.props.payload.signatures.map(signature => (
-                                        <div key={signature.publicKey} className="margin-b-s">
-                                            {signature.publicKey}
-                                        </div>
-                                    ))}
-                                </div>
+                        {receiptMilestoneOption && (
+                            <div className="section">
+                                <ReceiptPayload
+                                    network={this.props.network}
+                                    history={this.props.history}
+                                    payload={receiptMilestoneOption}
+                                    advancedMode={this.props.advancedMode}
+                                />
                             </div>
                         )}
-                        <div className="section--data">
+                        <div className="section--data" >
                             <div className="label">
                                 Signatures
                             </div>
-                            <div className="value code">
-                                {this.props.payload.signatures.map(signature => (
-                                    <div key={signature.signature} className="margin-b-s">
-                                        {signature.signature}
+                            <div className="section--data margin-t-s">
+                                {signatures.map((signature, idx) => (
+                                    <div key={idx} className="margin-b-s">
+                                        <div className="label indent">
+                                            Public Key
+                                        </div>
+                                        <div className="value code indent">
+                                            {signature.publicKey}
+                                        </div>
+                                        <div className="label indent margin-t-2">
+                                            Signature
+                                        </div>
+                                        <div className="value code indent">
+                                            {signature.signature}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -183,7 +244,8 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
      */
     private async loadIndex(index: string, updateUrl: boolean): Promise<void> {
         const result = await this._tangleCacheService.milestoneDetails(
-            this.props.network, Number.parseInt(index, 10));
+            this.props.network, Number.parseInt(index, 10)
+        );
 
         if (result) {
             window.scrollTo({
@@ -193,15 +255,16 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
             });
 
             this.setState({
-                milestone: result
+                messageId: result.messageId,
+                milestoneId: result.milestoneId,
+                milestone: result.milestone
             }, async () => this.checkForAdjacentMilestones());
 
             if (updateUrl) {
-                window.location.href = `/${this.props.network}/message/${this.state.milestone?.messageId}`;
+                window.location.href = `/${this.props.network}/message/${this.state.messageId}`;
             }
         } else {
-            this.props.history.replace(`/${this.props.network
-                }/search/${index}`);
+            this.props.history.replace(`/${this.props.network}/search/${index}`);
         }
     }
 
