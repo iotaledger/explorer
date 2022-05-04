@@ -5,7 +5,7 @@ export interface NFTDetailsRouteProps {
     network: string;
 
     /**
-     * The token to lookup.
+     * The nft to lookup.
      */
-    tokenId: string;
+    nftId: string;
 }

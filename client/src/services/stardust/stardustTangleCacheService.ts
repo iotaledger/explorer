@@ -9,6 +9,7 @@ import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetai
 import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
+import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -773,6 +774,33 @@ export class StardustTangleCacheService extends TangleCacheService {
 
         return {
             outputs: this._stardustSearchCache[request.network][`${request.address}--nft-outputs`]?.data?.outputs
+        };
+    }
+
+    /**
+     * Get the NFT Details.
+     * @param request The request.
+     * @param skipCache Skip looking in the cache.
+     * @returns The NFT outputs response.
+     */
+     public async nftDetails(
+        request: INftDetailsRequest,
+        skipCache: boolean = false
+    ): Promise<INftOutputsResponse | undefined> {
+        const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`];
+
+        if (!cacheEntry?.data?.outputs || skipCache) {
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+
+            const nftDetails = await apiClient.nftDetails(request);
+            this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`] = {
+                data: { outputs: nftDetails.outputs },
+                cached: Date.now()
+            };
+        }
+
+        return {
+            outputs: this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`]?.data?.outputs
         };
     }
 

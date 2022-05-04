@@ -220,6 +220,31 @@ export class StardustTangleHelper {
     }
 
     /**
+     * Get the nft details by nftId.
+     * @param network The network to find the items on.
+     * @param nftId The nftId to get the details for.
+     * @returns The nft details.
+     */
+    public static async nftDetails(
+        network: INetwork,
+        nftId: string
+    ): Promise<INftOutputsResponse | undefined> {
+        try {
+            const client = new SingleNodeClient(network.provider, {
+                userName: network.user,
+                password: network.password
+            });
+            const indexerPlugin = new IndexerPluginClient(client);
+
+            const nftOutputs = await indexerPlugin.nft(nftId);
+            return {
+                outputs: nftOutputs
+            };
+            return {};
+        } catch {}
+    }
+
+    /**
      * Find item on the stardust network.
      * @param network The network config.
      * @param isPermanode Is this a permanode endpoint.
