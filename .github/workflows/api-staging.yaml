@@ -36,7 +36,7 @@ jobs:
             fs.writeFileSync('./api/src/data/config.staging.json', process.env.CONFIG_JSON)
             fs.writeFileSync('./api/dispatch.yaml', process.env.DISPATCH_YAML)
             fs.writeFileSync('./api/app.yaml', process.env.APP_YAML)
-      - uses: google-github-actions/setup-gcloud@master
+      - uses: google-github-actions/setup-gcloud@main
         with:
           version: latest
           project_id: ${{ secrets.GCP_PROJECT_ID }}
