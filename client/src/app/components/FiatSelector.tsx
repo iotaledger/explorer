@@ -47,7 +47,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                 this.setState({ currencyNames });
             }
         })
-            .catch(_ => { });
+        .catch(_ => { });
     }
 
     /**
@@ -76,7 +76,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                 <span className="full-name">{this.state?.currencyNames?.[currency]}</span>
             </div>
         );
-        const hasCurrencies = this.state?.currencies.length > 0;
+        const hasCurrencies = this.state?.currencies?.length > 0;
 
         return (
             <div className="fiat-selector" >
