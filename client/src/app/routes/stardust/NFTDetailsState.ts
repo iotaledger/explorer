@@ -1,6 +1,14 @@
 
 export interface NFTDetailsState {
     /**
+     * Nft Id.
+     */
+    nftId: string;
+    /**
+     * amount.
+     */
+    amount: number;
+    /**
      * Current page in activity history table.
      */
     currentPage: number;

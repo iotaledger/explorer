@@ -285,15 +285,18 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                         : <ChrysalisMessage {...props} />
                                                 )}
                                             />
-                                            <Route
-                                                path="/:network/nft/:nftId"
-                                                component={(props: RouteComponentProps<NFTDetailsRouteProps>) =>
-                                                (
-                                                    <NFTDetails
-                                                        {...props}
+                                            {
+                                                isStardust && 
+                                                    <Route
+                                                        path="/:network/nft/:nftId"
+                                                        component={(props: RouteComponentProps<NFTDetailsRouteProps>) =>
+                                                        (
+                                                            <NFTDetails
+                                                                {...props}
+                                                            />
+                                                        )}
                                                     />
-                                                )}
-                                            />
+                                            }
                                             <Route
                                                 path="/:network/indexed/:index"
                                                 component={(props: RouteComponentProps<IndexedRouteProps>) =>

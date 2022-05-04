@@ -42,6 +42,8 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
         this.state = {
+            nftId: '',
+            amount: 0,
             currentPage: 1,
             pageSize: 10,
             currentPageActivities: [],
@@ -90,7 +92,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                 Buying Price
                                             </div>
                                             <div className="value featured">
-                                                <span>0</span>
+                                                <span>1.25 Gi (${this.state.amount})</span>
                                             </div>
                                         </div>
                                     </div>
@@ -114,7 +116,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                 </li>
                                                 <li className="list">
                                                     <span className="label name">Token ID</span>
-                                                    <span className="label value">21391039</span>
+                                                    <span className="label value">{this.state.nftId.slice(0, 6)}...{this.state.nftId.slice(-2)}</span>
                                                 </li>
                                                 <li className="list">
                                                     <span className="label name">Contact Address</span>
@@ -322,7 +324,10 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
 
                 if (output && !output.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
                     const nftDetails = output.output;
-                    // TODO: Code here to map the data on the page
+                    this.setState({
+                        amount: Number(nftDetails.amount),
+                        nftId: nftDetails.nftId
+                    })
                 }
             }
         }
