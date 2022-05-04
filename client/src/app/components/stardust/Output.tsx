@@ -144,7 +144,7 @@ class Output extends Component<OutputProps, OutputState> {
                         )}
                         {this.state.output.nativeTokens.map((token, idx) => (
                             <React.Fragment key={idx}>
-                                <div className="native-token padding-t-s">
+                                <div className="native-token">
                                     <div
                                         className="card--content__input card--value row middle"
                                         onClick={() => this.setState({ showOutputDetails:

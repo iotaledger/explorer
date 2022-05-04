@@ -1,4 +1,5 @@
 import { Bech32Helper, ED25519_ADDRESS_TYPE } from "@iota/iota.js";
+import { ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import { Converter } from "@iota/util.js";
 import { IBech32AddressDetails } from "../models/IBech32AddressDetails";
 
@@ -31,7 +32,7 @@ export class Bech32AddressHelper {
             // We assume this is hex and either use the hint or assume ed25519 for now
             hex = address;
             type = typeHint ?? ED25519_ADDRESS_TYPE;
-            bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, Converter.hexToBytes(hex), hrp);
+            bech32 = Bech32Helper.toBech32(type, Converter.hexToBytes(hex), hrp);
         }
 
         return {
@@ -50,6 +51,10 @@ export class Bech32AddressHelper {
     public static typeLabel(addressType?: number): string | undefined {
         if (addressType === ED25519_ADDRESS_TYPE) {
             return "Ed25519";
+        } else if (addressType === ALIAS_ADDRESS_TYPE) {
+            return "Alias Address";
+        } else if (addressType === NFT_ADDRESS_TYPE) {
+            return "Nft Address";
         }
     }
 }

@@ -1,9 +1,12 @@
 /* eslint-disable no-warning-comments */
-import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, Ed25519Address,
+import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
+    IGovernorAddressUnlockCondition, Ed25519Address,
     ED25519_ADDRESS_TYPE, IMessage, ISignatureUnlockBlock,
     IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE,
     TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
-    IBasicOutput, UnlockConditionTypes } from "@iota/iota.js-stardust";
+    IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
+    TREASURY_OUTPUT_TYPE, ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
+    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { DateHelper } from "../../helpers/dateHelper";
 import { IInput } from "../../models/api/stardust/IInput";
@@ -78,10 +81,10 @@ export class TransactionsHelper {
                     ? Number(inputTransaction.payload?.essence.outputs[transactionOutputIndex].amount) : 0;
 
                 const outputResponse = await tangleCacheService.outputDetails(network, outputHash);
-                if (outputResponse?.output.type === BASIC_OUTPUT_TYPE) {
+                if (outputResponse && outputResponse?.output.type !== TREASURY_OUTPUT_TYPE) {
                     const address: IBech32AddressDetails = TransactionsHelper
-                    .bechAddressFromAddressUnlockCondition(outputResponse.output.unlockConditions, _bechHrp);
-
+                    .bechAddressFromAddressUnlockCondition(outputResponse.output.unlockConditions,
+                                                         _bechHrp, outputResponse.output.type);
                     if (address.bech32 !== "") {
                         transactionAddress = address;
                         transactionUrl = `/${network}/message/${outputResponse.messageId}`;
@@ -102,11 +105,20 @@ export class TransactionsHelper {
 
             // Outputs
             for (let i = 0; i < payload.essence.outputs.length; i++) {
-                if (payload.essence.outputs[i].type === BASIC_OUTPUT_TYPE) {
-                    const basicOutput = payload.essence.outputs[i] as IBasicOutput;
+                if (payload.essence.outputs[i].type === TREASURY_OUTPUT_TYPE) {
+                    const output = payload.essence.outputs[i] as ITreasuryOutput;
+
+                    outputs.push({
+                        type: transactionMessage.payload.essence.outputs[i].type,
+                        output,
+                        amount: Number(transactionMessage.payload.essence.outputs[i].amount)
+                    });
+                } else {
+                    const output = payload.essence.outputs[i] as IBasicOutput |
+                    IFoundryOutput | IAliasOutput | INftOutput;
 
                     const address: IBech32AddressDetails = TransactionsHelper
-                    .bechAddressFromAddressUnlockCondition(basicOutput.unlockConditions, _bechHrp);
+                    .bechAddressFromAddressUnlockCondition(output.unlockConditions, _bechHrp, output.type);
 
                     const isRemainder = inputs.some(input => input.transactionAddress.bech32 === address.bech32);
 
@@ -116,7 +128,7 @@ export class TransactionsHelper {
                             address,
                             amount: Number(transactionMessage.payload.essence.outputs[i].amount),
                             isRemainder,
-                            output: basicOutput
+                            output
                         });
                     } else {
                         outputs.push({
@@ -124,7 +136,7 @@ export class TransactionsHelper {
                             address,
                             amount: Number(transactionMessage.payload.essence.outputs[i].amount),
                             isRemainder,
-                            output: basicOutput
+                            output
                         });
                     }
 
@@ -171,18 +183,38 @@ export class TransactionsHelper {
 
     private static bechAddressFromAddressUnlockCondition(
         unlockConditions: UnlockConditionTypes[],
-        _bechHrp: string
+        _bechHrp: string,
+        outputType: number
     ): IBech32AddressDetails {
         let address: IBech32AddressDetails = { bech32: "" };
+        let unlockCondition;
 
-        // Address unlock condition is mandatory, also there can be only one
-        const addressUnlockCondition = unlockConditions?.filter(
-            ot => ot.type === ADDRESS_UNLOCK_CONDITION_TYPE
-        ).map(ot => ot as IAddressUnlockCondition)[0];
+        if (outputType === BASIC_OUTPUT_TYPE || outputType === NFT_OUTPUT_TYPE) {
+            unlockCondition = unlockConditions?.filter(
+                ot => ot.type === ADDRESS_UNLOCK_CONDITION_TYPE
+            ).map(ot => ot as IAddressUnlockCondition)[0];
+        } else if (outputType === ALIAS_OUTPUT_TYPE) {
+            if (unlockConditions.some(ot => ot.type === STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE)) {
+                unlockCondition = unlockConditions?.filter(
+                    ot => ot.type === STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE
+                ).map(ot => ot as IStateControllerAddressUnlockCondition)[0];
+            }
+            if (unlockConditions.some(ot => ot.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE)) {
+                unlockCondition = unlockConditions?.filter(
+                    ot => ot.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE
+                ).map(ot => ot as IGovernorAddressUnlockCondition)[0];
+            }
+        }
 
-        if (addressUnlockCondition.address.type === ED25519_ADDRESS_TYPE) {
-            const pubKeyHash = HexHelper.stripPrefix(addressUnlockCondition.address.pubKeyHash);
+        if (unlockCondition?.address.type === ED25519_ADDRESS_TYPE) {
+            const pubKeyHash = HexHelper.stripPrefix(unlockCondition.address.pubKeyHash);
             address = Bech32AddressHelper.buildAddress(_bechHrp, pubKeyHash, ED25519_ADDRESS_TYPE);
+        } else if (unlockCondition?.address.type === ALIAS_ADDRESS_TYPE) {
+            const aliasId = HexHelper.stripPrefix(unlockCondition.address.aliasId);
+            address = Bech32AddressHelper.buildAddress(_bechHrp, aliasId, ALIAS_ADDRESS_TYPE);
+        } else if (unlockCondition?.address.type === NFT_ADDRESS_TYPE) {
+            const nftId = HexHelper.stripPrefix(unlockCondition.address.nftId);
+            address = Bech32AddressHelper.buildAddress(_bechHrp, nftId, NFT_ADDRESS_TYPE);
         }
 
         return address;

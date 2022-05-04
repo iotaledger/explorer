@@ -29,6 +29,6 @@ export interface IOutput {
     /**
      * Is remainder output flag.
      */
-    isRemainder: boolean;
+    isRemainder?: boolean;
 }
 
