@@ -286,7 +286,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 )}
                                             />
                                             {
-                                                isStardust && 
+                                                isStardust &&
                                                     <Route
                                                         path="/:network/nft/:nftId"
                                                         component={(props: RouteComponentProps<NFTDetailsRouteProps>) =>

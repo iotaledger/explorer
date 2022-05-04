@@ -42,7 +42,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
         this.state = {
-            nftId: '',
+            nftId: "",
             amount: 0,
             currentPage: 1,
             pageSize: 10,
@@ -327,7 +327,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                     this.setState({
                         amount: Number(nftDetails.amount),
                         nftId: nftDetails.nftId
-                    })
+                    });
                 }
             }
         }
