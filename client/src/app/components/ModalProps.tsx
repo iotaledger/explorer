@@ -15,5 +15,10 @@ export interface ModalProps {
     data: {
         title?: string;
         description: string;
+        links?: {
+            label?: string;
+            href?: string;
+            isExternalLink?: boolean;
+        }[];
     };
 }

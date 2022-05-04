@@ -6,7 +6,7 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../ModalProps";
-import messageJSON from "./../../../assets/modals/message.json";
+import milestoneMessage from "./../../../assets/modals/milestone-payload.json";
 import "./MilestonePayload.scss";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
@@ -59,7 +59,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         <h2>
                             Milestone Payload
                         </h2>
-                        <Modal icon={ModalIcon.Info} data={messageJSON} />
+                        <Modal icon={ModalIcon.Info} data={milestoneMessage} />
                     </div>
                     {(this.state.hasPrevious || this.state.hasNext) && (
                         <div className="section--data row middle">

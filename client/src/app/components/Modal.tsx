@@ -58,6 +58,22 @@ class Modal extends Component<ModalProps, ModalState> {
                             </div>
                             <div className="modal--description">
                                 <div dangerouslySetInnerHTML={{ __html: this.props.data?.description }} />
+                                {this.props.data.links && (
+                                    <div className="modal--actions">
+                                        {this.props.data.links.map((link, index) => (
+                                            <a
+                                                key={index}
+                                                rel="noopener noreferrer"
+                                                href={link.href}
+                                                target={link.isExternalLink ? "_blank" : "_self"}
+                                                className="modal--action"
+                                            >
+                                                {link.label}
+                                            </a>
+                                        ))}
+                                    </div>
+                                )}
+
                             </div>
                         </div>
                         <div

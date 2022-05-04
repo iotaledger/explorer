@@ -89,6 +89,22 @@
           margin-bottom: 24px;
         }
       }
+
+      .modal--actions {
+        margin: 24px 0;
+
+        .modal--action {
+          @include font-size(14px, 21px);
+
+          padding: 6px 20px;
+          border: none;
+          border-radius: 6px;
+          background: var(--mint-green-bg);
+          color: $white;
+          font-family: $inter;
+          text-decoration: none;
+        }
+      }
     }
   }
 }
