@@ -26,6 +26,10 @@
     color: var(--body-color);
     appearance: none;
 
+    @include phone-down {
+      padding: 0 24px 0 8px;
+    }
+
     &:focus {
       border-color: var(--input-focus-border-color);
     }
@@ -64,7 +68,10 @@
 
     @include phone-down {
       position: fixed;
+      top: $navbar-height-mobile;
       width: 100%;
+      max-height: calc(100vh - $navbar-height-mobile);
+      border-top: 0;
     }
 
     .group-header {
@@ -102,5 +109,9 @@
     right: 10px;
     color: $gray;
     pointer-events: none;
+
+    @include phone-down {
+      right: 1px;
+    }
   }
 }
