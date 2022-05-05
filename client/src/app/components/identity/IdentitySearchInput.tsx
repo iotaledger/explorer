@@ -36,7 +36,8 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
             >
                 <span className="material-icons">
                     search
-                </span>                   <input
+                </span>
+                <input
                     autoFocus={!this.props.compact}
                     className="identity-search--text-input"
                     type="text"

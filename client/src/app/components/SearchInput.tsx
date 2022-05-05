@@ -36,7 +36,8 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                 >
                     <span className="material-icons">
                         search
-                    </span>                    <input
+                    </span>
+                    <input
                         className="search--text-input"
                         type="text"
                         autoFocus
@@ -45,9 +46,9 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                             query: this.props.protocolVersion === "og"
                                 ? e.target.value.toUpperCase().trim()
                                 : e.target.value,
-                            isValid: this.isValid(this.props.protocolVersion === "og"
-                                ? e.target.value.toUpperCase().trim()
-                                : e.target.value)
+                                isValid: this.isValid(this.props.protocolVersion === "og"
+                                    ? e.target.value.toUpperCase().trim()
+                                    : e.target.value)
                         })}
                         onKeyDown={e => {
                             if (e.keyCode === 13 && this.state.isValid) {
