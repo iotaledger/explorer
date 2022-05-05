@@ -1,5 +1,5 @@
 import { UnitsHelper } from "@iota/iota.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
+import { Converter, HexHelper } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
@@ -443,13 +443,14 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
         if (this._graph && this._hadInitialLoad) {
             const highlightRegEx = this.highlightNodesRegEx();
 
-            for (const meta in metaData) {
-                const node = this._graph.getNode(meta);
+            for (const id in metaData) {
+                const noPrefixId = HexHelper.stripPrefix(id);
+                const node = this._graph.getNode(noPrefixId);
                 if (node) {
                     if (node.data) {
                         node.data.feedItem.metaData = {
                             ...node.data.feedItem.metaData,
-                            ...metaData[meta]
+                            ...metaData[id]
                         };
                     }
                     this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
