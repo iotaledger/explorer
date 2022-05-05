@@ -400,26 +400,28 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                 const now = Date.now();
 
                 for (const item of newItems) {
-                    const existingNode = this._graph.getNode(item.id);
+                    const id = HexHelper.stripPrefix(item.id);
+                    const existingNode = this._graph.getNode(id);
 
                     if (!existingNode) {
-                        this._graph.addNode(item.id, {
+                        this._graph.addNode(id, {
                             feedItem: item,
                             added: now
                         });
-                        this._existingIds.push(item.id);
+                        this._existingIds.push(id);
 
                         if (item.parents) {
                             const addedParents: string[] = [];
                             for (let i = 0; i < item.parents.length; i++) {
-                                if (!addedParents.includes(item.parents[i])) {
-                                    addedParents.push(item.parents[i]);
-                                    if (!this._graph.getNode(item.parents[i])) {
-                                        this._graph.addNode(item.parents[i]);
-                                        this._existingIds.push(item.parents[i]);
+                                const parentId = HexHelper.stripPrefix(item.parents[i]);
+                                if (!addedParents.includes(parentId)) {
+                                    addedParents.push(parentId);
+                                    if (!this._graph.getNode(parentId)) {
+                                        this._graph.addNode(parentId);
+                                        this._existingIds.push(parentId);
                                     }
 
-                                    this._graph.addLink(item.parents[i], item.id);
+                                    this._graph.addLink(parentId, id);
                                 }
                             }
                         }
