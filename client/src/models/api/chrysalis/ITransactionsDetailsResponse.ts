@@ -1,4 +1,3 @@
-import { ISigLockedDustAllowanceOutput, ISigLockedSingleOutput, IUTXOInput } from "@iota/iota.js";
 import { MessageTangleStatus } from "../../messageTangleStatus";
 import { IResponse } from "../IResponse";
 export interface HistoricOutput {

@@ -7,7 +7,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/transactionsHelper";
-import {HistoricInput, HistoricOutput, ITransaction} from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { HistoricInput, HistoricOutput, ITransaction } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { NetworkService } from "../../../services/networkService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -316,19 +316,20 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     private get currentPageTransactions() {
         const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
         const lastPageIndex = firstPageIndex + this.state.pageSize;
-        const transactionsPage = this.txsHistory.
-            slice(firstPageIndex, lastPageIndex).
-            reduce((acc: ITransaction[], curr: ITransaction) => {
+        const transactionsPage = this.txsHistory
+        .slice(firstPageIndex, lastPageIndex)
+        /* eslint-disable-next-line unicorn/no-array-reduce */
+        .reduce((acc: ITransaction[], curr: ITransaction) => {
             acc.push(curr);
             if (curr.relatedSpentTransaction) {
                 acc.push(curr.relatedSpentTransaction);
             }
-            return acc
+            return acc;
         }, []);
 
-        const sortedTransactions: ITransaction[] = transactionsPage.sort((a, b) =>
-            moment(a.date).isAfter(moment(b.date)) ? -1 : 1
-        );
+        const sortedTransactions: ITransaction[] = transactionsPage.sort((a, b) => (
+             moment(a.date).isAfter(moment(b.date)) ? -1 : 1
+        ));
         return sortedTransactions;
     }
 
@@ -433,21 +434,21 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                             if (transactionsResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
                                 const relatedAmount = await this.getTransactionAmount(output.spendingMessageId);
-                                const historicInputs: HistoricInput[] = transactionsResult?.message?.
-                                    payload?.essence?.inputs.map(input => ({
+                                const relatedInputs = transactionsResult?.message?.payload?.essence?.inputs;
+                                const historicInputs: HistoricInput[] = relatedInputs.map(input => ({
                                     transactionId: input.transactionId,
                                     transactionOutputIndex: input.transactionOutputIndex.toString(),
                                     type: input.type
                                 }));
-                                const historicOutputs: HistoricOutput[] = transactionsResult?.message?.
-                                    payload?.essence?.outputs.map(output => ({
+                                const relatedOutputs = transactionsResult?.message?.payload?.essence?.outputs;
+                                const historicOutputs: HistoricOutput[] = relatedOutputs.map(relatedOutput => ({
                                     output: {
                                         address: {
-                                            type: output.address.type,
-                                            address: output.address.address
+                                            type: relatedOutput.address.type,
+                                            address: relatedOutput.address.address
                                         },
-                                        amount: output.amount.toString(),
-                                        type: output.type
+                                        amount: relatedOutput.amount.toString(),
+                                        type: relatedOutput.type
                                     },
                                     spendingMessageId: ""
                                 }));
