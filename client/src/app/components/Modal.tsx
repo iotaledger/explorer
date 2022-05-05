@@ -1,5 +1,4 @@
 import React, { Component, ReactNode } from "react";
-import { ReactComponent as DotsIcon } from "./../../assets/dots.svg";
 import "./Modal.scss";
 import { ModalProps } from "./ModalProps";
 import { ModalState } from "./ModalState";

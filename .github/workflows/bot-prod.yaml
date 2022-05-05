@@ -41,7 +41,7 @@ jobs:
           cd discord-bot
           npm install
           npm run build
-      - uses: google-github-actions/setup-gcloud@master
+      - uses: google-github-actions/setup-gcloud@v0
         with:
           version: latest
           project_id: ${{ secrets.GCP_PROJECT_ID }}

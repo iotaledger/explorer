@@ -220,14 +220,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                                             .protocolVersion === "og" &&
                                                                             payload.label === "Non-zero only" &&
                                                                             payload.isEnabled) ||
-                                                                            (this.state.networkConfig.protocolVersion ===
-                                                                                "chrysalis" &&
+                                                                            (this.state
+                                                                             .networkConfig
+                                                                             .protocolVersion === "chrysalis" &&
                                                                                 payload.label === "Transaction" &&
-                                                                                payload.isEnabled)) && (
-                                                                                <div className="row">
-                                                                                    {this.transactionDropdown("minimum")}
-                                                                                    {this.transactionDropdown("maximum")}
-                                                                                </div>
+                                                                                payload.isEnabled)
+                                                                         ) && (
+                                                                             <div className="row">
+                                                                                 {this.transactionDropdown("minimum")}
+                                                                                 {this.transactionDropdown("maximum")}
+                                                                             </div>
                                                                             )}
                                                                     </React.Fragment>
                                                                 ))}
