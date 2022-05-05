@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import AsyncComponent from "../AsyncComponent";
 import FiatValue from "../FiatValue";
 import Modal from "../Modal";
-import { ModalIcon } from "../ModalProps";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import transactionPayloadMessage from "./../../../assets/modals/message/transaction-payload.json";
 import Bech32Address from "./Bech32Address";
@@ -52,7 +51,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         <h2>
                             Transaction Payload
                         </h2>
-                        <Modal icon={ModalIcon.Info} data={transactionPayloadMessage} />
+                        <Modal icon="info" data={transactionPayloadMessage} />
                     </div>
                     <div className="transaction-value">
                         <div>

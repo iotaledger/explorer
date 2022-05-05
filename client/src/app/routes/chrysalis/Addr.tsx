@@ -13,7 +13,6 @@ import Bech32Address from "../../components/chrysalis/Bech32Address";
 import QR from "../../components/chrysalis/QR";
 import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
-import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
@@ -121,7 +120,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 <h1>
                                     Address
                                 </h1>
-                                <Modal icon={ModalIcon.Info} data={mainHeaderMessage} />
+                                <Modal icon="info" data={mainHeaderMessage} />
                             </div>
                         </div>
                         <div className="top">
@@ -225,7 +224,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <h2>
                                                     Transaction History
                                                 </h2>
-                                                <Modal icon={ModalIcon.Info} data={transactionHistoryMessage} />
+                                                <Modal icon="info" data={transactionHistoryMessage} />
                                             </div>
                                             {this.state.status && (
                                                 <div className="margin-t-s middle row">

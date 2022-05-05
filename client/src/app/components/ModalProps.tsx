@@ -1,14 +1,8 @@
-// eslint-disable-next-line no-shadow
-export enum ModalIcon {
-    Dots = "dots",
-    Info = "info"
-}
-
 export interface ModalProps {
     /**
-     * The clickable icon path to show the modal.
+     * The clickable icon in "material icon string" format to show modal.
      */
-    icon: ModalIcon;
+    icon: string;
     /**
      * The title and description of Modal.
      */

@@ -31,15 +31,10 @@ class Modal extends Component<ModalProps, ModalState> {
                     className="modal--icon"
                     onClick={() => this.handleShow()}
                 >
-                    {this.props.icon === "dots" && (
+                    {this.props.icon && (
                         <span className="material-icons">
-                            more_horiz
+                            {this.props.icon}
                         </span>)}
-                    {this.props.icon === "info" && (
-                        <span className="material-icons">
-                            info
-                        </span>
-                    )}
                 </button>
                 {this.state.show && (
                     <React.Fragment>
