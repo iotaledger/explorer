@@ -5,7 +5,7 @@
       {
         "label": "Read more",
         "href": "https://wiki.iota.org/iota.rs/libraries/nodejs/examples#messages-payload-and-transactions",
-        "isExternalLink": true
+        "isExternal": true
       }
     ]
 }

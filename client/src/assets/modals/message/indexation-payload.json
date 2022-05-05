@@ -5,7 +5,7 @@
       {
         "label": "Read more",
         "href": "https://wiki.iota.org/learn/about-iota/messages#indexation-payload",
-        "isExternalLink": true
+        "isExternal": true
       }
     ]
 }

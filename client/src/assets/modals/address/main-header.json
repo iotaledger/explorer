@@ -5,7 +5,7 @@
       {
         "label": "Read more",
         "href": "https://wiki.iota.org/build/fundamentals/cryptography#addresses",
-        "isExternalLink": true
+        "isExternal": true
       }
     ]
 }

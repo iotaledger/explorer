@@ -65,7 +65,7 @@ class Modal extends Component<ModalProps, ModalState> {
                                                 key={index}
                                                 rel="noopener noreferrer"
                                                 href={link.href}
-                                                target={link.isExternalLink ? "_blank" : "_self"}
+                                                target={link.isExternal ? "_blank" : "_self"}
                                                 className="modal--action"
                                             >
                                                 {link.label}
