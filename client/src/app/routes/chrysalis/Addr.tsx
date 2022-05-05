@@ -7,7 +7,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/transactionsHelper";
-import { HistoricInput, HistoricOutput, ITransaction } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { HistoricInput, HistoricOutput, ITransaction, ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { NetworkService } from "../../../services/networkService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -353,30 +353,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
                     .catch(err => console.error(err));
 
-                if (transactionsDetails?.transactionHistory?.state) {
-                    const allTransactionsDetails = await this._tangleCacheService.transactionsDetails({
-                        network: this.props.match.params.network,
-                        address: this.state.address?.address ?? "",
-                        query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
-                    }, true);
-
-                    if (allTransactionsDetails?.transactionHistory.transactions) {
-                        this.setState({ transactionHistory: { ...allTransactionsDetails,
-                            transactionHistory: { ...allTransactionsDetails.transactionHistory,
-                                transactions: allTransactionsDetails.transactionHistory
-                                    .transactions?.map(t1 => ({ ...t1, ...this.txsHistory.find(t2 => t2.messageId === t1.messageId) })),
-                                state: allTransactionsDetails.transactionHistory.state } } });
-                    }
-
-                    if (allTransactionsDetails?.transactionHistory?.state) {
-                        return this._tangleCacheService.transactionsDetails({
-                            network: this.props.match.params.network,
-                            address: this.state.address?.address ?? "",
-                            query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
-                        },
-                        true);
-                    }
-                }
+                this.transactionHistoryHelper(transactionsDetails);
 
                 this.setState({
                     status: "",
@@ -384,6 +361,28 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 });
             }
         );
+    }
+
+    private async transactionHistoryHelper(transactionsDetails: ITransactionsDetailsResponse | undefined) {
+        if (transactionsDetails?.transactionHistory?.state) {
+            const allTransactionsDetails = await this._tangleCacheService.transactionsDetails({
+                network: this.props.match.params.network,
+                address: this.state.address?.address ?? "",
+                query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
+            }, true);
+
+            if (allTransactionsDetails?.transactionHistory.transactions) {
+                this.setState({ transactionHistory: { ...allTransactionsDetails,
+                              transactionHistory: { ...allTransactionsDetails.transactionHistory,
+                                  transactions: allTransactionsDetails.transactionHistory
+                                  .transactions?.map(t1 => ({ ...t1, ...this.txsHistory.find(t2 => t2.messageId === t1.messageId) })),
+                                  state: allTransactionsDetails.transactionHistory.state } } },
+                                  async () => {
+                                      this.transactionHistoryHelper(this.state.transactionHistory);
+                                  }
+                             );
+            }
+        }
     }
 
     private async updateTransactionHistoryDetails(startIndex: number, endIndex: number) {
