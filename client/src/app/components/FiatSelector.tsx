@@ -1,7 +1,8 @@
+import classNames from "classnames";
 import React, { ReactNode, RefObject } from "react";
 import Currency from "./Currency";
-import { FiatSelectorState } from "./FiatSelectorState";
 import "./FiatSelector.scss";
+import { FiatSelectorState } from "./FiatSelectorState";
 
 /**
  * Component which will display a currency button.
@@ -88,7 +89,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                 >
                     {this.state?.currency}
                 </button>
-                <span className="material-icons chevron">
+                <span className={classNames("material-icons chevron", { opened: this.state?.isExpanded })}>
                     expand_more
                 </span>
                 {

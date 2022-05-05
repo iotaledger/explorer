@@ -107,8 +107,13 @@
     z-index: 2;
     top: 19%;
     right: 10px;
+    transition: transform 0.2s ease;
     color: $gray;
     pointer-events: none;
+
+    &.opened {
+      transform: rotate(-180deg);
+    }
 
     @include phone-down {
       right: 1px;
