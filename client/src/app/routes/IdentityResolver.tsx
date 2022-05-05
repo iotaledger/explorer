@@ -19,9 +19,9 @@ import JsonViewer from "../components/JsonViewer";
 import MessageButton from "../components/MessageButton";
 import MessageTangleState from "../components/MessageTangleState";
 import Modal from "../components/Modal";
-import { ModalIcon } from "../components/ModalProps";
 import Spinner from "../components/Spinner";
-import messageJSON from "./../../assets/modals/message.json";
+import contentMessage from "./../../assets/modals/identity-resolver/content.json";
+import welcomeMessage from "./../../assets/modals/identity-resolver/welcome.json";
 import "./IdentityResolver.scss";
 import { IdentityResolverProps } from "./IdentityResolverProps";
 import { IdentityResolverState } from "./IdentityResolverState";
@@ -141,7 +141,7 @@ class IdentityResolver extends AsyncComponent<
                                                 <h1>
                                                     Decentralized Identifier
                                                 </h1>
-                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                                <Modal icon="info" data={welcomeMessage} />
                                             </div>
 
                                             <div>
@@ -190,7 +190,7 @@ class IdentityResolver extends AsyncComponent<
                                                 <h1>
                                                     Decentralized Identifier
                                                 </h1>
-                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                                <Modal icon="info" data={welcomeMessage} />
                                             </div>
                                         </div>
                                         <div>
@@ -274,7 +274,7 @@ class IdentityResolver extends AsyncComponent<
                                             <div className="section">
                                                 <div className="section--header">
                                                     <h2>Content
-                                                        <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                                        <Modal icon="info" data={contentMessage} />
                                                     </h2>
                                                 </div>
                                                 <div className="section--data">

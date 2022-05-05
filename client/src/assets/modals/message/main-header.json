@@ -1,0 +1,11 @@
+{
+    "title": "Message",
+    "description": "<p>A Message consists of basic information that defines the type and structure of the message, and it can also contain different payloads. A payload is an attachment that can include an IOTA transaction and many other kinds of data.</p>",
+    "links": [
+      {
+        "label": "Read more",
+        "href": "https://wiki.iota.org/learn/about-iota/data-transfer#what-is-an-iota-message",
+        "isExternal": true
+      }
+    ]
+}
