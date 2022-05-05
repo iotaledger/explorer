@@ -32,7 +32,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     /**
      * Maximum page size for permanode request.
      */
-     private static readonly MAX_PAGE_SIZE: number = 6000;
+     private static readonly MAX_PAGE_SIZE: number = 500;
 
     /**
      * API Client for tangle requests.
@@ -348,6 +348,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
                 const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize))
                     ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
+
                 this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
                     .catch(err => console.error(err));
 
@@ -364,6 +365,15 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 transactions: allTransactionsDetails.transactionHistory
                                     .transactions?.map(t1 => ({ ...t1, ...this.txsHistory.find(t2 => t2.messageId === t1.messageId) })),
                                 state: allTransactionsDetails.transactionHistory.state } } });
+                    }
+
+                    if (allTransactionsDetails?.transactionHistory?.state) {
+                        return this._tangleCacheService.transactionsDetails({
+                            network: this.props.match.params.network,
+                            address: this.state.address?.address ?? "",
+                            query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
+                        },
+                        true);
                     }
                 }
 
