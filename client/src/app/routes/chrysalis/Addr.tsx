@@ -16,7 +16,8 @@ import Icon from "../../components/Icon";
 import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
-import messageJSON from "./../../../assets/modals/message.json";
+import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
+import transactionHistoryMessage from "./../../../assets/modals/address/transaction-history.json";
 import Transaction from "./../../components/chrysalis/Transaction";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
@@ -120,7 +121,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 <h1>
                                     Address
                                 </h1>
-                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                <Modal icon={ModalIcon.Info} data={mainHeaderMessage} />
                             </div>
                         </div>
                         <div className="top">
@@ -224,7 +225,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <h2>
                                                     Transaction History
                                                 </h2>
-                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                                <Modal icon={ModalIcon.Info} data={transactionHistoryMessage} />
                                             </div>
                                             {this.state.status && (
                                                 <div className="margin-t-s middle row">

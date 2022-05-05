@@ -4,7 +4,7 @@ import React, { Component, ReactNode } from "react";
 import { TextHelper } from "../../../helpers/textHelper";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../ModalProps";
-import indexationMessage from "./../../../assets/modals/indexation-payload.json";
+import indexationMessage from "./../../../assets/modals/message/indexation-payload.json";
 import DataToggle from "./../DataToggle";
 import { IndexationPayloadProps } from "./IndexationPayloadProps";
 import { IndexationPayloadState } from "./IndexationPayloadState";

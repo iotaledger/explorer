@@ -6,7 +6,7 @@ import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
 import { ModalIcon } from "../ModalProps";
-import milestoneMessage from "./../../../assets/modals/milestone-payload.json";
+import milestoneMessage from "./../../../assets/modals/message/milestone-payload.json";
 import "./MilestonePayload.scss";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";

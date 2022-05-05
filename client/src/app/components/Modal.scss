@@ -78,7 +78,16 @@
     .modal--description {
       margin-top: 24px;
 
-      p {
+      a {
+        color: var(--mint-green-bg)
+      }
+
+      ol {
+        margin-left: 16px;
+      }
+
+      p,
+      ol {
         @include font-size(14px, 21px);
 
         color: var(--modal-color);

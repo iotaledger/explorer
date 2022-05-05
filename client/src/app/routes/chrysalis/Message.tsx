@@ -21,7 +21,9 @@ import Modal from "../../components/Modal";
 import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
 import Switcher from "../../components/Switcher";
-import messageJSON from "./../../../assets/modals/message.json";
+import mainHeaderMessage from "./../../../assets/modals/message/main-header.json";
+import treeMessage from "./../../../assets/modals/message/tree.json";
+import metadataMessage from "./../../../assets/modals/message/metadata.json";
 import { TransactionsHelper } from "./../../../helpers/transactionsHelper";
 import "./Message.scss";
 import { MessageRouteProps } from "./MessageRouteProps";
@@ -108,7 +110,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                 <h1>
                                     Message
                                 </h1>
-                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                <Modal icon={ModalIcon.Info} data={mainHeaderMessage} />
                             </div>
                             <Switcher
                                 label="Advanced View"
@@ -286,7 +288,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     <div className="row middle">
                                         <h2>
                                             Metadata
-                                            <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                            <Modal icon={ModalIcon.Info} data={metadataMessage} />
                                         </h2>
                                     </div>
                                 </div>
@@ -343,7 +345,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                         <h2>
                                             Messages tree
                                         </h2>
-                                        <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                        <Modal icon={ModalIcon.Info} data={treeMessage} />
                                     </div>
                                 </div>
                             </div>
