@@ -6,6 +6,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/transactionsHelper";
+import {HistoricInput, HistoricOutput} from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { NetworkService } from "../../../services/networkService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -435,14 +436,40 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                             if (transactionsResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
                                 const relatedAmount = await this.getTransactionAmount(output.spendingMessageId);
+                                const historicInputs: HistoricInput[] = transactionsResult?.message?.
+                                    payload?.essence?.inputs.map(input => (
+                                        {
+                                            transactionId: input.transactionId,
+                                            transactionOutputIndex: input.transactionOutputIndex.toString(),
+                                            type: input.type
+                                        }
+
+                                ));
+
+                                const historicOutputs: HistoricOutput[] = transactionsResult?.message?.
+                                    payload?.essence?.outputs.map(output => (
+                                        {
+                                            output: {
+                                                address: {
+                                                    type: output.address.type,
+                                                    address: output.address.address
+                                                },
+                                                amount: output.amount.toString(),
+                                                type: output.type
+                                            },
+                                            spendingMessageId: ""
+                                        }
+                                ));
+
                                 tsx.relatedSpentTransaction = {
                                     messageId: output.spendingMessageId,
                                     date: statusDetails.date,
                                     messageTangleStatus: statusDetails.messageTangleStatus,
                                     isSpent: true,
                                     amount: relatedAmount,
-                                    inputs: transactionsResult?.message?.payload?.essence?.inputs,
-                                    outputs: transactionsResult?.message?.payload?.essence?.outputs
+                                    inputs: historicInputs,
+                                    outputs: historicOutputs,
+                                    ledgerInclusionState: statusDetails.messageTangleStatus
                                 };
                                 if (relatedAmount < 0) {
                                     this.setState({ sent: this.state.sent + Math.abs(relatedAmount) });

@@ -55,36 +55,7 @@ export interface ITransaction {
     /**
      * Transaction which is consumed related to the current transaction.
      */
-    relatedSpentTransaction?: {
-        /**
-         * The message id the output was contained in.
-         */
-        messageId: string;
-        /**
-         * Message status
-         */
-        messageTangleStatus: MessageTangleStatus;
-        /**
-         * The inputs.
-         */
-        inputs: IUTXOInput[];
-        /**
-         * Date of Milestone Reference.
-         */
-        date?: string;
-        /**
-         * The outputs.
-         */
-        outputs: (ISigLockedDustAllowanceOutput | ISigLockedSingleOutput)[];
-        /**
-         * Show if a transation is spent or not.
-         */
-        isSpent?: boolean;
-        /**
-         * Amount of transaction.
-         */
-        amount?: number;
-    };
+    relatedSpentTransaction?: ITransaction;
     /**
      * Is transaction included in ledger.
      */
