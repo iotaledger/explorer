@@ -79,7 +79,7 @@
       margin-top: 24px;
 
       a {
-        color: var(--mint-green-bg)
+        color: var(--mint-green-bg);
       }
 
       ol {
@@ -106,10 +106,10 @@
           @include font-size(14px, 21px);
 
           padding: 6px 20px;
-          border: none;
+          border: 1px solid #d8e1f4;
           border-radius: 6px;
-          background: var(--mint-green-bg);
-          color: $white;
+          background: var(--light-bg);
+          color: var(--expanded-color);
           font-family: $inter;
           text-decoration: none;
         }
