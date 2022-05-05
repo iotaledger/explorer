@@ -353,7 +353,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
                     .catch(err => console.error(err));
 
-                this.transactionHistoryHelper(transactionsDetails);
+                await this.transactionHistoryHelper(transactionsDetails);
 
                 this.setState({
                     status: "",
@@ -365,22 +365,22 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
     private async transactionHistoryHelper(transactionsDetails: ITransactionsDetailsResponse | undefined) {
         if (transactionsDetails?.transactionHistory?.state) {
-            const allTransactionsDetails = await this._tangleCacheService.transactionsDetails({
+            const transactionDetailsBatch = await this._tangleCacheService.transactionsDetails({
                 network: this.props.match.params.network,
                 address: this.state.address?.address ?? "",
                 query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
             }, true);
 
-            if (allTransactionsDetails?.transactionHistory.transactions) {
-                this.setState({ transactionHistory: { ...allTransactionsDetails,
-                              transactionHistory: { ...allTransactionsDetails.transactionHistory,
-                                  transactions: allTransactionsDetails.transactionHistory
-                                  .transactions?.map(t1 => ({ ...t1, ...this.txsHistory.find(t2 => t2.messageId === t1.messageId) })),
-                                  state: allTransactionsDetails.transactionHistory.state } } },
-                                  async () => {
-                                      this.transactionHistoryHelper(this.state.transactionHistory);
-                                  }
-                             );
+            if (transactionDetailsBatch?.transactionHistory.transactions) {
+                const updatedHistory = {
+                    transactions: transactionDetailsBatch.transactionHistory
+                    .transactions?.map(t1 => ({ ...t1, ...this.txsHistory.find(t2 => t2.messageId === t1.messageId) })),
+                    state: transactionDetailsBatch.transactionHistory.state
+                };
+                this.setState(
+                    { ...this.state, transactionHistory: { transactionHistory: updatedHistory } },
+                    async () => this.transactionHistoryHelper(this.state.transactionHistory)
+                );
             }
         }
     }
