@@ -1,12 +1,13 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
 import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
+import moment from "moment";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/transactionsHelper";
-import {HistoricInput, HistoricOutput} from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
+import {HistoricInput, HistoricOutput, ITransaction} from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { NetworkService } from "../../../services/networkService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -264,19 +265,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 tableFormat={true}
                                                                 hasConflicts={!transaction.ledgerInclusionState || transaction.ledgerInclusionState === "conflicting"}
                                                             />
-                                                            {transaction?.relatedSpentTransaction && (
-                                                                <Transaction
-                                                                    key={transaction?.relatedSpentTransaction.messageId}
-                                                                    messageId={transaction?.relatedSpentTransaction.messageId}
-                                                                    network={this.props.match.params.network}
-                                                                    inputs={transaction?.relatedSpentTransaction.inputs.length}
-                                                                    outputs={transaction?.relatedSpentTransaction.outputs.length}
-                                                                    messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
-                                                                    date={transaction?.relatedSpentTransaction.date}
-                                                                    amount={transaction?.relatedSpentTransaction.amount}
-                                                                    tableFormat={true}
-                                                                />
-                                                            )}
                                                         </React.Fragment>
                                                     ))}
                                             </tbody>
@@ -297,19 +285,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                             date={transaction?.date}
                                                             amount={transaction?.amount}
                                                         />
-
-                                                        {transaction?.relatedSpentTransaction && (
-                                                            <Transaction
-                                                                key={transaction?.relatedSpentTransaction.messageId}
-                                                                messageId={transaction?.relatedSpentTransaction.messageId}
-                                                                network={this.props.match.params.network}
-                                                                inputs={transaction?.relatedSpentTransaction.inputs.length}
-                                                                outputs={transaction?.relatedSpentTransaction.outputs.length}
-                                                                messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
-                                                                date={transaction?.relatedSpentTransaction.date}
-                                                                amount={transaction?.relatedSpentTransaction.amount}
-                                                            />
-                                                        )}
                                                     </React.Fragment>
                                                 ))}
                                         </div>
@@ -341,8 +316,20 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     private get currentPageTransactions() {
         const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
         const lastPageIndex = firstPageIndex + this.state.pageSize;
+        const transactionsPage = this.txsHistory.
+            slice(firstPageIndex, lastPageIndex).
+            reduce((acc: ITransaction[], curr: ITransaction) => {
+            acc.push(curr);
+            if (curr.relatedSpentTransaction) {
+                acc.push(curr.relatedSpentTransaction);
+            }
+            return acc
+        }, []);
 
-        return this.txsHistory.slice(firstPageIndex, lastPageIndex);
+        const sortedTransactions: ITransaction[] = transactionsPage.sort((a, b) =>
+            moment(a.date).isAfter(moment(b.date)) ? -1 : 1
+        );
+        return sortedTransactions;
     }
 
     private get txsHistory() {
@@ -437,29 +424,23 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                             if (transactionsResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
                                 const relatedAmount = await this.getTransactionAmount(output.spendingMessageId);
                                 const historicInputs: HistoricInput[] = transactionsResult?.message?.
-                                    payload?.essence?.inputs.map(input => (
-                                        {
-                                            transactionId: input.transactionId,
-                                            transactionOutputIndex: input.transactionOutputIndex.toString(),
-                                            type: input.type
-                                        }
-
-                                ));
-
+                                    payload?.essence?.inputs.map(input => ({
+                                    transactionId: input.transactionId,
+                                    transactionOutputIndex: input.transactionOutputIndex.toString(),
+                                    type: input.type
+                                }));
                                 const historicOutputs: HistoricOutput[] = transactionsResult?.message?.
-                                    payload?.essence?.outputs.map(output => (
-                                        {
-                                            output: {
-                                                address: {
-                                                    type: output.address.type,
-                                                    address: output.address.address
-                                                },
-                                                amount: output.amount.toString(),
-                                                type: output.type
-                                            },
-                                            spendingMessageId: ""
-                                        }
-                                ));
+                                    payload?.essence?.outputs.map(output => ({
+                                    output: {
+                                        address: {
+                                            type: output.address.type,
+                                            address: output.address.address
+                                        },
+                                        amount: output.amount.toString(),
+                                        type: output.type
+                                    },
+                                    spendingMessageId: ""
+                                }));
 
                                 tsx.relatedSpentTransaction = {
                                     messageId: output.spendingMessageId,
