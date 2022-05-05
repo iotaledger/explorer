@@ -14,7 +14,7 @@
 
     display: flex;
     align-items: center;
-    height: 40px;
+    height: 32px;
     margin: 0;
     padding: 0 48px 0 20px;
     transition: border-color 0.2s ease;
@@ -27,7 +27,7 @@
     appearance: none;
 
     @include phone-down {
-      padding: 0 24px 0 8px;
+      padding: 0 32px 0 8px;
     }
 
     &:focus {
@@ -105,14 +105,15 @@
   .chevron {
     position: absolute;
     z-index: 2;
-    top: 19%;
+    top: 50%;
+    transform: translateY(-50%);
     right: 10px;
     transition: transform 0.2s ease;
     color: $gray;
     pointer-events: none;
 
     &.opened {
-      transform: rotate(-180deg);
+      transform: translateY(-50%) rotate(-180deg);
     }
 
     @include phone-down {
