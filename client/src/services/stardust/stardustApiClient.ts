@@ -23,6 +23,8 @@ import { ITransactionsGetRequest } from "../../models/api/og/ITransactionsGetReq
 import { ITransactionsGetResponse } from "../../models/api/og/ITransactionsGetResponse";
 import { ITrytesRetrieveRequest } from "../../models/api/og/ITrytesRetrieveRequest";
 import { ITrytesRetrieveResponse } from "../../models/api/og/ITrytesRetrieveResponse";
+import { IBaseTokenGetRequest } from "../../models/api/stardust/IBaseTokenGetRequest";
+import { IBaseTokenGetResponse } from "../../models/api/stardust/IBaseTokenGetResponse";
 import { IMessageDetailsResponse } from "../../models/api/stardust/IMessageDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
@@ -45,6 +47,18 @@ export class StardustApiClient extends ApiClient {
      */
     public async networks(): Promise<INetworkGetResponse> {
         return this.callApi<unknown, INetworkGetResponse>("networks", "get");
+    }
+
+    /**
+     * Perform a request to get the base token info for a network.
+     * @param request The Base token request.
+     * @returns The response from the request.
+     */
+    public async baseTokenInfo(request: IBaseTokenGetRequest): Promise<IBaseTokenGetResponse> {
+        return this.callApi<unknown, IBaseTokenGetResponse>(
+            `token/${request.network}`,
+            "get"
+        );
     }
 
     /**
