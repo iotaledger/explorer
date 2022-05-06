@@ -163,6 +163,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         <div className="card--value">
                                             <Output
                                                 key={idx}
+                                                network={this.props.network}
+                                                history={this.props.history}
                                                 index={idx + 1}
                                                 output={output.output}
                                                 amount={output.amount}

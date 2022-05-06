@@ -56,6 +56,8 @@ class FeatureBlock extends AsyncComponent<FeatureBlockProps, FeatureBlockState> 
                                 </div>
                                 <Address
                                     address={this.props.featureBlock.address}
+                                    network={this.props.network}
+                                    history={this.props.history}
                                 />
                             </React.Fragment>
                         )}
@@ -66,6 +68,8 @@ class FeatureBlock extends AsyncComponent<FeatureBlockProps, FeatureBlockState> 
                                 </div>
                                 <Address
                                     address={this.props.featureBlock.address}
+                                    network={this.props.network}
+                                    history={this.props.history}
                                 />
                             </React.Fragment>
                         )}

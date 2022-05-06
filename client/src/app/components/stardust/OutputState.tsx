@@ -9,4 +9,8 @@ export interface OutputState {
      * Shows details of the specified output id
      */
     showOutputDetails: number;
+    /**
+     * Bech32 address
+     */
+    bech32: string | undefined;
 }

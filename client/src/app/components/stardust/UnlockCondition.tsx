@@ -59,6 +59,8 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                 </div>
                                 <Address
                                     address={this.props.unlockCondition.address}
+                                    network={this.props.network}
+                                    history={this.props.history}
                                 />
                             </React.Fragment>
                         )}
@@ -69,6 +71,8 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                 </div>
                                 <Address
                                     address={this.props.unlockCondition.returnAddress}
+                                    network={this.props.network}
+                                    history={this.props.history}
                                 />
                                 <div className="card--label">
                                     Amount:
@@ -97,7 +101,9 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                         {this.props.unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE && (
                             <React.Fragment>
                                 <Address
+                                    network={this.props.network}
                                     address={this.props.unlockCondition.returnAddress}
+                                    history={this.props.history}
                                 />
                                 <div className="card--label">
                                     Milestone index
@@ -114,29 +120,25 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                             </React.Fragment>
                         )}
                         {this.props.unlockCondition.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Governor address:
-                                </div>
-                                <Address
-                                    address={this.props.unlockCondition.address}
-                                />
-                            </React.Fragment>
+                            <Address
+                                address={this.props.unlockCondition.address}
+                                network={this.props.network}
+                                history={this.props.history}
+                            />
                         )}
                         {this.props.unlockCondition.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE && (
                             <Address
                                 address={this.props.unlockCondition.address}
+                                network={this.props.network}
+                                history={this.props.history}
                             />
                         )}
                         {this.props.unlockCondition.type === STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Address:
-                                </div>
-                                <Address
-                                    address={this.props.unlockCondition.address}
-                                />
-                            </React.Fragment>
+                            <Address
+                                address={this.props.unlockCondition.address}
+                                network={this.props.network}
+                                history={this.props.history}
+                            />
                         )}
                         <div className="card--label">
                             Type:

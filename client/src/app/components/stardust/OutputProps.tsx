@@ -1,6 +1,11 @@
 import { OutputTypes } from "@iota/iota.js-stardust";
+import * as H from "history";
 
 export interface OutputProps {
+    /**
+     * The network to lookup.
+     */
+     network: string;
     /**
      * The output id.
      */
@@ -25,4 +30,9 @@ export interface OutputProps {
      * Should hide the label.
      */
     hideLabel?: boolean;
+
+    /**
+     * History for navigation.
+     */
+    history: H.History;
 }

@@ -1,7 +1,13 @@
 import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
-    TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE } from "@iota/iota.js-stardust";
+    TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
+    NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
+import { ServiceFactory } from "../../../factories/serviceFactory";
+import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { NetworkService } from "../../../services/networkService";
+import MessageButton from "../MessageButton";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import FeatureBlock from "./FeatureBlock";
 import { OutputProps } from "./OutputProps";
@@ -13,16 +19,36 @@ import UnlockCondition from "./UnlockCondition";
  */
 class Output extends Component<OutputProps, OutputState> {
     /**
+     * The hrp of bech addresses.
+     */
+    private readonly _bechHrp: string;
+
+    /**
      * Create a new instance of NewOutput.
      * @param props The props.
      */
     constructor(props: OutputProps) {
         super(props);
 
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        const networkConfig = props.network
+            ? networkService.get(props.network)
+            : undefined;
+
+        this._bechHrp = networkConfig?.bechHrp ?? "iota";
+
         this.state = {
             output: props.output,
-            showOutputDetails: -1
+            showOutputDetails: -1,
+            bech32: ""
         };
+    }
+
+    /**
+     * The component mounted.
+     */
+     public async componentDidMount(): Promise<void> {
+        await this.buildAddress();
     }
 
     /**
@@ -37,8 +63,23 @@ class Output extends Component<OutputProps, OutputState> {
                         <div className="card--label">
                             Alias id:
                         </div>
-                        <div className="card--value row">
-                            {this.state.output.aliasId}
+                        <div className="card--value row middle">
+                            {this.props.history && (
+                                <button
+                                    type="button"
+                                    className="margin-r-t"
+                                    onClick={() => this.props.history?.push(
+                                        `/${this.props.network
+                                        }/addr/${this.state.bech32}`)}
+                                >
+                                    {this.state.bech32}
+                                </button>
+                            )}
+                            <MessageButton
+                                onClick={() => ClipboardHelper.copy(this.state.bech32)}
+                                buttonType="copy"
+                                labelPosition="top"
+                            />
                         </div>
                         <div className="card--label">
                             State index:
@@ -67,7 +108,22 @@ class Output extends Component<OutputProps, OutputState> {
                             Nft id:
                         </div>
                         <div className="card--value row">
-                            {this.state.output.nftId}
+                            {this.props.history && (
+                                <button
+                                    type="button"
+                                    className="margin-r-t"
+                                    onClick={() => this.props.history?.push(
+                                        `/${this.props.network
+                                        }/addr/${this.state.bech32}`)}
+                                >
+                                    {this.state.bech32}
+                                </button>
+                            )}
+                            <MessageButton
+                                onClick={() => ClipboardHelper.copy(this.state.bech32)}
+                                buttonType="copy"
+                                labelPosition="top"
+                            />
                         </div>
                     </React.Fragment>
                 )}
@@ -123,12 +179,16 @@ class Output extends Component<OutputProps, OutputState> {
                         {this.state.output.unlockConditions.map((unlockCondition, idx) => (
                             <UnlockCondition
                                 key={idx}
+                                network={this.props.network}
+                                history={this.props.history}
                                 unlockCondition={unlockCondition}
                             />
                         ))}
                         {this.state.output.featureBlocks.map((featureBlock, idx) => (
                             <FeatureBlock
                                 key={idx}
+                                network={this.props.network}
+                                history={this.props.history}
                                 featureBlock={featureBlock}
                             />
                         ))}
@@ -137,6 +197,8 @@ class Output extends Component<OutputProps, OutputState> {
                                 {this.state.output.immutableFeatureBlocks.map((immutableFeatureBlock, idx) => (
                                     <FeatureBlock
                                         key={idx}
+                                        network={this.props.network}
+                                        history={this.props.history}
                                         featureBlock={immutableFeatureBlock}
                                     />
                                 ))}
@@ -184,6 +246,31 @@ class Output extends Component<OutputProps, OutputState> {
 
             </div>
         );
+    }
+
+    /**
+     * Build bech32 address.
+     * @returns The bech32 address.
+     */
+     private async buildAddress() {
+        let address: string = "";
+        let addressType: number = 0;
+
+        if (this.state.output.type === ALIAS_OUTPUT_TYPE) {
+            address = this.state.output.aliasId;
+            addressType = ALIAS_ADDRESS_TYPE;
+        } else if (this.state.output.type === NFT_OUTPUT_TYPE) {
+            address = this.state.output.nftId;
+            addressType = NFT_ADDRESS_TYPE;
+        }
+
+        this.setState({
+            bech32: Bech32AddressHelper.buildAddress(
+                this._bechHrp,
+                address,
+                addressType
+            ).bech32
+        });
     }
 }
 
