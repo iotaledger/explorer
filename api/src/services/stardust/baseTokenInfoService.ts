@@ -2,6 +2,15 @@ import { INodeInfoBaseToken, SingleNodeClient } from "@iota/iota.js-stardust";
 import { INetwork } from "../../models/db/INetwork";
 import { IBaseTokenService } from "../../models/services/IBaseTokenService";
 
+const DEFAULT_BASE_TOKEN_INFO: INodeInfoBaseToken = {
+    name: "IOTA",
+    tickerSymbol: "MIOTA",
+    unit: "i",
+    decimals: 0,
+    subunit: undefined,
+    useMetricPrefix: true
+};
+
 /**
  * Class to handle Stardust protocol base token info.
  */
@@ -14,7 +23,7 @@ export class BaseTokenInfoService implements IBaseTokenService {
     /**
      * The statistics.
      */
-    protected _baseTokenInfo: INodeInfoBaseToken;
+    protected _baseTokenInfo: INodeInfoBaseToken = DEFAULT_BASE_TOKEN_INFO;
 
     /**
      * Create a new instance of BaseTokenInfoService.
