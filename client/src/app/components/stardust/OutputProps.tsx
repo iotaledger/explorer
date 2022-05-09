@@ -2,10 +2,6 @@ import { OutputTypes } from "@iota/iota.js-stardust";
 
 export interface OutputProps {
     /**
-     * The network to lookup.
-     */
-     network: string;
-    /**
      * The output id.
      */
     id?: string;

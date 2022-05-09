@@ -5,8 +5,4 @@ export interface UnlockConditionProps {
      * The unlock condition.
      */
     unlockCondition: UnlockConditionTypes;
-    /**
-     * Network
-     */
-    network: string;
 }

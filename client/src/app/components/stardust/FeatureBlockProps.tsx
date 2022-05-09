@@ -5,9 +5,4 @@ export interface FeatureBlockProps {
      * The feature block.
      */
     featureBlock: FeatureBlockTypes;
-
-    /**
-     * Network
-     */
-    network: string;
 }

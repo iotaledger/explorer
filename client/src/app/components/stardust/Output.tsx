@@ -157,14 +157,12 @@ class Output extends Component<OutputProps, OutputState> {
                         {this.state.output.unlockConditions.map((unlockCondition, idx) => (
                             <UnlockCondition
                                 key={idx}
-                                network={this.props.network}
                                 unlockCondition={unlockCondition}
                             />
                         ))}
                         {this.state.output.featureBlocks.map((featureBlock, idx) => (
                             <FeatureBlock
                                 key={idx}
-                                network={this.props.network}
                                 featureBlock={featureBlock}
                             />
                         ))}
@@ -173,7 +171,6 @@ class Output extends Component<OutputProps, OutputState> {
                                 {this.state.output.immutableFeatureBlocks.map((immutableFeatureBlock, idx) => (
                                     <FeatureBlock
                                         key={idx}
-                                        network={this.props.network}
                                         featureBlock={immutableFeatureBlock}
                                     />
                                 ))}
