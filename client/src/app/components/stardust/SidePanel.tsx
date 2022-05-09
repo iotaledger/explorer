@@ -1,7 +1,7 @@
-import { UnitsHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IFeedItem } from "../../../models/IFeedItem";
 import LineChart from "./../LineChart";
 import "./SidePanel.scss";
@@ -75,7 +75,12 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, SidePane
                             <div className="row feed-item" key={item.id}>
                                 {item.value !== undefined && (
                                     <span className="feed-item--value">
-                                        {UnitsHelper.formatBest(item.value)}
+                                        {
+                                            formatAmount(
+                                                item.value,
+                                                this.context.tokenInfo
+                                            )
+                                        }
                                     </span>
                                 )}
                                 {item.value === undefined && (

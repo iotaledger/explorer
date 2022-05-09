@@ -1,9 +1,11 @@
 /* eslint-disable max-len */
-import { IEd25519Address, UnitsHelper } from "@iota/iota.js-stardust";
+import { IEd25519Address } from "@iota/iota.js-stardust";
 import React, { Component, ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { NetworkService } from "../../../services/networkService";
+import NetworkContext from "../../context/NetworkContext";
 import Bech32Address from "../chrysalis/Bech32Address";
 import { ReceiptPayloadState } from "../ReceiptPayloadState";
 import { ReceiptPayloadProps } from "./ReceiptPayloadProps";
@@ -12,6 +14,11 @@ import { ReceiptPayloadProps } from "./ReceiptPayloadProps";
  * Component which will display a receipt payload.
  */
 class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
+
     /**
      * The bech32 hrp from the node.
      */
@@ -80,7 +87,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                                             this._bech32Hrp,
                                             (f.address as IEd25519Address).pubKeyHash,
                                             f.address.type
-                                        )
+                                    )
                                     }
                                     advancedMode={this.props.advancedMode}
                                     history={this.props.history}
@@ -96,12 +103,17 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                                     type="button"
                                     onClick={() => this.setState(
                                         {
-                                           formatFull: !this.state.formatFull
+                                            formatFull: !this.state.formatFull
                                         }
                                     )}
                                 >
-                                    {this.state.formatFull
-                                        ? `${f.deposit} i` : UnitsHelper.formatBest(Number(f.deposit))}
+                                    {
+                                        formatAmount(
+                                            Number(f.deposit),
+                                            this.context.tokenInfo,
+                                            this.state.formatFull
+                                        )
+                                    }
                                 </button>
                             </div>
                         </div>
@@ -125,9 +137,13 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                                 }
                             )}
                         >
-                            {this.state.formatFull
-                                ? `${this.props.payload.transaction.output.amount} i`
-                                : UnitsHelper.formatBest(Number(this.props.payload.transaction.output.amount))}
+                            {
+                                formatAmount(
+                                    Number(this.props.payload.transaction.output.amount),
+                                    this.context.tokenInfo,
+                                    this.state.formatFull
+                                )
+                            }
                         </button>
                     </div>
                 </div>

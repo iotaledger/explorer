@@ -1,9 +1,10 @@
 /* eslint-disable max-len */
-import { UnitsHelper } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
+import NetworkContext from "../../context/NetworkContext";
 import AsyncComponent from "../AsyncComponent";
 import Bech32Address from "../chrysalis/Bech32Address";
 import FiatValue from "../FiatValue";
@@ -20,6 +21,10 @@ import { TransactionPayloadProps } from "./TransactionPayloadProps";
  * Component which will display a transaction payload.
  */
 class TransactionPayload extends AsyncComponent<TransactionPayloadProps, TransactionPayloadState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
     /**
      * Create a new instance of TransactionPayload.
      * @param props The props.
@@ -58,8 +63,12 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                     <div className="transaction-value">
                         <div>
                             <span className="value">
-                                {UnitsHelper.formatUnits(this.props.transferTotal,
-                                    UnitsHelper.calculateBest(this.props.transferTotal))}
+                                {
+                                    formatAmount(
+                                        this.props.transferTotal,
+                                        this.context.tokenInfo
+                                    )
+                                }
                             </span>
                             <span className="dot-separator">•</span>
                             <span className="fiat-value">
@@ -94,7 +103,12 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             truncateAddress
                                         />
                                         <div className="card--value">
-                                            {UnitsHelper.formatBest(input.amount)}
+                                            {
+                                                formatAmount(
+                                                    input.amount,
+                                                    this.context.tokenInfo
+                                                )
+                                            }
                                         </div>
                                     </div>
 
@@ -155,7 +169,12 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             {NameHelper.getOutputTypeName(output.type)}
                                         </button>
                                         <div className="card--value">
-                                            {UnitsHelper.formatBest(output.amount)}
+                                            {
+                                                formatAmount(
+                                                    output.amount,
+                                                    this.context.tokenInfo
+                                                )
+                                            }
                                         </div>
                                     </div>
 

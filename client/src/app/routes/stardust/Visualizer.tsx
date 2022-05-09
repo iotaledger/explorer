@@ -1,14 +1,15 @@
-import { UnitsHelper } from "@iota/iota.js-stardust";
 import { Converter } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../../helpers/circleNodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IFeedItemMetadata } from "../../../models/api/IFeedItemMetadata";
 import { INodeData } from "../../../models/graph/INodeData";
 import { IFeedItem } from "../../../models/IFeedItem";
 import Feeds from "../../components/stardust/Feeds";
+import NetworkContext from "../../context/NetworkContext";
 import "../Visualizer.scss";
 import { VisualizerProps, VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerState } from "../VisualizerState";
@@ -17,6 +18,11 @@ import { VisualizerState } from "../VisualizerState";
  * Component which will show the visualizer page.
  */
 class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & VisualizerProps, VisualizerState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
+
     /**
      * Maximum number of items.
      */
@@ -320,7 +326,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                                                     Value
                                                 </div>
                                                 <div className="card--value">
-                                                    {UnitsHelper.formatBest(this.state.selectedFeedItem?.value)}
+                                                    {
+                                                        formatAmount(
+                                                            this.state.selectedFeedItem?.value,
+                                                            this.context.tokenInfo
+                                                        )
+                                                    }
                                                 </div>
                                             </React.Fragment>
                                         )}
