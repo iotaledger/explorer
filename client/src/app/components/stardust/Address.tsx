@@ -1,9 +1,10 @@
+
+/* eslint-disable react/static-property-placement */
 import { ALIAS_ADDRESS_TYPE, ED25519_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import React, { Component, ReactNode } from "react";
-import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { NetworkService } from "../../../services/networkService";
+import Bech32HrpContext from "../../../helpers/stardust/bech32HrpContext";
 import MessageButton from "../MessageButton";
 import { AddressProps } from "./AddressProps";
 import { AddressState } from "./AddressState";
@@ -12,21 +13,12 @@ import { AddressState } from "./AddressState";
  * Component which will display an address.
  */
 class Address extends Component<AddressProps, AddressState> {
-    private readonly _bechHrp: string;
-
     /**
      * Create a new instance of NewOutput.
      * @param props The props.
      */
     constructor(props: AddressProps) {
         super(props);
-
-        const networkService = ServiceFactory.get<NetworkService>("network");
-        const networkConfig = props.network
-            ? networkService.get(props.network)
-            : undefined;
-
-        this._bechHrp = networkConfig?.bechHrp ?? "iota";
 
         this.state = {
             bech32: ""
@@ -51,17 +43,12 @@ class Address extends Component<AddressProps, AddressState> {
                     Address:
                 </div>
                 <div className="card--value row middle">
-                    {this.props.history && (
-                        <button
-                            type="button"
-                            className="margin-r-t"
-                            onClick={() => this.props.history?.push(
-                                `/${this.props.network
-                                }/addr/${this.state.bech32}`)}
-                        >
-                            {this.state.bech32}
-                        </button>
-                    )}
+                    <button
+                        type="button"
+                        className="margin-r-t"
+                    >
+                        {this.state.bech32}
+                    </button>
                     <MessageButton
                         onClick={() => ClipboardHelper.copy(this.state.bech32)}
                         buttonType="copy"
@@ -89,7 +76,7 @@ class Address extends Component<AddressProps, AddressState> {
 
         this.setState({
             bech32: Bech32AddressHelper.buildAddress(
-                this._bechHrp,
+                this.context.bech32Hrp,
                 address,
                 this.props.address.type
             ).bech32
@@ -97,4 +84,5 @@ class Address extends Component<AddressProps, AddressState> {
     }
 }
 
+Address.contextType = Bech32HrpContext;
 export default Address;
