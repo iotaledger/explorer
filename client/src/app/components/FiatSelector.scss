@@ -14,7 +14,7 @@
 
     display: flex;
     align-items: center;
-    height: 40px;
+    height: 32px;
     margin: 0;
     padding: 0 48px 0 20px;
     transition: border-color 0.2s ease;
@@ -25,6 +25,10 @@
     box-shadow: none;
     color: var(--body-color);
     appearance: none;
+
+    @include phone-down {
+      padding: 0 32px 0 8px;
+    }
 
     &:focus {
       border-color: var(--input-focus-border-color);
@@ -64,7 +68,10 @@
 
     @include phone-down {
       position: fixed;
+      top: $navbar-height-mobile;
       width: 100%;
+      max-height: calc(100vh - $navbar-height-mobile);
+      border-top: 0;
     }
 
     .group-header {
@@ -98,9 +105,19 @@
   .chevron {
     position: absolute;
     z-index: 2;
-    top: 19%;
+    top: 50%;
+    transform: translateY(-50%);
     right: 10px;
+    transition: transform 0.2s ease;
     color: $gray;
     pointer-events: none;
+
+    &.opened {
+      transform: translateY(-50%) rotate(-180deg);
+    }
+
+    @include phone-down {
+      right: 1px;
+    }
   }
 }
