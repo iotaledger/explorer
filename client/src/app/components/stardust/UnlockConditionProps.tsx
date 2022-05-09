@@ -1,5 +1,4 @@
 import { UnlockConditionTypes } from "@iota/iota.js-stardust";
-import * as H from "history";
 
 export interface UnlockConditionProps {
     /**
@@ -10,9 +9,4 @@ export interface UnlockConditionProps {
      * Network
      */
     network: string;
-
-    /**
-     * History for navigation.
-     */
-    history: H.History;
 }

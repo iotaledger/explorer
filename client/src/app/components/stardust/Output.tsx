@@ -64,17 +64,12 @@ class Output extends Component<OutputProps, OutputState> {
                             Alias id:
                         </div>
                         <div className="card--value row middle">
-                            {this.props.history && (
-                                <button
-                                    type="button"
-                                    className="margin-r-t"
-                                    onClick={() => this.props.history?.push(
-                                        `/${this.props.network
-                                        }/addr/${this.state.bech32}`)}
-                                >
-                                    {this.state.bech32}
-                                </button>
-                            )}
+                            <button
+                                type="button"
+                                className="margin-r-t"
+                            >
+                                {this.state.bech32}
+                            </button>
                             <MessageButton
                                 onClick={() => ClipboardHelper.copy(this.state.bech32)}
                                 buttonType="copy"
@@ -108,17 +103,12 @@ class Output extends Component<OutputProps, OutputState> {
                             Nft id:
                         </div>
                         <div className="card--value row">
-                            {this.props.history && (
-                                <button
-                                    type="button"
-                                    className="margin-r-t"
-                                    onClick={() => this.props.history?.push(
-                                        `/${this.props.network
-                                        }/addr/${this.state.bech32}`)}
-                                >
-                                    {this.state.bech32}
-                                </button>
-                            )}
+                            <button
+                                type="button"
+                                className="margin-r-t"
+                            >
+                                {this.state.bech32}
+                            </button>
                             <MessageButton
                                 onClick={() => ClipboardHelper.copy(this.state.bech32)}
                                 buttonType="copy"
@@ -180,7 +170,6 @@ class Output extends Component<OutputProps, OutputState> {
                             <UnlockCondition
                                 key={idx}
                                 network={this.props.network}
-                                history={this.props.history}
                                 unlockCondition={unlockCondition}
                             />
                         ))}
@@ -188,7 +177,6 @@ class Output extends Component<OutputProps, OutputState> {
                             <FeatureBlock
                                 key={idx}
                                 network={this.props.network}
-                                history={this.props.history}
                                 featureBlock={featureBlock}
                             />
                         ))}
@@ -198,7 +186,6 @@ class Output extends Component<OutputProps, OutputState> {
                                     <FeatureBlock
                                         key={idx}
                                         network={this.props.network}
-                                        history={this.props.history}
                                         featureBlock={immutableFeatureBlock}
                                     />
                                 ))}

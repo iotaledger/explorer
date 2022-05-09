@@ -1,5 +1,4 @@
 import { FeatureBlockTypes } from "@iota/iota.js-stardust";
-import * as H from "history";
 
 export interface FeatureBlockProps {
     /**
@@ -11,9 +10,4 @@ export interface FeatureBlockProps {
      * Network
      */
     network: string;
-
-    /**
-     * History for navigation.
-     */
-    history: H.History;
 }
