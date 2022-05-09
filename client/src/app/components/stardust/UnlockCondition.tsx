@@ -1,11 +1,7 @@
 import { ADDRESS_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import Bech32HrpContext from "../../../helpers/stardust/bech32HrpContext";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
-import { INetwork } from "../../../models/db/INetwork";
-import { NetworkService } from "../../../services/networkService";
 import AsyncComponent from "../AsyncComponent";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Address from "./Address";
@@ -16,15 +12,8 @@ import { UnlockConditionState } from "./UnlockConditionState";
  * Component which will display an unlock condition.
  */
 class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditionState> {
-    private readonly networkConfig: INetwork | undefined;
-
     constructor(props: UnlockConditionProps) {
         super(props);
-
-        const networkService = ServiceFactory.get<NetworkService>("network");
-        this.networkConfig = props.network
-            ? networkService.get(props.network)
-            : undefined;
 
         this.state = {
             showOutputDetails: -1
@@ -68,15 +57,9 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                 <div className="card--value row">
                                     {NameHelper.getAddressTypeName(this.props.unlockCondition.address.type)}
                                 </div>
-                                <Bech32HrpContext.Provider
-                                    value={{
-                                        bech32Hrp: this.networkConfig?.bechHrp ?? "iota"
-                                    }}
-                                >
-                                    <Address
-                                        address={this.props.unlockCondition.address}
-                                    />
-                                </Bech32HrpContext.Provider>
+                                <Address
+                                    address={this.props.unlockCondition.address}
+                                />
                             </React.Fragment>
                         )}
                         {this.props.unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE && (
@@ -84,15 +67,9 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                 <div className="card--label">
                                     Return address
                                 </div>
-                                <Bech32HrpContext.Provider
-                                    value={{
-                                        bech32Hrp: this.networkConfig?.bechHrp ?? "iota"
-                                    }}
-                                >
-                                    <Address
-                                        address={this.props.unlockCondition.returnAddress}
-                                    />
-                                </Bech32HrpContext.Provider>
+                                <Address
+                                    address={this.props.unlockCondition.returnAddress}
+                                />
                                 <div className="card--label">
                                     Amount:
                                 </div>
@@ -119,15 +96,9 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                         )}
                         {this.props.unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE && (
                             <React.Fragment>
-                                <Bech32HrpContext.Provider
-                                    value={{
-                                        bech32Hrp: this.networkConfig?.bechHrp ?? "iota"
-                                    }}
-                                >
-                                    <Address
-                                        address={this.props.unlockCondition.returnAddress}
-                                    />
-                                </Bech32HrpContext.Provider>
+                                <Address
+                                    address={this.props.unlockCondition.returnAddress}
+                                />
                                 <div className="card--label">
                                     Milestone index
                                 </div>
@@ -143,37 +114,19 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                             </React.Fragment>
                         )}
                         {this.props.unlockCondition.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE && (
-                            <Bech32HrpContext.Provider
-                                value={{
-                                    bech32Hrp: this.networkConfig?.bechHrp ?? "iota"
-                                }}
-                            >
-                                <Address
-                                    address={this.props.unlockCondition.address}
-                                />
-                            </Bech32HrpContext.Provider>
+                            <Address
+                                address={this.props.unlockCondition.address}
+                            />
                         )}
                         {this.props.unlockCondition.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE && (
-                            <Bech32HrpContext.Provider
-                                value={{
-                                    bech32Hrp: this.networkConfig?.bechHrp ?? "iota"
-                                }}
-                            >
-                                <Address
-                                    address={this.props.unlockCondition.address}
-                                />
-                            </Bech32HrpContext.Provider>
+                            <Address
+                                address={this.props.unlockCondition.address}
+                            />
                         )}
                         {this.props.unlockCondition.type === STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE && (
-                            <Bech32HrpContext.Provider
-                                value={{
-                                    bech32Hrp: this.networkConfig?.bechHrp ?? "iota"
-                                }}
-                            >
-                                <Address
-                                    address={this.props.unlockCondition.address}
-                                />
-                            </Bech32HrpContext.Provider>
+                            <Address
+                                address={this.props.unlockCondition.address}
+                            />
                         )}
                         <div className="card--label">
                             Type:

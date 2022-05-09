@@ -1,12 +1,12 @@
+/* eslint-disable react/static-property-placement */
 import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
     NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
-import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { NetworkService } from "../../../services/networkService";
+import Bech32HrpContext from "../../../helpers/stardust/bech32HrpContext";
 import MessageButton from "../MessageButton";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import FeatureBlock from "./FeatureBlock";
@@ -19,23 +19,11 @@ import UnlockCondition from "./UnlockCondition";
  */
 class Output extends Component<OutputProps, OutputState> {
     /**
-     * The hrp of bech addresses.
-     */
-    private readonly _bechHrp: string;
-
-    /**
      * Create a new instance of NewOutput.
      * @param props The props.
      */
     constructor(props: OutputProps) {
         super(props);
-
-        const networkService = ServiceFactory.get<NetworkService>("network");
-        const networkConfig = props.network
-            ? networkService.get(props.network)
-            : undefined;
-
-        this._bechHrp = networkConfig?.bechHrp ?? "iota";
 
         this.state = {
             output: props.output,
@@ -253,7 +241,7 @@ class Output extends Component<OutputProps, OutputState> {
 
         this.setState({
             bech32: Bech32AddressHelper.buildAddress(
-                this._bechHrp,
+                this.context.bech32Hrp,
                 address,
                 addressType
             ).bech32
@@ -261,4 +249,5 @@ class Output extends Component<OutputProps, OutputState> {
     }
 }
 
+Output.contextType = Bech32HrpContext;
 export default Output;

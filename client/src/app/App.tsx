@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable react/jsx-closing-tag-location */
 import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
+import Bech32HrpContext from "../helpers/stardust/bech32HrpContext";
 import { IConfiguration } from "../models/config/IConfiguration";
 import { CHRYSALIS, OG, STARDUST } from "../models/db/protocolVersion";
 import { NetworkService } from "../services/networkService";
@@ -281,8 +283,14 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 component={(props: RouteComponentProps<MessageProps>) =>
                                                 (
                                                     isStardust
-                                                        ? <StardustMessage {...props} />
-                                                        : <ChrysalisMessage {...props} />
+                                                    ? <Bech32HrpContext.Provider
+                                                            value={{
+                                                                bech32Hrp: currentNetworkConfig?.bechHrp ?? "iota"
+                                                            }}
+                                                      >
+                                                        <StardustMessage {...props} />
+                                                    </Bech32HrpContext.Provider>
+                                                    : <ChrysalisMessage {...props} />
                                                 )}
                                             />
                                             {
