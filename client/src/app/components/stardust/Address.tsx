@@ -14,7 +14,7 @@ import { AddressState } from "./AddressState";
  */
 class Address extends Component<AddressProps, AddressState> {
     /**
-     * Create a new instance of NewOutput.
+     * Create a new instance of Address.
      * @param props The props.
      */
     constructor(props: AddressProps) {
