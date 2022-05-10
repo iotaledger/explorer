@@ -1,4 +1,3 @@
-/* eslint-disable react/static-property-placement */
 import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
     NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
@@ -19,6 +18,11 @@ import UnlockCondition from "./UnlockCondition";
  */
 class Output extends Component<OutputProps, OutputState> {
     /**
+     * The component context type.
+     */
+    public static contextType = Bech32HrpContext;
+
+    /**
      * Create a new instance of NewOutput.
      * @param props The props.
      */
@@ -27,16 +31,8 @@ class Output extends Component<OutputProps, OutputState> {
 
         this.state = {
             output: props.output,
-            showOutputDetails: -1,
-            bech32: ""
+            showOutputDetails: -1
         };
-    }
-
-    /**
-     * The component mounted.
-     */
-     public async componentDidMount(): Promise<void> {
-        await this.buildAddress();
     }
 
     /**
@@ -44,6 +40,7 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const bech32 = this.buildAddress();
         return (
             <div className="output margin-l-t">
                 {this.state.output.type === ALIAS_OUTPUT_TYPE && (
@@ -56,10 +53,10 @@ class Output extends Component<OutputProps, OutputState> {
                                 type="button"
                                 className="margin-r-t"
                             >
-                                {this.state.bech32}
+                                {bech32}
                             </button>
                             <MessageButton
-                                onClick={() => ClipboardHelper.copy(this.state.bech32)}
+                                onClick={() => ClipboardHelper.copy(bech32)}
                                 buttonType="copy"
                                 labelPosition="top"
                             />
@@ -95,10 +92,10 @@ class Output extends Component<OutputProps, OutputState> {
                                 type="button"
                                 className="margin-r-t"
                             >
-                                {this.state.bech32}
+                                {bech32}
                             </button>
                             <MessageButton
-                                onClick={() => ClipboardHelper.copy(this.state.bech32)}
+                                onClick={() => ClipboardHelper.copy(bech32)}
                                 buttonType="copy"
                                 labelPosition="top"
                             />
@@ -224,7 +221,7 @@ class Output extends Component<OutputProps, OutputState> {
      * Build bech32 address.
      * @returns The bech32 address.
      */
-     private async buildAddress() {
+     private buildAddress() {
         let address: string = "";
         let addressType: number = 0;
 
@@ -236,15 +233,12 @@ class Output extends Component<OutputProps, OutputState> {
             addressType = NFT_ADDRESS_TYPE;
         }
 
-        this.setState({
-            bech32: Bech32AddressHelper.buildAddress(
+        return Bech32AddressHelper.buildAddress(
                 this.context.bech32Hrp,
                 address,
                 addressType
-            ).bech32
-        });
+            ).bech32;
     }
 }
 
-Output.contextType = Bech32HrpContext;
 export default Output;

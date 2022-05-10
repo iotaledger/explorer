@@ -6,7 +6,7 @@ interface IBech32HrpContext {
 }
 
 const defaultState = {
-  bech32Hrp: ""
+  bech32Hrp: "iota"
 };
 
 const Bech32HrpContext = createContext<IBech32HrpContext>(defaultState);

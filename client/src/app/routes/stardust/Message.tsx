@@ -32,6 +32,11 @@ import { MessageState } from "./MessageState";
  */
 class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageState> {
     /**
+     * The component context type.
+     */
+    public static contextType = Bech32HrpContext;
+
+    /**
      * API Client for tangle requests.
      */
     private readonly _tangleCacheService: StardustTangleCacheService;
@@ -450,6 +455,5 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
     }
 }
 
-Message.contextType = Bech32HrpContext;
 export default Message;
 
