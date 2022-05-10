@@ -1,8 +1,8 @@
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { IFeedItemMetadata } from "../models/api/IFeedItemMetadata";
 import { INetwork } from "../models/db/INetwork";
-import { IFeedItem } from "../models/IFeedItem";
+import { IFeedItem } from "../models/feed/IFeedItem";
+import { IFeedItemMetadata } from "../models/feed/IFeedItemMetadata";
 import { NetworkService } from "./networkService";
 
 export class FeedClient {

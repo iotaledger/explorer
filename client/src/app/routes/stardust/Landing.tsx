@@ -6,9 +6,9 @@ import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/db/INetwork";
 import { STARDUST } from "../../../models/db/protocolVersion";
-import { IFeedItem } from "../../../models/IFeedItem";
+import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/IFilterSettings";
-import { ValueFilter } from "../../../models/services/valueFilter";
+import { getDefaultValueFilter, ValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/stardust/Feeds";
 import "../Landing.scss";
@@ -19,25 +19,6 @@ import { LandingState } from "../LandingState";
  * Component which will show the landing page.
  */
 class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState> {
-    private readonly DEFAULT_VALUES_FILTER: ValueFilter[] = [
-        {
-            label: "Transaction",
-            isEnabled: true
-        },
-        {
-            label: "Milestone",
-            isEnabled: true
-        },
-        {
-            label: "Indexed",
-            isEnabled: true
-        },
-        {
-            label: "No payload",
-            isEnabled: true
-        }
-    ];
-
     /**
      * Create a new instance of Landing.
      * @param props The props.
@@ -60,7 +41,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMinimumUnits: "i",
             valueMaximum: "1",
             valueMaximumUnits: "Ti",
-            valuesFilter: this.DEFAULT_VALUES_FILTER,
+            valuesFilter: getDefaultValueFilter(network.protocolVersion),
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
@@ -100,7 +81,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMinimumUnits: filterSettings?.valueMinimumUnits ?? "i",
             valueMaximum: filterSettings?.valueMaximum ?? "3",
             valueMaximumUnits: filterSettings?.valueMaximumUnits ?? "Pi",
-            valuesFilter: filterSettings?.valuesFilter ?? this.DEFAULT_VALUES_FILTER,
+            valuesFilter: filterSettings?.valuesFilter ??
+                getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "stardust"),
             formatFull: settings.formatFull
         });
     }
@@ -402,9 +384,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
                 },
                 {
-                    payloadType: "Indexed",
+                    payloadType: "Data",
                     filter: (item: IFeedItem) =>
-                        item.payloadType === "Index"
+                        item.payloadType === "Data"
                 },
                 {
                     payloadType: "No payload",

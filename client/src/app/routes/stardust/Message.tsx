@@ -189,7 +189,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                     {this.state.message?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
                                         ("Milestone")}
                                     {this.state.message?.payload?.type === TAGGED_DATA_PAYLOAD_TYPE &&
-                                        ("Index")}
+                                        ("Data")}
                                     {this.state.message?.payload?.type === undefined &&
                                         ("No Payload")}
                                 </div>

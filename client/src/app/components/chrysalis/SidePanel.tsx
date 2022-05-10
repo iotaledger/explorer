@@ -3,7 +3,7 @@ import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { OG } from "../../../models/db/protocolVersion";
-import { IFeedItem } from "../../../models/IFeedItem";
+import { IFeedItem } from "../../../models/feed/IFeedItem";
 import LineChart from "../LineChart";
 import "./SidePanel.scss";
 import { SidePanelRouteProps } from "../SidePanelRouteProps";
