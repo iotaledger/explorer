@@ -4,6 +4,8 @@ import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequ
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
 import { ISearchRequest } from "../../models/api/ISearchRequest";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
+import { IBaseTokenGetRequest } from "../../models/api/stardust/IBaseTokenGetRequest";
+import { IBaseTokenGetResponse } from "../../models/api/stardust/IBaseTokenGetResponse";
 import { IMessageDetailsResponse } from "../../models/api/stardust/IMessageDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
@@ -20,6 +22,18 @@ import { ApiClient } from "../apiClient";
  * Class to handle api communications on stardust.
  */
 export class StardustApiClient extends ApiClient {
+    /**
+     * Perform a request to get the base token info for a network.
+     * @param request The Base token request.
+     * @returns The response from the request.
+     */
+    public async baseTokenInfo(request: IBaseTokenGetRequest): Promise<IBaseTokenGetResponse> {
+        return this.callApi<unknown, IBaseTokenGetResponse>(
+            `token/${request.network}`,
+            "get"
+        );
+    }
+
     /**
      * Find items from the tangle.
      * @param request The request to send.

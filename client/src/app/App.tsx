@@ -4,6 +4,7 @@ import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IConfiguration } from "../models/config/IConfiguration";
 import { CHRYSALIS, OG, STARDUST } from "../models/db/protocolVersion";
+import { BaseTokenInfoService } from "../services/baseTokenInfoService";
 import { NetworkService } from "../services/networkService";
 import { SettingsService } from "../services/settingsService";
 import "./App.scss";
@@ -13,6 +14,7 @@ import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import SearchInput from "./components/SearchInput";
+import NetworkContext from "./context/NetworkContext";
 import { AddrRouteProps } from "./routes/AddrRouteProps";
 import ChrysalisAddress from "./routes/chrysalis/Addr";
 import Indexed from "./routes/chrysalis/Indexed";
@@ -104,6 +106,8 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
     public render(): ReactNode {
         const currentNetworkConfig = this.state.networks.find(n => n.network === this.state.networkId);
         const isStardust = currentNetworkConfig?.protocolVersion === STARDUST;
+        const baseTokenService = ServiceFactory.get<BaseTokenInfoService>("base-token-info");
+        const tokenInfo = baseTokenService.get(this.state.networkId);
 
         const copyrightInnerContent = "This explorer implementation is inspired by ";
         const copyrightInner = (
@@ -115,6 +119,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                     </a>.
                 </span>
             </React.Fragment>
+        );
+
+        const withNetworkProvider = (wrappedComponent: ReactNode) => (
+            <NetworkContext.Provider value={{ name: this.state.networkId, tokenInfo }}>
+                {wrappedComponent}
+            </NetworkContext.Provider>
         );
 
         return (
@@ -270,10 +280,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             <Route
                                                 path="/:network/addr/:address"
                                                 component={(props: RouteComponentProps<AddrRouteProps>) =>
-                                                (
-                                                    isStardust
-                                                        ? <StardustAddress {...props} />
-                                                        : <ChrysalisAddress {...props} />
+                                                (isStardust
+                                                    ? withNetworkProvider(<StardustAddress {...props} />)
+                                                    : <ChrysalisAddress {...props} />
                                                 )}
                                             />
                                             <Route
@@ -281,7 +290,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 component={(props: RouteComponentProps<MessageProps>) =>
                                                 (
                                                     isStardust
-                                                        ? <StardustMessage {...props} />
+                                                        ? withNetworkProvider(<StardustMessage {...props} />)
                                                         : <ChrysalisMessage {...props} />
                                                 )}
                                             />

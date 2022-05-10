@@ -1,4 +1,4 @@
-import { Units, UnitsHelper } from "@iota/iota.js-stardust";
+import { Magnitudes, UnitsHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -7,13 +7,13 @@ import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/db/INetwork";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
-import { IFilterSettings } from "../../../models/services/IFilterSettings";
-import { getDefaultValueFilter, ValueFilter } from "../../../models/services/valueFilter";
+import { IFilterSettings } from "../../../models/services/stardust/IFilterSettings";
+import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/stardust/Feeds";
 import "../Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
-import { LandingState } from "../LandingState";
+import { LandingState } from "./LandingState";
 
 /**
  * Component which will show the landing page.
@@ -38,10 +38,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         this.state = {
             networkConfig: network,
             valueMinimum: "0",
-            valueMinimumUnits: "i",
+            valueMinimumMagnitude: "",
             valueMaximum: "1",
-            valueMaximumUnits: "Ti",
             valuesFilter: getDefaultValueFilter(network.protocolVersion),
+            valueMaximumMagnitude: "T",
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
@@ -78,11 +78,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
         this.setState({
             valueMinimum: filterSettings?.valueMinimum ?? "0",
-            valueMinimumUnits: filterSettings?.valueMinimumUnits ?? "i",
+            valueMinimumMagnitude: filterSettings?.valueMinimumMagnitude ?? "",
             valueMaximum: filterSettings?.valueMaximum ?? "3",
-            valueMaximumUnits: filterSettings?.valueMaximumUnits ?? "Pi",
             valuesFilter: filterSettings?.valuesFilter ??
                 getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "stardust"),
+            valueMaximumMagnitude: filterSettings?.valueMaximumMagnitude ?? "P",
             formatFull: settings.formatFull
         });
     }
@@ -352,9 +352,15 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     protected itemsUpdated(): void {
         if (this._isMounted && this._feedClient) {
             const minLimit = UnitsHelper.convertUnits(
-                Number.parseFloat(this.state.valueMinimum), this.state.valueMinimumUnits, "i");
+                Number.parseFloat(this.state.valueMinimum),
+                this.state.valueMinimumMagnitude,
+                ""
+            );
             const maxLimit = UnitsHelper.convertUnits(
-                Number.parseFloat(this.state.valueMaximum), this.state.valueMaximumUnits, "i");
+                Number.parseFloat(this.state.valueMaximum),
+                this.state.valueMaximumMagnitude,
+                ""
+            );
 
             const filters = [
                 {
@@ -465,9 +471,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             settings.filters[this._networkConfig?.network] = {
                 valuesFilter: this.state.valuesFilter,
                 valueMinimum: this.state.valueMinimum,
-                valueMinimumUnits: this.state.valueMinimumUnits,
+                valueMinimumMagnitude: this.state.valueMinimumMagnitude,
                 valueMaximum: this.state.valueMaximum,
-                valueMaximumUnits: this.state.valueMaximumUnits
+                valueMaximumMagnitude: this.state.valueMaximumMagnitude
             };
 
             this._settingsService.save();
@@ -496,9 +502,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     private resetFilters(): void {
         this.setState({
             valueMinimum: "0",
-            valueMinimumUnits: "i",
+            valueMinimumMagnitude: "",
             valueMaximum: "1",
-            valueMaximumUnits: "Ti",
+            valueMaximumMagnitude: "T",
             valuesFilter: this.state.valuesFilter.map(filter => ({ ...filter, isEnabled: true }))
         }, async () => this.updateFilters());
     }
@@ -525,20 +531,24 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                     <div className="select-wrapper">
                         <select
                             className="select-plus"
-                            value={type === "minimum" ? this.state.valueMinimumUnits : this.state.valueMaximumUnits}
+                            value={
+                                type === "minimum"
+                                    ? this.state.valueMinimumMagnitude
+                                    : this.state.valueMaximumMagnitude
+                            }
                             onChange={
                                 e =>
                                 (type === "minimum" ? this.setState(
                                     {
-                                        valueMinimumUnits:
-                                            e.target.value as Units
+                                        valueMinimumMagnitude:
+                                            e.target.value as Magnitudes
                                     },
                                     async () =>
                                         this.updateFilters()
                                 ) : this.setState(
                                     {
-                                        valueMaximumUnits:
-                                            e.target.value as Units
+                                        valueMaximumMagnitude:
+                                            e.target.value as Magnitudes
                                     },
                                     async () =>
                                         this.updateFilters()

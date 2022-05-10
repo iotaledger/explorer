@@ -1,8 +1,9 @@
-import { CONFLICT_REASON_STRINGS, IMessageMetadata, MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js-stardust";
+import { CONFLICT_REASON_STRINGS, IMessageMetadata, MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 import { NetworkService } from "../../../services/networkService";
@@ -21,6 +22,7 @@ import MilestonePayload from "../../components/stardust/MilestonePayload";
 import TaggedDataPayload from "../../components/stardust/TaggedDataPayload";
 import TransactionPayload from "../../components/stardust/TransactionPayload";
 import Switcher from "../../components/Switcher";
+import NetworkContext from "../../context/NetworkContext";
 import { MessageProps } from "../MessageProps";
 import messageJSON from "./../../../assets/modals/message.json";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
@@ -31,6 +33,11 @@ import { MessageState } from "./MessageState";
  * Component which will show the message page for stardust.
  */
 class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
+
     /**
      * API Client for tangle requests.
      */
@@ -211,8 +218,12 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                             Value
                                         </div>
                                         <div className="value row middle">
-                                            {UnitsHelper.formatUnits(this.state.transferTotal,
-                                                UnitsHelper.calculateBest(this.state.transferTotal))}
+                                            {
+                                                formatAmount(
+                                                    this.state.transferTotal,
+                                                    this.context.tokenInfo
+                                                )
+                                            }
                                             {" "}
                                             (<FiatValue value={this.state.transferTotal} />)
                                         </div>

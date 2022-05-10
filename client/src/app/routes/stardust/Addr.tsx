@@ -1,15 +1,15 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
 import { Blake2b } from "@iota/crypto.js-stardust";
-import { BASIC_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js-stardust";
-import { Converter } from "@iota/util.js";
-import { HexHelper } from "@iota/util.js-stardust";
+import { BASIC_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
+import { Converter, HexHelper } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -23,6 +23,7 @@ import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import Asset from "../../components/stardust/Asset";
 import Nft from "../../components/stardust/Nft";
+import NetworkContext from "../../context/NetworkContext";
 import { AddrRouteProps } from "../AddrRouteProps";
 import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 import messageJSON from "./../../../assets/modals/message.json";
@@ -37,6 +38,11 @@ import ITokenDetails from "./ITokenDetails";
  * Component which will show the address page for stardust.
  */
 class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
+
     /**
      * Maximum page size for permanode request.
      */
@@ -188,7 +194,13 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                         <div className="value featured">
                                                             {this.state.balance > 0 ? (
                                                                 <React.Fragment>
-                                                                    {UnitsHelper.formatBest(this.state.balance)}
+                                                                    {
+                                                                        formatAmount(
+                                                                            this.state.balance,
+                                                                            this.context.tokenInfo,
+                                                                            this.state.formatFull
+                                                                        )
+                                                                    }
                                                                     {" "}
                                                                     <span>(</span>
                                                                     <FiatValue value={this.state.balance} />

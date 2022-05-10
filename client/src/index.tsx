@@ -9,6 +9,7 @@ import { ServiceFactory } from "./factories/serviceFactory";
 import "./index.scss";
 import { IConfiguration } from "./models/config/IConfiguration";
 import { CHRYSALIS, STARDUST } from "./models/db/protocolVersion";
+import { BaseTokenInfoService } from "./services/baseTokenInfoService";
 import { ChrysalisApiClient } from "./services/chrysalis/chrysalisApiClient";
 import { ChrysalisFeedClient } from "./services/chrysalis/chrysalisFeedClient";
 import { ChrysalisTangleCacheService } from "./services/chrysalis/chrysalisTangleCacheService";
@@ -62,6 +63,7 @@ async function initialiseServices(): Promise<void> {
     ServiceFactory.register("currency", () => new CurrencyService(config.apiEndpoint));
     ServiceFactory.register(`tangle-cache-${CHRYSALIS}`, () => new ChrysalisTangleCacheService());
     ServiceFactory.register(`tangle-cache-${STARDUST}`, () => new StardustTangleCacheService());
+    ServiceFactory.register("base-token-info", () => new BaseTokenInfoService());
 
     const networks = networkService.networks();
 

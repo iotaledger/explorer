@@ -64,7 +64,7 @@ export class StardustItemsService implements IItemsService {
     private _timerId?: NodeJS.Timer;
 
     /**
-     * Create a new instance of ChrysalisItemsService.
+     * Create a new instance of StardustItemsService.
      * @param networkId The network configuration.
      */
     constructor(networkId: string) {
