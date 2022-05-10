@@ -21,6 +21,7 @@ import { OgFeedService } from "./services/og/ogFeedService";
 import { OgItemsService } from "./services/og/ogItemsService";
 import { OgStatsService } from "./services/og/ogStatsService";
 import { ZmqService } from "./services/og/zmqService";
+import { BaseTokenInfoService } from "./services/stardust/baseTokenInfoService";
 import { StardustFeedService } from "./services/stardust/stardustFeedService";
 import { StardustItemsService } from "./services/stardust/stardustItemsService";
 import { StardustStatsService } from "./services/stardust/stardustStatsService";
@@ -173,11 +174,19 @@ function initStardustServices(networkConfig: INetwork): void {
 
     ServiceFactory.register(
         `items-${networkConfig.network}`,
-        () => new StardustItemsService(networkConfig.network));
+        () => new StardustItemsService(networkConfig.network)
+    );
 
     ServiceFactory.register(
         `stats-${networkConfig.network}`,
-        () => new StardustStatsService(networkConfig));
+        () => new StardustStatsService(networkConfig)
+    );
+
+    const baseTokenInfoService = new BaseTokenInfoService(networkConfig);
+    ServiceFactory.register(
+        `base-token-${networkConfig.network}`,
+        () => baseTokenInfoService
+    );
 }
 
 /**

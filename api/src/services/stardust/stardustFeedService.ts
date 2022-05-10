@@ -4,7 +4,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedService } from "../../models/services/IFeedService";
 
 /**
- * Class to handle Chrysalis Protocol Feed service.
+ * Class to handle Stardust Protocol Feed service.
  */
 export class StardustFeedService implements IFeedService {
     /**
@@ -28,7 +28,7 @@ export class StardustFeedService implements IFeedService {
     private readonly _password?: string;
 
     /**
-     * Create a new instance of ChrysalisFeedService.
+     * Create a new instance of StardustItemsService.
      * @param networkId The network id.
      * @param endpoint The endpoint for the api.
      * @param user The user for the api.

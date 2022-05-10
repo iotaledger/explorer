@@ -41,6 +41,7 @@ export const routes: IRoute[] = [
     },
     { path: "/stardust/nfts/:network/:nftId", method: "get", folder: "stardust/nftDetails", func: "get" },
     { path: "/stardust/nfts/:network/:address", method: "get", folder: "stardust/nfts", func: "get" },
+    { path: "/token/:network", method: "get", folder: "token", func: "get" },
     { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
     { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
     { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true },
