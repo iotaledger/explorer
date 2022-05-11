@@ -1,11 +1,13 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
 import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
+import moment from "moment";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/transactionsHelper";
+import { HistoricInput, HistoricOutput, ITransaction, ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { NetworkService } from "../../../services/networkService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -30,7 +32,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     /**
      * Maximum page size for permanode request.
      */
-     private static readonly MAX_PAGE_SIZE: number = 6000;
+     private static readonly MAX_PAGE_SIZE: number = 500;
 
     /**
      * API Client for tangle requests.
@@ -263,19 +265,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 tableFormat={true}
                                                                 hasConflicts={!transaction.ledgerInclusionState || transaction.ledgerInclusionState === "conflicting"}
                                                             />
-                                                            {transaction?.relatedSpentTransaction && (
-                                                                <Transaction
-                                                                    key={transaction?.relatedSpentTransaction.messageId}
-                                                                    messageId={transaction?.relatedSpentTransaction.messageId}
-                                                                    network={this.props.match.params.network}
-                                                                    inputs={transaction?.relatedSpentTransaction.inputs.length}
-                                                                    outputs={transaction?.relatedSpentTransaction.outputs.length}
-                                                                    messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
-                                                                    date={transaction?.relatedSpentTransaction.date}
-                                                                    amount={transaction?.relatedSpentTransaction.amount}
-                                                                    tableFormat={true}
-                                                                />
-                                                            )}
                                                         </React.Fragment>
                                                     ))}
                                             </tbody>
@@ -296,19 +285,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                             date={transaction?.date}
                                                             amount={transaction?.amount}
                                                         />
-
-                                                        {transaction?.relatedSpentTransaction && (
-                                                            <Transaction
-                                                                key={transaction?.relatedSpentTransaction.messageId}
-                                                                messageId={transaction?.relatedSpentTransaction.messageId}
-                                                                network={this.props.match.params.network}
-                                                                inputs={transaction?.relatedSpentTransaction.inputs.length}
-                                                                outputs={transaction?.relatedSpentTransaction.outputs.length}
-                                                                messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
-                                                                date={transaction?.relatedSpentTransaction.date}
-                                                                amount={transaction?.relatedSpentTransaction.amount}
-                                                            />
-                                                        )}
                                                     </React.Fragment>
                                                 ))}
                                         </div>
@@ -340,8 +316,21 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     private get currentPageTransactions() {
         const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
         const lastPageIndex = firstPageIndex + this.state.pageSize;
+        const transactionsPage = this.txsHistory
+        .slice(firstPageIndex, lastPageIndex)
+        /* eslint-disable-next-line unicorn/no-array-reduce */
+        .reduce((acc: ITransaction[], curr: ITransaction) => {
+            acc.push(curr);
+            if (curr.relatedSpentTransaction) {
+                acc.push(curr.relatedSpentTransaction);
+            }
+            return acc;
+        }, []);
 
-        return this.txsHistory.slice(firstPageIndex, lastPageIndex);
+        const sortedTransactions: ITransaction[] = transactionsPage.sort((a, b) => (
+             moment(a.date).isAfter(moment(b.date)) ? -1 : 1
+        ));
+        return sortedTransactions;
     }
 
     private get txsHistory() {
@@ -360,24 +349,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
                 const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize))
                     ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
+
                 this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
                     .catch(err => console.error(err));
 
-                if (transactionsDetails?.transactionHistory?.state) {
-                    const allTransactionsDetails = await this._tangleCacheService.transactionsDetails({
-                        network: this.props.match.params.network,
-                        address: this.state.address?.address ?? "",
-                        query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
-                    }, true);
-
-                    if (allTransactionsDetails?.transactionHistory.transactions) {
-                        this.setState({ transactionHistory: { ...allTransactionsDetails,
-                            transactionHistory: { ...allTransactionsDetails.transactionHistory,
-                                transactions: allTransactionsDetails.transactionHistory
-                                    .transactions?.map(t1 => ({ ...t1, ...this.txsHistory.find(t2 => t2.messageId === t1.messageId) })),
-                                state: allTransactionsDetails.transactionHistory.state } } });
-                    }
-                }
+                await this.transactionHistoryHelper(transactionsDetails);
 
                 this.setState({
                     status: "",
@@ -385,6 +361,28 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 });
             }
         );
+    }
+
+    private async transactionHistoryHelper(transactionsDetails: ITransactionsDetailsResponse | undefined) {
+        if (transactionsDetails?.transactionHistory?.state) {
+            const transactionDetailsBatch = await this._tangleCacheService.transactionsDetails({
+                network: this.props.match.params.network,
+                address: this.state.address?.address ?? "",
+                query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
+            }, true);
+
+            if (transactionDetailsBatch?.transactionHistory.transactions) {
+                const updatedHistory = {
+                    transactions: transactionDetailsBatch.transactionHistory
+                    .transactions?.map(t1 => ({ ...t1, ...this.txsHistory.find(t2 => t2.messageId === t1.messageId) })),
+                    state: transactionDetailsBatch.transactionHistory.state
+                };
+                this.setState(
+                    { ...this.state, transactionHistory: { transactionHistory: updatedHistory } },
+                    async () => this.transactionHistoryHelper(this.state.transactionHistory)
+                );
+            }
+        }
     }
 
     private async updateTransactionHistoryDetails(startIndex: number, endIndex: number) {
@@ -435,14 +433,34 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
                             if (transactionsResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
                                 const relatedAmount = await this.getTransactionAmount(output.spendingMessageId);
+                                const relatedInputs = transactionsResult?.message?.payload?.essence?.inputs;
+                                const historicInputs: HistoricInput[] = relatedInputs.map(input => ({
+                                    transactionId: input.transactionId,
+                                    transactionOutputIndex: input.transactionOutputIndex.toString(),
+                                    type: input.type
+                                }));
+                                const relatedOutputs = transactionsResult?.message?.payload?.essence?.outputs;
+                                const historicOutputs: HistoricOutput[] = relatedOutputs.map(relatedOutput => ({
+                                    output: {
+                                        address: {
+                                            type: relatedOutput.address.type,
+                                            address: relatedOutput.address.address
+                                        },
+                                        amount: relatedOutput.amount.toString(),
+                                        type: relatedOutput.type
+                                    },
+                                    spendingMessageId: ""
+                                }));
+
                                 tsx.relatedSpentTransaction = {
                                     messageId: output.spendingMessageId,
                                     date: statusDetails.date,
                                     messageTangleStatus: statusDetails.messageTangleStatus,
                                     isSpent: true,
                                     amount: relatedAmount,
-                                    inputs: transactionsResult?.message?.payload?.essence?.inputs,
-                                    outputs: transactionsResult?.message?.payload?.essence?.outputs
+                                    inputs: historicInputs,
+                                    outputs: historicOutputs,
+                                    ledgerInclusionState: statusDetails.messageTangleStatus
                                 };
                                 if (relatedAmount < 0) {
                                     this.setState({ sent: this.state.sent + Math.abs(relatedAmount) });
