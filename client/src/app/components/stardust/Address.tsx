@@ -3,7 +3,7 @@ import { ALIAS_ADDRESS_TYPE, ED25519_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iot
 import React, { Component, ReactNode } from "react";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import Bech32HrpContext from "../../../helpers/stardust/bech32HrpContext";
+import NetworkContext from "../../context/NetworkContext";
 import MessageButton from "../MessageButton";
 import { AddressProps } from "./AddressProps";
 
@@ -14,7 +14,7 @@ class Address extends Component<AddressProps> {
     /**
      * The component context type.
      */
-    public static contextType = Bech32HrpContext;
+    public static contextType = NetworkContext;
 
     /**
      * Render the component.

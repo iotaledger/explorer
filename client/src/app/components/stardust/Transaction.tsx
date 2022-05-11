@@ -1,8 +1,9 @@
-import { UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import Spinner from "../../components/Spinner";
 import "./Transaction.scss";
+import NetworkContext from "../../context/NetworkContext";
 import { TransactionProps } from "../TransactionProps";
 import { TransactionState } from "../TransactionState";
 import MessageTangleState from "./MessageTangleState";
@@ -12,6 +13,11 @@ import MessageTangleState from "./MessageTangleState";
  * Component which will display a transaction.
  */
 class Transaction extends Component<TransactionProps, TransactionState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
+
     /**
      * Render the component.
      * @returns The node to render.
@@ -49,7 +55,12 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                             : <Spinner />}
                     </td>
                     <td className={`amount ${this.props.amount && this.props.amount < 0 ? "negative" : "positive"}`}>
-                        {this.props.amount ? UnitsHelper.formatBest(this.props.amount ?? 0) : <Spinner />}
+                        {this.props.amount
+                            ? formatAmount(
+                                this.props.amount,
+                                this.context.tokenInfo
+                            )
+                            : <Spinner />}
                     </td>
                 </tr>
             ) : (
@@ -101,7 +112,12 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                             ? "negative"
                             : "positive"}`}
                         >
-                            {this.props.amount ? UnitsHelper.formatBest(this.props.amount ?? 0) : <Spinner />}
+                            {this.props.amount
+                                ? formatAmount(
+                                    this.props.amount,
+                                    this.context.tokenInfo
+                                )
+                                : <Spinner />}
                         </div>
                     </div>
                 </div >

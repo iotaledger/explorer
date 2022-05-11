@@ -1,14 +1,15 @@
-import { UnitsHelper } from "@iota/iota.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
+import { Converter, HexHelper } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../../helpers/circleNodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IFeedItemMetadata } from "../../../models/api/IFeedItemMetadata";
 import { INodeData } from "../../../models/graph/INodeData";
 import { IFeedItem } from "../../../models/IFeedItem";
 import Feeds from "../../components/stardust/Feeds";
+import NetworkContext from "../../context/NetworkContext";
 import "../Visualizer.scss";
 import { VisualizerProps, VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerState } from "../VisualizerState";
@@ -17,6 +18,11 @@ import { VisualizerState } from "../VisualizerState";
  * Component which will show the visualizer page.
  */
 class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & VisualizerProps, VisualizerState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
+
     /**
      * Maximum number of items.
      */
@@ -320,7 +326,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                                                     Value
                                                 </div>
                                                 <div className="card--value">
-                                                    {UnitsHelper.formatBest(this.state.selectedFeedItem?.value)}
+                                                    {
+                                                        formatAmount(
+                                                            this.state.selectedFeedItem?.value,
+                                                            this.context.tokenInfo
+                                                        )
+                                                    }
                                                 </div>
                                             </React.Fragment>
                                         )}
@@ -400,26 +411,28 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                 const now = Date.now();
 
                 for (const item of newItems) {
-                    const existingNode = this._graph.getNode(item.id);
+                    const id = HexHelper.stripPrefix(item.id);
+                    const existingNode = this._graph.getNode(id);
 
                     if (!existingNode) {
-                        this._graph.addNode(item.id, {
+                        this._graph.addNode(id, {
                             feedItem: item,
                             added: now
                         });
-                        this._existingIds.push(item.id);
+                        this._existingIds.push(id);
 
                         if (item.parents) {
                             const addedParents: string[] = [];
                             for (let i = 0; i < item.parents.length; i++) {
-                                if (!addedParents.includes(item.parents[i])) {
-                                    addedParents.push(item.parents[i]);
-                                    if (!this._graph.getNode(item.parents[i])) {
-                                        this._graph.addNode(item.parents[i]);
-                                        this._existingIds.push(item.parents[i]);
+                                const parentId = HexHelper.stripPrefix(item.parents[i]);
+                                if (!addedParents.includes(parentId)) {
+                                    addedParents.push(parentId);
+                                    if (!this._graph.getNode(parentId)) {
+                                        this._graph.addNode(parentId);
+                                        this._existingIds.push(parentId);
                                     }
 
-                                    this._graph.addLink(item.parents[i], item.id);
+                                    this._graph.addLink(parentId, id);
                                 }
                             }
                         }
@@ -443,13 +456,14 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
         if (this._graph && this._hadInitialLoad) {
             const highlightRegEx = this.highlightNodesRegEx();
 
-            for (const meta in metaData) {
-                const node = this._graph.getNode(meta);
+            for (const id in metaData) {
+                const noPrefixId = HexHelper.stripPrefix(id);
+                const node = this._graph.getNode(noPrefixId);
                 if (node) {
                     if (node.data) {
                         node.data.feedItem.metaData = {
                             ...node.data.feedItem.metaData,
-                            ...metaData[meta]
+                            ...metaData[id]
                         };
                     }
                     this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
@@ -739,8 +753,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
         if (data.feedItem) {
             for (const key in data.feedItem.properties) {
                 const val = data.feedItem.properties[key] as string;
-                if (regEx.test(val) ||
-                    (Converter.isHex(val) && regEx.test(Converter.hexToUtf8(val)))) {
+                if (typeof val === "string" && Converter.isHex(val) && regEx.test(Converter.hexToUtf8(val))) {
                     return true;
                 }
             }

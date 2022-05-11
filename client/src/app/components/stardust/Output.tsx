@@ -5,7 +5,7 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import Bech32HrpContext from "../../../helpers/stardust/bech32HrpContext";
+import NetworkContext from "../../context/NetworkContext";
 import MessageButton from "../MessageButton";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import FeatureBlock from "./FeatureBlock";
@@ -20,7 +20,7 @@ class Output extends Component<OutputProps, OutputState> {
     /**
      * The component context type.
      */
-    public static contextType = Bech32HrpContext;
+    public static contextType = NetworkContext;
 
     /**
      * Create a new instance of NewOutput.
