@@ -1,9 +1,9 @@
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IFeedItemMetadata } from "../../../models/api/IFeedItemMetadata";
 import { INetwork } from "../../../models/db/INetwork";
 import { CHRYSALIS } from "../../../models/db/protocolVersion";
-import { IFeedItem } from "../../../models/IFeedItem";
+import { IFeedItem } from "../../../models/feed/IFeedItem";
+import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { ChrysalisApiClient } from "../../../services/chrysalis/chrysalisApiClient";
 import { ChrysalisFeedClient } from "../../../services/chrysalis/chrysalisFeedClient";
 import { MilestonesClient } from "../../../services/milestonesClient";

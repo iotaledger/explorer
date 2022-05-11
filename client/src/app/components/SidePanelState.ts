@@ -1,4 +1,4 @@
-import { IFeedItem } from "../../models/IFeedItem";
+import { IFeedItem } from "../../models/feed/IFeedItem";
 import { FeedsState } from "./FeedsState";
 
 export interface SidePanelState extends FeedsState {

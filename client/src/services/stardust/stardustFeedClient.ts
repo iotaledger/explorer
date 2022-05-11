@@ -1,15 +1,13 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, deserializeMessage, MILESTONE_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
-import { asTransactionObject } from "@iota/transaction-converter";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { TrytesHelper } from "../../helpers/trytesHelper";
-import { IFeedItemMetadata } from "../../models/api/IFeedItemMetadata";
 import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
 import { IFeedSubscriptionMessage } from "../../models/api/IFeedSubscriptionMessage";
 import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
-import { STARDUST } from "../../models/db/protocolVersion";
-import { IFeedItem } from "../../models/IFeedItem";
+import { IFeedItem } from "../../models/feed/IFeedItem";
+import { IFeedItemMetadata } from "../../models/feed/IFeedItemMetadata";
 import { FeedClient } from "../feedClient";
 
 /**
@@ -67,10 +65,10 @@ export class StardustFeedClient extends FeedClient {
                                 removeItems =
                                     removeItems.concat(transactionPayload.slice(-transactionPayloadToRemoveCount));
                             }
-                            const indexPayload = this._items.filter(t => t.payloadType === "Index");
-                            const indexPayloadToRemoveCount = indexPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                            if (indexPayloadToRemoveCount > 0) {
-                                removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
+                            const dataPayload = this._items.filter(t => t.payloadType === "Data");
+                            const dataPayloadToRemoveCount = dataPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (dataPayloadToRemoveCount > 0) {
+                                removeItems = removeItems.concat(dataPayload.slice(-dataPayloadToRemoveCount));
                             }
                             const msPayload = this._items.filter(t => t.payloadType === "MS");
                             const msPayloadToRemoveCount = msPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
@@ -135,66 +133,47 @@ export class StardustFeedClient extends FeedClient {
      * @returns The feed item.
      */
     private convertItem(item: string): IFeedItem {
-        if (this._networkConfig?.protocolVersion === STARDUST) {
-            const bytes = Converter.hexToBytes(item);
-            const messageId = Converter.bytesToHex(Blake2b.sum256(bytes));
+        const bytes = Converter.hexToBytes(item);
+        const messageId = Converter.bytesToHex(Blake2b.sum256(bytes));
 
-            let value;
-            let payloadType: "Transaction" | "Index" | "MS" | "None" = "None";
-            const properties: { [key: string]: unknown } = {};
-            let message;
+        let value;
+        let payloadType: "Transaction" | "Data" | "MS" | "None" = "None";
+        const properties: { [key: string]: unknown } = {};
+        let message;
 
-            try {
-                message = deserializeMessage(new ReadStream(bytes));
+        try {
+            message = deserializeMessage(new ReadStream(bytes));
 
-                if (message.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                    payloadType = "Transaction";
-                    value = 0;
+            if (message.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                payloadType = "Transaction";
+                value = 0;
 
-                    for (const output of message.payload.essence.outputs) {
-                        if (output.type === BASIC_OUTPUT_TYPE) {
-                            value += Number(output.amount);
-                        }
+                for (const output of message.payload.essence.outputs) {
+                    if (output.type === BASIC_OUTPUT_TYPE) {
+                        value += Number(output.amount);
                     }
-
-                    if (message.payload.essence.payload) {
-                        properties.Index = message.payload.essence.payload.tag;
-                    }
-                } else if (message.payload?.type === MILESTONE_PAYLOAD_TYPE) {
-                    payloadType = "MS";
-                    properties.MS = message.payload.index;
-                } else if (message.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
-                    payloadType = "Index";
-                    properties.Index = message.payload.tag;
                 }
-            } catch (err) {
-                console.error(err);
-            }
 
-            return {
-                id: messageId,
-                value,
-                parents: message?.parentMessageIds ?? [],
-                properties,
-                payloadType
-            };
+                if (message.payload.essence.payload) {
+                    properties.Index = message.payload.essence.payload.tag;
+                }
+            } else if (message.payload?.type === MILESTONE_PAYLOAD_TYPE) {
+                payloadType = "MS";
+                properties.MS = message.payload.index;
+            } else if (message.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
+                payloadType = "Data";
+                properties.Index = message.payload.tag;
+            }
+        } catch (err) {
+            console.error(err);
         }
 
-        const tx = asTransactionObject(item);
-
         return {
-            id: tx.hash,
-            value: tx.value,
-            parents: [
-                tx.trunkTransaction,
-                tx.branchTransaction
-            ],
-            properties: {
-                "Tag": tx.tag,
-                "Address": tx.address,
-                "Bundle": tx.bundle
-            },
-            payloadType: "Transaction"
+            id: messageId,
+            value,
+            parents: message?.parentMessageIds ?? [],
+            properties,
+            payloadType
         };
     }
 }

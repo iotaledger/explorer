@@ -3,13 +3,13 @@ import { deserializeMessage, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, SI
 import { asTransactionObject } from "@iota/transaction-converter";
 import { Converter, ReadStream } from "@iota/util.js";
 import { TrytesHelper } from "../../helpers/trytesHelper";
-import { IFeedItemMetadata } from "../../models/api/IFeedItemMetadata";
 import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
 import { IFeedSubscriptionMessage } from "../../models/api/IFeedSubscriptionMessage";
 import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
 import { CHRYSALIS, OG } from "../../models/db/protocolVersion";
-import { IFeedItem } from "../../models/IFeedItem";
+import { IFeedItem } from "../../models/feed/IFeedItem";
+import { IFeedItemMetadata } from "../../models/feed/IFeedItemMetadata";
 import { FeedClient } from "../feedClient";
 
 /**

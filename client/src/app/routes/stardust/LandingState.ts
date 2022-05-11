@@ -1,6 +1,6 @@
 import { Magnitudes } from "@iota/iota.js-stardust";
 import { INetwork } from "../../../models/db/INetwork";
-import { IFeedItem } from "../../../models/IFeedItem";
+import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { ValueFilter } from "../../../models/services/valueFilter";
 import { CurrencyState } from "../../components/CurrencyState";
 import { FeedsState } from "../../components/FeedsState";

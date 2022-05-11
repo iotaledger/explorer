@@ -1,4 +1,4 @@
-import { IFeedItemMetadata } from "./IFeedItemMetadata";
+import { IFeedItemMetadata } from "../feed/IFeedItemMetadata";
 
 export interface IFeedSubscriptionMessage {
     /**

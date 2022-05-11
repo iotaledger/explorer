@@ -1,4 +1,7 @@
-import { IFeedItemMetadata } from "./api/IFeedItemMetadata";
+import { IFeedItemMetadata } from "./IFeedItemMetadata";
+
+// Chrysalis | Stardust
+type IndexationPayloadType = "Index" | "Data";
 
 export interface IFeedItem {
     /**
@@ -22,9 +25,9 @@ export interface IFeedItem {
     properties?: { [key: string]: unknown };
 
     /**
-     * The payload type if this is Chrysalis.
+     * The payload type for Chrysalis/Stardust.
      */
-    payloadType?: "Transaction" | "Index" | "MS" | "None";
+    payloadType?: "Transaction" | IndexationPayloadType | "MS" | "None";
 
     /**
      * Metadata for the item.

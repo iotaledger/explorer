@@ -67,7 +67,7 @@ class TaggedDataPayload extends Component<TaggedDataPayloadProps, TaggedDataPayl
                 <div className="section--header">
                     <div className="row middle">
                         <h2>
-                            Indexation Payload
+                            Tagged Data Payload
                         </h2>
                         <Modal icon={ModalIcon.Info} data={messageJSON} />
                     </div>

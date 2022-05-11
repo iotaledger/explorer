@@ -1,4 +1,4 @@
-import { IFeedItem } from "../../models/IFeedItem";
+import { IFeedItem } from "../../models/feed/IFeedItem";
 import { FeedsState } from "../components/FeedsState";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
