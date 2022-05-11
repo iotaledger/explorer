@@ -206,6 +206,22 @@
     .section--header__filter {
       display: flex;
     }
+
+    .sort-disclaimer {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      span {
+          width: 60%;
+          padding: 6px;
+          font-family: $inter;
+          background-color: #ffc10780;
+          border-radius: 6px;
+          text-align: center;
+      }
+    }
   }
 
   .general-content {

@@ -236,8 +236,14 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                     </p>
                                                 </div>
                                             )}
-
                                         </div>
+                                        {this.txsHistory.length > this.state.pageSize && (
+                                            <div className="sort-disclaimer">
+                                                <span>
+                                                    The transaction history might not be in the correct order across multiple pages.
+                                                </span>
+                                            </div>
+                                        )}
                                         <table className="transaction--table">
                                             <thead>
                                                 <tr>
@@ -305,6 +311,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 })}
                                         />
                                     </div>)}
+
                             </div>
                         </div>
                     </div >
