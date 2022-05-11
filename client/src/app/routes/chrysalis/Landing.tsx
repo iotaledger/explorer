@@ -6,7 +6,7 @@ import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/db/INetwork";
 import { CHRYSALIS, OG } from "../../../models/db/protocolVersion";
-import { IFeedItem } from "../../../models/IFeedItem";
+import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/IFilterSettings";
 import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";

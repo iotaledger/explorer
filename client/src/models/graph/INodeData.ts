@@ -1,4 +1,4 @@
-import { IFeedItem } from "../IFeedItem";
+import { IFeedItem } from "../feed/IFeedItem";
 
 export interface INodeData {
     /**
