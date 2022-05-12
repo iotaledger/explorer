@@ -22,7 +22,7 @@ export class FixerClient {
      */
     constructor(apiKey: string) {
         this._apiKey = apiKey;
-        this._endpoint = "http://data.fixer.io/api/";
+        this._endpoint = "https://api.apilayer.com/fixer/";
     }
 
     /**
@@ -36,8 +36,10 @@ export class FixerClient {
         try {
             response = await FetchHelper.json<unknown, ILatestResponse>(
                 this._endpoint,
-                `latest?access_key=${this._apiKey}&format=1&base=${baseCurrency}`,
-                "get"
+                `latest?&base=${baseCurrency}`,
+                "get",
+                null,
+                { apiKey: this._apiKey }
             );
         } catch {
         }
@@ -55,8 +57,10 @@ export class FixerClient {
         try {
             response = await FetchHelper.json<unknown, ISymbolsResponse>(
                 this._endpoint,
-                `symbols?access_key=${this._apiKey}`,
-                "get"
+                "symbols",
+                "get",
+                null,
+                { apiKey: this._apiKey }
             );
         } catch { }
 
