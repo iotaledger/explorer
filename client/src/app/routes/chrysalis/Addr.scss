@@ -208,19 +208,19 @@
     }
 
     .sort-disclaimer {
+      align-items: center;
+      background-color: var(--header-svg-bg);
+      color: var(--body-color);
+      border-radius: 6px;
       display: flex;
       flex-direction: row;
-      align-items: center;
+      font-family: $inter;
+      font-size: 0.875rem;
       justify-content: center;
+      margin: 0 auto;
       margin-bottom: 24px;
-      span {
-          width: 60%;
-          padding: 6px;
-          font-family: $inter;
-          background-color: #ffc10780;
-          border-radius: 6px;
-          text-align: center;
-      }
+      padding: 10px 24px;
+      text-align: center;
     }
   }
 
