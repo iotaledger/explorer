@@ -434,10 +434,13 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
             }
 
             const { inputs, outputs, unlockAddresses, transferTotal } =
-                await TransactionsHelper.getInputsAndOutputs(result?.message,
+                await TransactionsHelper.getInputsAndOutputs(
+                    result?.message,
                     this.props.match.params.network,
                     this.context.bech32Hrp,
-                    this._tangleCacheService);
+                    this._tangleCacheService
+            );
+
             this.setState({
                 inputs,
                 outputs,

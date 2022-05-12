@@ -207,8 +207,10 @@ export class TransactionsHelper {
         }
 
         if (unlockCondition?.address.type === ED25519_ADDRESS_TYPE) {
-            const pubKeyHash = HexHelper.stripPrefix(unlockCondition.address.pubKeyHash);
-            address = Bech32AddressHelper.buildAddress(_bechHrp, pubKeyHash, ED25519_ADDRESS_TYPE);
+            const ed25519Address = Converter.bytesToHex(
+                new Ed25519Address(Converter.hexToBytes(unlockCondition.address.pubKeyHash)).toAddress()
+            );
+            address = Bech32AddressHelper.buildAddress(_bechHrp, ed25519Address, ED25519_ADDRESS_TYPE);
         } else if (unlockCondition?.address.type === ALIAS_ADDRESS_TYPE) {
             const aliasId = HexHelper.stripPrefix(unlockCondition.address.aliasId);
             address = Bech32AddressHelper.buildAddress(_bechHrp, aliasId, ALIAS_ADDRESS_TYPE);

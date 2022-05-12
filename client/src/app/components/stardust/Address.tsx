@@ -1,5 +1,7 @@
-import { ALIAS_ADDRESS_TYPE, ED25519_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, Ed25519Address, ED25519_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import { Converter } from "@iota/util.js-stardust";
 import React, { Component, ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
@@ -29,12 +31,12 @@ class Address extends Component<AddressProps> {
                     {NameHelper.getAddressTypeName(this.props.address.type)}
                 </div>
                 <div className="card--value row middle">
-                    <button
-                        type="button"
+                    <Link
+                        to={`/${this.context.name}/addr/${bech32}`}
                         className="margin-r-t"
                     >
                         {bech32}
-                    </button>
+                    </Link>
                     <MessageButton
                         onClick={() => ClipboardHelper.copy(bech32)}
                         buttonType="copy"
@@ -53,7 +55,9 @@ class Address extends Component<AddressProps> {
         let address: string = "";
 
         if (this.props.address.type === ED25519_ADDRESS_TYPE) {
-            address = this.props.address.pubKeyHash;
+            address = Converter.bytesToHex(
+                new Ed25519Address(Converter.hexToBytes(this.props.address.pubKeyHash)).toAddress()
+            );
         } else if (this.props.address.type === ALIAS_ADDRESS_TYPE) {
             address = this.props.address.aliasId;
         } else if (this.props.address.type === NFT_ADDRESS_TYPE) {
