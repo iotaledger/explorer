@@ -7,7 +7,6 @@ import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow
 import Address from "./Address";
 import { FeatureBlockProps } from "./FeatureBlockProps";
 import { FeatureBlockState } from "./FeatureBlockState";
-
 /**
  * Component which will display an Feature Block.
  */
@@ -50,24 +49,14 @@ class FeatureBlock extends AsyncComponent<FeatureBlockProps, FeatureBlockState> 
                 {this.state.showOutputDetails === 1 && (
                     <div className="margin-l-t">
                         {this.props.featureBlock.type === SENDER_FEATURE_BLOCK_TYPE && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Address
-                                </div>
-                                <Address
-                                    address={this.props.featureBlock.address}
-                                />
-                            </React.Fragment>
+                            <Address
+                                address={this.props.featureBlock.address}
+                            />
                         )}
                         {this.props.featureBlock.type === ISSUER_FEATURE_BLOCK_TYPE && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Address
-                                </div>
-                                <Address
-                                    address={this.props.featureBlock.address}
-                                />
-                            </React.Fragment>
+                            <Address
+                                address={this.props.featureBlock.address}
+                            />
                         )}
                         {this.props.featureBlock.type === METADATA_FEATURE_BLOCK_TYPE && (
                             <React.Fragment>

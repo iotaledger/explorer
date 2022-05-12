@@ -6,8 +6,8 @@ import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { NetworkService } from "../../../services/networkService";
 import NetworkContext from "../../context/NetworkContext";
-import Bech32Address from "../chrysalis/Bech32Address";
 import { ReceiptPayloadState } from "../ReceiptPayloadState";
+import Bech32Address from "./Bech32Address";
 import { ReceiptPayloadProps } from "./ReceiptPayloadProps";
 
 /**

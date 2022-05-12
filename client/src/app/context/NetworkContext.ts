@@ -8,11 +8,13 @@ import { DEFAULT_BASE_TOKEN_INFO } from "../../services/baseTokenInfoService";
 interface INetworkContextProps {
     name: string;
     tokenInfo: IBaseTokenGetResponse;
+    bech32Hrp: string;
 }
 
 const defaultState = {
   name: "",
-  tokenInfo: DEFAULT_BASE_TOKEN_INFO
+  tokenInfo: DEFAULT_BASE_TOKEN_INFO,
+  bech32Hrp: "iota"
 };
 
 const networkContext = createContext<INetworkContextProps>(defaultState);

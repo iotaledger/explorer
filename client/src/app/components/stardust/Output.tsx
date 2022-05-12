@@ -1,7 +1,12 @@
 import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
-    TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE } from "@iota/iota.js-stardust";
+    TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
+    NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
+import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import NetworkContext from "../../context/NetworkContext";
+import MessageButton from "../MessageButton";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import FeatureBlock from "./FeatureBlock";
 import { OutputProps } from "./OutputProps";
@@ -12,6 +17,11 @@ import UnlockCondition from "./UnlockCondition";
  * Component which will display an output.
  */
 class Output extends Component<OutputProps, OutputState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
+
     /**
      * Create a new instance of NewOutput.
      * @param props The props.
@@ -30,6 +40,7 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const bech32 = this.buildAddress();
         return (
             <div className="output margin-l-t">
                 {this.state.output.type === ALIAS_OUTPUT_TYPE && (
@@ -37,8 +48,18 @@ class Output extends Component<OutputProps, OutputState> {
                         <div className="card--label">
                             Alias id:
                         </div>
-                        <div className="card--value row">
-                            {this.state.output.aliasId}
+                        <div className="card--value row middle">
+                            <button
+                                type="button"
+                                className="margin-r-t"
+                            >
+                                {bech32}
+                            </button>
+                            <MessageButton
+                                onClick={() => ClipboardHelper.copy(bech32)}
+                                buttonType="copy"
+                                labelPosition="top"
+                            />
                         </div>
                         <div className="card--label">
                             State index:
@@ -67,7 +88,17 @@ class Output extends Component<OutputProps, OutputState> {
                             Nft id:
                         </div>
                         <div className="card--value row">
-                            {this.state.output.nftId}
+                            <button
+                                type="button"
+                                className="margin-r-t"
+                            >
+                                {bech32}
+                            </button>
+                            <MessageButton
+                                onClick={() => ClipboardHelper.copy(bech32)}
+                                buttonType="copy"
+                                labelPosition="top"
+                            />
                         </div>
                     </React.Fragment>
                 )}
@@ -184,6 +215,29 @@ class Output extends Component<OutputProps, OutputState> {
 
             </div>
         );
+    }
+
+    /**
+     * Build bech32 address.
+     * @returns The bech32 address.
+     */
+     private buildAddress() {
+        let address: string = "";
+        let addressType: number = 0;
+
+        if (this.state.output.type === ALIAS_OUTPUT_TYPE) {
+            address = this.state.output.aliasId;
+            addressType = ALIAS_ADDRESS_TYPE;
+        } else if (this.state.output.type === NFT_OUTPUT_TYPE) {
+            address = this.state.output.nftId;
+            addressType = NFT_ADDRESS_TYPE;
+        }
+
+        return Bech32AddressHelper.buildAddress(
+                this.context.bech32Hrp,
+                address,
+                addressType
+            ).bech32;
     }
 }
 

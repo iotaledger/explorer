@@ -50,17 +50,9 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                 {this.state.showOutputDetails === 1 && (
                     <div className="margin-l-t">
                         {this.props.unlockCondition.type === ADDRESS_UNLOCK_CONDITION_TYPE && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Name:
-                                </div>
-                                <div className="card--value row">
-                                    {NameHelper.getAddressTypeName(this.props.unlockCondition.address.type)}
-                                </div>
-                                <Address
-                                    address={this.props.unlockCondition.address}
-                                />
-                            </React.Fragment>
+                            <Address
+                                address={this.props.unlockCondition.address}
+                            />
                         )}
                         {this.props.unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE && (
                             <React.Fragment>
@@ -114,14 +106,9 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                             </React.Fragment>
                         )}
                         {this.props.unlockCondition.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Governor address:
-                                </div>
-                                <Address
-                                    address={this.props.unlockCondition.address}
-                                />
-                            </React.Fragment>
+                            <Address
+                                address={this.props.unlockCondition.address}
+                            />
                         )}
                         {this.props.unlockCondition.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE && (
                             <Address
@@ -129,21 +116,10 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                             />
                         )}
                         {this.props.unlockCondition.type === STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Address:
-                                </div>
-                                <Address
-                                    address={this.props.unlockCondition.address}
-                                />
-                            </React.Fragment>
+                            <Address
+                                address={this.props.unlockCondition.address}
+                            />
                         )}
-                        <div className="card--label">
-                            Type:
-                        </div>
-                        <div className="card--value row">
-                            {this.props.unlockCondition.type}
-                        </div>
                     </div>
                 )}
             </div>

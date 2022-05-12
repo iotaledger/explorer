@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
@@ -122,7 +121,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
         );
 
         const withNetworkProvider = (wrappedComponent: ReactNode) => (
-            <NetworkContext.Provider value={{ name: this.state.networkId, tokenInfo }}>
+            <NetworkContext.Provider value={{
+                    name: this.state.networkId,
+                    tokenInfo,
+                    bech32Hrp: currentNetworkConfig?.bechHrp ?? "iota"
+                }}
+            >
                 {wrappedComponent}
             </NetworkContext.Provider>
         );

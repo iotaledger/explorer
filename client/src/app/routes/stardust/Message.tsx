@@ -6,7 +6,6 @@ import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
-import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -54,11 +53,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
     private _timerId?: NodeJS.Timer;
 
     /**
-     * The hrp of bech addresses.
-     */
-    private readonly _bechHrp: string;
-
-    /**
      * Create a new instance of Message.
      * @param props The props.
      */
@@ -69,13 +63,6 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
             `tangle-cache-${STARDUST}`
         );
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
-
-        const networkService = ServiceFactory.get<NetworkService>("network");
-        const networkConfig = this.props.match.params.network
-            ? networkService.get(this.props.match.params.network)
-            : undefined;
-
-        this._bechHrp = networkConfig?.bechHrp ?? "iota";
 
         this.state = {
             messageTangleStatus: "pending",
@@ -447,10 +434,13 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
             }
 
             const { inputs, outputs, unlockAddresses, transferTotal } =
-                await TransactionsHelper.getInputsAndOutputs(result?.message,
+                await TransactionsHelper.getInputsAndOutputs(
+                    result?.message,
                     this.props.match.params.network,
-                    this._bechHrp,
-                    this._tangleCacheService);
+                    this.context.bech32Hrp,
+                    this._tangleCacheService
+            );
+
             this.setState({
                 inputs,
                 outputs,
