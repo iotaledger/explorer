@@ -1,8 +1,8 @@
-
 import { ALIAS_ADDRESS_TYPE, ED25519_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import React, { Component, ReactNode } from "react";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import NetworkContext from "../../context/NetworkContext";
 import MessageButton from "../MessageButton";
 import { AddressProps } from "./AddressProps";
@@ -22,10 +22,11 @@ class Address extends Component<AddressProps> {
      */
     public render(): ReactNode {
         const bech32 = this.buildAddress();
+
         return (
             <div className="address-type">
                 <div className="card--label">
-                    Address:
+                    {NameHelper.getAddressTypeName(this.props.address.type)}
                 </div>
                 <div className="card--value row middle">
                     <button
