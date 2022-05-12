@@ -45,9 +45,10 @@ class Header extends Component<HeaderProps, HeaderState> {
 
         const PROTOCOLS = [
             {
-                label: "IOTA 2.0 (Stardust)",
-                description: "Stardust Testnet (alphanet)",
-                networks: STARDUST_NETWORKS
+                label: "IOTA 1.0 (Legacy)",
+                description:
+                    "Legacy network that only accepts migrations to the IOTA 1.5 (Chrysalis) network.",
+                networks: LEGACY_NETWORKS
             },
             {
                 label: "IOTA 1.5 (Chrysalis)",
@@ -56,10 +57,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                 networks: CHRYSALIS_NETWORKS
             },
             {
-                label: "IOTA 1.0 (Legacy)",
-                description:
-                    "Legacy network that only accepts migrations to the IOTA 1.5 (Chrysalis) network.",
-                networks: LEGACY_NETWORKS
+                label: "IOTA Stardust",
+                description: "Stardust Testnet.",
+                networks: STARDUST_NETWORKS
             }
         ];
         return (
