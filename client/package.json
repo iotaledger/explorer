@@ -51,7 +51,7 @@
         "not op_mini all"
     ],
     "devDependencies": {
-        "@craco/craco": "^6.3.0",
+        "@craco/craco": "^6.4.3",
         "@types/bluebird": "^3.5.36",
         "@types/chartist": "^0.11.1",
         "@types/classnames": "^2.3.1",
@@ -69,7 +69,7 @@
         "eslint-plugin-react": "^7.25.3",
         "eslint-plugin-unicorn": "^36.0.0",
         "npm-run-all": "^4.1.5",
-        "sass": "^1.42.1",
+        "sass": "^1.51.0",
         "stylelint": "^13.13.1",
         "stylelint-config-property-sort-order-smacss": "^7.1.0",
         "stylelint-config-recommended": "^5.0.0",

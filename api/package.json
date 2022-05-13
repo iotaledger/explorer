@@ -40,7 +40,7 @@
         "express": "^4.17.1",
         "mqtt": "^4.2.8",
         "node-fetch": "^2.6.7",
-        "socket.io": "^4.2.0",
+        "socket.io": "^4.5.0",
         "uuid": "^8.3.2",
         "zeromq": "^5.2.8"
     },
