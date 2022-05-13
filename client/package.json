@@ -1,7 +1,7 @@
 {
     "name": "explorer-client",
     "description": "Tangle Explorer UI",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "author": "Martyn Janes <martyn.janes@iota.org>",
     "repository": {
         "type": "git",
