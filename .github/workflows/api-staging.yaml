@@ -2,12 +2,12 @@ name: API Build and Deploy Staging
 
 on:
   push:
-    branches: [ dev, v2 ]
+    branches: [ dev ]
     paths:
       - "api/**"
       - ".github/workflows/api-staging.yaml"
 
-concurrency: 
+concurrency:
   group: api-${{ github.ref }}
   cancel-in-progress: true
 
@@ -46,3 +46,4 @@ jobs:
         run: |
           cd api
           gcloud app deploy app.yaml dispatch.yaml --quiet
+
