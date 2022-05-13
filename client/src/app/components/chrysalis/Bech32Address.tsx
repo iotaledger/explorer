@@ -27,13 +27,13 @@ class Bech32Address extends Component<Bech32AddressProps> {
         return (
             <div className="bech32-address">
                 {this.props.addressDetails?.bech32 && (
-                    <React.Fragment>
+                    <div className="section--data">
                         {!this.props.hideLabel && (
-                            <div className="card--label">
+                            <div className="label">
                                 Address
                             </div>
                         )}
-                        <div className="card--value row middle">
+                        <div className="value row middle code">
                             {this.props.history && (
                                 <button
                                     type="button"
@@ -42,26 +42,30 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                         `/${this.props.network
                                         }/addr/${this.props.addressDetails?.bech32}`)}
                                 >
-                                    {this.props.addressDetails.bech32}
+                                    {this.props.truncateAddress
+                                        ? `${this.props.addressDetails.bech32.slice(0, 7)}...${this.props.addressDetails.bech32.slice(-7)} `
+                                        : this.props.addressDetails.bech32}
                                 </button>
                             )}
                             {!this.props.history && (
                                 <span className="margin-r-t">{this.props.addressDetails.bech32}</span>
                             )}
-                            <MessageButton
-                                onClick={() => ClipboardHelper.copy(this.props.addressDetails?.bech32)}
-                                buttonType="copy"
-                                labelPosition="top"
-                            />
+                            {!this.props.truncateAddress && (
+                                <MessageButton
+                                    onClick={() => ClipboardHelper.copy(this.props.addressDetails?.bech32)}
+                                    buttonType="copy"
+                                    labelPosition="top"
+                                />
+                            )}
                         </div>
-                    </React.Fragment>
+                    </div>
                 )}
                 {this.props.advancedMode && this.props.addressDetails?.typeLabel && this.props.addressDetails?.hex && (
-                    <React.Fragment>
-                        <div className="card--label">
+                    <div className="section--data">
+                        <div className="label">
                             {this.props.addressDetails.typeLabel} Address
                         </div>
-                        <div className="card--value row middle">
+                        <div className="value row middle code">
                             {this.props.history && (
                                 <button
                                     type="button"
@@ -82,7 +86,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                 labelPosition="top"
                             />
                         </div>
-                    </React.Fragment>
+                    </div>
                 )}
             </div>
         );

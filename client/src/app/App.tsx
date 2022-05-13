@@ -1,16 +1,10 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
-import { ReactComponent as CurrencyConverterIcon } from "../assets/currency-converter.svg";
-import { ReactComponent as ExplorerIcon } from "../assets/explorer.svg";
-import { ReactComponent as IdentityIcon } from "../assets/identity-icon.svg";
-import { ReactComponent as MarketsIcon } from "../assets/markets.svg";
-import { ReactComponent as StreamsIcon } from "../assets/streams.svg";
-import { ReactComponent as VisualizerIcon } from "../assets/visualizer.svg";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { PaletteHelper } from "../helpers/paletteHelper";
 import { IConfiguration } from "../models/config/IConfiguration";
 import { NetworkService } from "../services/networkService";
+import { SettingsService } from "../services/settingsService";
 import "./App.scss";
 import { AppRouteProps } from "./AppRouteProps";
 import { AppState } from "./AppState";
@@ -18,15 +12,12 @@ import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import SearchInput from "./components/SearchInput";
-import Switcher from "./components/Switcher";
 import Addr from "./routes/chrysalis/Addr";
 import { AddrRouteProps } from "./routes/chrysalis/AddrRouteProps";
 import Indexed from "./routes/chrysalis/Indexed";
 import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
 import Message from "./routes/chrysalis/Message";
 import { MessageRouteProps } from "./routes/chrysalis/MessageRouteProps";
-import Milestone from "./routes/chrysalis/Milestone";
-import { MilestoneRouteProps } from "./routes/chrysalis/MilestoneRouteProps";
 import CurrencyConverter from "./routes/CurrencyConverter";
 import IdentityResolver from "./routes/IdentityResolver";
 import { IdentityResolverProps } from "./routes/IdentityResolverProps";
@@ -46,7 +37,7 @@ import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import Visualizer from "./routes/Visualizer";
-import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
+import { VisualizerProps, VisualizerRouteProps } from "./routes/VisualizerRouteProps";
 
 /**
  * Main application class.
@@ -58,17 +49,26 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
     private readonly _networkService: NetworkService;
 
     /**
+     * Settings service.
+     */
+    private readonly _settingsService: SettingsService;
+
+    /**
      * Create a new instance of App.
      * @param props The props.
      */
     constructor(props: RouteComponentProps<AppRouteProps> & { config: IConfiguration }) {
         super(props);
+
         this._networkService = ServiceFactory.get<NetworkService>("network");
+        this._settingsService = ServiceFactory.get<SettingsService>("settings");
+
         const networks = this._networkService.networks();
 
         this.state = {
             networkId: "",
-            networks
+            networks,
+            darkMode: this._settingsService.get().darkMode ?? false
         };
     }
 
@@ -77,6 +77,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     public componentDidMount(): void {
         this.setNetwork(this.props.match.params.network, true);
+        if (this.state.darkMode) {
+            this.toggleModeClass();
+        }
     }
 
     /**
@@ -93,239 +96,217 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
     public render(): ReactNode {
         const currentNetworkConfig = this.state.networks.find(n => n.network === this.state.networkId);
 
-        const switcher = (
-            <Switcher
-                items={this.state.networks
-                    .filter(network => network.isEnabled)
-                    .map(n => ({
-                        label: n.label,
-                        value: n.network
-                    }))}
-                value={this.state.networkId}
-                onChange={value => {
-                    let path = `/${value}`;
-
-                    if (this.props.match.params.action === "streams") {
-                        path = `/${value}/streams/0/`;
-                    }
-
-                    if (this.props.match.params.action === "visualizer") {
-                        path = `/${value}/visualizer/`;
-                    }
-
-                    if (this.props.match.params.action === "identity-resolver") {
-                        path = `/${value}/identity-resolver/`;
-                    }
-
-                    this.props.history.push(path);
-                }}
-            />
+        const copyrightInnerContent = "This explorer implementation is inspired by ";
+        const copyrightInner = (
+            <React.Fragment>
+                {copyrightInnerContent}
+                <span>
+                    <a href="https://thetangle.org">
+                        thetangle.org
+                    </a>.
+                </span>
+            </React.Fragment>
         );
 
         return (
             <div className="app">
                 <Header
-                    rootPath={`/${currentNetworkConfig?.isEnabled ? this.state.networkId : ""}`}
-                    switcher={
-                        this.props.match.params.action &&
-                        this.props.match.params.action !== "markets" &&
-                        this.props.match.params.action !== "currency-converter" &&
-                        switcher
-                    }
+                    rootPath={`/${currentNetworkConfig?.isEnabled
+                        ? this.state.networkId
+                        : ""}`}
+                    network={currentNetworkConfig}
+                    networks={this.state.networks}
+                    action={this.props.match.params.action}
+                    history={this.props.history}
                     search={
-                        this.props.match.params.action &&
-                        this.props.match.params.action !== "streams" &&
-                        this.props.match.params.action !== "identity-resolver" &&
-                        this.props.match.params.action !== "visualizer" &&
-                        this.props.match.params.action !== "markets" &&
-                        this.props.match.params.action !== "currency-converter" && (
-                            <SearchInput
-                                onSearch={query => this.setQuery(query)}
-                                compact={true}
-                                protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
-                            />
-                        )
+                        <SearchInput
+                            onSearch={query => this.setQuery(query)}
+                            protocolVersion={currentNetworkConfig?.protocolVersion ?? "og"}
+                        />
                     }
-                    tools={this.getTools()}
+                    pages={this.state.networks.length > 0 ? [
+                        {
+                            label: "Explorer",
+                            url: `/${this.state.networkId}/`
+                        },
+                        {
+                            label: "Visualizer",
+                            url: `/${this.state.networkId}/visualizer/`
+                        }
+                    ] : []}
+                    utilities={this.state.networks.length > 0 ? [
+                        {
+                            label: "Streams v0",
+                            url: `/${this.state.networkId}/streams/0/`
+                        },
+                        {
+                            label: "Markets",
+                            url: `/${this.state.networkId}/markets/`
+                        },
+                        {
+                            label: "Currency Converter",
+                            url: `/${this.state.networkId}/currency-converter/`
+                        },
+                        {
+                            label: "Decentralized Identifier",
+                            url: `/${this.state.networkId}/identity-resolver/`
+                        }
+                    ] : []}
+                    darkMode={this.state.darkMode}
+                    toggleMode={() => this.toggleMode()}
                 />
                 <div className="content">
-                    {this.state.networks.length > 0 ? (
-                        <React.Fragment>
-                            {this.props.match.params.network &&
-                                !this.state.networks.some(f => f.network === this.props.match.params.network) && (
-                                    <div className="maintenance">
-                                        <div className="maintenance-inner">
-                                            The network provided does not exist, please check the url.
+                    {this.state.networks.length > 0
+                        ? (
+                            <React.Fragment>
+                                {this.props.match.params.network &&
+                                    !this.state.networks.some(f => f.network === this.props.match.params.network) && (
+                                        <div className="maintenance">
+                                            <div className="maintenance-inner">
+                                                The network provided does not exist, please check the url.
+                                            </div>
                                         </div>
+                                    )}
+                                {this.props.match.params.network &&
+                                    this.state.networks.some(f => f.network === this.props.match.params.network) && (
+                                        <Switch>
+                                            <Route
+                                                path="/:network/markets"
+                                                component={() =>
+                                                (
+                                                    <Markets />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/currency-converter"
+                                                component={() =>
+                                                (
+                                                    <CurrencyConverter />
+                                                )}
+                                            />
+                                            <Route
+                                                exact={true}
+                                                path="/:network?"
+                                                component={(props: RouteComponentProps<LandingRouteProps>) =>
+                                                (
+                                                    <Landing
+                                                        {...props}
+                                                    />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/streams/0/:hash?/:mode?/:key?"
+                                                component={(props: RouteComponentProps<StreamsV0RouteProps>) =>
+                                                (
+                                                    <StreamsV0 {...props} />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/visualizer/"
+                                                component={
+                                                    (props:
+                                                        RouteComponentProps<VisualizerRouteProps> & VisualizerProps) =>
+                                                    (
+                                                        <Visualizer darkMode={this.state.darkMode} {...props} />
+                                                    )
+                                                }
+                                            />
+                                            <Route
+                                                path="/:network/transaction/:hash"
+                                                component={(props: RouteComponentProps<TransactionRouteProps>) =>
+                                                (
+                                                    <Transaction {...props} />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/tag/:hash"
+                                                component={(props: RouteComponentProps<TagRouteProps>) =>
+                                                (
+                                                    <Tag {...props} />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/address/:hash"
+                                                component={(props: RouteComponentProps<AddressRouteProps>) =>
+                                                (
+                                                    <Address
+                                                        {...props}
+                                                    />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/bundle/:hash"
+                                                component={(props: RouteComponentProps<BundleRouteProps>) =>
+                                                (
+                                                    <Bundle {...props} />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/search/:query?"
+                                                component={(props: RouteComponentProps<SearchRouteProps>) =>
+                                                (
+                                                    <Search {...props} />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/addr/:address"
+                                                component={(props: RouteComponentProps<AddrRouteProps>) =>
+                                                (
+                                                    <Addr
+                                                        {...props}
+                                                    />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/message/:messageId"
+                                                component={(props: RouteComponentProps<MessageRouteProps>) =>
+                                                (
+                                                    <Message
+                                                        {...props}
+                                                    />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/indexed/:index"
+                                                component={(props: RouteComponentProps<IndexedRouteProps>) =>
+                                                (
+                                                    <Indexed
+                                                        {...props}
+                                                    />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/identity-resolver/:did?"
+                                                component={(props: RouteComponentProps<IdentityResolverProps>) => (
+                                                    <IdentityResolver
+                                                        {...props}
+                                                        isSupported={
+                                                            this.state.networkConfig?.protocolVersion === "chrysalis"
+                                                        }
+                                                    />
+                                                )}
+                                            />
+                                        </Switch>
+                                    )}
+                                <div className="copyright">
+                                    <div className="copyright-inner">
+                                        {copyrightInner}
                                     </div>
-                                )}
-                            {this.props.match.params.network &&
-                                this.state.networks.some(f => f.network === this.props.match.params.network) && (
-                                    <Switch>
-                                        <Route path="/:network/markets" component={() => <Markets />} />
-                                        <Route
-                                            path="/:network/currency-converter"
-                                            component={() => <CurrencyConverter />}
-                                        />
-                                        <Route
-                                            path="/:network/identity-resolver/:did?"
-                                            component={(props: RouteComponentProps<IdentityResolverProps>) => (
-                                                <IdentityResolver
-                                                    {...props}
-                                                    isSupported={
-                                                        this.state.networkConfig?.protocolVersion === "chrysalis"
-                                                    }
-                                                />
-                                            )}
-                                        />
-                                        <Route
-                                            exact={true}
-                                            path="/:network?"
-                                            component={(props: RouteComponentProps<LandingRouteProps>) => (
-                                                <Landing
-                                                    {...props}
-                                                    switcher={switcher}
-                                                    search={
-                                                        <SearchInput
-                                                            onSearch={query => this.setQuery(query)}
-                                                            compact={false}
-                                                            protocolVersion={
-                                                                currentNetworkConfig?.protocolVersion ?? "og"
-                                                            }
-                                                        />
-                                                    }
-                                                />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/:network/streams/0/:hash?/:mode?/:key?"
-                                            component={(props: RouteComponentProps<StreamsV0RouteProps>) => (
-                                                <StreamsV0 {...props} />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/:network/visualizer/"
-                                            component={(props: RouteComponentProps<VisualizerRouteProps>) => (
-                                                <Visualizer {...props} />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/:network/transaction/:hash"
-                                            component={(props: RouteComponentProps<TransactionRouteProps>) => (
-                                                <Transaction {...props} />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/:network/tag/:hash"
-                                            component={(props: RouteComponentProps<TagRouteProps>) => (
-                                                <Tag {...props} />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/:network/address/:hash"
-                                            component={(props: RouteComponentProps<AddressRouteProps>) => (
-                                                <Address {...props} />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/:network/bundle/:hash"
-                                            component={(props: RouteComponentProps<BundleRouteProps>) => (
-                                                <Bundle {...props} />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/:network/search/:query?"
-                                            component={(props: RouteComponentProps<SearchRouteProps>) => (
-                                                <Search {...props} />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/:network/addr/:address"
-                                            component={(props: RouteComponentProps<AddrRouteProps>) => (
-                                                <Addr {...props} />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/:network/milestone/:milestoneIndex"
-                                            component={(props: RouteComponentProps<MilestoneRouteProps>) => (
-                                                <Milestone {...props} />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/:network/message/:messageId"
-                                            component={(props: RouteComponentProps<MessageRouteProps>) => (
-                                                <Message {...props} />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/:network/indexed/:index"
-                                            component={(props: RouteComponentProps<IndexedRouteProps>) => (
-                                                <Indexed {...props} />
-                                            )}
-                                        />
-                                    </Switch>
-                                )}
-                        </React.Fragment>
-                    ) : (
-                        <div className="maintenance">
-                            <div className="maintenance-inner">
-                                Explorer is currently undergoing maintenance, please check back later.
+                                </div>
+                            </React.Fragment>
+                        )
+                        : (
+                            <div className="maintenance">
+                                <div className="maintenance-inner">
+                                    Explorer is currently undergoing maintenance, please check back later.
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
                 </div>
                 <Footer dynamic={this.getFooterItems()} />
                 <Disclaimer />
-            </div>
+            </div >
         );
-    }
-
-    /**
-     * create a tools list. Excludes Identity Resolver if network is not supported.
-     * @returns array of tools
-     */
-    private getTools() {
-        let tools: { label: string; url: string; icon: JSX.Element }[] = [];
-
-        if (this.state.networks.length > 0) {
-            tools = [
-                {
-                    label: "Explorer",
-                    url: `/${this.state.networkId}/`,
-                    icon: <ExplorerIcon />
-                },
-                {
-                    label: "Streams v0",
-                    url: `/${this.state.networkId}/streams/0/`,
-                    icon: <StreamsIcon />
-                },
-                {
-                    label: "Visualizer",
-                    url: `/${this.state.networkId}/visualizer/`,
-                    icon: <VisualizerIcon />
-                },
-                {
-                    label: "Markets",
-                    url: `/${this.state.networkId}/markets/`,
-                    icon: <MarketsIcon />
-                },
-                {
-                    label: "Currency Converter",
-                    url: `/${this.state.networkId}/currency-converter/`,
-                    icon: <CurrencyConverterIcon />
-                }
-            ];
-
-            if (
-                this.props.config.identityResolverEnabled) {
-                tools.push({
-                    label: "Identity Resolver",
-                    url: `/${this.state.networkId}/identity-resolver/`,
-                    icon: <IdentityIcon />
-                });
-            }
-        }
-        return tools;
     }
 
     /**
@@ -397,9 +378,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                     networkConfig: config
                 },
                 () => {
-                    if (config?.primaryColor && config.secondaryColor) {
-                        PaletteHelper.setPalette(config.primaryColor, config.secondaryColor);
-                    }
                     if (!this.props.location.pathname.startsWith(`/${network}`) && updateLocation) {
                         this.props.history.replace(`/${network}`);
                     }
@@ -419,6 +397,26 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     private setQuery(query?: string): void {
         this.props.history.push(`/${this.state.networkId}/search/${query}`);
+    }
+
+    /**
+     * Toggle the display mode.
+     */
+    private toggleMode(): void {
+        this.setState({
+            darkMode: !this.state.darkMode
+        }, () => {
+            this._settingsService.saveSingle("darkMode", this.state.darkMode);
+        });
+        this.toggleModeClass();
+    }
+
+    /**
+     * Toggle darkmode classname to the body DOM node
+     */
+    private toggleModeClass(): void {
+        const body = document.querySelector("body");
+        body?.classList.toggle("darkmode");
     }
 }
 

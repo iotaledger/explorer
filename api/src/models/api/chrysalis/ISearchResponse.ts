@@ -51,4 +51,9 @@ export interface ISearchResponse extends IResponse {
      * Cursor to use for subsequent requests.
      */
     cursor?: string;
+
+    /**
+     * DiD identifier.
+     */
+    did?: string;
 }

@@ -1,7 +1,8 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/media-queries';
-@import '../../scss/variables';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .visualizer {
   margin: 30px 40px;
@@ -22,7 +23,7 @@
     justify-content: stretch;
     height: 70vh;
     overflow: hidden;
-    border: 1px solid $gray-light;
+    border: 1px solid var(--input-border-color);
     border-radius: 6px;
 
     .viva {
@@ -31,7 +32,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: #ffffff;
+      background: var(--visualizer-bg);
     }
 
     .selected-node {
@@ -45,12 +46,21 @@
       font-family: $metropolis;
       word-break: break-all;
     }
-  }
 
-  &.dark-mode {
-    .graph-border {
-      .viva {
-        background: $gray-midnight;
+    .action-panel-container {
+      display: flex;
+      position: absolute;
+      z-index: 2;
+      top: 20px;
+      right: 20px;
+
+      .pause-button {
+        padding: 6px;
+        color: var(--header-icon-color);
+
+        &:hover {
+          color: $main-green-highlight;
+        }
       }
     }
   }
@@ -58,7 +68,7 @@
   .filter {
     flex: 1;
 
-    @media (max-width: $tablet-width) {
+    @include tablet-down {
       display: none;
     }
 
@@ -67,25 +77,18 @@
     }
 
     button {
-      // height: 36px;
-      // background: none;
-      // color: $
       white-space: nowrap;
     }
   }
 
   .sidepanel-border {
     flex: 0 0 220px;
+    border: 1px solid var(--input-border-color);
     border-radius: 6px;
-    background: #ffffff;
+    background-color: transparent;
 
-    @media (max-width: 1000px) {
-      &.tablet-hidden {
-        display: none;
-      }
-    }
-
-    @media (max-width: $tablet-width) {
+    @include tablet-down {
+      &.tablet-hidden,
       &.phone-hidden {
         display: none;
       }

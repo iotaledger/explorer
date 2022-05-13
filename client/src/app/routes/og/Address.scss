@@ -1,7 +1,7 @@
-@import '../../../scss/fonts';
-@import '../../../scss/mixins';
-@import '../../../scss/media-queries';
-@import '../../../scss/variables';
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
 
 .address {
   display: flex;
@@ -77,9 +77,9 @@
           }
         }
 
-        .svg-navigation {
-          width: 16px;
-          height: 16px;
+        .arrow {
+          margin-top: 6px;
+          font-size: 30px;
         }
 
         .item-details + .item-details {
@@ -118,13 +118,13 @@
           }
 
           &.value__zero {
-            background-color: #f2f5fb;
+            background-color: var(--body-background);
             color: #8493ad;
           }
 
           &.value__inprogress {
             border: 1px solid #c3d0e4;
-            background-color: #ffffff;
+            background-color: var(--body-background);
             color: #c3d0e4;
           }
         }

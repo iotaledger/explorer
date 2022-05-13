@@ -1,6 +1,7 @@
-@import '../scss/fonts';
-@import '../scss/media-queries';
-@import '../scss/mixins';
+@import "../scss/fonts";
+@import "../scss/media-queries";
+@import "../scss/mixins";
+@import "../scss/variables";
 
 .app {
   display: flex;
@@ -10,6 +11,11 @@
   .content {
     flex: 1;
     min-height: 300px;
+    margin-top: $navbar-height-desktop;
+
+    @include desktop-down {
+      margin-top: calc(2 * #{$navbar-height-mobile});
+    }
   }
 
   .maintenance {
@@ -18,10 +24,44 @@
     margin: 100px 0;
 
     .maintenance-inner {
-      @include font-size(18px);
-
       max-width: $desktop-width;
+      color: var(--body-color);
       font-family: $metropolis;
+
+      @include font-size(18px);
     }
   }
+
+  .copyright {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    background-color: var(--header-identity);
+    letter-spacing: 0.1em;
+
+    .copyright-inner {
+      max-width: $desktop-width;
+      color: $gray-6;
+      font-family: $metropolis;
+      font-weight: 600;
+
+      @include font-size(12px);
+
+      @include phone-down {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 300px;
+        line-height: 20px;
+      }
+
+      a {
+        color: $main-green-highlight;
+        text-decoration: none;
+      }
+    }
+  }
+
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }

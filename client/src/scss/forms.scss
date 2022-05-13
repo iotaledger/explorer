@@ -1,17 +1,23 @@
-@import './mixins';
-@import './variables';
+@import "./mixins";
+@import "./variables";
+@import "./themes";
+@import "./media-queries";
 
 .select-wrapper {
   display: inline-block;
   position: relative;
 
-  img {
+  span {
     position: absolute;
     z-index: 2;
-    top: 16px;
-    right: 18px;
+    top: 19%;
+    right: 5%;
     color: $gray;
     pointer-events: none;
+
+    @include desktop-down {
+      top: 15%;
+    }
   }
 
   select {
@@ -20,16 +26,17 @@
     height: 40px;
     margin: 0;
     padding: 0 48px 0 20px;
-    border: 1px solid $input-border;
+    transition: border-color 0.2s ease;
+    border: 1px solid var(--input-border-color);
     border-radius: 6px;
     outline: none;
-    background-color: #ffffff;
-    color: $gray-10;
+    background-color: transparent;
+    color: var(--body-color);
     font-family: $inter;
     appearance: none;
 
     &:focus {
-      box-shadow: 0 0 3px 0 $main-green-highlight;
+      border-color: var(--input-focus-border-color);
     }
 
     &:-ms-expand {
@@ -49,6 +56,7 @@
     &.select-plus {
       position: relative;
       min-width: 100px;
+      height: 48px;
       margin-right: -1px;
       border-radius: 6px 0 0 6px;
 
@@ -58,8 +66,8 @@
     }
 
     option {
-      background-color: $white;
-      color: $gray-midnight;
+      background-color: var(--body-background);
+      color: var(--body-color);
     }
   }
 
@@ -70,8 +78,8 @@
       height: 32px;
     }
 
-    img {
-      top: 12px;
+    span {
+      top: 15%;
     }
   }
 }
@@ -81,11 +89,10 @@ input {
 
   height: 40px;
   margin: 0;
-  padding: 0 20px;
-  border: 1px solid $input-border;
+  border: 1px solid var(--input-border-color);
   border-radius: 6px;
   outline: none;
-  color: $gray-10;
+  color: var(--body-color);
   font-family: $inter;
 
   &:focus {
@@ -99,6 +106,7 @@ input {
 
   &.input-plus {
     position: relative;
+    height: 48px;
     border-radius: 0 6px 6px 0;
 
     &:focus {
@@ -131,6 +139,7 @@ button {
 
 .form-input-long {
   width: 100%;
+  background-color: transparent;
 }
 
 .card {
@@ -142,11 +151,11 @@ button {
     justify-content: center;
     height: 32px;
     padding: 0 21px;
-    border: 1px solid $input-border;
+    border: 1px solid var(--input-border-color);
     border-radius: 6px;
     outline: none;
     background-color: transparent;
-    color: $gray-midnight;
+    color: var(--body-color);
     font-family: $metropolis;
     cursor: pointer;
 

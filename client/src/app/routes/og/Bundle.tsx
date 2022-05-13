@@ -1,9 +1,6 @@
 import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import chevronDownGray from "../../../assets/chevron-down-gray.svg";
-import chevronLeftGreen from "../../../assets/chevron-left-green.svg";
-import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -206,7 +203,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                     <option value={cur} key={cur}>{cur}</option>
                                                 ))}
                                             </select>
-                                            <img src={chevronDownGray} alt="expand" />
+                                            <span className="material-icons">
+                                                expand_more
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="card--content">
@@ -226,7 +225,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                 </div>
                                 {this.state.status && (
                                     <div className="card margin-t-s">
-                                        <div className="card--content middle row">
+                                        <div className="card--content middle row margin-t-s">
                                             {this.state.statusBusy && (<Spinner />)}
                                             <p className="status">
                                                 {this.state.status}
@@ -243,7 +242,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                 )}
                                 {!this.state.statusBusy && this.state.groups?.map((group, idx) => (
                                     <React.Fragment key={idx}>
-                                        <div className="row space-between margin-t-s">
+                                        <div className="row space-between margin-t-s middle">
                                             <p>
                                                 {DateHelper.format(group.timestamp)}
                                             </p>
@@ -299,11 +298,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                                         }/address/${item.details.tx.address}`
                                                                     }
                                                                 >
-                                                                    <img
-                                                                        src={chevronLeftGreen}
-                                                                        alt="address"
-                                                                        className="svg-navigation margin-r-t"
-                                                                    />
+                                                                    <span className="material-icons arrow">
+                                                                        chevron_left
+                                                                    </span>
                                                                 </Link>
                                                                 <Link
                                                                     className="card--value__tertiary"
@@ -378,11 +375,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                                         }/address/${item.details.tx.address}`
                                                                     }
                                                                 >
-                                                                    <img
-                                                                        src={chevronRightGreen}
-                                                                        alt="address"
-                                                                        className="svg-navigation margin-l-t"
-                                                                    />
+                                                                    <span className="material-icons arrow">
+                                                                        chevron_right
+                                                                    </span>
                                                                 </Link>
                                                             </div>
                                                         </div>

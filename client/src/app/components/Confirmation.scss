@@ -1,6 +1,7 @@
 @import '../../scss/fonts';
 @import '../../scss/mixins';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .confirmation {
   @include font-size(12px);
@@ -31,7 +32,7 @@
   }
 
   &.confirmation__pending {
-    background-color: $gray-light;
+    background-color: var(--light-bg);
     color: #8493ad;
   }
 

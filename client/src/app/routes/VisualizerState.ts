@@ -19,7 +19,7 @@ export interface VisualizerState extends FeedsState {
     filter: string;
 
     /**
-     * Show the graph in dark mode.
+     * Is Visualizer active flag.
      */
-    darkMode: boolean;
+    isActive: boolean;
 }

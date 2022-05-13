@@ -1,5 +1,6 @@
 // stylelint-disable-next-line value-keyword-case
-$fallback-fonts: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+$fallback-fonts: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+  'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 
 $metropolis: 'Metropolis Regular', $fallback-fonts;
 $metropolis-italic: 'Metropolis Regular Italic', $fallback-fonts;
@@ -19,5 +20,6 @@ $metropolis-extra-bold: 'Metropolis Extra Bold', $fallback-fonts;
 $metropolis-extra-bold-italic: 'Metropolis Extra Bold Italic', $fallback-fonts;
 $metropolis-black: 'Metropolis Black', $fallback-fonts;
 $metropolis-black-italic: 'Metropolis Black Italic', $fallback-fonts;
+$ibm-plex-mono: 'IBM Plex Mono', 'monospace', $fallback-fonts;
 
 $inter: 'Inter', $fallback-fonts;

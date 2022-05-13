@@ -3,7 +3,6 @@ import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -267,7 +266,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                 </div>
                                 {this.state.status && (
                                     <div className="card margin-t-s">
-                                        <div className="card--content middle row">
+                                        <div className="card--content middle row margin-t-s">
                                             {this.state.statusBusy === 0 && (<Spinner />)}
                                             <p className="status">
                                                 {this.state.status}
@@ -380,11 +379,9 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                                     }/bundle/${item.details?.tx.bundle}`
                                                                 }
                                                             >
-                                                                <img
-                                                                    src={chevronRightGreen}
-                                                                    alt="bundle"
-                                                                    className="svg-navigation margin-r-t"
-                                                                />
+                                                                <span className="material-icons arrow">
+                                                                    chevron_right
+                                                                </span>
                                                             </Link>
                                                             <Link
                                                                 className="card--value__tertiary"

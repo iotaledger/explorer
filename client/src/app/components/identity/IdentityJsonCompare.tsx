@@ -1,34 +1,14 @@
-import "./IdentityJsonCompare.scss";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import ReactDiffViewer from "react-diff-viewer";
-import { HiDownload } from "react-icons/hi";
 import { DownloadHelper } from "../../../helpers/downloadHelper";
 import { IdentityHelper } from "../../../helpers/identityHelper";
 import { JsonSyntaxHelper } from "../../../helpers/jsonSyntaxHelper";
 import IdentityCompareDropdown from "./IdentityCompareDropdown";
+import "./IdentityJsonCompare.scss";
 import { IdentityJsonCompareProps } from "./IdentityJsonCompareProps";
 import { IdentityJsonCompareState } from "./IdentityJsonCompareState";
 import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
-
-const COMPARE_ICON = (
-    <svg
-        className="compare-icon"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-    >
-        <rect x="5" y="5" width="10" height="10" rx="2" stroke="#BDBDBD" strokeWidth="2" />
-        <rect x="9" y="9" width="10" height="10" rx="2" stroke="#BDBDBD" strokeWidth="2" />
-        <path
-            // eslint-disable-next-line max-len
-            d="M15.9999 8V13.9999C15.9999 15.1044 15.1044 15.9999 13.9999 15.9999H8V10C8 8.89543 8.89543 8 10 8H15.9999Z"
-            fill="#BDBDBD"
-        />
-    </svg>
-);
 
 class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJsonCompareState> {
     constructor(props: IdentityJsonCompareProps) {
@@ -60,7 +40,6 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                         {!(this.props.selectedMessage?.isDiff && this.state.toggleState === "msg") && (
                             <div>
                                 <div className="row">
-                                    {COMPARE_ICON}
                                     <IdentityCompareDropdown
                                         messages={this.props.compareWith ?? []}
                                         selectedMessage={this.props.selectedComparisonMessage}
@@ -116,7 +95,19 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                             )}
                             role="button"
                         >
-                            <HiDownload size={20} />
+                            <svg
+                                width="18"
+                                height="17"
+                                viewBox="0 0 18 17"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                {/* eslint-disable-next-line max-len */}
+                                <path d="M3.34921 8.47354C2.92988 8.11412 2.88132 7.48282 3.24074 7.06349C3.60017 6.64417 4.23147 6.59561 4.65079 6.95503L8 9.82578V1C8 0.447715 8.44771 0 9 0C9.55228 0 10 0.447715 10 1V9.82578L13.3492 6.95503C13.7685 6.59561 14.3998 6.64417 14.7593 7.0635C15.1187 7.48282 15.0701 8.11412 14.6508 8.47354L9 13.3171L3.34921 8.47354Z" fill="#485776" />
+                                {/* eslint-disable-next-line max-len */}
+                                <path d="M2 14C2 13.4477 1.55228 13 1 13C0.447715 13 0 13.4477 0 14V15C0 16.1046 0.895431 17 2 17H16C17.1046 17 18 16.1046 18 15V14C18 13.4477 17.5523 13 17 13C16.4477 13 16 13.4477 16 14V15H2V14Z" fill="#485776" />
+                            </svg>
+
                         </a>
                     </div>
                 </div>
@@ -124,6 +115,7 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                 {/* --------- Json Compare Viewer --------- */}
                 <div
                     className="
+                    diff-wrapper
                     card--value
                     card--value-textarea
                     card--value-textarea__json"
@@ -142,29 +134,29 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                         )}
                         oldValue={
                             this.props.selectedComparisonMessage?.message &&
-                            this.props.selectedComparisonMessage.document
+                                this.props.selectedComparisonMessage.document
                                 ? JSON.stringify(
-                                      this.state.toggleState === "doc"
-                                          ? this.props.selectedComparisonMessage.document.doc
-                                          : IdentityHelper.transformDocument(
-                                                this.props.selectedComparisonMessage.message,
-                                                this.mode,
-                                                this.props.version
-                                            ),
-                                      null,
-                                      4
-                                  )
+                                    this.state.toggleState === "doc"
+                                        ? this.props.selectedComparisonMessage.document.doc
+                                        : IdentityHelper.transformDocument(
+                                            this.props.selectedComparisonMessage.message,
+                                            this.mode,
+                                            this.props.version
+                                        ),
+                                    null,
+                                    4
+                                )
                                 : JSON.stringify(
-                                      this.state.toggleState === "doc"
-                                          ? this.props.selectedMessage?.document.doc
-                                          : IdentityHelper.transformDocument(
-                                                this.props.selectedMessage?.message,
-                                                this.mode,
-                                                this.props.version
-                                            ),
-                                      null,
-                                      4
-                                  )
+                                    this.state.toggleState === "doc"
+                                        ? this.props.selectedMessage?.document.doc
+                                        : IdentityHelper.transformDocument(
+                                            this.props.selectedMessage?.message,
+                                            this.mode,
+                                            this.props.version
+                                        ),
+                                    null,
+                                    4
+                                )
                         }
                         splitView={false}
                         disableWordDiff={true}
@@ -174,7 +166,11 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                         styles={{
                             variables: {
                                 light: {
-                                    diffViewerBackground: "#f2f5fb"
+                                    diffViewerBackground: "var(--body-background)",
+                                    addedBackground: "var(--identity-added)",
+                                    removedBackground: "var(--identity-removed)",
+                                    addedColor: "var(--body-color)",
+                                    removedColor: "var(--body-color)"
                                 }
                             }
                         }}

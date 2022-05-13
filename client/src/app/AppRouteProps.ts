@@ -1,4 +1,3 @@
-
 export interface AppRouteProps {
     /**
      * The network from the location.

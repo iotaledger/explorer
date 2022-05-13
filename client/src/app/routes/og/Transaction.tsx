@@ -6,8 +6,6 @@ import { asTransactionTrytes } from "@iota/transaction-converter";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import chevronLeftGreen from "../../../assets/chevron-left-green.svg";
-import chevronRightGreen from "../../../assets/chevron-right-green.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -259,8 +257,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                         <Link
                                                                             to={
                                                                                 `/${this.props.match.params.network
-                                                                                }/transaction/${
-                                                                                    this.state.actionResultHash}`
+                                                                                }/transaction/
+                                                                                ${this.state.actionResultHash}`
                                                                             }
                                                                             className="margin-r-t"
                                                                         >
@@ -284,7 +282,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 </div>
                                 {this.state.status && (
                                     <div className="card margin-t-s">
-                                        <div className="card--content middle row">
+                                        <div className="card--content middle row margin-t-s">
                                             {this.state.statusBusy && (<Spinner />)}
                                             <p className="status">
                                                 {this.state.status}
@@ -356,11 +354,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             { disabled: this.state.previousTransaction === undefined }
                                                         )}
                                                     >
-                                                        <img
-                                                            src={chevronLeftGreen}
-                                                            alt="Previous"
-                                                            className="svg-navigation margin-r-t"
-                                                        />
+                                                        <span className="material-icons arrow">
+                                                            chevron_left
+                                                        </span>
                                                     </Link>
                                                     <span>
                                                         {this.state.details.tx.currentIndex + 1}
@@ -377,11 +373,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             { disabled: this.state.nextTransaction === undefined }
                                                         )}
                                                     >
-                                                        <img
-                                                            src={chevronRightGreen}
-                                                            alt="Next"
-                                                            className="svg-navigation margin-l-t"
-                                                        />
+                                                        <span className="material-icons arrow">
+                                                            chevron_right
+                                                        </span>
                                                     </Link>
                                                 </div>
                                             </div>
@@ -490,8 +484,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                 classNames(
                                                                     "card--value",
                                                                     "card--value-textarea",
-                                                                    `card--value-textarea__${
-                                                                        this.state.showRawMessageTrytes
+                                                                    `card--value-textarea__
+                                                                    ${this.state.showRawMessageTrytes
                                                                         ? "trytes"
                                                                         : this.state.messageType?.toLowerCase()
                                                                     }`
@@ -527,8 +521,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <Link
                                                                 to={
                                                                     `/${this.props.match.params.network
-                                                                    }/transaction/${
-                                                                        this.state.details?.tx.trunkTransaction
+                                                                    }/transaction/
+                                                                    ${this.state.details?.tx.trunkTransaction
                                                                     }`
                                                                 }
                                                             >
@@ -542,8 +536,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             <Link
                                                                 to={
                                                                     `/${this.props.match.params.network
-                                                                    }/transaction/${
-                                                                        this.state.details?.tx.branchTransaction
+                                                                    }/transaction/
+                                                                    ${this.state.details?.tx.branchTransaction
                                                                     }`
                                                                 }
                                                             >

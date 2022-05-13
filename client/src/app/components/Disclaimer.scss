@@ -1,6 +1,7 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/variables';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/variables";
+@import "../../scss/media-queries";
 
 .disclaimer {
   @include font-size(12px);
@@ -19,6 +20,14 @@
   background: $gray-midnight;
   color: $white;
   font-family: $metropolis;
+
+  .description {
+    margin-right: 20px;
+
+    @include tablet-down {
+      margin-right: 4px;
+    }
+  }
 
   a {
     color: $main-green-highlight;

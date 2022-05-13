@@ -5,7 +5,6 @@ import classNames from "classnames";
 import moment from "moment";
 import React, { ReactNode } from "react";
 import ChartistGraph from "react-chartist";
-import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { DateHelper } from "../../helpers/dateHelper";
 import { ApiClient } from "../../services/apiClient";
@@ -172,7 +171,9 @@ class Markets extends Currency<unknown, MarketsState> {
                                 <div className="card margin-b-s">
                                     <div className="card--header card--header__space-between">
                                         <h2>Current Market</h2>
-                                        <div className="select-wrapper select-wrapper--small">
+                                        <div
+                                            className="select-wrapper select-wrapper--card-header select-wrapper--small"
+                                        >
                                             <select
                                                 value={this.state.currency}
                                                 onChange={e => this.setCurrency(e.target.value)}
@@ -181,7 +182,9 @@ class Markets extends Currency<unknown, MarketsState> {
                                                     <option value={cur} key={cur}>{cur}</option>
                                                 ))}
                                             </select>
-                                            <img src={chevronDownGray} alt="expand" />
+                                            <span className="material-icons">
+                                                expand_more
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="card--content">
@@ -244,7 +247,9 @@ class Markets extends Currency<unknown, MarketsState> {
                                 <div className="card">
                                     <div className="card--header card--header__space-between">
                                         <h2>Price and Volume History</h2>
-                                        <div className="select-wrapper select-wrapper--small">
+                                        <div
+                                            className="select-wrapper select-wrapper--card-header select-wrapper--small"
+                                        >
                                             <select
                                                 value={this.state.currency}
                                                 onChange={e => this.setCurrency(e.target.value)}
@@ -253,7 +258,9 @@ class Markets extends Currency<unknown, MarketsState> {
                                                     <option value={cur} key={cur}>{cur}</option>
                                                 ))}
                                             </select>
-                                            <img src={chevronDownGray} alt="expand" />
+                                            <span className="material-icons">
+                                                expand_more
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="card--content">

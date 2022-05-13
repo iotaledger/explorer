@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 import { asciiToTrytes, trytesToAscii } from "@iota/converter";
 
 /**
@@ -61,5 +62,42 @@ export class TextHelper {
         }
 
         return TextHelper.decodeNonASCII(ascii) ?? "";
+    }
+
+    /**
+     * Check if a text contains valid UTF-8 characters.
+     * @param text The text to validate.
+     * @returns true if the text is valid or not.
+     */
+    public static isUTF8(text: Uint8Array): boolean {
+        let expectedLength = 0;
+        for (let i = 0; i < text.length; i++) {
+            if ((text[i] & 0b10000000) === 0b00000000) {
+                expectedLength = 1;
+            } else if ((text[i] & 0b11100000) === 0b11000000) {
+                expectedLength = 2;
+            } else if ((text[i] & 0b11110000) === 0b11100000) {
+                expectedLength = 3;
+            } else if ((text[i] & 0b11111000) === 0b11110000) {
+                expectedLength = 4;
+            } else if ((text[i] & 0b11111100) === 0b11111000) {
+                expectedLength = 5;
+            } else if ((text[i] & 0b11111110) === 0b11111100) {
+                expectedLength = 6;
+            } else {
+                return false;
+            }
+
+            while (--expectedLength > 0) {
+                if (++i >= text.length) {
+                    return false;
+                }
+                if ((text[i] & 0b11000000) !== 0b10000000) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
