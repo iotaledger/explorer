@@ -240,7 +240,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         {this.txsHistory.length > this.state.pageSize && (
                                             <div className="sort-disclaimer">
                                                 <span>
-                                                    The transaction history might not be in the correct order across multiple pages.
+                                                    When displayed across multiple pages, the transaction history may lose exact ordering.
                                                 </span>
                                             </div>
                                         )}

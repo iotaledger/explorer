@@ -43,12 +43,14 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
         super.componentDidMount();
 
         document.addEventListener("mousedown", this.outsideClickHandler);
-        this._currencyService.loadCurrencyNames().then(currencyNames => {
-            if (currencyNames) {
-                this.setState({ currencyNames });
+        this._currencyService.loadCurrencyNames().then(
+            currencyNames => {
+                if (currencyNames) {
+                    this.setState({ currencyNames });
+                }
             }
-        })
-            .catch(_ => { });
+        )
+        .catch(_ => { });
     }
 
     /**
@@ -77,7 +79,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                 <span className="full-name">{this.state?.currencyNames?.[currency]}</span>
             </div>
         );
-        const hasCurrencies = this.state?.currencies.length > 0;
+        const hasCurrencies = this.state?.currencies?.length > 0;
 
         return (
             <div className="fiat-selector" >
@@ -101,7 +103,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                             </div>
                             <div>
                                 <div className="group-header">All currencies</div>
-                                {this.state?.currencies.map(currency => renderCurrency(currency))}
+                                {this.state?.currencies?.map(currency => renderCurrency(currency))}
                             </div>
                         </div>
                 }
