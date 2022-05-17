@@ -40,7 +40,8 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const bech32 = this.buildAddress();
+        const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
+
         return (
             <div className="output margin-l-t">
                 {this.state.output.type === ALIAS_OUTPUT_TYPE && (
@@ -53,10 +54,10 @@ class Output extends Component<OutputProps, OutputState> {
                                 type="button"
                                 className="margin-r-t"
                             >
-                                {bech32}
+                                {aliasOrNftBech32}
                             </button>
                             <MessageButton
-                                onClick={() => ClipboardHelper.copy(bech32)}
+                                onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
                                 buttonType="copy"
                                 labelPosition="top"
                             />
@@ -92,10 +93,10 @@ class Output extends Component<OutputProps, OutputState> {
                                 type="button"
                                 className="margin-r-t"
                             >
-                                {bech32}
+                                {aliasOrNftBech32}
                             </button>
                             <MessageButton
-                                onClick={() => ClipboardHelper.copy(bech32)}
+                                onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
                                 buttonType="copy"
                                 labelPosition="top"
                             />
@@ -221,7 +222,7 @@ class Output extends Component<OutputProps, OutputState> {
      * Build bech32 address.
      * @returns The bech32 address.
      */
-     private buildAddress() {
+     private buildAddressForAliasOrNft() {
         let address: string = "";
         let addressType: number = 0;
 

@@ -1,13 +1,12 @@
 /* eslint-disable no-warning-comments */
 import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
-    IGovernorAddressUnlockCondition, Ed25519Address,
-    ED25519_ADDRESS_TYPE, IMessage, ISignatureUnlockBlock,
+    IGovernorAddressUnlockCondition, ED25519_ADDRESS_TYPE, IMessage, ISignatureUnlockBlock,
     IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE,
     TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
     IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
-    TREASURY_OUTPUT_TYPE, ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
+    TREASURY_OUTPUT_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
     GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
-import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
+import { HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { DateHelper } from "../../helpers/dateHelper";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
@@ -53,8 +52,8 @@ export class TransactionsHelper {
                 unlockAddresses.push(
                     Bech32AddressHelper.buildAddress(
                         _bechHrp,
-                        Converter.bytesToHex(
-                            new Ed25519Address(Converter.hexToBytes(signatureBlocks[i].signature.publicKey)).toAddress()
+                        HexHelper.stripPrefix(
+                            signatureBlocks[i].signature.publicKey
                         ),
                         ED25519_ADDRESS_TYPE
                     )
@@ -206,17 +205,8 @@ export class TransactionsHelper {
             }
         }
 
-        if (unlockCondition?.address.type === ED25519_ADDRESS_TYPE) {
-            const ed25519Address = Converter.bytesToHex(
-                new Ed25519Address(Converter.hexToBytes(unlockCondition.address.pubKeyHash)).toAddress()
-            );
-            address = Bech32AddressHelper.buildAddress(_bechHrp, ed25519Address, ED25519_ADDRESS_TYPE);
-        } else if (unlockCondition?.address.type === ALIAS_ADDRESS_TYPE) {
-            const aliasId = HexHelper.stripPrefix(unlockCondition.address.aliasId);
-            address = Bech32AddressHelper.buildAddress(_bechHrp, aliasId, ALIAS_ADDRESS_TYPE);
-        } else if (unlockCondition?.address.type === NFT_ADDRESS_TYPE) {
-            const nftId = HexHelper.stripPrefix(unlockCondition.address.nftId);
-            address = Bech32AddressHelper.buildAddress(_bechHrp, nftId, NFT_ADDRESS_TYPE);
+        if (unlockCondition?.address) {
+            address = Bech32AddressHelper.buildAddress(_bechHrp, unlockCondition?.address);
         }
 
         return address;
