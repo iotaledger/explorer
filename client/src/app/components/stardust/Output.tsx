@@ -3,8 +3,8 @@ import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_T
     NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
-import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import NetworkContext from "../../context/NetworkContext";
 import MessageButton from "../MessageButton";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";

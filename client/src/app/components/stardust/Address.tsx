@@ -2,8 +2,8 @@ import { ALIAS_ADDRESS_TYPE, Ed25519Address, ED25519_ADDRESS_TYPE, NFT_ADDRESS_T
 import { Converter } from "@iota/util.js-stardust";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import NetworkContext from "../../context/NetworkContext";
 import MessageButton from "../MessageButton";

@@ -2,7 +2,7 @@
 import { IEd25519Address } from "@iota/iota.js-stardust";
 import React, { Component, ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
+import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { NetworkService } from "../../../services/networkService";
 import NetworkContext from "../../context/NetworkContext";

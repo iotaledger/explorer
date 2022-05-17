@@ -14,7 +14,7 @@ import { IOutput } from "../../models/api/stardust/IOutput";
 import { IBech32AddressDetails } from "../../models/IBech32AddressDetails";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
-import { Bech32AddressHelper } from ".././bech32AddressHelper";
+import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 
 interface TransactionInputsAndOutputsResponse {
     inputs: (IUTXOInput & IInput)[];
