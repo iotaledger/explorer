@@ -2,6 +2,7 @@ import { IMessage, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stard
 import { IResponse } from "../IResponse";
 import IAddressDetails from "./IAddressDetails";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
+import { INftDetailsResponse } from "./INftDetailsResponse";
 import { ITransactionsDetailsResponse } from "./ITransactionsDetailsResponse";
 
 export interface ISearchResponse extends IResponse {
@@ -69,6 +70,12 @@ export interface ISearchResponse extends IResponse {
      * Transactions of an address.
      */
     transactionHistory?: ITransactionsDetailsResponse;
+
+    /**
+     * Nft Details.
+     */
+    nftDetails?: INftDetailsResponse;
+
     /**
      * DiD identifier.
      */

@@ -4,6 +4,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
+import { INftDetailsResponse } from "../../models/api/stardust/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -258,22 +259,27 @@ export class StardustTangleCacheService extends TangleCacheService {
      public async nftDetails(
         request: INftDetailsRequest,
         skipCache: boolean = false
-    ): Promise<INftOutputsResponse | undefined> {
+    ): Promise<INftDetailsResponse | undefined> {
         const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`];
 
         if (!cacheEntry?.data?.outputs || skipCache) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
-            const nftDetails = await apiClient.nftDetails(request);
+            const response = await apiClient.nftDetails(request);
             this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`] = {
-                data: { outputs: nftDetails.outputs },
+                data: {
+                    nftDetails: {
+                        imageSrc: response.imageSrc,
+                        amount: response.amount,
+                        quantity: response.quantity,
+                        generalData: response.generalData,
+                        activityHistory: response.activityHistory
+                    }
+                },
                 cached: Date.now()
             };
         }
-
-        return {
-            outputs: this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`]?.data?.outputs
-        };
+        return this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`]?.data?.nftDetails;
     }
 
     /**
