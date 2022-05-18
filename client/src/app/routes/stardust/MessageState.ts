@@ -6,9 +6,9 @@ import { MessageTangleStatus } from "../../../models/messageTangleStatus";
 
 export interface MessageState {
     /**
-     * The message id that was the parameter.
+     * The transaction id.
      */
-    paramMessageId?: string;
+    transactionId?: string;
 
     /**
      * The actual message Id in the case of an included message.

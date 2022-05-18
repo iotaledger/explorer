@@ -1,4 +1,5 @@
 /* eslint-disable no-warning-comments */
+import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
     IGovernorAddressUnlockCondition, Ed25519Address,
     ED25519_ADDRESS_TYPE, IMessage, ISignatureUnlockBlock,
@@ -6,7 +7,7 @@ import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlo
     TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
     IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
     TREASURY_OUTPUT_TYPE, ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
-    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
+    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE, serializeTransactionPayload, IMilestonePayload, ITaggedDataPayload } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { DateHelper } from "../../helpers/dateHelper";
 import { IInput } from "../../models/api/stardust/IInput";
@@ -148,6 +149,12 @@ export class TransactionsHelper {
         }
 
         return { inputs, outputs: [...outputs, ...remainderOutputs], unlockAddresses, transferTotal };
+    }
+
+    public static getTransactionId (payload: ITransactionPayload) { 
+        const tpWriteStream = new WriteStream();
+        serializeTransactionPayload(tpWriteStream, payload);
+        return Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
     }
 
     public static async getMessageStatus(
