@@ -321,7 +321,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
     private get currentPageTransactions() {
         const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
-        const lastPageIndex = firstPageIndex + this.state.pageSize;
+        const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
         const transactionsPage = this.txsHistory
         .slice(firstPageIndex, lastPageIndex)
         /* eslint-disable-next-line unicorn/no-array-reduce */
