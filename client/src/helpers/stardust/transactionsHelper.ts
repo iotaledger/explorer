@@ -1,12 +1,14 @@
 /* eslint-disable no-warning-comments */
+import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
     IGovernorAddressUnlockCondition, ED25519_ADDRESS_TYPE, IMessage, ISignatureUnlockBlock,
     IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE,
     TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
     IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
     TREASURY_OUTPUT_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
-    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
-import { HexHelper, WriteStream } from "@iota/util.js-stardust";
+    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
+    ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE, serializeTransactionPayload } from "@iota/iota.js-stardust";
+import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { DateHelper } from "../../helpers/dateHelper";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
@@ -36,6 +38,10 @@ export class TransactionsHelper {
         if (transactionMessage?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
             const payload: ITransactionPayload = transactionMessage.payload;
             const signatureBlocks: ISignatureUnlockBlock[] = [];
+
+            const tpWriteStream = new WriteStream();
+            serializeTransactionPayload(tpWriteStream, payload);
+            const transactionId = Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
 
             // Signatures
             for (let i = 0; i < payload.unlockBlocks.length; i++) {
@@ -104,13 +110,19 @@ export class TransactionsHelper {
 
             // Outputs
             for (let i = 0; i < payload.essence.outputs.length; i++) {
+                // Compute outputId from transactionPayload
+                const outputIndexWs = new WriteStream();
+                outputIndexWs.writeUInt16("outputIndex", i);
+                const outputId = transactionId + outputIndexWs.finalHex();
+
                 if (payload.essence.outputs[i].type === TREASURY_OUTPUT_TYPE) {
                     const output = payload.essence.outputs[i] as ITreasuryOutput;
 
                     outputs.push({
-                        type: transactionMessage.payload.essence.outputs[i].type,
+                        id: outputId,
+                        type: payload.essence.outputs[i].type,
                         output,
-                        amount: Number(transactionMessage.payload.essence.outputs[i].amount)
+                        amount: Number(payload.essence.outputs[i].amount)
                     });
                 } else {
                     const output = payload.essence.outputs[i] as IBasicOutput |
@@ -123,24 +135,26 @@ export class TransactionsHelper {
 
                     if (isRemainder) {
                         remainderOutputs.push({
-                            type: transactionMessage.payload.essence.outputs[i].type,
+                            id: outputId,
+                            type: payload.essence.outputs[i].type,
                             address,
-                            amount: Number(transactionMessage.payload.essence.outputs[i].amount),
+                            amount: Number(payload.essence.outputs[i].amount),
                             isRemainder,
                             output
                         });
                     } else {
                         outputs.push({
-                            type: transactionMessage.payload.essence.outputs[i].type,
+                            id: outputId,
+                            type: payload.essence.outputs[i].type,
                             address,
-                            amount: Number(transactionMessage.payload.essence.outputs[i].amount),
+                            amount: Number(payload.essence.outputs[i].amount),
                             isRemainder,
                             output
                         });
                     }
 
                     if (!isRemainder) {
-                        transferTotal += Number(transactionMessage.payload.essence.outputs[i].amount);
+                        transferTotal += Number(payload.essence.outputs[i].amount);
                     }
                 }
             }

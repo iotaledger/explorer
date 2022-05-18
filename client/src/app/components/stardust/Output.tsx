@@ -1,6 +1,9 @@
+import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
     NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import { Converter, HexHelper } from "@iota/util.js-stardust";
+import bigInt from "big-integer";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
@@ -230,7 +233,13 @@ class Output extends Component<OutputProps, OutputState> {
             address = this.state.output.aliasId;
             addressType = ALIAS_ADDRESS_TYPE;
         } else if (this.state.output.type === NFT_OUTPUT_TYPE) {
-            address = this.state.output.nftId;
+            const nftId = !HexHelper.toBigInt256(this.state.output.nftId).eq(bigInt.zero)
+                ? this.state.output.nftId
+                    // NFT has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
+                    : HexHelper.addPrefix(Converter.bytesToHex(
+                        Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(this.props.id)))
+                    ));
+            address = nftId;
             addressType = NFT_ADDRESS_TYPE;
         }
 
