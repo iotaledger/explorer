@@ -58,19 +58,19 @@ export interface INftDetailsResponse extends IResponse {
     /**
      * Nft image url
      */
-     imageSrc: string;
+     imageSrc?: string;
      /**
       * Nft amount
       */
-     amount: number;
+     amount?: number;
      /**
       * Nft quantity
       */
-     quantity: number;
+     quantity?: number;
      /**
       * Nft general information
       */
-     generalData: INftGeneral;
+     generalData?: INftGeneral;
      /**
       * Nft activity history
       */

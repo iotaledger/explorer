@@ -17,7 +17,7 @@ import "dotenv/config";
 export async function get(
     config: IConfiguration,
     request: INftDetailsRequest
-): Promise<INftDetailsResponse | unknown> {
+): Promise<INftDetailsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -28,7 +28,7 @@ export async function get(
     if (networkConfig.protocolVersion !== STARDUST) {
         return {};
     }
-    if (process.env.fakeNftDetails === "true") {
+    if (process.env.FAKE_NFT_DETAILS === "true") {
         return Promise.resolve(getNftDetails());
     }
     return Promise.resolve({});

@@ -268,13 +268,7 @@ export class StardustTangleCacheService extends TangleCacheService {
             const response = await apiClient.nftDetails(request);
             this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`] = {
                 data: {
-                    nftDetails: {
-                        imageSrc: response.imageSrc,
-                        amount: response.amount,
-                        quantity: response.quantity,
-                        generalData: response.generalData,
-                        activityHistory: response.activityHistory
-                    }
+                    nftDetails: response
                 },
                 cached: Date.now()
             };

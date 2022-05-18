@@ -128,15 +128,15 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                     <ul className="general-items">
                                                         <li className="list">
                                                             <span className="label name">Token Standard</span>
-                                                            <span className="label value margin-r-t">{this.state.nftDetails.generalData.standard}</span>
+                                                            <span className="label value margin-r-t">{this.state.nftDetails?.generalData?.standard}</span>
                                                         </li>
                                                         <li className="list">
                                                             <span className="label name">Token ID</span>
                                                             <div className="value code row middle">
-                                                                <span className="label value">{this.state.nftDetails.generalData.tokenId}</span>
+                                                                <span className="label value">{this.state.nftDetails?.generalData?.tokenId}</span>
                                                                 <MessageButton
                                                                     onClick={() => ClipboardHelper.copy(
-                                                                        this.state.nftDetails.generalData.tokenId
+                                                                        this.state.nftDetails?.generalData?.tokenId
                                                                     )}
                                                                     buttonType="copy"
                                                                     labelPosition="top"
@@ -147,11 +147,11 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                             <span className="label name">Contact Address</span>
                                                             <div className="value code row middle">
                                                                 <span className="label value">
-                                                                    {this.state.nftDetails.generalData.contractAddress.slice(0, 6)}...{this.state.nftDetails.generalData.contractAddress.slice(-2)}
+                                                                    {this.state.nftDetails?.generalData?.contractAddress.slice(0, 6)}...{this.state?.nftDetails?.generalData?.contractAddress.slice(-2)}
                                                                 </span>
                                                                 <MessageButton
                                                                     onClick={() => ClipboardHelper.copy(
-                                                                        this.state.nftDetails.generalData.contractAddress
+                                                                        this.state.nftDetails?.generalData?.contractAddress
                                                                     )}
                                                                     buttonType="copy"
                                                                     labelPosition="top"
@@ -162,11 +162,11 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                             <span className="label name">Creator Address</span>
                                                             <div className="value code row middle">
                                                                 <span className="label value">
-                                                                    {this.state.nftDetails.generalData.creatorAddress.slice(0, 6)}...{this.state.nftDetails.generalData.creatorAddress.slice(-2)}
+                                                                    {this.state.nftDetails?.generalData?.creatorAddress.slice(0, 6)}...{this.state.nftDetails?.generalData?.creatorAddress.slice(-2)}
                                                                 </span>
                                                                 <MessageButton
                                                                     onClick={() => ClipboardHelper.copy(
-                                                                        this.state.nftDetails.generalData.creatorAddress
+                                                                        this.state.nftDetails?.generalData?.creatorAddress
                                                                     )}
                                                                     buttonType="copy"
                                                                     labelPosition="top"
@@ -177,11 +177,11 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                             <span className="label name">Sender Address</span>
                                                             <div className="value code row middle">
                                                                 <span className="label value">
-                                                                    {this.state.nftDetails.generalData.senderAddress.slice(0, 6)}...{this.state.nftDetails.generalData.senderAddress.slice(-2)}
+                                                                    {this.state.nftDetails?.generalData?.senderAddress.slice(0, 6)}...{this.state.nftDetails?.generalData?.senderAddress.slice(-2)}
                                                                 </span>
                                                                 <MessageButton
                                                                     onClick={() => ClipboardHelper.copy(
-                                                                        this.state.nftDetails.generalData.senderAddress
+                                                                        this.state.nftDetails?.generalData?.senderAddress
                                                                     )}
                                                                     buttonType="copy"
                                                                     labelPosition="top"
@@ -190,11 +190,11 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                         </li>
                                                         <li className="list">
                                                             <span className="label name">File Type</span>
-                                                            <span className="label value margin-r-t">{this.state.nftDetails.generalData.fileType}</span>
+                                                            <span className="label value margin-r-t">{this.state.nftDetails?.generalData?.fileType}</span>
                                                         </li>
                                                         <li className="list">
                                                             <span className="label name">Network</span>
-                                                            <span className="label value margin-r-t">{this.state.nftDetails.generalData.network}</span>
+                                                            <span className="label value margin-r-t">{this.state.nftDetails?.generalData?.network}</span>
                                                         </li>
                                                     </ul>}
                                                 <div
