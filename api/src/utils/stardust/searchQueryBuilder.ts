@@ -115,8 +115,8 @@ export class SearchQueryBuilder {
             nftId = address.hex;
         }
 
-        // if the hex without prefix has 42 characters, if might be and Alias or Nft Address
-        if (address?.hexNoPrefix && address.hexNoPrefix.length === 42) {
+        // if the hex without prefix has 66 characters, if might be and Alias or Nft Address
+        if (address?.hexNoPrefix && address.hexNoPrefix.length === 66) {
             const typeByte = address.hexNoPrefix.slice(0, 2);
             const maybeAddress = address.hexNoPrefix.slice(2);
 
