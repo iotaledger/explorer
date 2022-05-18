@@ -443,7 +443,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                         ? nftOutput.nftId
                         // NFT has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
                         : HexHelper.addPrefix(Converter.bytesToHex(
-                            Blake2b.sum160(Converter.hexToBytes(HexHelper.stripPrefix(outputId)))
+                            Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId)))
                         ));
 
                     nfts.push({
