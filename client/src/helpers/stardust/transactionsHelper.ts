@@ -38,10 +38,7 @@ export class TransactionsHelper {
         if (transactionMessage?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
             const payload: ITransactionPayload = transactionMessage.payload;
             const signatureBlocks: ISignatureUnlockBlock[] = [];
-
-            const tpWriteStream = new WriteStream();
-            serializeTransactionPayload(tpWriteStream, payload);
-            const transactionId = Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
+            const transactionId = TransactionsHelper.getTransactionId(payload);
 
             // Signatures
             for (let i = 0; i < payload.unlockBlocks.length; i++) {
@@ -163,7 +160,7 @@ export class TransactionsHelper {
         return { inputs, outputs: [...outputs, ...remainderOutputs], unlockAddresses, transferTotal };
     }
 
-    public static getTransactionId (payload: ITransactionPayload) { 
+    public static getTransactionId(payload: ITransactionPayload) {
         const tpWriteStream = new WriteStream();
         serializeTransactionPayload(tpWriteStream, payload);
         return Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);

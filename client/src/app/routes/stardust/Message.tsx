@@ -443,7 +443,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
 
             if (result?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
                 const transactionId = TransactionsHelper.getTransactionId(result?.message.payload);
-                this.setState({transactionId})
+                this.setState({ transactionId });
             }
 
             this.setState({
