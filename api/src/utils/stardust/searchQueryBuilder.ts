@@ -131,13 +131,11 @@ export class SearchQueryBuilder {
 
         const hexWithPrefix = HexHelper.addPrefix(this.queryLower);
         const hexNoPrefix = HexHelper.stripPrefix(this.queryLower);
-        // if the hex without prefix is 52 or 76 characters and first byte is 08,
-        // it can be a FoundryId (52) or TokenId (76)
+        // if the hex without prefix is 76 characters and first byte is 08,
+        // it can be a FoundryId or TokenId
         if (Converter.isHex(hexWithPrefix, true) &&
-            Number.parseInt(hexNoPrefix.slice(0, 2), 16) === ALIAS_ADDRESS_TYPE &&
-                (hexNoPrefix.length === 52 || hexNoPrefix.length === 76)) {
-            foundryId = hexNoPrefix.length === 52 ? hexWithPrefix
-                : HexHelper.addPrefix(hexNoPrefix.slice(0, 52));
+            Number.parseInt(hexNoPrefix.slice(0, 2), 16) === ALIAS_ADDRESS_TYPE && hexNoPrefix.length === 76) {
+            foundryId = hexWithPrefix;
         }
 
         // if the hex has 66 characters, it might be a message or transaction id
