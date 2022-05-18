@@ -7,15 +7,9 @@
   display: flex;
   flex-direction: column;
 
-  .identity-title {
+  h2 {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    margin-bottom: 20px;
-
-    h1 {
-      margin: 0 0 0 10px !important;
-    }
   }
 
   .did-error {
@@ -26,21 +20,19 @@
     height: 300px;
 
     p {
-      color: $danger !important;
+      @include font-size(14px, 21px);
+
+      color: $error !important;
+      font-family: $inter;
+      letter-spacing: 0.5px;
       text-align: center;
     }
   }
 
   .example-did {
-    display: inline-block;
-    margin: 15px 0 !important;
-    padding: 8px 15px;
-    border-radius: 20px;
-    background-color: $white;
-    box-shadow: $box-shadow;
-
     p {
-      color: $gray-header !important;
+      color: var(--expanded-color);
+      font-family: $inter;
     }
 
     &:hover {
@@ -74,18 +66,6 @@
         padding-left: 0;
       }
 
-      h1 {
-        margin-bottom: 20px;
-      }
-
-      p {
-        @include font-size(12px);
-
-        color: $gray-10;
-        font-family: $metropolis;
-        font-weight: bold;
-      }
-
       .status {
         @include font-size(14px);
       }
@@ -114,19 +94,47 @@
   .identity-json-header {
     display: flex;
     flex-direction: row;
+    align-items: center;
     justify-content: space-between;
     width: 100%;
     padding: 10px;
-    background-color: $gray-light;
+    border: 1px solid $gray-3;
+    border-radius: 6px 6px 0 0;
+    background-color: var(--header-identity);
 
     a {
       color: $gray;
+
+      svg {
+        margin-right: 8px;
+
+        path {
+          fill: var(--did-color);
+        }
+
+        &:hover {
+          path {
+            fill: var(--body-color);
+          }
+        }
+      }
+    }
+  }
+
+  .json-wraper {
+    padding: 8px;
+    border: 1px solid $gray-3;
+    border-top: 0;
+
+    * {
+      word-break: break-all;
     }
   }
 
   .tool-description {
     margin: 30px 0;
     color: $gray !important;
+    font-family: $inter;
     font-size: 1em !important;
     line-height: 1.6;
   }
@@ -152,4 +160,17 @@
   background-color: rgba(250, 212, 208, 1);
   color: $danger;
   font-family: $metropolis;
+}
+
+.legacy-method {
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 6px;
+  background-color: rgb(250, 247, 208);
+  color: $warning;
+  font-family: $metropolis;
+
+  a {
+    color: $blue-5 !important;
+  }
 }

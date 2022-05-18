@@ -1,4 +1,6 @@
 @import './media-queries';
+@import './mixins';
+@import './variables';
 
 .row {
   display: flex;
@@ -54,6 +56,10 @@
 
 .line-breaks {
   white-space: pre;
+}
+
+.margin-t-0 {
+  margin-top: 0 !important;
 }
 
 .margin-b-2 {
@@ -120,6 +126,10 @@
   margin-left: 30px;
 }
 
+.padding-l-8 {
+  padding-left: 8px;
+}
+
 .padding-b-s {
   padding-bottom: 20px;
 }
@@ -152,6 +162,10 @@
   padding-left: 30px;
 }
 
+.relative {
+  position: relative;
+}
+
 .overflow-hidden {
   overflow: hidden;
 }
@@ -160,4 +174,15 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   word-break: normal !important;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.dot-separator {
+  margin: 0 6px;
+  color: $gray-6;
+
+  @include font-size(20px);
 }

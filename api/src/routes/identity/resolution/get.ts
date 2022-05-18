@@ -1,3 +1,4 @@
+import * as identityLegacy from "@iota/identity-wasm-0.4/node";
 import * as identity from "@iota/identity-wasm/node";
 
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -5,6 +6,7 @@ import { IIdentityDidResolveRequest } from "../../../models/api/IIdentityDidReso
 import { IIdentityDidResolveResponse } from "../../../models/api/IIdentityDidResolveResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NetworkService } from "../../../services/networkService";
+import { IdentityHelper } from "../../../utils/identityHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -12,7 +14,10 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(config: IConfiguration, request: IIdentityDidResolveRequest): Promise<unknown> {
+export async function get(
+    config: IConfiguration,
+    request: IIdentityDidResolveRequest
+): Promise<IIdentityDidResolveResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
 
@@ -30,35 +35,83 @@ export async function get(config: IConfiguration, request: IIdentityDidResolveRe
     const providerUrl = networkConfig.provider;
     const permanodeUrl = networkConfig.permaNodeEndpoint;
 
-    return resolveIdentity(request.did, providerUrl, permanodeUrl);
+    const identityResult = await resolveIdentity(request.did, providerUrl, permanodeUrl);
+
+    if (identityResult.error !== "DIDNotFound") {
+        return identityResult;
+    }
+
+    const legacyIdentityResult = await resolveLegacyIdentity(request.did, providerUrl, permanodeUrl);
+
+    // if ChainError return "latest" error, else return legacy error
+    if (!legacyIdentityResult.error) {
+        return legacyIdentityResult;
+    }
+
+    return identityResult;
 }
 
 /**
- * @param  {string} did DID to be resolved
+ * @param did DID to be resolved.
  * @param nodeUrl url of the network node.
- * @param permaNodeUrl url of permanode
- * @returns Promise
+ * @param permaNodeUrl url of permanode.
+ * @returns The response.
  */
 async function resolveIdentity(
     did: string,
     nodeUrl: string,
-    permaNodeUrl: string
+    permaNodeUrl?: string
 ): Promise<IIdentityDidResolveResponse> {
     try {
-        const config = new identity.Config();
+        const config: identity.IClientConfig = {
+            nodes: [nodeUrl],
+            permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined
+        };
+
+        const client = await identity.Client.fromConfig(config);
+        const res = await client.resolve(did);
+
+        return {
+            document: res.toJSON(),
+            version: "latest",
+            messageId: res.toJSON().integrationMessageId
+        };
+    } catch (e) {
+        return { error: improveErrorMessage(e) };
+    }
+}
+
+/**
+ * @param did DID to be resolved.
+ * @param nodeUrl url of the network node.
+ * @param permaNodeUrl url of permanode.
+ * @returns The response.
+ */
+ async function resolveLegacyIdentity(
+    did: string,
+    nodeUrl: string,
+    permaNodeUrl?: string
+): Promise<IIdentityDidResolveResponse> {
+    try {
+        const config = new identityLegacy.Config();
         config.setNode(nodeUrl);
         if (permaNodeUrl) {
             config.setPermanode(permaNodeUrl);
         }
 
-        const client = identity.Client.fromConfig(config);
+        const client = identityLegacy.Client.fromConfig(config);
         const res = await client.resolve(did);
-
-        return { document: res.toJSON(), messageId: res.messageId };
+        const document = res.toJSON();
+        return {
+            document: IdentityHelper.convertLegacyDocument(document),
+            messageId: res.messageId,
+            version: "legacy"
+        };
     } catch (e) {
         return { error: improveErrorMessage(e) };
     }
 }
+
 /**
  * @param errorMessage Error object
  * @param errorMessage.name Error name

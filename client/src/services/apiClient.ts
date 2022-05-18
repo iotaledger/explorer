@@ -8,7 +8,10 @@ import { IOutputDetailsRequest } from "../models/api/chrysalis/IOutputDetailsReq
 import { IOutputDetailsResponse } from "../models/api/chrysalis/IOutputDetailsResponse";
 import { ISearchRequest } from "../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
+import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ICurrenciesResponse } from "../models/api/ICurrenciesResponse";
+import { ICurrencyNamesResponse } from "../models/api/ICurrencyNamesResponse";
 import { IIdentityDidHistoryRequest } from "../models/api/IIdentityDidHistoryRequest";
 import { IIdentityDidHistoryResponse } from "../models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveRequest } from "../models/api/IIdentityDidResolveRequest";
@@ -62,6 +65,14 @@ export class ApiClient {
      */
     public async currencies(): Promise<ICurrenciesResponse> {
         return this.callApi<unknown, ICurrenciesResponse>("currencies", "get");
+    }
+
+    /**
+     * Perform a request to get currency names.
+     * @returns The response from the request.
+     */
+    public async currencyNames(): Promise<ICurrencyNamesResponse> {
+        return this.callApi<unknown, ICurrencyNamesResponse>("currency/names", "get");
     }
 
     /**
@@ -159,6 +170,19 @@ export class ApiClient {
     }
 
     /**
+     * Get the transaction history details of an address.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async transactionsDetails(request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse> {
+        const { network, address, query } = request;
+        return this.callApi<unknown, ITransactionsDetailsResponse>(
+            `transactionhistory/${network}/${address}${query ? FetchHelper.urlParams(query) : ""}`,
+            "get"
+        );
+    }
+
+    /**
      * Get the milestone details.
      * @param request The request to send.
      * @returns The response from the request.
@@ -194,19 +218,19 @@ export class ApiClient {
     }
 
     /**
-     * Get the hitstory of a DID.
+     * Get the history of a DID.
      * @param request The request to send.
      * @returns The response from the request.
      */
     public async didHistory(request: IIdentityDidHistoryRequest): Promise<IIdentityDidHistoryResponse> {
         return this.callApi<unknown, IIdentityDidResolveResponse>(
-            `did/${request.network}/${request.did}/history`,
+            `did/${request.network}/${request.did}/history?version=${request.version}`,
             "get"
         );
     }
 
     /**
-     * Get the hitstory of a an integration message.
+     * Get the history of a an integration message.
      * @param request The request to send.
      * @param payload body of request
      * @returns The response from the request.
@@ -216,7 +240,7 @@ export class ApiClient {
         payload: unknown
     ): Promise<IIdentityDiffHistoryResponse> {
         return this.callApi<unknown, IIdentityDiffHistoryResponse>(
-            `did/${request.network}/diffHistory/${request.integrationMsgId}`,
+            `did/${request.network}/diffHistory/${request.integrationMsgId}?version=${request.version}`,
             "post",
             payload
         );

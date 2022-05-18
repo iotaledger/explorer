@@ -1,6 +1,5 @@
 import { UnitsHelper } from "@iota/iota.js";
 import { Converter } from "@iota/util.js";
-import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
@@ -11,13 +10,13 @@ import { INodeData } from "../../models/graph/INodeData";
 import { IFeedItem } from "../../models/IFeedItem";
 import Feeds from "../components/Feeds";
 import "./Visualizer.scss";
-import { VisualizerRouteProps } from "./VisualizerRouteProps";
+import { VisualizerProps, VisualizerRouteProps } from "./VisualizerRouteProps";
 import { VisualizerState } from "./VisualizerState";
 
 /**
  * Component which will show the visualizer page.
  */
-class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, VisualizerState> {
+class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & VisualizerProps, VisualizerState> {
     /**
      * Maximum number of items.
      */
@@ -132,7 +131,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Create a new instance of Visualizer.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<VisualizerRouteProps>) {
+    constructor(props: RouteComponentProps<VisualizerRouteProps> & VisualizerProps) {
         super(props);
 
         this._existingIds = [];
@@ -154,7 +153,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             itemCount: 0,
             selectedFeedItem: undefined,
             filter: "",
-            darkMode: this._settingsService.get().darkMode ?? false
+            isActive: true
         };
     }
 
@@ -188,10 +187,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      */
     public render(): ReactNode {
         return (
-            <div className={
-                classNames("visualizer", { "dark-mode": this.state.darkMode })
-            }
-            >
+            <div className="visualizer">
                 <div className="row middle">
                     <h1 className="margin-r-t margin-b-t">Visualizer</h1>
                     <div className="card margin-b-s filter fill">
@@ -212,13 +208,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     () => this.restyleNodes())}
                                 maxLength={this._networkConfig?.protocolVersion === "og" ? 90 : 2000}
                             />
-                            <button
-                                type="button"
-                                className="card--action margin-l-s"
-                                onClick={() => this.toggleMode()}
-                            >
-                                {this.state.darkMode ? "Light Mode" : "Dark Mode"}
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -412,6 +401,19 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             }}
                             ref={r => this.setupGraph(r)}
                         />
+                        <div className="action-panel-container">
+                            <div className="card">
+                                <button
+                                    className="pause-button"
+                                    type="button"
+                                    onClick={() => this.toggleActivity()}
+                                >
+                                    {this.state.isActive
+                                        ? <span className="material-icons">pause</span>
+                                        : <span className="material-icons">play_arrow</span>}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="row middle margin-t-s">
@@ -465,7 +467,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 
@@ -564,7 +566,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graphics.node(node => this.calculateNodeStyle(
                 node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data)));
 
-            this._graphics.link(() => Viva.Graph.View.webglLine(this.state.darkMode
+            this._graphics.link(() => Viva.Graph.View.webglLine(this.props.darkMode
                 ? Visualizer.EDGE_COLOR_DARK : Visualizer.EDGE_COLOR_LIGHT));
 
             const events = Viva.Graph.webglInputEvents(this._graphics, this._graph);
@@ -763,7 +765,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graph.forEachLink((link: Viva.Graph.ILink<unknown>) => {
                 const linkUI = this._graphics?.getLinkUI(link.id);
                 if (linkUI) {
-                    linkUI.color = this.state.darkMode
+                    linkUI.color = this.props.darkMode
                         ? Visualizer.EDGE_COLOR_DARK
                         : Visualizer.EDGE_COLOR_LIGHT;
                 }
@@ -842,15 +844,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     }
 
     /**
-     * Toggle the display mode.
+     * The pause button was clicked
      */
-    private toggleMode(): void {
-        this.setState({
-            darkMode: !this.state.darkMode
-        }, () => {
-            this._settingsService.saveSingle("darkMode", this.state.darkMode);
-            this.styleConnections();
-        });
+    private toggleActivity(): void {
+        if (this._renderer) {
+            if (this.state.isActive) {
+                this._renderer.pause();
+            } else {
+                this._renderer.resume();
+            }
+        }
+
+        this.setState({ isActive: !this.state.isActive });
     }
 
     /**

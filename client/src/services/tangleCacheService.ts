@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { IMessageMetadata, IMilestoneResponse, IOutputResponse } from "@iota/iota.js";
 import { mamFetch as mamFetchOg, MamMode } from "@iota/mam-legacy";
 import { mamFetch as mamFetchChrysalis } from "@iota/mam.js";
@@ -5,6 +6,8 @@ import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
+import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
 import { ProtocolVersion } from "../models/db/protocolVersion";
@@ -736,6 +739,7 @@ export class TangleCacheService {
                 response.indexMessageIds ||
                 response.milestone ||
                 response.output ||
+                response.did ||
                 response.addressOutputIds) {
                 this._chrysalisSearchCache[networkId][fullQuery] = {
                     data: response,
@@ -823,6 +827,49 @@ export class TangleCacheService {
         }
 
         return this._chrysalisSearchCache[networkId][milestoneIndex.toString()]?.data?.milestone;
+    }
+
+    /**
+     * Get the milestone details.
+     * @param request The request.
+     * @param skipCache Skip looking in the cache.
+     * @returns The transactions response.
+     */
+    public async transactionsDetails(
+        request: ITransactionsDetailsRequest,
+        skipCache: boolean = false
+    ): Promise<ITransactionsDetailsResponse | undefined> {
+        if (!this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
+            ?.data?.transactionHistory || skipCache) {
+            const apiClient = ServiceFactory.get<ApiClient>("api-client");
+
+            const response = await apiClient.transactionsDetails(request);
+
+            if (response?.transactionHistory?.transactions) {
+                const cachedTransaction =
+                    this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
+                        ?.data?.transactionHistory?.transactionHistory.transactions ?? [];
+
+                this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`] = {
+                    data: {
+                        transactionHistory: {
+                            ...response,
+                            transactionHistory: {
+                                ...response.transactionHistory,
+                                transactions:
+                                    [...cachedTransaction, ...response.transactionHistory.transactions],
+                                state: response.transactionHistory.state
+                            }
+                        }
+                    },
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
+            ?.data
+            ?.transactionHistory;
     }
 
     /**

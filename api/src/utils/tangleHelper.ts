@@ -6,9 +6,12 @@ import { ChronicleClient } from "../clients/chronicleClient";
 import { HornetClient } from "../clients/hornetClient";
 import { IMessageDetailsResponse } from "../models/api/chrysalis/IMessageDetailsResponse";
 import { ISearchResponse } from "../models/api/chrysalis/ISearchResponse";
+import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
+import { ITransactionsDetailsResponse } from "../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
 import { INetwork } from "../models/db/INetwork";
+import { ExtendedSingleNodeClient } from "./extendedSingleNodeClient";
 
 /**
  * Helper functions for use with tangle.
@@ -392,6 +395,15 @@ export class TangleHelper {
         let queryLower = query.toLowerCase();
 
         try {
+            // If the query starts with did:iota: then lookup a Decentralized identifier
+            if (queryLower.startsWith("did:iota:")) {
+                return {
+                    did: query
+                };
+            }
+        } catch {
+        }
+        try {
             // If the query is an integer then lookup a milestone
             if (/^\d+$/.test(query)) {
                 const milestone = await client.milestone(Number.parseInt(query, 10));
@@ -620,6 +632,32 @@ export class TangleHelper {
                 });
                 return await client.output(outputId);
             } catch {
+            }
+        }
+    }
+
+    /**
+     * Get the transactions of an address.
+     * @param network The network to find the items on.
+     * @param request The request.
+     * @returns The transactions.
+     */
+    public static async transactionsDetails(network: INetwork,
+        request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse | undefined> {
+        if (network.permaNodeEndpoint) {
+            try {
+                // We use ExtendedSingleNodeClient instead of SingleNodeClient
+                // because @iota/iota.js does not support the address/transactions endpoint.
+                // The @iota/iota.js dependency must be updated to offer this new feature.
+                // This class must be replaced by SingleNodeClient when suported
+                const client = new ExtendedSingleNodeClient(network.permaNodeEndpoint, {
+                    userName: network.permaNodeEndpointUser,
+                    password: network.permaNodeEndpointPassword,
+                    basePath: "/"
+                });
+                return await client.transactionHistory(request);
+            } catch {
+                return { error: "Failed to fetch" };
             }
         }
     }

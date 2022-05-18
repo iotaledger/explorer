@@ -1,21 +1,26 @@
-import { IOutputResponse, UnitsHelper } from "@iota/iota.js";
+/* eslint-disable max-len */
+/* eslint-disable camelcase */
+import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
+import moment from "moment";
 import React, { ReactNode } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { TransactionsHelper } from "../../../helpers/transactionsHelper";
+import { HistoricInput, HistoricOutput, ITransaction, ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { NetworkService } from "../../../services/networkService";
-import { SettingsService } from "../../../services/settingsService";
 import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
-import Output from "../../components/chrysalis/Output";
-import CurrencyButton from "../../components/CurrencyButton";
-import MessageButton from "../../components/MessageButton";
-import SidePanel from "../../components/SidePanel";
+import QR from "../../components/chrysalis/QR";
+import FiatValue from "../../components/FiatValue";
+import Icon from "../../components/Icon";
+import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
-import ToolsPanel from "../../components/ToolsPanel";
-import ValueButton from "../../components/ValueButton";
+import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
+import transactionHistoryMessage from "./../../../assets/modals/address/transaction-history.json";
+import Transaction from "./../../components/chrysalis/Transaction";
+import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState } from "./AddrState";
@@ -25,14 +30,14 @@ import { AddrState } from "./AddrState";
  */
 class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState> {
     /**
+     * Maximum page size for permanode request.
+     */
+     private static readonly MAX_PAGE_SIZE: number = 500;
+
+    /**
      * API Client for tangle requests.
      */
     private readonly _tangleCacheService: TangleCacheService;
-
-    /**
-     * Settings service.
-     */
-    private readonly _settingsService: SettingsService;
 
     /**
      * The hrp of bech addresses.
@@ -47,7 +52,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
-        this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networkConfig = this.props.match.params.network
@@ -56,8 +60,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
         this._bechHrp = networkConfig?.bechHrp ?? "iot";
 
-        const isAdvanced = this._settingsService.get().advancedMode ?? false;
-
         this.state = {
             ...Bech32AddressHelper.buildAddress(
                 this._bechHrp,
@@ -65,8 +67,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             ),
             formatFull: false,
             statusBusy: true,
-            status: `Loading ${isAdvanced ? "outputs" : "balances"}...`,
-            advancedMode: isAdvanced
+            status: "Loading transactions...",
+            received: 0,
+            sent: 0,
+            currentPage: 1,
+            pageSize: 10,
+            currentPageTransactions: []
         };
     }
 
@@ -75,10 +81,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-
         const result = await this._tangleCacheService.search(
             this.props.match.params.network, this.props.match.params.address);
-
         if (result?.address) {
             window.scrollTo({
                 left: 0,
@@ -97,59 +101,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 outputIds: result.addressOutputIds,
                 historicOutputIds: result.historicAddressOutputIds
             }, async () => {
-                const outputs: IOutputResponse[] = [];
-
-                if (result.addressOutputIds) {
-                    for (const outputId of result.addressOutputIds) {
-                        const outputResult = await this._tangleCacheService.outputDetails(
-                            this.props.match.params.network, outputId);
-
-                        if (outputResult) {
-                            outputs.push(outputResult);
-
-                            this.setState({
-                                outputs,
-                                status: `Loading ${this.state.advancedMode
-                                    ? "Outputs" : "Balances"} [${outputs.length}/${result.addressOutputIds.length}]`
-                            });
-                        }
-
-                        if (!this._isMounted) {
-                            break;
-                        }
-                    }
-                }
-
-                const historicOutputs: IOutputResponse[] = [];
-
-                if (result.historicAddressOutputIds) {
-                    for (const outputId of result.historicAddressOutputIds) {
-                        const outputResult = await this._tangleCacheService.outputDetails(
-                            this.props.match.params.network, outputId);
-
-                        if (outputResult) {
-                            historicOutputs.push(outputResult);
-
-                            this.setState({
-                                historicOutputs,
-                                status: `Loading ${this.state.advancedMode
-                                    ? "Historic Outputs" : "Historic Balances"} [${
-                                        historicOutputs.length}/${result.historicAddressOutputIds.length}]`
-                            });
-                        }
-
-                        if (!this._isMounted) {
-                            break;
-                        }
-                    }
-                }
-
-                this.setState({
-                    outputs,
-                    historicOutputs,
-                    status: "",
-                    statusBusy: false
-                });
+                await this.getTransactionHistory();
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
@@ -165,266 +117,396 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             <div className="addr">
                 <div className="wrapper">
                     <div className="inner">
-                        <h1>
-                            Address
-                        </h1>
-                        <div className="row top">
-                            <div className="cards">
-                                <div className="card">
-                                    <div className="card--header card--header__space-between">
-                                        <h2>
-                                            General
-                                        </h2>
+                        <div className="addr--header">
+                            <div className="row middle">
+                                <h1>
+                                    Address
+                                </h1>
+                                <Modal icon="info" data={mainHeaderMessage} />
+                            </div>
+                        </div>
+                        <div className="top">
+                            <div className="sections">
+                                <div className="section">
+                                    <div className="section--header">
+                                        <div className="row middle">
+                                            <h2>
+                                                General
+                                            </h2>
+                                        </div>
                                     </div>
-                                    <div className="card--content">
-                                        <Bech32Address
-                                            addressDetails={this.state.bech32AddressDetails}
-                                            advancedMode={this.state.advancedMode}
-                                        />
-                                        {this.state.balance !== undefined && this.state.balance !== 0 && (
-                                            <div className="row fill margin-t-s margin-b-s value-buttons">
-                                                <div className="col">
-                                                    <ValueButton value={this.state.balance ?? 0} label="Balance" />
+                                    <div className="row space-between general-content">
+                                        <div className="section--data">
+                                            <Bech32Address
+                                                addressDetails={this.state.bech32AddressDetails}
+                                                advancedMode={true}
+                                            />
+                                            {/* {!this.state.statusBusy && (
+                                                <div className="row row--tablet-responsive">
+                                                    <div className="section--data margin-r-m">
+                                                        <div className="label">
+                                                            Total received
+                                                        </div>
+                                                        <div className="value">
+                                                            {UnitsHelper.formatBest(
+                                                                (this.state.balance ?? 0) + this.state.sent
+                                                            )}
+                                                            {" "}(
+                                                            <FiatValue
+                                                                value={
+                                                                    (this.state.balance ?? 0) +
+                                                                    this.state.sent
+                                                                }
+                                                            />)
+                                                        </div>
+                                                    </div>
+                                                    <div className="section--data">
+                                                        <div className="label">
+                                                            Total sent
+                                                        </div>
+                                                        <div className="value">
+                                                            {this.state.statusBusy ? (<Spinner />)
+                                                                : (
+                                                                    <React.Fragment>
+                                                                        {UnitsHelper.formatBest(this.state.sent)}
+                                                                        {" "}(<FiatValue value={this.state.sent} />)
+                                                                    </React.Fragment>
+                                                                )}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="col">
-                                                    <CurrencyButton
-                                                        marketsRoute={`/${this.props.match.params.network}/markets`}
-                                                        value={this.state.balance ?? 0}
-                                                    />
+                                            )} */}
+
+                                            {this.state.balance !== undefined && (
+                                                <div className="row middle">
+                                                    <Icon icon="wallet" boxed />
+                                                    <div className="balance">
+                                                        <div className="label">
+                                                            Final balance
+                                                        </div>
+                                                        <div className="value featured">
+                                                            {this.state.balance > 0 ? (
+                                                                <React.Fragment>
+                                                                    {UnitsHelper.formatBest(this.state.balance)}
+                                                                    {" "}
+                                                                    <span>(</span>
+                                                                    <FiatValue value={this.state.balance} />
+                                                                    <span>)</span>
+                                                                </React.Fragment>
+                                                            ) : 0}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                        {this.state.balance !== undefined && this.state.balance === 0 && (
-                                            <div>
-                                                <div className="card--label">
-                                                    Balance
-                                                </div>
-                                                <div className="card--value">
-                                                    0
-                                                </div>
-                                            </div>
-                                        )}
-                                        {this.state.status && (
-                                            <div className="middle row">
-                                                {this.state.statusBusy && (<Spinner />)}
-                                                <p className="status">
-                                                    {this.state.status}
-                                                </p>
-                                            </div>
-                                        )}
+                                            )}
+                                        </div>
+                                        <div className="section--data">
+                                            {this.state.bech32AddressDetails?.bech32 &&
+                                                (
+                                                    //  eslint-disable-next-line react/jsx-pascal-case
+                                                    <QR data={this.state.bech32AddressDetails.bech32} />
+                                                )}
+                                        </div>
                                     </div>
+
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
-                                    <div className="card">
-                                        <div className="card--content">
+                                    <div className="section">
+                                        <div className="section--data">
                                             <p>
-                                                There are no {this.state.advancedMode
-                                                    ? "outputs" : "balances"} for this address.
+                                                There are no transactions for this address.
                                             </p>
                                         </div>
                                     </div>
                                 )}
-                                {this.state.advancedMode &&
-                                    this.state.outputs &&
-                                    this.state.outputIds &&
-                                    this.state.outputs.length > 0 &&
-                                    this.state.outputs.map((output, idx) => (
-                                        <div className="card" key={idx}>
-                                            <Output
-                                                key={idx}
-                                                index={idx + 1}
-                                                network={this.props.match.params.network}
-                                                history={this.props.history}
-                                                id={this.state.outputIds ? this.state.outputIds[idx] : ""}
-                                                output={output}
-                                                advancedMode={this.state.advancedMode}
-                                            />
-                                        </div>
-                                    ))}
-                                {!this.state.advancedMode &&
-                                    this.state.outputs &&
-                                    this.state.outputIds &&
-                                    this.state.outputs.length > 0 && (
-                                        <div className="card">
-                                            <div className="card--header card--header__space-between">
+
+                                {this.txsHistory.length > 0 && (
+                                    <div className="section transaction--section">
+                                        <div className="section--header row space-between">
+                                            <div className="row middle">
                                                 <h2>
-                                                    Balances
+                                                    Transaction History
                                                 </h2>
+                                                <Modal icon="info" data={transactionHistoryMessage} />
                                             </div>
-                                            <div className="card--content">
-                                                {this.state.outputs.map((output, idx) => (
-                                                    <div key={idx} className="margin-b-m">
-                                                        <div className="card--value row middle">
-                                                            <div
-                                                                className="
-                                                                card--label card--label__no-height margin-r-s"
-                                                            >
-                                                                Message
-                                                            </div>
-                                                            <span className="card--value card--value__no-margin">
-                                                                <Link
-                                                                    to={
-                                                                        `/${this.props.match.params.network
-                                                                        }/message/${output.messageId}`
-                                                                    }
-                                                                    className="margin-r-t"
-                                                                >
-                                                                    {output.messageId}
-                                                                </Link>
-                                                            </span>
-                                                            <MessageButton
-                                                                onClick={() => ClipboardHelper.copy(
-                                                                    output.messageId
-                                                                )}
-                                                                buttonType="copy"
-                                                                labelPosition="top"
-                                                            />
-                                                        </div>
-                                                        <div className="card--value row middle">
-                                                            <div
-                                                                className="
-                                                                card--label card--label__no-height margin-r-s"
-                                                            >
-                                                                Amount
-                                                            </div>
-                                                            <span className="card--value card--value__no-margin">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => this.setState(
-                                                                        {
-                                                                            formatFull: !this.state.formatFull
-                                                                        }
-                                                                    )}
-                                                                >
-                                                                    {this.state.formatFull
-                                                                        ? `${output.output.amount} i`
-                                                                        : UnitsHelper.formatBest(output.output.amount)}
-                                                                </button>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                {this.state.advancedMode &&
-                                    this.state.historicOutputs &&
-                                    this.state.historicOutputIds &&
-                                    this.state.historicOutputs.length > 0 && (
-                                        <React.Fragment>
-                                            <h2 className="margin-t-s margin-b-s">
-                                                Historic Outputs
-                                            </h2>
-                                            {this.state.historicOutputs.map((output, idx) => (
-                                                <div className="card card__secondary" key={idx}>
-                                                    <Output
-                                                        key={idx}
-                                                        index={idx + 1}
-                                                        network={this.props.match.params.network}
-                                                        history={this.props.history}
-                                                        id={this.state.historicOutputIds
-                                                            ? this.state.historicOutputIds[idx] : ""}
-                                                        output={output}
-                                                        advancedMode={this.state.advancedMode}
-                                                    />
+                                            {this.state.status && (
+                                                <div className="margin-t-s middle row">
+                                                    {this.state.statusBusy && (<Spinner />)}
+                                                    <p className="status">
+                                                        {this.state.status}
+                                                    </p>
                                                 </div>
-                                            ))}
-                                        </React.Fragment>
-                                    )}
-                                {!this.state.advancedMode &&
-                                    this.state.historicOutputs &&
-                                    this.state.historicOutputIds &&
-                                    this.state.historicOutputs.length > 0 && (
-                                        <div className="card card__secondary">
-                                            <div className="card--header card--header__space-between">
-                                                <h2>
-                                                    Historic Balances
-                                                </h2>
+                                            )}
+                                        </div>
+                                        {this.txsHistory.length > this.state.pageSize && (
+                                            <div className="sort-disclaimer">
+                                                <span>
+                                                    When displayed across multiple pages, the transaction history may lose exact ordering.
+                                                </span>
                                             </div>
-                                            <div className="card--content">
-                                                {this.state.historicOutputs.map((output, idx) => (
-                                                    <div key={idx} className="margin-b-m">
-                                                        <div className="card--value row middle">
-                                                            <div
-                                                                className="
-                                                                card--label card--label__no-height margin-r-s"
-                                                            >
-                                                                Message
-                                                            </div>
-                                                            <span className="card--value card--value__no-margin">
-                                                                <Link
-                                                                    to={
-                                                                        `/${this.props.match.params.network
-                                                                        }/message/${output.messageId}`
-                                                                    }
-                                                                    className="margin-r-t"
-                                                                >
-                                                                    {output.messageId}
-                                                                </Link>
-                                                            </span>
-                                                            <MessageButton
-                                                                onClick={() => ClipboardHelper.copy(
-                                                                    output.messageId
-                                                                )}
-                                                                buttonType="copy"
-                                                                labelPosition="top"
+                                        )}
+                                        <table className="transaction--table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Message id</th>
+                                                    <th>Date</th>
+                                                    <th>Inputs</th>
+                                                    <th>Outputs</th>
+                                                    <th>Status</th>
+                                                    <th>Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                { this.currentPageTransactions.map((transaction, k) =>
+                                                    (
+                                                        <React.Fragment key={`${transaction?.messageId}${k}`}>
+                                                            <Transaction
+                                                                key={transaction?.messageId}
+                                                                messageId={transaction?.messageId}
+                                                                network={this.props.match.params.network}
+                                                                inputs={transaction?.inputs.length}
+                                                                outputs={transaction?.outputs.length}
+                                                                messageTangleStatus={transaction?.messageTangleStatus}
+                                                                date={transaction?.date}
+                                                                amount={transaction?.amount}
+                                                                tableFormat={true}
+                                                                hasConflicts={!transaction.ledgerInclusionState || transaction.ledgerInclusionState === "conflicting"}
                                                             />
-                                                        </div>
-                                                        <div className="card--value row middle">
-                                                            <div
-                                                                className="
-                                                                card--label card--label__no-height margin-r-s"
-                                                            >
-                                                                Amount
-                                                            </div>
-                                                            <span className="card--value card--value__no-margin">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => this.setState(
-                                                                        {
-                                                                            formatFull: !this.state.formatFull
-                                                                        }
-                                                                    )}
-                                                                >
-                                                                    {this.state.formatFull
-                                                                        ? `${output.output.amount} i`
-                                                                        : UnitsHelper.formatBest(output.output.amount)}
-                                                                </button>
-                                                            </span>
-                                                        </div>
-                                                    </div>
+                                                        </React.Fragment>
+                                                    ))}
+                                            </tbody>
+                                        </table>
+
+                                        {/* Only visible in mobile -- Card transactions*/}
+                                        <div className="transaction-cards">
+                                            {this.currentPageTransactions.map((transaction, k) =>
+                                                (
+                                                    <React.Fragment key={`${transaction?.messageId}${k}`}>
+                                                        <Transaction
+                                                            key={transaction?.messageId}
+                                                            messageId={transaction?.messageId}
+                                                            network={this.props.match.params.network}
+                                                            inputs={transaction?.inputs.length}
+                                                            outputs={transaction?.outputs.length}
+                                                            messageTangleStatus={transaction?.messageTangleStatus}
+                                                            date={transaction?.date}
+                                                            amount={transaction?.amount}
+                                                        />
+                                                    </React.Fragment>
                                                 ))}
-                                            </div>
                                         </div>
-                                    )}
-                            </div>
-                            <div className="side-panel-container">
-                                <SidePanel {...this.props} />
-                                <ToolsPanel>
-                                    <div className="card--section">
-                                        <div className="card--label margin-t-t">
-                                            <span>Advanced View</span>
-                                            <input
-                                                type="checkbox"
-                                                checked={this.state.advancedMode}
-                                                className="margin-l-t"
-                                                onChange={e => this.setState(
-                                                    {
-                                                        advancedMode: e.target.checked
-                                                    },
-                                                    () => this._settingsService.saveSingle(
-                                                        "advancedMode",
-                                                        this.state.advancedMode))}
-                                            />
-                                        </div>
-                                    </div>
-                                </ToolsPanel>
+                                        <Pagination
+                                            currentPage={this.state.currentPage}
+                                            totalCount={this.txsHistory.length}
+                                            pageSize={this.state.pageSize}
+                                            extraPageRangeLimit={20}
+                                            siblingsCount={1}
+                                            onPageChange={page =>
+                                                this.setState({ currentPage: page },
+                                                    () => {
+                                                        const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
+                                                        // Check if last page
+                                                        const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
+                                                        this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
+                                                        .catch(err => console.error(err));
+                                                })}
+                                        />
+                                    </div>)}
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </div >
+                </div >
             </div >
         );
+    }
+
+    private get currentPageTransactions() {
+        const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
+        const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
+        const transactionsPage = this.txsHistory
+        .slice(firstPageIndex, lastPageIndex)
+        /* eslint-disable-next-line unicorn/no-array-reduce */
+        .reduce((acc: ITransaction[], curr: ITransaction) => {
+            acc.push(curr);
+            if (curr.relatedSpentTransaction) {
+                acc.push(curr.relatedSpentTransaction);
+            }
+            return acc;
+        }, []);
+
+        const sortedTransactions: ITransaction[] = transactionsPage.sort((a, b) => (
+             moment(a.date).isAfter(moment(b.date)) ? -1 : 1
+        ));
+        return sortedTransactions;
+    }
+
+    private get txsHistory() {
+        return this.state.transactionHistory?.transactionHistory?.transactions ?? [];
+    }
+
+    private async getTransactionHistory() {
+        const transactionsDetails = await this._tangleCacheService.transactionsDetails({
+            network: this.props.match.params.network,
+            address: this.state.address?.address ?? "",
+            query: { page_size: this.state.pageSize }
+        }, false);
+
+        this.setState({ transactionHistory: transactionsDetails },
+            async () => {
+                const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
+                const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize))
+                    ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
+
+                this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
+                    .catch(err => console.error(err));
+
+                await this.transactionHistoryHelper(transactionsDetails);
+
+                this.setState({
+                    status: "",
+                    statusBusy: false
+                });
+            }
+        );
+    }
+
+    private async transactionHistoryHelper(transactionsDetails: ITransactionsDetailsResponse | undefined) {
+        if (transactionsDetails?.transactionHistory?.state) {
+            const transactionDetailsBatch = await this._tangleCacheService.transactionsDetails({
+                network: this.props.match.params.network,
+                address: this.state.address?.address ?? "",
+                query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
+            }, true);
+
+            if (transactionDetailsBatch?.transactionHistory.transactions) {
+                const updatedHistory = {
+                    transactions: transactionDetailsBatch.transactionHistory
+                    .transactions?.map(t1 => ({ ...t1, ...this.txsHistory.find(t2 => t2.messageId === t1.messageId) })),
+                    state: transactionDetailsBatch.transactionHistory.state
+                };
+                this.setState(
+                    { ...this.state, transactionHistory: { transactionHistory: updatedHistory } },
+                    async () => this.transactionHistoryHelper(this.state.transactionHistory)
+                );
+            }
+        }
+    }
+
+    private async updateTransactionHistoryDetails(startIndex: number, endIndex: number) {
+        if (this.txsHistory.length > 0) {
+            const transactionIds = this.txsHistory.map(transaction => transaction.messageId);
+            const updatingPage = this.state.currentPage;
+
+            for (let i = startIndex; i < endIndex; i++) {
+                if (updatingPage !== this.state.currentPage) {
+                    break;
+                }
+
+                const tsx = { ...this.txsHistory[i] };
+                let isUpdated = false;
+
+                if (!tsx.date || !tsx.messageTangleStatus) {
+                    isUpdated = true;
+                    const { date, messageTangleStatus } = await TransactionsHelper
+                        .getMessageStatus(this.props.match.params.network, tsx.messageId,
+                            this._tangleCacheService);
+                    tsx.date = date;
+                    tsx.messageTangleStatus = messageTangleStatus;
+                }
+
+                if (!tsx.amount) {
+                    isUpdated = true;
+                    const amount = await this.getTransactionAmount(tsx.messageId);
+                    tsx.amount = amount;
+
+                    if (amount < 0) {
+                        this.setState({ sent: this.state.sent + Math.abs(amount) });
+                    }
+                }
+
+                if (tsx.isSpent === undefined) {
+                    isUpdated = true;
+                    let isTransactionSpent = false;
+
+                    // Get spent related transaction
+                    for (const output of tsx.outputs) {
+                        if (output.output.address.address === this.state.address?.address && output.spendingMessageId && !transactionIds?.includes(output.spendingMessageId)) {
+                            transactionIds?.push(output.spendingMessageId);
+                            const transactionsResult = await this._tangleCacheService.search(
+                                this.props.match.params.network, output.spendingMessageId);
+                            const statusDetails = await TransactionsHelper
+                                .getMessageStatus(this.props.match.params.network, output.spendingMessageId,
+                                    this._tangleCacheService);
+
+                            if (transactionsResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                                const relatedAmount = await this.getTransactionAmount(output.spendingMessageId);
+                                const relatedInputs = transactionsResult?.message?.payload?.essence?.inputs;
+                                const historicInputs: HistoricInput[] = relatedInputs.map(input => ({
+                                    transactionId: input.transactionId,
+                                    transactionOutputIndex: input.transactionOutputIndex.toString(),
+                                    type: input.type
+                                }));
+                                const relatedOutputs = transactionsResult?.message?.payload?.essence?.outputs;
+                                const historicOutputs: HistoricOutput[] = relatedOutputs.map(relatedOutput => ({
+                                    output: {
+                                        address: {
+                                            type: relatedOutput.address.type,
+                                            address: relatedOutput.address.address
+                                        },
+                                        amount: relatedOutput.amount.toString(),
+                                        type: relatedOutput.type
+                                    },
+                                    spendingMessageId: ""
+                                }));
+
+                                tsx.relatedSpentTransaction = {
+                                    messageId: output.spendingMessageId,
+                                    date: statusDetails.date,
+                                    messageTangleStatus: statusDetails.messageTangleStatus,
+                                    isSpent: true,
+                                    amount: relatedAmount,
+                                    inputs: historicInputs,
+                                    outputs: historicOutputs,
+                                    ledgerInclusionState: statusDetails.messageTangleStatus
+                                };
+                                if (relatedAmount < 0) {
+                                    this.setState({ sent: this.state.sent + Math.abs(relatedAmount) });
+                                }
+                                isTransactionSpent = true;
+                            }
+                        }
+                    }
+                    tsx.isSpent = isTransactionSpent;
+                }
+
+                if (isUpdated) {
+                    const transactions = [...this.txsHistory];
+                    transactions[i] = tsx;
+                    this.setState({ transactionHistory: { transactionHistory: { transactions } } });
+                }
+            }
+        }
+    }
+
+    private async getTransactionAmount(
+        messageId: string): Promise<number> {
+        const result = await this._tangleCacheService.search(
+            this.props.match.params.network, messageId);
+        const { inputs, outputs } =
+            await TransactionsHelper.getInputsAndOutputs(result?.message,
+                this.props.match.params.network,
+                this._bechHrp,
+                this._tangleCacheService);
+        const inputsRelated = inputs.filter(input => input.transactionAddress.hex === this.state.address?.address);
+        const outputsRelated = outputs.filter(output => output.address.hex === this.state.address?.address);
+        let fromAmount = 0;
+        let toAmount = 0;
+        for (const input of inputsRelated) {
+            fromAmount += input.amount;
+        }
+        for (const output of outputsRelated) {
+            toAmount += output.amount;
+        }
+        return toAmount - fromAmount;
     }
 }
 

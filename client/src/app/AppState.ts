@@ -11,6 +11,10 @@ export interface AppState {
      */
     networks: INetwork[];
 
+    /**
+     * Darkmode theme
+     */
+    darkMode?: boolean;
 
     /**
      * config of current network

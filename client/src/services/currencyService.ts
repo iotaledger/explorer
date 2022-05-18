@@ -1,4 +1,5 @@
 import { ServiceFactory } from "../factories/serviceFactory";
+import { TrytesHelper } from "../helpers/trytesHelper";
 import { ICurrencySettings } from "../models/services/ICurrencySettings";
 import { ApiClient } from "./apiClient";
 import { SettingsService } from "./settingsService";
@@ -201,12 +202,18 @@ export class CurrencyService {
     private readonly _apiClient: ApiClient;
 
     /**
+     * Subsribers to settings updates.
+     */
+    private readonly _subscribers: { [id: string]: () => void };
+
+    /**
      * Create a new instance of CurrencyService.
      * @param apiEndpoint The api endpoint.
      */
     constructor(apiEndpoint: string) {
         this._apiClient = new ApiClient(apiEndpoint);
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
+        this._subscribers = {};
     }
 
     /**
@@ -245,11 +252,43 @@ export class CurrencyService {
     }
 
     /**
+     * Load the currency names data.
+     * @returns currencyNames The currency names map.
+     */
+    public async loadCurrencyNames(): Promise<{ [id: string]: string } | undefined> {
+        const settings = this._settingsService.get();
+
+        if (settings.currencyNames && Object.keys(settings.currencyNames).length > 0) {
+            return settings.currencyNames;
+        }
+
+        try {
+            const data = await this._apiClient.currencyNames();
+            settings.currencyNames = data.currencyNames;
+            return data.currencyNames;
+        } catch {
+            return undefined;
+        }
+    }
+
+    /**
      * Save the fiat code to settings.
      * @param fiatCode The fiat code to save.
      */
     public saveFiatCode(fiatCode: string): void {
         this._settingsService.saveSingle("fiatCode", fiatCode);
+
+        for (const id in this._subscribers) {
+            this._subscribers[id]();
+        }
+    }
+
+    /**
+     * Get fiat code stored in settings
+     * @returns Active fiat code.
+     */
+    public getSettingsFiatCode(): string {
+        return this._settingsService.get()?.fiatCode;
     }
 
     /**
@@ -291,6 +330,7 @@ export class CurrencyService {
      * @param includeSymbol Include the symbol in the formatting.
      * @param numDigits The number of digits to display.
      * @param extendToFindMax Extend the decimal places until non zero or limit.
+     * @param includeSuffix Use abbreviated value with suffix (k for thousand, M for million, B for billion, ...).
      * @returns The converted fiat.
      */
     public convertFiatBase(
@@ -298,7 +338,9 @@ export class CurrencyService {
         currencyData: ICurrencySettings,
         includeSymbol: boolean,
         numDigits: number,
-        extendToFindMax?: number): string {
+        extendToFindMax?: number,
+        includeSuffix?: boolean
+    ): string {
         let converted = "";
         if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
             const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
@@ -317,14 +359,17 @@ export class CurrencyService {
                         converted += found[0];
                     }
                 } else {
-                    converted += fiat
-                        .toFixed(numDigits)
-                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    converted += includeSuffix
+                        ? this.abbreviate(fiat, numDigits)
+                        : fiat
+                            .toFixed(numDigits)
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 }
             }
         }
         return converted;
     }
+
 
     /**
      * Convert from current currency to iota.
@@ -408,6 +453,50 @@ export class CurrencyService {
      */
     public getSymbol(currencyCode: string): string {
         return CurrencyService.SYMBOL_MAP[currencyCode] || currencyCode;
+    }
+
+    /**
+     * Subscribe to the wallet updates.
+     * @param callback The callback to trigger when there are updates.
+     * @returns The subscription id.
+     */
+    public subscribe(callback: () => void): string {
+        const id = TrytesHelper.generateHash(27);
+
+        this._subscribers[id] = callback;
+
+        return id;
+    }
+
+    /**
+     * Unsubscribe from the wallet updates.
+     * @param id The subscription ids.
+     */
+    public unsubscribe(id: string): void {
+        delete this._subscribers[id];
+    }
+
+    /**
+     * Abbreviate currency number and add corresponding symbol.
+     * @param value the number to abbreviate
+     * @param digits the number of digits to show
+     * @returns abbreviated number with symbol
+     */
+    private abbreviate(value: number, digits: number = 2): string {
+        const units = [
+            { value: 1, symbol: "" },
+            { value: 1e3, symbol: "k" },
+            { value: 1e6, symbol: "M" },
+            { value: 1e9, symbol: "B" },
+            { value: 1e12, symbol: "T" },
+            { value: 1e15, symbol: "P" },
+            { value: 1e18, symbol: "E" }
+        ];
+        const regex = /\.0+$|(\.\d*[1-9])0+$/;
+        const item = units.slice().reverse()
+            .find(unit => value >= unit.value);
+
+        return item ? (value / item.value).toFixed(digits).replace(regex, "1") + item.symbol : "0";
     }
 
     /**

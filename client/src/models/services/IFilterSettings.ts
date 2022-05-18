@@ -5,7 +5,7 @@ export interface IFilterSettings {
     /**
      * Value filter for feeds.
      */
-    valueFilter?: ValueFilter;
+    valuesFilter?: ValueFilter[];
 
     /**
      * Value limit feeds.

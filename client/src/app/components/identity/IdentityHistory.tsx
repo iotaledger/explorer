@@ -3,7 +3,6 @@ import "../../../scss/layout.scss";
 import React, { Component, Fragment, ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IdentityHelper } from "../../../helpers/identityHelper";
 import { IIdentityMessageWrapper } from "../../../models/identity/IIdentityMessageWrapper";
 import { IdentityDiffStorageService } from "../../../services/identityDiffStorageService";
 import { IdentityService } from "../../../services/identityService";
@@ -15,10 +14,10 @@ import IdentityJsonCompare from "./IdentityJsonCompare";
 import IdentityTree from "./tree/IdentityTree";
 
 export default class IdentityHistory extends Component<
-    RouteComponentProps<IdentityResolverProps>,
+    RouteComponentProps<IdentityResolverProps> & {version: string},
     IdentityHistoryState
 > {
-    constructor(props: RouteComponentProps<IdentityHistoryProps>) {
+    constructor(props: RouteComponentProps<IdentityHistoryProps> & {version: string}) {
         super(props);
 
         this.state = {
@@ -41,8 +40,8 @@ export default class IdentityHistory extends Component<
         return (
             <Fragment>
                 {/* --------- History Card --------- */}
-                <div className="card history-content">
-                    <div className="card--header card--header history-header">
+                <div className="section">
+                    <div className="section--header row space-between">
                         <h2>History</h2>
                         {/* --------- Load History Button --------- */}
                         {!this.state.historyLoaded && !this.state.loadingHistory && !this.state.error && (
@@ -62,7 +61,7 @@ export default class IdentityHistory extends Component<
 
                     {/* --------- Resolving History Spinner --------- */}
                     {this.state.loadingHistory && (
-                        <div className="card--content row">
+                        <div className="card--content row history-content">
                             <h3 className="margin-r-s">Resolving History ...</h3>
                             <Spinner />
                         </div>
@@ -83,13 +82,14 @@ export default class IdentityHistory extends Component<
                                 <IdentityTree
                                     network={this.props.match.params.network}
                                     history={this.state.resolvedHistory}
+                                    version={this.props.version}
                                     onItemClick={(selectedItem, compareWith) => {
                                         this.setState({
                                             selectedMessage: selectedItem,
                                             compareWith: compareWith
                                                 ? compareWith.concat(
-                                                      this.getPreviousMessages(selectedItem.parentMessageId ?? "", true)
-                                                  )
+                                                    this.getPreviousMessages(selectedItem.parentMessageId ?? "", true)
+                                                )
                                                 : this.getPreviousMessages(selectedItem.messageId),
                                             selectedComparisonMessage: undefined
                                         });
@@ -104,6 +104,7 @@ export default class IdentityHistory extends Component<
                                 />
                             </div>
                             <IdentityJsonCompare
+                                version={this.props.version}
                                 network={this.props.match.params.network}
                                 selectedMessage={this.state.selectedMessage}
                                 compareWith={this.state.compareWith}
@@ -150,7 +151,7 @@ export default class IdentityHistory extends Component<
             }
             // add integrations message
             const msg: IIdentityMessageWrapper = {
-                document: IdentityHelper.removeMetaDataFromDocument(integrationChainData[i].document),
+                document: integrationChainData[i].document,
                 isDiff: false,
                 message: integrationChainData[i].document,
                 messageId: integrationChainData[i].messageId
@@ -177,7 +178,8 @@ export default class IdentityHistory extends Component<
 
         const res = await ServiceFactory.get<IdentityService>("identity").resolveHistory(
             this.props.match.params.did,
-            this.props.match.params.network
+            this.props.match.params.network,
+            this.props.version
         );
 
         // handle if response contains Error.
@@ -203,7 +205,7 @@ export default class IdentityHistory extends Component<
                 selectedMessage: {
                     messageId: res.integrationChainData?.[0].messageId,
                     message: res.integrationChainData?.[0].document,
-                    document: IdentityHelper.removeMetaDataFromDocument(res.integrationChainData?.[0].document),
+                    document: res.integrationChainData?.[0].document,
                     isDiff: false
                 }
             });

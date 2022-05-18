@@ -1,5 +1,4 @@
 import React, { ReactNode } from "react";
-import chevronDownGray from "../../assets/chevron-down-gray.svg";
 import { CurrencyHelper } from "../../helpers/currencyHelper";
 import Currency from "../components/Currency";
 import "./CurrencyConverter.scss";
@@ -74,7 +73,9 @@ class CurrencyConverter extends Currency<unknown, CurrencyConverterState> {
                                                 <option value={cur} key={cur}>{cur}</option>
                                             ))}
                                         </select>
-                                        <img src={chevronDownGray} alt="expand" />
+                                        <span className="material-icons">
+                                            expand_more
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="card--label card--label__no-case">

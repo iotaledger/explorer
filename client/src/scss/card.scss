@@ -3,15 +3,15 @@
 @import "./media-queries";
 @import "./mixins";
 @import "./variables";
+@import "./themes";
 
 .card {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid $gray-noon;
+  border: 1px solid var(--input-border-color);
   border-radius: 6px;
-  background-color: $white;
-  box-shadow: $box-shadow;
+  background-color: transparent;
 
   &.card__secondary {
     background-color: #fcfcfc;
@@ -115,7 +115,7 @@
     margin-left: 20px;
     padding: 0 8px;
     border-radius: 6px;
-    background-color: $gray-light;
+    background-color: var(--light-bg);
     color: $gray;
     font-family: $metropolis;
     font-weight: bold;
@@ -151,7 +151,22 @@
     min-height: 50px;
     margin: 20px 26px 0 26px;
     padding-bottom: 14px;
-    border-bottom: 1px solid $gray-noon;
+    color: var(--body-color);
+
+    .card--header__title {
+      line-height: 100%;
+
+      @include font-size(14px, 21px);
+
+      & + .dot-separator {
+        & + span {
+          @include font-size(14px, 14px);
+
+          color: $gray-6;
+          font-family: $inter;
+        }
+      }
+    }
 
     @include phone-down {
       min-height: unset;
@@ -160,6 +175,16 @@
 
     &.card--header__space-between {
       justify-content: space-between;
+
+      .select-wrapper {
+        @include tablet-down {
+          display: none;
+        }
+
+        &.select-wrapper--card-header {
+          display: inline-block;
+        }
+      }
     }
 
     @include tablet-down {
@@ -185,10 +210,34 @@
   }
 
   .card--content {
-    padding: 20px 30px;
+    padding: 0 30px 20px;
 
     @include phone-down {
       padding: 15px 20px;
+    }
+
+    input {
+      padding: 0 20px;
+    }
+
+    .card--content__input {
+      display: flex;
+
+      .card--content__input--dropdown {
+        cursor: pointer;
+
+        svg {
+          transition: transform 0.25s ease;
+
+          path {
+            fill: var(--card-color);
+          }
+        }
+
+        &.opened > svg {
+          transform: rotate(90deg);
+        }
+      }
     }
   }
 
@@ -239,59 +288,33 @@
     margin-left: 10px;
   }
 
-  .card--label {
-    @include font-size(12px);
-
-    display: flex;
-    align-items: center;
-    height: 32px;
-    color: $gray-header;
-    font-family: $metropolis;
-    font-weight: bold;
-    text-transform: uppercase;
-    white-space: nowrap;
-
-    button,
-    .button {
-      @include font-size(12px);
-
-      padding: 0;
-      border: 0;
-      background: none;
-      color: inherit;
-      font-family: inherit;
-      font-size: inherit;
-      font-weight: inherit;
-      text-align: left;
-      text-transform: inherit;
-      cursor: pointer;
-
-      &:hover {
-        color: $main-green-highlight;
-        text-decoration: underline;
-      }
-
-      &:focus {
-        box-shadow: none;
-      }
-    }
-
-    &.card--label__no-case {
-      text-transform: none;
-    }
-
-    &.card--label__no-height {
-      height: auto;
-    }
-  }
-
   .card--value {
-    @include font-size(12px);
+    @include font-size(14px, 20px);
+
+    .section--data {
+      .label {
+        color: var(--card-color);
+      }
+    }
+
+    input {
+      padding: 0 20px;
+      background-color: var(--body-background);
+
+      &[type="checkbox"] {
+        padding: 0;
+      }
+    }
 
     margin-bottom: 12px;
-    color: $gray-10;
-    font-family: $inter;
+    color: var(--body-color);
+    font-family: $ibm-plex-mono;
     word-break: break-all;
+
+    a,
+    button {
+      color: $blue-5;
+    }
 
     &.card--value__highlight {
       @include font-size(12px);
@@ -328,7 +351,7 @@
       max-height: 150px;
       padding: 10px;
       overflow: auto;
-      background: $gray-noon;
+      background: var(--light-bg);
 
       &.card--value-textarea__ascii,
       &.card--value-textarea__utf8 {
@@ -370,6 +393,52 @@
           color: lighten($main-green-highlight, 10%);
         }
       }
+    }
+  }
+
+  .card--label {
+    @include font-size(12px);
+
+    display: flex;
+    align-items: center;
+    height: 32px;
+    color: var(--card-color);
+    font-family: $inter;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+
+    button,
+    .button {
+      @include font-size(12px);
+
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      text-align: left;
+      text-transform: inherit;
+      cursor: pointer;
+
+      &:hover {
+        color: $main-green-highlight;
+        text-decoration: underline;
+      }
+
+      &:focus {
+        box-shadow: none;
+      }
+    }
+
+    &.card--label__no-case {
+      text-transform: none;
+    }
+
+    &.card--label__no-height {
+      height: auto;
     }
   }
 }

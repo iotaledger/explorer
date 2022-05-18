@@ -1,7 +1,7 @@
-@import '../../../scss/fonts';
-@import '../../../scss/mixins';
-@import '../../../scss/media-queries';
-@import '../../../scss/variables';
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
 
 .transaction {
   display: flex;
@@ -84,6 +84,14 @@
           }
         }
 
+        .card--content {
+          .arrow {
+            color: $main-green;
+            font-size: 30px;
+            line-height: 60%;
+          }
+        }
+
         .children-container {
           max-height: 200px;
           margin: 20px 30px 30px 10px;
@@ -96,11 +104,13 @@
             flex: 1;
             width: auto;
           }
+
+          .col + .col {
+            margin-left: 24px;
+          }
         }
 
-        @include tablet-down {
-          margin-right: 0;
-
+        @include desktop-down {
           .value-buttons {
             flex-direction: column;
 
@@ -111,6 +121,7 @@
 
             .col + .col {
               margin-top: 23px;
+              margin-left: 0;
             }
           }
         }
@@ -123,14 +134,6 @@
           .col {
             .card {
               flex: 1;
-            }
-          }
-
-          .col + .col {
-            margin-left: 23px;
-
-            @include tablet-down {
-              margin-left: 0;
             }
           }
         }

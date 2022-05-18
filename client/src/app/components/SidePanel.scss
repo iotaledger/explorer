@@ -2,11 +2,13 @@
 @import '../../scss/mixins';
 @import '../../scss/media-queries';
 @import '../../scss/variables';
+@import '../../scss/themes';
 
 .side-panel {
   display: flex;
   flex-direction: row;
   width: 241px;
+  background-color: transparent;
 
   @include desktop-down {
     flex: 1;
