@@ -4,7 +4,7 @@ import { DateHelper } from "../../helpers/dateHelper";
 import { IBech32AddressDetails } from "../../models/IBech32AddressDetails";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
 import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
-import { Bech32AddressHelper } from "../bech32AddressHelper";
+import { Bech32AddressHelper } from "../chrysalis/bech32AddressHelper";
 
 export interface Input {
     outputHash: string;

@@ -1,13 +1,13 @@
 /* eslint-disable no-warning-comments */
 import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
-    IGovernorAddressUnlockCondition, Ed25519Address,
-    ED25519_ADDRESS_TYPE, IMessage, ISignatureUnlockBlock,
+    IGovernorAddressUnlockCondition, ED25519_ADDRESS_TYPE, IMessage, ISignatureUnlockBlock,
     IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE,
     TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
     IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
-    TREASURY_OUTPUT_TYPE, ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
-    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE, serializeTransactionPayload, IMilestonePayload, ITaggedDataPayload } from "@iota/iota.js-stardust";
+    TREASURY_OUTPUT_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
+    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
+    ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE, serializeTransactionPayload } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { DateHelper } from "../../helpers/dateHelper";
 import { IInput } from "../../models/api/stardust/IInput";
@@ -15,7 +15,7 @@ import { IOutput } from "../../models/api/stardust/IOutput";
 import { IBech32AddressDetails } from "../../models/IBech32AddressDetails";
 import { MessageTangleStatus } from "../../models/messageTangleStatus";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
-import { Bech32AddressHelper } from ".././bech32AddressHelper";
+import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 
 interface TransactionInputsAndOutputsResponse {
     inputs: (IUTXOInput & IInput)[];
@@ -39,6 +39,10 @@ export class TransactionsHelper {
             const payload: ITransactionPayload = transactionMessage.payload;
             const signatureBlocks: ISignatureUnlockBlock[] = [];
 
+            const tpWriteStream = new WriteStream();
+            serializeTransactionPayload(tpWriteStream, payload);
+            const transactionId = Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
+
             // Signatures
             for (let i = 0; i < payload.unlockBlocks.length; i++) {
                 const unlockBlock = payload.unlockBlocks[i];
@@ -54,8 +58,8 @@ export class TransactionsHelper {
                 unlockAddresses.push(
                     Bech32AddressHelper.buildAddress(
                         _bechHrp,
-                        Converter.bytesToHex(
-                            new Ed25519Address(Converter.hexToBytes(signatureBlocks[i].signature.publicKey)).toAddress()
+                        HexHelper.stripPrefix(
+                            signatureBlocks[i].signature.publicKey
                         ),
                         ED25519_ADDRESS_TYPE
                     )
@@ -106,13 +110,19 @@ export class TransactionsHelper {
 
             // Outputs
             for (let i = 0; i < payload.essence.outputs.length; i++) {
+                // Compute outputId from transactionPayload
+                const outputIndexWs = new WriteStream();
+                outputIndexWs.writeUInt16("outputIndex", i);
+                const outputId = transactionId + outputIndexWs.finalHex();
+
                 if (payload.essence.outputs[i].type === TREASURY_OUTPUT_TYPE) {
                     const output = payload.essence.outputs[i] as ITreasuryOutput;
 
                     outputs.push({
-                        type: transactionMessage.payload.essence.outputs[i].type,
+                        id: outputId,
+                        type: payload.essence.outputs[i].type,
                         output,
-                        amount: Number(transactionMessage.payload.essence.outputs[i].amount)
+                        amount: Number(payload.essence.outputs[i].amount)
                     });
                 } else {
                     const output = payload.essence.outputs[i] as IBasicOutput |
@@ -125,24 +135,26 @@ export class TransactionsHelper {
 
                     if (isRemainder) {
                         remainderOutputs.push({
-                            type: transactionMessage.payload.essence.outputs[i].type,
+                            id: outputId,
+                            type: payload.essence.outputs[i].type,
                             address,
-                            amount: Number(transactionMessage.payload.essence.outputs[i].amount),
+                            amount: Number(payload.essence.outputs[i].amount),
                             isRemainder,
                             output
                         });
                     } else {
                         outputs.push({
-                            type: transactionMessage.payload.essence.outputs[i].type,
+                            id: outputId,
+                            type: payload.essence.outputs[i].type,
                             address,
-                            amount: Number(transactionMessage.payload.essence.outputs[i].amount),
+                            amount: Number(payload.essence.outputs[i].amount),
                             isRemainder,
                             output
                         });
                     }
 
                     if (!isRemainder) {
-                        transferTotal += Number(transactionMessage.payload.essence.outputs[i].amount);
+                        transferTotal += Number(payload.essence.outputs[i].amount);
                     }
                 }
             }
@@ -213,17 +225,8 @@ export class TransactionsHelper {
             }
         }
 
-        if (unlockCondition?.address.type === ED25519_ADDRESS_TYPE) {
-            const ed25519Address = Converter.bytesToHex(
-                new Ed25519Address(Converter.hexToBytes(unlockCondition.address.pubKeyHash)).toAddress()
-            );
-            address = Bech32AddressHelper.buildAddress(_bechHrp, ed25519Address, ED25519_ADDRESS_TYPE);
-        } else if (unlockCondition?.address.type === ALIAS_ADDRESS_TYPE) {
-            const aliasId = HexHelper.stripPrefix(unlockCondition.address.aliasId);
-            address = Bech32AddressHelper.buildAddress(_bechHrp, aliasId, ALIAS_ADDRESS_TYPE);
-        } else if (unlockCondition?.address.type === NFT_ADDRESS_TYPE) {
-            const nftId = HexHelper.stripPrefix(unlockCondition.address.nftId);
-            address = Bech32AddressHelper.buildAddress(_bechHrp, nftId, NFT_ADDRESS_TYPE);
+        if (unlockCondition?.address) {
+            address = Bech32AddressHelper.buildAddress(_bechHrp, unlockCondition?.address);
         }
 
         return address;

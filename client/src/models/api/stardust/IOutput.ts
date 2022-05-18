@@ -5,7 +5,7 @@ export interface IOutput {
     /**
      * The output id.
      */
-    id?: string;
+    id: string;
     /**
      * The output type.
      */
