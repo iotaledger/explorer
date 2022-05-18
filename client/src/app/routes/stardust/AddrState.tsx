@@ -1,22 +1,10 @@
 /* eslint-disable no-shadow */
 import { IOutputResponse } from "@iota/iota.js-stardust";
-import IAddressDetails from "../../../models/api/stardust/IAddressDetails";
-import { ITransaction, ITransactionsDetailsResponse } from "../../../models/api/stardust/ITransactionsDetailsResponse";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import INftDetails from "./INftDetails";
 import ITokenDetails from "./ITokenDetails";
 
 export interface AddrState {
-    /**
-     * Address.
-     */
-    address?: string;
-
-    /**
-     * The Address Details.
-     */
-    addressDetails?: IAddressDetails;
-
     /**
      * The addres in bech 32 format.
      */
@@ -26,16 +14,6 @@ export interface AddrState {
      * The address balance.
      */
     balance?: number;
-
-    /**
-     * Is the component status busy.
-     */
-    statusBusy: boolean;
-
-    /**
-     * The status.
-     */
-    status: string;
 
     /**
      * Are the component native tokens loading.
@@ -58,49 +36,9 @@ export interface AddrState {
     outputs?: IOutputResponse[];
 
     /**
-     * The received amount.
-     */
-    received: number;
-
-    /**
-     * The total sent amount.
-     */
-    sent: number;
-
-    /**
-     * The historic output ids for the address.
-     */
-    historicOutputIds?: string[];
-
-    /**
-     * The historic outputs for the address.
-     */
-    historicOutputs?: IOutputResponse[];
-
-    /**
      * Format the amount in full.
      */
     formatFull: boolean;
-
-    /**
-     * List of transactions of an address.
-     */
-    transactionHistory?: ITransactionsDetailsResponse;
-
-    /**
-     * Current page number in transaction history table.
-     */
-    transactionsPageNumber: number;
-
-    /**
-     * Page size in transaction history table.
-     */
-    transactionsPageSize: number;
-
-    /**
-     * Current page in transaction history table.
-     */
-    transactionsPage: ITransaction[];
 
     /**
      * List of native tokens of the address.
