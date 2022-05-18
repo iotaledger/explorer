@@ -207,7 +207,7 @@ class Output extends Component<OutputProps, OutputState> {
                                             Amount:
                                         </div>
                                         <div className="card--value row">
-                                            {token.amount}
+                                            {Number(token.amount)}
                                         </div>
                                     </div>
                                     )}
