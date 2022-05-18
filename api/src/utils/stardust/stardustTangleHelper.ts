@@ -1,6 +1,9 @@
 /* eslint-disable no-warning-comments */
 import { Blake2b } from "@iota/crypto.js-stardust";
-import { addressBalance, ED25519_ADDRESS_TYPE, IOutputResponse, IOutputsResponse, serializeMessage, SingleNodeClient, IndexerPluginClient, messageIdFromMilestonePayload, milestoneIdFromMilestonePayload } from "@iota/iota.js-stardust";
+import {
+    addressBalance, ED25519_ADDRESS_TYPE, IOutputResponse, IOutputsResponse, serializeMessage,
+    SingleNodeClient, IndexerPluginClient, messageIdFromMilestonePayload, milestoneIdFromMilestonePayload
+} from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
@@ -158,13 +161,43 @@ export class StardustTangleHelper {
     }
 
     /**
-     * Get the milestone details.
+     * Get the milestone details by milestone id.
+     * @param network The network to find the items on.
+     * @param milestoneId The milestone id to get the details.
+     * @returns The milestone details.
+     */
+    public static async milestoneDetailsById(
+        network: INetwork, milestoneId: string
+    ): Promise<IMilestoneDetailsResponse | undefined> {
+        try {
+            const client: SingleNodeClient = new SingleNodeClient(network.provider, {
+                        userName: network.user,
+                        password: network.password
+                    });
+
+            const milestonePayload = await client.milestoneById(milestoneId);
+            /* eslint-disable-next-line no-warning-comments */
+            // TODO Fetch protocol version from config/node
+            const messageId = messageIdFromMilestonePayload(2, milestonePayload);
+
+            return {
+                messageId,
+                milestoneId,
+                milestone: milestonePayload
+            };
+        } catch {
+        }
+    }
+
+    /**
+     * Get the milestone details by index.
      * @param network The network to find the items on.
      * @param milestoneIndex The milestone index to get the details.
-     * @returns The item details.
+     * @returns The milestone details.
      */
-    public static async milestoneDetails(
-        network: INetwork, milestoneIndex: number): Promise<IMilestoneDetailsResponse | undefined> {
+    public static async milestoneDetailsByIndex(
+        network: INetwork, milestoneIndex: number
+    ): Promise<IMilestoneDetailsResponse | undefined> {
         try {
             const client: SingleNodeClient = network.permaNodeEndpoint
                 /* eslint-disable-next-line no-warning-comments */
@@ -240,7 +273,6 @@ export class StardustTangleHelper {
             return {
                 outputs: nftOutputs
             };
-            return {};
         } catch {}
     }
 
@@ -271,12 +303,24 @@ export class StardustTangleHelper {
             };
         }
 
-        if (searchQuery.milestone) {
+        if (searchQuery.milestoneIndex) {
             try {
-                const milestoneDetails = await this.milestoneDetails(network, searchQuery.milestone);
+                const milestoneDetails = await this.milestoneDetailsByIndex(network, searchQuery.milestoneIndex);
                 return {
                     milestone: milestoneDetails
                 };
+            } catch {
+            }
+        }
+
+        if (searchQuery.milestoneId) {
+            try {
+                const milestoneDetails = await this.milestoneDetailsById(network, searchQuery.milestoneId);
+                if (milestoneDetails) {
+                    return {
+                        milestone: milestoneDetails
+                    };
+                }
             } catch {
             }
         }

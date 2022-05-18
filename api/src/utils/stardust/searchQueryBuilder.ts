@@ -31,9 +31,13 @@ export interface SearchQuery {
      */
     did?: string;
     /**
-     * The milestone query.
+     * The milestoneIndex query.
      */
-    milestone?: number;
+    milestoneIndex?: number;
+    /**
+     * The milestoneId query.
+     */
+    milestoneId?: string;
     /**
      * The MaybeAddress query.
      */
@@ -103,16 +107,18 @@ export class SearchQueryBuilder {
         let output: string;
         let aliasId: string;
         let nftId: string;
+        let milestoneId: string;
         let foundryId: string;
 
         const did = this.queryLower.startsWith("did:iota:") ? this.query : undefined;
-        const milestone = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
+        const milestoneIndex = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
         const address = this.buildAddress();
 
-        // if the hex without prefix has 64 characters it might be an Alias or Nft Id
+        // if the hex without prefix has 64 characters it might be an AliasId, NftId or MilestoneId
         if (address?.hexNoPrefix && address.hexNoPrefix.length === 64) {
             aliasId = address.hex;
             nftId = address.hex;
+            milestoneId = address.hex;
         }
 
         // if the hex without prefix has 66 characters, if might be and Alias or Nft Address
@@ -153,7 +159,8 @@ export class SearchQueryBuilder {
         return {
             queryLower: this.queryLower,
             did,
-            milestone,
+            milestoneIndex,
+            milestoneId,
             address,
             messageIdOrTransactionId,
             output,
