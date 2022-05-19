@@ -1,13 +1,11 @@
 /* eslint-disable camelcase */
 import { IMessageMetadata, IOutputResponse } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
-import { ITransactionsDetailsResponse } from "../../models/api/stardust/ITransactionsDetailsResponse";
 import { STARDUST } from "../../models/db/protocolVersion";
 import { TangleCacheService } from "../tangleCacheService";
 import { StardustApiClient } from "./stardustApiClient";
@@ -168,58 +166,6 @@ export class StardustTangleCacheService extends TangleCacheService {
         }
 
         return this._stardustSearchCache[networkId][index]?.data?.milestone;
-    }
-
-    /**
-     * Get the milestone details.
-     * @param request The request.
-     * @param skipCache Skip looking in the cache.
-     * @returns The transactions response.
-     */
-    public async transactionsDetails(
-        request: ITransactionsDetailsRequest,
-        skipCache: boolean = false
-    ): Promise<ITransactionsDetailsResponse | undefined> {
-        const addressTransactionHistoryCacheEntry =
-            this._stardustSearchCache[request.network][`${request.address}--transaction-history`];
-
-        if (!addressTransactionHistoryCacheEntry?.data?.transactionHistory || skipCache) {
-            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-            const response = await apiClient.transactionsDetails(request);
-
-            if (response?.transactionHistory?.transactions) {
-                const cachedTransaction = addressTransactionHistoryCacheEntry?.data
-                    ?.transactionHistory?.transactionHistory.transactions ?? [];
-
-                this._stardustSearchCache[request.network][`${request.address}--transaction-history`] = {
-                    data: {
-                        transactionHistory: {
-                            ...response,
-                            transactionHistory: {
-                                ...response.transactionHistory,
-                                transactions:
-                                    [...cachedTransaction, ...response.transactionHistory.transactions],
-                                state: response.transactionHistory.state
-                            }
-                        }
-                    },
-                    cached: Date.now()
-                };
-            }
-
-            if (response?.transactionHistory?.state) {
-                return this.transactionsDetails({
-                    network: request.network,
-                    address: request.address,
-                    query: { page_size: request.query?.page_size, state: response.transactionHistory.state }
-                },
-                    skipCache);
-            }
-        }
-
-        return this._stardustSearchCache[request.network][`${request.address}--transaction-history`]
-            ?.data
-            ?.transactionHistory;
     }
 
     /**

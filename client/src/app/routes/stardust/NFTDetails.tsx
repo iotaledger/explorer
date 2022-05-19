@@ -7,19 +7,17 @@ import { NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import messageJSON from "../../../assets/modals/message.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Icon from "../../components/Icon";
 import Modal from "../../components/Modal";
-import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
 import { Activity } from "../../components/stardust/Activity";
 import { NFTDetailsRouteProps } from "../NFTDetailsRouteProps";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import INftDetails from "./INftDetails";
+import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import { NFTDetailsState } from "./NFTDetailsState";
 import "./NFTDetails.scss";
 
@@ -233,7 +231,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                     <h2>
                                         Item Activity
                                     </h2>
-                                    <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                    <Modal icon="info" data={mainHeaderMessage} />
                                 </div>
                             </div>
                             <table className="transaction--table">

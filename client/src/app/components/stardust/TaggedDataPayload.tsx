@@ -3,8 +3,7 @@ import { Converter } from "@iota/util.js-stardust";
 import React, { Component, ReactNode } from "react";
 import { TextHelper } from "../../../helpers/textHelper";
 import Modal from "../../components/Modal";
-import { ModalIcon } from "../ModalProps";
-import messageJSON from "./../../../assets/modals/message.json";
+import taggedDataPayloadMessage from "./../../../assets/modals/message/indexation-payload.json";
 import DataToggle from "./../DataToggle";
 import { TaggedDataPayloadProps } from "./TaggedDataPayloadProps";
 import { TaggedDataPayloadState } from "./TaggedDataPayloadState";
@@ -69,14 +68,14 @@ class TaggedDataPayload extends Component<TaggedDataPayloadProps, TaggedDataPayl
                         <h2>
                             Tagged Data Payload
                         </h2>
-                        <Modal icon={ModalIcon.Info} data={messageJSON} />
+                        <Modal icon="info" data={taggedDataPayloadMessage} />
                     </div>
                 </div>
                 <div className="section--data">
                     {TOGGLE_INDEX_OPTIONS.some(option => option.content !== undefined) && (
                         <React.Fragment>
                             <div className="label row middle">
-                                <span className="margin-r-t">Index</span>
+                                <span className="margin-r-t">Tag</span>
                             </div>
                             <DataToggle options={TOGGLE_INDEX_OPTIONS} />
                         </React.Fragment>

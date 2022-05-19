@@ -1,7 +1,8 @@
+import classNames from "classnames";
 import React, { ReactNode, RefObject } from "react";
 import Currency from "./Currency";
-import { FiatSelectorState } from "./FiatSelectorState";
 import "./FiatSelector.scss";
+import { FiatSelectorState } from "./FiatSelectorState";
 
 /**
  * Component which will display a currency button.
@@ -42,11 +43,13 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
         super.componentDidMount();
 
         document.addEventListener("mousedown", this.outsideClickHandler);
-        this._currencyService.loadCurrencyNames().then(currencyNames => {
-            if (currencyNames) {
-                this.setState({ currencyNames });
+        this._currencyService.loadCurrencyNames().then(
+            currencyNames => {
+                if (currencyNames) {
+                    this.setState({ currencyNames });
+                }
             }
-        })
+        )
         .catch(_ => { });
     }
 
@@ -87,7 +90,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                 >
                     {this.state?.currency}
                 </button>
-                <span className="material-icons chevron">
+                <span className={classNames("material-icons chevron", { opened: this.state?.isExpanded })}>
                     expand_more
                 </span>
                 {
@@ -100,7 +103,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                             </div>
                             <div>
                                 <div className="group-header">All currencies</div>
-                                {this.state?.currencies.map(currency => renderCurrency(currency))}
+                                {this.state?.currencies?.map(currency => renderCurrency(currency))}
                             </div>
                         </div>
                 }

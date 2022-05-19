@@ -31,15 +31,10 @@ class Modal extends Component<ModalProps, ModalState> {
                     className="modal--icon"
                     onClick={() => this.handleShow()}
                 >
-                    {this.props.icon === "dots" && (
+                    {this.props.icon && (
                         <span className="material-icons">
-                            more_horiz
+                            {this.props.icon}
                         </span>)}
-                    {this.props.icon === "info" && (
-                        <span className="material-icons">
-                            info
-                        </span>
-                    )}
                 </button>
                 {this.state.show && (
                     <React.Fragment>
@@ -57,6 +52,22 @@ class Modal extends Component<ModalProps, ModalState> {
                             </div>
                             <div className="modal--description">
                                 <div dangerouslySetInnerHTML={{ __html: this.props.data?.description }} />
+                                {this.props.data?.links && (
+                                    <div className="modal--actions">
+                                        {this.props.data.links.map((link, index) => (
+                                            <a
+                                                key={index}
+                                                rel="noopener noreferrer"
+                                                href={link.href}
+                                                target={link.isExternal ? "_blank" : "_self"}
+                                                className="modal--action"
+                                            >
+                                                {link.label}
+                                            </a>
+                                        ))}
+                                    </div>
+                                )}
+
                             </div>
                         </div>
                         <div

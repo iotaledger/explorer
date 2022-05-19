@@ -230,6 +230,10 @@ header {
         margin-left: 0;
       }
 
+      @include phone-down {
+        padding: 2px 4px;
+      }
+
       span {
         color: var(--header-icon-color);
       }
@@ -303,6 +307,10 @@ header {
     }
 
     .hamburger--menu__icon {
+      @include phone-down {
+        padding: 2px 4px;
+      }
+
       cursor: pointer;
 
       span {

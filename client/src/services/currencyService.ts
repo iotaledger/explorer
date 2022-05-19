@@ -258,7 +258,7 @@ export class CurrencyService {
     public async loadCurrencyNames(): Promise<{ [id: string]: string } | undefined> {
         const settings = this._settingsService.get();
 
-        if (settings.currencyNames) {
+        if (settings.currencyNames && Object.keys(settings.currencyNames).length > 0) {
             return settings.currencyNames;
         }
 

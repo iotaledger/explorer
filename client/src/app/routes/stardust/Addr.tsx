@@ -16,7 +16,6 @@ import AsyncComponent from "../../components/AsyncComponent";
 import QR from "../../components/chrysalis/QR";
 import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
-import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import Asset from "../../components/stardust/Asset";
@@ -25,7 +24,7 @@ import Nft from "../../components/stardust/Nft";
 import NetworkContext from "../../context/NetworkContext";
 import { AddrRouteProps } from "../AddrRouteProps";
 import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
-import messageJSON from "./../../../assets/modals/message.json";
+import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrState } from "./AddrState";
@@ -144,7 +143,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                 <h1>
                                     Address
                                 </h1>
-                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                <Modal icon="info" data={mainHeaderMessage} />
                             </div>
                         </div>
                         <div className="top">
@@ -258,7 +257,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <h2>
                                                     Assets in Wallet ({this.state.tokens?.length})
                                                 </h2>
-                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                                <Modal icon="info" data={mainHeaderMessage} />
                                             </div>
                                         </div>
                                         <table className="transaction--table">
@@ -331,7 +330,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <h2>
                                                     NFTs in Wallet ({this.state.nfts?.length})
                                                 </h2>
-                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                                <Modal icon="info" data={mainHeaderMessage} />
                                             </div>
                                         </div>
                                         <div className="nft--section">
