@@ -48,7 +48,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                             : <Spinner />}
                     </td>
                     <td className={`amount ${this.props.amount && this.props.amount < 0 ? "negative" : "positive"}`}>
-                        {this.props.amount ? UnitsHelper.formatBest(this.props.amount ?? 0) : <Spinner />}
+                        {this.props.amount !== undefined ? UnitsHelper.formatBest(this.props.amount ?? 0) : <Spinner />}
                     </td>
                 </tr>
             ) : (

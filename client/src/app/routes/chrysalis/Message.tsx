@@ -2,6 +2,7 @@ import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MIL
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { TransactionsHelper } from "../../../helpers/chrysalis/transactionsHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { MessageTangleStatus } from "../../../models/messageTangleStatus";
@@ -19,12 +20,12 @@ import InclusionState from "../../components/InclusionState";
 import MessageButton from "../../components/MessageButton";
 import MessageTree from "../../components/MessageTree";
 import Modal from "../../components/Modal";
-import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
 import Switcher from "../../components/Switcher";
 import { MessageProps } from "../MessageProps";
-import messageJSON from "./../../../assets/modals/message.json";
-import { TransactionsHelper } from "./../../../helpers/chrysalis/transactionsHelper";
+import mainHeaderMessage from "./../../../assets/modals/message/main-header.json";
+import metadataMessage from "./../../../assets/modals/message/metadata.json";
+import treeMessage from "./../../../assets/modals/message/tree.json";
 import "./Message.scss";
 import { MessageState } from "./MessageState";
 /**
@@ -111,7 +112,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                 <h1>
                                     Message
                                 </h1>
-                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                <Modal icon="info" data={mainHeaderMessage} />
                             </div>
                             <Switcher
                                 label="Advanced View"
@@ -289,7 +290,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                     <div className="row middle">
                                         <h2>
                                             Metadata
-                                            <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                            <Modal icon="info" data={metadataMessage} />
                                         </h2>
                                     </div>
                                 </div>
@@ -346,7 +347,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                         <h2>
                                             Messages tree
                                         </h2>
-                                        <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                        <Modal icon="info" data={treeMessage} />
                                     </div>
                                 </div>
                             </div>

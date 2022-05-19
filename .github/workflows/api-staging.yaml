@@ -2,12 +2,12 @@ name: API Build and Deploy Staging
 
 on:
   push:
-    branches: [ dev, v2 ]
+    branches: [ dev ]
     paths:
       - "api/**"
       - ".github/workflows/api-staging.yaml"
 
-concurrency: 
+concurrency:
   group: api-${{ github.ref }}
   cancel-in-progress: true
 
@@ -36,7 +36,7 @@ jobs:
             fs.writeFileSync('./api/src/data/config.staging.json', process.env.CONFIG_JSON)
             fs.writeFileSync('./api/dispatch.yaml', process.env.DISPATCH_YAML)
             fs.writeFileSync('./api/app.yaml', process.env.APP_YAML)
-      - uses: google-github-actions/setup-gcloud@master
+      - uses: google-github-actions/setup-gcloud@v0
         with:
           version: latest
           project_id: ${{ secrets.GCP_PROJECT_ID }}
@@ -46,3 +46,4 @@ jobs:
         run: |
           cd api
           gcloud app deploy app.yaml dispatch.yaml --quiet
+

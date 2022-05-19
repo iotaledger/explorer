@@ -721,15 +721,6 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
                     cached: Date.now()
                 };
             }
-
-            if (response?.transactionHistory?.state) {
-                return this.transactionsDetails({
-                    network: request.network,
-                    address: request.address,
-                    query: { page_size: request.query?.page_size, state: response.transactionHistory.state }
-                },
-                    skipCache);
-            }
         }
 
         return this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]

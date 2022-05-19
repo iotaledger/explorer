@@ -86,26 +86,26 @@
       grid-template-rows: auto 1fr;
       padding: 0 24px;
 
-      .protocol-heading {
-        height: 50px;
-      }
+      .protocol-header {
+          min-height: 68px;
 
-      .protocol--title {
-        color: var(--expanded-color);
-        font-family: $metropolis;
-        font-weight: 700;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
+          .protocol--title {
+              color: var(--expanded-color);
+              font-family: $metropolis;
+              font-weight: 700;
+              letter-spacing: 0.15em;
+              text-transform: uppercase;
 
-        @include font-size(14px, 21px);
-      }
+              @include font-size(14px, 21px);
+          }
 
-      .protocol--description {
-        color: var(--expanded-color);
-        font-family: $inter;
-        letter-spacing: 0.5px;
+          .protocol--description {
+              color: var(--expanded-color);
+              font-family: $inter;
+              letter-spacing: 0.5px;
 
-        @include font-size(14px, 21px);
+              @include font-size(14px, 21px);
+          }
       }
 
       .network--cards {
@@ -116,7 +116,7 @@
         .network--card {
           min-height: 86px;
           margin-bottom: 16px;
-          padding: 4px;
+          padding: 8px;
           border-radius: 12px;
           cursor: pointer;
 
