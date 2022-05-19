@@ -86,6 +86,10 @@
       grid-template-rows: auto 1fr;
       padding: 0 24px;
 
+      .protocol-heading {
+        height: 50px;
+      }
+
       .protocol--title {
         color: var(--expanded-color);
         font-family: $metropolis;
@@ -105,9 +109,8 @@
       }
 
       .network--cards {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr 1fr;
+        display: flex;
+        flex-direction: column;
         padding-top: 44px;
 
         .network--card {

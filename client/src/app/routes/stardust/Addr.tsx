@@ -1,14 +1,13 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
 import { Blake2b } from "@iota/crypto.js-stardust";
-import { BASIC_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
+import { BASIC_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
-import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
+import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
@@ -27,7 +26,6 @@ import NetworkContext from "../../context/NetworkContext";
 import { AddrRouteProps } from "../AddrRouteProps";
 import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 import messageJSON from "./../../../assets/modals/message.json";
-import Transaction from "./../../components/chrysalis/Transaction";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
 import { AddrState } from "./AddrState";
@@ -42,11 +40,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      * The component context type.
      */
     public static contextType = NetworkContext;
-
-    /**
-     * Maximum page size for permanode request.
-     */
-    private static readonly MAX_PAGE_SIZE: number = 6000;
 
     /**
      * Native Tokens page size.
@@ -85,20 +78,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         this._bechHrp = networkConfig?.bechHrp ?? "iota";
 
         this.state = {
-            ...Bech32AddressHelper.buildAddress(
-                this._bechHrp,
-                props.match.params.address
-            ),
+            ...Bech32AddressHelper.buildAddress(this._bechHrp, props.match.params.address),
             formatFull: false,
-            statusBusy: true,
-            status: "Loading transactions...",
             areTokensLoading: true,
             areNftsLoading: true,
-            received: 0,
-            sent: 0,
-            transactionsPageNumber: 1,
-            transactionsPageSize: 10,
-            transactionsPage: [],
             tokens: [],
             tokensPageNumber: 1,
             tokensPage: [],
@@ -126,18 +109,14 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             });
 
             this.setState({
-                address: result.address,
                 bech32AddressDetails: Bech32AddressHelper.buildAddress(
                     this._bechHrp,
                     result.address,
                     result.addressDetails?.type ? result.addressDetails.type.type : 0
                 ),
                 balance: Number(result.addressDetails?.balance),
-                outputIds: result.addressOutputIds,
-                historicOutputIds: result.historicAddressOutputIds
+                outputIds: result.addressOutputIds
             }, async () => {
-                // TO DO This need permanode
-                // await this.getTransactionHistory();
                 await this.getOutputs();
                 await this.getNativeTokens();
                 await this.getNfts();
@@ -262,115 +241,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </div>
                                     </div>
                                 )}
-                                {this.txsHistory.length > 0 && (
-                                    <div className="section transaction--section">
-                                        <div className="section--header row space-between">
-                                            <div className="row middle">
-                                                <h2>
-                                                    Transaction History
-                                                </h2>
-                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
-                                            </div>
-                                            {this.state.status && (
-                                                <div className="margin-t-s middle row">
-                                                    {this.state.statusBusy && (<Spinner />)}
-                                                    <p className="status">
-                                                        {this.state.status}
-                                                    </p>
-                                                </div>
-                                            )}
-
-                                        </div>
-                                        <table className="transaction--table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Message id</th>
-                                                    <th>Date</th>
-                                                    <th>Inputs</th>
-                                                    <th>Outputs</th>
-                                                    <th>Status</th>
-                                                    <th>Amount</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                { this.transactionsPage.map((transaction, k) =>
-                                                    (
-                                                        <React.Fragment key={`${transaction?.messageId}${k}`}>
-                                                            <Transaction
-                                                                key={transaction?.messageId}
-                                                                messageId={transaction?.messageId}
-                                                                network={networkId}
-                                                                inputs={transaction?.inputs.length}
-                                                                outputs={transaction?.outputs.length}
-                                                                messageTangleStatus={transaction?.messageTangleStatus}
-                                                                date={transaction?.date}
-                                                                amount={transaction?.amount}
-                                                                tableFormat={true}
-                                                                hasConflicts={!transaction.ledgerInclusionState || transaction.ledgerInclusionState === "conflicting"}
-                                                            />
-                                                            {transaction?.relatedSpentTransaction && (
-                                                                <Transaction
-                                                                    key={transaction?.relatedSpentTransaction.messageId}
-                                                                    messageId={transaction?.relatedSpentTransaction.messageId}
-                                                                    network={networkId}
-                                                                    inputs={transaction?.relatedSpentTransaction.inputs.length}
-                                                                    outputs={transaction?.relatedSpentTransaction.outputs.length}
-                                                                    messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
-                                                                    date={transaction?.relatedSpentTransaction.date}
-                                                                    amount={transaction?.relatedSpentTransaction.amount}
-                                                                    tableFormat={true}
-                                                                />
-                                                            )}
-                                                        </React.Fragment>
-                                                    ))}
-                                            </tbody>
-                                        </table>
-                                        {/* Only visible in mobile -- Card transactions*/}
-                                        <div className="transaction-cards">
-                                            {this.transactionsPage.map((transaction, k) =>
-                                                (
-                                                    <React.Fragment key={`${transaction?.messageId}${k}`}>
-                                                        <Transaction
-                                                            key={transaction?.messageId}
-                                                            messageId={transaction?.messageId}
-                                                            network={networkId}
-                                                            inputs={transaction?.inputs.length}
-                                                            outputs={transaction?.outputs.length}
-                                                            messageTangleStatus={transaction?.messageTangleStatus}
-                                                            date={transaction?.date}
-                                                            amount={transaction?.amount}
-                                                        />
-
-                                                        {transaction?.relatedSpentTransaction && (
-                                                            <Transaction
-                                                                key={transaction?.relatedSpentTransaction.messageId}
-                                                                messageId={transaction?.relatedSpentTransaction.messageId}
-                                                                network={networkId}
-                                                                inputs={transaction?.relatedSpentTransaction.inputs.length}
-                                                                outputs={transaction?.relatedSpentTransaction.outputs.length}
-                                                                messageTangleStatus={transaction?.relatedSpentTransaction.messageTangleStatus}
-                                                                date={transaction?.relatedSpentTransaction.date}
-                                                                amount={transaction?.relatedSpentTransaction.amount}
-                                                            />
-                                                        )}
-                                                    </React.Fragment>
-                                                ))}
-                                        </div>
-                                        <Pagination
-                                            currentPage={this.state.transactionsPageNumber}
-                                            totalCount={this.txsHistory.length}
-                                            pageSize={this.state.transactionsPageSize}
-                                            siblingsCount={1}
-                                            onPageChange={page =>
-                                                this.setState({ transactionsPageNumber: page },
-                                                    () => {
-                                                        const firstPageIndex = (this.state.transactionsPageNumber - 1) * this.state.transactionsPageSize;
-                                                        // Check if last page
-                                                        const lastPageIndex = (this.state.transactionsPageNumber === Math.ceil(this.txsHistory.length / this.state.transactionsPageSize)) ? this.txsHistory.length : firstPageIndex + this.state.transactionsPageSize;
-                                                        this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex).catch(err => console.error(err));
-                                                })}
-                                        />
-                                    </div>)}
                                 {this.state.areTokensLoading && (
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
@@ -494,13 +364,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         );
     }
 
-    private get transactionsPage() {
-        const firstPageIndex = (this.state.transactionsPageNumber - 1) * this.state.transactionsPageSize;
-        const lastPageIndex = firstPageIndex + this.state.transactionsPageSize;
-
-        return this.txsHistory.slice(firstPageIndex, lastPageIndex);
-    }
-
     private get currentTokensPage() {
         const from = (this.state.tokensPageNumber - 1) * Addr.TOKENS_PAGE_SIZE;
         const to = from + Addr.TOKENS_PAGE_SIZE;
@@ -513,49 +376,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         const to = from + Addr.NFTS_PAGE_SIZE;
 
         return this.state.nfts?.slice(from, to);
-    }
-
-    private get txsHistory() {
-        return this.state.transactionHistory?.transactionHistory?.transactions ?? [];
-    }
-
-    private async getTransactionHistory() {
-        const transactionsDetails = await this._tangleCacheService.transactionsDetails({
-            network: this.props.match.params.network,
-            address: this.state.address ?? "",
-            query: { page_size: this.state.transactionsPageSize }
-        }, false);
-
-        this.setState({ transactionHistory: transactionsDetails },
-            async () => {
-                const firstPageIndex = (this.state.transactionsPageNumber - 1) * this.state.transactionsPageSize;
-                const lastPageIndex = (this.state.transactionsPageNumber === Math.ceil(this.txsHistory.length / this.state.transactionsPageSize))
-                    ? this.txsHistory.length : firstPageIndex + this.state.transactionsPageSize;
-                this.updateTransactionHistoryDetails(firstPageIndex, lastPageIndex)
-                    .catch(err => console.error(err));
-
-                if (transactionsDetails?.transactionHistory?.state) {
-                    const allTransactionsDetails = await this._tangleCacheService.transactionsDetails({
-                        network: this.props.match.params.network,
-                        address: this.state.address ?? "",
-                        query: { page_size: Addr.MAX_PAGE_SIZE, state: transactionsDetails?.transactionHistory.state }
-                    }, true);
-
-                    if (allTransactionsDetails?.transactionHistory.transactions) {
-                        this.setState({ transactionHistory: { ...allTransactionsDetails,
-                            transactionHistory: { ...allTransactionsDetails.transactionHistory,
-                                transactions: allTransactionsDetails.transactionHistory
-                                    .transactions?.map(t1 => ({ ...t1, ...this.txsHistory.find(t2 => t2.messageId === t1.messageId) })),
-                                state: allTransactionsDetails.transactionHistory.state } } });
-                    }
-                }
-
-                this.setState({
-                    status: "",
-                    statusBusy: false
-                });
-            }
-        );
     }
 
     private async getOutputs() {
@@ -623,7 +443,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                         ? nftOutput.nftId
                         // NFT has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
                         : HexHelper.addPrefix(Converter.bytesToHex(
-                            Blake2b.sum160(Converter.hexToBytes(HexHelper.stripPrefix(outputId)))
+                            Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId)))
                         ));
 
                     nfts.push({
@@ -638,105 +458,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             nfts,
             areNftsLoading: false
         });
-    }
-
-    private async updateTransactionHistoryDetails(startIndex: number, endIndex: number) {
-        if (this.txsHistory.length > 0) {
-            const transactionIds = this.txsHistory.map(transaction => transaction.messageId);
-            const updatingPage = this.state.transactionsPageNumber;
-
-            for (let i = startIndex; i < endIndex; i++) {
-                if (updatingPage !== this.state.transactionsPageNumber) {
-                    break;
-                }
-
-                const tsx = { ...this.txsHistory[i] };
-                let isUpdated = false;
-
-                if (!tsx.date || !tsx.messageTangleStatus) {
-                    isUpdated = true;
-                    const { date, messageTangleStatus } = await TransactionsHelper.getMessageStatus(
-                        this.props.match.params.network, tsx.messageId, this._tangleCacheService
-                    );
-                    tsx.date = date;
-                    tsx.messageTangleStatus = messageTangleStatus;
-                }
-
-                if (!tsx.amount) {
-                    isUpdated = true;
-                    const amount = await this.getTransactionAmount(tsx.messageId);
-                    tsx.amount = amount;
-
-                    if (amount < 0) {
-                        this.setState({ sent: this.state.sent + Math.abs(amount) });
-                    }
-                }
-
-                if (tsx.isSpent === undefined) {
-                    isUpdated = true;
-                    let isTransactionSpent = false;
-
-                    // Get spent related transaction
-                    for (const output of tsx.outputs) {
-                        if (output.output.address.address === this.state.address && output.spendingMessageId && !transactionIds?.includes(output.spendingMessageId)) {
-                            transactionIds?.push(output.spendingMessageId);
-                            const transactionsResult = await this._tangleCacheService.search(
-                                this.props.match.params.network, output.spendingMessageId);
-                            const statusDetails = await TransactionsHelper
-                                .getMessageStatus(this.props.match.params.network, output.spendingMessageId,
-                                    this._tangleCacheService);
-
-                            if (transactionsResult?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                                const relatedAmount = await this.getTransactionAmount(output.spendingMessageId);
-                                tsx.relatedSpentTransaction = {
-                                    messageId: output.spendingMessageId,
-                                    date: statusDetails.date,
-                                    messageTangleStatus: statusDetails.messageTangleStatus,
-                                    isSpent: true,
-                                    amount: relatedAmount,
-                                    inputs: transactionsResult?.message?.payload?.essence?.inputs,
-                                    outputs: transactionsResult?.message?.payload?.essence?.outputs
-                                };
-                                if (relatedAmount < 0) {
-                                    this.setState({ sent: this.state.sent + Math.abs(relatedAmount) });
-                                }
-                                isTransactionSpent = true;
-                            }
-                        }
-                    }
-                    tsx.isSpent = isTransactionSpent;
-                }
-
-                if (isUpdated) {
-                    const transactions = [...this.txsHistory];
-                    transactions[i] = tsx;
-                    this.setState({ transactionHistory: { transactionHistory: { transactions } } });
-                }
-            }
-        }
-    }
-
-    private async getTransactionAmount(
-        messageId: string): Promise<number> {
-        const result = await this._tangleCacheService.search(
-            this.props.match.params.network, messageId
-        );
-        const { inputs, outputs } = await TransactionsHelper.getInputsAndOutputs(
-            result?.message,
-            this.props.match.params.network,
-            this._bechHrp,
-            this._tangleCacheService
-        );
-        const inputsRelated = inputs.filter(input => input.transactionAddress.hex === this.state.address);
-        let fromAmount = 0;
-        let toAmount = 0;
-        for (const input of inputsRelated) {
-            fromAmount += input.amount;
-        }
-        for (const output of outputs) {
-            toAmount += output.amount;
-        }
-        return toAmount - fromAmount;
     }
 }
 

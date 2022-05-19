@@ -1,8 +1,7 @@
 /* eslint-disable max-len */
-import { IEd25519Address } from "@iota/iota.js-stardust";
 import React, { Component, ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
+import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { NetworkService } from "../../../services/networkService";
 import NetworkContext from "../../context/NetworkContext";
@@ -83,11 +82,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                             <div className="card--value card--value__mono">
                                 <Bech32Address
                                     addressDetails={
-                                        Bech32AddressHelper.buildAddress(
-                                            this._bech32Hrp,
-                                            (f.address as IEd25519Address).pubKeyHash,
-                                            f.address.type
-                                    )
+                                        Bech32AddressHelper.buildAddress(this._bech32Hrp, f.address)
                                     }
                                     advancedMode={this.props.advancedMode}
                                     history={this.props.history}

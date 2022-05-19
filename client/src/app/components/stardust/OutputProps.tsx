@@ -4,7 +4,7 @@ export interface OutputProps {
     /**
      * The output id.
      */
-    id?: string;
+    id: string;
 
     /**
      * The index within the parent.

@@ -31,9 +31,13 @@ export interface SearchQuery {
      */
     did?: string;
     /**
-     * The milestone query.
+     * The milestoneIndex query.
      */
-    milestone?: number;
+    milestoneIndex?: number;
+    /**
+     * The milestoneId query.
+     */
+    milestoneId?: string;
     /**
      * The MaybeAddress query.
      */
@@ -103,20 +107,22 @@ export class SearchQueryBuilder {
         let output: string;
         let aliasId: string;
         let nftId: string;
+        let milestoneId: string;
         let foundryId: string;
 
         const did = this.queryLower.startsWith("did:iota:") ? this.query : undefined;
-        const milestone = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
+        const milestoneIndex = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
         const address = this.buildAddress();
 
-        // if the hex without prefix has 64 characters it might be an Alias or Nft Id
+        // if the hex without prefix has 64 characters it might be an AliasId, NftId or MilestoneId
         if (address?.hexNoPrefix && address.hexNoPrefix.length === 64) {
             aliasId = address.hex;
             nftId = address.hex;
+            milestoneId = address.hex;
         }
 
-        // if the hex without prefix has 42 characters, if might be and Alias or Nft Address
-        if (address?.hexNoPrefix && address.hexNoPrefix.length === 42) {
+        // if the hex without prefix has 66 characters, if might be and Alias or Nft Address
+        if (address?.hexNoPrefix && address.hexNoPrefix.length === 66) {
             const typeByte = address.hexNoPrefix.slice(0, 2);
             const maybeAddress = address.hexNoPrefix.slice(2);
 
@@ -131,13 +137,11 @@ export class SearchQueryBuilder {
 
         const hexWithPrefix = HexHelper.addPrefix(this.queryLower);
         const hexNoPrefix = HexHelper.stripPrefix(this.queryLower);
-        // if the hex without prefix is 52 or 76 characters and first byte is 08,
-        // it can be a FoundryId (52) or TokenId (76)
+        // if the hex without prefix is 76 characters and first byte is 08,
+        // it can be a FoundryId or TokenId
         if (Converter.isHex(hexWithPrefix, true) &&
-            Number.parseInt(hexNoPrefix.slice(0, 2), 16) === ALIAS_ADDRESS_TYPE &&
-                (hexNoPrefix.length === 52 || hexNoPrefix.length === 76)) {
-            foundryId = hexNoPrefix.length === 52 ? hexWithPrefix
-                : HexHelper.addPrefix(hexNoPrefix.slice(0, 52));
+            Number.parseInt(hexNoPrefix.slice(0, 2), 16) === ALIAS_ADDRESS_TYPE && hexNoPrefix.length === 76) {
+            foundryId = hexWithPrefix;
         }
 
         // if the hex has 66 characters, it might be a message or transaction id
@@ -155,7 +159,8 @@ export class SearchQueryBuilder {
         return {
             queryLower: this.queryLower,
             did,
-            milestone,
+            milestoneIndex,
+            milestoneId,
             address,
             messageIdOrTransactionId,
             output,

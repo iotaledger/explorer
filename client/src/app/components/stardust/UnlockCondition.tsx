@@ -1,7 +1,12 @@
-import { ADDRESS_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
+import { ADDRESS_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
+    IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE,
+    STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
+import moment from "moment";
 import React, { ReactNode } from "react";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
+import NetworkContext from "../../context/NetworkContext";
 import AsyncComponent from "../AsyncComponent";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Address from "./Address";
@@ -12,6 +17,11 @@ import { UnlockConditionState } from "./UnlockConditionState";
  * Component which will display an unlock condition.
  */
 class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditionState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
+
     constructor(props: UnlockConditionProps) {
         super(props);
 
@@ -66,7 +76,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                     Amount:
                                 </div>
                                 <div className="card--value row">
-                                    {this.props.unlockCondition.amount}
+                                    {formatAmount(Number(this.props.unlockCondition.amount), this.context.tokenInfo)}
                                 </div>
                             </React.Fragment>
                         )}
@@ -82,7 +92,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                     Unix time
                                 </div>
                                 <div className="card--value row">
-                                    {this.props.unlockCondition.unixTime}
+                                    {this.formatUnixTime(this.props.unlockCondition.unixTime)}
                                 </div>
                             </React.Fragment>
                         )}
@@ -101,7 +111,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                     Unix time
                                 </div>
                                 <div className="card--value row">
-                                    {this.props.unlockCondition.unixTime}
+                                    {this.formatUnixTime(this.props.unlockCondition.unixTime)}
                                 </div>
                             </React.Fragment>
                         )}
@@ -125,6 +135,8 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
             </div>
         );
     }
+
+    private readonly formatUnixTime = (timestamp: number) => moment.unix(timestamp).format("DD/MM/YYYY HH:MM:ss");
 }
 
 export default UnlockCondition;

@@ -4,7 +4,7 @@ import { TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
+import { Bech32AddressHelper } from "../../../helpers/chrysalis/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/chrysalis/transactionsHelper";
 import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
