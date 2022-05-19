@@ -5,11 +5,11 @@ import React from "react";
 import "./Transaction.scss";
 import { ActivityProps } from "./ActivityProps";
 
-export const Activity: React.FC<ActivityProps> = ({ hash, date, action, status, price, tableFormat }) =>
+export const Activity: React.FC<ActivityProps> = ({ transactionId, date, action, status, price, tableFormat }) =>
     (tableFormat ? (
         <tr>
             <td className="value code highlight">
-                {hash.slice(0, 12)}...{hash.slice(-12)}
+                {transactionId.slice(0, 12)}...{transactionId.slice(-12)}
             </td>
             <td className="date">{date}</td>
             <td className="date">{action}</td>
@@ -19,9 +19,9 @@ export const Activity: React.FC<ActivityProps> = ({ hash, date, action, status, 
     ) : (
         <div className="transaction-card">
             <div className="field">
-                <div className="label">T'XN Hash</div>
+                <div className="label">Transaction Id</div>
                 <div className="value message-id">
-                    {hash.slice(0, 12)}...{hash.slice(-12)}
+                    {transactionId.slice(0, 12)}...{transactionId.slice(-12)}
                 </div>
             </div>
             <div className="field">

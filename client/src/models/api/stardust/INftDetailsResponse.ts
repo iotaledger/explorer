@@ -2,9 +2,9 @@ import { IResponse } from "../IResponse";
 
 export interface INftActivityHistory {
     /**
-     * transaction hash
+     * transaction id
      */
-    hash: string;
+    transactionId: string;
     /**
      * date of transaction
      */

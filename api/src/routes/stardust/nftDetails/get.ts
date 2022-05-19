@@ -4,9 +4,59 @@ import { INftDetailsResponse } from "../../../models/api/stardust/INftDetailsRes
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { getNftDetails } from "../../../utils/apiHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 import "dotenv/config";
+
+/**
+ * Get mock nft detils
+ * @returns nft details.
+ */
+ export function getMockNftDetails(): INftDetailsResponse {
+    return {
+        imageSrc: "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png",
+        amount: 100,
+        quantity: 1.25,
+        generalData: {
+            standard: "ERC-1155",
+            tokenId: "2139039",
+            contractAddress: "0x2d71279794d65115d400d823a8a48d25f956c39f48aa245fa6d0a1db9accfc",
+            creatorAddress: "0x2d71279794d65115d400d823a8a48d25f956c39f48aa245fa6d0a1db9accbd",
+            senderAddress: "0x2d71279794d65115d400d823a8a48d25f956c39f48aa245fa6d0a1db9accav",
+            fileType: "JPG",
+            network: "Layer 2 network"
+        },
+        activityHistory: [
+            {
+                transactionId: "0x5ade9fb0ee287c3bd52a011bcbf19f4cc9137a98afa07f48c2c62f8063d66045",
+                date: "2021-06-18 01:32 AM",
+                action: "Sale",
+                status: "Confirmed",
+                price: "+1.25 Gi"
+            },
+            {
+                transactionId: "0x5ade9fb0ee287c3bd52a011bcbf19f4cc9137a98afa07f48c2c62f8063d66034",
+                date: "2021-06-18 01:32 AM",
+                action: "Sale",
+                status: "Confirmed",
+                price: "+1.25 Gi"
+            },
+            {
+                transactionId: "0x5ade9fb0ee287c3bd52a011bcbf19f4cc9137a98afa07f48c2c62f8063d66023",
+                date: "2021-06-18 01:32 AM",
+                action: "Sale",
+                status: "Confirmed",
+                price: "+1.25 Gi"
+            },
+            {
+                transactionId: "0x5ade9fb0ee287c3bd52a011bcbf19f4cc9137a98afa07f48c2c62f8063d660b0",
+                date: "2021-06-18 01:32 AM",
+                action: "Sale",
+                status: "Confirmed",
+                price: "+1.25 Gi"
+            }
+        ]
+    };
+}
 
 /**
  * Find the object from the network.
@@ -29,7 +79,7 @@ export async function get(
         return {};
     }
     if (process.env.FAKE_NFT_DETAILS === "true") {
-        return Promise.resolve(getNftDetails());
+        return Promise.resolve(getMockNftDetails());
     }
     return Promise.resolve({});
 }

@@ -13,6 +13,22 @@
     display: none;
   }
 
+  .date {
+    color: #485776
+  }
+
+  .price {
+    color: #36A1AC;
+    font-weight: 600;
+  }
+
+  .status {
+    background: rgba(0, 224, 202, 0.2);
+    padding: 5px 10px 5px 10px;
+    border-radius: 6px;
+    color: #36A1AC;
+  }
+
   tr {
     @include font-size(14px);
 

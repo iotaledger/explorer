@@ -1,8 +1,8 @@
 export interface ActivityProps {
     /**
-     * The hash of an activity.
+     * transaction Id.
      */
-    hash: string;
+    transactionId: string;
     /**
      * date
      */

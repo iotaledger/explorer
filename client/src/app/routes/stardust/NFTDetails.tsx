@@ -122,7 +122,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                     <div className="margin-r-t icon">
                                                         <DropdownIcon />
                                                     </div>
-                                                    <span>General</span>
+                                                    <h2>General</h2>
                                                 </div>
                                                 {this.state.showGeneralItems &&
                                                     <ul className="general-items">
@@ -204,7 +204,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                     <div className="margin-r-t icon">
                                                         <DropdownIcon />
                                                     </div>
-                                                    <span>Attributes</span>
+                                                    <h2>Attributes</h2>
                                                 </div>
                                                 <div
                                                     className={classNames("list--dropdown", "item",
@@ -213,7 +213,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                     <div className="margin-r-t icon">
                                                         <DropdownIcon />
                                                     </div>
-                                                    <span>Description</span>
+                                                    <h2>Description</h2>
                                                 </div>
                                             </div>
                                         </div>
@@ -231,7 +231,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                     <table className="transaction--table">
                                         <thead>
                                             <tr>
-                                                <th>T'XN Hash</th>
+                                                <th>Transaction Id</th>
                                                 <th>Date</th>
                                                 <th>Action</th>
                                                 <th>Status</th>
@@ -241,10 +241,10 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                         <tbody>
                                             { this.currentPageActivities.map((activity, k) =>
                                                 (
-                                                    <React.Fragment key={`${activity?.hash}${k}`}>
+                                                    <React.Fragment key={`${activity?.transactionId}${k}`}>
                                                         <Activity
                                                             key={k}
-                                                            hash={activity?.hash}
+                                                            transactionId={activity?.transactionId}
                                                             date={activity?.date}
                                                             action={activity?.action}
                                                             status={activity?.status}
@@ -260,10 +260,10 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                     <div className="transaction-cards">
                                         {this.currentPageActivities.map((activity, k) =>
                                             (
-                                                <React.Fragment key={`${activity?.hash}${k}`}>
+                                                <React.Fragment key={`${activity?.transactionId}${k}`}>
                                                     <Activity
                                                         key={k}
-                                                        hash={activity?.hash}
+                                                        transactionId={activity?.transactionId}
                                                         date={activity?.date}
                                                         action={activity?.action}
                                                         status={activity?.status}
@@ -289,8 +289,8 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                     />
                                 </div>
                             </div> :
-                            <div className="content inner row middle center">
-                                No data available
+                            <div className="content inner row middle center card">
+                                <h2>No data available</h2>
                             </div>
                     }
                 </div>
