@@ -442,7 +442,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
             );
 
             if (result?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                const transactionId = TransactionsHelper.getTransactionId(result?.message.payload);
+                const transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(result?.message.payload);
                 this.setState({ transactionId });
             }
 
