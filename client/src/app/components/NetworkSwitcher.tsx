@@ -40,12 +40,6 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                         <div className="protocols">
                             {this.props.protocols.map(protocol => (
                                 <div className="protocol" key={protocol.label}>
-                                    <div className="protocol-header">
-                                        <div className="protocol--title">{protocol.label}</div>
-                                        <div className="protocol--description">
-                                            {protocol.description}
-                                        </div>
-                                    </div>
                                     <div className="network--cards">
                                         {protocol.networks?.map(n => (
                                             <div
@@ -70,6 +64,18 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                                                 </div>
                                             </div>
                                         ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="protocols">
+                            {this.props.protocols.map(protocol => (
+                                <div className="protocol" key={protocol.label}>
+                                    <div className="protocol-header">
+                                        <div className="protocol--title">{protocol.label}</div>
+                                        <div className="protocol--description">
+                                            {protocol.description}
+                                        </div>
                                     </div>
                                 </div>
                             ))}

@@ -43,25 +43,7 @@ class Header extends Component<HeaderProps, HeaderState> {
             n => n.protocolVersion === OG
         );
 
-        const PROTOCOLS = [
-            {
-                label: "IOTA 1.0 (Legacy)",
-                description:
-                    "Legacy network that only accepts migrations to the IOTA 1.5 (Chrysalis) network.",
-                networks: LEGACY_NETWORKS
-            },
-            {
-                label: "IOTA 1.5 (Chrysalis)",
-                description:
-                    "The latest IOTA network deployed in April 2021.",
-                networks: CHRYSALIS_NETWORKS
-            },
-            {
-                label: "IOTA Stardust",
-                description: "Stardust Testnet.",
-                networks: STARDUST_NETWORKS
-            }
-        ];
+        const PROTOCOLS = getProtocols();
         return (
             <header>
                 <nav className="inner">
@@ -272,6 +254,35 @@ class Header extends Component<HeaderProps, HeaderState> {
                 </nav>
             </header >
         );
+
+        /**
+         * Get protocol from configuration
+         * @returns The filtered protocols.
+         */
+        function getProtocols() {
+            let protocols = [
+                {
+                    label: "IOTA 1.0 (Legacy)",
+                    description:
+                        "Legacy network that only accepts migrations to the IOTA 1.5 (Chrysalis) network.",
+                    networks: LEGACY_NETWORKS
+                },
+                {
+                    label: "IOTA 1.5 (Chrysalis)",
+                    description:
+                        "The latest IOTA network deployed in April 2021.",
+                    networks: CHRYSALIS_NETWORKS
+                },
+                {
+                    label: "IOTA Stardust",
+                    description:
+                        "Stardust Testnet.",
+                    networks: STARDUST_NETWORKS
+                }
+            ];
+            protocols = protocols.filter(protocol => protocol.networks && protocol.networks.length > 0);
+            return protocols;
+        }
     }
 
     /**
