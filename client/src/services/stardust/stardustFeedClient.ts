@@ -1,5 +1,5 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
-import { BASIC_OUTPUT_TYPE, deserializeMessage, MILESTONE_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
+import { BASIC_OUTPUT_TYPE, deserializeBlock, MILESTONE_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
@@ -134,44 +134,44 @@ export class StardustFeedClient extends FeedClient {
      */
     private convertItem(item: string): IFeedItem {
         const bytes = Converter.hexToBytes(item);
-        const messageId = Converter.bytesToHex(Blake2b.sum256(bytes));
+        const blockId = Converter.bytesToHex(Blake2b.sum256(bytes));
 
         let value;
         let payloadType: "Transaction" | "Data" | "MS" | "None" = "None";
         const properties: { [key: string]: unknown } = {};
-        let message;
+        let block;
 
         try {
-            message = deserializeMessage(new ReadStream(bytes));
+            block = deserializeBlock(new ReadStream(bytes));
 
-            if (message.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+            if (block.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
                 payloadType = "Transaction";
                 value = 0;
 
-                for (const output of message.payload.essence.outputs) {
+                for (const output of block.payload.essence.outputs) {
                     if (output.type === BASIC_OUTPUT_TYPE) {
                         value += Number(output.amount);
                     }
                 }
 
-                if (message.payload.essence.payload) {
-                    properties.Index = message.payload.essence.payload.tag;
+                if (block.payload.essence.payload) {
+                    properties.Index = block.payload.essence.payload.tag;
                 }
-            } else if (message.payload?.type === MILESTONE_PAYLOAD_TYPE) {
+            } else if (block.payload?.type === MILESTONE_PAYLOAD_TYPE) {
                 payloadType = "MS";
-                properties.MS = message.payload.index;
-            } else if (message.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
+                properties.MS = block.payload.index;
+            } else if (block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
                 payloadType = "Data";
-                properties.Index = message.payload.tag;
+                properties.Index = block.payload.tag;
             }
         } catch (err) {
             console.error(err);
         }
 
         return {
-            id: messageId,
+            id: blockId,
             value,
-            parents: message?.parentMessageIds ?? [],
+            parents: block?.parents ?? [],
             properties,
             payloadType
         };

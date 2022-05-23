@@ -1,29 +1,29 @@
-import { IMessage, IMessageMetadata, IUTXOInput } from "@iota/iota.js-stardust";
+import { IBlock, IBlockMetadata, IUTXOInput } from "@iota/iota.js-stardust";
 import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
-import { MessageTangleStatus } from "../../../models/messageTangleStatus";
+import { TangleStatus } from "../../../models/tangleStatus";
 
-export interface MessageState {
+export interface BlockState {
     /**
      * The transaction id.
      */
     transactionId?: string;
 
     /**
-     * The actual message Id in the case of an included message.
+     * The actual block Id in the case of an included block.
      */
-    actualMessageId?: string;
+    actualBlockId?: string;
 
     /**
-     * Message.
+     * Block.
      */
-    message?: IMessage;
+    block?: IBlock;
 
     /**
      * Metadata.
      */
-    metadata?: IMessageMetadata;
+    metadata?: IBlockMetadata;
 
     /**
      * The metadata failed.
@@ -48,7 +48,7 @@ export interface MessageState {
     /**
      * The state of the message on the tangle.
      */
-    messageTangleStatus: MessageTangleStatus;
+    blockTangleStatus: TangleStatus;
 
     /**
      * Display advanced mode.

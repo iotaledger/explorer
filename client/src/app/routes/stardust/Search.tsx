@@ -199,18 +199,16 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 if (response) {
                                     let objType = "";
                                     let objParam = query;
-                                    if (response.message) {
-                                        objType = "message";
-                                    } else if (response.address) {
+                                    if (response.block) {
+                                        objType = "block";
+                                    } else if (response.addressDetails?.hex) {
                                         objType = "addr";
-                                    } else if (response.indexMessageIds) {
-                                        objType = "indexed";
                                     } else if (response.output) {
-                                        objType = "message";
-                                        objParam = response.output.messageId;
-                                    } else if (response.milestone?.messageId) {
-                                        objType = "message";
-                                        objParam = response.milestone?.messageId;
+                                        objType = "block";
+                                        objParam = response.output.metadata.blockId;
+                                    } else if (response.milestone?.blockId) {
+                                        objType = "block";
+                                        objParam = response.milestone?.blockId;
                                     } else if (response.did) {
                                         objType = "identity-resolver";
                                         objParam = response.did;

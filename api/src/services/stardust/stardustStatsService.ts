@@ -15,8 +15,8 @@ export class StardustStatsService extends BaseStatsService {
 
             if (info) {
                 this._statistics.push({
-                    itemsPerSecond: info.metrics.messagesPerSecond,
-                    confirmedItemsPerSecond: info.metrics.referencedMessagesPerSecond,
+                    itemsPerSecond: info.metrics.blocksPerSecond,
+                    confirmedItemsPerSecond: info.metrics.referencedBlocksPerSecond,
                     confirmationRate: info.metrics.referencedRate,
                     latestMilestoneIndex: info.status.latestMilestone.index,
                     latestMilestoneIndexTime: info.status.latestMilestone.timestamp * 1000

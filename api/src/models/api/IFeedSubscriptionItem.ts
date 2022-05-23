@@ -1,6 +1,6 @@
 import { IFeedItemMetadata } from "./IFeedItemMetadata";
 
-export interface IFeedSubscriptionMessage {
+export interface IFeedSubscriptionItem {
     /**
      * The subscription id created.
      */

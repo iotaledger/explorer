@@ -1,6 +1,6 @@
 import { IUTXOInput } from "@iota/iota.js";
 import { Input, Output } from "../../../helpers/chrysalis/transactionsHelper";
-import { MessageTangleStatus } from "../../messageTangleStatus";
+import { TangleStatus } from "../../tangleStatus";
 export interface INodeTransaction {
     /**
      * The message id the output was contained in.
@@ -25,5 +25,5 @@ export interface INodeTransaction {
     /**
      * Message status
      */
-    messageTangleStatus: MessageTangleStatus;
+    messageTangleStatus: TangleStatus;
 }

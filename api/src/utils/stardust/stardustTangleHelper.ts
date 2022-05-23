@@ -1,14 +1,13 @@
 /* eslint-disable no-warning-comments */
 import { Blake2b } from "@iota/crypto.js-stardust";
 import {
-    addressBalance, ED25519_ADDRESS_TYPE, IOutputResponse, IOutputsResponse, serializeMessage,
-    SingleNodeClient, IndexerPluginClient, messageIdFromMilestonePayload, milestoneIdFromMilestonePayload
+    addressBalance, IOutputResponse, serializeBlock, SingleNodeClient,
+    IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload
 } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
-import bigInt from "big-integer";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/ITransactionsDetailsResponse";
-import { IMessageDetailsResponse } from "../../models/api/stardust/IMessageDetailsResponse";
+import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -24,59 +23,32 @@ export class StardustTangleHelper {
      * Find item on the chrysalis network.
      * @param network The network to find the items on.
      * @param query The query to use for finding items.
-     * @param cursor A cursor if are requesting subsequent pages.
      * @returns The item found.
      */
-    public static async search(network: INetwork, query: string, cursor?: string): Promise<ISearchResponse> {
-        // If we have a cursor this must be next page of permanode, so don't do the node lookup
-        let nodeResult = cursor ? {} : await StardustTangleHelper.searchApi(network, false, query);
-
-        // If there were no results from regular node and we have a permanode
-        // or if there were output ids get any additional historic ones
-        if (network.permaNodeEndpoint &&
-            (Object.keys(nodeResult).length === 0 || nodeResult.addressOutputIds || nodeResult.indexMessageIds)) {
-            const permaResult = await StardustTangleHelper.searchApi(network, true, query);
-
-            if (nodeResult.addressOutputIds) {
-                if (permaResult.addressOutputIds) {
-                    nodeResult.historicAddressOutputIds =
-                        permaResult.addressOutputIds.filter(a => !nodeResult.addressOutputIds.includes(a));
-                    nodeResult.cursor = permaResult.cursor;
-                }
-            } else if (nodeResult.indexMessageIds) {
-                if (permaResult.indexMessageIds) {
-                    nodeResult.indexMessageIds = nodeResult.indexMessageIds.concat(
-                        permaResult.indexMessageIds.filter(a => !nodeResult.indexMessageIds.includes(a)));
-                    nodeResult.cursor = permaResult.cursor;
-                }
-            } else {
-                nodeResult = permaResult;
-            }
-        }
-
-        return nodeResult;
+    public static async search(network: INetwork, query: string): Promise<ISearchResponse> {
+        return StardustTangleHelper.searchApi(network, query);
     }
 
     /**
-     * Get the message details.
+     * Get the block details.
      * @param network The network to find the items on.
-     * @param messageId The message id to get the details.
+     * @param blockId The block id to get the details.
      * @returns The item details.
      */
-    public static async messageDetails(network: INetwork, messageId: string): Promise<IMessageDetailsResponse> {
+    public static async blockDetails(network: INetwork, blockId: string): Promise<IBlockDetailsResponse> {
         try {
             const client = new SingleNodeClient(network.provider, {
                 userName: network.user,
                 password: network.password
             });
 
-            messageId = HexHelper.addPrefix(messageId);
-            const metadata = await client.messageMetadata(messageId);
-            const children = await client.messageChildren(messageId);
+            blockId = HexHelper.addPrefix(blockId);
+            const metadata = await client.blockMetadata(blockId);
+            const childrenResponse = await client.blockChildren(blockId);
 
             return {
                 metadata,
-                childrenMessageIds: children ? children.childrenMessageIds : undefined
+                children: childrenResponse ? childrenResponse.children : undefined
             };
         } catch {
         }
@@ -89,12 +61,12 @@ export class StardustTangleHelper {
                     basePath: "/"
                 });
 
-                const metadata = await client.messageMetadata(messageId);
-                const children = await client.messageChildren(messageId);
+                const metadata = await client.blockMetadata(blockId);
+                const childrenResponse = await client.blockChildren(blockId);
 
                 return {
                     metadata,
-                    childrenMessageIds: children ? children.childrenMessageIds : undefined
+                    children: childrenResponse ? childrenResponse.children : undefined
                 };
             } catch {
             }
@@ -178,10 +150,10 @@ export class StardustTangleHelper {
             const milestonePayload = await client.milestoneById(milestoneId);
             /* eslint-disable-next-line no-warning-comments */
             // TODO Fetch protocol version from config/node
-            const messageId = messageIdFromMilestonePayload(2, milestonePayload);
+            const blockId = blockIdFromMilestonePayload(2, milestonePayload);
 
             return {
-                messageId,
+                blockId,
                 milestoneId,
                 milestone: milestonePayload
             };
@@ -215,11 +187,11 @@ export class StardustTangleHelper {
             const milestonePayload = await client.milestoneByIndex(milestoneIndex);
             /* eslint-disable-next-line no-warning-comments */
             // TODO Fetch protocol version from config/node
-            const messageId = messageIdFromMilestonePayload(2, milestonePayload);
+            const blockId = blockIdFromMilestonePayload(2, milestonePayload);
             const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
 
             return {
-                messageId,
+                blockId,
                 milestoneId,
                 milestone: milestonePayload
             };
@@ -279,21 +251,15 @@ export class StardustTangleHelper {
     /**
      * Find item on the stardust network.
      * @param network The network config.
-     * @param isPermanode Is this a permanode endpoint.
      * @param query The query to use for finding items.
      * @returns The item found.
      */
     private static async searchApi(
         network: INetwork,
-        isPermanode: boolean,
         query: string
     ): Promise<ISearchResponse> {
         const { provider, bechHrp, user, password } = network;
-        const client = new SingleNodeClient(provider, {
-            userName: user,
-            password,
-            basePath: isPermanode ? "/" : undefined
-        });
+        const client = new SingleNodeClient(provider, { userName: user, password });
         const indexerPlugin = new IndexerPluginClient(client);
         const searchQuery: SearchQuery = new SearchQueryBuilder(query, bechHrp).build();
 
@@ -325,29 +291,29 @@ export class StardustTangleHelper {
             }
         }
 
-        if (searchQuery.messageIdOrTransactionId) {
+        if (searchQuery.blockIdOrTransactionId) {
             try {
-                const message = await client.message(searchQuery.messageIdOrTransactionId);
+                const block = await client.block(searchQuery.blockIdOrTransactionId);
 
-                if (Object.keys(message).length > 0) {
+                if (Object.keys(block).length > 0) {
                     return {
-                        message
+                        block
                     };
                 }
             } catch {
             }
 
             try {
-                const message = await client.transactionIncludedMessage(searchQuery.address.hex);
+                const block = await client.transactionIncludedBlock(searchQuery.address.hex);
 
-                if (Object.keys(message).length > 0) {
+                if (Object.keys(block).length > 0) {
                     const writeStream = new WriteStream();
-                    serializeMessage(writeStream, message);
-                    const includedMessageId = Converter.bytesToHex(Blake2b.sum256(writeStream.finalBytes()));
+                    serializeBlock(writeStream, block);
+                    const includedBlockId = Converter.bytesToHex(Blake2b.sum256(writeStream.finalBytes()));
 
                     return {
-                        message,
-                        includedMessageId
+                        block,
+                        includedBlockId
                     };
                 }
             } catch {
@@ -415,48 +381,23 @@ export class StardustTangleHelper {
 
         if (searchQuery.address?.bech32) {
             try {
-                if (isPermanode && searchQuery.address.addressType === ED25519_ADDRESS_TYPE) {
-                    // Permanode doesn't support the bech32 address endpoint so convert
-                    // the query to ed25519 format if thats what the type is
-                    // it will then be tried using the ed25519 address/outputs endpoint
-                    //
-                    // TODO: Check this part when permanode is available
+                const addressBalanceDetails = await addressBalance(client, searchQuery.address.bech32);
+                if (addressBalanceDetails) {
                     const addressDetails = {
-                        addressType: ED25519_ADDRESS_TYPE,
-                        address: searchQuery.address.hex,
-                        balance: bigInt(0),
-                        dustAllowed: false,
-                        ledgerIndex: 0,
-                        nativeTokens: {}
+                        ...addressBalanceDetails,
+                        hex: searchQuery.address.hex,
+                        bech32: searchQuery.address.bech32,
+                        type: searchQuery.address.addressType
                     };
 
-                    const addressOutputs = await indexerPlugin.outputs({ addressBech32: searchQuery.address.bech32 });
+                    const addressOutputs = await indexerPlugin.outputs(
+                        { addressBech32: searchQuery.address.bech32 }
+                    );
 
-                    if (addressOutputs.items.length > 0) {
-                        const state = (addressOutputs as (IOutputsResponse & {
-                            state?: unknown;
-                        })).state;
-
-                        return {
-                            address: searchQuery.address.bech32,
-                            addressDetails,
-                            addressOutputIds: addressOutputs.items,
-                            cursor: state ? Converter.utf8ToHex(JSON.stringify(state)) : undefined
-                        };
-                    }
-                } else {
-                    const addressDetails = await addressBalance(client, searchQuery.address.bech32);
-                    if (addressDetails) {
-                        const addressOutputs = await indexerPlugin.outputs(
-                            { addressBech32: searchQuery.address.bech32 }
-                        );
-
-                        return {
-                            address: searchQuery.address.bech32,
-                            addressDetails,
-                            addressOutputIds: addressOutputs.items
-                        };
-                    }
+                    return {
+                        addressDetails,
+                        addressOutputIds: addressOutputs.items
+                    };
                 }
             } catch {}
         }

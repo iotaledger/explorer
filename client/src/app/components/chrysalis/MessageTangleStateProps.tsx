@@ -1,4 +1,4 @@
-import { MessageTangleStatus } from "../../models/messageTangleStatus";
+import { TangleStatus } from "../../../models/tangleStatus";
 
 export interface MessageTangleStateProps {
     /**
@@ -9,7 +9,7 @@ export interface MessageTangleStateProps {
     /**
      * The tangle status.
      */
-    status?: MessageTangleStatus;
+    status?: TangleStatus;
 
     /**
      * The milestone that confirmed it.

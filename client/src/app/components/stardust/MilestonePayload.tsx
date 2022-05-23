@@ -55,7 +55,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
      */
     public render(): ReactNode {
         const { index, timestamp, previousMilestoneId,
-            parentMessageIds, confirmedMerkleRoot, appliedMerkleRoot,
+            parents, inclusionMerkleRoot, appliedMerkleRoot,
             metadata, options, signatures }: IMilestonePayload = this.props.payload;
 
         let receiptMilestoneOption: IReceiptMilestoneOption | null = null;
@@ -137,12 +137,12 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         {previousMilestoneId}
                     </div>
                 </div>
-                {parentMessageIds?.length > 0 && (
+                {parents?.length > 0 && (
                     <div className="section--data">
                         <div className="label">
                             Parent message Ids
                         </div>
-                        {parentMessageIds.map((id, idx) => (
+                        {parents.map((id, idx) => (
                             <div key={idx} className="value code">
                                 {id}
                             </div>
@@ -153,10 +153,10 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                     <React.Fragment>
                         <div className="section--data">
                             <div className="label">
-                                Confirmed Merkle Root
+                                Inclusion Merkle Root
                             </div>
                             <div className="value code">
-                                {confirmedMerkleRoot}
+                                {inclusionMerkleRoot}
                             </div>
                         </div>
                         <div className="section--data">
@@ -254,13 +254,13 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
             });
 
             this.setState({
-                messageId: result.messageId,
+                blockId: result.blockId,
                 milestoneId: result.milestoneId,
                 milestone: result.milestone
             }, async () => this.checkForAdjacentMilestones());
 
             if (updateUrl) {
-                window.location.href = `/${this.props.network}/message/${this.state.messageId}`;
+                window.location.href = `/${this.props.network}/block/${this.state.blockId}`;
             }
         } else {
             this.props.history.replace(`/${this.props.network}/search/${index}`);

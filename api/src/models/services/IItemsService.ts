@@ -1,4 +1,4 @@
-import { IFeedSubscriptionMessage } from "../api/IFeedSubscriptionMessage";
+import { IFeedSubscriptionItem } from "../api/IFeedSubscriptionItem";
 
 /**
  * Interface definition for an items service.
@@ -14,7 +14,7 @@ export interface IItemsService {
      * @param id The id of the subscriber.
      * @param callback The callback to call with data for the event.
      */
-    subscribe(id: string, callback: (data: IFeedSubscriptionMessage) => Promise<void>): void;
+    subscribe(id: string, callback: (data: IFeedSubscriptionItem) => Promise<void>): void;
 
     /**
      * Unsubscribe from the feed.

@@ -2,17 +2,20 @@ import { IMilestonePayload } from "@iota/iota.js-stardust";
 
 export interface MilestonePayloadState {
     /**
-     * The messageId of the milestone.
+     * The blockId of the milestone.
      */
-    messageId?: string;
+    blockId?: string;
+
     /**
      * The milestoneId of the milestone.
      */
     milestoneId?: string;
+
     /**
      * Milestone.
      */
     milestone?: IMilestonePayload;
+
     /**
      * The previous milestone is available.
      */
