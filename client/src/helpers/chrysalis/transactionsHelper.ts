@@ -2,7 +2,7 @@ import { Ed25519Address, ED25519_ADDRESS_TYPE, IMessage, IReferenceUnlockBlock, 
 import { Converter, WriteStream } from "@iota/util.js";
 import { DateHelper } from "../../helpers/dateHelper";
 import { IBech32AddressDetails } from "../../models/IBech32AddressDetails";
-import { MessageTangleStatus } from "../../models/messageTangleStatus";
+import { TangleStatus } from "../../models/tangleStatus";
 import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import { Bech32AddressHelper } from "../chrysalis/bech32AddressHelper";
 
@@ -137,8 +137,8 @@ export class TransactionsHelper {
         network: string,
         messageId: string,
         tangleCacheService: ChrysalisTangleCacheService
-    ): Promise<{ messageTangleStatus: MessageTangleStatus; date: string }> {
-        let messageTangleStatus: MessageTangleStatus = "unknown";
+    ): Promise<{ messageTangleStatus: TangleStatus; date: string }> {
+        let messageTangleStatus: TangleStatus = "unknown";
         let date: string = "";
         const details = await tangleCacheService.messageDetails(
             network, messageId ?? "");

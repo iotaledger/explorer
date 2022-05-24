@@ -1,17 +1,17 @@
-import { ISSUER_FEATURE_BLOCK_TYPE, METADATA_FEATURE_BLOCK_TYPE, SENDER_FEATURE_BLOCK_TYPE, TAG_FEATURE_BLOCK_TYPE } from "@iota/iota.js-stardust";
+import { ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, SENDER_FEATURE_TYPE, TAG_FEATURE_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
+import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import AsyncComponent from "../AsyncComponent";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Address from "./Address";
-import { FeatureBlockProps } from "./FeatureBlockProps";
-import { FeatureBlockState } from "./FeatureBlockState";
+import { FeatureProps } from "./FeatureProps";
+import { FeatureState } from "./FeatureState";
 /**
  * Component which will display an Feature Block.
  */
-class FeatureBlock extends AsyncComponent<FeatureBlockProps, FeatureBlockState> {
-    constructor(props: FeatureBlockProps) {
+class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
+    constructor(props: FeatureProps) {
         super(props);
 
         this.state = {
@@ -43,38 +43,38 @@ class FeatureBlock extends AsyncComponent<FeatureBlockProps, FeatureBlockState> 
                         <DropdownIcon />
                     </div>
                     <div className="card--label">
-                        {NameHelper.getFeatureBlockTypeName(this.props.featureBlock.type)}
+                        {NameHelper.getFeatureTypeName(this.props.feature.type)}
                     </div>
                 </div>
                 {this.state.showOutputDetails === 1 && (
                     <div className="margin-l-t">
-                        {this.props.featureBlock.type === SENDER_FEATURE_BLOCK_TYPE && (
+                        {this.props.feature.type === SENDER_FEATURE_TYPE && (
                             <Address
-                                address={this.props.featureBlock.address}
+                                address={this.props.feature.address}
                             />
                         )}
-                        {this.props.featureBlock.type === ISSUER_FEATURE_BLOCK_TYPE && (
+                        {this.props.feature.type === ISSUER_FEATURE_TYPE && (
                             <Address
-                                address={this.props.featureBlock.address}
+                                address={this.props.feature.address}
                             />
                         )}
-                        {this.props.featureBlock.type === METADATA_FEATURE_BLOCK_TYPE && (
+                        {this.props.feature.type === METADATA_FEATURE_TYPE && (
                             <React.Fragment>
                                 <div className="card--label">
                                     Data:
                                 </div>
                                 <div className="card--value row">
-                                    {this.props.featureBlock.data}
+                                    {this.props.feature.data}
                                 </div>
                             </React.Fragment>
                         )}
-                        {this.props.featureBlock.type === TAG_FEATURE_BLOCK_TYPE && (
+                        {this.props.feature.type === TAG_FEATURE_TYPE && (
                             <React.Fragment>
                                 <div className="card--label">
                                     Tag:
                                 </div>
                                 <div className="card--value row">
-                                    {this.props.featureBlock.tag}
+                                    {this.props.feature.tag}
                                 </div>
                             </React.Fragment>
                         )}

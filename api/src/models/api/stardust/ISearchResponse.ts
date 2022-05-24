@@ -1,28 +1,13 @@
-import { IMessage, IOutputResponse } from "@iota/iota.js-stardust";
+import { IBlock, IOutputResponse } from "@iota/iota.js-stardust";
 import { IResponse } from "../IResponse";
 import IAddressDetails from "./IAddressDetails";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
-     * Message if it was found.
+     * Block if it was found.
      */
-    message?: IMessage;
-
-    /**
-     * Message ids if indexation was found.
-     */
-    indexMessageIds?: string[];
-
-    /**
-     * Index type if result from indexation.
-     */
-    indexMessageType?: "utf8" | "hex" | undefined;
-
-    /**
-     * Address if it was found.
-     */
-    address?: string;
+    block?: IBlock;
 
     /**
      * Address details when address was found.
@@ -35,12 +20,7 @@ export interface ISearchResponse extends IResponse {
     addressOutputIds?: string[];
 
     /**
-     * Historic output ids when address was found from permanode.
-     */
-    historicAddressOutputIds?: string[];
-
-    /**
-     * Output if it was found (message will also be populated).
+     * Output if it was found (block will also be populated).
      */
     output?: IOutputResponse;
 
@@ -50,14 +30,9 @@ export interface ISearchResponse extends IResponse {
     milestone?: IMilestoneDetailsResponse;
 
     /**
-     * The included message id.
+     * The included block id.
      */
-    includedMessageId?: string;
-
-    /**
-     * Cursor to use for subsequent requests.
-     */
-    cursor?: string;
+    includedBlockId?: string;
 
     /**
      * DiD identifier.

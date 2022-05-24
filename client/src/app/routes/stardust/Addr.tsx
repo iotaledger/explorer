@@ -100,7 +100,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             this.props.match.params.network, this.props.match.params.address
         );
 
-        if (result?.address) {
+        if (result?.addressDetails?.hex) {
             window.scrollTo({
                 left: 0,
                 top: 0,
@@ -110,8 +110,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             this.setState({
                 bech32AddressDetails: Bech32AddressHelper.buildAddress(
                     this._bechHrp,
-                    result.address,
-                    result.addressDetails?.type ? result.addressDetails.type.type : 0
+                    result.addressDetails?.hex,
+                    result.addressDetails?.type ?? 0
                 ),
                 balance: Number(result.addressDetails?.balance),
                 outputIds: result.addressOutputIds
@@ -402,9 +402,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         const tokens: ITokenDetails[] = [];
 
         for (const output of this.state.outputs) {
-            if (!output.isSpent && output.output.type === BASIC_OUTPUT_TYPE && output.output.nativeTokens.length > 0) {
+            if (!output.metadata.isSpent && output.output.type === BASIC_OUTPUT_TYPE) {
                 const basicOutput = output.output;
-                for (const token of basicOutput.nativeTokens) {
+                for (const token of basicOutput.nativeTokens ?? []) {
                     tokens.push({
                         name: token.id,
                         amount: Number.parseInt(token.amount, 16)
@@ -436,7 +436,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         if (nftOutputs?.outputs && nftOutputs?.outputs?.items.length > 0) {
             for (const outputId of nftOutputs.outputs.items) {
                 const output = await this._tangleCacheService.outputDetails(networkId, outputId);
-                if (output && !output.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
+                if (output && !output.metadata.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
                     const nftOutput = output.output;
                     const nftId = !HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero)
                         ? nftOutput.nftId

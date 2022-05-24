@@ -7,18 +7,18 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../helpers/downloadHelper";
 import { CHRYSALIS } from "../../models/db/protocolVersion";
-import { MessageTangleStatus } from "../../models/messageTangleStatus";
+import { TangleStatus } from "../../models/tangleStatus";
 import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import { IdentityDiffStorageService } from "../../services/identityDiffStorageService";
 import { IdentityService } from "../../services/identityService";
 import { NetworkService } from "../../services/networkService";
 import AsyncComponent from "../components/AsyncComponent";
+import MessageButton from "../components/chrysalis/MessageButton";
 import MessageTangleState from "../components/chrysalis/MessageTangleState";
 import IdentityHistory from "../components/identity/IdentityHistory";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
 import JsonViewer from "../components/JsonViewer";
-import MessageButton from "../components/MessageButton";
 import Modal from "../components/Modal";
 import Spinner from "../components/Spinner";
 import contentMessage from "./../../assets/modals/identity-resolver/content.json";
@@ -385,8 +385,8 @@ class IdentityResolver extends AsyncComponent<
      * @param metadata The metadata to calculate the status from.
      * @returns The message status.
      */
-    private calculateStatus(metadata?: IMessageMetadata): MessageTangleStatus {
-        let messageTangleStatus: MessageTangleStatus = "unknown";
+    private calculateStatus(metadata?: IMessageMetadata): TangleStatus {
+        let messageTangleStatus: TangleStatus = "unknown";
 
         if (metadata) {
             if (metadata.milestoneIndex) {

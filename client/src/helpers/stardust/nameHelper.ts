@@ -1,9 +1,9 @@
-import { ALIAS_OUTPUT_TYPE, ALIAS_UNLOCK_BLOCK_TYPE, BASIC_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
-    NFT_UNLOCK_BLOCK_TYPE, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, TREASURY_INPUT_TYPE,
+import { ALIAS_OUTPUT_TYPE, ALIAS_UNLOCK_TYPE, BASIC_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
+    NFT_UNLOCK_TYPE, REFERENCE_UNLOCK_TYPE, SIGNATURE_UNLOCK_TYPE, TREASURY_INPUT_TYPE,
     TREASURY_OUTPUT_TYPE, UTXO_INPUT_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
     TIMELOCK_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
-    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, SENDER_FEATURE_BLOCK_TYPE,
-    ISSUER_FEATURE_BLOCK_TYPE, METADATA_FEATURE_BLOCK_TYPE, TAG_FEATURE_BLOCK_TYPE,
+    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, SENDER_FEATURE_TYPE,
+    ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, TAG_FEATURE_TYPE,
     ED25519_ADDRESS_TYPE, ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 
 export class NameHelper {
@@ -44,22 +44,22 @@ export class NameHelper {
     }
 
     /**
-     * Get the name for the unlock block type.
+     * Get the name for the unlock type.
      * @param type The type to get the name for.
-     * @returns The unlock block type name.
+     * @returns The unlock type name.
      */
-    public static getUnlockBlockTypeName(type: number): string {
+    public static getUnlockTypeName(type: number): string {
         switch (type) {
-            case ALIAS_UNLOCK_BLOCK_TYPE:
-                return "Alias Unlock Block";
-            case NFT_UNLOCK_BLOCK_TYPE:
-                return "NFT Unlock Block";
-            case SIGNATURE_UNLOCK_BLOCK_TYPE:
-                return "Signature Unlock Block";
-            case REFERENCE_UNLOCK_BLOCK_TYPE:
-                return "Reference Unlock Block";
+            case ALIAS_UNLOCK_TYPE:
+                return "Alias Unlock";
+            case NFT_UNLOCK_TYPE:
+                return "NFT Unlock";
+            case SIGNATURE_UNLOCK_TYPE:
+                return "Signature Unlock";
+            case REFERENCE_UNLOCK_TYPE:
+                return "Reference Unlock";
             default:
-                return "Unknown Unlock Block";
+                return "Unknown Unlock";
         }
     }
 
@@ -88,21 +88,21 @@ export class NameHelper {
     }
 
     /**
-     * Get the name for the feature block type.
+     * Get the name for the feature type.
      * @param type The type to get the name for.
-     * @returns The feature block type name.
+     * @returns The feature type name.
      */
-    public static getFeatureBlockTypeName(type: number): string {
-        if (type === SENDER_FEATURE_BLOCK_TYPE) {
-            return "Sender Feature Block";
-        } else if (type === ISSUER_FEATURE_BLOCK_TYPE) {
-            return "Issuer Feature Block";
-        } else if (type === METADATA_FEATURE_BLOCK_TYPE) {
-            return "Metadata Feature Block";
-        } else if (type === TAG_FEATURE_BLOCK_TYPE) {
-            return "Tag Feature Block";
+    public static getFeatureTypeName(type: number): string {
+        if (type === SENDER_FEATURE_TYPE) {
+            return "Sender Feature";
+        } else if (type === ISSUER_FEATURE_TYPE) {
+            return "Issuer Feature";
+        } else if (type === METADATA_FEATURE_TYPE) {
+            return "Metadata Feature";
+        } else if (type === TAG_FEATURE_TYPE) {
+            return "Tag Feature";
         }
-        return "Unknown Feature Block";
+        return "Unknown Feature";
     }
 
     /**

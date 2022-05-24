@@ -1,12 +1,12 @@
-@import "../../scss/fonts";
-@import "../../scss/mixins";
-@import "../../scss/variables";
-@import "../../scss/media-queries";
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/variables";
+@import "../../../scss/media-queries";
 
-.message-button {
+.block-button {
   position: relative;
 
-  .message-button-btn {
+  .block-button-btn {
     border: 0;
     outline: none;
     background: none;
@@ -24,7 +24,7 @@
     }
   }
 
-  .message-button--message {
+  .block-button--block {
     @include font-size(10px, 12px);
 
     position: absolute;

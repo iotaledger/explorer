@@ -1,4 +1,4 @@
-export interface IMessageDetailsRequest {
+export interface IBlockDetailsRequest {
     /**
      * The network to search on.
      */
@@ -7,5 +7,5 @@ export interface IMessageDetailsRequest {
     /**
      * The message id to get the details for.
      */
-    messageId: string;
+    blockId: string;
 }

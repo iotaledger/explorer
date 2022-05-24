@@ -320,7 +320,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
             for (const outputId of nftOutputs.outputs.items) {
                 const output = await this._tangleCacheService.outputDetails(networkId, outputId);
 
-                if (output && !output.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
+                if (output && !output.metadata.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
                     const nftDetails = output.output;
                     this.setState({
                         amount: Number(nftDetails.amount),

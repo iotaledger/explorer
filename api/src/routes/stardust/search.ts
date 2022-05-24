@@ -1,5 +1,5 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { ISearchRequest } from "../../models/api/ISearchRequest";
+import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { STARDUST } from "../../models/db/protocolVersion";
@@ -28,5 +28,5 @@ export async function search(
         return {};
     }
 
-    return StardustTangleHelper.search(networkConfig, request.query, request.cursor);
+    return StardustTangleHelper.search(networkConfig, request.query);
 }

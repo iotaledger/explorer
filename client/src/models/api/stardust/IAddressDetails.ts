@@ -1,18 +1,23 @@
-import { AddressTypes } from "@iota/iota.js-stardust";
 import { BigInteger } from "big-integer";
+
 /**
  * Address details.
  */
  export default interface IAddressDetails {
     /**
-     * The address the details are for.
+     * The hex for the address the details are for.
      */
-    address?: string;
+    hex?: string;
+
+    /**
+     * The bech32 for the address the details are for.
+     */
+    bech32?: string;
 
     /**
      * The address type
      */
-    type?: AddressTypes;
+    type?: number;
 
     /**
      * The balance of the address.

@@ -6,7 +6,7 @@ import "./Transaction.scss";
 import NetworkContext from "../../context/NetworkContext";
 import { TransactionProps } from "../TransactionProps";
 import { TransactionState } from "../TransactionState";
-import MessageTangleState from "./MessageTangleState";
+import BlockTangleState from "./BlockTangleState";
 
 
 /**
@@ -46,7 +46,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                     <td>
                         {this.props.messageTangleStatus
                             ? (
-                                <MessageTangleState
+                                <BlockTangleState
                                     network={this.props.network}
                                     status={this.props.messageTangleStatus}
                                     hasConflicts={this.props.hasConflicts}
@@ -98,7 +98,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                         <div className="label">Status</div>
                         <div className="value">{this.props.messageTangleStatus
                             ? (
-                                <MessageTangleState
+                                <BlockTangleState
                                     network={this.props.network}
                                     status={this.props.messageTangleStatus}
                                 />

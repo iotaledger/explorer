@@ -1,0 +1,81 @@
+@import "../../../scss/fonts";
+@import "../../../scss/themes";
+@import "../../../scss/variables";
+@import "../../../scss/media-queries";
+@import "../../../scss/mixins";
+
+.block-tree-title {
+  @include font-size(12px);
+
+  position: relative;
+  color: var(--header-color);
+  font-family: $inter;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+
+  div {
+    position: absolute;
+    top: 0;
+
+    &.parents-title {
+      left: 0;
+    }
+
+    &.children-title {
+      transform: translateX(100%);
+    }
+  }
+}
+
+.tree {
+  position: relative;
+  opacity: 1;
+
+  &.busy {
+    opacity: 0.5;
+    cursor: wait;
+  }
+
+  .parent,
+  .child,
+  .item,
+  .root {
+    @include font-size(12px);
+
+    display: flex;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 4px;
+    background-color: var(--message-tree-bg);
+    color: var(--expanded-color);
+    font-family: $ibm-plex-mono;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+  }
+
+  .parent {
+    padding: 8px 16px;
+  }
+
+  .root {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 224, 202, 0.2);
+    color: $mint-green-7;
+  }
+
+  .edge {
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+
+    line {
+      stroke: var(--message-tree-bg);
+    }
+  }
+}

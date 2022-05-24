@@ -1,4 +1,4 @@
-import { MessageTangleStatus } from "./../../models/messageTangleStatus";
+import { TangleStatus } from "./../../models/tangleStatus";
 
 export interface TransactionState {
     /**
@@ -16,7 +16,7 @@ export interface TransactionState {
     /**
      * The status of the message.
      */
-    messageTangleStatus?: MessageTangleStatus;
+    messageTangleStatus?: TangleStatus;
     /**
      * The date transaction is referenced by a milestone.
      */

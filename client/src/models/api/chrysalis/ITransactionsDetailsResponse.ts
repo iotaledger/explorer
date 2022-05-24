@@ -1,4 +1,4 @@
-import { MessageTangleStatus } from "../../messageTangleStatus";
+import { TangleStatus } from "../../tangleStatus";
 import { IResponse } from "../IResponse";
 export interface HistoricOutput {
     output: {
@@ -46,7 +46,7 @@ export interface ITransaction {
     /**
      * Message status
      */
-    messageTangleStatus: MessageTangleStatus;
+    messageTangleStatus: TangleStatus;
     /**
      * Show if a transation is spent or not.
      */

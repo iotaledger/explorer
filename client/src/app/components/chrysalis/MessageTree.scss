@@ -1,8 +1,8 @@
-@import "../../scss/fonts";
-@import "../../scss/themes";
-@import "../../scss/variables";
-@import "../../scss/media-queries";
-@import "../../scss/mixins";
+@import "../../../scss/fonts";
+@import "../../../scss/themes";
+@import "../../../scss/variables";
+@import "../../../scss/media-queries";
+@import "../../../scss/mixins";
 
 .message-tree-title {
   @include font-size(12px);
