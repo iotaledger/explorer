@@ -155,7 +155,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 unlockCondition={unlockCondition}
                             />
                         ))}
-                        {this.state.output.features.map((feature, idx) => (
+                        {this.state.output.features?.map((feature, idx) => (
                             <Feature
                                 key={idx}
                                 feature={feature}
@@ -171,7 +171,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 ))}
                             </React.Fragment>
                         )}
-                        {this.state.output.nativeTokens.map((token, idx) => (
+                        {this.state.output.nativeTokens?.map((token, idx) => (
                             <React.Fragment key={idx}>
                                 <div className="native-token">
                                     <div

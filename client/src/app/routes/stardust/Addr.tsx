@@ -402,9 +402,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         const tokens: ITokenDetails[] = [];
 
         for (const output of this.state.outputs) {
-            if (!output.metadata.isSpent && output.output.type === BASIC_OUTPUT_TYPE && output.output.nativeTokens.length > 0) {
+            if (!output.metadata.isSpent && output.output.type === BASIC_OUTPUT_TYPE) {
                 const basicOutput = output.output;
-                for (const token of basicOutput.nativeTokens) {
+                for (const token of basicOutput.nativeTokens ?? []) {
                     tokens.push({
                         name: token.id,
                         amount: Number.parseInt(token.amount, 16)
