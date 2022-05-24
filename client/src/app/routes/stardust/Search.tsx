@@ -116,11 +116,11 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                                 <br />
                                                 <ul>
                                                     <li>
-                                                        <span>Messages</span>
+                                                        <span>Blocks</span>
                                                         <span>64 Hex characters</span>
                                                     </li>
                                                     <li>
-                                                        <span>Message using Transaction Id</span>
+                                                        <span>Block using Transaction Id</span>
                                                         <span>64 Hex characters</span>
                                                     </li>
                                                     <li>
@@ -128,23 +128,38 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                                         <span>64 Hex characters or Bech32 Format</span>
                                                     </li>
                                                     <li>
+                                                        <span>Nft/Alias Addresses</span>
+                                                        <span>66 Hex characters or Bech32 Format</span>
+                                                    </li>
+                                                    <li>
                                                         <span>Outputs</span>
                                                         <span>68 Hex characters</span>
+                                                    </li>
+                                                    <li>
+                                                        <span>Alias Id</span>
+                                                        <span>64 Hex characters</span>
+                                                    </li>
+                                                    <li>
+                                                        <span>Foundry Id</span>
+                                                        <span>76 Hex characters</span>
+                                                    </li>
+                                                    <li>
+                                                        <span>Token Id</span>
+                                                        <span>76 Hex characters</span>
+                                                    </li>
+                                                    <li>
+                                                        <span>NFT Id</span>
+                                                        <span>64 Hex characters</span>
+                                                    </li>
+                                                    <li>
+                                                        <span>Milestone Id</span>
+                                                        <span>64 Hex characters</span>
                                                     </li>
                                                     <li>
                                                         <span>Milestone Index</span>
                                                         <span>Numeric</span>
                                                     </li>
-                                                    <li>
-                                                        <span>Indexes</span>
-                                                        <span>Maximum 64 UTF-8 chars or maximum 128 hex chars</span>
-                                                    </li>
-                                                    <li>
-                                                        <span>DID</span>
-                                                        <span>64 Hex characters starting with did:iota:</span>
-                                                    </li>
-                                                </ul>
-                                                <br />
+                                                </ul>                                                <br />
                                                 <p>Please perform another search with a valid hash.</p>
                                             </React.Fragment>
                                         )}
