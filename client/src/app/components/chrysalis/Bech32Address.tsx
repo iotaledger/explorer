@@ -2,7 +2,7 @@
 import React, { Component, ReactNode } from "react";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressProps } from "../Bech32AddressProps";
-import MessageButton from "../MessageButton";
+import MessageButton from "../chrysalis/MessageButton";
 
 /**
  * Component which will display an Bech32Address.

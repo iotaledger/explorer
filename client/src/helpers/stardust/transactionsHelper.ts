@@ -1,8 +1,8 @@
 /* eslint-disable no-warning-comments */
 import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
-    IGovernorAddressUnlockCondition, ED25519_ADDRESS_TYPE, IMessage, ISignatureUnlockBlock,
-    IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE,
+    IGovernorAddressUnlockCondition, ED25519_ADDRESS_TYPE, IBlock, ISignatureUnlock,
+    IUTXOInput, REFERENCE_UNLOCK_TYPE, SIGNATURE_UNLOCK_TYPE,
     TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
     IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
     TREASURY_OUTPUT_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
@@ -13,7 +13,7 @@ import { DateHelper } from "../../helpers/dateHelper";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
 import { IBech32AddressDetails } from "../../models/IBech32AddressDetails";
-import { MessageTangleStatus } from "../../models/messageTangleStatus";
+import { TangleStatus } from "../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
 import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 
@@ -25,7 +25,7 @@ interface TransactionInputsAndOutputsResponse {
 }
 
 export class TransactionsHelper {
-    public static async getInputsAndOutputs(transactionMessage: IMessage | undefined, network: string,
+    public static async getInputsAndOutputs(block: IBlock | undefined, network: string,
                                             _bechHrp: string, tangleCacheService: StardustTangleCacheService
                                            ): Promise<TransactionInputsAndOutputsResponse> {
         const GENESIS_HASH = "0".repeat(64);
@@ -35,21 +35,18 @@ export class TransactionsHelper {
         const unlockAddresses: IBech32AddressDetails[] = [];
         let transferTotal = 0;
 
-        if (transactionMessage?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-            const payload: ITransactionPayload = transactionMessage.payload;
-            const signatureBlocks: ISignatureUnlockBlock[] = [];
-
-            const tpWriteStream = new WriteStream();
-            serializeTransactionPayload(tpWriteStream, payload);
-            const transactionId = Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
+        if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+            const payload: ITransactionPayload = block.payload;
+            const signatureBlocks: ISignatureUnlock[] = [];
+            const transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(payload);
 
             // Signatures
-            for (let i = 0; i < payload.unlockBlocks.length; i++) {
-                const unlockBlock = payload.unlockBlocks[i];
-                if (unlockBlock.type === SIGNATURE_UNLOCK_BLOCK_TYPE) {
-                    signatureBlocks.push(unlockBlock);
-                } else if (unlockBlock.type === REFERENCE_UNLOCK_BLOCK_TYPE) {
-                    signatureBlocks.push(payload.unlockBlocks[unlockBlock.reference] as ISignatureUnlockBlock);
+            for (let i = 0; i < payload.unlocks.length; i++) {
+                const unlock = payload.unlocks[i];
+                if (unlock.type === SIGNATURE_UNLOCK_TYPE) {
+                    signatureBlocks.push(unlock);
+                } else if (unlock.type === REFERENCE_UNLOCK_TYPE) {
+                    signatureBlocks.push(payload.unlocks[unlock.reference] as ISignatureUnlock);
                 }
             }
 
@@ -81,7 +78,7 @@ export class TransactionsHelper {
                 transactionUrl = `/${network}/search/${outputHash}`;
 
                 const inputSearchResponse = await tangleCacheService.search(network, input.transactionId);
-                const inputTransaction = inputSearchResponse?.message;
+                const inputTransaction = inputSearchResponse?.block;
                 const amount = (inputTransaction?.payload?.type === TRANSACTION_PAYLOAD_TYPE)
                     ? Number(inputTransaction.payload?.essence.outputs[transactionOutputIndex].amount) : 0;
 
@@ -92,7 +89,7 @@ export class TransactionsHelper {
                                                          _bechHrp, outputResponse.output.type);
                     if (address.bech32 !== "") {
                         transactionAddress = address;
-                        transactionUrl = `/${network}/message/${outputResponse.messageId}`;
+                        transactionUrl = `/${network}/message/${outputResponse.metadata.blockId}`;
                     }
                 }
 
@@ -163,23 +160,28 @@ export class TransactionsHelper {
         return { inputs, outputs: [...outputs, ...remainderOutputs], unlockAddresses, transferTotal };
     }
 
+    public static computeTransactionIdFromTransactionPayload(payload: ITransactionPayload) {
+        const tpWriteStream = new WriteStream();
+        serializeTransactionPayload(tpWriteStream, payload);
+        return Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
+    }
+
     public static async getMessageStatus(
         network: string,
-        messageId: string,
+        blockId: string,
         tangleCacheService: StardustTangleCacheService
-    ): Promise<{ messageTangleStatus: MessageTangleStatus; date: string }> {
-        let messageTangleStatus: MessageTangleStatus = "unknown";
+    ): Promise<{ blockTangleStatus: TangleStatus; date: string }> {
+        let blockTangleStatus: TangleStatus = "unknown";
         let date: string = "";
-        const details = await tangleCacheService.messageDetails(
-            network, messageId ?? "");
+        const details = await tangleCacheService.blockDetails(network, blockId);
         if (details) {
             if (details?.metadata) {
                 if (details.metadata.milestoneIndex) {
-                    messageTangleStatus = "milestone";
+                    blockTangleStatus = "milestone";
                 } else if (details.metadata.referencedByMilestoneIndex) {
-                    messageTangleStatus = "referenced";
+                    blockTangleStatus = "referenced";
                 } else {
-                    messageTangleStatus = "pending";
+                    blockTangleStatus = "pending";
                 }
             }
             const milestoneIndex = details?.metadata?.referencedByMilestoneIndex;
@@ -191,7 +193,7 @@ export class TransactionsHelper {
                 }
             }
         }
-        return { messageTangleStatus, date };
+        return { blockTangleStatus, date };
     }
 
     private static bechAddressFromAddressUnlockCondition(

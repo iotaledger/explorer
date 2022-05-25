@@ -1,20 +1,17 @@
-import { FetchHelper } from "../../helpers/fetchHelper";
-import { IMessageDetailsRequest } from "../../models/api/IMessageDetailsRequest";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
-import { ISearchRequest } from "../../models/api/ISearchRequest";
-import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { IBaseTokenGetRequest } from "../../models/api/stardust/IBaseTokenGetRequest";
 import { IBaseTokenGetResponse } from "../../models/api/stardust/IBaseTokenGetResponse";
-import { IMessageDetailsResponse } from "../../models/api/stardust/IMessageDetailsResponse";
+import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
+import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
 import { INftDetailsResponse } from "../../models/api/stardust/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
+import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
-import { ITransactionsDetailsResponse } from "../../models/api/stardust/ITransactionsDetailsResponse";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -42,19 +39,19 @@ export class StardustApiClient extends ApiClient {
      */
     public async search(request: ISearchRequest): Promise<ISearchResponse> {
         return this.callApi<unknown, ISearchResponse>(
-            `stardust/search/${request.network}/${request.query}${request.cursor ? `?cursor=${request.cursor}` : ""}`,
+            `stardust/search/${request.network}/${request.query}`,
             "get"
         );
     }
 
     /**
-     * Get the message details.
+     * Get the block details.
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async messageDetails(request: IMessageDetailsRequest): Promise<IMessageDetailsResponse> {
-        return this.callApi<unknown, IMessageDetailsResponse>(
-            `stardust/message/${request.network}/${request.messageId}`, "get"
+    public async blockDetails(request: IBlockDetailsRequest): Promise<IBlockDetailsResponse> {
+        return this.callApi<unknown, IBlockDetailsResponse>(
+            `stardust/block/${request.network}/${request.blockId}`, "get"
         );
     }
 
@@ -66,19 +63,6 @@ export class StardustApiClient extends ApiClient {
     public async outputDetails(request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
         return this.callApi<unknown, IOutputDetailsResponse>(
             `stardust/output/${request.network}/${request.outputId}`, "get"
-        );
-    }
-
-    /**
-     * Get the transaction history details of an address.
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async transactionsDetails(request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse> {
-        const { network, address, query } = request;
-        return this.callApi<unknown, ITransactionsDetailsResponse>(
-            `stardust/transactionhistory/${network}/${address}${query ? FetchHelper.urlParams(query) : ""}`,
-            "get"
         );
     }
 

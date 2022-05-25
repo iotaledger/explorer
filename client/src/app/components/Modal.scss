@@ -42,8 +42,8 @@
     z-index: 3000;
     top: 50%;
     left: 50%;
-    width: 50%;
-    min-height: 500px;
+    width: 100%;
+    max-width: 660px;
     max-height: 100%;
     padding: 32px;
     transform: translate(-50%, -50%);
@@ -54,7 +54,7 @@
 
     @include tablet-down {
       width: 100%;
-      overflow-y: scroll;
+      overflow-y: auto;
     }
 
     .modal--title {
@@ -78,7 +78,16 @@
     .modal--description {
       margin-top: 24px;
 
-      p {
+      a {
+        color: var(--mint-green-bg);
+      }
+
+      ol {
+        margin-left: 16px;
+      }
+
+      p,
+      ol {
         @include font-size(14px, 21px);
 
         color: var(--modal-color);
@@ -87,6 +96,22 @@
 
         &:not(:last-child) {
           margin-bottom: 24px;
+        }
+      }
+
+      .modal--actions {
+        margin: 24px 0;
+
+        .modal--action {
+          @include font-size(14px, 21px);
+
+          padding: 6px 20px;
+          border: 1px solid #d8e1f4;
+          border-radius: 6px;
+          background: var(--light-bg);
+          color: var(--expanded-color);
+          font-family: $inter;
+          text-decoration: none;
         }
       }
     }

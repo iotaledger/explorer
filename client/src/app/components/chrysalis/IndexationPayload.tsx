@@ -3,8 +3,7 @@ import { Converter } from "@iota/util.js";
 import React, { Component, ReactNode } from "react";
 import { TextHelper } from "../../../helpers/textHelper";
 import Modal from "../../components/Modal";
-import { ModalIcon } from "../ModalProps";
-import messageJSON from "./../../../assets/modals/message.json";
+import indexationMessage from "./../../../assets/modals/message/indexation-payload.json";
 import DataToggle from "./../DataToggle";
 import { IndexationPayloadProps } from "./IndexationPayloadProps";
 import { IndexationPayloadState } from "./IndexationPayloadState";
@@ -70,7 +69,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                         <h2>
                             Indexation Payload
                         </h2>
-                        <Modal icon={ModalIcon.Info} data={messageJSON} />
+                        <Modal icon="info" data={indexationMessage} />
                     </div>
                 </div>
                 <div className="section--data">

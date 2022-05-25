@@ -4,11 +4,9 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-warning-comments */
 /* eslint-disable operator-linebreak */
-import { NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import messageJSON from "../../../assets/modals/message.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { INftActivityHistory } from "../../../models/api/stardust/INftDetailsResponse";
@@ -16,13 +14,13 @@ import { STARDUST } from "../../../models/db/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Icon from "../../components/Icon";
-import MessageButton from "../../components/MessageButton";
 import Modal from "../../components/Modal";
-import { ModalIcon } from "../../components/ModalProps";
 import Pagination from "../../components/Pagination";
 import { Activity } from "../../components/stardust/Activity";
+import BlockButton from "../../components/stardust/BlockButton";
 import { NFTDetailsRouteProps } from "../NFTDetailsRouteProps";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import mainHeaderMessage from "./../../../assets/modals/block/main-header.json";
 import { NFTDetailsState } from "./NFTDetailsState";
 import "./NFTDetails.scss";
 
@@ -134,7 +132,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                             <span className="label name">Token ID</span>
                                                             <div className="value code row middle">
                                                                 <span className="label value">{this.state.nftDetails?.generalData?.tokenId}</span>
-                                                                <MessageButton
+                                                                <BlockButton
                                                                     onClick={() => ClipboardHelper.copy(
                                                                         this.state.nftDetails?.generalData?.tokenId
                                                                     )}
@@ -149,7 +147,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                                 <span className="label value">
                                                                     {this.state.nftDetails?.generalData?.contractAddress.slice(0, 6)}...{this.state?.nftDetails?.generalData?.contractAddress.slice(-2)}
                                                                 </span>
-                                                                <MessageButton
+                                                                <BlockButton
                                                                     onClick={() => ClipboardHelper.copy(
                                                                         this.state.nftDetails?.generalData?.contractAddress
                                                                     )}
@@ -164,7 +162,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                                 <span className="label value">
                                                                     {this.state.nftDetails?.generalData?.creatorAddress.slice(0, 6)}...{this.state.nftDetails?.generalData?.creatorAddress.slice(-2)}
                                                                 </span>
-                                                                <MessageButton
+                                                                <BlockButton
                                                                     onClick={() => ClipboardHelper.copy(
                                                                         this.state.nftDetails?.generalData?.creatorAddress
                                                                     )}
@@ -179,7 +177,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                                 <span className="label value">
                                                                     {this.state.nftDetails?.generalData?.senderAddress.slice(0, 6)}...{this.state.nftDetails?.generalData?.senderAddress.slice(-2)}
                                                                 </span>
-                                                                <MessageButton
+                                                                <BlockButton
                                                                     onClick={() => ClipboardHelper.copy(
                                                                         this.state.nftDetails?.generalData?.senderAddress
                                                                     )}
@@ -225,7 +223,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                             <h2>
                                                 Item Activity
                                             </h2>
-                                            <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                            <Modal icon="info" data={mainHeaderMessage} />
                                         </div>
                                     </div>
                                     <table className="transaction--table">

@@ -77,7 +77,8 @@ export interface LandingState extends CurrencyState, FeedsState {
     isFilterExpanded: boolean;
 
     /**
-     * Messages snapshot when feed is paused.
+     * Blocks snapshot when feed is paused.
      */
-    frozenMessages: IFeedItem[];
+    frozenBlocks: IFeedItem[];
+
 }

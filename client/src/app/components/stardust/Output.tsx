@@ -9,9 +9,9 @@ import React, { Component, ReactNode } from "react";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import NetworkContext from "../../context/NetworkContext";
-import MessageButton from "../MessageButton";
+import BlockButton from "../stardust/BlockButton";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import FeatureBlock from "./FeatureBlock";
+import Feature from "./Feature";
 import { OutputProps } from "./OutputProps";
 import { OutputState } from "./OutputState";
 import UnlockCondition from "./UnlockCondition";
@@ -59,7 +59,7 @@ class Output extends Component<OutputProps, OutputState> {
                             >
                                 {aliasOrNftBech32}
                             </button>
-                            <MessageButton
+                            <BlockButton
                                 onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
                                 buttonType="copy"
                                 labelPosition="top"
@@ -98,7 +98,7 @@ class Output extends Component<OutputProps, OutputState> {
                             >
                                 {aliasOrNftBech32}
                             </button>
-                            <MessageButton
+                            <BlockButton
                                 onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
                                 buttonType="copy"
                                 labelPosition="top"
@@ -114,12 +114,6 @@ class Output extends Component<OutputProps, OutputState> {
                         </div>
                         <div className="card--value row">
                             {this.state.output.serialNumber}
-                        </div>
-                        <div className="card--label">
-                            Token tag:
-                        </div>
-                        <div className="card--value row">
-                            {this.state.output.tokenTag}
                         </div>
                         <div className="card--label">
                             Token scheme type:
@@ -161,23 +155,23 @@ class Output extends Component<OutputProps, OutputState> {
                                 unlockCondition={unlockCondition}
                             />
                         ))}
-                        {this.state.output.featureBlocks.map((featureBlock, idx) => (
-                            <FeatureBlock
+                        {this.state.output.features?.map((feature, idx) => (
+                            <Feature
                                 key={idx}
-                                featureBlock={featureBlock}
+                                feature={feature}
                             />
                         ))}
-                        {this.state.output.type !== BASIC_OUTPUT_TYPE && this.state.output.immutableFeatureBlocks && (
+                        {this.state.output.type !== BASIC_OUTPUT_TYPE && this.state.output.immutableFeatures && (
                             <React.Fragment>
-                                {this.state.output.immutableFeatureBlocks.map((immutableFeatureBlock, idx) => (
-                                    <FeatureBlock
+                                {this.state.output.immutableFeatures.map((immutableFeature, idx) => (
+                                    <Feature
                                         key={idx}
-                                        featureBlock={immutableFeatureBlock}
+                                        feature={immutableFeature}
                                     />
                                 ))}
                             </React.Fragment>
                         )}
-                        {this.state.output.nativeTokens.map((token, idx) => (
+                        {this.state.output.nativeTokens?.map((token, idx) => (
                             <React.Fragment key={idx}>
                                 <div className="native-token">
                                     <div

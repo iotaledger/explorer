@@ -59,6 +59,10 @@
   }
 
   button {
+    @include phone-down {
+      padding: 2px 4px;
+    }
+
     border: 0;
     background: none;
 

@@ -9,10 +9,7 @@ import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysal
 import { SettingsService } from "../../../services/settingsService";
 import AsyncComponent from "../../components/AsyncComponent";
 import DataToggle from "../../components/DataToggle";
-import Modal from "../../components/Modal";
-import { ModalIcon } from "../../components/ModalProps";
 import Spinner from "../../components/Spinner";
-import messageJSON from "./../../../assets/modals/message.json";
 import "./Indexed.scss";
 import { IndexedRouteProps } from "./IndexedRouteProps";
 import { IndexedState } from "./IndexedState";
@@ -124,7 +121,6 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                 <h1>
                                     Indexed
                                 </h1>
-                                <Modal icon={ModalIcon.Info} data={messageJSON} />
                             </div>
                         </div>
                         <div className="section">

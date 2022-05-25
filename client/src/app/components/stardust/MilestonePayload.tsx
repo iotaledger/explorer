@@ -7,9 +7,8 @@ import { STARDUST } from "../../../models/db/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
-import { ModalIcon } from "../ModalProps";
 import ReceiptPayload from "../stardust/ReceiptPayload";
-import messageJSON from "./../../../assets/modals/message.json";
+import milestoneMessage from "./../../../assets/modals/message/milestone-payload.json";
 import "./MilestonePayload.scss";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
@@ -56,7 +55,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
      */
     public render(): ReactNode {
         const { index, timestamp, previousMilestoneId,
-            parentMessageIds, confirmedMerkleRoot, appliedMerkleRoot,
+            parents, inclusionMerkleRoot, appliedMerkleRoot,
             metadata, options, signatures }: IMilestonePayload = this.props.payload;
 
         let receiptMilestoneOption: IReceiptMilestoneOption | null = null;
@@ -77,7 +76,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         <h2>
                             Milestone Payload
                         </h2>
-                        <Modal icon={ModalIcon.Info} data={messageJSON} />
+                        <Modal icon="info" data={milestoneMessage} />
                     </div>
                     {(this.state.hasPrevious || this.state.hasNext) && (
                         <div className="section--data row middle">
@@ -138,12 +137,12 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         {previousMilestoneId}
                     </div>
                 </div>
-                {parentMessageIds?.length > 0 && (
+                {parents?.length > 0 && (
                     <div className="section--data">
                         <div className="label">
                             Parent message Ids
                         </div>
-                        {parentMessageIds.map((id, idx) => (
+                        {parents.map((id, idx) => (
                             <div key={idx} className="value code">
                                 {id}
                             </div>
@@ -154,10 +153,10 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                     <React.Fragment>
                         <div className="section--data">
                             <div className="label">
-                                Confirmed Merkle Root
+                                Inclusion Merkle Root
                             </div>
                             <div className="value code">
-                                {confirmedMerkleRoot}
+                                {inclusionMerkleRoot}
                             </div>
                         </div>
                         <div className="section--data">
@@ -255,13 +254,13 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
             });
 
             this.setState({
-                messageId: result.messageId,
+                blockId: result.blockId,
                 milestoneId: result.milestoneId,
                 milestone: result.milestone
             }, async () => this.checkForAdjacentMilestones());
 
             if (updateUrl) {
-                window.location.href = `/${this.props.network}/message/${this.state.messageId}`;
+                window.location.href = `/${this.props.network}/block/${this.state.blockId}`;
             }
         } else {
             this.props.history.replace(`/${this.props.network}/search/${index}`);

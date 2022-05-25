@@ -7,22 +7,22 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../helpers/downloadHelper";
 import { CHRYSALIS } from "../../models/db/protocolVersion";
-import { MessageTangleStatus } from "../../models/messageTangleStatus";
+import { TangleStatus } from "../../models/tangleStatus";
 import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import { IdentityDiffStorageService } from "../../services/identityDiffStorageService";
 import { IdentityService } from "../../services/identityService";
 import { NetworkService } from "../../services/networkService";
 import AsyncComponent from "../components/AsyncComponent";
+import MessageButton from "../components/chrysalis/MessageButton";
 import MessageTangleState from "../components/chrysalis/MessageTangleState";
 import IdentityHistory from "../components/identity/IdentityHistory";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
 import JsonViewer from "../components/JsonViewer";
-import MessageButton from "../components/MessageButton";
 import Modal from "../components/Modal";
-import { ModalIcon } from "../components/ModalProps";
 import Spinner from "../components/Spinner";
-import messageJSON from "./../../assets/modals/message.json";
+import contentMessage from "./../../assets/modals/identity-resolver/content.json";
+import welcomeMessage from "./../../assets/modals/identity-resolver/welcome.json";
 import "./IdentityResolver.scss";
 import { IdentityResolverProps } from "./IdentityResolverProps";
 import { IdentityResolverState } from "./IdentityResolverState";
@@ -142,7 +142,7 @@ class IdentityResolver extends AsyncComponent<
                                                 <h1>
                                                     Decentralized Identifier
                                                 </h1>
-                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                                <Modal icon="info" data={welcomeMessage} />
                                             </div>
 
                                             <div>
@@ -191,7 +191,7 @@ class IdentityResolver extends AsyncComponent<
                                                 <h1>
                                                     Decentralized Identifier
                                                 </h1>
-                                                <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                                <Modal icon="info" data={welcomeMessage} />
                                             </div>
                                         </div>
                                         <div>
@@ -275,7 +275,7 @@ class IdentityResolver extends AsyncComponent<
                                             <div className="section">
                                                 <div className="section--header">
                                                     <h2>Content
-                                                        <Modal icon={ModalIcon.Info} data={messageJSON} />
+                                                        <Modal icon="info" data={contentMessage} />
                                                     </h2>
                                                 </div>
                                                 <div className="section--data">
@@ -385,8 +385,8 @@ class IdentityResolver extends AsyncComponent<
      * @param metadata The metadata to calculate the status from.
      * @returns The message status.
      */
-    private calculateStatus(metadata?: IMessageMetadata): MessageTangleStatus {
-        let messageTangleStatus: MessageTangleStatus = "unknown";
+    private calculateStatus(metadata?: IMessageMetadata): TangleStatus {
+        let messageTangleStatus: TangleStatus = "unknown";
 
         if (metadata) {
             if (metadata.milestoneIndex) {

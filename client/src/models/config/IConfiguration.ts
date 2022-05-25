@@ -1,4 +1,3 @@
-
 export interface IConfiguration {
     /**
      * The api endpoint for the client.

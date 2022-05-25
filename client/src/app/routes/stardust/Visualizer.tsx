@@ -217,7 +217,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                             <h2>Statistics</h2>
                         </div>
                         <div className="card--content">
-                            <div className="card--label">Messages</div>
+                            <div className="card--label">Blocks</div>
                             <div className="card--value">
                                 {this.state.itemCount}
                             </div>
@@ -236,7 +236,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                                     <h2>Selected</h2>
                                 </div>
                                 <div className="card--content">
-                                    <div className="card--label">Message</div>
+                                    <div className="card--label">Block</div>
                                     <div className="card--value overflow-ellipsis">
                                         <a
                                             className="button"
@@ -261,10 +261,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                                                         className="button"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        href={
-                                                            `${window.location.origin}/${this.props.match.params.network
-                                                            }/tag/${this.state.selectedFeedItem?.properties.Tag}`
-                                                        }
                                                     >
                                                         {this.state.selectedFeedItem?.properties.Tag as string}
                                                     </a>
@@ -274,17 +270,13 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                                     {this.state.selectedFeedItem?.properties?.Index && (
                                         <React.Fragment>
                                             <div className="card--label">
-                                                Index UTF8
+                                                Tag
                                             </div>
                                             <div className="card--value overflow-ellipsis">
                                                 <a
                                                     className="button"
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    href={
-                                                        `${window.location.origin}/${this.props.match.params.network
-                                                        }/indexed/${this.state.selectedFeedItem?.properties.Index}`
-                                                    }
                                                 >
                                                     {Converter.hexToUtf8(
                                                         this.state.selectedFeedItem?.properties.Index as string
@@ -299,10 +291,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
                                                     className="button"
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    href={
-                                                        `${window.location.origin}/${this.props.match.params.network
-                                                        }/indexed/${this.state.selectedFeedItem?.properties.Index}`
-                                                    }
                                                 >
                                                     {this.state.selectedFeedItem?.properties.Index as string}
                                                 </a>
