@@ -25,6 +25,11 @@ export interface ISearchResponse extends IResponse {
     output?: IOutputResponse;
 
     /**
+     * Foundry output id if it was found.
+     */
+    foundryOutputId?: string;
+
+    /**
      * Milestone if it was found.
      */
     milestone?: IMilestoneDetailsResponse;

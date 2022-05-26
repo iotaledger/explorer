@@ -5,7 +5,7 @@ import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { NameHelper } from "../../../helpers/chrysalis/nameHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import MessageButton from "../chrysalis/MessageButton";
+import CopyButton from "../CopyButton";
 import { OutputState } from "../OutputState";
 import { OutputProps } from "./OutputProps";
 
@@ -61,7 +61,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 >
                                     {this.props.output.messageId}
                                 </Link>
-                                <MessageButton
+                                <CopyButton
                                     onClick={() => ClipboardHelper.copy(
                                         this.props.output.messageId
                                     )}
@@ -93,7 +93,7 @@ class Output extends Component<OutputProps, OutputState> {
                                                 {this.props.output.transactionId}
                                             </Link>
                                         </span>
-                                        <MessageButton
+                                        <CopyButton
                                             onClick={() => ClipboardHelper.copy(
                                                 this.props.output.transactionId
                                             )}

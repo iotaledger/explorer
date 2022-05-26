@@ -1,6 +1,5 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-/* eslint-disable @typescript-eslint/naming-convention */
 import React from "react";
 import "./Transaction.scss";
 import { Link } from "react-router-dom";

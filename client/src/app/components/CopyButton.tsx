@@ -1,24 +1,24 @@
 /* eslint-disable max-len */
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
-import "./BlockButton.scss";
-import { BlockButtonProps } from "./BlockButtonProps";
-import { BlockButtonState } from "./BlockButtonState";
+import "./CopyButton.scss";
+import { CopyButtonProps } from "./CopyButtonProps";
+import { CopyButtonState } from "./CopyButtonState";
 
 /**
- * Component which will display a block button.
+ * Component which will display a copy button.
  */
-class BlockButton extends Component<BlockButtonProps, BlockButtonState> {
+class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
     /**
-     * Create a new instance of MessageButton.
+     * Create a new instance of CopyButton.
      * @param props The props.
      */
-    constructor(props: BlockButtonProps) {
+    constructor(props: CopyButtonProps) {
         super(props);
 
         this.state = {
             active: false,
-            block: props.buttonType === "copy" ? "Copied" : ""
+            message: props.buttonType === "copy" ? "Copied" : ""
         };
     }
 
@@ -28,12 +28,12 @@ class BlockButton extends Component<BlockButtonProps, BlockButtonState> {
      */
     public render(): ReactNode {
         return (
-            <div className="block-button">
+            <div className="copy-button">
                 <button
                     type="button"
                     className={classNames(
-                        "block-button-btn",
-                        { "block-button-btn--active": this.state.active }
+                        "copy-button-btn",
+                        { "copy-button-btn--active": this.state.active }
                     )}
                     onClick={() => this.activate()}
                 >
@@ -43,9 +43,9 @@ class BlockButton extends Component<BlockButtonProps, BlockButtonState> {
                         </span>
                     )}
                 </button>
-                {this.state.active && this.state.block && (
-                    <span className="block-button--block">
-                        {this.state.block}
+                {this.state.active && this.state.message && (
+                    <span className="copy-button--message">
+                        {this.state.message}
                     </span>
                 )}
             </div>
@@ -67,4 +67,4 @@ class BlockButton extends Component<BlockButtonProps, BlockButtonState> {
     }
 }
 
-export default BlockButton;
+export default CopyButton;

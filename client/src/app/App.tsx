@@ -41,6 +41,8 @@ import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddress from "./routes/stardust/Addr";
 import StardustBlock from "./routes/stardust/Block";
 import { BlockProps } from "./routes/stardust/BlockProps";
+import Foundry from "./routes/stardust/Foundry";
+import { FoundryProps } from "./routes/stardust/FoundryProps";
 import StardustLanding from "./routes/stardust/Landing";
 import NFTDetails from "./routes/stardust/NFTDetails";
 import StardustSearch from "./routes/stardust/Search";
@@ -302,6 +304,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 component={(props: RouteComponentProps<BlockProps>) =>
                                                 (
                                                     withNetworkProvider(<StardustBlock {...props} />)
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/foundry/:outputId"
+                                                component={(props: RouteComponentProps<FoundryProps>) => (
+                                                    withNetworkProvider(<Foundry {...props} />)
                                                 )}
                                             />
                                             {

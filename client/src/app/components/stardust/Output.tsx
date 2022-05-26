@@ -9,7 +9,7 @@ import React, { Component, ReactNode } from "react";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import NetworkContext from "../../context/NetworkContext";
-import BlockButton from "../stardust/BlockButton";
+import CopyButton from "../CopyButton";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Feature from "./Feature";
 import { OutputProps } from "./OutputProps";
@@ -59,7 +59,7 @@ class Output extends Component<OutputProps, OutputState> {
                             >
                                 {aliasOrNftBech32}
                             </button>
-                            <BlockButton
+                            <CopyButton
                                 onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
                                 buttonType="copy"
                                 labelPosition="top"
@@ -98,7 +98,7 @@ class Output extends Component<OutputProps, OutputState> {
                             >
                                 {aliasOrNftBech32}
                             </button>
-                            <BlockButton
+                            <CopyButton
                                 onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
                                 buttonType="copy"
                                 labelPosition="top"
@@ -127,19 +127,19 @@ class Output extends Component<OutputProps, OutputState> {
                                     Minted tokens:
                                 </div>
                                 <div className="card--value row">
-                                    {this.state.output.tokenScheme.mintedTokens}
+                                    {Number(this.state.output.tokenScheme.mintedTokens)}
                                 </div>
                                 <div className="card--label">
                                     Melted tokens:
                                 </div>
                                 <div className="card--value row">
-                                    {this.state.output.tokenScheme.meltedTokens}
+                                    {Number(this.state.output.tokenScheme.meltedTokens)}
                                 </div>
                                 <div className="card--label">
                                     Maximum supply:
                                 </div>
                                 <div className="card--value row">
-                                    {this.state.output.tokenScheme.maximumSupply}
+                                    {Number(this.state.output.tokenScheme.maximumSupply)}
                                 </div>
                             </React.Fragment>
                         )}
