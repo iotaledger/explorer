@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable camelcase */
 import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
@@ -130,9 +128,12 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { bech32AddressDetails, balance, areTokensLoading, areNftsLoading, outputs,
+            formatFull, tokens, tokensPageNumber, nfts, nftsPageNumber } = this.state;
+
         const networkId = this.props.match.params.network;
-        const hasNativeTokens = this.state.tokens && this.state.tokens.length > 0;
-        const hasNfts = this.state.nfts && this.state.nfts.length > 0;
+        const hasNativeTokens = tokens && tokens.length > 0;
+        const hasNfts = nfts && nfts.length > 0;
 
         return (
             <div className="addr">
@@ -159,10 +160,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     <div className="row space-between general-content">
                                         <div className="section--data">
                                             <Bech32Address
-                                                addressDetails={this.state.bech32AddressDetails}
+                                                addressDetails={bech32AddressDetails}
                                                 advancedMode={true}
                                             />
-                                            {this.state.balance !== undefined && (
+                                            {balance && (
                                                 <div className="row middle">
                                                     <Icon icon="wallet" boxed />
                                                     <div className="balance">
@@ -170,18 +171,18 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                             Final balance
                                                         </div>
                                                         <div className="value featured">
-                                                            {this.state.balance > 0 ? (
+                                                            {balance > 0 ? (
                                                                 <React.Fragment>
                                                                     {
                                                                         formatAmount(
-                                                                            this.state.balance,
+                                                                            balance,
                                                                             this.context.tokenInfo,
-                                                                            this.state.formatFull
+                                                                            formatFull
                                                                         )
                                                                     }
                                                                     {" "}
                                                                     <span>(</span>
-                                                                    <FiatValue value={this.state.balance} />
+                                                                    <FiatValue value={balance} />
                                                                     <span>)</span>
                                                                 </React.Fragment>
                                                             ) : 0}
@@ -191,10 +192,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             )}
                                         </div>
                                         <div className="section--data">
-                                            {this.state.bech32AddressDetails?.bech32 &&
+                                            {bech32AddressDetails?.bech32 &&
                                                 (
                                                     //  eslint-disable-next-line react/jsx-pascal-case
-                                                    <QR data={this.state.bech32AddressDetails.bech32} />
+                                                    <QR data={bech32AddressDetails.bech32} />
                                                 )}
                                         </div>
                                     </div>
@@ -204,7 +205,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <div className="section--assets">
                                                     <div className="inner--asset">
                                                         <div className="section--data assets">
-                                                            <span className="label">Assets in wallet ({this.state.tokens?.length})</span>
+                                                            <span className="label">
+                                                                Assets in wallet ({tokens?.length})
+                                                            </span>
                                                         </div>
                                                         <img
                                                             src={chevronRightGray}
@@ -218,7 +221,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <div className="section--NFT">
                                                     <div className="inner--asset">
                                                         <div className="section--data assets">
-                                                            <span className="label">NFTs in wallet ({this.state.nfts?.length})</span>
+                                                            <span className="label">
+                                                                NFTs in wallet ({nfts?.length})
+                                                            </span>
                                                         </div>
                                                         <img
                                                             src={chevronRightGray}
@@ -231,7 +236,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </div>
                                     )}
                                 </div>
-                                {this.state.outputs && this.state.outputs.length === 0 && (
+                                {outputs && outputs.length === 0 && (
                                     <div className="section">
                                         <div className="section--data">
                                             <p>
@@ -240,7 +245,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </div>
                                     </div>
                                 )}
-                                {this.state.areTokensLoading && (
+                                {areTokensLoading && (
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
                                             <div className="margin-t-s middle row">
@@ -255,7 +260,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         <div className="section--header row space-between">
                                             <div className="row middle">
                                                 <h2>
-                                                    Assets in Wallet ({this.state.tokens?.length})
+                                                    Assets in Wallet ({tokens?.length})
                                                 </h2>
                                                 <Modal icon="info" data={mainHeaderMessage} />
                                             </div>
@@ -305,15 +310,15 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             ))}
                                         </div>
                                         <Pagination
-                                            currentPage={this.state.tokensPageNumber}
-                                            totalCount={this.state.tokens?.length ?? 0}
+                                            currentPage={tokensPageNumber}
+                                            totalCount={tokens?.length ?? 0}
                                             pageSize={Addr.TOKENS_PAGE_SIZE}
                                             siblingsCount={1}
                                             onPageChange={page => this.setState({ tokensPageNumber: page })}
                                         />
                                     </div>
                                 )}
-                                {this.state.areNftsLoading && (
+                                {areNftsLoading && (
                                     <div className="section transaction--section no-border">
                                         <div className="section--header row space-between">
                                             <div className="margin-t-s middle row">
@@ -328,7 +333,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         <div className="section--header row space-between">
                                             <div className="row middle">
                                                 <h2>
-                                                    NFTs in Wallet ({this.state.nfts?.length})
+                                                    NFTs in Wallet ({nfts?.length})
                                                 </h2>
                                                 <Modal icon="info" data={mainHeaderMessage} />
                                             </div>
@@ -347,8 +352,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             ))}
                                         </div>
                                         <Pagination
-                                            currentPage={this.state.nftsPageNumber}
-                                            totalCount={this.state.nfts?.length ?? 0}
+                                            currentPage={nftsPageNumber}
+                                            totalCount={nfts?.length ?? 0}
                                             pageSize={Addr.NFTS_PAGE_SIZE}
                                             siblingsCount={1}
                                             onPageChange={page => this.setState({ nftsPageNumber: page })}
