@@ -1,4 +1,5 @@
-import { BASIC_OUTPUT_TYPE, IOutputResponse } from "@iota/iota.js-stardust";
+import { ALIAS_OUTPUT_TYPE, BASIC_OUTPUT_TYPE,
+    FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE, OutputTypes } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
 import ITokenDetails from "../../routes/stardust/ITokenDetails";
 import Modal from "../Modal";
@@ -8,7 +9,7 @@ import Asset from "./Asset";
 
 interface AssetsTableProps {
     networkId: string;
-    outputs: IOutputResponse[] | undefined;
+    outputs: OutputTypes[] | undefined;
 }
 
 const TOKEN_PAGE_SIZE: number = 10;
@@ -22,9 +23,9 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
         if (outputs) {
             const theTokens: ITokenDetails[] = [];
             for (const output of outputs) {
-                if (!output.metadata.isSpent && output.output.type === BASIC_OUTPUT_TYPE) {
-                    const basicOutput = output.output;
-                    for (const token of basicOutput.nativeTokens ?? []) {
+                if (output.type === BASIC_OUTPUT_TYPE || output.type === ALIAS_OUTPUT_TYPE ||
+                   output.type === FOUNDRY_OUTPUT_TYPE || output.type === NFT_OUTPUT_TYPE) {
+                    for (const token of output.nativeTokens ?? []) {
                         const existingToken = theTokens.find(t => t.name === token.id);
                         if (existingToken) {
                             existingToken.amount += Number(token.amount);

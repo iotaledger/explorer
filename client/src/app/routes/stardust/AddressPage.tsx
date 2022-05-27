@@ -118,11 +118,11 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      */
     public render(): ReactNode {
         const { bech32AddressDetails, balance, areNftsLoading,
-            outputs, formatFull, nfts, nftsPageNumber } = this.state;
+            outputResponse, formatFull, nfts, nftsPageNumber } = this.state;
 
         const networkId = this.props.match.params.network;
         // TODO This counts all token outputs instead of distinct tokens
-        const nativeTokensCount = outputs ? outputs.filter(output => (
+        const nativeTokensCount = outputResponse ? outputResponse.filter(output => (
             !output.metadata.isSpent &&
                 output.output.type === BASIC_OUTPUT_TYPE &&
                 output.output.nativeTokens && output.output.nativeTokens.length > 0
@@ -231,7 +231,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         </div>
                                     )}
                                 </div>
-                                {outputs && outputs.length === 0 && (
+                                {outputResponse && outputResponse.length === 0 && (
                                     <div className="section">
                                         <div className="section--data">
                                             <p>
@@ -240,7 +240,10 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         </div>
                                     </div>
                                 )}
-                                <AssetsTable networkId={networkId} outputs={outputs} />
+                                <AssetsTable
+                                    networkId={networkId}
+                                    outputs={outputResponse?.map(output => output.output)}
+                                />
                                 {areNftsLoading && (
                                     <div className="section transaction--section no-border">
                                         <div className="section--header row space-between">
@@ -303,16 +306,16 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             return;
         }
         const networkId = this.props.match.params.network;
-        const outputs: IOutputResponse[] = [];
+        const outputResponse: IOutputResponse[] = [];
 
         for (const outputId of this.state.outputIds) {
             const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
             if (outputDetails) {
-                outputs.push(outputDetails);
+                outputResponse.push(outputDetails);
             }
         }
 
-        this.setState({ outputs });
+        this.setState({ outputResponse });
     }
 
 
