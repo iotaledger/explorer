@@ -11,7 +11,7 @@ import "dotenv/config";
  * Get mock nft detils
  * @returns nft details.
  */
- export function getMockNftDetails(): INftDetailsResponse {
+const getMockNftDetails = (): INftDetailsResponse => {
     return {
         imageSrc: "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png",
         amount: 100,

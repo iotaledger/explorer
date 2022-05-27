@@ -4,19 +4,19 @@ export interface ActivityProps {
      */
     transactionId: string;
     /**
-     * date
+     * The date of transaction
      */
     date?: string;
     /**
-     * action
+     * The action of transaction
      */
     action: string;
     /**
-     * status
+     * The status of transaction
      */
     status: string;
     /**
-     * price
+     * The price of transaction
      */
     price: string;
     /**
