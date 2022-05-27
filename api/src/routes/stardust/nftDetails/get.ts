@@ -11,8 +11,8 @@ import "dotenv/config";
  * Get mock nft detils
  * @returns nft details.
  */
-const getMockNftDetails = (): INftDetailsResponse => {
-    return {
+const getMockNftDetails = (): INftDetailsResponse => (
+    {
         imageSrc: "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png",
         amount: 100,
         quantity: 1.25,
@@ -55,8 +55,8 @@ const getMockNftDetails = (): INftDetailsResponse => {
                 price: "+1.25 Gi"
             }
         ]
-    };
-}
+    }
+);
 
 /**
  * Find the object from the network.

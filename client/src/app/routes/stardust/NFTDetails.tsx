@@ -226,7 +226,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                             <Modal icon="info" data={mainHeaderMessage} />
                                         </div>
                                     </div>
-                                    <table className="transaction--table">
+                                    <table className="transaction--table activity--table">
                                         <thead>
                                             <tr>
                                                 <th>Transaction Id</th>
