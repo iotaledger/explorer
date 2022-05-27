@@ -16,13 +16,13 @@ import DataToggle from "../../components/DataToggle";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import Bech32Address from "../../components/stardust/Bech32Address";
-import BlockButton from "../../components/stardust/BlockButton";
+import CopyButton from "../../components/CopyButton";
 import Foundry from "../../components/stardust/Foundry";
 import NetworkContext from "../../context/NetworkContext";
 import { AliasRouteProps } from "../AliasRouteProps";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import Modal from "./../../components/Modal";
-import "./Addr.scss";
+import "./AddressPage.scss";
 import { AliasState } from "./AliasState";
 import IFoundryDetails from "./IFoundryDetails";
 
@@ -167,7 +167,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                             </div>
                                             <div className="value row middle code">
                                                 <span className="margin-r-t">{this.props.match.params.aliasId}</span>
-                                                <BlockButton
+                                                <CopyButton
                                                     onClick={() => ClipboardHelper.copy(this.props.match.params.aliasId)}
                                                     buttonType="copy"
                                                     labelPosition="top"
