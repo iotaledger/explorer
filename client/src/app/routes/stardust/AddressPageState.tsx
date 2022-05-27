@@ -4,7 +4,7 @@ import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import INftDetails from "./INftDetails";
 import ITokenDetails from "./ITokenDetails";
 
-export interface AddrState {
+export interface AddressPageState {
     /**
      * The addres in bech 32 format.
      */

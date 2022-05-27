@@ -1,4 +1,4 @@
-export interface AddrRouteProps {
+export interface AddressRouteProps {
     /**
      * The network to lookup.
      */

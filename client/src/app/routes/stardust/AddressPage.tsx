@@ -20,19 +20,19 @@ import Asset from "../../components/stardust/Asset";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import Nft from "../../components/stardust/Nft";
 import NetworkContext from "../../context/NetworkContext";
-import { AddrRouteProps } from "../AddrRouteProps";
+import { AddressRouteProps } from "../AddressRouteProps";
 import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import Modal from "./../../components/Modal";
-import "./Addr.scss";
-import { AddrState } from "./AddrState";
+import "./AddressPage.scss";
+import { AddressPageState } from "./AddressPageState";
 import INftDetails from "./INftDetails";
 import ITokenDetails from "./ITokenDetails";
 
 /**
  * Component which will show the address page for stardust.
  */
-class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState> {
+class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddressPageState> {
     /**
      * The component context type.
      */
@@ -59,10 +59,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     private readonly _bechHrp: string;
 
     /**
-     * Create a new instance of Addr.
+     * Create a new instance of AddressPage.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<AddrRouteProps>) {
+    constructor(props: RouteComponentProps<AddressRouteProps>) {
         super(props);
 
         const networkService = ServiceFactory.get<NetworkService>("network");
@@ -312,7 +312,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         <Pagination
                                             currentPage={tokensPageNumber}
                                             totalCount={tokens?.length ?? 0}
-                                            pageSize={Addr.TOKENS_PAGE_SIZE}
+                                            pageSize={AddressPage.TOKENS_PAGE_SIZE}
                                             siblingsCount={1}
                                             onPageChange={page => this.setState({ tokensPageNumber: page })}
                                         />
@@ -354,7 +354,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         <Pagination
                                             currentPage={nftsPageNumber}
                                             totalCount={nfts?.length ?? 0}
-                                            pageSize={Addr.NFTS_PAGE_SIZE}
+                                            pageSize={AddressPage.NFTS_PAGE_SIZE}
                                             siblingsCount={1}
                                             onPageChange={page => this.setState({ nftsPageNumber: page })}
                                         />
@@ -369,15 +369,15 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     }
 
     private get currentTokensPage() {
-        const from = (this.state.tokensPageNumber - 1) * Addr.TOKENS_PAGE_SIZE;
-        const to = from + Addr.TOKENS_PAGE_SIZE;
+        const from = (this.state.tokensPageNumber - 1) * AddressPage.TOKENS_PAGE_SIZE;
+        const to = from + AddressPage.TOKENS_PAGE_SIZE;
 
         return this.state.tokens?.slice(from, to);
     }
 
     private get currentNftsPage() {
-        const from = (this.state.nftsPageNumber - 1) * Addr.NFTS_PAGE_SIZE;
-        const to = from + Addr.NFTS_PAGE_SIZE;
+        const from = (this.state.nftsPageNumber - 1) * AddressPage.NFTS_PAGE_SIZE;
+        const to = from + AddressPage.NFTS_PAGE_SIZE;
 
         return this.state.nfts?.slice(from, to);
     }
@@ -465,5 +465,5 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     }
 }
 
-export default Addr;
+export default AddressPage;
 
