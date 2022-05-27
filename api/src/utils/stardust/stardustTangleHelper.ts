@@ -8,6 +8,7 @@ import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/ITransactionsDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
+import { IFoundryOutputsResponse } from "../../models/api/stardust/IFoundryOutputsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -225,6 +226,30 @@ export class StardustTangleHelper {
     }
 
     /**
+     * Get the foundry outputs.
+     * @param network The network to find the items on.
+     * @param address The address to get the details for.
+     * @returns The foundry outputs.
+     */
+    public static async foundryOutputs(
+        network: INetwork,
+        address: string
+    ): Promise<IFoundryOutputsResponse | undefined> {
+        try {
+            const client = new SingleNodeClient(network.provider, {
+                userName: network.user,
+                password: network.password
+            });
+            const indexerPlugin = new IndexerPluginClient(client);
+
+            const foundryOutputs = await indexerPlugin.foundries({ aliasAddressBech32: address });
+            return {
+                outputs: foundryOutputs
+            };
+        } catch {}
+    }
+
+    /**
      * Get the nft details by nftId.
      * @param network The network to find the items on.
      * @param nftId The nftId to get the details for.
@@ -334,7 +359,7 @@ export class StardustTangleHelper {
                 const aliasOutputs = await indexerPlugin.alias(searchQuery.aliasId);
                 if (aliasOutputs.items.length > 0) {
                     return {
-                        output: await client.output(aliasOutputs.items[0])
+                        aliasOutput: await client.output(aliasOutputs.items[0])
                     };
                 }
             } catch {}

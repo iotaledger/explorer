@@ -4,6 +4,8 @@ import { IBaseTokenGetRequest } from "../../models/api/stardust/IBaseTokenGetReq
 import { IBaseTokenGetResponse } from "../../models/api/stardust/IBaseTokenGetResponse";
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
+import { IFoundryOutputsRequest } from "../../models/api/stardust/IFoundryOutputsRequest";
+import { IFoundryOutputsResponse } from "../../models/api/stardust/IFoundryOutputsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
@@ -97,6 +99,18 @@ export class StardustApiClient extends ApiClient {
      public async nftDetails(request: INftDetailsRequest): Promise<INftOutputsResponse> {
         return this.callApi<unknown, INftOutputsResponse>(
             `stardust/nfts/${request.network}/${request.nftId}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the foundry outputs.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async foundryOutputs(request: IFoundryOutputsRequest): Promise<IFoundryOutputsResponse> {
+        return this.callApi<unknown, IFoundryOutputsResponse>(
+            `stardust/foundry/${request.network}/${request.address}`,
             "get"
         );
     }

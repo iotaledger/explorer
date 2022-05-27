@@ -25,6 +25,11 @@ export interface ISearchResponse extends IResponse {
     output?: IOutputResponse;
 
     /**
+     * Output if it was found for alias Id.
+     */
+    aliasOutput?: IOutputResponse;
+
+    /**
      * Milestone if it was found.
      */
     milestone?: IMilestoneDetailsResponse;

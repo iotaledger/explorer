@@ -218,6 +218,8 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                         objType = "block";
                                     } else if (response.addressDetails?.hex) {
                                         objType = "addr";
+                                    } else if (response.aliasOutput) {
+                                        objType = "alias";
                                     } else if (response.output) {
                                         objType = "block";
                                         objParam = response.output.metadata.blockId;

@@ -15,6 +15,7 @@ import Header from "./components/Header";
 import SearchInput from "./components/SearchInput";
 import NetworkContext from "./context/NetworkContext";
 import { AddrRouteProps } from "./routes/AddrRouteProps";
+import { AliasRouteProps } from "./routes/AliasRouteProps";
 import ChrysalisAddress from "./routes/chrysalis/Addr";
 import Indexed from "./routes/chrysalis/Indexed";
 import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
@@ -39,6 +40,7 @@ import Transaction from "./routes/og/Transaction";
 import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddress from "./routes/stardust/Addr";
+import Alias from "./routes/stardust/Alias";
 import StardustBlock from "./routes/stardust/Block";
 import { BlockProps } from "./routes/stardust/BlockProps";
 import StardustLanding from "./routes/stardust/Landing";
@@ -311,6 +313,18 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                         component={(props: RouteComponentProps<NFTDetailsRouteProps>) =>
                                                         (
                                                             <NFTDetails
+                                                                {...props}
+                                                            />
+                                                        )}
+                                                    />
+                                            }
+                                            {
+                                                isStardust &&
+                                                    <Route
+                                                        path="/:network/alias/:aliasId"
+                                                        component={(props: RouteComponentProps<AliasRouteProps>) =>
+                                                        (
+                                                            <Alias
                                                                 {...props}
                                                             />
                                                         )}
