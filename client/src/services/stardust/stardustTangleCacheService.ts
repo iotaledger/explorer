@@ -71,7 +71,7 @@ export class StardustTangleCacheService extends TangleCacheService {
                 response.block ||
                 response.milestone ||
                 response.output ||
-                response.aliasOutput ||
+                response.aliasOutputId ||
                 response.foundryOutputId ||
                 response.did ||
                 response.addressOutputIds) {

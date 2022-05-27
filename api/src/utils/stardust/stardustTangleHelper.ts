@@ -359,7 +359,7 @@ export class StardustTangleHelper {
                 const aliasOutputs = await indexerPlugin.alias(searchQuery.aliasId);
                 if (aliasOutputs.items.length > 0) {
                     return {
-                        aliasOutput: await client.output(aliasOutputs.items[0])
+                        aliasOutputId: aliasOutputs.items[0]
                     };
                 }
             } catch {}

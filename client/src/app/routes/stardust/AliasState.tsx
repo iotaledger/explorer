@@ -51,24 +51,9 @@ export interface AliasState {
     assetsPage: IBalanceDetails[];
 
     /**
-     * Metadata of the output.
-     */
-    metaData?: IOutputMetadataResponse;
-
-    /**
      * alias output.
      */
     output?: IAliasOutput;
-
-    /**
-     * Hex view of index.
-     */
-    hexIndex?: string;
-
-    /**
-     * UTF8 view of index.
-     */
-    utf8Index?: string;
 
     /**
      * Hex view of data.

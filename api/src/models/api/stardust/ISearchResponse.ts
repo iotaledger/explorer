@@ -25,9 +25,9 @@ export interface ISearchResponse extends IResponse {
     output?: IOutputResponse;
 
     /**
-     * Output if it was found for alias Id.
+     * Alias output id if it was found.
      */
-    aliasOutput?: IOutputResponse;
+    aliasOutputId?: string;
 
     /**
      * Foundry output id if it was found.

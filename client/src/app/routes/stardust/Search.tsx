@@ -220,8 +220,9 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.output) {
                                     route = "block";
                                     routeParam = response.output.metadata.blockId;
-                                } else if (response.aliasOutput) {
+                                } else if (response.aliasOutputId) {
                                     route = "alias";
+                                    routeParam = response.aliasOutputId;
                                 } else if (response.foundryOutputId) {
                                     route = "foundry";
                                     routeParam = response.foundryOutputId;

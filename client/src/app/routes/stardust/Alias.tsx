@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
-import { ALIAS_ADDRESS_TYPE, ALIAS_OUTPUT_TYPE, BASIC_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -84,11 +84,11 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
-        const result = await this._tangleCacheService.search(
+        const result = await this._tangleCacheService.outputDetails(
             this.props.match.params.network, this.props.match.params.aliasId
         );
 
-        if (result?.aliasOutput?.output.type === ALIAS_OUTPUT_TYPE) {
+        if (result?.output?.type === ALIAS_OUTPUT_TYPE) {
             window.scrollTo({
                 left: 0,
                 top: 0,
@@ -99,11 +99,10 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
             this.setState({
                 bech32AddressDetails: Bech32AddressHelper.buildAddress(
                     this._bechHrp,
-                    result.aliasOutput?.output?.aliasId,
+                    result.output?.aliasId,
                     ALIAS_ADDRESS_TYPE
                 ),
-                metaData: result.aliasOutput.metadata,
-                output: result.aliasOutput.output
+                output: result.output
             }, async () => {
                 await this.getControlledFoundries();
             });
@@ -123,14 +122,12 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         const TOGGLE_DATA_OPTIONS = [
             {
                 label: this.state.jsonData ? "JSON" : "Text",
-                // content: this.state.jsonData ?? this.state.utf8Data,
-                content: "Test Text",
+                content: this.state.jsonData ?? this.state.utf8Data,
                 isJson: this.state.jsonData !== undefined
             },
             {
                 label: "HEX",
-                // content: this.state.hexData
-                content: "Test Hex",
+                content: this.state.hexData
             }
         ];
 
@@ -295,9 +292,12 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
 
         if (foundryOutputs?.outputs && foundryOutputs?.outputs?.items.length > 0) {
             for (const outputId of foundryOutputs.outputs.items) {
-                foundries.push({
-                    foundryId: outputId
-                });
+                const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
+                if (outputDetails?.output.type === FOUNDRY_OUTPUT_TYPE) {
+                    foundries.push({
+                        foundryId: this.state.bech32AddressDetails?.bech32 + outputDetails?.output.serialNumber + outputDetails?.output.tokenScheme.type
+                    });
+                }
             }
         }
 
@@ -312,20 +312,13 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
      * @returns Object with indexes and data in raw and utf-8 format.
      */
      private loadPayload() {
-        const index = this.state.output?.stateIndex ? this.state.output?.stateIndex.toString()  : "";
-        const utf8Index = TextHelper.isUTF8(Converter.hexToBytes(index)) ? Converter.hexToUtf8(index) : undefined;
-        const matchHexIndex = index.match(/.{1,2}/g);
-        const hexIndex = matchHexIndex ? matchHexIndex.join(" ") : index;
-
         let hexData;
         let utf8Data;
         let jsonData;
 
         if (this.state.output?.stateMetadata) {
-            const matchHexData = this.state.output?.stateMetadata.match(/.{1,2}/g);
-
-            hexData = matchHexData ? matchHexData.join(" ") : this.state.output?.stateMetadata;
-            utf8Data = TextHelper.isUTF8(Converter.hexToBytes(this.state.output?.stateMetadata)) ? Converter.hexToUtf8(this.state.output?.stateMetadata) : undefined;
+            hexData = this.state.output?.stateMetadata;
+            utf8Data = Converter.hexToUtf8(this.state.output?.stateMetadata);
 
             try {
                 if (utf8Data) {
@@ -334,8 +327,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
             } catch { }
         }
         return {
-            utf8Index,
-            hexIndex,
             utf8Data,
             hexData,
             jsonData
