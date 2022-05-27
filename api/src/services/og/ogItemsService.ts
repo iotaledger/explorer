@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedItemMetadata } from "../../models/api/IFeedItemMetadata";
-import { IFeedSubscriptionMessage } from "../../models/api/IFeedSubscriptionMessage";
+import { IFeedSubscriptionItem } from "../../models/api/IFeedSubscriptionItem";
 import { IFeedService } from "../../models/services/IFeedService";
 import { IItemsService } from "../../models/services/IItemsService";
 import { IStatistics } from "../../models/services/IStatistics";
@@ -74,7 +74,7 @@ export class OgItemsService implements IItemsService {
      * The callback for different events.
      */
     private readonly _subscribers: {
-        [id: string]: (data: IFeedSubscriptionMessage) => Promise<void>;
+        [id: string]: (data: IFeedSubscriptionItem) => Promise<void>;
     };
 
     /**
@@ -145,7 +145,7 @@ export class OgItemsService implements IItemsService {
      * @param id The id of the subscriber.
      * @param callback The callback to call with data for the event.
      */
-    public async subscribe(id: string, callback: (data: IFeedSubscriptionMessage) => Promise<void>): Promise<void> {
+    public async subscribe(id: string, callback: (data: IFeedSubscriptionItem) => Promise<void>): Promise<void> {
         this._subscribers[id] = callback;
     }
 
@@ -277,7 +277,7 @@ export class OgItemsService implements IItemsService {
         if (this._items.length > 0 ||
             Object.keys(this._itemMetadata).length > 0) {
             for (const subscriptionId in this._subscribers) {
-                const data: IFeedSubscriptionMessage = {
+                const data: IFeedSubscriptionItem = {
                     subscriptionId,
                     items: this._items,
                     itemsMetadata: this._itemMetadata

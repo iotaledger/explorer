@@ -5,7 +5,7 @@ import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { NameHelper } from "../../../helpers/chrysalis/nameHelper";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import MessageButton from "../MessageButton";
+import MessageButton from "../chrysalis/MessageButton";
 import { OutputState } from "../OutputState";
 import { OutputProps } from "./OutputProps";
 

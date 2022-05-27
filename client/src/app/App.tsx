@@ -20,6 +20,7 @@ import Indexed from "./routes/chrysalis/Indexed";
 import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
 import ChrysalisLanding from "./routes/chrysalis/Landing";
 import ChrysalisMessage from "./routes/chrysalis/Message";
+import { MessageProps } from "./routes/chrysalis/MessageProps";
 import ChrysalisSearch from "./routes/chrysalis/Search";
 import ChrysalisVisualizer from "./routes/chrysalis/Visualizer";
 import CurrencyConverter from "./routes/CurrencyConverter";
@@ -27,7 +28,6 @@ import IdentityResolver from "./routes/IdentityResolver";
 import { IdentityResolverProps } from "./routes/IdentityResolverProps";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
-import { MessageProps } from "./routes/MessageProps";
 import { NFTDetailsRouteProps } from "./routes/NFTDetailsRouteProps";
 import Address from "./routes/og/Address";
 import { AddressRouteProps } from "./routes/og/AddressRouteProps";
@@ -39,8 +39,9 @@ import Transaction from "./routes/og/Transaction";
 import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddress from "./routes/stardust/Addr";
+import StardustBlock from "./routes/stardust/Block";
+import { BlockProps } from "./routes/stardust/BlockProps";
 import StardustLanding from "./routes/stardust/Landing";
-import StardustMessage from "./routes/stardust/Message";
 import NFTDetails from "./routes/stardust/NFTDetails";
 import StardustSearch from "./routes/stardust/Search";
 import StardustVisualizer from "./routes/stardust/Visualizer";
@@ -293,9 +294,14 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 path="/:network/message/:messageId"
                                                 component={(props: RouteComponentProps<MessageProps>) =>
                                                 (
-                                                    isStardust
-                                                        ? withNetworkProvider(<StardustMessage {...props} />)
-                                                        : <ChrysalisMessage {...props} />
+                                                    <ChrysalisMessage {...props} />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/block/:blockId"
+                                                component={(props: RouteComponentProps<BlockProps>) =>
+                                                (
+                                                    withNetworkProvider(<StardustBlock {...props} />)
                                                 )}
                                             />
                                             {

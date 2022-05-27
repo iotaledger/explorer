@@ -1,0 +1,59 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/variables";
+@import "../../../scss/media-queries";
+
+.message-button {
+  position: relative;
+
+  .message-button-btn {
+    border: 0;
+    outline: none;
+    background: none;
+    cursor: pointer;
+
+    span {
+      color: $gray-10;
+      font-size: 16px;
+    }
+
+    &:hover {
+      span {
+        color: $main-green-highlight;
+      }
+    }
+  }
+
+  .message-button--message {
+    @include font-size(10px, 12px);
+
+    position: absolute;
+    top: 10px;
+    right: 0;
+    min-width: 50px;
+    transform: translateX(100%);
+    animation: fade 2s linear;
+    opacity: 1;
+    color: $main-green;
+    font-family: $metropolis;
+    font-weight: bold;
+    text-transform: uppercase;
+    animation-fill-mode: forwards;
+
+    @include tablet-down {
+      top: -12px;
+      transform: translateX(25%);
+    }
+  }
+
+  @keyframes fade {
+    0%,
+    100% {
+      opacity: 0;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+}

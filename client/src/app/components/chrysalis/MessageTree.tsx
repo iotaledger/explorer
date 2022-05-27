@@ -25,7 +25,7 @@ const MOBILE_CONFIG: TreeConfig = {
 };
 
 /**
- * Component which will show the visualizer page.
+ * Component which will show the message tree page.
  */
 class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
     /**

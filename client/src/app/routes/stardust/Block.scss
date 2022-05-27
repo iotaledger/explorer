@@ -3,7 +3,7 @@
 @import "../../../scss/media-queries";
 @import "../../../scss/variables";
 
-.message {
+.block {
   display: flex;
   flex-direction: column;
 
@@ -35,7 +35,7 @@
         margin: 28px 0;
       }
 
-      .message--header {
+      .block--header {
         display: flex;
         align-items: center;
         justify-content: space-between;

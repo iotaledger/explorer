@@ -32,14 +32,14 @@ export const routes: IRoute[] = [
         folder: "chrysalis/transactionhistory", func: "get"
     },
     { path: "/stardust/search/:network/:query", method: "get", folder: "stardust", func: "search" },
-    { path: "/stardust/message/:network/:messageId", method: "get", folder: "stardust/message", func: "get" },
+    { path: "/stardust/block/:network/:blockId", method: "get", folder: "stardust/block", func: "get" },
     { path: "/stardust/milestone/:network/:milestoneIndex", method: "get", folder: "stardust/milestone", func: "get" },
     { path: "/stardust/output/:network/:outputId", method: "get", folder: "stardust/output", func: "get" },
     {
         path: "/stardust/transactionhistory/:network/:address", method: "get",
         folder: "stardust/transactionhistory", func: "get"
     },
-    { path: "/stardust/nfts/:network/:nftId", method: "get", folder: "stardust/nftDetails", func: "get" },
+    { path: "/stardust/nft/:network/:nftId", method: "get", folder: "stardust/nftDetails", func: "get" },
     { path: "/stardust/nfts/:network/:address", method: "get", folder: "stardust/nfts", func: "get" },
     { path: "/token/:network", method: "get", folder: "token", func: "get" },
     { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },

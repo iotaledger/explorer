@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { ISearchRequest } from "../../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
-import { ISearchRequest } from "../../models/api/ISearchRequest";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { CHRYSALIS } from "../../models/db/protocolVersion";
 import { NetworkService } from "../../services/networkService";

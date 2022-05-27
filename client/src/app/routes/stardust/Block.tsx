@@ -1,38 +1,41 @@
-import { CONFLICT_REASON_STRINGS, IMessageMetadata, MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
+import {
+    CONFLICT_REASON_STRINGS, IBlockMetadata, MILESTONE_PAYLOAD_TYPE,
+    TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE
+} from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/db/protocolVersion";
-import { MessageTangleStatus } from "../../../models/messageTangleStatus";
+import { TangleStatus } from "../../../models/tangleStatus";
 import { SettingsService } from "../../../services/settingsService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import FiatValue from "../../components/FiatValue";
 import InclusionState from "../../components/InclusionState";
-import MessageButton from "../../components/MessageButton";
-import MessageTree from "../../components/MessageTree";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
-import MessageTangleState from "../../components/stardust/MessageTangleState";
+import BlockButton from "../../components/stardust/BlockButton";
+import BlockTangleState from "../../components/stardust/BlockTangleState";
+import BlockTree from "../../components/stardust/BlockTree";
 import MilestonePayload from "../../components/stardust/MilestonePayload";
 import TaggedDataPayload from "../../components/stardust/TaggedDataPayload";
 import TransactionPayload from "../../components/stardust/TransactionPayload";
 import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
-import { MessageProps } from "../MessageProps";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
-import metadataMessage from "./../../../assets/modals/message/metadata.json";
-import treeMessage from "./../../../assets/modals/message/tree.json";
+import metadataMessage from "./../../../assets/modals/block/metadata.json";
+import treeMessage from "./../../../assets/modals/block/tree.json";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
-import "./Message.scss";
-import { MessageState } from "./MessageState";
+import { BlockProps } from "./BlockProps";
+import "./Block.scss";
+import { BlockState } from "./BlockState";
 
 /**
- * Component which will show the message page for stardust.
+ * Component which will show the block page for stardust.
  */
-class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageState> {
+class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> {
     /**
      * The component context type.
      */
@@ -54,10 +57,10 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
     private _timerId?: NodeJS.Timer;
 
     /**
-     * Create a new instance of Message.
+     * Create a new instance of Block.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<MessageProps>) {
+    constructor(props: RouteComponentProps<BlockProps>) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(
@@ -66,7 +69,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         this.state = {
-            messageTangleStatus: "pending",
+            blockTangleStatus: "pending",
             childrenBusy: true,
             advancedMode: this._settingsService.get().advancedMode ?? false
         };
@@ -77,7 +80,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        await this.loadMessage(this.props.match.params.messageId, false);
+        await this.loadBlock(this.props.match.params.blockId, false);
     }
 
     /**
@@ -97,13 +100,13 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
      */
     public render(): ReactNode {
         return (
-            <div className="message">
+            <div className="block">
                 <div className="wrapper">
                     <div className="inner">
-                        <div className="message--header">
+                        <div className="block--header">
                             <div className="row middle">
                                 <h1>
-                                    Message
+                                    Block
                                 </h1>
                                 <Modal icon="info" data={mainHeaderMessage} />
                             </div>
@@ -126,30 +129,30 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                     <h2>General</h2>
                                 </div>
 
-                                <MessageTangleState
+                                <BlockTangleState
                                     network={this.props.match.params.network}
-                                    status={this.state.messageTangleStatus}
+                                    status={this.state.blockTangleStatus}
                                     milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
                                         this.state.metadata?.milestoneIndex}
                                     hasConflicts={this.state.metadata?.ledgerInclusionState === "conflicting"}
                                     onClick={this.state.metadata?.referencedByMilestoneIndex
-                                        ? (messageId: string) => this.props.history.push(
+                                        ? (blockId: string) => this.props.history.push(
                                             `/${this.props.match.params.network
-                                            }/search/${messageId}`)
+                                            }/search/${blockId}`)
                                         : undefined}
                                 />
                             </div>
                             <div className="section--data">
                                 <div className="label">
-                                    Message ID
+                                    Block ID
                                 </div>
                                 <div className="value code row middle">
                                     <span className="margin-r-t">
-                                        {this.state.actualMessageId}
+                                        {this.state.actualBlockId}
                                     </span>
-                                    <MessageButton
+                                    <BlockButton
                                         onClick={() => ClipboardHelper.copy(
-                                            this.state.actualMessageId
+                                            this.state.actualBlockId
                                         )}
                                         buttonType="copy"
                                         labelPosition="top"
@@ -164,7 +167,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                     </div>
                                     <div className="value value__secondary row middle">
                                         <span className="margin-r-t">{this.state.transactionId}</span>
-                                        <MessageButton
+                                        <BlockButton
                                             onClick={() => ClipboardHelper.copy(
                                                 this.state.transactionId
                                             )}
@@ -179,13 +182,13 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                     Payload Type
                                 </div>
                                 <div className="value row middle">
-                                    {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                                    {this.state.block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
                                         ("Transaction")}
-                                    {this.state.message?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
+                                    {this.state.block?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
                                         ("Milestone")}
-                                    {this.state.message?.payload?.type === TAGGED_DATA_PAYLOAD_TYPE &&
+                                    {this.state.block?.payload?.type === TAGGED_DATA_PAYLOAD_TYPE &&
                                         ("Data")}
-                                    {this.state.message?.payload?.type === undefined &&
+                                    {this.state.block?.payload?.type === undefined &&
                                         ("No Payload")}
                                 </div>
                             </div>
@@ -195,11 +198,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                         Nonce
                                     </div>
                                     <div className="value row middle">
-                                        <span className="margin-r-t">{this.state.message?.nonce}</span>
+                                        <span className="margin-r-t">{this.state.block?.nonce}</span>
                                     </div>
                                 </div>
                             )}
-                            {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                            {this.state.block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
                                 this.state.transferTotal !== undefined && (
                                     <div className="section--data">
                                         <div className="label">
@@ -220,9 +223,9 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                         </div>
 
 
-                        {this.state.message?.payload && (
+                        {this.state.block?.payload && (
                             <React.Fragment>
-                                {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE &&
+                                {this.state.block.payload.type === TRANSACTION_PAYLOAD_TYPE &&
                                     this.state.inputs &&
                                     this.state.outputs &&
                                     this.state.transferTotal !== undefined &&
@@ -238,34 +241,34 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                                 />
                                             </div>
                                             {
-                                                this.state.message.payload.essence.payload &&
+                                                this.state.block.payload.essence.payload &&
                                                     <div className="section">
                                                         <TaggedDataPayload
                                                             network={this.props.match.params.network}
                                                             history={this.props.history}
-                                                            payload={this.state.message.payload.essence.payload}
+                                                            payload={this.state.block.payload.essence.payload}
                                                             advancedMode={this.state.advancedMode}
                                                         />
                                                     </div>
                                             }
                                         </React.Fragment>
                                     )}
-                                {this.state.message.payload.type === MILESTONE_PAYLOAD_TYPE && (
+                                {this.state.block.payload.type === MILESTONE_PAYLOAD_TYPE && (
                                     <div className="section">
                                         <MilestonePayload
                                             network={this.props.match.params.network}
                                             history={this.props.history}
-                                            payload={this.state.message.payload}
+                                            payload={this.state.block.payload}
                                             advancedMode={this.state.advancedMode}
                                         />
                                     </div>
                                 )}
-                                {this.state.message.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (
+                                {this.state.block.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (
                                     <div className="section">
                                         <TaggedDataPayload
                                             network={this.props.match.params.network}
                                             history={this.props.history}
-                                            payload={this.state.message.payload}
+                                            payload={this.state.block.payload}
                                             advancedMode={this.state.advancedMode}
                                         />
                                     </div>
@@ -333,18 +336,18 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                 <div>
                                     <div className="row middle">
                                         <h2>
-                                            Messages tree
+                                            Block tree
                                         </h2>
                                         <Modal icon="info" data={treeMessage} />
                                     </div>
                                 </div>
                             </div>
-                            {this.state.message?.parentMessageIds && this.state.childrenIds && (
-                                <MessageTree
-                                    parentsIds={this.state.message?.parentMessageIds}
-                                    messageId={this.props.match.params.messageId}
+                            {this.state.block?.parents && this.state.childrenIds && (
+                                <BlockTree
+                                    parentsIds={this.state.block?.parents}
+                                    blockId={this.props.match.params.blockId}
                                     childrenIds={this.state.childrenIds}
-                                    onSelected={async (i, update) => this.loadMessage(i, update)}
+                                    onSelected={async (i, update) => this.loadBlock(i, update)}
                                 />
                             )}
                         </div>
@@ -355,11 +358,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
     }
 
     /**
-     * Update the message details.
+     * Update the block details.
      */
-    private async updateMessageDetails(): Promise<void> {
-        const details = await this._tangleCacheService.messageDetails(
-            this.props.match.params.network, this.state.actualMessageId ?? "");
+    private async updateBlockDetails(): Promise<void> {
+        const details = await this._tangleCacheService.blockDetails(
+            this.props.match.params.network, this.state.actualBlockId ?? "");
 
         this.setState({
             metadata: details?.metadata,
@@ -367,44 +370,44 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
             conflictReason: this.calculateConflictReason(details?.metadata),
             childrenIds: details?.childrenIds && details?.childrenIds.length > 0
                 ? details?.childrenIds : (this.state.childrenIds ?? []),
-            messageTangleStatus: this.calculateStatus(details?.metadata),
+            blockTangleStatus: this.calculateStatus(details?.metadata),
             childrenBusy: false
         });
 
         if (!details?.metadata?.referencedByMilestoneIndex) {
             this._timerId = setTimeout(async () => {
-                await this.updateMessageDetails();
+                await this.updateBlockDetails();
             }, 10000);
         }
     }
 
     /**
-     * Calculate the status for the message.
+     * Calculate the status for the block.
      * @param metadata The metadata to calculate the status from.
-     * @returns The message status.
+     * @returns The block status.
      */
-    private calculateStatus(metadata?: IMessageMetadata): MessageTangleStatus {
-        let messageTangleStatus: MessageTangleStatus = "unknown";
+    private calculateStatus(metadata?: IBlockMetadata): TangleStatus {
+        let blockTangleStatus: TangleStatus = "unknown";
 
         if (metadata) {
             if (metadata.milestoneIndex) {
-                messageTangleStatus = "milestone";
+                blockTangleStatus = "milestone";
             } else if (metadata.referencedByMilestoneIndex) {
-                messageTangleStatus = "referenced";
+                blockTangleStatus = "referenced";
             } else {
-                messageTangleStatus = "pending";
+                blockTangleStatus = "pending";
             }
         }
 
-        return messageTangleStatus;
+        return blockTangleStatus;
     }
 
     /**
-     * Calculate the conflict reason for the message.
+     * Calculate the conflict reason for the block.
      * @param metadata The metadata to calculate the conflict reason from.
      * @returns The conflict reason.
      */
-    private calculateConflictReason(metadata?: IMessageMetadata): string {
+    private calculateConflictReason(metadata?: IBlockMetadata): string {
         let conflictReason: string = "";
 
         if (metadata?.ledgerInclusionState === "conflicting") {
@@ -417,15 +420,16 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
     }
 
     /**
-     * Load the message with the given id.
-     * @param messageId The index to load.
+     * Load the block with the given id.
+     * @param blockId The index to load.
      * @param updateUrl Update the url.
      */
-    private async loadMessage(messageId: string, updateUrl: boolean): Promise<void> {
+    private async loadBlock(blockId: string, updateUrl: boolean): Promise<void> {
         const result = await this._tangleCacheService.search(
-            this.props.match.params.network, messageId);
+            this.props.match.params.network, blockId
+        );
 
-        if (result?.message) {
+        if (result?.block) {
             if (!updateUrl) {
                 window.scrollTo({
                     left: 0,
@@ -436,15 +440,16 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
 
             const { inputs, outputs, unlockAddresses, transferTotal } =
                 await TransactionsHelper.getInputsAndOutputs(
-                    result?.message,
+                    result?.block,
                     this.props.match.params.network,
                     this.context.bech32Hrp,
                     this._tangleCacheService
             );
 
-            if (result?.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                const transactionId =
-                    TransactionsHelper.computeTransactionIdFromTransactionPayload(result?.message.payload);
+            if (result?.block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                const transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(
+                    result?.block.payload
+                );
                 this.setState({ transactionId });
             }
 
@@ -456,21 +461,21 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
             });
 
             this.setState({
-                actualMessageId: result.includedMessageId ?? messageId,
-                message: result.message
+                actualBlockId: result.includedBlockId ?? blockId,
+                block: result.block
             }, async () => {
-                await this.updateMessageDetails();
+                await this.updateBlockDetails();
             });
             if (updateUrl) {
                 window.history.pushState(undefined, window.document.title, `/${this.props.match.params.network
-                    }/message/${result.includedMessageId ?? messageId}`);
+                    }/block/${result.includedBlockId ?? blockId}`);
             }
         } else {
             this.props.history.replace(`/${this.props.match.params.network
-                }/search/${messageId}`);
+                }/search/${blockId}`);
         }
     }
 }
 
-export default Message;
+export default Block;
 

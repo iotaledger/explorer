@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { IMessageMetadata, IOutputResponse } from "@iota/iota.js-stardust";
+import { IBlockMetadata, IOutputResponse } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
@@ -63,15 +63,10 @@ export class StardustTangleCacheService extends TangleCacheService {
         if (!this._stardustSearchCache[networkId][fullQuery]) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
-            const response = await apiClient.search({
-                network: networkId,
-                query,
-                cursor
-            });
+            const response = await apiClient.search({ network: networkId, query });
 
-            if (response.address ||
-                response.message ||
-                response.indexMessageIds ||
+            if (response.addressDetails ||
+                response.block ||
                 response.milestone ||
                 response.output ||
                 response.did ||
@@ -87,26 +82,26 @@ export class StardustTangleCacheService extends TangleCacheService {
     }
 
     /**
-     * Get the message metadata.
+     * Get the block metadata.
      * @param networkId The network to search
-     * @param messageId The message if to get the metadata for.
+     * @param blockId The block if to get the metadata for.
      * @returns The details response.
      */
-    public async messageDetails(
+    public async blockDetails(
         networkId: string,
-        messageId: string): Promise<{
-            metadata?: IMessageMetadata;
+        blockId: string): Promise<{
+            metadata?: IBlockMetadata;
             childrenIds?: string[];
             error?: string;
         }> {
         const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
-        const response = await apiClient.messageDetails({ network: networkId, messageId });
+        const response = await apiClient.blockDetails({ network: networkId, blockId });
 
         if (response) {
             return {
                 metadata: response.metadata,
-                childrenIds: response.childrenMessageIds,
+                childrenIds: response.childrenBlockIds,
                 error: response.error
             };
         }
@@ -180,18 +175,18 @@ export class StardustTangleCacheService extends TangleCacheService {
     ): Promise<INftOutputsResponse | undefined> {
         const cacheEntry = this._stardustSearchCache[request.network][`${request.address}--nft-outputs`];
 
-        if (!cacheEntry?.data?.outputs || skipCache) {
+        if (!cacheEntry?.data?.nftOutputs || skipCache) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
             const nftOutputs = await apiClient.nftOutputs(request);
 
             this._stardustSearchCache[request.network][`${request.address}--nft-outputs`] = {
-                data: { outputs: nftOutputs.outputs },
+                data: { nftOutputs: nftOutputs.outputs },
                 cached: Date.now()
             };
         }
 
         return {
-            outputs: this._stardustSearchCache[request.network][`${request.address}--nft-outputs`]?.data?.outputs
+            outputs: this._stardustSearchCache[request.network][`${request.address}--nft-outputs`]?.data?.nftOutputs
         };
     }
 
@@ -207,18 +202,18 @@ export class StardustTangleCacheService extends TangleCacheService {
     ): Promise<INftOutputsResponse | undefined> {
         const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`];
 
-        if (!cacheEntry?.data?.outputs || skipCache) {
+        if (!cacheEntry?.data?.nftOutputs || skipCache) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
             const nftDetails = await apiClient.nftDetails(request);
             this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`] = {
-                data: { outputs: nftDetails.outputs },
+                data: { nftOutputs: nftDetails.outputs },
                 cached: Date.now()
             };
         }
 
         return {
-            outputs: this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`]?.data?.outputs
+            outputs: this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`]?.data?.nftOutputs
         };
     }
 

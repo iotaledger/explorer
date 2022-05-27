@@ -5,9 +5,9 @@ import { DateHelper } from "../../../helpers/dateHelper";
 import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import AsyncComponent from "../AsyncComponent";
-import "../MessageTangleState.scss";
-import { MessageTangleStateProps } from "../MessageTangleStateProps";
-import { MessageTangleStateState } from "../MessageTangleStateState";
+import "./MessageTangleState.scss";
+import { MessageTangleStateProps } from "./MessageTangleStateProps";
+import { MessageTangleStateState } from "./MessageTangleStateState";
 
 /**
  * Component which will display a message tangle state.

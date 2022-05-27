@@ -51,7 +51,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             priceEUR: 0,
             priceCurrency: "--",
             filteredItems: [],
-            frozenMessages: [],
+            frozenBlocks: [],
             milestones: [],
             currency: "USD",
             currencies: [],
@@ -106,7 +106,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             {this.state.networkConfig.isEnabled && (
                                 <div className="row space-between info-boxes">
                                     <div className="info-box">
-                                        <span className="info-box--title">Messages per sec
+                                        <span className="info-box--title">Blocks per sec
                                         </span>
                                         <div className="info-box--value">
                                             <span className="download-rate">
@@ -143,7 +143,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             <div className="row wrap feeds">
                                 <div className="feed section">
                                     <div className="section--header row space-between padding-l-8">
-                                        <h2>Latest messages</h2>
+                                        <h2>Latest blocks</h2>
                                         <div className="feed--actions">
                                             <button
                                                 className="button--unstyled"
@@ -151,7 +151,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 onClick={() => {
                                                     this.setState({
                                                         isFeedPaused: !this.state.isFeedPaused,
-                                                        frozenMessages: this.state.filteredItems
+                                                        frozenBlocks: this.state.filteredItems
                                                     });
                                                 }}
                                             >
@@ -243,7 +243,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
-                                            <span className="label">Message id</span>
+                                            <span className="label">Block id</span>
                                             <span className="label">Payload Type</span>
                                         </div>
                                         {this.state.filteredItems.length === 0 && (
@@ -252,7 +252,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         {this.state.filteredItems.map(item => (
                                             <div className="feed-item" key={item.id}>
                                                 <div className="feed-item__content">
-                                                    <span className="feed-item--label">Message id</span>
+                                                    <span className="feed-item--label">Block id</span>
                                                     <Link
                                                         className="feed-item--hash"
                                                         to={RouteBuilder.buildItem(this.state.networkConfig, item.id)}
@@ -410,12 +410,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 return aux;
             });
 
-            const filteredMessages = this.state.isFeedPaused
-                ? this.state.frozenMessages
+            const filteredBlocks = this.state.isFeedPaused
+                ? this.state.frozenBlocks
                 : this._feedClient.getItems();
 
             this.setState({
-                filteredItems: filteredMessages
+                filteredItems: filteredBlocks
                     .filter(item => {
                         let aux = false;
                         for (const f of filters) {
