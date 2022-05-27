@@ -16,7 +16,7 @@ import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
-import Asset from "../../components/stardust/Asset";
+import AssetsTable from "../../components/stardust/AssetsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import Nft from "../../components/stardust/Nft";
 import NetworkContext from "../../context/NetworkContext";
@@ -27,7 +27,6 @@ import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
 import { AddressPageState } from "./AddressPageState";
 import INftDetails from "./INftDetails";
-import ITokenDetails from "./ITokenDetails";
 
 /**
  * Component which will show the address page for stardust.
@@ -37,11 +36,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * The component context type.
      */
     public static contextType = NetworkContext;
-
-    /**
-     * Native Tokens page size.
-     */
-    private static readonly TOKENS_PAGE_SIZE: number = 10;
 
     /**
      * Nfts page size.
@@ -77,11 +71,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         this.state = {
             ...Bech32AddressHelper.buildAddress(this._bechHrp, props.match.params.address),
             formatFull: false,
-            areTokensLoading: true,
             areNftsLoading: true,
-            tokens: [],
-            tokensPageNumber: 1,
-            tokensPage: [],
             nfts: [],
             nftsPageNumber: 1,
             nftsPage: []
@@ -115,7 +105,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                 outputIds: result.addressOutputIds
             }, async () => {
                 await this.getOutputs();
-                await this.getNativeTokens();
                 await this.getNfts();
             });
         } else {
@@ -128,11 +117,17 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, balance, areTokensLoading, areNftsLoading, outputs,
-            formatFull, tokens, tokensPageNumber, nfts, nftsPageNumber } = this.state;
+        const { bech32AddressDetails, balance, areNftsLoading,
+            outputs, formatFull, nfts, nftsPageNumber } = this.state;
 
         const networkId = this.props.match.params.network;
-        const hasNativeTokens = tokens && tokens.length > 0;
+        // TODO This counts all token outputs instead of distinct tokens
+        const nativeTokensCount = outputs ? outputs.filter(output => (
+            !output.metadata.isSpent &&
+                output.output.type === BASIC_OUTPUT_TYPE &&
+                output.output.nativeTokens && output.output.nativeTokens.length > 0
+        )).length : 0;
+        const hasNativeTokens = nativeTokensCount > 0;
         const hasNfts = nfts && nfts.length > 0;
 
         return (
@@ -206,7 +201,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                     <div className="inner--asset">
                                                         <div className="section--data assets">
                                                             <span className="label">
-                                                                Assets in wallet ({tokens?.length})
+                                                                Assets in wallet ({nativeTokensCount})
                                                             </span>
                                                         </div>
                                                         <img
@@ -245,79 +240,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         </div>
                                     </div>
                                 )}
-                                {areTokensLoading && (
-                                    <div className="section transaction--section">
-                                        <div className="section--header row space-between">
-                                            <div className="margin-t-s middle row">
-                                                <Spinner />
-                                                <p className="status">Loading Assets...</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                                {hasNativeTokens && (
-                                    <div className="section transaction--section">
-                                        <div className="section--header row space-between">
-                                            <div className="row middle">
-                                                <h2>
-                                                    Assets in Wallet ({tokens?.length})
-                                                </h2>
-                                                <Modal icon="info" data={mainHeaderMessage} />
-                                            </div>
-                                        </div>
-                                        <table className="transaction--table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Asset</th>
-                                                    <th>Symbol</th>
-                                                    <th>Quantity</th>
-                                                    <th>Price</th>
-                                                    <th>Value</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                { this.currentTokensPage?.map((token, k) => (
-                                                    <React.Fragment key={`${token?.name}${k}`}>
-                                                        <Asset
-                                                            key={k}
-                                                            name={token?.name}
-                                                            network={networkId}
-                                                            symbol={token?.symbol}
-                                                            amount={token.amount}
-                                                            price={token?.price}
-                                                            value={token?.value}
-                                                            tableFormat={true}
-                                                        />
-                                                    </React.Fragment>
-                                                ))}
-                                            </tbody>
-                                        </table>
-
-                                        {/* Only visible in mobile -- Card assets*/}
-                                        <div className="transaction-cards">
-                                            {this.currentTokensPage?.map((token, k) => (
-                                                <React.Fragment key={`${token?.name}${k}`}>
-                                                    <Asset
-                                                        key={k}
-                                                        name={token?.name}
-                                                        network={networkId}
-                                                        symbol={token?.symbol}
-                                                        amount={token?.amount}
-                                                        price={token?.price}
-                                                        value={token?.value}
-                                                    />
-                                                </React.Fragment>
-                                            ))}
-                                        </div>
-                                        <Pagination
-                                            currentPage={tokensPageNumber}
-                                            totalCount={tokens?.length ?? 0}
-                                            pageSize={AddressPage.TOKENS_PAGE_SIZE}
-                                            siblingsCount={1}
-                                            onPageChange={page => this.setState({ tokensPageNumber: page })}
-                                        />
-                                    </div>
-                                )}
+                                <AssetsTable networkId={networkId} outputs={outputs} />
                                 {areNftsLoading && (
                                     <div className="section transaction--section no-border">
                                         <div className="section--header row space-between">
@@ -368,13 +291,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         );
     }
 
-    private get currentTokensPage() {
-        const from = (this.state.tokensPageNumber - 1) * AddressPage.TOKENS_PAGE_SIZE;
-        const to = from + AddressPage.TOKENS_PAGE_SIZE;
-
-        return this.state.tokens?.slice(from, to);
-    }
-
     private get currentNftsPage() {
         const from = (this.state.nftsPageNumber - 1) * AddressPage.NFTS_PAGE_SIZE;
         const to = from + AddressPage.NFTS_PAGE_SIZE;
@@ -399,30 +315,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         this.setState({ outputs });
     }
 
-    private async getNativeTokens() {
-        if (!this.state.outputs || this.state.outputs?.length === 0) {
-            this.setState({ areTokensLoading: false });
-            return;
-        }
-        const tokens: ITokenDetails[] = [];
-
-        for (const output of this.state.outputs) {
-            if (!output.metadata.isSpent && output.output.type === BASIC_OUTPUT_TYPE) {
-                const basicOutput = output.output;
-                for (const token of basicOutput.nativeTokens ?? []) {
-                    tokens.push({
-                        name: token.id,
-                        amount: Number.parseInt(token.amount, 16)
-                    });
-                }
-            }
-        }
-
-        this.setState({
-            tokens,
-            areTokensLoading: false
-        });
-    }
 
     private async getNfts() {
         if (!this.state.bech32AddressDetails?.bech32) {
