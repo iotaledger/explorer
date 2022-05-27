@@ -466,7 +466,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     amount: relatedAmount,
                                     inputs: historicInputs,
                                     outputs: historicOutputs,
-                                    ledgerInclusionState: statusDetails.messageTangleStatus
+                                    ledgerInclusionState: "included"
                                 };
                                 if (relatedAmount < 0) {
                                     this.setState({ sent: this.state.sent + Math.abs(relatedAmount) });
