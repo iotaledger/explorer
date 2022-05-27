@@ -1,0 +1,117 @@
+import { BASIC_OUTPUT_TYPE, IOutputResponse } from "@iota/iota.js-stardust";
+import React, { useEffect, useState } from "react";
+import ITokenDetails from "../../routes/stardust/ITokenDetails";
+import Modal from "../Modal";
+import Pagination from "../Pagination";
+import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
+import Asset from "./Asset";
+
+interface AssetsTableProps {
+    networkId: string;
+    outputs: IOutputResponse[] | undefined;
+}
+
+const TOKEN_PAGE_SIZE: number = 10;
+
+const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
+    const [tokens, setTokens] = useState<ITokenDetails[]>();
+    const [currentPage, setCurrentPage] = useState<ITokenDetails[]>([]);
+    const [pageNumber, setPageNumber] = useState(1);
+
+    useEffect(() => {
+        if (outputs) {
+            const theTokens: ITokenDetails[] = [];
+            for (const output of outputs) {
+                if (!output.metadata.isSpent && output.output.type === BASIC_OUTPUT_TYPE) {
+                    const basicOutput = output.output;
+                    for (const token of basicOutput.nativeTokens ?? []) {
+                        const existingToken = theTokens.find(t => t.name === token.id);
+                        if (existingToken) {
+                            existingToken.amount += Number(token.amount);
+                        } else {
+                            theTokens.push({ name: token.id, amount: Number.parseInt(token.amount, 16) });
+                        }
+                    }
+                }
+            }
+
+            setTokens(theTokens);
+        }
+    }, [outputs]);
+
+    useEffect(() => {
+        const from = (pageNumber - 1) * TOKEN_PAGE_SIZE;
+        const to = from + TOKEN_PAGE_SIZE;
+        if (tokens) {
+            setCurrentPage(tokens.slice(from, to));
+        }
+    }, [tokens, pageNumber]);
+
+    return (
+        tokens && tokens?.length > 0 ? (
+            <div className="section transaction--section">
+                <div className="section--header row space-between">
+                    <div className="row middle">
+                        <h2>
+                            Assets in Wallet ({tokens?.length})
+                        </h2>
+                        <Modal icon="info" data={mainHeaderMessage} />
+                    </div>
+                </div>
+                <table className="transaction--table">
+                    <thead>
+                        <tr>
+                            <th>Asset</th>
+                            <th>Symbol</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        { currentPage.map((token, k) => (
+                            <React.Fragment key={`${token?.name}${k}`}>
+                                <Asset
+                                    key={k}
+                                    name={token?.name}
+                                    network={networkId}
+                                    symbol={token?.symbol}
+                                    amount={token.amount}
+                                    price={token?.price}
+                                    value={token?.value}
+                                    tableFormat={true}
+                                />
+                            </React.Fragment>
+                        ))}
+                    </tbody>
+                </table>
+
+                {/* Only visible in mobile -- Card assets*/}
+                <div className="transaction-cards">
+                    {currentPage.map((token, k) => (
+                        <React.Fragment key={`${token?.name}${k}`}>
+                            <Asset
+                                key={k}
+                                name={token?.name}
+                                network={networkId}
+                                symbol={token?.symbol}
+                                amount={token?.amount}
+                                price={token?.price}
+                                value={token?.value}
+                            />
+                        </React.Fragment>
+                    ))}
+                </div>
+                <Pagination
+                    currentPage={pageNumber}
+                    totalCount={tokens?.length ?? 0}
+                    pageSize={TOKEN_PAGE_SIZE}
+                    siblingsCount={1}
+                    onPageChange={number => setPageNumber(number)}
+                />
+            </div>
+        ) : null
+    );
+};
+
+export default AssetsTable;

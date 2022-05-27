@@ -379,12 +379,9 @@ export class StardustTangleHelper {
         if (searchQuery.foundryId) {
             try {
                 const foundryOutputs = await indexerPlugin.foundry(searchQuery.foundryId);
-
                 if (foundryOutputs.items.length > 0) {
-                    const foundryOutput = await client.output(foundryOutputs.items[0]);
-
                     return {
-                        output: foundryOutput
+                        foundryOutputId: foundryOutputs.items[0]
                     };
                 }
             } catch {}

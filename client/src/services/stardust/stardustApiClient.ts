@@ -98,7 +98,7 @@ export class StardustApiClient extends ApiClient {
      */
      public async nftDetails(request: INftDetailsRequest): Promise<INftOutputsResponse> {
         return this.callApi<unknown, INftOutputsResponse>(
-            `stardust/nfts/${request.network}/${request.nftId}`,
+            `stardust/nft/${request.network}/${request.nftId}`,
             "get"
         );
     }

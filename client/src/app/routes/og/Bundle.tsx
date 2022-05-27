@@ -9,8 +9,8 @@ import { ConfirmationState } from "../../../models/confirmationState";
 import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { ICachedTransaction } from "../../../models/ICachedTransaction";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
-import MessageButton from "../../components/chrysalis/MessageButton";
 import Confirmation from "../../components/Confirmation";
+import CopyButton from "../../components/CopyButton";
 import Currency from "../../components/Currency";
 import Spinner from "../../components/Spinner";
 import "./Bundle.scss";
@@ -217,7 +217,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                         </div>
                                         <div className="card--value row middle">
                                             <span className="margin-r-t">{this.state.bundle}</span>
-                                            <MessageButton
+                                            <CopyButton
                                                 onClick={() => ClipboardHelper.copy(
                                                     this.state.bundle)}
                                                 buttonType="copy"

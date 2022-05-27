@@ -30,6 +30,11 @@ export interface ISearchResponse extends IResponse {
     aliasOutput?: IOutputResponse;
     
     /**
+     * Foundry output if it was found.
+     */
+    foundryOutputId?: string;
+
+    /**
      * Nft outputs.
      */
     nftOutputs?: IOutputsResponse;
