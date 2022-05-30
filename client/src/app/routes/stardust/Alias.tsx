@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
 import { ALIAS_ADDRESS_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
+import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -261,12 +261,12 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
     }
 
     private async getControlledFoundries() {
-        if (!this.state.bech32AddressDetails?.bech32) {
+        if (!this.state.bech32AddressDetails?.bech32 || !this.state.bech32AddressDetails.hex) {
             this.setState({ areFoundriesLoading: false });
             return;
         }
-        const networkId = this.props.match.params.network;
 
+        const networkId = this.props.match.params.network;
         const foundries: IFoundryDetails[] = [];
 
         const foundryOutputs = await this._tangleCacheService.foundriesByAliasAddress({
@@ -277,10 +277,15 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         if (foundryOutputs?.foundryOutputsResponse && foundryOutputs?.foundryOutputsResponse?.items.length > 0) {
             for (const foundryOutputId of foundryOutputs.foundryOutputsResponse.items) {
                 const outputDetails = await this._tangleCacheService.outputDetails(networkId, foundryOutputId);
+
                 if (outputDetails?.output.type === FOUNDRY_OUTPUT_TYPE) {
-                    foundries.push({
-                        foundryId: this.state.bech32AddressDetails?.bech32.toString() + outputDetails?.output.serialNumber.toString() + outputDetails?.output.tokenScheme.type.toString()
-                    });
+                    const aliasId = this.state.bech32AddressDetails.hex;
+                    const serialNumber = outputDetails.output.serialNumber;
+                    const tokenSchemeType = outputDetails.output.tokenScheme.type;
+
+                    const foundryId = this.buildFoundyId(aliasId, serialNumber, tokenSchemeType);
+
+                    foundries.push({ foundryId });
                 }
             }
         }
@@ -289,6 +294,29 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
             foundries,
             areFoundriesLoading: false
         });
+    }
+
+    /**
+     * Build a FoundryId from aliasAddres, serialNumber and tokenSchemeType
+     * @param aliasAddress The Alias address that controls the Foundry.
+     * @param serialNumber The serial number of the Foundry.
+     * @param tokenSchemeType The token scheme type of the Foundry.
+     * @returns The FoundryId string.
+     */
+    private buildFoundyId(aliasId: string, serialNumber: number, tokenSchemeType: number) {
+        const typeWS = new WriteStream();
+        typeWS.writeUInt8("alias address type", ALIAS_ADDRESS_TYPE);
+        const aliasAddress = HexHelper.addPrefix(
+            `${typeWS.finalHex()}${HexHelper.stripPrefix(aliasId)}`
+        );
+        const serialNumberWS = new WriteStream();
+        serialNumberWS.writeUInt32("serialNumber", serialNumber);
+        const serialNumberHex = serialNumberWS.finalHex();
+        const tokenSchemeTypeWS = new WriteStream();
+        tokenSchemeTypeWS.writeUInt8("tokenSchemeType", tokenSchemeType);
+        const tokenSchemeTypeHex = tokenSchemeTypeWS.finalHex();
+
+        return `${aliasAddress}${serialNumberHex}${tokenSchemeTypeHex}`
     }
 
     /**
