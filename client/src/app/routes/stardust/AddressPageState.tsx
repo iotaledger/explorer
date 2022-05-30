@@ -27,7 +27,7 @@ export interface AddressPageState {
     /**
      * The outputs for the address.
      */
-    outputs?: IOutputResponse[];
+    outputResponse?: IOutputResponse[];
 
     /**
      * Format the amount in full.

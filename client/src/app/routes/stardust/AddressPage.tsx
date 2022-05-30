@@ -1,5 +1,5 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
-import { BASIC_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
+import { IOutputResponse, NFT_OUTPUT_TYPE, TREASURY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import React, { ReactNode } from "react";
@@ -118,15 +118,10 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      */
     public render(): ReactNode {
         const { bech32AddressDetails, balance, areNftsLoading,
-            outputs, formatFull, nfts, nftsPageNumber } = this.state;
+            outputResponse, formatFull, nfts, nftsPageNumber } = this.state;
 
         const networkId = this.props.match.params.network;
-        // TODO This counts all token outputs instead of distinct tokens
-        const nativeTokensCount = outputs ? outputs.filter(output => (
-            !output.metadata.isSpent &&
-                output.output.type === BASIC_OUTPUT_TYPE &&
-                output.output.nativeTokens && output.output.nativeTokens.length > 0
-        )).length : 0;
+        const nativeTokensCount = outputResponse ? this.countDistinctNativeTokens(outputResponse) : 0;
         const hasNativeTokens = nativeTokensCount > 0;
         const hasNfts = nfts && nfts.length > 0;
 
@@ -231,7 +226,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         </div>
                                     )}
                                 </div>
-                                {outputs && outputs.length === 0 && (
+                                {outputResponse && outputResponse.length === 0 && (
                                     <div className="section">
                                         <div className="section--data">
                                             <p>
@@ -240,7 +235,10 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         </div>
                                     </div>
                                 )}
-                                <AssetsTable networkId={networkId} outputs={outputs} />
+                                <AssetsTable
+                                    networkId={networkId}
+                                    outputs={outputResponse?.map(output => output.output)}
+                                />
                                 {areNftsLoading && (
                                     <div className="section transaction--section no-border">
                                         <div className="section--header row space-between">
@@ -291,6 +289,20 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         );
     }
 
+    private countDistinctNativeTokens(outputResponse: IOutputResponse[]): number {
+        const distinctNativeTokens: string[] = [];
+        for (const response of outputResponse) {
+            if (response.output.type !== TREASURY_OUTPUT_TYPE && response.output.nativeTokens) {
+                for (const nativeToken of response.output.nativeTokens) {
+                    if (!distinctNativeTokens.includes(nativeToken.id)) {
+                        distinctNativeTokens.push(nativeToken.id);
+                    }
+                }
+            }
+        }
+        return distinctNativeTokens.length;
+    }
+
     private get currentNftsPage() {
         const from = (this.state.nftsPageNumber - 1) * AddressPage.NFTS_PAGE_SIZE;
         const to = from + AddressPage.NFTS_PAGE_SIZE;
@@ -303,16 +315,16 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             return;
         }
         const networkId = this.props.match.params.network;
-        const outputs: IOutputResponse[] = [];
+        const outputResponse: IOutputResponse[] = [];
 
         for (const outputId of this.state.outputIds) {
             const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
             if (outputDetails) {
-                outputs.push(outputDetails);
+                outputResponse.push(outputDetails);
             }
         }
 
-        this.setState({ outputs });
+        this.setState({ outputResponse });
     }
 
 

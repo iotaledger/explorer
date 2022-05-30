@@ -9,12 +9,14 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
+import AssetsTable from "../../components/stardust/AssetsTable";
 import NetworkContext from "../../context/NetworkContext";
 import { FoundryProps } from "./FoundryProps";
 import "./Foundry.scss";
 
 const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({ match: { params: { network, outputId } } }) => {
     const { tokenInfo } = useContext(NetworkContext);
+    const [output, setOutput] = useState<IFoundryOutput>();
     const [serialNumber, setSerialNumber] = useState<number>();
     const [controllerAlias, setControllerAlias] = useState<string>();
     const [balance, setBalance] = useState<number>();
@@ -30,6 +32,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({ match: { params:
             const immutableAliasUnlockCondition = (foundryOutput.unlockConditions[0] as IImmutableAliasUnlockCondition);
             const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
 
+            setOutput(foundryOutput);
             setSerialNumber(foundryOutput.serialNumber);
             setControllerAlias(aliasId);
             setBalance(Number(foundryOutput.amount));
@@ -162,11 +165,13 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({ match: { params:
                             </div>
                         </div>
 
+                        {output && (
+                            <AssetsTable networkId={network} outputs={[output]} />
+                        )}
                     </div>
                 </div>
             </div>
         </div>
     );
 };
-
 export default Foundry;
