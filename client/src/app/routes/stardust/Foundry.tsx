@@ -14,7 +14,9 @@ import NetworkContext from "../../context/NetworkContext";
 import { FoundryProps } from "./FoundryProps";
 import "./Foundry.scss";
 
-const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({ match: { params: { network, outputId } } }) => {
+const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
+    { history, match: { params: { network, outputId } } }
+) => {
     const { tokenInfo } = useContext(NetworkContext);
     const [output, setOutput] = useState<IFoundryOutput>();
     const [serialNumber, setSerialNumber] = useState<number>();
@@ -28,18 +30,23 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({ match: { params:
     useEffect(() => {
         const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
         tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
-            const foundryOutput = outputDetails?.output as IFoundryOutput;
-            const immutableAliasUnlockCondition = (foundryOutput.unlockConditions[0] as IImmutableAliasUnlockCondition);
-            const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
+            if (outputDetails) {
+                const foundryOutput = outputDetails.output as IFoundryOutput;
+                const immutableAliasUnlockCondition =
+                    foundryOutput.unlockConditions[0] as IImmutableAliasUnlockCondition;
+                const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
 
-            setOutput(foundryOutput);
-            setSerialNumber(foundryOutput.serialNumber);
-            setControllerAlias(aliasId);
-            setBalance(Number(foundryOutput.amount));
-            setTokenScheme(foundryOutput.tokenScheme.type);
-            setMaximumSupply(Number(foundryOutput.tokenScheme.maximumSupply));
-            setMintedTokens(Number(foundryOutput.tokenScheme.mintedTokens));
-            setMeltedTokens(Number(foundryOutput.tokenScheme.meltedTokens));
+                setOutput(foundryOutput);
+                setSerialNumber(foundryOutput.serialNumber);
+                setControllerAlias(aliasId);
+                setBalance(Number(foundryOutput.amount));
+                setTokenScheme(foundryOutput.tokenScheme.type);
+                setMaximumSupply(Number(foundryOutput.tokenScheme.maximumSupply));
+                setMintedTokens(Number(foundryOutput.tokenScheme.mintedTokens));
+                setMeltedTokens(Number(foundryOutput.tokenScheme.meltedTokens));
+            } else {
+                history.replace(`/${network}/search/${outputId}`);
+            }
         })
         .catch(_ => {});
     }, []);
