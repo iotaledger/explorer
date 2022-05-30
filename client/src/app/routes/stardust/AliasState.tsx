@@ -1,7 +1,6 @@
 /* eslint-disable no-shadow */
 import { IAliasOutput } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
-import IFoundryDetails from "./IFoundryDetails";
 
 export interface AliasState {
     /**
@@ -10,44 +9,44 @@ export interface AliasState {
     bech32AddressDetails?: IBech32AddressDetails;
 
     /**
-     * Are the component native tokens loading.
+     * Are the controlled Foundries loading.
      */
     areFoundriesLoading: boolean;
 
     /**
-     * List of foundries of the alias.
+     * List of foundries controlled by the alias.
      */
-    foundries?: IFoundryDetails[];
+    foundries?: { foundryId: string }[];
 
     /**
-     * Current page number in native tokens table.
+     * Current page number of controlled Foundries.
      */
     foundriesPageNumber: number;
 
     /**
-     * Current page in tokens table.
+     * Current page of controlled Foundries.
      */
-    foundriesPage: IFoundryDetails[];
+    foundriesPage: { foundryId: string }[];
 
     /**
-     * alias output.
+     * The Alias output.
      */
     output?: IAliasOutput;
 
     /**
-     * Hex view of data.
+     * Hex form of state metadata.
      */
-    hexData?: string;
+    stateMetadataHex?: string;
 
     /**
-     * UTF8 view of data.
+     * UTF8 form of state metadata.
      */
-    utf8Data?: string;
+    stateMetadataUtf8?: string;
 
     /**
-     * JSON view of data.
+     * JSON form of state metadata.
      */
-    jsonData?: string;
+    stateMetadataJson?: string;
 
 }
 

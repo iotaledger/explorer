@@ -5,11 +5,6 @@ export interface ControlledFoundryProps {
     foundryId: string;
 
     /**
-     * Created date of foundry
-     */
-    dateCreated?: Date;
-
-    /**
      * Network
      */
     network: string;

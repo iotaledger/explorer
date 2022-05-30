@@ -3,8 +3,7 @@ import "./Transaction.scss";
 import { Link } from "react-router-dom";
 import { ControlledFoundryProps } from "./ControlledFoundryProps";
 
-const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, dateCreated, tableFormat, network }) => {
-    const addPaddingLeft = { paddingLeft: "16px" };
+const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, tableFormat, network }) => {
 
     return (
         tableFormat ? (
@@ -17,7 +16,6 @@ const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, dateCr
                         {foundryId}
                     </Link>
                 </td>
-                <td style={addPaddingLeft}>{dateCreated ?? "-"}</td>
             </tr>
         ) : (
             <div className="transaction-card">
@@ -34,7 +32,6 @@ const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, dateCr
                 </div>
                 <div className="field">
                     <div className="label">Date Created</div>
-                    <div className="value">{dateCreated ?? "-"}</div>
                 </div>
             </div >
         )

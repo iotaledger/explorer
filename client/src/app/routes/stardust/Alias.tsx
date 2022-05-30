@@ -23,7 +23,6 @@ import mainHeaderMessage from "./../../../assets/modals/address/main-header.json
 import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
 import { AliasState } from "./AliasState";
-import IFoundryDetails from "./IFoundryDetails";
 
 /**
  * Component which will show the alias page for stardust.
@@ -102,13 +101,13 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         const hasFoundries = this.state.foundries && this.state.foundries.length > 0;
         const TOGGLE_DATA_OPTIONS = [
             {
-                label: this.state.jsonData ? "JSON" : "Text",
-                content: this.state.jsonData ?? this.state.utf8Data,
-                isJson: this.state.jsonData !== undefined
+                label: this.state.stateMetadataJson ? "JSON" : "Text",
+                content: this.state.stateMetadataJson ?? this.state.stateMetadataUtf8,
+                isJson: this.state.stateMetadataJson !== undefined
             },
             {
                 label: "HEX",
-                content: this.state.hexData
+                content: this.state.stateMetadataHex
             }
         ];
 
@@ -202,7 +201,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                             <thead>
                                                 <tr>
                                                     <th>Foundry Id</th>
-                                                    <th>Date Created</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -212,7 +210,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                                             key={k}
                                                             foundryId={foundry?.foundryId}
                                                             network={networkId}
-                                                            dateCreated={foundry?.createdDate}
                                                             tableFormat={true}
                                                         />
                                                     </React.Fragment>
@@ -228,7 +225,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                                         key={k}
                                                         foundryId={foundry?.foundryId}
                                                         network={networkId}
-                                                        dateCreated={foundry?.createdDate}
                                                     />
                                                 </React.Fragment>
                                             ))}
@@ -267,7 +263,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         }
 
         const networkId = this.props.match.params.network;
-        const foundries: IFoundryDetails[] = [];
+        const foundries: { foundryId: string }[] = [];
 
         const foundryOutputs = await this._tangleCacheService.foundriesByAliasAddress({
             network: networkId,
@@ -324,24 +320,24 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
      * @returns Object with indexes and data in raw and utf-8 format.
      */
      private loadPayload() {
-        let hexData;
-        let utf8Data;
-        let jsonData;
+        let stateMetadataHex;
+        let stateMetadataUtf8;
+        let stateMetadataJson;
 
         if (this.state.output?.stateMetadata) {
-            hexData = this.state.output?.stateMetadata;
-            utf8Data = Converter.hexToUtf8(this.state.output?.stateMetadata);
+            stateMetadataHex = this.state.output?.stateMetadata;
+            stateMetadataUtf8 = Converter.hexToUtf8(this.state.output?.stateMetadata);
 
             try {
-                if (utf8Data) {
-                    jsonData = JSON.stringify(JSON.parse(utf8Data), undefined, "  ");
+                if (stateMetadataUtf8) {
+                    stateMetadataJson = JSON.stringify(JSON.parse(stateMetadataUtf8), undefined, "  ");
                 }
             } catch { }
         }
         return {
-            utf8Data,
-            hexData,
-            jsonData
+            stateMetadataUtf8,
+            stateMetadataHex,
+            stateMetadataJson
         };
     }
 }
