@@ -41,6 +41,7 @@
         "aws-sdk": "^2.1005.0",
         "compression": "^1.7.4",
         "cors": "^2.8.5",
+        "dotenv": "^16.0.1",
         "express": "^4.17.1",
         "mqtt": "^4.2.8",
         "node-fetch": "^2.6.7",

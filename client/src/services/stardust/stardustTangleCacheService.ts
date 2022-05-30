@@ -5,6 +5,7 @@ import { IFoundriesRequest } from "../../models/api/stardust/IFoundriesRequest";
 import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
+import { INftDetailsResponse } from "../../models/api/stardust/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -231,22 +232,22 @@ export class StardustTangleCacheService extends TangleCacheService {
      public async nftDetails(
         request: INftDetailsRequest,
         skipCache: boolean = false
-    ): Promise<INftOutputsResponse | undefined> {
+    ): Promise<INftDetailsResponse | undefined> {
         const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`];
 
-        if (!cacheEntry?.data?.nftOutputs || skipCache) {
+        if (!cacheEntry?.data?.nftDetails || skipCache) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
             const nftDetails = await apiClient.nftDetails(request);
             this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`] = {
-                data: { nftOutputs: nftDetails.outputs },
+                data: {
+                    nftDetails
+                },
                 cached: Date.now()
             };
         }
 
-        return {
-            outputs: this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`]?.data?.nftOutputs
-        };
+        return this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`]?.data?.nftDetails;
     }
 
     /**

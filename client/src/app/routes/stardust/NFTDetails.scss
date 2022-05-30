@@ -77,7 +77,7 @@
               &.opened {
                 .icon {
                   svg {
-                    transform: rotate(-90deg);
+                    transform: rotate(90deg);
       
                     path {
                       stroke: var(--active-item-color);

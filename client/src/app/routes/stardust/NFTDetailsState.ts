@@ -1,13 +1,6 @@
+import { INftDetailsResponse } from "../../../models/api/stardust/INftDetailsResponse";
 
 export interface NFTDetailsState {
-    /**
-     * Nft Id.
-     */
-    nftId: string;
-    /**
-     * amount.
-     */
-    amount: number;
     /**
      * Current page in activity history table.
      */
@@ -29,12 +22,8 @@ export interface NFTDetailsState {
     showGeneralItems: boolean;
 
     /**
-     * Show attributes
+     * History details
      */
-    showAttributes: boolean;
+    nftDetails: INftDetailsResponse;
 
-    /**
-     * Show description
-     */
-    showDescription: boolean;
 }
