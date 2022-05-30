@@ -1,11 +1,11 @@
 export interface ControlledFoundryProps {
     /**
-     * Foundry Id.
+     * The foundry id.
      */
     foundryId: string;
 
     /**
-     * Network
+     * The network id in context.
      */
     network: string;
 
