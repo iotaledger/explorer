@@ -4,8 +4,8 @@ import { IBaseTokenGetRequest } from "../../models/api/stardust/IBaseTokenGetReq
 import { IBaseTokenGetResponse } from "../../models/api/stardust/IBaseTokenGetResponse";
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
-import { IFoundryOutputsRequest } from "../../models/api/stardust/IFoundryOutputsRequest";
-import { IFoundryOutputsResponse } from "../../models/api/stardust/IFoundryOutputsResponse";
+import { IFoundriesRequest } from "../../models/api/stardust/IFoundriesRequest";
+import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
@@ -104,13 +104,13 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
-     * Get the foundry outputs.
+     * Get the foundries controlled by an alias address.
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async foundryOutputs(request: IFoundryOutputsRequest): Promise<IFoundryOutputsResponse> {
-        return this.callApi<unknown, IFoundryOutputsResponse>(
-            `stardust/foundry/${request.network}/${request.address}`,
+    public async aliasFoundries(request: IFoundriesRequest): Promise<IFoundriesResponse> {
+        return this.callApi<unknown, IFoundriesResponse>(
+            `stardust/foundries/${request.network}/${request.aliasAddress}`,
             "get"
         );
     }

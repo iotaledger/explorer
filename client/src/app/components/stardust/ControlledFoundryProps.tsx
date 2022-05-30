@@ -1,4 +1,4 @@
-export interface FoundryProps {
+export interface ControlledFoundryProps {
     /**
      * Foundry Id.
      */

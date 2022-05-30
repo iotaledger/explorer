@@ -8,7 +8,7 @@ import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/ITransactionsDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
-import { IFoundryOutputsResponse } from "../../models/api/stardust/IFoundryOutputsResponse";
+import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -226,25 +226,27 @@ export class StardustTangleHelper {
     }
 
     /**
-     * Get the foundry outputs.
+     * Get controlled Foundry output id by controller Alias address
      * @param network The network to find the items on.
-     * @param address The address to get the details for.
+     * @param aliasAddress The alias address to get the controlled Foundries for.
      * @returns The foundry outputs.
      */
-    public static async foundryOutputs(
+    public static async aliasFoundries(
         network: INetwork,
-        address: string
-    ): Promise<IFoundryOutputsResponse | undefined> {
+        aliasAddress: string
+    ): Promise<IFoundriesResponse | undefined> {
         try {
             const client = new SingleNodeClient(network.provider, {
                 userName: network.user,
                 password: network.password
             });
             const indexerPlugin = new IndexerPluginClient(client);
+            const foundryOutputsResponse = await indexerPlugin.foundries({ aliasAddressBech32: aliasAddress });
 
-            const foundryOutputs = await indexerPlugin.foundries({ aliasAddressBech32: address });
+            console.log(foundryOutputsResponse);
+
             return {
-                outputs: foundryOutputs
+                foundryOutputsResponse
             };
         } catch {}
     }

@@ -8,7 +8,6 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { STARDUST } from "../../../models/db/protocolVersion";
-import { NetworkService } from "../../../services/networkService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import CopyButton from "../../components/CopyButton";
@@ -17,7 +16,7 @@ import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
-import Foundry from "../../components/stardust/Foundry";
+import ControlledFoundry from "../../components/stardust/ControlledFoundry";
 import NetworkContext from "../../context/NetworkContext";
 import { AliasRouteProps } from "../AliasRouteProps";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
@@ -27,7 +26,7 @@ import { AliasState } from "./AliasState";
 import IFoundryDetails from "./IFoundryDetails";
 
 /**
- * Component which will show the address page for stardust.
+ * Component which will show the alias page for stardust.
  */
 class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasState> {
     /**
@@ -46,27 +45,13 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
     private readonly _tangleCacheService: StardustTangleCacheService;
 
     /**
-     * The hrp of bech addresses.
-     */
-    private readonly _bechHrp: string;
-
-    /**
      * Create a new instance of Addr.
      * @param props The props.
      */
     constructor(props: RouteComponentProps<AliasRouteProps>) {
         super(props);
-        const networkService = ServiceFactory.get<NetworkService>("network");
-        const networkConfig = this.props.match.params.network
-            ? networkService.get(this.props.match.params.network)
-            : undefined;
-
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
-
-        this._bechHrp = networkConfig?.bechHrp ?? "iota";
-
         this.state = {
-            ...Bech32AddressHelper.buildAddress(this._bechHrp, props.match.params.aliasId),
             areFoundriesLoading: true,
             foundries: [],
             foundriesPageNumber: 1,
@@ -79,10 +64,11 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
+        const bech32Hrp = this.context.bech32Hrp;
+        const networkId = this.props.match.params.network;
+        const aliasId = this.props.match.params.aliasId;
 
-        const result = await this._tangleCacheService.outputDetails(
-            this.props.match.params.network, this.props.match.params.aliasId
-        );
+        const result = await this._tangleCacheService.outputDetails(networkId, aliasId);
 
         if (result?.output?.type === ALIAS_OUTPUT_TYPE) {
             window.scrollTo({
@@ -91,19 +77,19 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                 behavior: "smooth"
             });
 
+            const bech32AddressDetails = Bech32AddressHelper.buildAddress(
+                    bech32Hrp,
+                    result.output.aliasId,
+                    ALIAS_ADDRESS_TYPE);
             this.setState(this.loadPayload());
             this.setState({
-                bech32AddressDetails: Bech32AddressHelper.buildAddress(
-                    this._bechHrp,
-                    result.output?.aliasId,
-                    ALIAS_ADDRESS_TYPE
-                ),
+                bech32AddressDetails,
                 output: result.output
             }, async () => {
                 await this.getControlledFoundries();
             });
         } else {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.aliasId}`);
+            this.props.history.replace(`/${networkId}/search/${aliasId}`);
         }
     }
 
@@ -179,7 +165,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                     <div className="section--data">
                                         <div>
                                             <div className="label">
-                                                State Index
+                                                Index
                                             </div>
                                             <span>{this.state.output?.stateIndex}</span>
                                         </div>
@@ -222,7 +208,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                             <tbody>
                                                 { this.currentFoundriesPage?.map((foundry, k) => (
                                                     <React.Fragment key={`${foundry?.foundryId}${k}`}>
-                                                        <Foundry
+                                                        <ControlledFoundry
                                                             key={k}
                                                             foundryId={foundry?.foundryId}
                                                             network={networkId}
@@ -238,7 +224,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                         <div className="transaction-cards">
                                             {this.currentFoundriesPage?.map((foundry, k) => (
                                                 <React.Fragment key={`${foundry?.foundryId}${k}`}>
-                                                    <Foundry
+                                                    <ControlledFoundry
                                                         key={k}
                                                         foundryId={foundry?.foundryId}
                                                         network={networkId}
@@ -283,14 +269,14 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
 
         const foundries: IFoundryDetails[] = [];
 
-        const foundryOutputs = await this._tangleCacheService.foundry({
+        const foundryOutputs = await this._tangleCacheService.foundriesByAliasAddress({
             network: networkId,
-            address: this.state.bech32AddressDetails?.bech32
+            aliasAddress: this.state.bech32AddressDetails?.bech32
         });
 
-        if (foundryOutputs?.outputs && foundryOutputs?.outputs?.items.length > 0) {
-            for (const outputId of foundryOutputs.outputs.items) {
-                const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
+        if (foundryOutputs?.foundryOutputsResponse && foundryOutputs?.foundryOutputsResponse?.items.length > 0) {
+            for (const foundryOutputId of foundryOutputs.foundryOutputsResponse.items) {
+                const outputDetails = await this._tangleCacheService.outputDetails(networkId, foundryOutputId);
                 if (outputDetails?.output.type === FOUNDRY_OUTPUT_TYPE) {
                     foundries.push({
                         foundryId: this.state.bech32AddressDetails?.bech32.toString() + outputDetails?.output.serialNumber.toString() + outputDetails?.output.tokenScheme.type.toString()

@@ -1,20 +1,11 @@
-/* eslint-disable jsdoc/require-param */
-/* eslint-disable jsdoc/require-returns */
-/* eslint-disable @typescript-eslint/naming-convention */
 import React from "react";
 import "./Transaction.scss";
 import { Link } from "react-router-dom";
-import { FoundryProps } from "./FoundryProps";
+import { ControlledFoundryProps } from "./ControlledFoundryProps";
 
-/**
- * Component which will display an asset.
- */
-const Foundry: React.FC<FoundryProps> = ({ foundryId, dateCreated, tableFormat, network }) => {
+const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, dateCreated, tableFormat, network }) => {
     const addPaddingLeft = { paddingLeft: "16px" };
-    /**
-     * Render the component.
-     * @returns The node to render.
-     */
+
     return (
         tableFormat ? (
             <tr>
@@ -50,5 +41,5 @@ const Foundry: React.FC<FoundryProps> = ({ foundryId, dateCreated, tableFormat, 
     );
 };
 
-export default Foundry;
+export default ControlledFoundry;
 
