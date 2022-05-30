@@ -168,7 +168,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                     <div className="section--data">
                                         <div>
                                             <div className="label">
-                                                Index
+                                                State Index
                                             </div>
                                             <div className="value row middle">
                                                 <span className="margin-r-t">{this.state.output?.stateIndex}</span>
