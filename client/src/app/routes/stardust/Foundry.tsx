@@ -1,5 +1,5 @@
 import { IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
@@ -17,6 +17,7 @@ import "./Foundry.scss";
 const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     { history, match: { params: { network, outputId } } }
 ) => {
+    const isMounted = useRef(false);
     const { tokenInfo } = useContext(NetworkContext);
     const [output, setOutput] = useState<IFoundryOutput>();
     const [serialNumber, setSerialNumber] = useState<number>();
@@ -28,6 +29,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     const [meltedTokens, setMeltedTokens] = useState<number>();
 
     useEffect(() => {
+        isMounted.current = true;
         const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
         tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
             if (outputDetails) {
@@ -36,19 +38,25 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                     foundryOutput.unlockConditions[0] as IImmutableAliasUnlockCondition;
                 const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
 
-                setOutput(foundryOutput);
-                setSerialNumber(foundryOutput.serialNumber);
-                setControllerAlias(aliasId);
-                setBalance(Number(foundryOutput.amount));
-                setTokenScheme(foundryOutput.tokenScheme.type);
-                setMaximumSupply(Number(foundryOutput.tokenScheme.maximumSupply));
-                setMintedTokens(Number(foundryOutput.tokenScheme.mintedTokens));
-                setMeltedTokens(Number(foundryOutput.tokenScheme.meltedTokens));
+                if (isMounted.current) {
+                    setOutput(foundryOutput);
+                    setSerialNumber(foundryOutput.serialNumber);
+                    setControllerAlias(aliasId);
+                    setBalance(Number(foundryOutput.amount));
+                    setTokenScheme(foundryOutput.tokenScheme.type);
+                    setMaximumSupply(Number(foundryOutput.tokenScheme.maximumSupply));
+                    setMintedTokens(Number(foundryOutput.tokenScheme.mintedTokens));
+                    setMeltedTokens(Number(foundryOutput.tokenScheme.meltedTokens));
+                }
             } else {
                 history.replace(`/${network}/search/${outputId}`);
             }
         })
         .catch(_ => {});
+
+        return () => {
+            isMounted.current = false;
+        };
     }, []);
 
     return (
