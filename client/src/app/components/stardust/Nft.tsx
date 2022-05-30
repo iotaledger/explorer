@@ -21,14 +21,16 @@ const Nft: React.FC<NftProps> = ({ id, name, network, image }) => {
                 to={`/${network}/nft/${id}`}
                 className="margin-r-t"
             >
-                <img
-                    src={image}
-                    alt="bundle"
-                    className="nft-image"
-                />
+                <div className="nft-data">
+                    <img
+                        src={image}
+                        alt="bundle"
+                        className="nft-image"
+                    />
+                    {name && <span className="nft-name">Token: {name}</span>}
+                    <span className="nft-id">NFT Id: {shortId}</span>
+                </div>
             </Link>
-            {name && <span className="nft-name">Token: {name}</span>}
-            <span className="nft-id">NFT Id: {shortId}</span>
         </div>
     );
 };

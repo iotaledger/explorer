@@ -165,7 +165,7 @@
     justify-content: space-between;
 
     .section--assets {
-      background: #F8F9FA;
+      background: var(--card-body);
       border-radius: 6px;
       width: 469px;
       height: 85px;
@@ -194,7 +194,7 @@
     }
 
     .section--NFT {
-      background: #F8F9FA;
+      background: var(--card-body);
       border-radius: 6px;
       width: 469px;
       height: 85px;

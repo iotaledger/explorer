@@ -8,26 +8,31 @@
     margin-right: 20px;
     margin-bottom: 20px;
 
-    .nft-image {
-        width: 200px;
-        height: 180px;
-        margin-top: 6px;
-    }
+    .nft-data {
+        display: flex;
+        flex-direction: column;
 
-    .nft-name {
-        margin-top: 12px;
-        font-weight: 600;
-    }
-
-    .nft-id {
-        margin-top: 12px;
-        text-align: center;
-        @include font-size(12px);
-        font-family: $ibm-plex-mono;
-        font-weight: normal;
-        letter-spacing: 0.02em;
-        line-height: 20px;
-        color: $blue-5;
-        line-height: 16px;
+        .nft-image {
+            width: 200px;
+            height: 180px;
+            margin-top: 6px;
+        }
+    
+        .nft-name {
+            margin-top: 12px;
+            font-weight: 600;
+        }
+    
+        .nft-id {
+            margin-top: 12px;
+            text-align: center;
+            @include font-size(12px);
+            font-family: $ibm-plex-mono;
+            font-weight: normal;
+            letter-spacing: 0.02em;
+            line-height: 20px;
+            color: $blue-5;
+            line-height: 16px;
+        }
     }
 }
