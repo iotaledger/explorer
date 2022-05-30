@@ -65,11 +65,11 @@ export class TransactionsHelper {
             }
 
             for (let i = 0; i < transactionMessage.payload.essence.inputs.length; i++) {
-                const input = transactionMessage.payload.essence.inputs[i];
+                const input: IUTXOInput = transactionMessage.payload.essence.inputs[i];
                 const isGenesis = input.transactionId === GENESIS_HASH;
                 const writeOutputStream = new WriteStream();
                 writeOutputStream.writeUInt16("transactionOutputIndex", input.transactionOutputIndex);
-                const outputHash = input.transactionId + writeOutputStream.finalHex();
+                const outputHash = `${input.transactionId}${writeOutputStream.finalHex()}`;
                 const transactionOutputIndex = input.transactionOutputIndex;
                 const transactionResult = await tangleCacheService.search(
                     network, input.transactionId);
