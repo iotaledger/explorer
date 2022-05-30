@@ -143,9 +143,13 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                                 Alias ID
                                             </div>
                                             <div className="value row middle code">
-                                                <span className="margin-r-t">{this.props.match.params.aliasId}</span>
+                                                <span className="margin-r-t">
+                                                    {this.state.bech32AddressDetails?.hex}
+                                                </span>
                                                 <CopyButton
-                                                    onClick={() => ClipboardHelper.copy(this.props.match.params.aliasId)}
+                                                    onClick={() => ClipboardHelper.copy(
+                                                        this.state.bech32AddressDetails?.hex
+                                                    )}
                                                     buttonType="copy"
                                                     labelPosition="top"
                                                 />
@@ -166,7 +170,9 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                             <div className="label">
                                                 Index
                                             </div>
-                                            <span>{this.state.output?.stateIndex}</span>
+                                            <div className="value row middle">
+                                                <span className="margin-r-t">{this.state.output?.stateIndex}</span>
+                                            </div>
                                         </div>
                                         <div className="margin-t-s">
                                             {TOGGLE_DATA_OPTIONS.some(option => option.content !== undefined) && (
