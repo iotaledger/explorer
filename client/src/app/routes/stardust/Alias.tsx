@@ -294,7 +294,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
 
     /**
      * Build a FoundryId from aliasAddres, serialNumber and tokenSchemeType
-     * @param aliasAddress The Alias address that controls the Foundry.
+     * @param aliasId The id of the Alias that controls the Foundry.
      * @param serialNumber The serial number of the Foundry.
      * @param tokenSchemeType The token scheme type of the Foundry.
      * @returns The FoundryId string.
@@ -312,7 +312,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         tokenSchemeTypeWS.writeUInt8("tokenSchemeType", tokenSchemeType);
         const tokenSchemeTypeHex = tokenSchemeTypeWS.finalHex();
 
-        return `${aliasAddress}${serialNumberHex}${tokenSchemeTypeHex}`
+        return `${aliasAddress}${serialNumberHex}${tokenSchemeTypeHex}`;
     }
 
     /**

@@ -243,8 +243,6 @@ export class StardustTangleHelper {
             const indexerPlugin = new IndexerPluginClient(client);
             const foundryOutputsResponse = await indexerPlugin.foundries({ aliasAddressBech32: aliasAddress });
 
-            console.log(foundryOutputsResponse);
-
             return {
                 foundryOutputsResponse
             };
