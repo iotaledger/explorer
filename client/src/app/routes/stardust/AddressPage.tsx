@@ -1,5 +1,5 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
-import { BASIC_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
+import { IOutputResponse, NFT_OUTPUT_TYPE, TREASURY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import React, { ReactNode } from "react";
@@ -121,12 +121,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             outputResponse, formatFull, nfts, nftsPageNumber } = this.state;
 
         const networkId = this.props.match.params.network;
-        // TODO This counts all token outputs instead of distinct tokens
-        const nativeTokensCount = outputResponse ? outputResponse.filter(output => (
-            !output.metadata.isSpent &&
-                output.output.type === BASIC_OUTPUT_TYPE &&
-                output.output.nativeTokens && output.output.nativeTokens.length > 0
-        )).length : 0;
+        const nativeTokensCount = outputResponse ? this.countDistinctNativeTokens(outputResponse) : 0;
         const hasNativeTokens = nativeTokensCount > 0;
         const hasNfts = nfts && nfts.length > 0;
 
@@ -292,6 +287,20 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                 </div >
             </div >
         );
+    }
+
+    private countDistinctNativeTokens(outputResponse: IOutputResponse[]): number {
+        const distinctNativeTokens: string[] = [];
+        for (const response of outputResponse) {
+            if (response.output.type !== TREASURY_OUTPUT_TYPE && response.output.nativeTokens) {
+                for (const nativeToken of response.output.nativeTokens) {
+                    if (!distinctNativeTokens.includes(nativeToken.id)) {
+                        distinctNativeTokens.push(nativeToken.id);
+                    }
+                }
+            }
+        }
+        return distinctNativeTokens.length;
     }
 
     private get currentNftsPage() {
