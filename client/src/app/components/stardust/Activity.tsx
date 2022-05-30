@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/function-component-definition */
 import React from "react";

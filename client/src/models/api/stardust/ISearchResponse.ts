@@ -26,6 +26,16 @@ export interface ISearchResponse extends IResponse {
     output?: IOutputResponse;
 
     /**
+     * Alias output id if it was found.
+     */
+    aliasOutputId?: string;
+
+    /**
+     * Foundry output if it was found.
+     */
+    foundryOutputId?: string;
+
+    /**
      * Nft outputs.
      */
     nftOutputs?: IOutputsResponse;
@@ -34,6 +44,11 @@ export interface ISearchResponse extends IResponse {
      * Nft Details.
      */
     nftDetails?: INftDetailsResponse;
+
+    /**
+     * Foundry outputs.
+     */
+    foundryOutputs?: IOutputsResponse;
 
     /**
      * Milestone if it was found.

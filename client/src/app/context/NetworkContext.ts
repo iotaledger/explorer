@@ -1,5 +1,5 @@
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import { createContext } from "react";
-import { IBaseTokenGetResponse } from "../../models/api/stardust/IBaseTokenGetResponse";
 import { DEFAULT_BASE_TOKEN_INFO } from "../../services/baseTokenInfoService";
 
 /**
@@ -7,7 +7,7 @@ import { DEFAULT_BASE_TOKEN_INFO } from "../../services/baseTokenInfoService";
  */
 interface INetworkContextProps {
     name: string;
-    tokenInfo: IBaseTokenGetResponse;
+    tokenInfo: INodeInfoBaseToken;
     bech32Hrp: string;
 }
 

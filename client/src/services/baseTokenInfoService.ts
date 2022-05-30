@@ -24,37 +24,33 @@ export class BaseTokenInfoService {
     /**
      * Cache of the base taken infos.
      */
-    private _cache: { [network: string]: IBaseTokenGetResponse } = {};
-
-    /**
-     * Create a new instance of BaseTokenInfoService.
-     */
-    constructor() {
-        this.buildCache().catch(err => console.log(err));
-    }
+    private _cache: { [network: string]: INodeInfoBaseToken } = {};
 
     /**
      * Get the base token info by network.
      * @param network The name of the network.
      * @returns The base token info.
      */
-    public get(network: string): IBaseTokenGetResponse {
-        return this._cache?.[network] ?? DEFAULT_BASE_TOKEN_INFO;
+    public get(network: string): INodeInfoBaseToken {
+        return this._cache[network] ?? DEFAULT_BASE_TOKEN_INFO;
     }
 
     /**
      * Build the cache of base token infos.
      */
-    private async buildCache(): Promise<void> {
+    public async buildCache(): Promise<void> {
         const networksService = ServiceFactory.get<NetworkService>("network");
         const allNetworks = networksService.networks();
 
         for (const networkDetails of allNetworks) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
             const network = networkDetails.network;
-            const baseTokenInfo = await apiClient.baseTokenInfo({ network });
+            const response: IBaseTokenGetResponse = await apiClient.baseTokenInfo({ network });
+            const { name, tickerSymbol, unit, subunit, decimals, useMetricPrefix } = response;
 
-            this._cache[network] = baseTokenInfo;
+            if (name && tickerSymbol && unit && decimals && useMetricPrefix !== undefined) {
+                this._cache[network] = { name, tickerSymbol, unit, subunit, decimals, useMetricPrefix };
+            }
         }
     }
 }

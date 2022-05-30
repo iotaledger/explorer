@@ -199,50 +199,54 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
         let invalidError = "";
 
         if (query.length > 0) {
-            if (this.state.protocolVersion === STARDUST) {
-                status = "Detecting query type...";
-                statusBusy = true;
-                if (this._isMounted) {
-                    setImmediate(
-                        async () => {
-                            if (this._isMounted) {
-                                const response = await this._tangleCacheService.search(
-                                    this.props.match.params.network,
-                                    query
-                                );
+            status = "Detecting query type...";
+            statusBusy = true;
+            if (this._isMounted) {
+                setImmediate(
+                    async () => {
+                        if (this._isMounted) {
+                            const response = await this._tangleCacheService.search(
+                                this.props.match.params.network,
+                                query
+                            );
 
-                                if (response) {
-                                    let objType = "";
-                                    let objParam = query;
-                                    if (response.block) {
-                                        objType = "block";
-                                    } else if (response.addressDetails?.hex) {
-                                        objType = "addr";
-                                    } else if (response.output) {
-                                        objType = "block";
-                                        objParam = response.output.metadata.blockId;
-                                    } else if (response.milestone?.blockId) {
-                                        objType = "block";
-                                        objParam = response.milestone?.blockId;
-                                    } else if (response.did) {
-                                        objType = "identity-resolver";
-                                        objParam = response.did;
-                                    }
-                                    this.setState({
-                                        status: "",
-                                        statusBusy: false,
-                                        redirect: `/${this.props.match.params.network}/${objType}/${objParam}`
-                                    });
-                                } else {
-                                    this.setState({
-                                        completion: "notFound",
-                                        status: "",
-                                        statusBusy: false
-                                    });
+                            if (response) {
+                                let route = "";
+                                let routeParam = query;
+                                if (response.block) {
+                                    route = "block";
+                                } else if (response.addressDetails?.hex) {
+                                    route = "addr";
+                                } else if (response.output) {
+                                    route = "block";
+                                    routeParam = response.output.metadata.blockId;
+                                } else if (response.aliasOutputId) {
+                                    route = "alias";
+                                    routeParam = response.aliasOutputId;
+                                } else if (response.foundryOutputId) {
+                                    route = "foundry";
+                                    routeParam = response.foundryOutputId;
+                                } else if (response.milestone?.blockId) {
+                                    route = "block";
+                                    routeParam = response.milestone?.blockId;
+                                } else if (response.did) {
+                                    route = "identity-resolver";
+                                    routeParam = response.did;
                                 }
+                                this.setState({
+                                    status: "",
+                                    statusBusy: false,
+                                    redirect: `/${this.props.match.params.network}/${route}/${routeParam}`
+                                });
+                            } else {
+                                this.setState({
+                                    completion: "notFound",
+                                    status: "",
+                                    statusBusy: false
+                                });
                             }
-                        });
-                }
+                        }
+                    });
             }
         } else {
             invalidError = "the query is empty";

@@ -4,6 +4,8 @@ import { IBaseTokenGetRequest } from "../../models/api/stardust/IBaseTokenGetReq
 import { IBaseTokenGetResponse } from "../../models/api/stardust/IBaseTokenGetResponse";
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
+import { IFoundriesRequest } from "../../models/api/stardust/IFoundriesRequest";
+import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
 import { INftDetailsResponse } from "../../models/api/stardust/INftDetailsResponse";
@@ -98,6 +100,18 @@ export class StardustApiClient extends ApiClient {
      public async nftDetails(request: INftDetailsRequest): Promise<INftDetailsResponse> {
         return this.callApi<unknown, INftDetailsResponse>(
             `stardust/nft/${request.network}/${request.nftId}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the foundries controlled by an alias address.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async aliasFoundries(request: IFoundriesRequest): Promise<IFoundriesResponse> {
+        return this.callApi<unknown, IFoundriesResponse>(
+            `stardust/foundries/${request.network}/${request.aliasAddress}`,
             "get"
         );
     }

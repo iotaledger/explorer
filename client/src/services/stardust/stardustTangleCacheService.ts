@@ -1,6 +1,8 @@
 /* eslint-disable camelcase */
 import { IBlockMetadata, IOutputResponse } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { IFoundriesRequest } from "../../models/api/stardust/IFoundriesRequest";
+import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
 import { INftDetailsResponse } from "../../models/api/stardust/INftDetailsResponse";
@@ -70,6 +72,8 @@ export class StardustTangleCacheService extends TangleCacheService {
                 response.block ||
                 response.milestone ||
                 response.output ||
+                response.aliasOutputId ||
+                response.foundryOutputId ||
                 response.did ||
                 response.addressOutputIds) {
                 this._stardustSearchCache[networkId][fullQuery] = {
@@ -188,6 +192,34 @@ export class StardustTangleCacheService extends TangleCacheService {
 
         return {
             outputs: this._stardustSearchCache[request.network][`${request.address}--nft-outputs`]?.data?.nftOutputs
+        };
+    }
+
+    /**
+     * Get the controlled Foundry output ids by alias address.
+     * @param request The request.
+     * @param skipCache Skip looking in the cache.
+     * @returns The Foundry output ids response.
+     */
+     public async foundriesByAliasAddress(
+        request: IFoundriesRequest,
+        skipCache: boolean = false
+    ): Promise<IFoundriesResponse | undefined> {
+        const cacheEntry = this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`];
+
+        if (!cacheEntry?.data?.foundryOutputs || skipCache) {
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+            const foundryOutputs = await apiClient.aliasFoundries(request);
+
+            this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`] = {
+                data: { foundryOutputs: foundryOutputs.foundryOutputsResponse },
+                cached: Date.now()
+            };
+        }
+
+        return {
+            foundryOutputsResponse:
+                this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`]?.data?.foundryOutputs
         };
     }
 
