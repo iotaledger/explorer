@@ -56,14 +56,16 @@ async function initialiseServices(): Promise<void> {
     ServiceFactory.register("identity", () => new IdentityService());
 
     const networkService = new NetworkService();
+    await networkService.buildCache();
     ServiceFactory.register("network", () => networkService);
 
-    await networkService.buildCache();
+    const baseTokenInfoService = new BaseTokenInfoService();
+    await baseTokenInfoService.buildCache();
+    ServiceFactory.register("base-token-info", () => baseTokenInfoService);
 
     ServiceFactory.register("currency", () => new CurrencyService(config.apiEndpoint));
     ServiceFactory.register(`tangle-cache-${CHRYSALIS}`, () => new ChrysalisTangleCacheService());
     ServiceFactory.register(`tangle-cache-${STARDUST}`, () => new StardustTangleCacheService());
-    ServiceFactory.register("base-token-info", () => new BaseTokenInfoService());
 
     const networks = networkService.networks();
 

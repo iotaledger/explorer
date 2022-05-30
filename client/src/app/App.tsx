@@ -14,7 +14,7 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import SearchInput from "./components/SearchInput";
 import NetworkContext from "./context/NetworkContext";
-import { AddrRouteProps } from "./routes/AddrRouteProps";
+import { AddressRouteProps } from "./routes/AddressRouteProps";
 import ChrysalisAddress from "./routes/chrysalis/Addr";
 import Indexed from "./routes/chrysalis/Indexed";
 import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
@@ -30,7 +30,7 @@ import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
 import { NFTDetailsRouteProps } from "./routes/NFTDetailsRouteProps";
 import Address from "./routes/og/Address";
-import { AddressRouteProps } from "./routes/og/AddressRouteProps";
+import { AddressRouteProps as OgAddressRouteProps } from "./routes/og/AddressRouteProps";
 import Bundle from "./routes/og/Bundle";
 import { BundleRouteProps } from "./routes/og/BundleRouteProps";
 import Tag from "./routes/og/Tag";
@@ -38,9 +38,11 @@ import { TagRouteProps } from "./routes/og/TagRouteProps";
 import Transaction from "./routes/og/Transaction";
 import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
-import StardustAddress from "./routes/stardust/Addr";
+import StardustAddressPage from "./routes/stardust/AddressPage";
 import StardustBlock from "./routes/stardust/Block";
 import { BlockProps } from "./routes/stardust/BlockProps";
+import Foundry from "./routes/stardust/Foundry";
+import { FoundryProps } from "./routes/stardust/FoundryProps";
 import StardustLanding from "./routes/stardust/Landing";
 import NFTDetails from "./routes/stardust/NFTDetails";
 import StardustSearch from "./routes/stardust/Search";
@@ -259,7 +261,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             />
                                             <Route
                                                 path="/:network/address/:hash"
-                                                component={(props: RouteComponentProps<AddressRouteProps>) =>
+                                                component={(props: RouteComponentProps<OgAddressRouteProps>) =>
                                                 (
                                                     <Address
                                                         {...props}
@@ -284,9 +286,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             />
                                             <Route
                                                 path="/:network/addr/:address"
-                                                component={(props: RouteComponentProps<AddrRouteProps>) =>
+                                                component={(props: RouteComponentProps<AddressRouteProps>) =>
                                                 (isStardust
-                                                    ? withNetworkProvider(<StardustAddress {...props} />)
+                                                    ? withNetworkProvider(<StardustAddressPage {...props} />)
                                                     : <ChrysalisAddress {...props} />
                                                 )}
                                             />
@@ -302,6 +304,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 component={(props: RouteComponentProps<BlockProps>) =>
                                                 (
                                                     withNetworkProvider(<StardustBlock {...props} />)
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/foundry/:outputId"
+                                                component={(props: RouteComponentProps<FoundryProps>) => (
+                                                    withNetworkProvider(<Foundry {...props} />)
                                                 )}
                                             />
                                             {

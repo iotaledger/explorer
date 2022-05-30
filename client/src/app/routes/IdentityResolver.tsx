@@ -13,8 +13,8 @@ import { IdentityDiffStorageService } from "../../services/identityDiffStorageSe
 import { IdentityService } from "../../services/identityService";
 import { NetworkService } from "../../services/networkService";
 import AsyncComponent from "../components/AsyncComponent";
-import MessageButton from "../components/chrysalis/MessageButton";
 import MessageTangleState from "../components/chrysalis/MessageTangleState";
+import CopyButton from "../components/CopyButton";
 import IdentityHistory from "../components/identity/IdentityHistory";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
@@ -241,7 +241,7 @@ class IdentityResolver extends AsyncComponent<
                                                     <div className="label">DID</div>
                                                     <div className="row middle value code highlight margin-b-s">
                                                         <div className="margin-r-t">{this.state.did}</div>
-                                                        <MessageButton
+                                                        <CopyButton
                                                             onClick={() => ClipboardHelper.copy(this.state.did)}
                                                             buttonType="copy"
                                                             labelPosition="top"
@@ -257,7 +257,7 @@ class IdentityResolver extends AsyncComponent<
                                                                     <div className="margin-r-t">
                                                                         {this.state.resolvedIdentity?.messageId}
                                                                     </div>
-                                                                    <MessageButton
+                                                                    <CopyButton
                                                                         onClick={() =>
                                                                             ClipboardHelper.copy(
                                                                                 this.state.resolvedIdentity

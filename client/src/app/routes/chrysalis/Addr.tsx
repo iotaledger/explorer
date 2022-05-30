@@ -21,7 +21,7 @@ import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
-import { AddrRouteProps } from "../AddrRouteProps";
+import { AddressRouteProps } from "../AddressRouteProps";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import transactionHistoryMessage from "./../../../assets/modals/address/transaction-history.json";
 import Transaction from "./../../components/chrysalis/Transaction";
@@ -32,7 +32,7 @@ import { AddrState } from "./AddrState";
 /**
  * Component which will show the address page for chrysalis and older.
  */
-class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState> {
+class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrState> {
     /**
      * Maximum page size for permanode request.
      */
@@ -52,7 +52,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      * Create a new instance of Addr.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<AddrRouteProps>) {
+    constructor(props: RouteComponentProps<AddressRouteProps>) {
         super(props);
 
         const networkService = ServiceFactory.get<NetworkService>("network");

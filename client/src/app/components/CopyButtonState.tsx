@@ -1,4 +1,4 @@
-export interface MessageButtonState {
+export interface CopyButtonState {
     /**
      * Is the message active.
      */

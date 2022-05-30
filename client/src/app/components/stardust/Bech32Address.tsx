@@ -1,7 +1,7 @@
 import React, { Component, ReactNode } from "react";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressProps } from "../Bech32AddressProps";
-import BlockButton from "../stardust/BlockButton";
+import CopyButton from "../CopyButton";
 
 /**
  * Component which will display an Bech32Address.
@@ -51,7 +51,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                 <span className="margin-r-t">{this.props.addressDetails.bech32}</span>
                             )}
                             {!this.props.truncateAddress && (
-                                <BlockButton
+                                <CopyButton
                                     onClick={() => ClipboardHelper.copy(this.props.addressDetails?.bech32)}
                                     buttonType="copy"
                                     labelPosition="top"

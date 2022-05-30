@@ -4,7 +4,7 @@ import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import NetworkContext from "../../context/NetworkContext";
-import BlockButton from "../stardust/BlockButton";
+import CopyButton from "../CopyButton";
 import { AddressProps } from "./AddressProps";
 
 /**
@@ -38,7 +38,7 @@ class Address extends Component<AddressProps> {
                     >
                         {bech32}
                     </Link>
-                    <BlockButton
+                    <CopyButton
                         onClick={() => ClipboardHelper.copy(bech32)}
                         buttonType="copy"
                         labelPosition="top"

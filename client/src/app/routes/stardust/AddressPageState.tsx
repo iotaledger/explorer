@@ -2,9 +2,8 @@
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import INftDetails from "./INftDetails";
-import ITokenDetails from "./ITokenDetails";
 
-export interface AddrState {
+export interface AddressPageState {
     /**
      * The addres in bech 32 format.
      */
@@ -14,11 +13,6 @@ export interface AddrState {
      * The address balance.
      */
     balance?: number;
-
-    /**
-     * Are the component native tokens loading.
-     */
-    areTokensLoading: boolean;
 
     /**
      * Are the component NFTs loading.
@@ -33,27 +27,12 @@ export interface AddrState {
     /**
      * The outputs for the address.
      */
-    outputs?: IOutputResponse[];
+    outputResponse?: IOutputResponse[];
 
     /**
      * Format the amount in full.
      */
     formatFull: boolean;
-
-    /**
-     * List of native tokens of the address.
-     */
-    tokens?: ITokenDetails[];
-
-    /**
-     * Current page number in native tokens table.
-     */
-    tokensPageNumber: number;
-
-    /**
-     * Current page in tokens table.
-     */
-    tokensPage: ITokenDetails[];
 
     /**
      * List of nfts of the address.
