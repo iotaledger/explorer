@@ -1,7 +1,6 @@
 /* eslint-disable no-shadow */
-import { IAliasOutput, IBlockMetadata, IOutputMetadataResponse, IOutputResponse, OutputTypes } from "@iota/iota.js-stardust";
+import { IAliasOutput } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
-import IBalanceDetails from "./IBalanceDetails";
 import IFoundryDetails from "./IFoundryDetails";
 
 export interface AliasState {
@@ -14,11 +13,6 @@ export interface AliasState {
      * Are the component native tokens loading.
      */
     areFoundriesLoading: boolean;
-
-    /**
-     * Are the component NFTs loading.
-     */
-    areAssetsLoading: boolean;
 
     /**
      * List of foundries of the alias.
@@ -34,21 +28,6 @@ export interface AliasState {
      * Current page in tokens table.
      */
     foundriesPage: IFoundryDetails[];
-
-    /**
-     * List of nfts of the address.
-     */
-    assets?: IBalanceDetails[];
-
-    /**
-     * Current page number in nft history table.
-     */
-    assetsPageNumber: number;
-
-    /**
-     * Current page in nft history table.
-     */
-    assetsPage: IBalanceDetails[];
 
     /**
      * alias output.

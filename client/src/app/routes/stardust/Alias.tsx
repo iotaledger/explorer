@@ -1,22 +1,22 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
 import { ALIAS_ADDRESS_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
-import { Converter, HexHelper } from "@iota/util.js-stardust";
+import { Converter } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
-import { TextHelper } from "../../../helpers/textHelper";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
+import CopyButton from "../../components/CopyButton";
 import DataToggle from "../../components/DataToggle";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
+import AssetsTable from "../../components/stardust/AssetsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
-import CopyButton from "../../components/CopyButton";
 import Foundry from "../../components/stardust/Foundry";
 import NetworkContext from "../../context/NetworkContext";
 import { AliasRouteProps } from "../AliasRouteProps";
@@ -68,13 +68,9 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         this.state = {
             ...Bech32AddressHelper.buildAddress(this._bechHrp, props.match.params.aliasId),
             areFoundriesLoading: true,
-            areAssetsLoading: true,
             foundries: [],
             foundriesPageNumber: 1,
-            foundriesPage: [],
-            assets: [],
-            assetsPageNumber: 1,
-            assetsPage: []
+            foundriesPage: []
         };
     }
 
@@ -118,7 +114,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
     public render(): ReactNode {
         const networkId = this.props.match.params.network;
         const hasFoundries = this.state.foundries && this.state.foundries.length > 0;
-        const hasAssets = this.state.assets && this.state.assets.length > 0;
         const TOGGLE_DATA_OPTIONS = [
             {
                 label: this.state.jsonData ? "JSON" : "Text",
@@ -261,6 +256,9 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                         />
                                     </div>
                                 )}
+                                {this.state.output && (
+                                    <AssetsTable networkId={networkId} outputs={[this.state.output]} />
+                                )}
                             </div>
                         </div>
                     </div >
@@ -284,7 +282,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         const networkId = this.props.match.params.network;
 
         const foundries: IFoundryDetails[] = [];
-        
+
         const foundryOutputs = await this._tangleCacheService.foundry({
             network: networkId,
             address: this.state.bech32AddressDetails?.bech32
@@ -295,7 +293,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                 const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
                 if (outputDetails?.output.type === FOUNDRY_OUTPUT_TYPE) {
                     foundries.push({
-                        foundryId: this.state.bech32AddressDetails?.bech32 + outputDetails?.output.serialNumber + outputDetails?.output.tokenScheme.type
+                        foundryId: this.state.bech32AddressDetails?.bech32.toString() + outputDetails?.output.serialNumber.toString() + outputDetails?.output.tokenScheme.type.toString()
                     });
                 }
             }

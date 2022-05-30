@@ -217,7 +217,8 @@ export class StardustTangleCacheService extends TangleCacheService {
         }
 
         return {
-            outputs: this._stardustSearchCache[request.network][`${request.address}--foundry-outputs`]?.data?.foundryOutputs
+            outputs:
+                this._stardustSearchCache[request.network][`${request.address}--foundry-outputs`]?.data?.foundryOutputs
         };
     }
 
