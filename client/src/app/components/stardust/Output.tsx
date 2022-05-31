@@ -59,7 +59,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 className="margin-r-t"
                                 onClick={() => this.props.history?.push(
                                     `/${this.props.network
-                                    }/block/${this.state.outputId}`)}
+                                    }/search/${this.state.outputId}`)}
                             >
                                 {this.state.outputId}
                             </button>
@@ -117,7 +117,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 className="margin-r-t"
                                 onClick={() => this.props.history?.push(
                                     `/${this.props.network
-                                    }/block/${this.state.outputId}`)}
+                                    }/search/${this.state.outputId}`)}
                             >
                                 {this.state.outputId}
                             </button>
@@ -157,7 +157,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 className="margin-r-t"
                                 onClick={() => this.props.history?.push(
                                     `/${this.props.network
-                                    }/block/${this.state.outputId}`)}
+                                    }/search/${this.state.outputId}`)}
                             >
                                 {this.state.outputId}
                             </button>
