@@ -185,6 +185,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                 index={idx + 1}
                                                 output={output.output}
                                                 amount={output.amount}
+                                                network={this.props.network}
+                                                history={this.props.history}
                                             />
                                         </div>
                                     )}

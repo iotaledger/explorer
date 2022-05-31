@@ -34,6 +34,7 @@ class Output extends Component<OutputProps, OutputState> {
 
         this.state = {
             output: props.output,
+            outputId: props.id,
             showOutputDetails: -1
         };
     }
@@ -49,6 +50,25 @@ class Output extends Component<OutputProps, OutputState> {
             <div className="output margin-l-t">
                 {this.state.output.type === ALIAS_OUTPUT_TYPE && (
                     <React.Fragment>
+                        <div className="card--label">
+                            Output id:
+                        </div>
+                        <div className="card--value row middle">
+                            <button
+                                type="button"
+                                className="margin-r-t"
+                                onClick={() => this.props.history?.push(
+                                    `/${this.props.network
+                                    }/block/${this.state.outputId}`)}
+                            >
+                                {this.state.outputId}
+                            </button>
+                            <CopyButton
+                                onClick={() => ClipboardHelper.copy(this.state.outputId)}
+                                buttonType="copy"
+                                labelPosition="top"
+                            />
+                        </div>
                         <div className="card--label">
                             Alias id:
                         </div>
@@ -89,6 +109,25 @@ class Output extends Component<OutputProps, OutputState> {
                 {this.state.output.type === NFT_OUTPUT_TYPE && (
                     <React.Fragment>
                         <div className="card--label">
+                            Output id:
+                        </div>
+                        <div className="card--value row middle">
+                            <button
+                                type="button"
+                                className="margin-r-t"
+                                onClick={() => this.props.history?.push(
+                                    `/${this.props.network
+                                    }/block/${this.state.outputId}`)}
+                            >
+                                {this.state.outputId}
+                            </button>
+                            <CopyButton
+                                onClick={() => ClipboardHelper.copy(this.state.outputId)}
+                                buttonType="copy"
+                                labelPosition="top"
+                            />
+                        </div>
+                        <div className="card--label">
                             Nft id:
                         </div>
                         <div className="card--value row">
@@ -109,6 +148,25 @@ class Output extends Component<OutputProps, OutputState> {
 
                 {this.state.output.type === FOUNDRY_OUTPUT_TYPE && (
                     <React.Fragment>
+                        <div className="card--label">
+                            Output id:
+                        </div>
+                        <div className="card--value row middle">
+                            <button
+                                type="button"
+                                className="margin-r-t"
+                                onClick={() => this.props.history?.push(
+                                    `/${this.props.network
+                                    }/block/${this.state.outputId}`)}
+                            >
+                                {this.state.outputId}
+                            </button>
+                            <CopyButton
+                                onClick={() => ClipboardHelper.copy(this.state.outputId)}
+                                buttonType="copy"
+                                labelPosition="top"
+                            />
+                        </div>
                         <div className="card--label">
                             Serial number:
                         </div>
