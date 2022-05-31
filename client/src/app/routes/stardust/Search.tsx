@@ -226,6 +226,9 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.foundryOutputId) {
                                     route = "foundry";
                                     routeParam = response.foundryOutputId;
+                                } else if (response.nftOutputId) {
+                                    route = "nft-address";
+                                    routeParam = response.nftOutputId;
                                 } else if (response.milestone?.blockId) {
                                     route = "block";
                                     routeParam = response.milestone?.blockId;
