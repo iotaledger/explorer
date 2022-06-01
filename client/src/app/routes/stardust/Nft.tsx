@@ -18,7 +18,7 @@ import "./AddressPage.scss";
 import { NftState } from "./NftState";
 
 /**
- * Component which will show the alias page for stardust.
+ * Component which will show the nft address page for stardust.
  */
 class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
     /**
@@ -32,7 +32,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
     private readonly _tangleCacheService: StardustTangleCacheService;
 
     /**
-     * Create a new instance of Addr.
+     * Create a new instance of Nft.
      * @param props The props.
      */
     constructor(props: RouteComponentProps<NftRouteProps>) {
