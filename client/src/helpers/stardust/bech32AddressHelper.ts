@@ -79,7 +79,7 @@ export class Bech32AddressHelper {
         } else if (addressType === ALIAS_ADDRESS_TYPE) {
             return "Alias";
         } else if (addressType === NFT_ADDRESS_TYPE) {
-            return "Nft";
+            return "NFT";
         }
     }
 }
