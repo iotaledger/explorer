@@ -6,10 +6,6 @@ export interface OutputState {
      */
     output: OutputTypes;
     /**
-     * The output id.
-     */
-    outputId: string;
-    /**
      * Shows details of the specified output id
      */
     showOutputDetails: number;

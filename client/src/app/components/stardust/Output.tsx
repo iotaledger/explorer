@@ -1,11 +1,14 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
-    NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
-import { Converter, HexHelper } from "@iota/util.js-stardust";
+    NFT_ADDRESS_TYPE,
+    IImmutableAliasUnlockCondition,
+    IAliasAddress } from "@iota/iota.js-stardust";
+import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import NetworkContext from "../../context/NetworkContext";
@@ -34,7 +37,6 @@ class Output extends Component<OutputProps, OutputState> {
 
         this.state = {
             output: props.output,
-            outputId: props.id,
             showOutputDetails: -1
         };
     }
@@ -45,40 +47,22 @@ class Output extends Component<OutputProps, OutputState> {
      */
     public render(): ReactNode {
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
+        const foundryId = this.buildFoundyId();
 
         return (
             <div className="output margin-l-t">
                 {this.state.output.type === ALIAS_OUTPUT_TYPE && (
                     <React.Fragment>
                         <div className="card--label">
-                            Output id:
-                        </div>
-                        <div className="card--value row middle">
-                            <button
-                                type="button"
-                                className="margin-r-t"
-                                onClick={() => this.props.history?.push(
-                                    `/${this.props.network
-                                    }/search/${this.state.outputId}`)}
-                            >
-                                {this.state.outputId}
-                            </button>
-                            <CopyButton
-                                onClick={() => ClipboardHelper.copy(this.state.outputId)}
-                                buttonType="copy"
-                                labelPosition="top"
-                            />
-                        </div>
-                        <div className="card--label">
                             Alias id:
                         </div>
                         <div className="card--value row middle">
-                            <button
-                                type="button"
+                            <Link
+                                to={`/${this.props.network}/search/${aliasOrNftBech32}`}
                                 className="margin-r-t"
                             >
                                 {aliasOrNftBech32}
-                            </button>
+                            </Link>
                             <CopyButton
                                 onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
                                 buttonType="copy"
@@ -109,34 +93,15 @@ class Output extends Component<OutputProps, OutputState> {
                 {this.state.output.type === NFT_OUTPUT_TYPE && (
                     <React.Fragment>
                         <div className="card--label">
-                            Output id:
-                        </div>
-                        <div className="card--value row middle">
-                            <button
-                                type="button"
-                                className="margin-r-t"
-                                onClick={() => this.props.history?.push(
-                                    `/${this.props.network
-                                    }/search/${this.state.outputId}`)}
-                            >
-                                {this.state.outputId}
-                            </button>
-                            <CopyButton
-                                onClick={() => ClipboardHelper.copy(this.state.outputId)}
-                                buttonType="copy"
-                                labelPosition="top"
-                            />
-                        </div>
-                        <div className="card--label">
                             Nft id:
                         </div>
-                        <div className="card--value row">
-                            <button
-                                type="button"
+                        <div className="card--value row middle">
+                            <Link
+                                to={`/${this.props.network}/search/${aliasOrNftBech32}`}
                                 className="margin-r-t"
                             >
                                 {aliasOrNftBech32}
-                            </button>
+                            </Link>
                             <CopyButton
                                 onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
                                 buttonType="copy"
@@ -149,20 +114,17 @@ class Output extends Component<OutputProps, OutputState> {
                 {this.state.output.type === FOUNDRY_OUTPUT_TYPE && (
                     <React.Fragment>
                         <div className="card--label">
-                            Output id:
+                            Foundry id:
                         </div>
                         <div className="card--value row middle">
-                            <button
-                                type="button"
+                            <Link
+                                to={`/${this.props.network}/search/${foundryId}`}
                                 className="margin-r-t"
-                                onClick={() => this.props.history?.push(
-                                    `/${this.props.network
-                                    }/search/${this.state.outputId}`)}
                             >
-                                {this.state.outputId}
-                            </button>
+                                {foundryId}
+                            </Link>
                             <CopyButton
-                                onClick={() => ClipboardHelper.copy(this.state.outputId)}
+                                onClick={() => ClipboardHelper.copy(foundryId)}
                                 buttonType="copy"
                                 labelPosition="top"
                             />
@@ -300,6 +262,31 @@ class Output extends Component<OutputProps, OutputState> {
                 address,
                 addressType
             ).bech32;
+    }
+
+    /**
+     * Build a FoundryId from aliasAddres, serialNumber and tokenSchemeType
+     * @returns The FoundryId string.
+     */
+     private buildFoundyId() {
+        if (this.state.output.type === FOUNDRY_OUTPUT_TYPE) {
+            const immutableAliasUnlockCondition =
+            this.state.output.unlockConditions[0] as IImmutableAliasUnlockCondition;
+            const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
+            const typeWS = new WriteStream();
+            typeWS.writeUInt8("alias address type", ALIAS_ADDRESS_TYPE);
+            const aliasAddress = HexHelper.addPrefix(
+                `${typeWS.finalHex()}${HexHelper.stripPrefix(aliasId)}`
+            );
+            const serialNumberWS = new WriteStream();
+            serialNumberWS.writeUInt32("serialNumber", this.state.output.serialNumber);
+            const serialNumberHex = serialNumberWS.finalHex();
+            const tokenSchemeTypeWS = new WriteStream();
+            tokenSchemeTypeWS.writeUInt8("tokenSchemeType", this.state.output.tokenScheme.type);
+            const tokenSchemeTypeHex = tokenSchemeTypeWS.finalHex();
+
+            return `${aliasAddress}${serialNumberHex}${tokenSchemeTypeHex}`;
+        }
     }
 }
 

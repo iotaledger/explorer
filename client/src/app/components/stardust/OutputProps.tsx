@@ -1,5 +1,4 @@
 import { OutputTypes } from "@iota/iota.js-stardust";
-import * as H from "history";
 
 export interface OutputProps {
     /**
@@ -28,11 +27,6 @@ export interface OutputProps {
     hideLabel?: boolean;
 
     /**
-     * History for navigation.
-     */
-    history: H.History;
-
-     /**
      * The network to lookup.
      */
     network: string;
