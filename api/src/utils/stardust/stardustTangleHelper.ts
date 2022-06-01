@@ -370,7 +370,7 @@ export class StardustTangleHelper {
                 const nftOutputs = await indexerPlugin.nft(searchQuery.nftId);
                 if (nftOutputs.items.length > 0) {
                     return {
-                        output: await client.output(nftOutputs.items[0])
+                        nftOutputId: nftOutputs.items[0]
                     };
                 }
             } catch {}

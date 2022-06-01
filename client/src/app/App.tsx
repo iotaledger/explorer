@@ -30,6 +30,7 @@ import { IdentityResolverProps } from "./routes/IdentityResolverProps";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
 import { NFTDetailsRouteProps } from "./routes/NFTDetailsRouteProps";
+import { NftRouteProps } from "./routes/NftRouteProps";
 import Address from "./routes/og/Address";
 import { AddressRouteProps as OgAddressRouteProps } from "./routes/og/AddressRouteProps";
 import Bundle from "./routes/og/Bundle";
@@ -46,6 +47,7 @@ import { BlockProps } from "./routes/stardust/BlockProps";
 import Foundry from "./routes/stardust/Foundry";
 import { FoundryProps } from "./routes/stardust/FoundryProps";
 import StardustLanding from "./routes/stardust/Landing";
+import Nft from "./routes/stardust/Nft";
 import NFTDetails from "./routes/stardust/NFTDetails";
 import StardustSearch from "./routes/stardust/Search";
 import StardustVisualizer from "./routes/stardust/Visualizer";
@@ -330,6 +332,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 path="/:network/alias/:aliasId"
                                                 component={(props: RouteComponentProps<AliasRouteProps>) => (
                                                     withNetworkProvider(<Alias {...props} />)
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/nft-address/:nftId"
+                                                component={(props: RouteComponentProps<NftRouteProps>) => (
+                                                    withNetworkProvider(<Nft {...props} />)
                                                 )}
                                             />
                                             <Route

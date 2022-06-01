@@ -74,6 +74,7 @@ export class StardustTangleCacheService extends TangleCacheService {
                 response.output ||
                 response.aliasOutputId ||
                 response.foundryOutputId ||
+                response.nftOutputId ||
                 response.did ||
                 response.addressOutputIds) {
                 this._stardustSearchCache[networkId][fullQuery] = {
