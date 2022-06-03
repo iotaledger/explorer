@@ -55,8 +55,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
         super(props);
 
         this._networkService = ServiceFactory.get<NetworkService>("network");
-        // this._settingsService = ServiceFactory.get<SettingsService>("settings");
-
         const networks = this._networkService.networks();
 
         this.state = {
