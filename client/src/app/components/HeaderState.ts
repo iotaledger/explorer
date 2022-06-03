@@ -17,4 +17,9 @@ export interface HeaderState {
      * Is the hamburger menu expanded.
      */
     isMenuExpanded: boolean;
+
+    /**
+     * Darkmode theme
+     */
+     darkMode?: boolean;
 }

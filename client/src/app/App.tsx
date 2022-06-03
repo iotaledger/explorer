@@ -4,7 +4,6 @@ import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IConfiguration } from "../models/config/IConfiguration";
 import { NetworkService } from "../services/networkService";
-import { SettingsService } from "../services/settingsService";
 import "./App.scss";
 import { AppRouteProps } from "./AppRouteProps";
 import { AppState } from "./AppState";
@@ -49,11 +48,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
     private readonly _networkService: NetworkService;
 
     /**
-     * Settings service.
-     */
-    private readonly _settingsService: SettingsService;
-
-    /**
      * Create a new instance of App.
      * @param props The props.
      */
@@ -61,14 +55,13 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
         super(props);
 
         this._networkService = ServiceFactory.get<NetworkService>("network");
-        this._settingsService = ServiceFactory.get<SettingsService>("settings");
+        // this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         const networks = this._networkService.networks();
 
         this.state = {
             networkId: "",
-            networks,
-            darkMode: this._settingsService.get().darkMode ?? false
+            networks
         };
     }
 
@@ -77,9 +70,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     public componentDidMount(): void {
         this.setNetwork(this.props.match.params.network, true);
-        if (this.state.darkMode) {
-            this.toggleModeClass();
-        }
     }
 
     /**
@@ -152,8 +142,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                             url: `/${this.state.networkId}/identity-resolver/`
                         }
                     ] : []}
-                    darkMode={this.state.darkMode}
-                    toggleMode={() => this.toggleMode()}
                 />
                 <div className="content">
                     {this.state.networks.length > 0
@@ -397,26 +385,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     private setQuery(query?: string): void {
         this.props.history.push(`/${this.state.networkId}/search/${query}`);
-    }
-
-    /**
-     * Toggle the display mode.
-     */
-    private toggleMode(): void {
-        this.setState({
-            darkMode: !this.state.darkMode
-        }, () => {
-            this._settingsService.saveSingle("darkMode", this.state.darkMode);
-        });
-        this.toggleModeClass();
-    }
-
-    /**
-     * Toggle darkmode classname to the body DOM node
-     */
-    private toggleModeClass(): void {
-        const body = document.querySelector("body");
-        body?.classList.toggle("darkmode");
     }
 }
 
