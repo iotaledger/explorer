@@ -63,6 +63,10 @@
         color: var(--type-color);
       }
 
+      .pointer {
+        cursor: pointer;
+      }
+
       .bech32-address {
         .value {
           @include font-size(14px);
