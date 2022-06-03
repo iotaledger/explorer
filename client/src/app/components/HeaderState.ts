@@ -21,5 +21,5 @@ export interface HeaderState {
     /**
      * Darkmode theme
      */
-     darkMode?: boolean;
+    darkMode: boolean;
 }

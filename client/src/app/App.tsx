@@ -140,6 +140,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                             url: `/${this.state.networkId}/identity-resolver/`
                         }
                     ] : []}
+                    onModeChange={mode => this.setState({ darkMode: mode })}
                 />
                 <div className="content">
                     {this.state.networks.length > 0

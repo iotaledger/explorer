@@ -42,6 +42,7 @@ class Header extends Component<HeaderProps, HeaderState> {
      public componentDidMount(): void {
         if (this.state.darkMode) {
             this.toggleModeClass();
+            this.props.onModeChange(this.state.darkMode);
         }
     }
 
@@ -302,6 +303,7 @@ class Header extends Component<HeaderProps, HeaderState> {
             darkMode: !this.state.darkMode
         }, () => {
             this._settingsService.saveSingle("darkMode", this.state.darkMode);
+            this.props.onModeChange(this.state.darkMode);
         });
         this.toggleModeClass();
     }
