@@ -65,6 +65,7 @@ export class TransactionsHelper {
 
             // Inputs
             for (let i = 0; i < payload.essence.inputs.length; i++) {
+                let amount = 0;
                 let transactionUrl;
                 let transactionAddress = unlockAddresses[i];
                 const input = payload.essence.inputs[i];
@@ -77,19 +78,21 @@ export class TransactionsHelper {
 
                 transactionUrl = `/${network}/search/${outputHash}`;
 
-                const inputSearchResponse = await tangleCacheService.search(network, input.transactionId);
-                const inputTransaction = inputSearchResponse?.block;
-                const amount = (inputTransaction?.payload?.type === TRANSACTION_PAYLOAD_TYPE)
-                    ? Number(inputTransaction.payload?.essence.outputs[transactionOutputIndex].amount) : 0;
-
                 const outputResponse = await tangleCacheService.outputDetails(network, outputHash);
-                if (outputResponse && outputResponse?.output.type !== TREASURY_OUTPUT_TYPE) {
-                    const address: IBech32AddressDetails = TransactionsHelper
-                    .bechAddressFromAddressUnlockCondition(outputResponse.output.unlockConditions,
-                                                         _bechHrp, outputResponse.output.type);
-                    if (address.bech32 !== "") {
-                        transactionAddress = address;
-                        transactionUrl = `/${network}/message/${outputResponse.metadata.blockId}`;
+                if (outputResponse) {
+                    amount = Number(outputResponse.output.amount);
+
+                    if (outputResponse.output.type !== TREASURY_OUTPUT_TYPE) {
+                        const address: IBech32AddressDetails = TransactionsHelper.bechAddressFromAddressUnlockCondition(
+                            outputResponse.output.unlockConditions,
+                            _bechHrp,
+                            outputResponse.output.type
+                        );
+
+                        if (address.bech32 !== "") {
+                            transactionAddress = address;
+                            transactionUrl = `/${network}/message/${outputResponse.metadata.blockId}`;
+                        }
                     }
                 }
 
