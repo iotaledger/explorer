@@ -4,6 +4,7 @@ import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IConfiguration } from "../models/config/IConfiguration";
 import { NetworkService } from "../services/networkService";
+import { SettingsService } from "../services/settingsService";
 import "./App.scss";
 import { AppRouteProps } from "./AppRouteProps";
 import { AppState } from "./AppState";
@@ -36,7 +37,7 @@ import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import Visualizer from "./routes/Visualizer";
-import { VisualizerProps, VisualizerRouteProps } from "./routes/VisualizerRouteProps";
+import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
 
 /**
  * Main application class.
@@ -47,12 +48,17 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     private readonly _networkService: NetworkService;
 
+    private readonly _settingsService: SettingsService;
+
+
     /**
      * Create a new instance of App.
      * @param props The props.
      */
     constructor(props: RouteComponentProps<AppRouteProps> & { config: IConfiguration }) {
         super(props);
+
+        this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         this._networkService = ServiceFactory.get<NetworkService>("network");
         const networks = this._networkService.networks();
@@ -140,7 +146,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                             url: `/${this.state.networkId}/identity-resolver/`
                         }
                     ] : []}
-                    onModeChange={mode => this.setState({ darkMode: mode })}
                 />
                 <div className="content">
                     {this.state.networks.length > 0
@@ -192,9 +197,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 path="/:network/visualizer/"
                                                 component={
                                                     (props:
-                                                        RouteComponentProps<VisualizerRouteProps> & VisualizerProps) =>
+                                                        RouteComponentProps<VisualizerRouteProps>) =>
                                                     (
-                                                        <Visualizer darkMode={this.state.darkMode} {...props} />
+                                                        <Visualizer {...props} />
                                                     )
                                                 }
                                             />

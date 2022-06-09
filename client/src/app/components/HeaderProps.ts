@@ -65,11 +65,4 @@ export interface HeaderProps {
          */
         url: string;
     }[];
-
-    /**
-     * The function to pass darkMode state from child to parent.
-     * @param e dark mode.
-     * @returns void.
-     */
-    onModeChange: (e: boolean) => void;
 }
