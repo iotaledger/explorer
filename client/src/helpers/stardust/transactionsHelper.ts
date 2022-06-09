@@ -7,7 +7,8 @@ import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlo
     IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
     TREASURY_OUTPUT_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
     GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
-    ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE, serializeTransactionPayload } from "@iota/iota.js-stardust";
+    ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE, serializeTransactionPayload, FOUNDRY_OUTPUT_TYPE,
+    IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { DateHelper } from "../../helpers/dateHelper";
 import { IInput } from "../../models/api/stardust/IInput";
@@ -219,6 +220,10 @@ export class TransactionsHelper {
                     ot => ot.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE
                 ).map(ot => ot as IGovernorAddressUnlockCondition)[0];
             }
+        } else if (outputType === FOUNDRY_OUTPUT_TYPE) {
+            unlockCondition = unlockConditions?.filter(
+                ot => ot.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE
+            ).map(ot => ot as IImmutableAliasUnlockCondition)[0];
         }
 
         if (unlockCondition?.address) {
