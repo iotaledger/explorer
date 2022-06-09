@@ -48,8 +48,10 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     private readonly _networkService: NetworkService;
 
+    /**
+     * Settings service.
+     */
     private readonly _settingsService: SettingsService;
-
 
     /**
      * Create a new instance of App.
@@ -58,9 +60,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
     constructor(props: RouteComponentProps<AppRouteProps> & { config: IConfiguration }) {
         super(props);
 
+        this._networkService = ServiceFactory.get<NetworkService>("network");
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
-        this._networkService = ServiceFactory.get<NetworkService>("network");
         const networks = this._networkService.networks();
 
         this.state = {
