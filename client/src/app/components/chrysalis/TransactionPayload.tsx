@@ -92,9 +92,10 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             addressDetails={input.transactionAddress}
                                             advancedMode={false}
                                             hideLabel
-                                            truncateAddress
+                                            truncateAddress={false}
+                                            showCopyButton={false}
                                         />
-                                        <div className="card--value">
+                                        <div className="card--value amount-size">
                                             {UnitsHelper.formatBest(input.amount)}
                                         </div>
                                     </div>
@@ -110,6 +111,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                     advancedMode
                                                     hideLabel
                                                     truncateAddress={false}
+                                                    showCopyButton={true}
                                                 />
                                             </div>
                                             <div className="card--label"> Transaction Id</div>
@@ -187,6 +189,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                     advancedMode
                                                     hideLabel
                                                     truncateAddress={false}
+                                                    showCopyButton={true}
                                                 />
                                             </div>
                                         </React.Fragment>)}

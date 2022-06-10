@@ -37,7 +37,7 @@ import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import Visualizer from "./routes/Visualizer";
-import { VisualizerProps, VisualizerRouteProps } from "./routes/VisualizerRouteProps";
+import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
 
 /**
  * Main application class.
@@ -67,8 +67,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
 
         this.state = {
             networkId: "",
-            networks,
-            darkMode: this._settingsService.get().darkMode ?? false
+            networks
         };
     }
 
@@ -77,9 +76,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     public componentDidMount(): void {
         this.setNetwork(this.props.match.params.network, true);
-        if (this.state.darkMode) {
-            this.toggleModeClass();
-        }
     }
 
     /**
@@ -152,8 +148,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                             url: `/${this.state.networkId}/identity-resolver/`
                         }
                     ] : []}
-                    darkMode={this.state.darkMode}
-                    toggleMode={() => this.toggleMode()}
                 />
                 <div className="content">
                     {this.state.networks.length > 0
@@ -205,9 +199,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 path="/:network/visualizer/"
                                                 component={
                                                     (props:
-                                                        RouteComponentProps<VisualizerRouteProps> & VisualizerProps) =>
+                                                        RouteComponentProps<VisualizerRouteProps>) =>
                                                     (
-                                                        <Visualizer darkMode={this.state.darkMode} {...props} />
+                                                        <Visualizer {...props} />
                                                     )
                                                 }
                                             />
@@ -397,26 +391,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     private setQuery(query?: string): void {
         this.props.history.push(`/${this.state.networkId}/search/${query}`);
-    }
-
-    /**
-     * Toggle the display mode.
-     */
-    private toggleMode(): void {
-        this.setState({
-            darkMode: !this.state.darkMode
-        }, () => {
-            this._settingsService.saveSingle("darkMode", this.state.darkMode);
-        });
-        this.toggleModeClass();
-    }
-
-    /**
-     * Toggle darkmode classname to the body DOM node
-     */
-    private toggleModeClass(): void {
-        const body = document.querySelector("body");
-        body?.classList.toggle("darkmode");
     }
 }
 

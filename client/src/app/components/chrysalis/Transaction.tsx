@@ -28,7 +28,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                             }
                             className="margin-r-t"
                         >
-                            {this.props.messageId.slice(0, 12)}...{this.props.messageId.slice(-12)}
+                            {this.props.messageId}
                         </Link>
                     </td>
                     <td>{this.props.date
@@ -64,7 +64,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                                 }
                                 className="margin-r-t"
                             >
-                                {this.props.messageId.slice(0, 12)}...{this.props.messageId.slice(-12)}
+                                {this.props.messageId}
                             </Link>
                         </div>
                     </div>

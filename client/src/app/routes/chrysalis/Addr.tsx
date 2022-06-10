@@ -143,6 +143,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             <Bech32Address
                                                 addressDetails={this.state.bech32AddressDetails}
                                                 advancedMode={true}
+                                                showCopyButton={true}
                                             />
                                             {/* {!this.state.statusBusy && (
                                                 <div className="row row--tablet-responsive">
