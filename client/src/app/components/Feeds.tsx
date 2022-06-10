@@ -7,6 +7,7 @@ import { ApiClient } from "../../services/apiClient";
 import { FeedClient } from "../../services/feedClient";
 import { MilestonesClient } from "../../services/milestonesClient";
 import { NetworkService } from "../../services/networkService";
+import { SettingsService } from "../../services/settingsService";
 import Currency from "./Currency";
 import { FeedsState } from "./FeedsState";
 
@@ -23,6 +24,11 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * Api client.
      */
     protected _apiClient?: ApiClient;
+
+    /**
+     * Settings service.
+     */
+    protected _settingsService: SettingsService;
 
     /**
      * Milestones client.
@@ -48,6 +54,12 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * The network configuration;
      */
     protected _networkConfig: INetwork | undefined;
+
+    constructor(props: P) {
+        super(props);
+
+        this._settingsService = ServiceFactory.get<SettingsService>("settings");
+    }
 
     /**
      * The component mounted.
