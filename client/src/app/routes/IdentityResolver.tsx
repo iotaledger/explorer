@@ -243,7 +243,7 @@ class IdentityResolver extends AsyncComponent<
                                                         <MessageButton
                                                             onClick={() => ClipboardHelper.copy(this.state.did)}
                                                             buttonType="copy"
-                                                            labelPosition="top"
+                                                            labelPosition="right"
                                                         />
                                                     </div>
                                                     {this.state.resolvedIdentity &&
@@ -263,7 +263,7 @@ class IdentityResolver extends AsyncComponent<
                                                                                     ?.messageId
                                                                             )}
                                                                         buttonType="copy"
-                                                                        labelPosition="top"
+                                                                        labelPosition="right"
                                                                     />
                                                                 </div>
                                                             </Fragment>

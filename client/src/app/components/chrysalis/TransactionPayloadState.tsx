@@ -13,5 +13,5 @@ export interface TransactionPayloadState {
     /**
      * Toggle balance between raw and formatted amount.
      */
-    toggleBalance: boolean;
+    isFormattedBalance: boolean;
 }

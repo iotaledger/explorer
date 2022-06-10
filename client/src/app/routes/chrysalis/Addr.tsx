@@ -144,6 +144,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 addressDetails={this.state.bech32AddressDetails}
                                                 advancedMode={true}
                                                 showCopyButton={true}
+                                                labelPosition="right"
                                             />
                                             {/* {!this.state.statusBusy && (
                                                 <div className="row row--tablet-responsive">
@@ -205,7 +206,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                     <MessageButton
                                                                         onClick={() => ClipboardHelper.copy(String(this.state.balance))}
                                                                         buttonType="copy"
-                                                                        labelPosition="top"
+                                                                        labelPosition="right"
                                                                     />
                                                                 </div>
                                                             ) : 0}

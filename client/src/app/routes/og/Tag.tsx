@@ -190,7 +190,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                                 onClick={() => ClipboardHelper.copy(
                                                     this.state.tag)}
                                                 buttonType="copy"
-                                                labelPosition="top"
+                                                labelPosition="right"
                                             />
                                         </div>
                                         <div className="card--label">

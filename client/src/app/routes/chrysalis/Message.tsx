@@ -156,7 +156,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                             this.state.actualMessageId
                                         )}
                                         buttonType="copy"
-                                        labelPosition="top"
+                                        labelPosition="right"
                                     />
                                 </div>
                             </div>
@@ -173,7 +173,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                                 this.state.paramMessageId
                                             )}
                                             buttonType="copy"
-                                            labelPosition="top"
+                                            labelPosition="right"
                                         />
                                     </div>
                                 </div>

@@ -36,4 +36,9 @@ export interface Bech32AddressProps {
      * Show copy button.
      */
     showCopyButton?: boolean;
+
+    /**
+     * Position to show copied label.
+     */
+    labelPosition: "top" | "right" | "bottom";
 }

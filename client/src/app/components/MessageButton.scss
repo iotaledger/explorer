@@ -46,6 +46,16 @@
     }
   }
 
+  .message-label--bottom {
+    top: 25px;
+    right: 40px;
+  }
+
+  .message-label--top {
+    top: -20px;
+    right: 40px;
+  }
+
   @keyframes fade {
     0%,
     100% {

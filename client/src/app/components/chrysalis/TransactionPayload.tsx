@@ -31,7 +31,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
         this.state = {
             showInputDetails: -1,
             showOutputDetails: -1,
-            toggleBalance: false
+            isFormattedBalance: false
         };
     }
 
@@ -94,6 +94,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             hideLabel
                                             truncateAddress={false}
                                             showCopyButton={false}
+                                            labelPosition="bottom"
                                         />
                                         <div className="card--value amount-size">
                                             {UnitsHelper.formatBest(input.amount)}
@@ -112,6 +113,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                     hideLabel
                                                     truncateAddress={false}
                                                     showCopyButton={true}
+                                                    labelPosition="bottom"
                                                 />
                                             </div>
                                             <div className="card--label"> Transaction Id</div>
@@ -158,22 +160,24 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                 addressDetails={output.address}
                                                 advancedMode={false}
                                                 hideLabel
-                                                truncateAddress
+                                                truncateAddress={false}
+                                                showCopyButton={false}
+                                                labelPosition="bottom"
                                             />
                                         </div>
-                                        <div className="card--value pointer row middle">
+                                        <div className="card--value pointer amount-size row end">
                                             <span
                                                 className="margin-r-t"
                                                 onClick={() => this.setState({
-                                                    toggleBalance: !this.state.toggleBalance
+                                                    isFormattedBalance: !this.state.isFormattedBalance
                                                 })}
                                             >
-                                                {this.state.toggleBalance ? output.amount : UnitsHelper.formatBest(output.amount)}
+                                                {this.state.isFormattedBalance ? output.amount : UnitsHelper.formatBest(output.amount)}
                                             </span>
                                             <MessageButton
                                                 onClick={() => ClipboardHelper.copy(String(output.amount))}
                                                 buttonType="copy"
-                                                labelPosition="top"
+                                                labelPosition="bottom"
                                             />
                                         </div>
                                     </div>
@@ -190,6 +194,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                     hideLabel
                                                     truncateAddress={false}
                                                     showCopyButton={true}
+                                                    labelPosition="bottom"
                                                 />
                                             </div>
                                         </React.Fragment>)}

@@ -86,6 +86,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                                     history={this.props.history}
                                     network={this.props.network}
                                     showCopyButton={true}
+                                    labelPosition="right"
                                 />
                             </div>
                             <div className="card--label">
