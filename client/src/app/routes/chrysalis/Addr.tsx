@@ -75,7 +75,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             currentPage: 1,
             pageSize: 10,
             currentPageTransactions: [],
-            toggleBalance: false
+            isFormattedBalance: false
         };
     }
 
@@ -193,11 +193,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 <div className="row middle">
                                                                     <span
                                                                         onClick={() => this.setState({
-                                                                            toggleBalance: !this.state.toggleBalance
+                                                                            isFormattedBalance: !this.state.isFormattedBalance
                                                                         })}
                                                                         className="pointer margin-r-5"
                                                                     >
-                                                                        {this.state.toggleBalance ? this.state.balance : UnitsHelper.formatBest(this.state.balance)}
+                                                                        {this.state.isFormattedBalance ? this.state.balance : UnitsHelper.formatBest(this.state.balance)}
                                                                     </span>
                                                                     <span>(</span>
                                                                     <FiatValue value={this.state.balance} />
