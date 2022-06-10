@@ -99,9 +99,10 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             addressDetails={input.transactionAddress}
                                             advancedMode={false}
                                             hideLabel
-                                            truncateAddress
+                                            truncateAddress={false}
+                                            showCopyButton={false}
                                         />
-                                        <div className="card--value">
+                                        <div className="card--value amount-size">
                                             {
                                                 formatAmount(
                                                     input.amount,
@@ -122,6 +123,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                     advancedMode
                                                     hideLabel
                                                     truncateAddress={false}
+                                                    showCopyButton={true}
                                                 />
                                             </div>
                                             <div className="card--label"> Transaction Id</div>
@@ -167,7 +169,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         >
                                             {NameHelper.getOutputTypeName(output.type)}
                                         </button>
-                                        <div className="card--value">
+                                        <div className="card--value amount-size">
                                             {
                                                 formatAmount(
                                                     output.amount,

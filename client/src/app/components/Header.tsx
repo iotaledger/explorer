@@ -2,7 +2,9 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
+import { ServiceFactory } from "../../factories/serviceFactory";
 import { CHRYSALIS, OG, STARDUST } from "../../models/db/protocolVersion";
+import { SettingsService } from "../../services/settingsService";
 import FiatSelector from "./FiatSelector";
 import "./Header.scss";
 import { HeaderProps } from "./HeaderProps";
@@ -14,19 +16,35 @@ import NetworkSwitcher from "./NetworkSwitcher";
  */
 class Header extends Component<HeaderProps, HeaderState> {
     /**
+     * Settings service.
+     */
+     private readonly _settingsService: SettingsService;
+
+    /**
      * Create a new instance of Header.
      * @param props The props.
      */
     constructor(props: HeaderProps) {
         super(props);
 
+        this._settingsService = ServiceFactory.get<SettingsService>("settings");
+
         this.state = {
             isNetworkSwitcherExpanded: false,
             isUtilitiesExpanded: false,
-            isMenuExpanded: false
+            isMenuExpanded: false,
+            darkMode: this._settingsService.get().darkMode ?? false
         };
     }
 
+    /**
+     * The component mounted.
+     */
+     public componentDidMount(): void {
+        if (this.state.darkMode) {
+            this.toggleModeClass();
+        }
+    }
 
     /**
      * Render the component.
@@ -156,9 +174,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                         <button
                             type="button"
                             className="button--unstyled theme-toggle"
-                            onClick={this.props?.toggleMode}
+                            onClick={() => this.toggleMode()}
                         >
-                            {this.props.darkMode ? <span className="material-icons">light_mode</span>
+                            {this.state.darkMode ? <span className="material-icons">light_mode</span>
                                 : <span className="material-icons">dark_mode</span>}
                         </button>
                         <div className="hamburger--menu">
@@ -283,6 +301,26 @@ class Header extends Component<HeaderProps, HeaderState> {
             isNetworkSwitcherExpanded: false,
             isMenuExpanded: false
         });
+    }
+
+    /**
+     * Toggle the display mode.
+     */
+     private toggleMode(): void {
+        this.setState({
+            darkMode: !this.state.darkMode
+        }, () => {
+            this._settingsService.saveSingle("darkMode", this.state.darkMode);
+        });
+        this.toggleModeClass();
+    }
+
+    /**
+     * Toggle darkmode classname to the body DOM node
+     */
+    private toggleModeClass(): void {
+        const body = document.querySelector("body");
+        body?.classList.toggle("darkmode");
     }
 }
 

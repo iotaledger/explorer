@@ -11,13 +11,13 @@ import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { INodeData } from "../../../models/graph/INodeData";
 import Feeds from "../../components/chrysalis/Feeds";
 import "../Visualizer.scss";
-import { VisualizerProps, VisualizerRouteProps } from "../VisualizerRouteProps";
+import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerState } from "../VisualizerState";
 
 /**
  * Component which will show the visualizer page.
  */
-class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & VisualizerProps, VisualizerState> {
+class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, VisualizerState> {
     /**
      * Maximum number of items.
      */
@@ -129,16 +129,22 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
     private _hadInitialLoad: boolean;
 
     /**
+     * Dark mode from service settings.
+     */
+    private _darkMode: boolean | undefined;
+
+    /**
      * Create a new instance of Visualizer.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<VisualizerRouteProps> & VisualizerProps) {
+    constructor(props: RouteComponentProps<VisualizerRouteProps>) {
         super(props);
 
         this._existingIds = [];
         this._lastClick = 0;
         this._removeNodes = [];
         this._hadInitialLoad = false;
+        this._darkMode = this._settingsService.get().darkMode;
 
         this._graphElement = null;
         this._resize = () => this.resize();
@@ -187,6 +193,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
      * @returns The node to render.
      */
     public render(): ReactNode {
+        if (this._darkMode !== this._settingsService.get().darkMode) {
+            this._darkMode = this._settingsService.get().darkMode;
+            this.styleConnections();
+        }
         return (
             <div className="visualizer">
                 <div className="row middle">
@@ -567,7 +577,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
             this._graphics.node(node => this.calculateNodeStyle(
                 node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data)));
 
-            this._graphics.link(() => Viva.Graph.View.webglLine(this.props.darkMode
+            this._graphics.link(() => Viva.Graph.View.webglLine(this._darkMode
                 ? Visualizer.EDGE_COLOR_DARK : Visualizer.EDGE_COLOR_LIGHT));
 
             const events = Viva.Graph.webglInputEvents(this._graphics, this._graph);
@@ -766,7 +776,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & Visua
             this._graph.forEachLink((link: Viva.Graph.ILink<unknown>) => {
                 const linkUI = this._graphics?.getLinkUI(link.id);
                 if (linkUI) {
-                    linkUI.color = this.props.darkMode
+                    linkUI.color = this._darkMode
                         ? Visualizer.EDGE_COLOR_DARK
                         : Visualizer.EDGE_COLOR_LIGHT;
                 }

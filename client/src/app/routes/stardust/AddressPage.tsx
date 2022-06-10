@@ -152,6 +152,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                             <Bech32Address
                                                 addressDetails={bech32AddressDetails}
                                                 advancedMode={true}
+                                                showCopyButton={true}
                                             />
                                             {balance && (
                                                 <div className="row middle">

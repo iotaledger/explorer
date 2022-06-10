@@ -10,8 +10,8 @@ import { EdgeUI, ItemUI, BlockTreeState, TreeConfig } from "./BlockTreeState";
 const DESKTOP_CONFIG: TreeConfig = {
     verticalSpace: 20,
     horizontalSpace: 80,
-    itemHeight: 32,
-    itemWidth: 205
+    itemHeight: 40,
+    itemWidth: 300
 };
 
 /**
@@ -151,9 +151,11 @@ class BlockTree extends Component<BlockTreeProps, BlockTreeState> {
                                 width: `${this.state.config.itemWidth}px`,
                                 left: item.type === "parent" ? "0" : "none",
                                 right: item.type === "child" ? "0" : "none",
-                                top: `${item.top}px`
+                                top: `${item.top}px`,
+                                wordBreak: this.state.config === DESKTOP_CONFIG ? "break-word" : "normal",
+                                textAlign: "center"
                             }}
-                            className={item.type}
+                            className="parent"
                             key={item.id}
                             onClick={() => {
                                 this.scrollToBlockTree();
@@ -162,22 +164,30 @@ class BlockTree extends Component<BlockTreeProps, BlockTreeState> {
                                 });
                             }}
                         >
-                            {item.id.slice(0, this.state.config === DESKTOP_CONFIG
-                                ? 6 : 4)}...{item.id.slice(this.state.config === DESKTOP_CONFIG ? -6 : -4)}
+                            {
+                                this.state.config === DESKTOP_CONFIG
+                                    ? item.id
+                                    : <span>{item.id.slice(0, 4)}...{item.id.slice(-4)}</span>
+                            }
                         </div>
                     ))}
 
                     {/* Root */}
                     <div
-                        className="root"
+                        className="root parent"
                         style={{
                             height: `${this.state.config.itemHeight}px`,
-                            width: `${this.state.config.itemWidth}px`
+                            width: `${this.state.config.itemWidth}px`,
+                            wordBreak: this.state.config === DESKTOP_CONFIG ? "break-word" : "normal",
+                            textAlign: "center"
                         }}
                     >
-                        {this.state.currentBlock.slice(0, this.state.config === DESKTOP_CONFIG
-                            ? 6 : 4)}...{this.state.currentBlock.slice(this.state.config === DESKTOP_CONFIG
-                                ? -6 : -4)}
+                        {
+                            this.state.config === DESKTOP_CONFIG
+                                ? this.state.currentBlock
+                                // eslint-disable-next-line max-len
+                                : <span>{this.state.currentBlock.slice(0, 4)}...{this.state.currentBlock.slice(-4)}</span>
+                        }
                     </div>
 
                     {/* Edges */}
