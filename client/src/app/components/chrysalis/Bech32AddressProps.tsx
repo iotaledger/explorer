@@ -40,5 +40,5 @@ export interface Bech32AddressProps {
     /**
      * Position to show copied label.
      */
-    labelPosition: "top" | "right" | "bottom";
+    labelPosition?: "top" | "right" | "bottom";
 }

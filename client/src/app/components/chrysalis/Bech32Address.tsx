@@ -54,7 +54,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                 <MessageButton
                                     onClick={() => ClipboardHelper.copy(this.props.addressDetails?.bech32)}
                                     buttonType="copy"
-                                    labelPosition={this.props.labelPosition}
+                                    labelPosition={this.props.labelPosition ?? "right"}
                                 />
                             )}
                         </div>
@@ -83,7 +83,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                             <MessageButton
                                 onClick={() => ClipboardHelper.copy(this.props.addressDetails?.hex)}
                                 buttonType="copy"
-                                labelPosition={this.props.labelPosition}
+                                labelPosition={this.props.labelPosition ?? "right"}
                             />
                         </div>
                     </div>

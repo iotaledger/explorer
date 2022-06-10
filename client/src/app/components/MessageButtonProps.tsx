@@ -7,7 +7,7 @@ export interface MessageButtonProps {
     /**
      * Position to show copied label.
      */
-    labelPosition: "top" | "right" | "bottom";
+    labelPosition?: "top" | "right" | "bottom";
 
     /**
      * The button click.

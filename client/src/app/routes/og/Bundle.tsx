@@ -218,7 +218,6 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                 onClick={() => ClipboardHelper.copy(
                                                     this.state.bundle)}
                                                 buttonType="copy"
-                                                labelPosition="right"
                                             />
                                         </div>
                                     </div>

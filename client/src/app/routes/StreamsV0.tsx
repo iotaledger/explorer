@@ -256,7 +256,6 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                                 ? item.rawMessageTrytes
                                                                 : item.message)}
                                                         buttonType="copy"
-                                                        labelPosition="right"
                                                     />
                                                 </div>
                                                 <div

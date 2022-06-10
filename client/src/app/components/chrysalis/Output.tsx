@@ -66,7 +66,6 @@ class Output extends Component<OutputProps, OutputState> {
                                         this.props.output.messageId
                                     )}
                                     buttonType="copy"
-                                    labelPosition="right"
                                 />
                             </React.Fragment>
                         )}
@@ -98,7 +97,6 @@ class Output extends Component<OutputProps, OutputState> {
                                                 this.props.output.transactionId
                                             )}
                                             buttonType="copy"
-                                            labelPosition="right"
                                         />
                                     </React.Fragment>
                                 )}

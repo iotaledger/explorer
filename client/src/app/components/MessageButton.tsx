@@ -18,7 +18,7 @@ class MessageButton extends Component<MessageButtonProps, MessageButtonState> {
         super(props);
 
         this.state = {
-            active: false,
+            active: true,
             message: props.buttonType === "copy" ? "Copied" : ""
         };
     }
@@ -48,8 +48,8 @@ class MessageButton extends Component<MessageButtonProps, MessageButtonState> {
                     <span
                         className={classNames(
                             "message-button--message",
-                            this.props.labelPosition === "bottom" ? "message-label--bottom"
-                            : this.props.labelPosition === "top" ? "message-label--top"
+                            this.props.labelPosition === "bottom" ? "bottom"
+                            : this.props.labelPosition === "top" ? "top"
                             : ""
                         )}
                     >
