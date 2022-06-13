@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable unicorn/no-nested-ternary */
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import "./MessageButton.scss";
@@ -18,7 +16,7 @@ class MessageButton extends Component<MessageButtonProps, MessageButtonState> {
         super(props);
 
         this.state = {
-            active: true,
+            active: false,
             message: props.buttonType === "copy" ? "Copied" : ""
         };
     }
@@ -45,14 +43,7 @@ class MessageButton extends Component<MessageButtonProps, MessageButtonState> {
                     )}
                 </button>
                 {this.state.active && this.state.message && (
-                    <span
-                        className={classNames(
-                            "message-button--message",
-                            this.props.labelPosition === "bottom" ? "bottom"
-                            : this.props.labelPosition === "top" ? "top"
-                            : ""
-                        )}
-                    >
+                    <span className={classNames("message-button--message", this.props.labelPosition)}>
                         {this.state.message}
                     </span>
                 )}
