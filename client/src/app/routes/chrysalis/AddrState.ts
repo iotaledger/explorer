@@ -83,5 +83,10 @@ export interface AddrState {
     /**
      * Page size in transaction history table.
      */
-     currentPageTransactions: ITransaction[];
+    currentPageTransactions: ITransaction[];
+
+    /**
+     * Toggle balance between raw and formatted amount.
+     */
+    isFormattedBalance: boolean;
 }

@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import "./MessageButton.scss";
@@ -44,7 +43,7 @@ class MessageButton extends Component<MessageButtonProps, MessageButtonState> {
                     )}
                 </button>
                 {this.state.active && this.state.message && (
-                    <span className="message-button--message">
+                    <span className={classNames("message-button--message", this.props.labelPosition)}>
                         {this.state.message}
                     </span>
                 )}

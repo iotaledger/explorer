@@ -3,8 +3,10 @@ import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import AsyncComponent from "../AsyncComponent";
 import FiatValue from "../FiatValue";
+import MessageButton from "../MessageButton";
 import Modal from "../Modal";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import transactionPayloadMessage from "./../../../assets/modals/message/transaction-payload.json";
@@ -28,7 +30,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
 
         this.state = {
             showInputDetails: -1,
-            showOutputDetails: -1
+            showOutputDetails: -1,
+            isFormattedBalance: false
         };
     }
 
@@ -91,6 +94,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             hideLabel
                                             truncateAddress={false}
                                             showCopyButton={false}
+                                            labelPosition="bottom"
                                         />
                                         <div className="card--value amount-size">
                                             {UnitsHelper.formatBest(input.amount)}
@@ -109,6 +113,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                     hideLabel
                                                     truncateAddress={false}
                                                     showCopyButton={true}
+                                                    labelPosition="bottom"
                                                 />
                                             </div>
                                             <div className="card--label"> Transaction Id</div>
@@ -141,24 +146,39 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         <div className="card--content">
                             {this.props.outputs.map((output, idx) => (
                                 <React.Fragment key={idx}>
-                                    <div
-                                        className="card--content__input"
-                                        onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx })}
-                                    >
-                                        <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === idx })}>
-                                            <DropdownIcon />
+                                    <div className="row middle">
+                                        <div
+                                            className="card--content__input"
+                                            onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx })}
+                                        >
+                                            <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === idx })}>
+                                                <DropdownIcon />
+                                            </div>
+                                            <Bech32Address
+                                                network={this.props.network}
+                                                history={this.props.history}
+                                                addressDetails={output.address}
+                                                advancedMode={false}
+                                                hideLabel
+                                                truncateAddress={false}
+                                                showCopyButton={false}
+                                                labelPosition="bottom"
+                                            />
                                         </div>
-                                        <Bech32Address
-                                            network={this.props.network}
-                                            history={this.props.history}
-                                            addressDetails={output.address}
-                                            advancedMode={false}
-                                            hideLabel
-                                            truncateAddress={false}
-                                            showCopyButton={false}
-                                        />
-                                        <div className="card--value amount-size">
-                                            {UnitsHelper.formatBest(output.amount)}
+                                        <div className="card--value pointer amount-size row end">
+                                            <span
+                                                className="margin-r-t"
+                                                onClick={() => this.setState({
+                                                    isFormattedBalance: !this.state.isFormattedBalance
+                                                })}
+                                            >
+                                                {this.state.isFormattedBalance ? output.amount : UnitsHelper.formatBest(output.amount)}
+                                            </span>
+                                            <MessageButton
+                                                onClick={() => ClipboardHelper.copy(String(output.amount))}
+                                                buttonType="copy"
+                                                labelPosition="bottom"
+                                            />
                                         </div>
                                     </div>
 
@@ -174,6 +194,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                     hideLabel
                                                     truncateAddress={false}
                                                     showCopyButton={true}
+                                                    labelPosition="bottom"
                                                 />
                                             </div>
                                         </React.Fragment>)}
