@@ -5,12 +5,12 @@ export interface CopyButtonProps {
     buttonType: "copy";
 
     /**
-     * Position to show label.
+     * Position to show copied label.
      */
-    labelPosition: "top" | "right";
+    labelPosition?: "top" | "right" | "bottom";
 
     /**
      * The button click.
      */
-    onClick(): void;
+    onClick(event?: React.MouseEvent): void;
 }

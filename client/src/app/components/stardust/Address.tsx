@@ -41,7 +41,7 @@ class Address extends Component<AddressProps> {
                     <CopyButton
                         onClick={() => ClipboardHelper.copy(bech32)}
                         buttonType="copy"
-                        labelPosition="top"
+                        labelPosition="bottom"
                     />
                 </div>
             </div>

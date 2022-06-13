@@ -151,7 +151,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                                         this.state.bech32AddressDetails?.hex
                                                     )}
                                                     buttonType="copy"
-                                                    labelPosition="top"
                                                 />
                                             </div>
                                         </div>

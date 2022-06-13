@@ -7,6 +7,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/chrysalis/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/chrysalis/transactionsHelper";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import {
     HistoricInput, HistoricOutput,
     ITransaction, ITransactionsDetailsResponse
@@ -17,6 +18,7 @@ import { NetworkService } from "../../../services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import QR from "../../components/chrysalis/QR";
+import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
 import Pagination from "../../components/Pagination";
@@ -76,7 +78,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
             sent: 0,
             currentPage: 1,
             pageSize: 10,
-            currentPageTransactions: []
+            currentPageTransactions: [],
+            isFormattedBalance: false
         };
     }
 
@@ -191,13 +194,23 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                                                         </div>
                                                         <div className="value featured">
                                                             {this.state.balance > 0 ? (
-                                                                <React.Fragment>
-                                                                    {UnitsHelper.formatBest(this.state.balance)}
-                                                                    {" "}
+                                                                <div className="row middle">
+                                                                    <span
+                                                                        onClick={() => this.setState({
+                                                                            isFormattedBalance: !this.state.isFormattedBalance
+                                                                        })}
+                                                                        className="pointer margin-r-5"
+                                                                    >
+                                                                        {this.state.isFormattedBalance ? this.state.balance : UnitsHelper.formatBest(this.state.balance)}
+                                                                    </span>
                                                                     <span>(</span>
                                                                     <FiatValue value={this.state.balance} />
                                                                     <span>)</span>
-                                                                </React.Fragment>
+                                                                    <CopyButton
+                                                                        onClick={() => ClipboardHelper.copy(String(this.state.balance))}
+                                                                        buttonType="copy"
+                                                                    />
+                                                                </div>
                                                             ) : 0}
                                                         </div>
                                                     </div>
@@ -516,4 +529,3 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
 }
 
 export default Addr;
-

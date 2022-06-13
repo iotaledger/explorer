@@ -105,6 +105,10 @@
 
       .balance {
         margin-left: 16px;
+
+        .pointer {
+          cursor: pointer;
+        }
       }
 
       .cards {

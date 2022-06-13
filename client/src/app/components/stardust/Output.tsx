@@ -66,7 +66,7 @@ class Output extends Component<OutputProps, OutputState> {
                             <CopyButton
                                 onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
                                 buttonType="copy"
-                                labelPosition="top"
+                                labelPosition="bottom"
                             />
                         </div>
                         <div className="card--label">
@@ -105,7 +105,6 @@ class Output extends Component<OutputProps, OutputState> {
                             <CopyButton
                                 onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
                                 buttonType="copy"
-                                labelPosition="top"
                             />
                         </div>
                     </React.Fragment>
@@ -126,7 +125,6 @@ class Output extends Component<OutputProps, OutputState> {
                             <CopyButton
                                 onClick={() => ClipboardHelper.copy(foundryId)}
                                 buttonType="copy"
-                                labelPosition="top"
                             />
                         </div>
                         <div className="card--label">

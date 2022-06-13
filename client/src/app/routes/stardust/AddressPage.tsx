@@ -5,6 +5,7 @@ import bigInt from "big-integer";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/db/protocolVersion";
@@ -12,6 +13,7 @@ import { NetworkService } from "../../../services/networkService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import QR from "../../components/chrysalis/QR";
+import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
 import Pagination from "../../components/Pagination";
@@ -70,7 +72,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
         this.state = {
             ...Bech32AddressHelper.buildAddress(this._bechHrp, props.match.params.address),
-            formatFull: false,
+            formatFull: true,
             areNftsLoading: true,
             nfts: [],
             nftsPageNumber: 1,
@@ -163,19 +165,29 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                         </div>
                                                         <div className="value featured">
                                                             {balance > 0 ? (
-                                                                <React.Fragment>
-                                                                    {
-                                                                        formatAmount(
+                                                                <div className="row middle">
+                                                                    <span
+                                                                        onClick={() => this.setState({
+                                                                            formatFull: !formatFull
+                                                                        })}
+                                                                        className="pointer margin-r-5"
+                                                                    >
+                                                                        {formatAmount(
                                                                             balance,
                                                                             this.context.tokenInfo,
                                                                             formatFull
-                                                                        )
-                                                                    }
-                                                                    {" "}
+                                                                        )}
+                                                                    </span>
                                                                     <span>(</span>
                                                                     <FiatValue value={balance} />
                                                                     <span>)</span>
-                                                                </React.Fragment>
+                                                                    <CopyButton
+                                                                        onClick={() => ClipboardHelper.copy(
+                                                                            String(balance)
+                                                                        )}
+                                                                        buttonType="copy"
+                                                                    />
+                                                                </div>
                                                             ) : 0}
                                                         </div>
                                                     </div>

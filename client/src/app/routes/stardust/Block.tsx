@@ -155,7 +155,6 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                             this.state.actualBlockId
                                         )}
                                         buttonType="copy"
-                                        labelPosition="top"
                                     />
                                 </div>
                             </div>
@@ -172,7 +171,6 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                 this.state.transactionId
                                             )}
                                             buttonType="copy"
-                                            labelPosition="top"
                                         />
                                     </div>
                                 </div>

@@ -99,7 +99,6 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                                 </span>
                                 <CopyButton
                                     buttonType="copy"
-                                    labelPosition="top"
                                     onClick={() => ClipboardHelper.copy(controllerAlias)}
                                 />
                             </div>

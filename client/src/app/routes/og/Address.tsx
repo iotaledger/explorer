@@ -196,7 +196,6 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                     `${this.state.address}${this.state.checksum}`
                                                 )}
                                                 buttonType="copy"
-                                                labelPosition="top"
                                             />
                                         </div>
                                         {this.state.balance !== undefined && this.state.balance !== 0 && (

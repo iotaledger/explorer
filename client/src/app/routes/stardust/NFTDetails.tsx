@@ -137,7 +137,6 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                                         this.state.nftDetails?.generalData?.tokenId
                                                                     )}
                                                                     buttonType="copy"
-                                                                    labelPosition="top"
                                                                 />
                                                             </div>
                                                         </li>
@@ -152,7 +151,6 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                                         this.state.nftDetails?.generalData?.contractAddress
                                                                     )}
                                                                     buttonType="copy"
-                                                                    labelPosition="top"
                                                                 />
                                                             </div>
                                                         </li>
@@ -167,7 +165,6 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                                         this.state.nftDetails?.generalData?.creatorAddress
                                                                     )}
                                                                     buttonType="copy"
-                                                                    labelPosition="top"
                                                                 />
                                                             </div>
                                                         </li>
@@ -182,7 +179,6 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                                         this.state.nftDetails?.generalData?.senderAddress
                                                                     )}
                                                                     buttonType="copy"
-                                                                    labelPosition="top"
                                                                 />
                                                             </div>
                                                         </li>

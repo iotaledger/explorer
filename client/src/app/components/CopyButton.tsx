@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import "./CopyButton.scss";
@@ -35,7 +34,7 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
                         "copy-button-btn",
                         { "copy-button-btn--active": this.state.active }
                     )}
-                    onClick={() => this.activate()}
+                    onClick={e => this.activate(e)}
                 >
                     {this.props.buttonType === "copy" && (
                         <span className="material-icons">
@@ -44,7 +43,7 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
                     )}
                 </button>
                 {this.state.active && this.state.message && (
-                    <span className="copy-button--message">
+                    <span className={classNames("copy-button--message", this.props.labelPosition)}>
                         {this.state.message}
                     </span>
                 )}
@@ -54,9 +53,10 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
 
     /**
      * Activate the button.
+     * @param event The mouse click event
      */
-    private activate(): void {
-        this.props.onClick();
+    private activate(event: React.MouseEvent): void {
+        this.props.onClick(event);
 
         this.setState({ active: true });
         setTimeout(
