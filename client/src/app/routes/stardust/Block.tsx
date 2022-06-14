@@ -3,7 +3,7 @@ import {
     TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE
 } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
@@ -96,6 +96,8 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const network = this.props.match.params.network;
+
         return (
             <div className="block">
                 <div className="wrapper">
@@ -127,15 +129,13 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                 </div>
 
                                 <BlockTangleState
-                                    network={this.props.match.params.network}
+                                    network={network}
                                     status={this.state.blockTangleStatus}
                                     milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
                                         this.state.metadata?.milestoneIndex}
                                     hasConflicts={this.state.metadata?.ledgerInclusionState === "conflicting"}
                                     onClick={this.state.metadata?.referencedByMilestoneIndex
-                                        ? (blockId: string) => this.props.history.push(
-                                            `/${this.props.match.params.network
-                                            }/search/${blockId}`)
+                                        ? (blockId: string) => this.props.history.push(`/${network }/search/${blockId}`)
                                         : undefined}
                                 />
                             </div>
@@ -228,7 +228,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                         <React.Fragment>
                                             <div className="section">
                                                 <TransactionPayload
-                                                    network={this.props.match.params.network}
+                                                    network={network}
                                                     history={this.props.history}
                                                     inputs={this.state.inputs}
                                                     outputs={this.state.outputs}
@@ -239,7 +239,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                 this.state.block.payload.essence.payload &&
                                                     <div className="section">
                                                         <TaggedDataPayload
-                                                            network={this.props.match.params.network}
+                                                            network={network}
                                                             history={this.props.history}
                                                             payload={this.state.block.payload.essence.payload}
                                                             advancedMode={this.state.advancedMode}
@@ -251,7 +251,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                 {this.state.block.payload.type === MILESTONE_PAYLOAD_TYPE && (
                                     <div className="section">
                                         <MilestonePayload
-                                            network={this.props.match.params.network}
+                                            network={network}
                                             history={this.props.history}
                                             payload={this.state.block.payload}
                                             advancedMode={this.state.advancedMode}
@@ -261,7 +261,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                 {this.state.block.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (
                                     <div className="section">
                                         <TaggedDataPayload
-                                            network={this.props.match.params.network}
+                                            network={network}
                                             history={this.props.history}
                                             payload={this.state.block.payload}
                                             advancedMode={this.state.advancedMode}
@@ -319,6 +319,24 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                     <div className="value">
                                                         {this.state.conflictReason}
                                                     </div>
+                                                </div>
+                                            )}
+                                            {this.state.metadata?.parents &&
+                                                this.state.block?.payload?.type !== MILESTONE_PAYLOAD_TYPE && (
+                                                <div className="section--data">
+                                                    <div className="label">
+                                                        Parents
+                                                    </div>
+                                                    {this.state.metadata.parents.map(parent => (
+                                                        <div className="value code">
+                                                            <Link
+                                                                to={`/${network}/block/${parent}`}
+                                                                className="margin-r-t"
+                                                            >
+                                                                {parent}
+                                                            </Link>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             )}
                                         </React.Fragment>
