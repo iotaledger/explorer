@@ -18,7 +18,6 @@ import InclusionState from "../../components/InclusionState";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
-import BlockTree from "../../components/stardust/BlockTree";
 import MilestonePayload from "../../components/stardust/MilestonePayload";
 import TaggedDataPayload from "../../components/stardust/TaggedDataPayload";
 import TransactionPayload from "../../components/stardust/TransactionPayload";
@@ -26,7 +25,6 @@ import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import metadataMessage from "./../../../assets/modals/block/metadata.json";
-import treeMessage from "./../../../assets/modals/block/tree.json";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
 import "./Block.scss";
@@ -70,7 +68,6 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
 
         this.state = {
             blockTangleStatus: "pending",
-            childrenBusy: true,
             advancedMode: this._settingsService.get().advancedMode ?? false
         };
     }
@@ -329,26 +326,6 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                 </div>
                             </div>
                         )}
-                        <div className="section">
-                            <div className="section--header">
-                                <div>
-                                    <div className="row middle">
-                                        <h2>
-                                            Block tree
-                                        </h2>
-                                        <Modal icon="info" data={treeMessage} />
-                                    </div>
-                                </div>
-                            </div>
-                            {this.state.block?.parents && this.state.childrenIds && (
-                                <BlockTree
-                                    parentsIds={this.state.block?.parents}
-                                    blockId={this.props.match.params.blockId}
-                                    childrenIds={this.state.childrenIds}
-                                    onSelected={async (i, update) => this.loadBlock(i, update)}
-                                />
-                            )}
-                        </div>
                     </div>
                 </div>
             </div >
@@ -360,16 +337,14 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
      */
     private async updateBlockDetails(): Promise<void> {
         const details = await this._tangleCacheService.blockDetails(
-            this.props.match.params.network, this.state.actualBlockId ?? "");
+            this.props.match.params.network, this.state.actualBlockId ?? ""
+        );
 
         this.setState({
             metadata: details?.metadata,
             metadataError: details?.error,
             conflictReason: this.calculateConflictReason(details?.metadata),
-            childrenIds: details?.childrenIds && details?.childrenIds.length > 0
-                ? details?.childrenIds : (this.state.childrenIds ?? []),
-            blockTangleStatus: this.calculateStatus(details?.metadata),
-            childrenBusy: false
+            blockTangleStatus: this.calculateStatus(details?.metadata)
         });
 
         if (!details?.metadata?.referencedByMilestoneIndex) {

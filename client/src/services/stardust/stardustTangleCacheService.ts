@@ -97,7 +97,6 @@ export class StardustTangleCacheService extends TangleCacheService {
         networkId: string,
         blockId: string): Promise<{
             metadata?: IBlockMetadata;
-            childrenIds?: string[];
             error?: string;
         }> {
         const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
@@ -107,7 +106,6 @@ export class StardustTangleCacheService extends TangleCacheService {
         if (response) {
             return {
                 metadata: response.metadata,
-                childrenIds: response.childrenBlockIds,
                 error: response.error
             };
         }
