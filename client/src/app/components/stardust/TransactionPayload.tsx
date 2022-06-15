@@ -1,12 +1,9 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import AsyncComponent from "../AsyncComponent";
-import CopyButton from "../CopyButton";
 import FiatValue from "../FiatValue";
 import Modal from "../Modal";
 import { TransactionPayloadState } from "../TransactionPayloadState";
@@ -14,7 +11,7 @@ import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow
 import transactionPayloadMessage from "./../../../assets/modals/message/transaction-payload.json";
 import Bech32Address from "./Bech32Address";
 import "./TransactionPayload.scss";
-import Output from "./Output";
+import { OutputDropdown } from "./OutputDropdown";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
 
 /**
@@ -166,69 +163,14 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         </div>
                         <div className="card--content">
                             {this.props.outputs.map((output, idx) => (
-                                <React.Fragment key={idx}>
-                                    <div
-                                        className="card--content__input card--value"
-                                        onClick={() => this.setState(
-                                            { showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx }
-                                        )}
-                                    >
-                                        <div className={classNames(
-                                            "margin-r-t", "card--content__input--dropdown",
-                                            "card--content__flex_between",
-                                            { opened: this.state.showOutputDetails === idx }
-                                        )}
-                                        >
-                                            <DropdownIcon />
-                                        </div>
-                                        <button
-                                            type="button"
-                                            className="margin-r-t color"
-                                        >
-                                            {NameHelper.getOutputTypeName(output.type)}
-                                        </button>
-                                        <div className="card--value pointer amount-size row end">
-                                            <span
-                                                className="margin-r-t"
-                                                onClick={e => {
-                                                    this.setState({
-                                                        isFormattedBalance: !this.state.isFormattedBalance
-                                                    });
-                                                    e.stopPropagation();
-                                                }}
-                                            >
-                                                {
-                                                    this.state.isFormattedBalance
-                                                        ? formatAmount(output.amount, this.context.tokenInfo)
-                                                        : output.amount
-                                                }
-                                            </span>
-                                        </div>
-                                        <CopyButton
-                                            onClick={e => {
-                                                ClipboardHelper.copy(String(output.amount));
-                                                if (e) {
-                                                    e.stopPropagation();
-                                                }
-                                            }}
-                                            buttonType="copy"
-                                            labelPosition="bottom"
-                                        />
-                                    </div>
-
-                                    {this.state.showOutputDetails === idx && (
-                                        <div className="card--value">
-                                            <Output
-                                                key={idx}
-                                                id={output.id}
-                                                index={idx + 1}
-                                                output={output.output}
-                                                amount={output.amount}
-                                                network={this.props.network}
-                                            />
-                                        </div>
-                                    )}
-                                </React.Fragment>
+                                <OutputDropdown
+                                    key={idx}
+                                    outputIndex={idx}
+                                    output={output}
+                                    context={this.context}
+                                    network={this.props.network}
+                                    showOutputDetails={this.state.showOutputDetails}
+                                />
                             ))}
                         </div>
                     </div>
