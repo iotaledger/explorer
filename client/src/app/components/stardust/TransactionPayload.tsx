@@ -32,8 +32,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
 
         this.state = {
             showInputDetails: -1,
-            showOutputDetails: -1,
-            isFormattedBalance: true
+            showOutputDetails: -1
         };
     }
 
