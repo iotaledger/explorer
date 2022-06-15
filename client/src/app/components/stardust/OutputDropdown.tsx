@@ -10,21 +10,21 @@ import { OutputDropdownProps } from "./OutputDropdownProps";
 
 export const OutputDropdown: React.FC<OutputDropdownProps> = (
     { outputIndex, showOutputDetails, context, output, network }) => {
-    const [outputDetails, setOutputDetails] = useState(showOutputDetails);
+    const [showOutput, setShowOutput] = useState(showOutputDetails);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
     return (
         <React.Fragment key={outputIndex}>
             <div
                 className="card--content__input card--value"
-                onClick={() => setOutputDetails(
-                    outputDetails === outputIndex ? -1 : outputIndex
+                onClick={() => setShowOutput(
+                    showOutput === outputIndex ? -1 : outputIndex
                 )}
             >
                 <div className={classNames(
                     "margin-r-t", "card--content__input--dropdown",
                     "card--content__flex_between",
-                    { opened: outputDetails === outputIndex }
+                    { opened: showOutput === outputIndex }
                 )}
                 >
                     <DropdownIcon />
@@ -62,7 +62,7 @@ export const OutputDropdown: React.FC<OutputDropdownProps> = (
                 />
             </div>
 
-            {outputDetails === outputIndex && (
+            {showOutput === outputIndex && (
                 <div className="card--value">
                     <Output
                         key={outputIndex}
