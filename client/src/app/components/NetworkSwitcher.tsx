@@ -33,7 +33,7 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                     </div>
 
 
-                    <div className={classNames("header--expanded", {
+                    <div className={classNames("header--expanded network--expanded", {
                         opened: this.props.isExpanded
                     })}
                     >
@@ -59,23 +59,11 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                                                 <div className="network--content">
                                                     <div className="label">{n.label}</div>
                                                     <div className="description">
-                                                        {n.description}
+                                                        {protocol.label}
                                                     </div>
                                                 </div>
                                             </div>
                                         ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="protocols">
-                            {this.props.protocols.map(protocol => (
-                                <div className="protocol" key={protocol.label}>
-                                    <div className="protocol-header">
-                                        <div className="protocol--title">{protocol.label}</div>
-                                        <div className="protocol--description">
-                                            {protocol.description}
-                                        </div>
                                     </div>
                                 </div>
                             ))}

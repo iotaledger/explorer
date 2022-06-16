@@ -63,28 +63,24 @@
   }
 
   .protocols {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto;
-    max-width: 1400px;
+    display: flex;
+    flex-direction: column;
+    max-width: 360px;
     margin: auto;
-    padding: 40px;
+    padding-top: 20px;
 
     @media (max-width: 1200px) {
       display: block;
-      padding: 24px;
 
       div.protocol {
         width: 100%;
-        padding: 24px 0;
       }
     }
 
     .protocol {
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr;
-      padding: 0 24px;
+      display: flex;
+      flex-direction: row;
+      padding: 0 10px;
 
       .protocol-header {
           min-height: 68px;
@@ -111,6 +107,7 @@
       .network--cards {
         display: flex;
         flex-direction: column;
+        width: 350px;
 
         .network--card {
           min-height: 86px;
