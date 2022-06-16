@@ -6,6 +6,7 @@ import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { MilestonesClient } from "../../../services/milestonesClient";
 import { NetworkService } from "../../../services/networkService";
+import { SettingsService } from "../../../services/settingsService";
 import { StardustApiClient } from "../../../services/stardust/stardustApiClient";
 import { StardustFeedClient } from "../../../services/stardust/stardustFeedClient";
 import Currency from "../Currency";
@@ -24,6 +25,11 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * Api client.
      */
     protected _apiClient?: StardustApiClient;
+
+    /**
+     * Settings service.
+     */
+    protected _settingsService: SettingsService;
 
     /**
      * Milestones client.
@@ -49,6 +55,12 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * The network configuration;
      */
     protected _networkConfig: INetwork | undefined;
+
+    constructor(props: P) {
+        super(props);
+
+        this._settingsService = ServiceFactory.get<SettingsService>("settings");
+    }
 
     /**
      * The component mounted.

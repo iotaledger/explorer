@@ -1,11 +1,12 @@
-/* eslint-disable max-len */
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import AsyncComponent from "../AsyncComponent";
+import CopyButton from "../CopyButton";
 import FiatValue from "../FiatValue";
 import Modal from "../Modal";
 import { TransactionPayloadState } from "../TransactionPayloadState";
@@ -34,7 +35,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
 
         this.state = {
             showInputDetails: -1,
-            showOutputDetails: -1
+            showOutputDetails: -1,
+            isFormattedBalance: true
         };
     }
 
@@ -88,9 +90,16 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 <React.Fragment key={idx}>
                                     <div
                                         className="card--content__input"
-                                        onClick={() => this.setState({ showInputDetails: this.state.showInputDetails === idx ? -1 : idx })}
+                                        onClick={() => this.setState(
+                                            { showInputDetails: this.state.showInputDetails === idx ? -1 : idx }
+                                        )}
                                     >
-                                        <div className={classNames("margin-r-t", "card--content__input--dropdown", { opened: this.state.showInputDetails === idx })}>
+                                        <div className={
+                                            classNames("margin-r-t", "card--content__input--dropdown",
+                                                       { opened: this.state.showInputDetails === idx }
+                                                      )
+                                            }
+                                        >
                                             <DropdownIcon />
                                         </div>
                                         <Bech32Address
@@ -99,9 +108,11 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             addressDetails={input.transactionAddress}
                                             advancedMode={false}
                                             hideLabel
-                                            truncateAddress
+                                            truncateAddress={false}
+                                            showCopyButton={false}
+                                            labelPosition="bottom"
                                         />
-                                        <div className="card--value">
+                                        <div className="card--value amount-size">
                                             {
                                                 formatAmount(
                                                     input.amount,
@@ -122,6 +133,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                     advancedMode
                                                     hideLabel
                                                     truncateAddress={false}
+                                                    showCopyButton={true}
+                                                    labelPosition="bottom"
                                                 />
                                             </div>
                                             <div className="card--label"> Transaction Id</div>
@@ -156,9 +169,16 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 <React.Fragment key={idx}>
                                     <div
                                         className="card--content__input card--value"
-                                        onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx })}
+                                        onClick={() => this.setState(
+                                            { showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx }
+                                        )}
                                     >
-                                        <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === idx })}>
+                                        <div className={classNames(
+                                            "margin-r-t", "card--content__input--dropdown",
+                                            "card--content__flex_between",
+                                            { opened: this.state.showOutputDetails === idx }
+                                        )}
+                                        >
                                             <DropdownIcon />
                                         </div>
                                         <button
@@ -167,14 +187,33 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         >
                                             {NameHelper.getOutputTypeName(output.type)}
                                         </button>
-                                        <div className="card--value">
-                                            {
-                                                formatAmount(
-                                                    output.amount,
-                                                    this.context.tokenInfo
-                                                )
-                                            }
+                                        <div className="card--value pointer amount-size row end">
+                                            <span
+                                                className="margin-r-t"
+                                                onClick={e => {
+                                                    this.setState({
+                                                        isFormattedBalance: !this.state.isFormattedBalance
+                                                    });
+                                                    e.stopPropagation();
+                                                }}
+                                            >
+                                                {
+                                                    this.state.isFormattedBalance
+                                                        ? formatAmount(output.amount, this.context.tokenInfo)
+                                                        : output.amount
+                                                }
+                                            </span>
                                         </div>
+                                        <CopyButton
+                                            onClick={e => {
+                                                ClipboardHelper.copy(String(output.amount));
+                                                if (e) {
+                                                    e.stopPropagation();
+                                                }
+                                            }}
+                                            buttonType="copy"
+                                            labelPosition="bottom"
+                                        />
                                     </div>
 
                                     {this.state.showOutputDetails === idx && (
@@ -185,6 +224,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                 index={idx + 1}
                                                 output={output.output}
                                                 amount={output.amount}
+                                                network={this.props.network}
                                             />
                                         </div>
                                     )}

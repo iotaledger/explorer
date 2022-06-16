@@ -25,4 +25,9 @@ export interface OutputProps {
      * Should hide the label.
      */
     hideLabel?: boolean;
+
+    /**
+     * The network to lookup.
+     */
+    network: string;
 }

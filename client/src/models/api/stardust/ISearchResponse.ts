@@ -2,6 +2,7 @@ import { IBlock, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardus
 import { IResponse } from "../IResponse";
 import IAddressDetails from "./IAddressDetails";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
+import { INftDetailsResponse } from "./INftDetailsResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
@@ -25,9 +26,34 @@ export interface ISearchResponse extends IResponse {
     output?: IOutputResponse;
 
     /**
+     * Alias output id if it was found.
+     */
+    aliasOutputId?: string;
+
+    /**
+     * Foundry output if it was found.
+     */
+    foundryOutputId?: string;
+
+    /**
+     * Nft output if it was found.
+     */
+    nftOutputId?: string;
+
+    /**
      * Nft outputs.
      */
     nftOutputs?: IOutputsResponse;
+
+    /**
+     * Nft Details.
+     */
+    nftDetails?: INftDetailsResponse;
+
+    /**
+     * Foundry outputs.
+     */
+    foundryOutputs?: IOutputsResponse;
 
     /**
      * Milestone if it was found.

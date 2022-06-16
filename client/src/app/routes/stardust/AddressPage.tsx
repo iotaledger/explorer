@@ -1,12 +1,11 @@
-/* eslint-disable max-len */
-/* eslint-disable camelcase */
 import { Blake2b } from "@iota/crypto.js-stardust";
-import { BASIC_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
+import { IOutputResponse, NFT_OUTPUT_TYPE, TREASURY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/db/protocolVersion";
@@ -14,36 +13,31 @@ import { NetworkService } from "../../../services/networkService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import QR from "../../components/chrysalis/QR";
+import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
-import Asset from "../../components/stardust/Asset";
+import AssetsTable from "../../components/stardust/AssetsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import Nft from "../../components/stardust/Nft";
 import NetworkContext from "../../context/NetworkContext";
-import { AddrRouteProps } from "../AddrRouteProps";
+import { AddressRouteProps } from "../AddressRouteProps";
 import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import Modal from "./../../components/Modal";
-import "./Addr.scss";
-import { AddrState } from "./AddrState";
+import "./AddressPage.scss";
+import { AddressPageState } from "./AddressPageState";
 import INftDetails from "./INftDetails";
-import ITokenDetails from "./ITokenDetails";
 
 /**
  * Component which will show the address page for stardust.
  */
-class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState> {
+class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddressPageState> {
     /**
      * The component context type.
      */
     public static contextType = NetworkContext;
-
-    /**
-     * Native Tokens page size.
-     */
-    private static readonly TOKENS_PAGE_SIZE: number = 10;
 
     /**
      * Nfts page size.
@@ -61,10 +55,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     private readonly _bechHrp: string;
 
     /**
-     * Create a new instance of Addr.
+     * Create a new instance of AddressPage.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<AddrRouteProps>) {
+    constructor(props: RouteComponentProps<AddressRouteProps>) {
         super(props);
 
         const networkService = ServiceFactory.get<NetworkService>("network");
@@ -78,12 +72,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 
         this.state = {
             ...Bech32AddressHelper.buildAddress(this._bechHrp, props.match.params.address),
-            formatFull: false,
-            areTokensLoading: true,
+            formatFull: true,
             areNftsLoading: true,
-            tokens: [],
-            tokensPageNumber: 1,
-            tokensPage: [],
             nfts: [],
             nftsPageNumber: 1,
             nftsPage: []
@@ -117,7 +107,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                 outputIds: result.addressOutputIds
             }, async () => {
                 await this.getOutputs();
-                await this.getNativeTokens();
                 await this.getNfts();
             });
         } else {
@@ -130,9 +119,13 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { bech32AddressDetails, balance, areNftsLoading,
+            outputResponse, formatFull, nfts, nftsPageNumber } = this.state;
+
         const networkId = this.props.match.params.network;
-        const hasNativeTokens = this.state.tokens && this.state.tokens.length > 0;
-        const hasNfts = this.state.nfts && this.state.nfts.length > 0;
+        const nativeTokensCount = outputResponse ? this.countDistinctNativeTokens(outputResponse) : 0;
+        const hasNativeTokens = nativeTokensCount > 0;
+        const hasNfts = nfts && nfts.length > 0;
 
         return (
             <div className="addr">
@@ -159,10 +152,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     <div className="row space-between general-content">
                                         <div className="section--data">
                                             <Bech32Address
-                                                addressDetails={this.state.bech32AddressDetails}
+                                                addressDetails={bech32AddressDetails}
                                                 advancedMode={true}
+                                                showCopyButton={true}
                                             />
-                                            {this.state.balance !== undefined && (
+                                            {balance && (
                                                 <div className="row middle">
                                                     <Icon icon="wallet" boxed />
                                                     <div className="balance">
@@ -170,20 +164,30 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                             Final balance
                                                         </div>
                                                         <div className="value featured">
-                                                            {this.state.balance > 0 ? (
-                                                                <React.Fragment>
-                                                                    {
-                                                                        formatAmount(
-                                                                            this.state.balance,
+                                                            {balance > 0 ? (
+                                                                <div className="row middle">
+                                                                    <span
+                                                                        onClick={() => this.setState({
+                                                                            formatFull: !formatFull
+                                                                        })}
+                                                                        className="pointer margin-r-5"
+                                                                    >
+                                                                        {formatAmount(
+                                                                            balance,
                                                                             this.context.tokenInfo,
-                                                                            this.state.formatFull
-                                                                        )
-                                                                    }
-                                                                    {" "}
+                                                                            formatFull
+                                                                        )}
+                                                                    </span>
                                                                     <span>(</span>
-                                                                    <FiatValue value={this.state.balance} />
+                                                                    <FiatValue value={balance} />
                                                                     <span>)</span>
-                                                                </React.Fragment>
+                                                                    <CopyButton
+                                                                        onClick={() => ClipboardHelper.copy(
+                                                                            String(balance)
+                                                                        )}
+                                                                        buttonType="copy"
+                                                                    />
+                                                                </div>
                                                             ) : 0}
                                                         </div>
                                                     </div>
@@ -191,10 +195,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             )}
                                         </div>
                                         <div className="section--data">
-                                            {this.state.bech32AddressDetails?.bech32 &&
+                                            {bech32AddressDetails?.bech32 &&
                                                 (
                                                     //  eslint-disable-next-line react/jsx-pascal-case
-                                                    <QR data={this.state.bech32AddressDetails.bech32} />
+                                                    <QR data={bech32AddressDetails.bech32} />
                                                 )}
                                         </div>
                                     </div>
@@ -204,7 +208,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <div className="section--assets">
                                                     <div className="inner--asset">
                                                         <div className="section--data assets">
-                                                            <span className="label">Assets in wallet ({this.state.tokens?.length})</span>
+                                                            <span className="label">
+                                                                Assets in wallet ({nativeTokensCount})
+                                                            </span>
                                                         </div>
                                                         <img
                                                             src={chevronRightGray}
@@ -218,7 +224,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 <div className="section--NFT">
                                                     <div className="inner--asset">
                                                         <div className="section--data assets">
-                                                            <span className="label">NFTs in wallet ({this.state.nfts?.length})</span>
+                                                            <span className="label">
+                                                                NFTs in wallet ({nfts?.length})
+                                                            </span>
                                                         </div>
                                                         <img
                                                             src={chevronRightGray}
@@ -231,7 +239,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </div>
                                     )}
                                 </div>
-                                {this.state.outputs && this.state.outputs.length === 0 && (
+                                {outputResponse && outputResponse.length === 0 && (
                                     <div className="section">
                                         <div className="section--data">
                                             <p>
@@ -240,80 +248,11 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         </div>
                                     </div>
                                 )}
-                                {this.state.areTokensLoading && (
-                                    <div className="section transaction--section">
-                                        <div className="section--header row space-between">
-                                            <div className="margin-t-s middle row">
-                                                <Spinner />
-                                                <p className="status">Loading Assets...</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                                {hasNativeTokens && (
-                                    <div className="section transaction--section">
-                                        <div className="section--header row space-between">
-                                            <div className="row middle">
-                                                <h2>
-                                                    Assets in Wallet ({this.state.tokens?.length})
-                                                </h2>
-                                                <Modal icon="info" data={mainHeaderMessage} />
-                                            </div>
-                                        </div>
-                                        <table className="transaction--table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Asset</th>
-                                                    <th>Symbol</th>
-                                                    <th>Quantity</th>
-                                                    <th>Price</th>
-                                                    <th>Value</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                { this.currentTokensPage?.map((token, k) => (
-                                                    <React.Fragment key={`${token?.name}${k}`}>
-                                                        <Asset
-                                                            key={k}
-                                                            name={token?.name}
-                                                            network={networkId}
-                                                            symbol={token?.symbol}
-                                                            amount={token.amount}
-                                                            price={token?.price}
-                                                            value={token?.value}
-                                                            tableFormat={true}
-                                                        />
-                                                    </React.Fragment>
-                                                ))}
-                                            </tbody>
-                                        </table>
-
-                                        {/* Only visible in mobile -- Card assets*/}
-                                        <div className="transaction-cards">
-                                            {this.currentTokensPage?.map((token, k) => (
-                                                <React.Fragment key={`${token?.name}${k}`}>
-                                                    <Asset
-                                                        key={k}
-                                                        name={token?.name}
-                                                        network={networkId}
-                                                        symbol={token?.symbol}
-                                                        amount={token?.amount}
-                                                        price={token?.price}
-                                                        value={token?.value}
-                                                    />
-                                                </React.Fragment>
-                                            ))}
-                                        </div>
-                                        <Pagination
-                                            currentPage={this.state.tokensPageNumber}
-                                            totalCount={this.state.tokens?.length ?? 0}
-                                            pageSize={Addr.TOKENS_PAGE_SIZE}
-                                            siblingsCount={1}
-                                            onPageChange={page => this.setState({ tokensPageNumber: page })}
-                                        />
-                                    </div>
-                                )}
-                                {this.state.areNftsLoading && (
+                                <AssetsTable
+                                    networkId={networkId}
+                                    outputs={outputResponse?.map(output => output.output)}
+                                />
+                                {areNftsLoading && (
                                     <div className="section transaction--section no-border">
                                         <div className="section--header row space-between">
                                             <div className="margin-t-s middle row">
@@ -328,7 +267,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                         <div className="section--header row space-between">
                                             <div className="row middle">
                                                 <h2>
-                                                    NFTs in Wallet ({this.state.nfts?.length})
+                                                    NFTs in Wallet ({nfts?.length})
                                                 </h2>
                                                 <Modal icon="info" data={mainHeaderMessage} />
                                             </div>
@@ -347,9 +286,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             ))}
                                         </div>
                                         <Pagination
-                                            currentPage={this.state.nftsPageNumber}
-                                            totalCount={this.state.nfts?.length ?? 0}
-                                            pageSize={Addr.NFTS_PAGE_SIZE}
+                                            currentPage={nftsPageNumber}
+                                            totalCount={nfts?.length ?? 0}
+                                            pageSize={AddressPage.NFTS_PAGE_SIZE}
                                             siblingsCount={1}
                                             onPageChange={page => this.setState({ nftsPageNumber: page })}
                                         />
@@ -363,16 +302,23 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
         );
     }
 
-    private get currentTokensPage() {
-        const from = (this.state.tokensPageNumber - 1) * Addr.TOKENS_PAGE_SIZE;
-        const to = from + Addr.TOKENS_PAGE_SIZE;
-
-        return this.state.tokens?.slice(from, to);
+    private countDistinctNativeTokens(outputResponse: IOutputResponse[]): number {
+        const distinctNativeTokens: string[] = [];
+        for (const response of outputResponse) {
+            if (response.output.type !== TREASURY_OUTPUT_TYPE && response.output.nativeTokens) {
+                for (const nativeToken of response.output.nativeTokens) {
+                    if (!distinctNativeTokens.includes(nativeToken.id)) {
+                        distinctNativeTokens.push(nativeToken.id);
+                    }
+                }
+            }
+        }
+        return distinctNativeTokens.length;
     }
 
     private get currentNftsPage() {
-        const from = (this.state.nftsPageNumber - 1) * Addr.NFTS_PAGE_SIZE;
-        const to = from + Addr.NFTS_PAGE_SIZE;
+        const from = (this.state.nftsPageNumber - 1) * AddressPage.NFTS_PAGE_SIZE;
+        const to = from + AddressPage.NFTS_PAGE_SIZE;
 
         return this.state.nfts?.slice(from, to);
     }
@@ -382,42 +328,18 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             return;
         }
         const networkId = this.props.match.params.network;
-        const outputs: IOutputResponse[] = [];
+        const outputResponse: IOutputResponse[] = [];
 
         for (const outputId of this.state.outputIds) {
             const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
             if (outputDetails) {
-                outputs.push(outputDetails);
+                outputResponse.push(outputDetails);
             }
         }
 
-        this.setState({ outputs });
+        this.setState({ outputResponse });
     }
 
-    private async getNativeTokens() {
-        if (!this.state.outputs || this.state.outputs?.length === 0) {
-            this.setState({ areTokensLoading: false });
-            return;
-        }
-        const tokens: ITokenDetails[] = [];
-
-        for (const output of this.state.outputs) {
-            if (!output.metadata.isSpent && output.output.type === BASIC_OUTPUT_TYPE) {
-                const basicOutput = output.output;
-                for (const token of basicOutput.nativeTokens ?? []) {
-                    tokens.push({
-                        name: token.id,
-                        amount: Number.parseInt(token.amount, 16)
-                    });
-                }
-            }
-        }
-
-        this.setState({
-            tokens,
-            areTokensLoading: false
-        });
-    }
 
     private async getNfts() {
         if (!this.state.bech32AddressDetails?.bech32) {
@@ -460,5 +382,5 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
     }
 }
 
-export default Addr;
+export default AddressPage;
 

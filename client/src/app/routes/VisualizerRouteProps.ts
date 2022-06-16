@@ -4,10 +4,3 @@ export interface VisualizerRouteProps {
      */
     network: string;
 }
-
-export interface VisualizerProps {
-    /**
-     * Darkmode theme
-     */
-    darkMode?: boolean;
-}

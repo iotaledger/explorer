@@ -12,9 +12,9 @@ import { ICachedTransaction } from "../../../models/ICachedTransaction";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { SettingsService } from "../../../services/settingsService";
 import AsyncComponent from "../../components/AsyncComponent";
-import MessageButton from "../../components/chrysalis/MessageButton";
 import SidePanel from "../../components/chrysalis/SidePanel";
 import Confirmation from "../../components/Confirmation";
+import CopyButton from "../../components/CopyButton";
 import CurrencyButton from "../../components/CurrencyButton";
 import Spinner from "../../components/Spinner";
 import ValueButton from "../../components/ValueButton";
@@ -191,12 +191,11 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                     {this.state.checksum}
                                                 </span>
                                             </span>
-                                            <MessageButton
+                                            <CopyButton
                                                 onClick={() => ClipboardHelper.copy(
                                                     `${this.state.address}${this.state.checksum}`
                                                 )}
                                                 buttonType="copy"
-                                                labelPosition="top"
                                             />
                                         </div>
                                         {this.state.balance !== undefined && this.state.balance !== 0 && (

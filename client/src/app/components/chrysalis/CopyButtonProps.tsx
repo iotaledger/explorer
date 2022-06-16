@@ -1,4 +1,4 @@
-export interface BlockButtonProps {
+export interface CopyButtonProps {
     /**
      * The type of button to show.
      */

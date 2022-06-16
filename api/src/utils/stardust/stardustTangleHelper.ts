@@ -8,6 +8,7 @@ import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/ITransactionsDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
+import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -225,6 +226,30 @@ export class StardustTangleHelper {
     }
 
     /**
+     * Get controlled Foundry output id by controller Alias address
+     * @param network The network to find the items on.
+     * @param aliasAddress The alias address to get the controlled Foundries for.
+     * @returns The foundry outputs.
+     */
+    public static async aliasFoundries(
+        network: INetwork,
+        aliasAddress: string
+    ): Promise<IFoundriesResponse | undefined> {
+        try {
+            const client = new SingleNodeClient(network.provider, {
+                userName: network.user,
+                password: network.password
+            });
+            const indexerPlugin = new IndexerPluginClient(client);
+            const foundryOutputsResponse = await indexerPlugin.foundries({ aliasAddressBech32: aliasAddress });
+
+            return {
+                foundryOutputsResponse
+            };
+        } catch {}
+    }
+
+    /**
      * Get the nft details by nftId.
      * @param network The network to find the items on.
      * @param nftId The nftId to get the details for.
@@ -334,7 +359,7 @@ export class StardustTangleHelper {
                 const aliasOutputs = await indexerPlugin.alias(searchQuery.aliasId);
                 if (aliasOutputs.items.length > 0) {
                     return {
-                        output: await client.output(aliasOutputs.items[0])
+                        aliasOutputId: aliasOutputs.items[0]
                     };
                 }
             } catch {}
@@ -345,7 +370,7 @@ export class StardustTangleHelper {
                 const nftOutputs = await indexerPlugin.nft(searchQuery.nftId);
                 if (nftOutputs.items.length > 0) {
                     return {
-                        output: await client.output(nftOutputs.items[0])
+                        nftOutputId: nftOutputs.items[0]
                     };
                 }
             } catch {}
@@ -354,12 +379,9 @@ export class StardustTangleHelper {
         if (searchQuery.foundryId) {
             try {
                 const foundryOutputs = await indexerPlugin.foundry(searchQuery.foundryId);
-
                 if (foundryOutputs.items.length > 0) {
-                    const foundryOutput = await client.output(foundryOutputs.items[0]);
-
                     return {
-                        output: foundryOutput
+                        foundryOutputId: foundryOutputs.items[0]
                     };
                 }
             } catch {}

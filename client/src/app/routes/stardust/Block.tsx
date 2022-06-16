@@ -12,11 +12,11 @@ import { TangleStatus } from "../../../models/tangleStatus";
 import { SettingsService } from "../../../services/settingsService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
+import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import InclusionState from "../../components/InclusionState";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
-import BlockButton from "../../components/stardust/BlockButton";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import BlockTree from "../../components/stardust/BlockTree";
 import MilestonePayload from "../../components/stardust/MilestonePayload";
@@ -150,12 +150,11 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     <span className="margin-r-t">
                                         {this.state.actualBlockId}
                                     </span>
-                                    <BlockButton
+                                    <CopyButton
                                         onClick={() => ClipboardHelper.copy(
                                             this.state.actualBlockId
                                         )}
                                         buttonType="copy"
-                                        labelPosition="top"
                                     />
                                 </div>
                             </div>
@@ -167,12 +166,11 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     </div>
                                     <div className="value value__secondary row middle">
                                         <span className="margin-r-t">{this.state.transactionId}</span>
-                                        <BlockButton
+                                        <CopyButton
                                             onClick={() => ClipboardHelper.copy(
                                                 this.state.transactionId
                                             )}
                                             buttonType="copy"
-                                            labelPosition="top"
                                         />
                                     </div>
                                 </div>

@@ -7,7 +7,7 @@ import { TrytesHelper } from "../../helpers/trytesHelper";
 import { CHRYSALIS } from "../../models/db/protocolVersion";
 import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
-import MessageButton from "../components/chrysalis/MessageButton";
+import CopyButton from "../components/CopyButton";
 import JsonViewer from "../components/JsonViewer";
 import Spinner from "../components/Spinner";
 import "./StreamsV0.scss";
@@ -251,13 +251,12 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                             `Message ${item.messageType}`
                                                         )}
                                                     </span>
-                                                    <MessageButton
+                                                    <CopyButton
                                                         onClick={() => ClipboardHelper.copy(
                                                             item.showRawMessageTrytes
                                                                 ? item.rawMessageTrytes
                                                                 : item.message)}
                                                         buttonType="copy"
-                                                        labelPosition="right"
                                                     />
                                                 </div>
                                                 <div

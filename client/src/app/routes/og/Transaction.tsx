@@ -15,9 +15,9 @@ import { ICachedTransaction } from "../../../models/ICachedTransaction";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";
-import MessageButton from "../../components/chrysalis/MessageButton";
 import SidePanel from "../../components/chrysalis/SidePanel";
 import Confirmation from "../../components/Confirmation";
+import CopyButton from "../../components/CopyButton";
 import CurrencyButton from "../../components/CurrencyButton";
 import JsonViewer from "../../components/JsonViewer";
 import Spinner from "../../components/Spinner";
@@ -165,10 +165,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                         </div>
                                         <div className="card--value row middle">
                                             <span className="margin-r-t">{this.state.hash}</span>
-                                            <MessageButton
+                                            <CopyButton
                                                 onClick={() => ClipboardHelper.copy(this.state.hash)}
                                                 buttonType="copy"
-                                                labelPosition="top"
                                             />
                                         </div>
                                         {this.state.details && (
@@ -212,12 +211,11 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             {this.state.checksum}
                                                         </span>
                                                     </Link>
-                                                    <MessageButton
+                                                    <CopyButton
                                                         onClick={() => ClipboardHelper.copy(
                                                             `${this.state.address}${this.state.checksum}`
                                                         )}
                                                         buttonType="copy"
-                                                        labelPosition="top"
                                                     />
                                                 </div>
                                                 {this.state.details.confirmationState === "pending" &&
@@ -267,12 +265,11 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                         >
                                                                             {this.state.actionResultHash}
                                                                         </Link>
-                                                                        <MessageButton
+                                                                        <CopyButton
                                                                             onClick={() => ClipboardHelper.copy(
                                                                                 this.state.actionResultHash
                                                                             )}
                                                                             buttonType="copy"
-                                                                            labelPosition="top"
                                                                         />
                                                                     </div>
                                                                 </React.Fragment>
@@ -335,11 +332,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     >
                                                         {this.state.details?.tx.bundle}
                                                     </Link>
-                                                    <MessageButton
+                                                    <CopyButton
                                                         onClick={() => ClipboardHelper.copy(
                                                             this.state.details?.tx.bundle)}
                                                         buttonType="copy"
-                                                        labelPosition="top"
                                                     />
                                                 </div>
 
@@ -403,11 +399,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             >
                                                                 {this.state.details.tx.tag}
                                                             </Link>
-                                                            <MessageButton
+                                                            <CopyButton
                                                                 onClick={() => ClipboardHelper.copy(
                                                                     this.state.details?.tx.tag)}
                                                                 buttonType="copy"
-                                                                labelPosition="top"
                                                             />
                                                         </div>
                                                     </div>
@@ -425,11 +420,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             >
                                                                 {this.state.details.tx.obsoleteTag}
                                                             </Link>
-                                                            <MessageButton
+                                                            <CopyButton
                                                                 onClick={() => ClipboardHelper.copy(
                                                                     this.state.details?.tx.obsoleteTag)}
                                                                 buttonType="copy"
-                                                                labelPosition="top"
                                                             />
                                                         </div>
                                                     </div>
@@ -473,13 +467,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                     `Message ${this.state.messageType}`
                                                                 )}
                                                             </span>
-                                                            <MessageButton
+                                                            <CopyButton
                                                                 onClick={() => ClipboardHelper.copy(
                                                                     this.state.showRawMessageTrytes
                                                                         ? this.state.rawMessageTrytes
                                                                         : this.state.message)}
                                                                 buttonType="copy"
-                                                                labelPosition="right"
                                                             />
                                                         </div>
                                                         <div
@@ -608,10 +601,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                 Trytes
                                                             </span>
                                                             {this.state.details && (
-                                                                <MessageButton
+                                                                <CopyButton
                                                                     onClick={() => ClipboardHelper.copy(this.state.raw)}
                                                                     buttonType="copy"
-                                                                    labelPosition="right"
                                                                 />
                                                             )}
                                                         </div>

@@ -1,8 +1,11 @@
 /* eslint-disable camelcase */
 import { IBlockMetadata, IOutputResponse } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { IFoundriesRequest } from "../../models/api/stardust/IFoundriesRequest";
+import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
+import { INftDetailsResponse } from "../../models/api/stardust/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -69,6 +72,9 @@ export class StardustTangleCacheService extends TangleCacheService {
                 response.block ||
                 response.milestone ||
                 response.output ||
+                response.aliasOutputId ||
+                response.foundryOutputId ||
+                response.nftOutputId ||
                 response.did ||
                 response.addressOutputIds) {
                 this._stardustSearchCache[networkId][fullQuery] = {
@@ -191,6 +197,34 @@ export class StardustTangleCacheService extends TangleCacheService {
     }
 
     /**
+     * Get the controlled Foundry output ids by alias address.
+     * @param request The request.
+     * @param skipCache Skip looking in the cache.
+     * @returns The Foundry output ids response.
+     */
+     public async foundriesByAliasAddress(
+        request: IFoundriesRequest,
+        skipCache: boolean = false
+    ): Promise<IFoundriesResponse | undefined> {
+        const cacheEntry = this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`];
+
+        if (!cacheEntry?.data?.foundryOutputs || skipCache) {
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+            const foundryOutputs = await apiClient.aliasFoundries(request);
+
+            this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`] = {
+                data: { foundryOutputs: foundryOutputs.foundryOutputsResponse },
+                cached: Date.now()
+            };
+        }
+
+        return {
+            foundryOutputsResponse:
+                this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`]?.data?.foundryOutputs
+        };
+    }
+
+    /**
      * Get the NFT Details.
      * @param request The request.
      * @param skipCache Skip looking in the cache.
@@ -199,22 +233,22 @@ export class StardustTangleCacheService extends TangleCacheService {
      public async nftDetails(
         request: INftDetailsRequest,
         skipCache: boolean = false
-    ): Promise<INftOutputsResponse | undefined> {
+    ): Promise<INftDetailsResponse | undefined> {
         const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`];
 
-        if (!cacheEntry?.data?.nftOutputs || skipCache) {
+        if (!cacheEntry?.data?.nftDetails || skipCache) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
             const nftDetails = await apiClient.nftDetails(request);
             this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`] = {
-                data: { nftOutputs: nftDetails.outputs },
+                data: {
+                    nftDetails
+                },
                 cached: Date.now()
             };
         }
 
-        return {
-            outputs: this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`]?.data?.nftOutputs
-        };
+        return this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`]?.data?.nftDetails;
     }
 
     /**

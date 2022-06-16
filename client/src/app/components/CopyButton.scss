@@ -1,12 +1,12 @@
-@import "../../../scss/fonts";
-@import "../../../scss/mixins";
-@import "../../../scss/variables";
-@import "../../../scss/media-queries";
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/variables";
+@import "../../scss/media-queries";
 
-.block-button {
+.copy-button {
   position: relative;
 
-  .block-button-btn {
+  .copy-button-btn {
     border: 0;
     outline: none;
     background: none;
@@ -24,7 +24,7 @@
     }
   }
 
-  .block-button--block {
+  .copy-button--message {
     @include font-size(10px, 12px);
 
     position: absolute;
@@ -44,7 +44,18 @@
       top: -12px;
       transform: translateX(25%);
     }
+
+    &.bottom {
+        top: 25px;
+        right: 40px;
+    }
+
+    &.top {
+        top: -20px;
+        right: 40px;
+    }
   }
+
 
   @keyframes fade {
     0%,

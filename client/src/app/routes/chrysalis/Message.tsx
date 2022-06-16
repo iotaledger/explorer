@@ -11,12 +11,12 @@ import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import AsyncComponent from "../../components/AsyncComponent";
 import IndexationPayload from "../../components/chrysalis/IndexationPayload";
-import MessageButton from "../../components/chrysalis/MessageButton";
 import MessageTangleState from "../../components/chrysalis/MessageTangleState";
 import MessageTree from "../../components/chrysalis/MessageTree";
 import MilestonePayload from "../../components/chrysalis/MilestonePayload";
 import ReceiptPayload from "../../components/chrysalis/ReceiptPayload";
 import TransactionPayload from "../../components/chrysalis/TransactionPayload";
+import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import InclusionState from "../../components/InclusionState";
 import Modal from "../../components/Modal";
@@ -154,12 +154,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                     <span className="margin-r-t">
                                         {this.state.actualMessageId}
                                     </span>
-                                    <MessageButton
+                                    <CopyButton
                                         onClick={() => ClipboardHelper.copy(
                                             this.state.actualMessageId
                                         )}
                                         buttonType="copy"
-                                        labelPosition="top"
                                     />
                                 </div>
                             </div>
@@ -171,12 +170,11 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                     </div>
                                     <div className="value value__secondary row middle">
                                         <span className="margin-r-t">{this.state.paramMessageId}</span>
-                                        <MessageButton
+                                        <CopyButton
                                             onClick={() => ClipboardHelper.copy(
                                                 this.state.paramMessageId
                                             )}
                                             buttonType="copy"
-                                            labelPosition="top"
                                         />
                                     </div>
                                 </div>

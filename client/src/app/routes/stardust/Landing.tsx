@@ -271,7 +271,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                                 },
                                                                 () => this._settingsService.saveSingle(
                                                                     "formatFull",
-                                                                    this.state.formatFull)
+                                                                    this.state.formatFull
+                                                                )
                                                             )}
                                                         >
                                                             {item.payloadType}

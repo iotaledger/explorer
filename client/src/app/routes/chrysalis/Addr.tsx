@@ -7,6 +7,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/chrysalis/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/chrysalis/transactionsHelper";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import {
     HistoricInput, HistoricOutput,
     ITransaction, ITransactionsDetailsResponse
@@ -17,11 +18,12 @@ import { NetworkService } from "../../../services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import QR from "../../components/chrysalis/QR";
+import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
-import { AddrRouteProps } from "../AddrRouteProps";
+import { AddressRouteProps } from "../AddressRouteProps";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import transactionHistoryMessage from "./../../../assets/modals/address/transaction-history.json";
 import Transaction from "./../../components/chrysalis/Transaction";
@@ -32,7 +34,7 @@ import { AddrState } from "./AddrState";
 /**
  * Component which will show the address page for chrysalis and older.
  */
-class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState> {
+class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrState> {
     /**
      * Maximum page size for permanode request.
      */
@@ -52,7 +54,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      * Create a new instance of Addr.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<AddrRouteProps>) {
+    constructor(props: RouteComponentProps<AddressRouteProps>) {
         super(props);
 
         const networkService = ServiceFactory.get<NetworkService>("network");
@@ -76,7 +78,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             sent: 0,
             currentPage: 1,
             pageSize: 10,
-            currentPageTransactions: []
+            currentPageTransactions: [],
+            isFormattedBalance: false
         };
     }
 
@@ -144,6 +147,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                             <Bech32Address
                                                 addressDetails={this.state.bech32AddressDetails}
                                                 advancedMode={true}
+                                                showCopyButton={true}
                                             />
                                             {/* {!this.state.statusBusy && (
                                                 <div className="row row--tablet-responsive">
@@ -190,13 +194,23 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                         </div>
                                                         <div className="value featured">
                                                             {this.state.balance > 0 ? (
-                                                                <React.Fragment>
-                                                                    {UnitsHelper.formatBest(this.state.balance)}
-                                                                    {" "}
+                                                                <div className="row middle">
+                                                                    <span
+                                                                        onClick={() => this.setState({
+                                                                            isFormattedBalance: !this.state.isFormattedBalance
+                                                                        })}
+                                                                        className="pointer margin-r-5"
+                                                                    >
+                                                                        {this.state.isFormattedBalance ? this.state.balance : UnitsHelper.formatBest(this.state.balance)}
+                                                                    </span>
                                                                     <span>(</span>
                                                                     <FiatValue value={this.state.balance} />
                                                                     <span>)</span>
-                                                                </React.Fragment>
+                                                                    <CopyButton
+                                                                        onClick={() => ClipboardHelper.copy(String(this.state.balance))}
+                                                                        buttonType="copy"
+                                                                    />
+                                                                </div>
                                                             ) : 0}
                                                         </div>
                                                     </div>
@@ -515,4 +529,3 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
 }
 
 export default Addr;
-

@@ -10,9 +10,9 @@ import { ICachedTransaction } from "../../../models/ICachedTransaction";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { SettingsService } from "../../../services/settingsService";
 import AsyncComponent from "../../components/AsyncComponent";
-import MessageButton from "../../components/chrysalis/MessageButton";
 import SidePanel from "../../components/chrysalis/SidePanel";
 import Confirmation from "../../components/Confirmation";
+import CopyButton from "../../components/CopyButton";
 import Spinner from "../../components/Spinner";
 import "./Tag.scss";
 import { TagRouteProps } from "./TagRouteProps";
@@ -186,11 +186,10 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                                     {this.state.tagFill}
                                                 </span>
                                             </span>
-                                            <MessageButton
+                                            <CopyButton
                                                 onClick={() => ClipboardHelper.copy(
                                                     this.state.tag)}
                                                 buttonType="copy"
-                                                labelPosition="top"
                                             />
                                         </div>
                                         <div className="card--label">

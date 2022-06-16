@@ -2,7 +2,7 @@
 import React, { Component, ReactNode } from "react";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressProps } from "../Bech32AddressProps";
-import MessageButton from "../chrysalis/MessageButton";
+import CopyButton from "../CopyButton";
 
 /**
  * Component which will display an Bech32Address.
@@ -50,11 +50,11 @@ class Bech32Address extends Component<Bech32AddressProps> {
                             {!this.props.history && (
                                 <span className="margin-r-t">{this.props.addressDetails.bech32}</span>
                             )}
-                            {!this.props.truncateAddress && (
-                                <MessageButton
+                            {this.props.showCopyButton && (
+                                <CopyButton
                                     onClick={() => ClipboardHelper.copy(this.props.addressDetails?.bech32)}
                                     buttonType="copy"
-                                    labelPosition="top"
+                                    labelPosition={this.props.labelPosition ?? "right"}
                                 />
                             )}
                         </div>
@@ -80,10 +80,10 @@ class Bech32Address extends Component<Bech32AddressProps> {
                             {!this.props.history && (
                                 <span className="margin-r-t">{this.props.addressDetails?.hex}</span>
                             )}
-                            <MessageButton
+                            <CopyButton
                                 onClick={() => ClipboardHelper.copy(this.props.addressDetails?.hex)}
                                 buttonType="copy"
-                                labelPosition="top"
+                                labelPosition={this.props.labelPosition ?? "right"}
                             />
                         </div>
                     </div>

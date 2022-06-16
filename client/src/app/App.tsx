@@ -5,7 +5,6 @@ import { IConfiguration } from "../models/config/IConfiguration";
 import { CHRYSALIS, OG, STARDUST } from "../models/db/protocolVersion";
 import { BaseTokenInfoService } from "../services/baseTokenInfoService";
 import { NetworkService } from "../services/networkService";
-import { SettingsService } from "../services/settingsService";
 import "./App.scss";
 import { AppRouteProps } from "./AppRouteProps";
 import { AppState } from "./AppState";
@@ -14,7 +13,8 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import SearchInput from "./components/SearchInput";
 import NetworkContext from "./context/NetworkContext";
-import { AddrRouteProps } from "./routes/AddrRouteProps";
+import { AddressRouteProps } from "./routes/AddressRouteProps";
+import { AliasRouteProps } from "./routes/AliasRouteProps";
 import ChrysalisAddress from "./routes/chrysalis/Addr";
 import Indexed from "./routes/chrysalis/Indexed";
 import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
@@ -29,8 +29,9 @@ import { IdentityResolverProps } from "./routes/IdentityResolverProps";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
 import { NFTDetailsRouteProps } from "./routes/NFTDetailsRouteProps";
+import { NftRouteProps } from "./routes/NftRouteProps";
 import Address from "./routes/og/Address";
-import { AddressRouteProps } from "./routes/og/AddressRouteProps";
+import { AddressRouteProps as OgAddressRouteProps } from "./routes/og/AddressRouteProps";
 import Bundle from "./routes/og/Bundle";
 import { BundleRouteProps } from "./routes/og/BundleRouteProps";
 import Tag from "./routes/og/Tag";
@@ -38,16 +39,20 @@ import { TagRouteProps } from "./routes/og/TagRouteProps";
 import Transaction from "./routes/og/Transaction";
 import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
-import StardustAddress from "./routes/stardust/Addr";
+import StardustAddressPage from "./routes/stardust/AddressPage";
+import Alias from "./routes/stardust/Alias";
 import StardustBlock from "./routes/stardust/Block";
 import { BlockProps } from "./routes/stardust/BlockProps";
+import Foundry from "./routes/stardust/Foundry";
+import { FoundryProps } from "./routes/stardust/FoundryProps";
 import StardustLanding from "./routes/stardust/Landing";
+import Nft from "./routes/stardust/Nft";
 import NFTDetails from "./routes/stardust/NFTDetails";
 import StardustSearch from "./routes/stardust/Search";
 import StardustVisualizer from "./routes/stardust/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
-import { VisualizerProps, VisualizerRouteProps } from "./routes/VisualizerRouteProps";
+import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
 
 /**
  * Main application class.
@@ -59,11 +64,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
     private readonly _networkService: NetworkService;
 
     /**
-     * Settings service.
-     */
-    private readonly _settingsService: SettingsService;
-
-    /**
      * Create a new instance of App.
      * @param props The props.
      */
@@ -71,14 +71,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
         super(props);
 
         this._networkService = ServiceFactory.get<NetworkService>("network");
-        this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         const networks = this._networkService.networks();
 
         this.state = {
             networkId: "",
-            networks,
-            darkMode: this._settingsService.get().darkMode ?? false
+            networks
         };
     }
 
@@ -87,9 +85,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     public componentDidMount(): void {
         this.setNetwork(this.props.match.params.network, true);
-        if (this.state.darkMode) {
-            this.toggleModeClass();
-        }
     }
 
     /**
@@ -176,8 +171,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                             url: `/${this.state.networkId}/identity-resolver/`
                         }
                     ] : []}
-                    darkMode={this.state.darkMode}
-                    toggleMode={() => this.toggleMode()}
                 />
                 <div className="content">
                     {this.state.networks.length > 0
@@ -229,17 +222,11 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 path="/:network/visualizer/"
                                                 component={
                                                     (props:
-                                                        RouteComponentProps<VisualizerRouteProps> & VisualizerProps) =>
+                                                        RouteComponentProps<VisualizerRouteProps>) =>
                                                     (
                                                         isStardust
-                                                            ? <StardustVisualizer
-                                                                    darkMode={this.state.darkMode}
-                                                                    {...props}
-                                                              />
-                                                              : <ChrysalisVisualizer
-                                                                      darkMode={this.state.darkMode}
-                                                                      {...props}
-                                                                />
+                                                            ? <StardustVisualizer {...props} />
+                                                              : <ChrysalisVisualizer {...props} />
                                                     )
                                                 }
                                             />
@@ -259,7 +246,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             />
                                             <Route
                                                 path="/:network/address/:hash"
-                                                component={(props: RouteComponentProps<AddressRouteProps>) =>
+                                                component={(props: RouteComponentProps<OgAddressRouteProps>) =>
                                                 (
                                                     <Address
                                                         {...props}
@@ -284,9 +271,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             />
                                             <Route
                                                 path="/:network/addr/:address"
-                                                component={(props: RouteComponentProps<AddrRouteProps>) =>
+                                                component={(props: RouteComponentProps<AddressRouteProps>) =>
                                                 (isStardust
-                                                    ? withNetworkProvider(<StardustAddress {...props} />)
+                                                    ? withNetworkProvider(<StardustAddressPage {...props} />)
                                                     : <ChrysalisAddress {...props} />
                                                 )}
                                             />
@@ -304,6 +291,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                     withNetworkProvider(<StardustBlock {...props} />)
                                                 )}
                                             />
+                                            <Route
+                                                path="/:network/foundry/:outputId"
+                                                component={(props: RouteComponentProps<FoundryProps>) => (
+                                                    withNetworkProvider(<Foundry {...props} />)
+                                                )}
+                                            />
                                             {
                                                 isStardust &&
                                                     <Route
@@ -316,6 +309,18 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                         )}
                                                     />
                                             }
+                                            <Route
+                                                path="/:network/alias/:aliasId"
+                                                component={(props: RouteComponentProps<AliasRouteProps>) => (
+                                                    withNetworkProvider(<Alias {...props} />)
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/nft-address/:nftId"
+                                                component={(props: RouteComponentProps<NftRouteProps>) => (
+                                                    withNetworkProvider(<Nft {...props} />)
+                                                )}
+                                            />
                                             <Route
                                                 path="/:network/indexed/:index"
                                                 component={(props: RouteComponentProps<IndexedRouteProps>) =>
@@ -447,26 +452,6 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     private setQuery(query?: string): void {
         this.props.history.push(`/${this.state.networkId}/search/${query}`);
-    }
-
-    /**
-     * Toggle the display mode.
-     */
-    private toggleMode(): void {
-        this.setState({
-            darkMode: !this.state.darkMode
-        }, () => {
-            this._settingsService.saveSingle("darkMode", this.state.darkMode);
-        });
-        this.toggleModeClass();
-    }
-
-    /**
-     * Toggle darkmode classname to the body DOM node
-     */
-    private toggleModeClass(): void {
-        const body = document.querySelector("body");
-        body?.classList.toggle("darkmode");
     }
 }
 
