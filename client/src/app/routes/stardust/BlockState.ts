@@ -36,16 +36,6 @@ export interface BlockState {
     conflictReason?: string;
 
     /**
-     * Are we busy loading the children.
-     */
-    childrenBusy: boolean;
-
-    /**
-     * The children ids.
-     */
-    childrenIds?: string[];
-
-    /**
      * The state of the message on the tangle.
      */
     blockTangleStatus: TangleStatus;
