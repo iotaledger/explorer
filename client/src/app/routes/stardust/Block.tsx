@@ -327,8 +327,8 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                     <div className="label">
                                                         Parents
                                                     </div>
-                                                    {this.state.metadata.parents.map(parent => (
-                                                        <div className="value code">
+                                                    {this.state.metadata.parents.map((parent, idx) => (
+                                                        <div key={idx} className="value code">
                                                             <Link
                                                                 to={`/${network}/block/${parent}`}
                                                                 className="margin-r-t"
