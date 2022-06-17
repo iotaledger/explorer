@@ -10,13 +10,13 @@ import { INodeData } from "../../models/graph/INodeData";
 import { IFeedItem } from "../../models/IFeedItem";
 import Feeds from "../components/Feeds";
 import "./Visualizer.scss";
-import { VisualizerRouteProps } from "./VisualizerRouteProps";
+import { VisualizerProps, VisualizerRouteProps } from "./VisualizerRouteProps";
 import { VisualizerState } from "./VisualizerState";
 
 /**
  * Component which will show the visualizer page.
  */
-class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, VisualizerState> {
+class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps> & VisualizerProps, VisualizerState> {
     /**
      * Maximum number of items.
      */
@@ -136,7 +136,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Create a new instance of Visualizer.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<VisualizerRouteProps>) {
+    constructor(props: RouteComponentProps<VisualizerRouteProps> & VisualizerProps) {
         super(props);
 
         this._existingIds = [];

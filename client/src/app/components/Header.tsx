@@ -36,6 +36,7 @@ class Header extends Component<HeaderProps, HeaderState> {
         };
     }
 
+
     /**
      * The component mounted.
      */

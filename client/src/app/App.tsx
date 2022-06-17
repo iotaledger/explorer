@@ -67,7 +67,8 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
 
         this.state = {
             networkId: "",
-            networks
+            networks,
+            darkMode: this._settingsService.get().darkMode ?? false
         };
     }
 
@@ -76,6 +77,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     public componentDidMount(): void {
         this.setNetwork(this.props.match.params.network, true);
+        if (this.state.darkMode) {
+            this.toggleModeClass();
+        }
     }
 
     /**
@@ -391,6 +395,26 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     private setQuery(query?: string): void {
         this.props.history.push(`/${this.state.networkId}/search/${query}`);
+    }
+
+    /**
+     * Toggle the display mode.
+     */
+    private toggleMode(): void {
+        this.setState({
+            darkMode: !this.state.darkMode
+        }, () => {
+            this._settingsService.saveSingle("darkMode", this.state.darkMode);
+        });
+        this.toggleModeClass();
+    }
+
+    /**
+     * Toggle darkmode classname to the body DOM node
+     */
+    private toggleModeClass(): void {
+        const body = document.querySelector("body");
+        body?.classList.toggle("darkmode");
     }
 }
 
