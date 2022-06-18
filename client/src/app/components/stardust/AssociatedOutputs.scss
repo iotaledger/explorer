@@ -1,0 +1,100 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+@import "../../../scss/themes";
+
+.section {
+    .associated--table {
+      width: 100%;
+      border-spacing: 12px 28px;
+      border-collapse: separate;
+
+      @include tablet-down {
+          display: none;
+      }
+
+      tr {
+          @include font-size(14px);
+
+          color: $gray-7;
+          font-family: $inter;
+          letter-spacing: 0.5px;
+
+          th {
+              @include font-size(12px);
+
+              color: $gray-6;
+              font-weight: 600;
+              text-align: left;
+              text-transform: uppercase;
+          }
+
+          td {
+              border: none;
+              color: var(--body-color);
+              &:first-child {
+                  padding-left: 2px;
+                  width: 368px;
+              }
+          }
+      }
+    }
+
+    // Mobile
+    .associated--cards {
+        display: none;
+
+        @include tablet-down {
+            display: block;
+
+            .card {
+                .field {
+                    margin: 8px 0 0 8px;
+                    margin-bottom: 8px;
+
+                    .label {
+                        color: $gray-6;
+                        font-family: $inter;
+                        letter-spacing: 0.5px;
+
+                        @include font-size(14px, 21px);
+                    }
+
+                    .value {
+                        margin: 8px 0 0 4px;
+                        @include font-size(14px, 21px);
+
+                        color: var(--body-color);
+                        font-family: $metropolis;
+                        font-weight: 700;
+                    }
+                }
+            }
+        }
+    }
+
+    .associated--table, .associated--cards {
+        .output--label {
+            display: flex;
+
+            .dropdown--icon {
+                cursor: pointer;
+                svg {
+                    transition: transform 0.25s ease;
+                    path {
+                        fill: var(--card-color);
+                    }
+                }
+                &.opened > svg {
+                    transform: rotate(90deg);
+                }
+            }
+        }
+
+        button.color {
+            font-family: $ibm-plex-mono;
+            color: #108cff;
+        }
+    }
+}
