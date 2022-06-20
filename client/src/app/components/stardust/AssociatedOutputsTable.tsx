@@ -1,17 +1,13 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { DateHelper } from "../../../helpers/dateHelper";
-import { NameHelper } from "../../../helpers/stardust/nameHelper";
-import { AssociationType, IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";
+import { IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Pagination from "../../components/Pagination";
+import AssociatedOutput from "./AssociatedOutput";
 import "./AssociatedOutputsTable.scss";
-import Output from "./Output";
 
 interface AssociatedOutputsTableProps {
     /**
@@ -24,20 +20,6 @@ interface AssociatedOutputsTableProps {
     address: string;
 }
 
-const ASSOCIATION_TYPE_TO_LABEL = {
-    [AssociationType.BASIC_SENDER]: "Sender Block Feature",
-    [AssociationType.BASIC_EXPIRATION_RETURN]: "Expiration Return Unlock Condtition",
-    [AssociationType.BASIC_STORAGE_RETURN]: "Storage Deposit Return Unlock Condition",
-    [AssociationType.ALIAS_STATE_CONTROLLER]: "State Controller Address Unlock Condition",
-    [AssociationType.ALIAS_GOVERNOR]: "Governor Address Unlock Condition",
-    [AssociationType.ALIAS_ISSUER]: "Issuer Block Feature",
-    [AssociationType.ALIAS_SENDER]: "Sender Block Feature",
-    [AssociationType.FOUNDRY_ALIAS]: "Immutable Alias Address Unlock Condition",
-    [AssociationType.NFT_STORAGE_RETURN]: "Storage Deposit Return Unlock Condition",
-    [AssociationType.NFT_EXPIRATION_RETURN]: "Expiration Return Unlock Condtition",
-    [AssociationType.NFT_SENDER]: "Sender Block Feature"
-};
-
 const PAGE_SIZE = 10;
 
 /**
@@ -46,7 +28,7 @@ const PAGE_SIZE = 10;
 const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network, address }) => {
     const [associatedOutputs, setAssociatedOutputs] = useState<IAssociatedOutput[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(0);
-    const [showOutputDetails, setShowOutputDetails] = useState(-1);
+    const [outputDetailsLoaded, setOutputDetailsLoaded] = useState(false);
 
     useEffect(() => {
         const loadAssociatedOutputs = async () => {
@@ -68,6 +50,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
 
             for (const associatedOutput of associatedOutputs) {
                 const outputId = associatedOutput.outputId;
+
                 tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
                     if (!associatedOutput.outputDetails) {
                         setAssociatedOutputs(
@@ -78,7 +61,12 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                                         { ...associatedOutput, outputDetails } :
                                         prevOutput
                             )
-                        ));
+                                               ));
+                    }
+                })
+                .finally(() => {
+                    if (associatedOutputs.length > 0) {
+                        setOutputDetailsLoaded(true);
                     }
                 });
             }
@@ -86,7 +74,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
     }, [associatedOutputs]);
 
     return (
-        associatedOutputs ?
+        outputDetailsLoaded ?
             <div className="section">
                 <div className="section--header"><h2>Associated Outputs</h2></div>
                 <table className="associated--table">
@@ -98,113 +86,27 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                         </tr>
                     </thead>
                     <tbody>
-                        {associatedOutputs.map((associatedOutput, idx) => {
-                            if (!associatedOutput.outputDetails) {
-                                return null;
-                            }
-
-                            const output = associatedOutput.outputDetails.output;
-                            const outputMetadata = associatedOutput.outputDetails.metadata;
-                            const outputLabel = NameHelper.getOutputTypeName(output.type);
-                            const dateCreated = DateHelper.formatShort(outputMetadata.milestoneTimestampBooked * 1000);
-                            const associationLabel = ASSOCIATION_TYPE_TO_LABEL[associatedOutput.association];
-
-                            return (
-                                <tr key={idx}>
-                                    <td className="card">
-                                        <div
-                                            className="output--label"
-                                            onClick={() => setShowOutputDetails(
-                                                showOutputDetails === idx ? -1 : idx
-                                            )}
-                                        >
-                                            <div className={classNames(
-                                                "dropdown--icon", "margin-r-t", { opened: showOutputDetails === idx }
-                                            )}
-                                            >
-                                                <DropdownIcon />
-                                            </div>
-                                            <button type="button" className="margin-r-t color">
-                                                {outputLabel}
-                                            </button>
-                                        </div>
-                                        {showOutputDetails === idx && (
-                                            <Output
-                                                key={idx}
-                                                id={associatedOutput.outputId}
-                                                output={output}
-                                                amount={Number(output.amount)}
-                                                network={network}
-                                            />
-                                        )}
-                                    </td>
-                                    <td>{associationLabel}</td>
-                                    <td>{dateCreated}</td>
-                                </tr>
-                            );
-                        })}
+                        {associatedOutputs.map((associatedOutput, idx) => (
+                            <AssociatedOutput
+                                key={idx}
+                                network={network}
+                                associatedOutput={associatedOutput}
+                                isMobile={false}
+                            />
+                        ))}
                     </tbody>
                 </table>
 
                 {/* ----- Only visible on mobile ----- */}
                 <div className="associated--cards">
-                    {associatedOutputs.map((associatedOutput, idx) => {
-                        if (!associatedOutput.outputDetails) {
-                            return null;
-                        }
-
-                        const output = associatedOutput.outputDetails.output;
-                        const outputMetadata = associatedOutput.outputDetails.metadata;
-                        const outputLabel = NameHelper.getOutputTypeName(output.type);
-                        const dateCreated = DateHelper.formatShort(outputMetadata.milestoneTimestampBooked * 1000);
-                        const associationLabel = ASSOCIATION_TYPE_TO_LABEL[associatedOutput.association];
-
-                        return (
-                            <div className="card" key={idx}>
-                                <div className="field">
-                                    <div className="label">
-                                        Output type
-                                    </div>
-                                    <div className="value">
-                                        <div
-                                            className="output--label"
-                                            onClick={() => setShowOutputDetails(
-                                                showOutputDetails === idx ? -1 : idx
-                                            )}
-                                        >
-                                            <div className={classNames(
-                                                "margin-r-t", "dropdown--icon",
-                                                { opened: showOutputDetails === idx }
-                                            )}
-                                            >
-                                                <DropdownIcon />
-                                            </div>
-                                            <button type="button" className="margin-r-t color" >
-                                                {outputLabel}
-                                            </button>
-                                        </div>
-                                        {showOutputDetails === idx && (
-                                            <Output
-                                                key={idx}
-                                                id={associatedOutput.outputId}
-                                                output={output}
-                                                amount={Number(output.amount)}
-                                                network={network}
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    <div className="label">Address found in</div>
-                                    <div className="value">{associationLabel}</div>
-                                </div>
-                                <div className="field">
-                                    <div className="label">Date created</div>
-                                    <div className="value">{dateCreated}</div>
-                                </div>
-                            </div>
-                        );
-                    })}
+                    {associatedOutputs.map((associatedOutput, idx) => (
+                        <AssociatedOutput
+                            key={idx}
+                            network={network}
+                            associatedOutput={associatedOutput}
+                            isMobile={true}
+                        />
+                    ))}
                 </div>
 
                 <Pagination
@@ -215,7 +117,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                     onPageChange={n => setPageNumber(n)}
                 />
             </div> : null
-           );
+    );
 };
 
 export default AssociatedOutputsTable;
