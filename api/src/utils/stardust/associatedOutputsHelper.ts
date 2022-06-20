@@ -30,73 +30,77 @@ export class AssociatedOutputsHelper {
 
         const indexerPlugin = new IndexerPluginClient(client);
 
+        // Basic output -> storage return address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.outputs(query),
             { storageReturnAddressBech32: address },
             AssociationType.BASIC_STORAGE_RETURN
         );
 
+        // Basic output -> expiration return address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.outputs(query),
             { expirationReturnAddressBech32: address },
             AssociationType.BASIC_EXPIRATION_RETURN
         );
 
+        // Basic output -> sender address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.outputs(query),
             { senderBech32: address },
             AssociationType.BASIC_SENDER
         );
 
+        // Alias output -> state controller address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.aliases(query),
             { stateControllerBech32: address },
             AssociationType.ALIAS_STATE_CONTROLLER
         );
 
-        // alias governor
+        // Alias output -> governor address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.aliases(query),
             { governorBech32: address },
             AssociationType.ALIAS_GOVERNOR
         );
 
-        // alias issuer
+        // Alias output -> issuer address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.aliases(query),
             { issuerBech32: address },
             AssociationType.ALIAS_ISSUER
         );
 
-        // alias sender
+        // Alias output -> sender address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.aliases(query),
             { senderBech32: address },
             AssociationType.ALIAS_SENDER
         );
 
-        // foundries aliasAddress
+        // Foundry output ->  alias address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.foundries(query),
             { aliasAddressBech32: address },
             AssociationType.FOUNDRY_ALIAS
         );
 
-        // nft storage return address
+        // Nft output -> storage return address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.nfts(query),
             { storageReturnAddressBech32: address },
             AssociationType.NFT_STORAGE_RETURN
         );
 
-        // nft expiration return address
+        // Nft output -> expiration return address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.nfts(query),
             { expirationReturnAddressBech32: address },
             AssociationType.NFT_EXPIRATION_RETURN
         );
 
-        // nft sender
+        // Nft output -> sender address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.nfts(query),
             { senderBech32: address },
