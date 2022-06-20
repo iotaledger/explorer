@@ -19,7 +19,7 @@ import Icon from "../../components/Icon";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import AssetsTable from "../../components/stardust/AssetsTable";
-import AssociatedOutputs from "../../components/stardust/AssociatedOutputs";
+import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import Nft from "../../components/stardust/Nft";
 import NetworkContext from "../../context/NetworkContext";
@@ -297,7 +297,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                     </div>
                                 )}
                                 {addressBech32 && (
-                                    <AssociatedOutputs network={networkId} address={addressBech32} />
+                                    <AssociatedOutputsTable network={networkId} address={addressBech32} />
                                 )}
                             </div>
                         </div>

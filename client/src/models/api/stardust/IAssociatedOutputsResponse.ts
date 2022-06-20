@@ -1,3 +1,4 @@
+import { IOutputResponse } from "@iota/iota.js-stardust";
 import { IResponse } from "../IResponse";
 
 export enum AssociationType {
@@ -17,7 +18,7 @@ export enum AssociationType {
 export interface IAssociatedOutput {
     association: AssociationType;
     outputId: string;
-    output?: string;
+    outputDetails?: IOutputResponse;
 }
 
 export interface IAssociatedOutputsResponse extends IResponse {

@@ -1,8 +1,8 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { IOutputResponse } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
+import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
@@ -10,11 +10,10 @@ import { AssociationType, IAssociatedOutput } from "../../../models/api/stardust
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Pagination from "../../components/Pagination";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import "./AssociatedOutputs.scss";
+import "./AssociatedOutputsTable.scss";
 import Output from "./Output";
 
-interface AssociatedOutputsProps {
+interface AssociatedOutputsTableProps {
     /**
      * The network in context.
      */
@@ -23,10 +22,6 @@ interface AssociatedOutputsProps {
      * Bech32 address
      */
     address: string;
-}
-
-interface OutputIdToOutputDetailsMap {
-    [outputId: string]: IOutputResponse;
 }
 
 const ASSOCIATION_TYPE_TO_LABEL = {
@@ -48,9 +43,8 @@ const PAGE_SIZE = 10;
 /**
  * Component to render the Associated Outputs section.
  */
-const AssociatedOutputs: React.FC<AssociatedOutputsProps> = ({ network, address }) => {
-    const [associatedOutputs, setAssociatedOutputs] = useState<IAssociatedOutput[] | null>(null);
-    const [outputDetails, setOutputDetails] = useState<OutputIdToOutputDetailsMap>({});
+const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network, address }) => {
+    const [associatedOutputs, setAssociatedOutputs] = useState<IAssociatedOutput[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(0);
     const [showOutputDetails, setShowOutputDetails] = useState(-1);
 
@@ -74,10 +68,17 @@ const AssociatedOutputs: React.FC<AssociatedOutputsProps> = ({ network, address 
 
             for (const associatedOutput of associatedOutputs) {
                 const outputId = associatedOutput.outputId;
-                tangleCacheService.outputDetails(network, outputId).then(output => {
-                    if (output && !(outputId in outputDetails)) {
-                        const updatedOutputDetails = { ...outputDetails, [outputId]: output };
-                        setOutputDetails(updatedOutputDetails);
+                tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
+                    if (!associatedOutput.outputDetails) {
+                        setAssociatedOutputs(
+                            prevOutputs =>
+                                prevOutputs.map(prevOutput => (
+                                    associatedOutput.outputId === prevOutput.outputId &&
+                                        associatedOutput.association === prevOutput.association ?
+                                        { ...associatedOutput, outputDetails } :
+                                        prevOutput
+                            )
+                        ));
                     }
                 });
             }
@@ -98,12 +99,12 @@ const AssociatedOutputs: React.FC<AssociatedOutputsProps> = ({ network, address 
                     </thead>
                     <tbody>
                         {associatedOutputs.map((associatedOutput, idx) => {
-                            if (!(associatedOutput.outputId in outputDetails)) {
+                            if (!associatedOutput.outputDetails) {
                                 return null;
                             }
 
-                            const output = outputDetails[associatedOutput.outputId].output;
-                            const outputMetadata = outputDetails[associatedOutput.outputId].metadata;
+                            const output = associatedOutput.outputDetails.output;
+                            const outputMetadata = associatedOutput.outputDetails.metadata;
                             const outputLabel = NameHelper.getOutputTypeName(output.type);
                             const dateCreated = DateHelper.formatShort(outputMetadata.milestoneTimestampBooked * 1000);
                             const associationLabel = ASSOCIATION_TYPE_TO_LABEL[associatedOutput.association];
@@ -148,12 +149,12 @@ const AssociatedOutputs: React.FC<AssociatedOutputsProps> = ({ network, address 
                 {/* ----- Only visible on mobile ----- */}
                 <div className="associated--cards">
                     {associatedOutputs.map((associatedOutput, idx) => {
-                        if (!(associatedOutput.outputId in outputDetails)) {
+                        if (!associatedOutput.outputDetails) {
                             return null;
                         }
 
-                        const output = outputDetails[associatedOutput.outputId].output;
-                        const outputMetadata = outputDetails[associatedOutput.outputId].metadata;
+                        const output = associatedOutput.outputDetails.output;
+                        const outputMetadata = associatedOutput.outputDetails.metadata;
                         const outputLabel = NameHelper.getOutputTypeName(output.type);
                         const dateCreated = DateHelper.formatShort(outputMetadata.milestoneTimestampBooked * 1000);
                         const associationLabel = ASSOCIATION_TYPE_TO_LABEL[associatedOutput.association];
@@ -217,5 +218,5 @@ const AssociatedOutputs: React.FC<AssociatedOutputsProps> = ({ network, address 
            );
 };
 
-export default AssociatedOutputs;
+export default AssociatedOutputsTable;
 
