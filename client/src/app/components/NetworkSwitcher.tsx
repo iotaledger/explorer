@@ -11,7 +11,7 @@ const PROTOCOL_VERIONS_TO_LABEL = {
     [OG]: "Legacy",
     [CHRYSALIS]: "Chrysalis",
     [STARDUST]: "Stardust"
-}
+};
 
 /**
  * Component which will show the switcher.

@@ -1,6 +1,6 @@
 import { IUTXOInput } from "@iota/iota.js";
 import * as H from "history";
-import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
+import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 export interface TransactionPayloadProps {
     /**
      * The network to lookup.
