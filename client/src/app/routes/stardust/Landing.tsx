@@ -2,7 +2,6 @@ import { Magnitudes, UnitsHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/db/INetwork";
 import { STARDUST } from "../../../models/db/protocolVersion";
@@ -11,7 +10,7 @@ import { IFilterSettings } from "../../../models/services/stardust/IFilterSettin
 import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/stardust/Feeds";
-import "../Landing.scss";
+import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
 import { LandingState } from "./LandingState";
 
@@ -94,7 +93,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     public render(): ReactNode {
         return (
             <div className="landing">
-                <div className="wrapper header-wrapper">
+                <div className="wrapper smr-header-wrapper">
                     <div className="inner">
                         <div className="header">
                             <div className="header--title">
@@ -104,42 +103,61 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 </div>
                             </div>
                             {this.state.networkConfig.isEnabled && (
-                                <div className="row space-between info-boxes">
-                                    <div className="info-box">
-                                        <span className="info-box--title">Blocks per sec
-                                        </span>
-                                        <div className="info-box--value">
-                                            <span className="download-rate">
-                                                {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1) || "--"}
-                                            </span>
-                                            <span className="upload-rate">
-                                                /{NumberHelper.roundTo(Number(this.state.confirmedItemsPerSecond)
-                                                    , 1) || "--"}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    {this.state.networkConfig.showMarket && (
+                                <div className="smr-info-boxes">
+                                    <div className="row space-between">
                                         <div className="info-box">
-                                            <span className="info-box--title">IOTA Market Cap</span>
-                                            <span className="info-box--value">{this.state.marketCapCurrency}</span>
-                                        </div>
-                                    )}
-                                    {this.state.networkConfig.showMarket && (
-                                        <div className="info-box">
-                                            <span className="info-box--title">Price / MI</span>
+                                            <span className="info-box--title">Tokens created
+                                            </span>
                                             <span className="info-box--value">
-                                                {this.state.priceCurrency}
+                                                11.2k
                                             </span>
                                         </div>
-                                    )}
+                                        {this.state.networkConfig.showMarket && (
+                                            <div className="info-box">
+                                                <span className="info-box--title">NFTs minted</span>
+                                                <span className="info-box--value">52.1k</span>
+                                            </div>
+                                        )}
+                                        {this.state.networkConfig.showMarket && (
+                                            <div className="info-box">
+                                                <span className="info-box--title">Active Addresses</span>
+                                                <span className="info-box--value">
+                                                    72.8k
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="row space-between">
+                                        <div className="info-box">
+                                            <span className="info-box--title">Active Addresses
+                                            </span>
+                                            <span className="info-box--value">
+                                                23.4k
+                                            </span>
+                                        </div>
+                                        {this.state.networkConfig.showMarket && (
+                                            <div className="info-box">
+                                                <span className="info-box--title">Locked storage deposit</span>
+                                                <span className="info-box--value">549k SMR</span>
+                                            </div>
+                                        )}
+                                        {this.state.networkConfig.showMarket && (
+                                            <div className="info-box">
+                                                <span className="info-box--title">Daily transactions</span>
+                                                <span className="info-box--value">
+                                                    2.45m
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </div>
                     </div>
                 </div>
-                <div className="wrapper feeds-wrapper">
+                <div className="wrapper smr-feeds-wrapper">
                     <div className="inner">
-                        <div className="feeds-section">
+                        <div className="smr-feeds-section">
                             <div className="row wrap feeds">
                                 <div className="feed section">
                                     <div className="section--header row space-between padding-l-8">

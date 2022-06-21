@@ -1,7 +1,9 @@
+/* eslint-disable react/jsx-closing-tag-location */
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
+import { ReactComponent as SmrLogoHeader } from "../../assets/smr-logo-header.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { CHRYSALIS, OG, STARDUST } from "../../models/db/protocolVersion";
 import { SettingsService } from "../../services/settingsService";
@@ -81,7 +83,7 @@ class Header extends Component<HeaderProps, HeaderState> {
             }
         ];
         return (
-            <header>
+            <header className={classNames({ "smr-header-bg": this.props.network?.protocolVersion === STARDUST })}>
                 <nav className="inner">
                     <div className="inner--main">
                         <div className="inner-wrapper">
@@ -90,7 +92,16 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 onClick={() => this.resetExpandedDropdowns()}
                                 className="logo-image--wrapper"
                             >
-                                <LogoHeader />
+                                {
+                                    this.props.network?.protocolVersion === STARDUST
+                                    ? <div className="smr-logo-wrapper">
+                                        <div className="smr-logo">
+                                            <SmrLogoHeader />
+                                        </div>
+                                        <h2 className="smr-heading">EXPLORER</h2>
+                                    </div>
+                                    : <LogoHeader />
+                                }
                             </Link>
                             {this.props.pages &&
                                 this.props.pages.length > 0 &&

@@ -6,13 +6,18 @@
   --body-color: #{$gray-9};
   --active-item-color: #{$gray-midnight};
   --navbar-bg: rgba(255, 255, 255, 0.7);
+  --smr-navbar-bg: rgba(255, 255, 255, 0.2);
   --navbar-color: #{$gray-6};
   --header-bg: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
+  --smr-header-bg: #f2f6f9;
+  --smr-feeds-bg: #{$white};
   --bubble-1: url("../assets/bubble-1.svg");
   --bubble-2: url("../assets/bubble-2.svg");
+  --smr-bg: url("../assets/header-bg-light.svg");
   --header-color: #{$gray-6};
   --type-color: #{$gray-7};
   --header-box-bg: rgba(255, 255, 255, 0.6);
+  --smr-header-box-bg: #{$white};
   --header-label-color: #{$gray-midnight};
   --header-icon-color: #{$gray-7};
   --header-svg-bg: #{$gray-2};
@@ -28,6 +33,7 @@
   --qr-color: #{$gray-9};
   --box-shadow-down: 0 4px 30px rgba(132, 147, 173, 0.1);
   --header-identity: #{$gray-daylight};
+  --smr-copyright: #{$white};
   --did-color: #{$gray-7};
   --search-bg-opacity: 0.6;
   --card-color: #{$gray-6};
@@ -44,17 +50,23 @@
 
   body.darkmode {
     --body-background: #091326;
+    --smr-body-background: #00121f;
     --card-body: #141e31;
     --body-color: #fcfcfc;
     --active-item-color: #{$gray-daylight};
     --navbar-bg: rgba(6, 16, 35, 0.7);
+    --smr-navbar-bg: #051122;
     --navbar-color: #{$gray-5};
     --header-bg: linear-gradient(180deg, #{$gray-7} 0%, #{$gray-9} 100%);
+    --smr-header-bg: #00121f;
+    --smr-feeds-bg: #00121f;
     --bubble-1: url("../assets/bubble-1-darkmode.svg");
     --bubble-2: url("../assets/bubble-2-darkmode.svg");
+    --smr-bg: url("../assets/header-bg-dark.svg");
     --header-color: #{$gray-5};
     --type-color: #{$gray-3};
     --header-box-bg: rgba(6, 16, 35, 0.7);
+    --smr-header-box-bg: #061a2899;
     --header-label-color: #{$gray-3};
     --header-icon-color: #{$gray-5};
     --header-svg-bg: #202e4a;
@@ -69,6 +81,7 @@
     --qr-color: #{$white};
     --box-shadow-down: 0 4px 30px rgba(137, 141, 145, 0.1);
     --header-identity: #{$gray-midnight};
+    --smr-copyright: #0f202c;
     --did-color: #{$gray-4};
     --search-bg-opacity: 0.2;
     --card-color: #{$gray-4};

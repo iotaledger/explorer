@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
@@ -12,6 +13,7 @@ import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import SearchInput from "./components/SearchInput";
+import SmrFooter from "./components/stardust/SmrFooter";
 import NetworkContext from "./context/NetworkContext";
 import { AddressRouteProps } from "./routes/AddressRouteProps";
 import { AliasRouteProps } from "./routes/AliasRouteProps";
@@ -343,7 +345,12 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             />
                                         </Switch>
                                     )}
-                                <div className="copyright">
+                                <div
+                                    className={classNames(
+                                        "copyright",
+                                        { "smr-copyright": this.state.networkConfig?.protocolVersion === STARDUST }
+                                    )}
+                                >
                                     <div className="copyright-inner">
                                         {copyrightInner}
                                     </div>
@@ -358,7 +365,11 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                             </div>
                         )}
                 </div>
-                <Footer dynamic={this.getFooterItems()} />
+                {
+                    isStardust
+                    ? <SmrFooter dynamic={this.getFooterItems()} />
+                    : <Footer dynamic={this.getFooterItems()} />
+                }
                 <Disclaimer />
             </div >
         );
