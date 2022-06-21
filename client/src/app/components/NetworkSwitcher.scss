@@ -62,52 +62,62 @@
     }
   }
 
-  .protocols {
+}
+
+.network--expanded {
+  position: fixed;
+  z-index: 2;
+  top: $navbar-height-desktop;
+  right: 0;
+  width: 520px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  border-radius: 12px;
+  background: var(--body-background);
+  box-shadow: var(--box-shadow-down);
+
+  @include desktop-down {
+    width: 468px;
+    top: $navbar-height-mobile * 2;
+  }
+
+  @include phone-down {
+      width: 100vw;
+      border-radius: unset;
+  }
+
+  &.opened {
+    max-height: 1000px;
+
+    @include desktop-down {
+      top: $navbar-height-mobile * 2;
+    }
+  }
+
+  .networks {
     display: flex;
     flex-direction: column;
-    max-width: 360px;
     margin: auto;
-    padding-top: 20px;
+    padding: 32px 12px;
 
     @media (max-width: 1200px) {
       display: block;
 
-      div.protocol {
-        width: 100%;
+      div.network {
+          width: 100%;
       }
     }
 
-    .protocol {
+    .network {
       display: flex;
       flex-direction: row;
       padding: 0 10px;
 
-      .protocol-header {
-          min-height: 68px;
-
-          .protocol--title {
-              color: var(--expanded-color);
-              font-family: $metropolis;
-              font-weight: 700;
-              letter-spacing: 0.15em;
-              text-transform: uppercase;
-
-              @include font-size(14px, 21px);
-          }
-
-          .protocol--description {
-              color: var(--expanded-color);
-              font-family: $inter;
-              letter-spacing: 0.5px;
-
-              @include font-size(14px, 21px);
-          }
-      }
-
       .network--cards {
         display: flex;
         flex-direction: column;
-        width: 350px;
+        width: 100vw;
 
         .network--card {
           min-height: 86px;

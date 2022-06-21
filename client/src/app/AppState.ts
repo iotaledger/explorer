@@ -1,4 +1,4 @@
-import { INetwork } from "../models/db/INetwork";
+import { INetwork } from "../models/config/INetwork";
 
 export interface AppState {
     /**

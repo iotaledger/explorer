@@ -3,7 +3,7 @@ import { IMilestonePayload, IPoWMilestoneOption, IReceiptMilestoneOption, POW_MI
 import React, { ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
-import { STARDUST } from "../../../models/db/protocolVersion";
+import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";

@@ -10,7 +10,7 @@ import { ITransactionsDetailsResponse } from "../../models/api/chrysalis/ITransa
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
-import { CHRYSALIS, OG } from "../../models/db/protocolVersion";
+import { CHRYSALIS, OG } from "../../models/config/protocolVersion";
 import { ICachedTransaction } from "../../models/ICachedTransaction";
 import { ChrysalisApiClient } from "../chrysalis/chrysalisApiClient";
 import { ChrysalisApiStreamsV0Client } from "../chrysalis/chrysalisApiStreamsV0Client";

@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
-import { CHRYSALIS, OG, ProtocolVersion } from "../../../models/db/protocolVersion";
+import { CHRYSALIS, OG, ProtocolVersion } from "../../../models/config/protocolVersion";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";

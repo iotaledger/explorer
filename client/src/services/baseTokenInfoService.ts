@@ -1,7 +1,7 @@
 import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IBaseTokenGetResponse } from "../models/api/stardust/IBaseTokenGetResponse";
-import { STARDUST } from "../models/db/protocolVersion";
+import { STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { StardustApiClient } from "./stardust/stardustApiClient";
 

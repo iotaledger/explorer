@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
+import { getNetworkOrder, MAINNET } from "../../models/config/networkType";
 import { ReactComponent as DevnetIcon } from "./../../assets/devnet.svg";
 import { ReactComponent as MainnetIcon } from "./../../assets/mainnet.svg";
 import "./NetworkSwitcher.scss";
@@ -15,16 +16,19 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { label, eyebrow, networks, isExpanded, onChange, onClick } = this.props;
+
+        networks.sort((a, b) => getNetworkOrder(a.network) - getNetworkOrder(b.network));
+
         return (
             <div className="network--switcher">
                 <div
-                    className={classNames("network--switcher__header row middle space-between",
-                        { opened: this.props.isExpanded })}
-                    onClick={this.props.onClick}
+                    className={classNames("network--switcher__header row middle space-between", { opened: isExpanded })}
+                    onClick={onClick}
                 >
                     <div className="network--switcher__dropdown">
-                        <div className="eyebrow">{this.props.eyebrow}</div>
-                        <div className="label">{this.props.label}</div>
+                        <div className="eyebrow">{eyebrow}</div>
+                        <div className="label">{label}</div>
                     </div>
                     <div className="icon">
                         <span className="material-icons">
@@ -33,47 +37,36 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                     </div>
 
 
-                    <div className={classNames("header--expanded network--expanded", {
-                        opened: this.props.isExpanded
-                    })}
-                    >
-                        <div className="protocols">
-                            {this.props.protocols.map(protocol => (
-                                <div className="protocol" key={protocol.label}>
+                    <div className={classNames("network--expanded", { opened: isExpanded })}>
+                        <div className="networks">
+                            {networks.map((network, idx) => (
+                                <div className="network" key={idx}>
                                     <div className="network--cards">
-                                        {protocol.networks?.map(n => (
-                                            <div
-                                                className={classNames("network--card row middle",
-                                                    {
-                                                        selected: n.label ===
-                                                            this.props.label
-                                                    })}
-                                                onClick={() => this.props.onChange(n.network)}
-                                                key={n.label}
-                                            >
-                                                <div className="network--icon row middle center">
-                                                    {n.network.includes("mainnet")
-                                                        ? <MainnetIcon />
-                                                        : <DevnetIcon />}
-                                                </div>
-                                                <div className="network--content">
-                                                    <div className="label">{n.label}</div>
-                                                    <div className="description">
-                                                        {protocol.label}
-                                                    </div>
-                                                </div>
+                                        <div
+                                            className={classNames(
+                                                "network--card row middle",
+                                                { selected: network.label === label }
+                                            )}
+                                            onClick={() => onChange(network.network)}
+                                        >
+                                            <div className="network--icon row middle center">
+                                                {network.network === MAINNET ? <MainnetIcon /> : <DevnetIcon />}
                                             </div>
-                                        ))}
+                                            <div className="network--content">
+                                                <div className="label">{network.label}</div>
+                                                <div className="description"> {network.description} </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    {this.props.isExpanded && (
+                    {isExpanded && (
                         <div
                             className="header--expanded--shield"
-                            onClick={this.props.onClick}
+                            onClick={onClick}
                         />
                     )}
 

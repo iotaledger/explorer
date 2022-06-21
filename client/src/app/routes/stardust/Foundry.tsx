@@ -4,7 +4,7 @@ import { RouteComponentProps } from "react-router";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
-import { STARDUST } from "../../../models/db/protocolVersion";
+import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";

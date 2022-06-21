@@ -7,7 +7,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
-import { CHRYSALIS } from "../../../models/db/protocolVersion";
+import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { ICachedTransaction } from "../../../models/ICachedTransaction";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { SettingsService } from "../../../services/settingsService";

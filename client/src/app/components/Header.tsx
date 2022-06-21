@@ -3,7 +3,6 @@ import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { CHRYSALIS, OG, STARDUST } from "../../models/db/protocolVersion";
 import { SettingsService } from "../../services/settingsService";
 import FiatSelector from "./FiatSelector";
 import "./Header.scss";
@@ -51,32 +50,23 @@ class Header extends Component<HeaderProps, HeaderState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const STARDUST_NETWORKS = this.props.networks?.filter(
-            n => n.protocolVersion === STARDUST
-        );
-        const CHRYSALIS_NETWORKS = this.props.networks?.filter(
-            n => n.protocolVersion === CHRYSALIS
-        );
-        const LEGACY_NETWORKS = this.props.networks?.filter(
-            n => n.protocolVersion === OG
-        );
+        const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
 
-        const PROTOCOLS = getProtocols();
         return (
             <header>
                 <nav className="inner">
                     <div className="inner--main">
                         <div className="inner-wrapper">
                             <Link
-                                to={this.props.rootPath}
+                                to={rootPath}
                                 onClick={() => this.resetExpandedDropdowns()}
                                 className="logo-image--wrapper"
                             >
                                 <LogoHeader />
                             </Link>
-                            {this.props.pages &&
-                                this.props.pages.length > 0 &&
-                                this.props.pages.map(page => (
+                            {pages &&
+                                pages.length > 0 &&
+                                pages.map(page => (
                                     <Link
                                         key={page.url}
                                         to={page.url}
@@ -115,7 +105,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 >
                                     <div className="utilities">
                                         <div className="utilities--label">Utilities</div>
-                                        {this.props.utilities?.map(utility => (
+                                        {utilities?.map(utility => (
                                             <div key={utility.url} className="utilities--item">
                                                 <Link
                                                     to={utility.url}
@@ -145,7 +135,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                             </div>
                             {/* ---------- */}
 
-                            {this.props.search}
+                            {search}
 
                             {/* ----- Only visible in desktop ----- */}
                             <div className="desktop-fiat">
@@ -178,9 +168,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 })}
                             >
                                 <ul>
-                                    {this.props.pages &&
-                                        this.props.pages.length > 0 &&
-                                        this.props.pages.map(page => (
+                                    {pages &&
+                                        pages.length > 0 &&
+                                        pages.map(page => (
                                             <Link
                                                 key={page.url}
                                                 to={page.url}
@@ -219,7 +209,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                                         opened: this.state.isUtilitiesExpanded
                                     })}
                                     >
-                                        {this.props.utilities?.map(utility => (
+                                        {utilities?.map(utility => (
                                             <Link
                                                 key={utility.url}
                                                 to={utility.url}
@@ -247,9 +237,9 @@ class Header extends Component<HeaderProps, HeaderState> {
                     </div>
                     <div className="inner--networks">
                         <NetworkSwitcher
-                            eyebrow="Selected network"
-                            label={this.props.network?.label}
-                            protocols={PROTOCOLS}
+                            eyebrow="Selected currentNetwork"
+                            label={currentNetwork?.label}
+                            networks={networks}
                             isExpanded={this.state.isNetworkSwitcherExpanded}
                             onClick={() => {
                                 this.setState({
@@ -258,13 +248,13 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     isUtilitiesExpanded: false
                                 });
                             }}
-                            onChange={network => {
-                                this.props.history?.push(
-                                    this.props.action === "streams"
-                                        ? `/${network}/streams/0/`
-                                        : (this.props.action === "visualizer"
-                                            ? `/${network}/visualizer/`
-                                            : `/${network}`)
+                            onChange={targetNetwork => {
+                                history?.push(
+                                    action === "streams" ?
+                                        `/${targetNetwork}/streams/0/` :
+                                        (action === "visualizer" ?
+                                         `/${targetNetwork}/visualizer/` :
+                                         `/${targetNetwork}`)
                                 );
                             }}
                         />
@@ -272,35 +262,6 @@ class Header extends Component<HeaderProps, HeaderState> {
                 </nav>
             </header >
         );
-
-        /**
-         * Get protocol from configuration
-         * @returns The filtered protocols.
-         */
-        function getProtocols() {
-            let protocols = [
-                {
-                    label: "IOTA 1.0 (Legacy)",
-                    description:
-                        "Legacy network that only accepts migrations to the IOTA 1.5 (Chrysalis) network.",
-                    networks: LEGACY_NETWORKS
-                },
-                {
-                    label: "IOTA 1.5 (Chrysalis)",
-                    description:
-                        "The latest IOTA network deployed in April 2021.",
-                    networks: CHRYSALIS_NETWORKS
-                },
-                {
-                    label: "IOTA Stardust",
-                    description:
-                        "Stardust Testnet.",
-                    networks: STARDUST_NETWORKS
-                }
-            ];
-            protocols = protocols.filter(protocol => protocol.networks && protocol.networks.length > 0);
-            return protocols;
-        }
     }
 
     /**

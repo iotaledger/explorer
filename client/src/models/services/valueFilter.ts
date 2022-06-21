@@ -1,4 +1,4 @@
-import { OG, ProtocolVersion, STARDUST } from "../db/protocolVersion";
+import { OG, ProtocolVersion, STARDUST } from "../config/protocolVersion";
 
 export interface ValueFilter {
     label: "Zero only" | "Non-zero only" | "Transaction" | "Milestone" | "Indexed" | "Data" | "No payload";

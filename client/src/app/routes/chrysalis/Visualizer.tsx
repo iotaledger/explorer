@@ -5,7 +5,7 @@ import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildCircleNodeShader } from "../../../helpers/circleNodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
-import { CHRYSALIS, OG } from "../../../models/db/protocolVersion";
+import { CHRYSALIS, OG } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { INodeData } from "../../../models/graph/INodeData";
