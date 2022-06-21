@@ -1,11 +1,17 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { getNetworkOrder, MAINNET } from "../../models/config/networkType";
+import { CHRYSALIS, OG, STARDUST } from "../../models/config/protocolVersion";
 import { ReactComponent as DevnetIcon } from "./../../assets/devnet.svg";
 import { ReactComponent as MainnetIcon } from "./../../assets/mainnet.svg";
 import "./NetworkSwitcher.scss";
 import { NetworkSwitcherProps } from "./NetworkSwitcherProps";
 
+const PROTOCOL_VERIONS_TO_LABEL = {
+    [OG]: "Legacy",
+    [CHRYSALIS]: "Chrysalis",
+    [STARDUST]: "Stardust"
+}
 
 /**
  * Component which will show the switcher.
@@ -54,7 +60,9 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                                             </div>
                                             <div className="network--content">
                                                 <div className="label">{network.label}</div>
-                                                <div className="description"> {network.description} </div>
+                                                <div className="protocol">
+                                                    {PROTOCOL_VERIONS_TO_LABEL[network.protocolVersion]}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
