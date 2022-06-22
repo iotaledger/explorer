@@ -67,7 +67,6 @@ export const OutputDropdown: React.FC<OutputDropdownProps> = (
                     <Output
                         key={outputIndex}
                         id={output.id}
-                        index={outputIndex + 1}
                         output={output.output}
                         amount={output.amount}
                         network={network}
