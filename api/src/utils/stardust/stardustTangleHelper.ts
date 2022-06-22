@@ -45,11 +45,9 @@ export class StardustTangleHelper {
 
             blockId = HexHelper.addPrefix(blockId);
             const metadata = await client.blockMetadata(blockId);
-            const childrenResponse = await client.blockChildren(blockId);
 
             return {
-                metadata,
-                children: childrenResponse ? childrenResponse.children : undefined
+                metadata
             };
         } catch {
         }
@@ -63,11 +61,9 @@ export class StardustTangleHelper {
                 });
 
                 const metadata = await client.blockMetadata(blockId);
-                const childrenResponse = await client.blockChildren(blockId);
 
                 return {
-                    metadata,
-                    children: childrenResponse ? childrenResponse.children : undefined
+                    metadata
                 };
             } catch {
             }
