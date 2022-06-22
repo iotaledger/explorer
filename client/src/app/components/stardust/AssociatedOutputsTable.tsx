@@ -1,5 +1,6 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";
@@ -63,8 +64,13 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                                         associatedOutput.association === prevOutput.association ?
                                         { ...associatedOutput, outputDetails } :
                                         prevOutput
-                            )
-                                               ));
+                            ))
+                            .sort((a, b) => {
+                                const timestampBookedA = a.outputDetails?.metadata.milestoneTimestampBooked;
+                                const timestampBookedB = b.outputDetails?.metadata.milestoneTimestampBooked;
+                                return moment(timestampBookedA).isAfter(moment(timestampBookedB)) ? -1 : 1;
+                            })
+                        );
                     }
                 })
                 .finally(() => {
