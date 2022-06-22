@@ -80,19 +80,16 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                 </div>
                             </React.Fragment>
                         )}
-                        {this.props.unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE && (
-                            <React.Fragment>
-                                {this.props.unlockCondition.unixTime && (
-                                    <React.Fragment>
-                                        <div className="card--label">
-                                            Unix time
-                                        </div>
-                                        <div className="card--value row">
-                                            {this.formatUnixTime(this.props.unlockCondition.unixTime)}
-                                        </div>
-                                    </React.Fragment>
-                                )}
-                            </React.Fragment>
+                        {this.props.unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE &&
+                            this.props.unlockCondition.unixTime && (
+                                <React.Fragment>
+                                    <div className="card--label">
+                                        Unix time
+                                    </div>
+                                    <div className="card--value row">
+                                        {this.formatUnixTime(this.props.unlockCondition.unixTime)}
+                                    </div>
+                                </React.Fragment>
                         )}
                         {this.props.unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE && (
                             <React.Fragment>
