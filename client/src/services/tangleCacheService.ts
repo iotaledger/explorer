@@ -1,8 +1,8 @@
 import { ServiceFactory } from "../factories/serviceFactory";
+import { ICachedTransaction } from "../models/api/ICachedTransaction";
 import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
 import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
-import { ProtocolVersion } from "../models/db/protocolVersion";
-import { ICachedTransaction } from "../models/ICachedTransaction";
+import { ProtocolVersion } from "../models/config/protocolVersion";
 import { NetworkService } from "./networkService";
 
 /**

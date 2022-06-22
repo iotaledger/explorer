@@ -1,5 +1,5 @@
 import { Magnitudes } from "@iota/iota.js-stardust";
-import { INetwork } from "../../../models/db/INetwork";
+import { INetwork } from "../../../models/config/INetwork";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { ValueFilter } from "../../../models/services/valueFilter";
 import { CurrencyState } from "../../components/CurrencyState";

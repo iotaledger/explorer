@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IIdentityDidHistoryResponse } from "../models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
-import { CHRYSALIS } from "../models/db/protocolVersion";
+import { CHRYSALIS } from "../models/config/protocolVersion";
 import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
 import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 

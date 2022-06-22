@@ -1,4 +1,4 @@
-import { IBech32AddressDetails } from "../../IBech32AddressDetails";
+import { IBech32AddressDetails } from "../IBech32AddressDetails";
 
 export interface IInput {
     /**

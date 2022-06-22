@@ -194,7 +194,7 @@ header {
       }
 
       .utilities {
-        padding: 40px 120px 120px 120px;
+        padding: 64px 120px 120px 120px;
 
         & * {
           margin-bottom: 8px;
@@ -305,13 +305,13 @@ header {
     box-shadow: var(--box-shadow-down);
 
     &.opened {
-      height: auto;
       max-height: 1000px;
 
       @include desktop-down {
         top: $navbar-height-mobile * 2;
         height: calc(100vh - 2 * #{$navbar-height-mobile});
       }
+
     }
 
     @include desktop-down {

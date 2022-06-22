@@ -42,108 +42,88 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { showOutputDetails } = this.state;
+        const { unlockCondition } = this.props;
+
         return (
             <div className="unlock-condition">
                 <div
                     className="card--content__input card--value row middle"
-                    onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === 1 ? -1 : 1 })}
+                    onClick={() => this.setState({ showOutputDetails: showOutputDetails === 1 ? -1 : 1 })}
                 >
                     <div className={classNames("margin-r-t", "card--content__input--dropdown",
-                        "card--content__flex_between", { opened: this.state.showOutputDetails === 1 })}
+                        "card--content__flex_between", { opened: showOutputDetails === 1 })}
                     >
                         <DropdownIcon />
                     </div>
                     <div className="card--label">
-                        {NameHelper.getUnlockConditionTypeName(this.props.unlockCondition.type)}
+                        {NameHelper.getUnlockConditionTypeName(unlockCondition.type)}
                     </div>
                 </div>
-                {this.state.showOutputDetails === 1 && (
+                {showOutputDetails === 1 && (
                     <div className="margin-l-t">
-                        {this.props.unlockCondition.type === ADDRESS_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === ADDRESS_UNLOCK_CONDITION_TYPE && (
                             <Address
-                                address={this.props.unlockCondition.address}
+                                address={unlockCondition.address}
                             />
                         )}
-                        {this.props.unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE && (
                             <React.Fragment>
                                 <div className="card--label">
                                     Return address
                                 </div>
                                 <Address
-                                    address={this.props.unlockCondition.returnAddress}
+                                    address={unlockCondition.returnAddress}
                                 />
                                 <div className="card--label">
                                     Amount:
                                 </div>
                                 <div className="card--value row">
-                                    {formatAmount(Number(this.props.unlockCondition.amount), this.context.tokenInfo)}
+                                    {formatAmount(Number(unlockCondition.amount), this.context.tokenInfo)}
                                 </div>
                             </React.Fragment>
                         )}
-                        {this.props.unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE && (
-                            <React.Fragment>
-                                {this.props.unlockCondition.milestoneIndex && (
-                                    <React.Fragment>
-                                        <div className="card--label">
-                                            Milestone index
-                                        </div>
-                                        <div className="card--value row">
-                                            {this.props.unlockCondition.milestoneIndex}
-                                        </div>
-                                    </React.Fragment>
-                                )}
-                                {this.props.unlockCondition.unixTime && (
-                                    <React.Fragment>
-                                        <div className="card--label">
-                                            Unix time
-                                        </div>
-                                        <div className="card--value row">
-                                            {this.formatUnixTime(this.props.unlockCondition.unixTime)}
-                                        </div>
-                                    </React.Fragment>
-                                )}
-                            </React.Fragment>
+                        {unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE &&
+                            unlockCondition.unixTime && (
+                                <React.Fragment>
+                                    <div className="card--label">
+                                        Unix time
+                                    </div>
+                                    <div className="card--value row">
+                                        {this.formatUnixTime(unlockCondition.unixTime)}
+                                    </div>
+                                </React.Fragment>
                         )}
-                        {this.props.unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE && (
                             <React.Fragment>
                                 <Address
-                                    address={this.props.unlockCondition.returnAddress}
+                                    address={unlockCondition.returnAddress}
                                 />
-                                {this.props.unlockCondition.milestoneIndex && (
-                                    <React.Fragment>
-                                        <div className="card--label">
-                                            Milestone index
-                                        </div>
-                                        <div className="card--value row">
-                                            {this.props.unlockCondition.milestoneIndex}
-                                        </div>
-                                    </React.Fragment>
-                                )}
-                                {this.props.unlockCondition.unixTime && (
+                                {unlockCondition.unixTime && (
                                     <React.Fragment>
                                         <div className="card--label">
                                             Unix time
                                         </div>
                                         <div className="card--value row">
-                                            {this.formatUnixTime(this.props.unlockCondition.unixTime)}
+                                            {this.formatUnixTime(unlockCondition.unixTime)}
                                         </div>
                                     </React.Fragment>
                                 )}
                             </React.Fragment>
                         )}
-                        {this.props.unlockCondition.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE && (
                             <Address
-                                address={this.props.unlockCondition.address}
+                                address={unlockCondition.address}
                             />
                         )}
-                        {this.props.unlockCondition.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE && (
                             <Address
-                                address={this.props.unlockCondition.address}
+                                address={unlockCondition.address}
                             />
                         )}
-                        {this.props.unlockCondition.type === STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE && (
                             <Address
-                                address={this.props.unlockCondition.address}
+                                address={unlockCondition.address}
                             />
                         )}
                     </div>

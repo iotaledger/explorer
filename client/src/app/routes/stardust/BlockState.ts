@@ -1,7 +1,7 @@
 import { IBlock, IBlockMetadata, IUTXOInput } from "@iota/iota.js-stardust";
+import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
-import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
 import { TangleStatus } from "../../../models/tangleStatus";
 
 export interface BlockState {

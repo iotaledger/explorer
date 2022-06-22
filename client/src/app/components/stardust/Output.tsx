@@ -75,12 +75,16 @@ class Output extends Component<OutputProps, OutputState> {
                         <div className="card--value row">
                             {this.state.output.stateIndex}
                         </div>
-                        <div className="card--label">
-                            State metadata:
-                        </div>
-                        <div className="card--value row">
-                            {this.state.output.stateMetadata}
-                        </div>
+                        {this.state.output.stateMetadata && (
+                            <React.Fragment>
+                                <div className="card--label">
+                                    State metadata:
+                                </div>
+                                <div className="card--value row">
+                                    {this.state.output.stateMetadata}
+                                </div>
+                            </React.Fragment>
+                        )}
                         <div className="card--label">
                             Foundry counter:
                         </div>

@@ -1,6 +1,7 @@
 import { IBlock, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
 import { IResponse } from "../IResponse";
 import IAddressDetails from "./IAddressDetails";
+import { IAssociatedOutputsResponse } from "./IAssociatedOutputsResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { INftDetailsResponse } from "./INftDetailsResponse";
 
@@ -24,6 +25,11 @@ export interface ISearchResponse extends IResponse {
      * Output if it was found (block will also be populated).
      */
     output?: IOutputResponse;
+
+    /**
+     * Associated outputs of the address.
+     */
+    addressAssociatedOutputs?: IAssociatedOutputsResponse;
 
     /**
      * Alias output id if it was found.

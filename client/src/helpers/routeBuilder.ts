@@ -1,5 +1,5 @@
-import { INetwork } from "../models/db/INetwork";
-import { OG } from "../models/db/protocolVersion";
+import { INetwork } from "../models/config/INetwork";
+import { OG } from "../models/config/protocolVersion";
 
 /**
  * Class for helping to build routes.

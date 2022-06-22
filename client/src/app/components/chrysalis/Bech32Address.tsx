@@ -9,17 +9,6 @@ import CopyButton from "../CopyButton";
  */
 class Bech32Address extends Component<Bech32AddressProps> {
     /**
-     * Create a new instance of Bech32Address.
-     * @param props The props.
-     */
-    constructor(props: Bech32AddressProps) {
-        super(props);
-
-        this.state = {
-        };
-    }
-
-    /**
      * Render the component.
      * @returns The node to render.
      */

@@ -1,5 +1,5 @@
+import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
 import { ITransactionsCursor } from "../../../models/api/og/ITransactionsCursor";
-import { ICachedTransaction } from "../../../models/ICachedTransaction";
 
 export interface AddressState {
     /**

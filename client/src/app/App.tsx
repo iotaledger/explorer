@@ -3,7 +3,8 @@ import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IConfiguration } from "../models/config/IConfiguration";
-import { CHRYSALIS, OG, STARDUST } from "../models/db/protocolVersion";
+import { MAINNET } from "../models/config/networkType";
+import { CHRYSALIS, OG, STARDUST } from "../models/config/protocolVersion";
 import { BaseTokenInfoService } from "../services/baseTokenInfoService";
 import { NetworkService } from "../services/networkService";
 import "./App.scss";
@@ -132,10 +133,8 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
         return (
             <div className="app">
                 <Header
-                    rootPath={`/${currentNetworkConfig?.isEnabled
-                        ? this.state.networkId
-                        : ""}`}
-                    network={currentNetworkConfig}
+                    rootPath={`/${currentNetworkConfig?.isEnabled ? this.state.networkId : ""}`}
+                    currentNetwork={currentNetworkConfig}
                     networks={this.state.networks}
                     action={this.props.match.params.action}
                     history={this.props.history}
@@ -385,7 +384,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                 .filter(network => network.isEnabled)
                 .map(n => ({
                     label: n.label,
-                    url: n.network
+                    url: n.network.toString()
                 }))
                 .concat({
                     label: "Streams v0",
@@ -432,7 +431,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
     private setNetwork(network: string | undefined, updateLocation: boolean): void {
         if (!network) {
             network =
-                this.state.networks && this.state.networks.length > 0 ? this.state.networks[0].network : "mainnet";
+                this.state.networks && this.state.networks.length > 0 ? this.state.networks[0].network : MAINNET;
             updateLocation = true;
         }
         const hasChanged = network !== this.state.networkId;

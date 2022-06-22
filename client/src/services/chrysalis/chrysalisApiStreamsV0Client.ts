@@ -1,7 +1,7 @@
 import { IMessage, IMessagesResponse } from "@iota/iota.js";
 import { Converter } from "@iota/util.js";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { CHRYSALIS } from "../../models/db/protocolVersion";
+import { CHRYSALIS } from "../../models/config/protocolVersion";
 import { ChrysalisApiClient } from "../chrysalis/chrysalisApiClient";
 
 /**
