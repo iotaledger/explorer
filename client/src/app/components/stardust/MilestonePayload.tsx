@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
-import { IMilestonePayload, IPoWMilestoneOption, IReceiptMilestoneOption, POW_MILESTONE_OPTION_TYPE, RECEIPT_MILESTONE_OPTION_TYPE } from "@iota/iota.js-stardust";
+import { IMilestonePayload, IProtocolParamsMilestoneOption, IReceiptMilestoneOption, PROTOCOL_PARAMETERS_MILESTONE_OPTION_TYPE, RECEIPT_MILESTONE_OPTION_TYPE } from "@iota/iota.js-stardust";
+import { Converter } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -59,14 +60,18 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
             metadata, options, signatures }: IMilestonePayload = this.props.payload;
 
         let receiptMilestoneOption: IReceiptMilestoneOption | null = null;
-        let powMilestoneOption: IPoWMilestoneOption | null = null;
+        let protocolParamsMilestoneOption: IProtocolParamsMilestoneOption | null = null;
 
         if (options?.some((option => option.type === RECEIPT_MILESTONE_OPTION_TYPE))) {
-            receiptMilestoneOption = options.find(option => option.type === RECEIPT_MILESTONE_OPTION_TYPE) as IReceiptMilestoneOption;
+            receiptMilestoneOption = options.find(
+                option => option.type === RECEIPT_MILESTONE_OPTION_TYPE
+            ) as IReceiptMilestoneOption;
         }
 
-        if (options?.some((option => option.type === POW_MILESTONE_OPTION_TYPE))) {
-            powMilestoneOption = options.find(option => option.type === POW_MILESTONE_OPTION_TYPE) as IPoWMilestoneOption;
+        if (options?.some((option => option.type === PROTOCOL_PARAMETERS_MILESTONE_OPTION_TYPE))) {
+            protocolParamsMilestoneOption = options.find(
+                option => option.type === PROTOCOL_PARAMETERS_MILESTONE_OPTION_TYPE
+            ) as IProtocolParamsMilestoneOption;
         }
 
         return (
@@ -177,22 +182,30 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                                 </div>
                             </React.Fragment>
                         )}
-                        {powMilestoneOption && (
+                        {protocolParamsMilestoneOption && (
                             <React.Fragment>
                                 <div className="section--data">
                                     <div className="label">
-                                        Next PoW Score
+                                        Target milestone index
                                     </div>
                                     <div className="value code">
-                                        {powMilestoneOption?.nextPoWScore}
+                                        {protocolParamsMilestoneOption?.targetMilestoneIndex}
                                     </div>
                                 </div>
                                 <div className="section--data">
                                     <div className="label">
-                                        Next PoW Score Milestone Index
+                                        Target protocol version
                                     </div>
                                     <div className="value code">
-                                        {powMilestoneOption?.nextPoWScoreMilestoneIndex}
+                                        {protocolParamsMilestoneOption?.protocolVersion}
+                                    </div>
+                                </div>
+                                <div className="section--data">
+                                    <div className="label">
+                                        Protocol paramaters
+                                    </div>
+                                    <div className="value code">
+                                        {protocolParamsMilestoneOption?.params}
                                     </div>
                                 </div>
                             </React.Fragment>
