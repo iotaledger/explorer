@@ -114,14 +114,20 @@ export class AssociatedOutputsHelper {
        association: AssociationType
     ) {
         const associatedOutputs = this.associatedOutputs;
+        let cursor: string;
 
-        try {
-            const outputs = await fetch(request);
-            if (outputs.items.length > 0) {
-                for (const outputId of outputs.items) {
-                    associatedOutputs.push({ outputId, association });
+        do {
+            try {
+                const outputs = await fetch({ ...request, cursor });
+
+                if (outputs.items.length > 0) {
+                    for (const outputId of outputs.items) {
+                        associatedOutputs.push({ outputId, association });
+                    }
                 }
-            }
-        } catch {}
+
+                cursor = outputs.cursor;
+            } catch {}
+        } while (cursor);
     }
 }
