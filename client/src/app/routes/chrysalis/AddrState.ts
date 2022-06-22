@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
 import { ITransaction, ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
-import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
+import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 
 
 export interface AddrState {

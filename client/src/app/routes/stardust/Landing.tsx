@@ -4,8 +4,9 @@ import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
-import { INetwork } from "../../../models/db/INetwork";
-import { STARDUST } from "../../../models/db/protocolVersion";
+import { INetwork } from "../../../models/config/INetwork";
+import { CUSTOM } from "../../../models/config/networkType";
+import { STARDUST } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/stardust/IFilterSettings";
 import { getDefaultValueFilter } from "../../../models/services/valueFilter";
@@ -28,11 +29,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
         const networkService = ServiceFactory.get<NetworkService>("network");
         const network: INetwork = (props.match.params.network && networkService.get(props.match.params.network)) || {
-            label: "Unknown Network",
-            network: "unknown",
+            label: "Custom network",
+            network: CUSTOM,
             protocolVersion: STARDUST,
-            isEnabled: false,
-            order: 9999999
+            isEnabled: false
         };
 
         this.state = {

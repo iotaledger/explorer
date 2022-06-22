@@ -1,7 +1,7 @@
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { INetwork } from "../../../models/db/INetwork";
-import { STARDUST } from "../../../models/db/protocolVersion";
+import { INetwork } from "../../../models/config/INetwork";
+import { STARDUST } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { MilestonesClient } from "../../../services/milestonesClient";

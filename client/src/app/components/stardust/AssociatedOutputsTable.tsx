@@ -4,7 +4,7 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";
-import { STARDUST } from "../../../models/db/protocolVersion";
+import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Pagination from "../../components/Pagination";
 import AssociatedOutput from "./AssociatedOutput";

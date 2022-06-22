@@ -1,3 +1,4 @@
+import { NetworkType } from "./networkType";
 import { ProtocolVersion } from "./protocolVersion";
 
 /**
@@ -7,7 +8,7 @@ export interface INetwork {
     /**
      * The network.
      */
-    network: string;
+    network: NetworkType;
 
     /**
      * The protocol version.
@@ -108,11 +109,6 @@ export interface INetwork {
      * Show the market figures.
      */
     showMarket?: boolean;
-
-    /**
-     * The ordering for the networks.
-     */
-    order: number;
 
     /**
      * An example for an Identity DID address.

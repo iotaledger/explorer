@@ -1,6 +1,6 @@
 import { AddressTypes, ALIAS_ADDRESS_TYPE, Bech32Helper, ED25519_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
-import { IBech32AddressDetails } from "../../models/IBech32AddressDetails";
+import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 
 export class Bech32AddressHelper {
     /**

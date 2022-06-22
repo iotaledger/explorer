@@ -18,23 +18,20 @@ export async function get(config: IConfiguration): Promise<INetworkGetResponse> 
             // Only return networks that are not hidden
             // and copy the fields needed by the client
             // as we don't want to expose all the information
-            .filter(n => !n.isHidden).map(n => ({
-                network: n.network,
-                label: n.label,
-                protocolVersion: n.protocolVersion,
-                coordinatorAddress: n.coordinatorAddress,
-                coordinatorSecurityLevel: n.coordinatorSecurityLevel,
-                primaryColor: n.primaryColor,
-                secondaryColor: n.secondaryColor,
-                isEnabled: n.isEnabled,
-                showMarket: n.showMarket,
-                order: n.order,
-                description: n.description,
-                bechHrp: n.bechHrp,
-                didExample: n.didExample,
-                faucet: n.faucet
-            })
-            )
-            .sort((a, b) => a.order - b.order)
+        .filter(n => !n.isHidden).map(n => ({
+            network: n.network,
+            label: n.label,
+            protocolVersion: n.protocolVersion,
+            coordinatorAddress: n.coordinatorAddress,
+            coordinatorSecurityLevel: n.coordinatorSecurityLevel,
+            primaryColor: n.primaryColor,
+            secondaryColor: n.secondaryColor,
+            isEnabled: n.isEnabled,
+            showMarket: n.showMarket,
+            description: n.description,
+            bechHrp: n.bechHrp,
+            didExample: n.didExample,
+            faucet: n.faucet
+        }))
     };
 }

@@ -7,7 +7,7 @@ import React, { ReactNode } from "react";
 import ChartistGraph from "react-chartist";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { DateHelper } from "../../helpers/dateHelper";
-import { CHRYSALIS } from "../../models/db/protocolVersion";
+import { CHRYSALIS } from "../../models/config/protocolVersion";
 import { ChrysalisApiClient } from "../../services/chrysalis/chrysalisApiClient";
 import Currency from "../components/Currency";
 import Spinner from "../components/Spinner";

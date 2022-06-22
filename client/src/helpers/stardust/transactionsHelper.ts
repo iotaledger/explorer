@@ -11,9 +11,9 @@ import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlo
     IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { DateHelper } from "../../helpers/dateHelper";
+import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
-import { IBech32AddressDetails } from "../../models/IBech32AddressDetails";
 import { TangleStatus } from "../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
 import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";

@@ -1,5 +1,5 @@
 import { OutputTypes, TREASURY_OUTPUT_TYPE, BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
-import { IBech32AddressDetails } from "../../IBech32AddressDetails";
+import { IBech32AddressDetails } from "../IBech32AddressDetails";
 
 export interface IOutput {
     /**
