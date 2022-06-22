@@ -2,7 +2,7 @@ import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
-import { OG } from "../../../models/db/protocolVersion";
+import { OG } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import LineChart from "../LineChart";
 import "./SidePanel.scss";

@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { INetwork } from "../models/db/INetwork";
+import { INetwork } from "../models/config/INetwork";
 import { IFeedItem } from "../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../models/feed/IFeedItemMetadata";
 import { NetworkService } from "./networkService";

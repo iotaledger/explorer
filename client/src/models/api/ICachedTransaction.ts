@@ -1,5 +1,5 @@
 import { Transaction } from "@iota/core";
-import { ConfirmationState } from "./confirmationState";
+import { ConfirmationState } from "../confirmationState";
 
 export interface ICachedTransaction {
     /**

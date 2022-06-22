@@ -8,7 +8,7 @@ import { AppRouteProps } from "./app/AppRouteProps";
 import { ServiceFactory } from "./factories/serviceFactory";
 import "./index.scss";
 import { IConfiguration } from "./models/config/IConfiguration";
-import { CHRYSALIS, STARDUST } from "./models/db/protocolVersion";
+import { CHRYSALIS, STARDUST } from "./models/config/protocolVersion";
 import { BaseTokenInfoService } from "./services/baseTokenInfoService";
 import { ChrysalisApiClient } from "./services/chrysalis/chrysalisApiClient";
 import { ChrysalisFeedClient } from "./services/chrysalis/chrysalisFeedClient";

@@ -38,7 +38,7 @@ export class NetworkService {
 
             const newCache = {};
 
-            for (const network of networks.sort((a, b) => a.order - b.order)) {
+            for (const network of networks) {
                 newCache[network.network] = network;
             }
 

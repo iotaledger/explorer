@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 import { INftOutput } from "@iota/iota.js-stardust";
-import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
+import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 
 export interface NftState {
     /**

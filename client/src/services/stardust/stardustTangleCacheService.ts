@@ -9,7 +9,7 @@ import { INftDetailsResponse } from "../../models/api/stardust/INftDetailsRespon
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
-import { STARDUST } from "../../models/db/protocolVersion";
+import { STARDUST } from "../../models/config/protocolVersion";
 import { TangleCacheService } from "../tangleCacheService";
 import { StardustApiClient } from "./stardustApiClient";
 
@@ -97,7 +97,6 @@ export class StardustTangleCacheService extends TangleCacheService {
         networkId: string,
         blockId: string): Promise<{
             metadata?: IBlockMetadata;
-            childrenIds?: string[];
             error?: string;
         }> {
         const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
@@ -107,7 +106,6 @@ export class StardustTangleCacheService extends TangleCacheService {
         if (response) {
             return {
                 metadata: response.metadata,
-                childrenIds: response.childrenBlockIds,
                 error: response.error
             };
         }
@@ -123,7 +121,8 @@ export class StardustTangleCacheService extends TangleCacheService {
      */
     public async outputDetails(
         networkId: string,
-        outputId: string): Promise<IOutputResponse | undefined> {
+        outputId: string
+    ): Promise<IOutputResponse | undefined> {
         if (!this._stardustSearchCache[networkId][outputId]?.data?.output) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
@@ -138,6 +137,22 @@ export class StardustTangleCacheService extends TangleCacheService {
         }
 
         return this._stardustSearchCache[networkId][outputId]?.data?.output;
+    }
+
+    public async associatedOutputs(network: string, address: string) {
+        if (!this._stardustSearchCache[network][address]?.data?.addressAssociatedOutputs) {
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+            const response = await apiClient.associatedOutputs({ network, address });
+
+            if (response.outputs) {
+                this._stardustSearchCache[network][address] = {
+                    data: { addressAssociatedOutputs: response },
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._stardustSearchCache[network][address].data?.addressAssociatedOutputs;
     }
 
     /**

@@ -8,7 +8,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
-import { STARDUST } from "../../../models/db/protocolVersion";
+import { STARDUST } from "../../../models/config/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -19,6 +19,7 @@ import Icon from "../../components/Icon";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import AssetsTable from "../../components/stardust/AssetsTable";
+import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import Nft from "../../components/stardust/Nft";
 import NetworkContext from "../../context/NetworkContext";
@@ -126,6 +127,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         const nativeTokensCount = outputResponse ? this.countDistinctNativeTokens(outputResponse) : 0;
         const hasNativeTokens = nativeTokensCount > 0;
         const hasNfts = nfts && nfts.length > 0;
+        const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
 
         return (
             <div className="addr">
@@ -293,6 +295,9 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                             onPageChange={page => this.setState({ nftsPageNumber: page })}
                                         />
                                     </div>
+                                )}
+                                {addressBech32 && (
+                                    <AssociatedOutputsTable network={networkId} address={addressBech32} />
                                 )}
                             </div>
                         </div>

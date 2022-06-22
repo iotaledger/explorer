@@ -4,7 +4,7 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { TextHelper } from "../../../helpers/textHelper";
-import { CHRYSALIS } from "../../../models/db/protocolVersion";
+import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { SettingsService } from "../../../services/settingsService";
 import AsyncComponent from "../../components/AsyncComponent";

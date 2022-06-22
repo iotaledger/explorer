@@ -1,4 +1,4 @@
-import { ICachedTransaction } from "../../../models/ICachedTransaction";
+import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
 
 export interface TransactionState {
     /**

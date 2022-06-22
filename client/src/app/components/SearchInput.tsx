@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { TrytesHelper } from "../../helpers/trytesHelper";
-import { OG } from "../../models/db/protocolVersion";
+import { OG } from "../../models/config/protocolVersion";
 import AsyncComponent from "./AsyncComponent";
 import "./SearchInput.scss";
 import { SearchInputProps } from "./SearchInputProps";

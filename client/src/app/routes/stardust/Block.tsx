@@ -3,11 +3,11 @@ import {
     TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE
 } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
-import { STARDUST } from "../../../models/db/protocolVersion";
+import { STARDUST } from "../../../models/config/protocolVersion";
 import { TangleStatus } from "../../../models/tangleStatus";
 import { SettingsService } from "../../../services/settingsService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -18,7 +18,6 @@ import InclusionState from "../../components/InclusionState";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
-import BlockTree from "../../components/stardust/BlockTree";
 import MilestonePayload from "../../components/stardust/MilestonePayload";
 import TaggedDataPayload from "../../components/stardust/TaggedDataPayload";
 import TransactionPayload from "../../components/stardust/TransactionPayload";
@@ -26,7 +25,6 @@ import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import metadataMessage from "./../../../assets/modals/block/metadata.json";
-import treeMessage from "./../../../assets/modals/block/tree.json";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
 import "./Block.scss";
@@ -70,7 +68,6 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
 
         this.state = {
             blockTangleStatus: "pending",
-            childrenBusy: true,
             advancedMode: this._settingsService.get().advancedMode ?? false
         };
     }
@@ -99,6 +96,8 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const network = this.props.match.params.network;
+
         return (
             <div className="block">
                 <div className="wrapper">
@@ -130,15 +129,13 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                 </div>
 
                                 <BlockTangleState
-                                    network={this.props.match.params.network}
+                                    network={network}
                                     status={this.state.blockTangleStatus}
                                     milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
                                         this.state.metadata?.milestoneIndex}
                                     hasConflicts={this.state.metadata?.ledgerInclusionState === "conflicting"}
                                     onClick={this.state.metadata?.referencedByMilestoneIndex
-                                        ? (blockId: string) => this.props.history.push(
-                                            `/${this.props.match.params.network
-                                            }/search/${blockId}`)
+                                        ? (blockId: string) => this.props.history.push(`/${network}/search/${blockId}`)
                                         : undefined}
                                 />
                             </div>
@@ -231,7 +228,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                         <React.Fragment>
                                             <div className="section">
                                                 <TransactionPayload
-                                                    network={this.props.match.params.network}
+                                                    network={network}
                                                     history={this.props.history}
                                                     inputs={this.state.inputs}
                                                     outputs={this.state.outputs}
@@ -242,7 +239,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                 this.state.block.payload.essence.payload &&
                                                     <div className="section">
                                                         <TaggedDataPayload
-                                                            network={this.props.match.params.network}
+                                                            network={network}
                                                             history={this.props.history}
                                                             payload={this.state.block.payload.essence.payload}
                                                             advancedMode={this.state.advancedMode}
@@ -254,7 +251,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                 {this.state.block.payload.type === MILESTONE_PAYLOAD_TYPE && (
                                     <div className="section">
                                         <MilestonePayload
-                                            network={this.props.match.params.network}
+                                            network={network}
                                             history={this.props.history}
                                             payload={this.state.block.payload}
                                             advancedMode={this.state.advancedMode}
@@ -264,7 +261,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                 {this.state.block.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (
                                     <div className="section">
                                         <TaggedDataPayload
-                                            network={this.props.match.params.network}
+                                            network={network}
                                             history={this.props.history}
                                             payload={this.state.block.payload}
                                             advancedMode={this.state.advancedMode}
@@ -324,31 +321,29 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                     </div>
                                                 </div>
                                             )}
+                                            {this.state.metadata?.parents &&
+                                                this.state.block?.payload?.type !== MILESTONE_PAYLOAD_TYPE && (
+                                                <div className="section--data">
+                                                    <div className="label">
+                                                        Parents
+                                                    </div>
+                                                    {this.state.metadata.parents.map((parent, idx) => (
+                                                        <div key={idx} className="value code">
+                                                            <Link
+                                                                to={`/${network}/block/${parent}`}
+                                                                className="margin-r-t"
+                                                            >
+                                                                {parent}
+                                                            </Link>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </React.Fragment>
                                     )}
                                 </div>
                             </div>
                         )}
-                        <div className="section">
-                            <div className="section--header">
-                                <div>
-                                    <div className="row middle">
-                                        <h2>
-                                            Block tree
-                                        </h2>
-                                        <Modal icon="info" data={treeMessage} />
-                                    </div>
-                                </div>
-                            </div>
-                            {this.state.block?.parents && this.state.childrenIds && (
-                                <BlockTree
-                                    parentsIds={this.state.block?.parents}
-                                    blockId={this.props.match.params.blockId}
-                                    childrenIds={this.state.childrenIds}
-                                    onSelected={async (i, update) => this.loadBlock(i, update)}
-                                />
-                            )}
-                        </div>
                     </div>
                 </div>
             </div >
@@ -360,16 +355,14 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
      */
     private async updateBlockDetails(): Promise<void> {
         const details = await this._tangleCacheService.blockDetails(
-            this.props.match.params.network, this.state.actualBlockId ?? "");
+            this.props.match.params.network, this.state.actualBlockId ?? ""
+        );
 
         this.setState({
             metadata: details?.metadata,
             metadataError: details?.error,
             conflictReason: this.calculateConflictReason(details?.metadata),
-            childrenIds: details?.childrenIds && details?.childrenIds.length > 0
-                ? details?.childrenIds : (this.state.childrenIds ?? []),
-            blockTangleStatus: this.calculateStatus(details?.metadata),
-            childrenBusy: false
+            blockTangleStatus: this.calculateStatus(details?.metadata)
         });
 
         if (!details?.metadata?.referencedByMilestoneIndex) {
