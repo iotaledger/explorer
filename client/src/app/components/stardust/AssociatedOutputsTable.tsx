@@ -27,9 +27,11 @@ const PAGE_SIZE = 10;
  */
 const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network, address }) => {
     const [associatedOutputs, setAssociatedOutputs] = useState<IAssociatedOutput[]>([]);
-    const [pageNumber, setPageNumber] = useState<number>(0);
+    const [pageNumber, setPageNumber] = useState<number>(1);
+    const [currentPage, setCurrentPage] = useState<IAssociatedOutput[]>([]);
     const [outputDetailsLoaded, setOutputDetailsLoaded] = useState(false);
 
+    // Fetch associated output ids
     useEffect(() => {
         const loadAssociatedOutputs = async () => {
             const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
@@ -44,6 +46,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
         loadAssociatedOutputs();
     }, [network, address]);
 
+    // Fetch associated output details
     useEffect(() => {
         if (associatedOutputs) {
             const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
@@ -73,6 +76,17 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
         }
     }, [associatedOutputs]);
 
+    // On page change handler
+    useEffect(() => {
+        if (outputDetailsLoaded) {
+            const from = (pageNumber - 1) * PAGE_SIZE;
+            const to = from + PAGE_SIZE;
+
+            const page = associatedOutputs?.slice(from, to);
+            setCurrentPage(page);
+        }
+    }, [associatedOutputs, pageNumber, outputDetailsLoaded]);
+
     return (
         outputDetailsLoaded ?
             <div className="section">
@@ -86,9 +100,9 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                         </tr>
                     </thead>
                     <tbody>
-                        {associatedOutputs.map((associatedOutput, idx) => (
+                        {currentPage.map((associatedOutput, idx) => (
                             <AssociatedOutput
-                                key={idx}
+                                key={`${associatedOutput.outputId}${associatedOutput.association}${idx}`}
                                 network={network}
                                 associatedOutput={associatedOutput}
                                 isMobile={false}
@@ -99,9 +113,9 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
 
                 {/* ----- Only visible on mobile ----- */}
                 <div className="associated--cards">
-                    {associatedOutputs.map((associatedOutput, idx) => (
+                    {currentPage.map((associatedOutput, idx) => (
                         <AssociatedOutput
-                            key={idx}
+                            key={`${associatedOutput.outputId}${associatedOutput.association}${idx}`}
                             network={network}
                             associatedOutput={associatedOutput}
                             isMobile={true}
@@ -110,6 +124,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                 </div>
 
                 <Pagination
+                    classNames="associated--pagination"
                     currentPage={pageNumber}
                     totalCount={associatedOutputs?.length ?? 0}
                     pageSize={PAGE_SIZE}

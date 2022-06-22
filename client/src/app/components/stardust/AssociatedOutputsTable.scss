@@ -92,9 +92,27 @@
             }
         }
 
+        tr {
+            .found-in, .date-created {
+                color: $gray-6;
+            }
+        }
+
+        .card {
+            .found-in, .date-created {
+                .value {
+                    color: $gray-6;
+                } 
+            }
+        }
+
         button.color {
             font-family: $ibm-plex-mono;
             color: #108cff;
         }
+    }
+
+    .associated--pagination {
+        margin-top: 34px;
     }
 }

@@ -65,8 +65,8 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
                     />
                 )}
             </td>
-            <td>{associationLabel}</td>
-            <td>{dateCreated}</td>
+            <td className="found-in">{associationLabel}</td>
+            <td className="date-created">{dateCreated}</td>
         </tr>
     );
 
@@ -88,11 +88,11 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
                     )}
                 </div>
             </div>
-            <div className="field">
+            <div className="field found-in">
                 <div className="label">Address found in</div>
                 <div className="value">{associationLabel}</div>
             </div>
-            <div className="field">
+            <div className="field date-created">
                 <div className="label">Date created</div>
                 <div className="value">{dateCreated}</div>
             </div>
