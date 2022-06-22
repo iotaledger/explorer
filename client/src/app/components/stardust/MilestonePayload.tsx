@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
-import { IMilestonePayload, IProtocolParamsMilestoneOption, IReceiptMilestoneOption, PROTOCOL_PARAMETERS_MILESTONE_OPTION_TYPE, RECEIPT_MILESTONE_OPTION_TYPE } from "@iota/iota.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
+import {
+    IMilestonePayload, IProtocolParamsMilestoneOption, IReceiptMilestoneOption,
+    PROTOCOL_PARAMETERS_MILESTONE_OPTION_TYPE, RECEIPT_MILESTONE_OPTION_TYPE
+} from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
