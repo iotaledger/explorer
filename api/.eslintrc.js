@@ -877,8 +877,9 @@ module.exports = {
         "no-setter-return": [
             "off"
         ],
-        "no-shadow": [
-            "error"
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": [
+            "error", { "ignoreTypeValueShadow": true }
         ],
         "no-shadow-restricted-names": [
             "error"
@@ -1015,7 +1016,7 @@ module.exports = {
             "error"
         ],
         "operator-linebreak": [
-            "error"
+            "error", "after", { "overrides": { "?": "ignore", ":": "ignore" } }
         ],
         "padded-blocks": [
             "error",

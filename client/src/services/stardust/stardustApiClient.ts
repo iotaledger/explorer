@@ -1,5 +1,7 @@
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
+import { IAssociatedOutputsRequest } from "../../models/api/stardust/IAssociatedOutputsRequest";
+import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
 import { IBaseTokenGetRequest } from "../../models/api/stardust/IBaseTokenGetRequest";
 import { IBaseTokenGetResponse } from "../../models/api/stardust/IBaseTokenGetResponse";
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
@@ -65,6 +67,12 @@ export class StardustApiClient extends ApiClient {
     public async outputDetails(request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
         return this.callApi<unknown, IOutputDetailsResponse>(
             `stardust/output/${request.network}/${request.outputId}`, "get"
+        );
+    }
+
+    public async associatedOutputs(request: IAssociatedOutputsRequest) {
+        return this.callApi<unknown, IAssociatedOutputsResponse>(
+            `stardust/output/associated/${request.network}/${request.address}`, "get"
         );
     }
 

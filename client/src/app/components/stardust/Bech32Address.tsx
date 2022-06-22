@@ -8,17 +8,6 @@ import CopyButton from "../CopyButton";
  */
 class Bech32Address extends Component<Bech32AddressProps> {
     /**
-     * Create a new instance of Bech32Address.
-     * @param props The props.
-     */
-    constructor(props: Bech32AddressProps) {
-        super(props);
-
-        this.state = {
-        };
-    }
-
-    /**
      * Render the component.
      * @returns The node to render.
      */
@@ -41,8 +30,8 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                     type="button"
                                     className="margin-r-t"
                                     onClick={() => this.props.history?.push(
-                                        `/${this.props.network
-                                        }/addr/${this.props.addressDetails?.bech32}`)}
+                                        `/${this.props.network}/addr/${this.props.addressDetails?.bech32}`
+                                    )}
                                 >
                                     {this.props.truncateAddress ? truncatedAddress : this.props.addressDetails.bech32}
                                 </button>
@@ -71,8 +60,8 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                     type="button"
                                     className="margin-r-t"
                                     onClick={() => this.props.history?.push(
-                                        `/${this.props.network
-                                        }/addr/${this.props.addressDetails?.hex}`)}
+                                        `/${this.props.network}/addr/${this.props.addressDetails?.hex}`
+                                    )}
                                 >
                                     {this.props.addressDetails?.hex}
                                 </button>
