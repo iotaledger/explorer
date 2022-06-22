@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
 import { ReactComponent as SmrLogoHeader } from "../../assets/smr-logo-header.svg";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { STARDUST } from "../../models/config/protocolVersion";
 import { SettingsService } from "../../services/settingsService";
 import FiatSelector from "./FiatSelector";
 import "./Header.scss";
@@ -55,7 +56,9 @@ class Header extends Component<HeaderProps, HeaderState> {
         const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
 
         return (
-            <header className={classNames({ "smr-header-bg": this.props.network?.protocolVersion === STARDUST })}>
+            <header className={classNames(
+                { "smr-header-bg": currentNetwork?.protocolVersion === STARDUST }
+            )}>
                 <nav className="inner">
                     <div className="inner--main">
                         <div className="inner-wrapper">
@@ -65,14 +68,14 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 className="logo-image--wrapper"
                             >
                                 {
-                                    this.props.network?.protocolVersion === STARDUST
-                                    ? <div className="smr-logo-wrapper">
-                                        <div className="smr-logo">
-                                            <SmrLogoHeader />
+                                    currentNetwork?.protocolVersion === STARDUST
+                                        ? <div className="smr-logo-wrapper">
+                                            <div className="smr-logo">
+                                                <SmrLogoHeader />
+                                            </div>
+                                            <h2 className="smr-heading">EXPLORER</h2>
                                         </div>
-                                        <h2 className="smr-heading">EXPLORER</h2>
-                                    </div>
-                                    : <LogoHeader />
+                                        : <LogoHeader />
                                 }
                             </Link>
                             {pages &&
