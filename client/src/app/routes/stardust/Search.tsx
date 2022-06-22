@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ProtocolVersion, STARDUST } from "../../../models/db/protocolVersion";
+import { ProtocolVersion, STARDUST } from "../../../models/config/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";

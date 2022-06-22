@@ -4,7 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { TrytesHelper } from "../../helpers/trytesHelper";
-import { CHRYSALIS } from "../../models/db/protocolVersion";
+import { CHRYSALIS } from "../../models/config/protocolVersion";
 import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
 import CopyButton from "../components/CopyButton";

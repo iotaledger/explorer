@@ -1,7 +1,7 @@
 import { Ed25519Address, ED25519_ADDRESS_TYPE, IMessage, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
 import { Converter, WriteStream } from "@iota/util.js";
 import { DateHelper } from "../../helpers/dateHelper";
-import { IBech32AddressDetails } from "../../models/IBech32AddressDetails";
+import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { TangleStatus } from "../../models/tangleStatus";
 import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import { Bech32AddressHelper } from "../chrysalis/bech32AddressHelper";

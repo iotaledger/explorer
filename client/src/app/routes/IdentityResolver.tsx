@@ -6,7 +6,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../helpers/downloadHelper";
-import { CHRYSALIS } from "../../models/db/protocolVersion";
+import { CHRYSALIS } from "../../models/config/protocolVersion";
 import { TangleStatus } from "../../models/tangleStatus";
 import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import { IdentityDiffStorageService } from "../../services/identityDiffStorageService";

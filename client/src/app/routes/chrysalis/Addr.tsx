@@ -12,7 +12,7 @@ import {
     HistoricInput, HistoricOutput,
     ITransaction, ITransactionsDetailsResponse
 } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
-import { CHRYSALIS } from "../../../models/db/protocolVersion";
+import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";

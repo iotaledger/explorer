@@ -9,7 +9,7 @@ import { INftDetailsResponse } from "../../models/api/stardust/INftDetailsRespon
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
-import { STARDUST } from "../../models/db/protocolVersion";
+import { STARDUST } from "../../models/config/protocolVersion";
 import { TangleCacheService } from "../tangleCacheService";
 import { StardustApiClient } from "./stardustApiClient";
 

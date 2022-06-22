@@ -1,7 +1,7 @@
 import { Transaction, Transfer } from "@iota/core";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { CHRYSALIS } from "../../models/db/protocolVersion";
+import { CHRYSALIS } from "../../models/config/protocolVersion";
 import { ChrysalisApiClient } from "../chrysalis/chrysalisApiClient";
 
 /**

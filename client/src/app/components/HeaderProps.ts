@@ -1,6 +1,6 @@
 import * as H from "history";
 import { ReactNode } from "react";
-import { INetwork } from "./../../models/db/INetwork";
+import { INetwork } from "./../../models/config/INetwork";
 
 /**
  * The props for the Header component.
@@ -12,14 +12,14 @@ export interface HeaderProps {
     rootPath: string;
 
     /**
-     * The network selected.
+     * The currently selected network.
      */
-    network?: INetwork;
+    currentNetwork?: INetwork;
 
     /**
      * The networks available.
      */
-    networks?: INetwork[];
+    networks: INetwork[];
 
     /**
      * History for navigation.

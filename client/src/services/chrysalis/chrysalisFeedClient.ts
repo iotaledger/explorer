@@ -7,7 +7,7 @@ import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
 import { IFeedSubscriptionMessage } from "../../models/api/IFeedSubscriptionMessage";
 import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
-import { CHRYSALIS, OG } from "../../models/db/protocolVersion";
+import { CHRYSALIS, OG } from "../../models/config/protocolVersion";
 import { IFeedItem } from "../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../models/feed/IFeedItemMetadata";
 import { FeedClient } from "../feedClient";

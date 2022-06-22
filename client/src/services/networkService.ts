@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../factories/serviceFactory";
-import { INetwork } from "../models/db/INetwork";
-import { CHRYSALIS } from "../models/db/protocolVersion";
+import { INetwork } from "../models/config/INetwork";
+import { CHRYSALIS } from "../models/config/protocolVersion";
 import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 
 /**
@@ -48,6 +48,7 @@ export class NetworkService {
      * @returns All of the networks.
      */
     public networks(): INetwork[] {
-        return this._cache ? Object.values(this._cache).sort((a, b) => a.order - b.order) : [];
+        return this._cache ? Object.values(this._cache) : [];
     }
 }
+
