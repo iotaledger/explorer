@@ -11,7 +11,7 @@ import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow
 import transactionPayloadMessage from "./../../../assets/modals/message/transaction-payload.json";
 import Bech32Address from "./Bech32Address";
 import "./TransactionPayload.scss";
-import { OutputDropdown } from "./OutputDropdown";
+import Output from "./Output";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
 
 /**
@@ -162,13 +162,14 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         </div>
                         <div className="card--content">
                             {this.props.outputs.map((output, idx) => (
-                                <OutputDropdown
+                                <Output
                                     key={idx}
+                                    id={output.id}
                                     outputIndex={idx}
-                                    output={output}
-                                    context={this.context}
+                                    output={output.output}
+                                    amount={output.amount}
                                     network={this.props.network}
-                                    showOutputDetails={this.state.showOutputDetails}
+                                    showCopyAmount={true}
                                 />
                             ))}
                         </div>

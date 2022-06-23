@@ -7,6 +7,11 @@ export interface OutputProps {
     id: string;
 
     /**
+     * Index of an output.
+     */
+    outputIndex?: number;
+
+    /**
      * The output to display.
      */
     output: OutputTypes;
@@ -15,6 +20,11 @@ export interface OutputProps {
      * The amount to display.
      */
     amount: number;
+
+    /**
+     * Show amount and copy button.
+     */
+    showCopyAmount: boolean;
 
     /**
      * Should hide the label.

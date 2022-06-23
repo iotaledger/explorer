@@ -11,6 +11,8 @@ import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
+import { NameHelper } from "../../../helpers/stardust/nameHelper";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import CopyButton from "../CopyButton";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
@@ -37,7 +39,9 @@ class Output extends Component<OutputProps, OutputState> {
 
         this.state = {
             output: props.output,
-            showOutputDetails: -1
+            showOutputDetails: -1,
+            isExpanded: false,
+            isFormattedBalance: false
         };
     }
 
@@ -50,189 +54,240 @@ class Output extends Component<OutputProps, OutputState> {
         const foundryId = this.buildFoundyId();
 
         return (
-            <div className="output margin-l-t">
-                {this.state.output.type === ALIAS_OUTPUT_TYPE && (
-                    <React.Fragment>
-                        <div className="card--label">
-                            Alias id:
-                        </div>
-                        <div className="card--value row middle">
-                            <Link
-                                to={`/${this.props.network}/search/${aliasOrNftBech32}`}
+            <div>
+                <div
+                    className="card--content__input card--value"
+                    onClick={() => this.setState({ isExpanded: !this.state.isExpanded })}
+                >
+                    <div className={classNames("margin-r-t", "card--content__input--dropdown",
+                        "card--content__flex_between",
+                        { opened: this.state.isExpanded })}
+                    >
+                        <DropdownIcon />
+                    </div>
+                    <button
+                        type="button"
+                        className="margin-r-t color"
+                    >
+                        {NameHelper.getOutputTypeName(this.props.output.type)}
+                    </button>
+                    {
+                        this.props.showCopyAmount &&
+                        <div className="card--value pointer amount-size row end">
+                            <span
                                 className="margin-r-t"
+                                onClick={e => {
+                                    this.setState({ isFormattedBalance: !this.state.isFormattedBalance });
+                                    e.stopPropagation();
+                                }}
                             >
-                                {aliasOrNftBech32}
-                            </Link>
-                            <CopyButton
-                                onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
-                                buttonType="copy"
-                                labelPosition="bottom"
-                            />
+                                {
+                                    this.state.isFormattedBalance
+                                    ? formatAmount(this.props.amount, this.context.tokenInfo)
+                                    : this.props.amount
+                                }
+                            </span>
                         </div>
-                        <div className="card--label">
-                            State index:
-                        </div>
-                        <div className="card--value row">
-                            {this.state.output.stateIndex}
-                        </div>
-                        {this.state.output.stateMetadata && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    State metadata:
-                                </div>
-                                <div className="card--value row">
-                                    {this.state.output.stateMetadata}
-                                </div>
-                            </React.Fragment>
+                    }
+                    {
+                        this.props.showCopyAmount &&
+                        <CopyButton
+                            onClick={e => {
+                                ClipboardHelper.copy(String(this.props.amount));
+                                if (e) {
+                                    e.stopPropagation();
+                                }
+                            }}
+                            buttonType="copy"
+                            labelPosition="bottom"
+                        />
+                    }
+                </div>
+                {this.state.isExpanded && (
+                    <div className="output margin-l-t">
+                        {this.state.output.type === ALIAS_OUTPUT_TYPE && (
+                        <React.Fragment>
+                            <div className="card--label">
+                                Alias id:
+                            </div>
+                            <div className="card--value row middle">
+                                <Link
+                                    to={`/${this.props.network}/search/${aliasOrNftBech32}`}
+                                    className="margin-r-t"
+                                >
+                                    {aliasOrNftBech32}
+                                </Link>
+                                <CopyButton
+                                    onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
+                                    buttonType="copy"
+                                    labelPosition="bottom"
+                                />
+                            </div>
+                            <div className="card--label">
+                                State index:
+                            </div>
+                            <div className="card--value row">
+                                {this.state.output.stateIndex}
+                            </div>
+                            {this.state.output.stateMetadata && (
+                                <React.Fragment>
+                                    <div className="card--label">
+                                        State metadata:
+                                    </div>
+                                    <div className="card--value row">
+                                        {this.state.output.stateMetadata}
+                                    </div>
+                                </React.Fragment>
+                            )}
+                            <div className="card--label">
+                                Foundry counter:
+                            </div>
+                            <div className="card--value row">
+                                {this.state.output.foundryCounter}
+                            </div>
+                        </React.Fragment>
                         )}
-                        <div className="card--label">
-                            Foundry counter:
-                        </div>
-                        <div className="card--value row">
-                            {this.state.output.foundryCounter}
-                        </div>
-                    </React.Fragment>
-                )}
 
-                {this.state.output.type === NFT_OUTPUT_TYPE && (
-                    <React.Fragment>
-                        <div className="card--label">
-                            Nft id:
-                        </div>
-                        <div className="card--value row middle">
-                            <Link
-                                to={`/${this.props.network}/search/${aliasOrNftBech32}`}
-                                className="margin-r-t"
-                            >
-                                {aliasOrNftBech32}
-                            </Link>
-                            <CopyButton
-                                onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
-                                buttonType="copy"
-                            />
-                        </div>
-                    </React.Fragment>
-                )}
-
-                {this.state.output.type === FOUNDRY_OUTPUT_TYPE && (
-                    <React.Fragment>
-                        <div className="card--label">
-                            Foundry id:
-                        </div>
-                        <div className="card--value row middle">
-                            <Link
-                                to={`/${this.props.network}/search/${foundryId}`}
-                                className="margin-r-t"
-                            >
-                                {foundryId}
-                            </Link>
-                            <CopyButton
-                                onClick={() => ClipboardHelper.copy(foundryId)}
-                                buttonType="copy"
-                            />
-                        </div>
-                        <div className="card--label">
-                            Serial number:
-                        </div>
-                        <div className="card--value row">
-                            {this.state.output.serialNumber}
-                        </div>
-                        <div className="card--label">
-                            Token scheme type:
-                        </div>
-                        <div className="card--value row">
-                            {this.state.output.tokenScheme.type}
-                        </div>
-                        {this.state.output.tokenScheme.type === SIMPLE_TOKEN_SCHEME_TYPE && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Minted tokens:
-                                </div>
-                                <div className="card--value row">
-                                    {Number(this.state.output.tokenScheme.mintedTokens)}
-                                </div>
-                                <div className="card--label">
-                                    Melted tokens:
-                                </div>
-                                <div className="card--value row">
-                                    {Number(this.state.output.tokenScheme.meltedTokens)}
-                                </div>
-                                <div className="card--label">
-                                    Maximum supply:
-                                </div>
-                                <div className="card--value row">
-                                    {Number(this.state.output.tokenScheme.maximumSupply)}
-                                </div>
-                            </React.Fragment>
+                        {this.state.output.type === NFT_OUTPUT_TYPE && (
+                        <React.Fragment>
+                            <div className="card--label">
+                                Nft id:
+                            </div>
+                            <div className="card--value row middle">
+                                <Link
+                                    to={`/${this.props.network}/search/${aliasOrNftBech32}`}
+                                    className="margin-r-t"
+                                >
+                                    {aliasOrNftBech32}
+                                </Link>
+                                <CopyButton
+                                    onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
+                                    buttonType="copy"
+                                />
+                            </div>
+                        </React.Fragment>
                         )}
-                    </React.Fragment>
-                )}
 
-                {/* all output types except Treasury have common output conditions */}
-                {this.state.output.type !== TREASURY_OUTPUT_TYPE && (
-                    <React.Fragment>
-                        {this.state.output.unlockConditions.map((unlockCondition, idx) => (
-                            <UnlockCondition
-                                key={idx}
-                                unlockCondition={unlockCondition}
-                            />
-                        ))}
-                        {this.state.output.features?.map((feature, idx) => (
-                            <Feature
-                                key={idx}
-                                feature={feature}
-                            />
-                        ))}
-                        {this.state.output.type !== BASIC_OUTPUT_TYPE && this.state.output.immutableFeatures && (
-                            <React.Fragment>
-                                {this.state.output.immutableFeatures.map((immutableFeature, idx) => (
-                                    <Feature
-                                        key={idx}
-                                        feature={immutableFeature}
-                                    />
-                                ))}
-                            </React.Fragment>
+                        {this.state.output.type === FOUNDRY_OUTPUT_TYPE && (
+                        <React.Fragment>
+                            <div className="card--label">
+                                Foundry id:
+                            </div>
+                            <div className="card--value row middle">
+                                <Link
+                                    to={`/${this.props.network}/search/${foundryId}`}
+                                    className="margin-r-t"
+                                >
+                                    {foundryId}
+                                </Link>
+                                <CopyButton
+                                    onClick={() => ClipboardHelper.copy(foundryId)}
+                                    buttonType="copy"
+                                />
+                            </div>
+                            <div className="card--label">
+                                Serial number:
+                            </div>
+                            <div className="card--value row">
+                                {this.state.output.serialNumber}
+                            </div>
+                            <div className="card--label">
+                                Token scheme type:
+                            </div>
+                            <div className="card--value row">
+                                {this.state.output.tokenScheme.type}
+                            </div>
+                            {this.state.output.tokenScheme.type === SIMPLE_TOKEN_SCHEME_TYPE && (
+                                <React.Fragment>
+                                    <div className="card--label">
+                                        Minted tokens:
+                                    </div>
+                                    <div className="card--value row">
+                                        {Number(this.state.output.tokenScheme.mintedTokens)}
+                                    </div>
+                                    <div className="card--label">
+                                        Melted tokens:
+                                    </div>
+                                    <div className="card--value row">
+                                        {Number(this.state.output.tokenScheme.meltedTokens)}
+                                    </div>
+                                    <div className="card--label">
+                                        Maximum supply:
+                                    </div>
+                                    <div className="card--value row">
+                                        {Number(this.state.output.tokenScheme.maximumSupply)}
+                                    </div>
+                                </React.Fragment>
+                            )}
+                        </React.Fragment>
                         )}
-                        {this.state.output.nativeTokens?.map((token, idx) => (
-                            <React.Fragment key={idx}>
-                                <div className="native-token">
-                                    <div
-                                        className="card--content__input card--value row middle"
-                                        onClick={() => this.setState({ showOutputDetails:
-                                            this.state.showOutputDetails === 1 ? -1 : 1 })}
-                                    >
-                                        <div className={classNames("margin-r-t", "card--content__input--dropdown",
-                                            "card--content__flex_between",
-                                            { opened: this.state.showOutputDetails === 1 })}
+
+                        {/* all output types except Treasury have common output conditions */}
+                        {this.state.output.type !== TREASURY_OUTPUT_TYPE && (
+                        <React.Fragment>
+                            {this.state.output.unlockConditions.map((unlockCondition, idx) => (
+                                <UnlockCondition
+                                    key={idx}
+                                    unlockCondition={unlockCondition}
+                                />
+                            ))}
+                            {this.state.output.features?.map((feature, idx) => (
+                                <Feature
+                                    key={idx}
+                                    feature={feature}
+                                />
+                            ))}
+                            {this.state.output.type !== BASIC_OUTPUT_TYPE && this.state.output.immutableFeatures && (
+                                <React.Fragment>
+                                    {this.state.output.immutableFeatures.map((immutableFeature, idx) => (
+                                        <Feature
+                                            key={idx}
+                                            feature={immutableFeature}
+                                        />
+                                    ))}
+                                </React.Fragment>
+                            )}
+                            {this.state.output.nativeTokens?.map((token, idx) => (
+                                <React.Fragment key={idx}>
+                                    <div className="native-token">
+                                        <div
+                                            className="card--content__input card--value row middle"
+                                            onClick={() => this.setState({ showOutputDetails:
+                                                this.state.showOutputDetails === 1 ? -1 : 1 })}
                                         >
-                                            <DropdownIcon />
+                                            <div className={classNames("margin-r-t", "card--content__input--dropdown",
+                                                "card--content__flex_between",
+                                                { opened: this.state.showOutputDetails === 1 })}
+                                            >
+                                                <DropdownIcon />
+                                            </div>
+                                            <div className="card--label">
+                                                Native token
+                                            </div>
                                         </div>
-                                        <div className="card--label">
-                                            Native token
+                                        {this.state.showOutputDetails === 1 && (
+                                        <div className="margin-l-t">
+                                            <div className="card--label">
+                                                Token id:
+                                            </div>
+                                            <div className="card--value row">
+                                                {token.id}
+                                            </div>
+                                            <div className="card--label">
+                                                Amount:
+                                            </div>
+                                            <div className="card--value row">
+                                                {Number(token.amount)}
+                                            </div>
                                         </div>
+                                        )}
                                     </div>
-                                    {this.state.showOutputDetails === 1 && (
-                                    <div className="margin-l-t">
-                                        <div className="card--label">
-                                            Token id:
-                                        </div>
-                                        <div className="card--value row">
-                                            {token.id}
-                                        </div>
-                                        <div className="card--label">
-                                            Amount:
-                                        </div>
-                                        <div className="card--value row">
-                                            {Number(token.amount)}
-                                        </div>
-                                    </div>
-                                    )}
-                                </div>
-                            </React.Fragment>
-                        ))}
-                    </React.Fragment>
+                                </React.Fragment>
+                            ))}
+                        </React.Fragment>
+                        )}
+                    </div>
                 )}
-
             </div>
         );
     }

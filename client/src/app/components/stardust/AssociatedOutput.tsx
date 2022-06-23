@@ -1,10 +1,7 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import classNames from "classnames";
-import React, { useState } from "react";
-import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
+import React from "react";
 import { DateHelper } from "../../../helpers/dateHelper";
-import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { AssociationType, IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";
 import Output from "./Output";
 
@@ -29,41 +26,28 @@ const ASSOCIATION_TYPE_TO_LABEL = {
 };
 
 const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associatedOutput, isMobile }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-
     if (!associatedOutput.outputDetails) {
         return null;
     }
 
     const output = associatedOutput.outputDetails.output;
     const outputMetadata = associatedOutput.outputDetails.metadata;
-    const outputName = NameHelper.getOutputTypeName(output.type);
     const dateCreated = DateHelper.formatShort(outputMetadata.milestoneTimestampBooked * 1000);
     const associationLabel = ASSOCIATION_TYPE_TO_LABEL[associatedOutput.association];
-
-    const outputLabelDiv = (
-        <div className="output--label" onClick={() => setIsExpanded(!isExpanded)}>
-            <div className={classNames("dropdown--icon", "margin-r-t", { opened: isExpanded })}>
-                <DropdownIcon />
-            </div>
-            <button type="button" className="margin-r-t color">
-                {outputName}
-            </button>
-        </div>
-    );
 
     const outputTableRow = (
         <tr>
             <td className="card">
-                {outputLabelDiv}
-                {isExpanded && (
+                <div className="card--content">
                     <Output
+                        key={associatedOutput.outputId}
                         id={associatedOutput.outputId}
                         output={output}
                         amount={Number(output.amount)}
                         network={network}
+                        showCopyAmount={false}
                     />
-                )}
+                </div>
             </td>
             <td className="found-in">{associationLabel}</td>
             <td className="date-created">{dateCreated}</td>
@@ -76,16 +60,15 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
                 <div className="label">
                     Output type
                 </div>
-                <div className="value">
-                    {outputLabelDiv}
-                    {isExpanded && (
-                        <Output
-                            id={associatedOutput.outputId}
-                            output={output}
-                            amount={Number(output.amount)}
-                            network={network}
-                        />
-                    )}
+                <div className="card--content">
+                    <Output
+                        key={associatedOutput.outputId}
+                        id={associatedOutput.outputId}
+                        output={output}
+                        amount={Number(output.amount)}
+                        network={network}
+                        showCopyAmount={false}
+                    />
                 </div>
             </div>
             <div className="field found-in">
