@@ -2,16 +2,16 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
-import { ReactComponent as SmrLogoHeader } from "../../assets/smr-logo-header.svg";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { SettingsService } from "../../services/settingsService";
-import FiatSelector from "./FiatSelector";
+import { ReactComponent as LogoHeader } from "../../../assets/logo-header.svg";
+import { ReactComponent as SmrLogoHeader } from "../../../assets/smr-logo-header.svg";
+import { ServiceFactory } from "../../../factories/serviceFactory";
+import { STARDUST } from "../../../models/config/protocolVersion";
+import { SettingsService } from "../../../services/settingsService";
+import FiatSelector from "../FiatSelector";
 import "./Header.scss";
+import NetworkSwitcher from "../NetworkSwitcher";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
-import NetworkSwitcher from "./NetworkSwitcher";
 
 /**
  * Component which will show the header.
@@ -56,9 +56,7 @@ class Header extends Component<HeaderProps, HeaderState> {
         const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
 
         return (
-            <header className={classNames(
-                { "smr-header-bg": currentNetwork?.protocolVersion === STARDUST }
-            )}>
+            <header className={classNames({ "smr-header-bg": currentNetwork?.protocolVersion === STARDUST })}>
                 <nav className="inner">
                     <div className="inner--main">
                         <div className="inner-wrapper">
