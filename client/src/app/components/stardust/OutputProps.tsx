@@ -7,11 +7,6 @@ export interface OutputProps {
     id: string;
 
     /**
-     * Index of an output.
-     */
-    outputIndex?: number;
-
-    /**
      * The output to display.
      */
     output: OutputTypes;

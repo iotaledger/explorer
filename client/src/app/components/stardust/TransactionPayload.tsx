@@ -31,8 +31,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
         super(props);
 
         this.state = {
-            showInputDetails: -1,
-            showOutputDetails: -1
+            showInputDetails: -1
         };
     }
 
@@ -165,7 +164,6 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 <Output
                                     key={idx}
                                     id={output.id}
-                                    outputIndex={idx}
                                     output={output.output}
                                     amount={output.amount}
                                     network={this.props.network}

@@ -39,7 +39,7 @@ class Output extends Component<OutputProps, OutputState> {
 
         this.state = {
             output: props.output,
-            showOutputDetails: -1,
+            showNativeToken: false,
             isExpanded: false,
             isFormattedBalance: false
         };
@@ -252,12 +252,11 @@ class Output extends Component<OutputProps, OutputState> {
                                     <div className="native-token">
                                         <div
                                             className="card--content__input card--value row middle"
-                                            onClick={() => this.setState({ showOutputDetails:
-                                                this.state.showOutputDetails === 1 ? -1 : 1 })}
+                                            onClick={() => this.setState({ showNativeToken: !this.state.showNativeToken })}
                                         >
                                             <div className={classNames("margin-r-t", "card--content__input--dropdown",
                                                 "card--content__flex_between",
-                                                { opened: this.state.showOutputDetails === 1 })}
+                                                { opened: this.state.showNativeToken })}
                                             >
                                                 <DropdownIcon />
                                             </div>
@@ -265,7 +264,7 @@ class Output extends Component<OutputProps, OutputState> {
                                                 Native token
                                             </div>
                                         </div>
-                                        {this.state.showOutputDetails === 1 && (
+                                        {this.state.showNativeToken && (
                                         <div className="margin-l-t">
                                             <div className="card--label">
                                                 Token id:

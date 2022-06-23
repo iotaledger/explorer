@@ -6,9 +6,9 @@ export interface OutputState {
      */
     output: OutputTypes;
     /**
-     * Shows details of the specified output id
+     * Shows details of the native token.
      */
-    showOutputDetails: number;
+    showNativeToken: boolean;
     /**
      * Show output details.
      */
