@@ -93,14 +93,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { networkConfig, marketCapEUR, marketCapCurrency,
-            priceEUR, priceCurrency, valueMinimum,
-            valueMinimumMagnitude, valueMaximum, valueMaximumMagnitude,
-            valuesFilter, formatFull, filteredItems,
-            isFeedPaused, isFilterExpanded, frozenBlocks,
-            currencies, currency, itemsPerSecond,
-            confirmedItemsPerSecond, confirmedItemsPerSecondPercent,
-            itemsPerSecondHistory, milestones } = this.state;
+        const { networkConfig, marketCapCurrency, priceCurrency, valuesFilter, formatFull, filteredItems,
+            isFeedPaused, isFilterExpanded, itemsPerSecond,
+            confirmedItemsPerSecond } = this.state;
 
         const { network } = this.props.match.params;
         const isShimmerNetwork = network === SHIMMER;
