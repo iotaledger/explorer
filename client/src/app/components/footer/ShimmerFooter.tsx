@@ -1,7 +1,7 @@
 import React, { Component, ReactNode } from "react";
 import { ReactComponent as DiscordIcon } from "../../../assets/discord.svg";
 import { ReactComponent as GithubIcon } from "../../../assets/github.svg";
-import { ReactComponent as SmrLogo } from "../../../assets/smr-footer-bg.svg";
+import { ReactComponent as Logo } from "../../../assets/shimmer-footer-bg.svg";
 import { ReactComponent as TwitterIcon } from "../../../assets/twitter.svg";
 import { FoundationDataHelper } from "../../../helpers/foundationDataHelper";
 import "./ShimmerFooter.scss";
@@ -67,11 +67,11 @@ class ShimmerFooter extends Component<FooterProps, FooterState> {
     public render(): ReactNode {
         return (
             <footer>
-                <section className="smr-footer--content">
+                <section className="shimmer-footer--content">
                     <div>
-                        <SmrLogo />
+                        <Logo />
                     </div>
-                    <div className="smr-inner">
+                    <div className="shimmer-inner">
                         <div className="footer-grid">
                             {[this.state.siteFooterSection].concat(this.state.foundationData?.footerSections ?? [])
                                 .map((section, sectionIdx) => (

@@ -2,10 +2,10 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ReactComponent as LogoHeader } from "../../../assets/logo-header.svg";
-import { ReactComponent as SmrLogoHeader } from "../../../assets/smr-logo-header.svg";
+import { ReactComponent as Logo } from "../../../assets/logo-header.svg";
+import { ReactComponent as ShimmerLogo } from "../../../assets/shimmer-logo-header.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { STARDUST } from "../../../models/config/protocolVersion";
+import { SHIMMER } from "../../../models/config/networkType";
 import { SettingsService } from "../../../services/settingsService";
 import FiatSelector from "../FiatSelector";
 import "./Header.scss";
@@ -54,9 +54,10 @@ class Header extends Component<HeaderProps, HeaderState> {
      */
     public render(): ReactNode {
         const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
+        const isShimmerNetwork = currentNetwork?.network === SHIMMER;
 
         return (
-            <header className={classNames({ "smr-header-bg": currentNetwork?.protocolVersion === STARDUST })}>
+            <header className={classNames({ "shimmer-header-bg": isShimmerNetwork })}>
                 <nav className="inner">
                     <div className="inner--main">
                         <div className="inner-wrapper">
@@ -66,14 +67,14 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 className="logo-image--wrapper"
                             >
                                 {
-                                    currentNetwork?.protocolVersion === STARDUST
-                                        ? <div className="smr-logo-wrapper">
-                                            <div className="smr-logo">
-                                                <SmrLogoHeader />
+                                    isShimmerNetwork ?
+                                        <React.Fragment>
+                                            <div className="shimmer-logo">
+                                                <ShimmerLogo />
                                             </div>
-                                            <h2 className="smr-heading">EXPLORER</h2>
-                                        </div>
-                                        : <LogoHeader />
+                                            <h2 className="shimmer-heading">EXPLORER</h2>
+                                        </React.Fragment> :
+                                        <Logo />
                                 }
                             </Link>
                             {pages &&

@@ -93,7 +93,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     public render(): ReactNode {
         return (
             <div className="landing">
-                <div className="wrapper smr-header-wrapper">
+                <div className="wrapper shimmer-header-wrapper">
                     <div className="inner">
                         <div className="header">
                             <div className="header--title">
@@ -103,7 +103,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 </div>
                             </div>
                             {this.state.networkConfig.isEnabled && (
-                                <div className="smr-info-boxes">
+                                <div className="shimmer-info-boxes">
                                     <div className="row space-between">
                                         <div className="info-box">
                                             <span className="info-box--title">Tokens created
@@ -155,9 +155,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         </div>
                     </div>
                 </div>
-                <div className="wrapper smr-feeds-wrapper">
+                <div className="wrapper shimmer-feeds-wrapper">
                     <div className="inner">
-                        <div className="smr-feeds-section">
+                        <div className="shimmer-feeds-section">
                             <div className="row wrap feeds">
                                 <div className="feed section">
                                     <div className="section--header row space-between padding-l-8">

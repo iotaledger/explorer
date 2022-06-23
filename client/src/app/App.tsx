@@ -3,7 +3,7 @@ import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IConfiguration } from "../models/config/IConfiguration";
-import { MAINNET } from "../models/config/networkType";
+import { MAINNET, SHIMMER } from "../models/config/networkType";
 import { CHRYSALIS, OG, STARDUST } from "../models/config/protocolVersion";
 import { BaseTokenInfoService } from "../services/baseTokenInfoService";
 import { NetworkService } from "../services/networkService";
@@ -103,6 +103,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
      */
     public render(): ReactNode {
         const currentNetworkConfig = this.state.networks.find(n => n.network === this.state.networkId);
+        const isShimmerNetwork = currentNetworkConfig?.network === SHIMMER;
         const isStardust = currentNetworkConfig?.protocolVersion === STARDUST;
         const baseTokenService = ServiceFactory.get<BaseTokenInfoService>("base-token-info");
         const tokenInfo = baseTokenService.get(this.state.networkId);
@@ -344,12 +345,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             />
                                         </Switch>
                                     )}
-                                <div
-                                    className={classNames(
-                                        "copyright",
-                                        { "smr-copyright": this.state.networkConfig?.protocolVersion === STARDUST }
-                                    )}
-                                >
+                                <div className={classNames("copyright", { "shimmer-copyright": isShimmerNetwork })}>
                                     <div className="copyright-inner">
                                         {copyrightInner}
                                     </div>
@@ -365,9 +361,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                         )}
                 </div>
                 {
-                    isStardust
-                    ? <ShimmerFooter dynamic={this.getFooterItems()} />
-                    : <Footer dynamic={this.getFooterItems()} />
+                    isShimmerNetwork ?
+                        <ShimmerFooter dynamic={this.getFooterItems()} /> :
+                        <Footer dynamic={this.getFooterItems()} />
                 }
                 <Disclaimer />
             </div >

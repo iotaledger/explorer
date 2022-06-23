@@ -13,6 +13,10 @@ header {
   background: var(--navbar-bg);
   backdrop-filter: blur(20px);
 
+  &.shimmer-header-bg {
+      background: var(--shimmer-navbar-bg);
+  }
+
   a {
     outline: none;
     text-decoration: none;
@@ -36,11 +40,7 @@ header {
       display: flex;
       align-items: center;
 
-      .smr-logo-wrapper {
-        display: flex;
-        flex-direction: row;
-
-        .smr-logo {
+      .shimmer-logo {
           margin-left: -24px;
           height: 80px;
           width: 80px;
@@ -50,22 +50,21 @@ header {
           color: #131f37;
 
           svg {
-            path {
-              fill: #131f37
-            }
+              path {
+                  fill: #131f37
+              }
           }
-        }
+      }
 
-        .smr-heading {
+      .shimmer-heading {
           align-self: center;
           margin-left: 20px;
-        }
-        
-        @include desktop-down {
-          .smr-logo {
-            height: 56px;
+      }
+
+      @include desktop-down {
+          .shimmer-logo {
+              height: 56px;
           }
-        }
       }
 
       svg {
@@ -427,10 +426,6 @@ header {
       }
     }
   }
-}
-
-.smr-header-bg {
-  background: var(--smr-navbar-bg);
 }
 
 /* Backdrop support: very transparent and blurred */
