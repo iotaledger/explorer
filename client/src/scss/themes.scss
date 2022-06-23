@@ -44,9 +44,7 @@
 
   --shimmer-navbar-bg: rgba(255, 255, 255, 0.2);
   --shimmer-header-bg: #f2f6f9;
-  --shimmer-feeds-bg: #{$white};
   --shimmer-bg: url("../assets/header-bg-light.svg");
-  --shimmer-header-box-bg: #{$white};
   --shimmer-copyright: #{$white};
 
   body.darkmode {
@@ -93,7 +91,6 @@
     --shimmer-body-background: #00121f;
     --shimmer-navbar-bg: #051122;
     --shimmer-header-bg: #00121f;
-    --shimmer-header-box-bg: #061a2899;
     --shimmer-feeds-bg: #00121f;
     --shimmer-bg: url("../assets/header-bg-dark.svg");
     --shimmer-copyright: #0f202c;

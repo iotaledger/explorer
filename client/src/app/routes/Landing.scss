@@ -75,6 +75,11 @@
           background: var(--header-box-bg);
           backdrop-filter: blur(20px);
 
+          &.shimmer {
+              display: flex;
+              flex-direction: column;
+          }
+
           @include desktop-down {
             margin: 0 calc(-1 * #{$inner-padding});
             margin-top: 120px;
@@ -107,6 +112,7 @@
               letter-spacing: 0.5px;
               text-align: center;
               text-decoration: none;
+              white-space: nowrap;
 
               @include tablet-down {
                 margin-bottom: 16px;
@@ -547,6 +553,10 @@
     overflow: hidden;
     background: var(--header-bg);
 
+    &.shimmer {
+        background: var(--shimmer-header-bg);
+    }
+
     &::after,
     &::before {
       content: "";
@@ -556,43 +566,72 @@
       height: 200px;
     }
 
-    &::before {
-      right: 50%;
-      transform: translateX(300%);
-      background: var(--bubble-2);
-      background-repeat: no-repeat;
-      background-size: contain;
+    &:not(.shimmer) {
+        &::before {
+            right: 50%;
+            transform: translateX(300%);
+            background: var(--bubble-2);
+            background-repeat: no-repeat;
+            background-size: contain;
 
-      @include desktop-down {
-        top: 200px;
-        right: -130px;
-        bottom: inherit;
-        transform: none;
-      }
+            @include desktop-down {
+                top: 200px;
+                right: -130px;
+                bottom: inherit;
+                transform: none;
+            }
+        }
+
+        &::after {
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-100%);
+            background: var(--bubble-1);
+            background-repeat: no-repeat;
+            background-size: contain;
+
+            @include desktop-down {
+                top: 0;
+                bottom: inherit;
+                left: 0;
+                transform: translate(-130px, -40px);
+            }
+        }
     }
 
-    &::after {
-      bottom: -25px;
-      left: 50%;
-      transform: translateX(-100%);
-      background: var(--bubble-1);
-      background-repeat: no-repeat;
-      background-size: contain;
+    &.shimmer {
+        &::after,
+        &::before {
+            width: 400px;
+            height: 500px;
+        }
 
-      @include desktop-down {
-        top: 0;
-        bottom: inherit;
-        left: 0;
-        transform: translate(-130px, -40px);
-      }
+        &::before {
+            right: -30px;
+            top: -100px;
+            background: var(--shimmer-bg);
+            background-repeat: no-repeat;
+
+            @include desktop-down {
+                bottom: inherit;
+                transform: none;
+            }
+        }
     }
+
+
   }
 
   .feeds-wrapper {
-    padding: 0 $inner-padding 44px;
+      padding: 0 $inner-padding 44px;
 
-    .inner {
-      max-width: 960px;
-    }
+      .inner {
+          max-width: 960px;
+      }
+
+      &.shimmer .feeds-section .feeds .feed .feed-items .feed-item .feed-item--hash {
+
+          color: $mint-green-7;
+      }
   }
 }
