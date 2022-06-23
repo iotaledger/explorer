@@ -1,17 +1,17 @@
 import React, { Component, ReactNode } from "react";
+import { ReactComponent as DiscordIcon } from "../../../assets/discord.svg";
+import { ReactComponent as GithubIcon } from "../../../assets/github.svg";
+import { ReactComponent as SmrLogo } from "../../../assets/smr-footer-bg.svg";
+import { ReactComponent as TwitterIcon } from "../../../assets/twitter.svg";
 import { FoundationDataHelper } from "../../../helpers/foundationDataHelper";
-import { ReactComponent as DiscordIcon } from "./../../../assets/discord.svg";
-import { ReactComponent as GithubIcon } from "./../../../assets/github.svg";
-import { ReactComponent as SmrLogo } from "./../../../assets/smr-footer-bg.svg";
-import { ReactComponent as TwitterIcon } from "./../../../assets/twitter.svg";
-import "./SmrFooter.scss";
-import { SmrFooterProps } from "./SmrFooterProps";
-import { SmrFooterState } from "./SmrFooterState";
+import "./ShimmerFooter.scss";
+import { FooterProps } from "./FooterProps";
+import { FooterState } from "./FooterState";
 
 /**
  * Component which will show the footer.
  */
-class SmrFooter extends Component<SmrFooterProps, SmrFooterState> {
+class ShimmerFooter extends Component<FooterProps, FooterState> {
     private readonly SOCIAL_LINKS = [
         {
             name: "Twitter",
@@ -34,7 +34,7 @@ class SmrFooter extends Component<SmrFooterProps, SmrFooterState> {
      * Create a new instance of Footer.
      * @param props The props.
      */
-    constructor(props: SmrFooterProps) {
+    constructor(props: FooterProps) {
         super(props);
         this.state = {
             siteFooterSection: this.buildSiteFooter()
@@ -52,7 +52,7 @@ class SmrFooter extends Component<SmrFooterProps, SmrFooterState> {
      * The component updated.
      * @param prevProps The previous properties.
      */
-    public componentDidUpdate(prevProps: SmrFooterProps): void {
+    public componentDidUpdate(prevProps: FooterProps): void {
         if (this.props.dynamic !== prevProps.dynamic) {
             this.setState({
                 siteFooterSection: this.buildSiteFooter()
@@ -161,4 +161,4 @@ class SmrFooter extends Component<SmrFooterProps, SmrFooterState> {
     }
 }
 
-export default SmrFooter;
+export default ShimmerFooter;

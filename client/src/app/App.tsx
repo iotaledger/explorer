@@ -12,7 +12,7 @@ import { AppRouteProps } from "./AppRouteProps";
 import { AppState } from "./AppState";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
-import SmrFooter from "./components/footer/SmrFooter";
+import ShimmerFooter from "./components/footer/ShimmerFooter";
 import Header from "./components/header/Header";
 import SearchInput from "./components/SearchInput";
 import NetworkContext from "./context/NetworkContext";
@@ -366,7 +366,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                 </div>
                 {
                     isStardust
-                    ? <SmrFooter dynamic={this.getFooterItems()} />
+                    ? <ShimmerFooter dynamic={this.getFooterItems()} />
                     : <Footer dynamic={this.getFooterItems()} />
                 }
                 <Disclaimer />
