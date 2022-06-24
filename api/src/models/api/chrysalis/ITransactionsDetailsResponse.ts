@@ -1,4 +1,4 @@
-import { IResponse } from "./IResponse";
+import { IResponse } from "../IResponse";
 
 export interface Output {
     output?: {

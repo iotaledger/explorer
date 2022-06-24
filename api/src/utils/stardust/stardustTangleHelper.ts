@@ -5,8 +5,8 @@ import {
     IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload
 } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
-import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "../../models/api/ITransactionsDetailsResponse";
+import { ITransactionsDetailsRequest } from "../../models/api/chrysalis/ITransactionsDetailsRequest";
+import { ITransactionsDetailsResponse } from "../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
