@@ -11,7 +11,7 @@ footer {
     background-color: #061A28;
     color: $white;
 
-    svg {
+    .arcs {
       margin-right: 40px
     }
 
@@ -31,14 +31,22 @@ footer {
 
       .footer-grid {
         display: grid;
-        grid-gap: 28px;
+        grid-gap: 8px;
         grid-template-columns: 1fr 1fr 1fr 1fr 2fr;
         grid-template-rows: 1fr;
         margin-bottom: 24px;
 
+        section:not(.social--media__wrapper) {
+            padding: 0px 12px;
+        }
+
         @include tablet-down {
           grid-template-columns: 1fr 1fr;
           grid-template-rows: 1fr 1fr;
+
+          section:not(.social--media__wrapper) {
+              padding: 0px;
+          }
         }
       }
 
@@ -103,7 +111,7 @@ footer {
         @include font-size(12px, 20px);
 
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         color: $gray-6;
         font-family: $inter;
 
@@ -155,7 +163,8 @@ footer {
 
   .social--media__wrapper {
     display: flex;
-    width: 100%;
+    align-items: center;
+    justify-content: space-evenly;
     background-image: radial-gradient(#92A6B4 1px, transparent 0);
     background-size: 40px 40px;
 

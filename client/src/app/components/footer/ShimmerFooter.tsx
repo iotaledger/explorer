@@ -68,7 +68,7 @@ class ShimmerFooter extends Component<FooterProps, FooterState> {
         return (
             <footer>
                 <section className="shimmer-footer--content">
-                    <div>
+                    <div className="arcs">
                         <Logo />
                     </div>
                     <div className="shimmer-inner">
@@ -93,7 +93,6 @@ class ShimmerFooter extends Component<FooterProps, FooterState> {
                                         key={socialID}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        style={{ width: `${100 / this.SOCIAL_LINKS.length}%` }}
                                         className="social--media__item"
                                     >
                                         {social.icon}
@@ -103,9 +102,6 @@ class ShimmerFooter extends Component<FooterProps, FooterState> {
                         </div>
                         <hr className="sep" />
                         <div className="row foundation-data">
-                            {/* <div >
-                                <img src={logoFooter} alt="IOTA" />
-                            </div> */}
                             <section className="line-breaks">
                                 {this.state.foundationData?.registeredAddress.value.join("\n")}
                             </section>
