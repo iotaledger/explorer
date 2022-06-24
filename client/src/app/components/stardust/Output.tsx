@@ -55,56 +55,57 @@ class Output extends Component<OutputProps, OutputState> {
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
         const foundryId = this.buildFoundyId();
 
-        return (
-            <div className="card--content">
-                <div
-                    className="card--content__input card--value"
-                    onClick={() => this.setState({ isExpanded: !isExpanded })}
+        const outputHeader = (
+            <div
+                className="card--content__input card--value"
+                onClick={() => this.setState({ isExpanded: !isExpanded })}
+            >
+                <div className={classNames("margin-r-t", "card--content__input--dropdown",
+                                           "card--content__flex_between",
+                                           { opened: isExpanded })}
                 >
-                    <div className={classNames("margin-r-t", "card--content__input--dropdown",
-                        "card--content__flex_between",
-                        { opened: isExpanded })}
-                    >
-                        <DropdownIcon />
-                    </div>
-                    <button
-                        type="button"
-                        className="margin-r-t color"
-                    >
-                        {NameHelper.getOutputTypeName(output.type)}
-                    </button>
-                    {
-                        showCopyAmount &&
-                        <div className="card--value pointer amount-size row end">
-                            <span
-                                className="margin-r-t"
-                                onClick={e => {
-                                    this.setState({ isFormattedBalance: !isFormattedBalance });
-                                    e.stopPropagation();
-                                }}
-                            >
-                                {
-                                    isFormattedBalance
+                    <DropdownIcon />
+                </div>
+                <button
+                    type="button"
+                    className="margin-r-t color"
+                >
+                    {NameHelper.getOutputTypeName(output.type)}
+                </button>
+                {showCopyAmount && (
+                    <div className="card--value pointer amount-size row end">
+                        <span
+                            className="margin-r-t"
+                            onClick={e => {
+                                this.setState({ isFormattedBalance: !isFormattedBalance });
+                                e.stopPropagation();
+                            }}
+                        >
+                            {
+                                isFormattedBalance
                                     ? formatAmount(amount, this.context.tokenInfo)
                                     : amount
-                                }
-                            </span>
-                        </div>
-                    }
-                    {
-                        showCopyAmount &&
-                        <CopyButton
-                            onClick={e => {
-                                ClipboardHelper.copy(String(amount));
-                                if (e) {
-                                    e.stopPropagation();
-                                }
-                            }}
-                            buttonType="copy"
-                            labelPosition="bottom"
-                        />
-                    }
-                </div>
+                            }
+                        </span>
+                    </div>
+                )}
+                {showCopyAmount &&
+                    <CopyButton
+                        onClick={e => {
+                            ClipboardHelper.copy(String(amount));
+                            if (e) {
+                                e.stopPropagation();
+                            }
+                        }}
+                        buttonType="copy"
+                        labelPosition="bottom"
+                    />}
+            </div>
+        );
+
+        return (
+            <div className="card--content">
+                {outputHeader}
                 {isExpanded && (
                     <div className="output margin-l-t">
                         {output.type === ALIAS_OUTPUT_TYPE && (
@@ -113,10 +114,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 Alias id:
                             </div>
                             <div className="card--value row middle">
-                                <Link
-                                    to={`/${network}/search/${aliasOrNftBech32}`}
-                                    className="margin-r-t"
-                                >
+                                <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
                                     {aliasOrNftBech32}
                                 </Link>
                                 <CopyButton
@@ -156,10 +154,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 Nft id:
                             </div>
                             <div className="card--value row middle">
-                                <Link
-                                    to={`/${network}/search/${aliasOrNftBech32}`}
-                                    className="margin-r-t"
-                                >
+                                <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
                                     {aliasOrNftBech32}
                                 </Link>
                                 <CopyButton
@@ -228,24 +223,15 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type !== TREASURY_OUTPUT_TYPE && (
                         <React.Fragment>
                             {output.unlockConditions.map((unlockCondition, idx) => (
-                                <UnlockCondition
-                                    key={idx}
-                                    unlockCondition={unlockCondition}
-                                />
+                                <UnlockCondition key={idx} unlockCondition={unlockCondition} />
                             ))}
                             {output.features?.map((feature, idx) => (
-                                <Feature
-                                    key={idx}
-                                    feature={feature}
-                                />
+                                <Feature key={idx} feature={feature} />
                             ))}
                             {output.type !== BASIC_OUTPUT_TYPE && output.immutableFeatures && (
                                 <React.Fragment>
                                     {output.immutableFeatures.map((immutableFeature, idx) => (
-                                        <Feature
-                                            key={idx}
-                                            feature={immutableFeature}
-                                        />
+                                        <Feature key={idx} feature={immutableFeature} />
                                     ))}
                                 </React.Fragment>
                             )}
@@ -306,14 +292,14 @@ class Output extends Component<OutputProps, OutputState> {
              address = output.aliasId;
              addressType = ALIAS_ADDRESS_TYPE;
          } else if (output.type === NFT_OUTPUT_TYPE) {
-             const nftId = !HexHelper.toBigInt256(output.nftId).eq(bigInt.zero)
-                 ? output.nftId
+             const nftId = !HexHelper.toBigInt256(output.nftId).eq(bigInt.zero) ?
+                 output.nftId :
                  // NFT has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
-                     : HexHelper.addPrefix(Converter.bytesToHex(
-                         Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId)))
-                     ));
-                     address = nftId;
-                     addressType = NFT_ADDRESS_TYPE;
+                 HexHelper.addPrefix(
+                     Converter.bytesToHex(Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId))))
+                 );
+             address = nftId;
+             addressType = NFT_ADDRESS_TYPE;
          }
 
          return Bech32AddressHelper.buildAddress(
