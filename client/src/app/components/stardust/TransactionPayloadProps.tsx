@@ -10,7 +10,7 @@ export interface TransactionPayloadProps {
     network: string;
 
     /**
-     * The unlock addresses for the transactions.
+     * The inputs.
      */
     inputs: (IUTXOInput & IInput)[];
 

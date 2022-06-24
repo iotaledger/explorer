@@ -38,16 +38,14 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
     const outputTableRow = (
         <tr>
             <td className="card">
-                <div className="card--content">
-                    <Output
-                        key={associatedOutput.outputId}
-                        id={associatedOutput.outputId}
-                        output={output}
-                        amount={Number(output.amount)}
-                        network={network}
-                        showCopyAmount={false}
-                    />
-                </div>
+                <Output
+                    key={associatedOutput.outputId}
+                    outputId={associatedOutput.outputId}
+                    output={output}
+                    amount={Number(output.amount)}
+                    network={network}
+                    showCopyAmount={false}
+                />
             </td>
             <td className="found-in">{associationLabel}</td>
             <td className="date-created">{dateCreated}</td>
@@ -60,16 +58,14 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
                 <div className="label">
                     Output type
                 </div>
-                <div className="card--content">
-                    <Output
-                        key={associatedOutput.outputId}
-                        id={associatedOutput.outputId}
-                        output={output}
-                        amount={Number(output.amount)}
-                        network={network}
-                        showCopyAmount={false}
-                    />
-                </div>
+                <Output
+                    key={associatedOutput.outputId}
+                    outputId={associatedOutput.outputId}
+                    output={output}
+                    amount={Number(output.amount)}
+                    network={network}
+                    showCopyAmount={false}
+                />
             </div>
             <div className="field found-in">
                 <div className="label">Address found in</div>

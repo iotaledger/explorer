@@ -38,10 +38,9 @@ class Output extends Component<OutputProps, OutputState> {
         super(props);
 
         this.state = {
-            output: props.output,
             showNativeToken: false,
             isExpanded: false,
-            isFormattedBalance: false
+            isFormattedBalance: true
         };
     }
 
@@ -50,18 +49,21 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { output, amount, showCopyAmount, network } = this.props;
+        const { showNativeToken, isExpanded, isFormattedBalance } = this.state;
+
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
         const foundryId = this.buildFoundyId();
 
         return (
-            <div>
+            <div className="card--content">
                 <div
                     className="card--content__input card--value"
-                    onClick={() => this.setState({ isExpanded: !this.state.isExpanded })}
+                    onClick={() => this.setState({ isExpanded: !isExpanded })}
                 >
                     <div className={classNames("margin-r-t", "card--content__input--dropdown",
                         "card--content__flex_between",
-                        { opened: this.state.isExpanded })}
+                        { opened: isExpanded })}
                     >
                         <DropdownIcon />
                     </div>
@@ -69,31 +71,31 @@ class Output extends Component<OutputProps, OutputState> {
                         type="button"
                         className="margin-r-t color"
                     >
-                        {NameHelper.getOutputTypeName(this.props.output.type)}
+                        {NameHelper.getOutputTypeName(output.type)}
                     </button>
                     {
-                        this.props.showCopyAmount &&
+                        showCopyAmount &&
                         <div className="card--value pointer amount-size row end">
                             <span
                                 className="margin-r-t"
                                 onClick={e => {
-                                    this.setState({ isFormattedBalance: !this.state.isFormattedBalance });
+                                    this.setState({ isFormattedBalance: !isFormattedBalance });
                                     e.stopPropagation();
                                 }}
                             >
                                 {
-                                    this.state.isFormattedBalance
-                                    ? formatAmount(this.props.amount, this.context.tokenInfo)
-                                    : this.props.amount
+                                    isFormattedBalance
+                                    ? formatAmount(amount, this.context.tokenInfo)
+                                    : amount
                                 }
                             </span>
                         </div>
                     }
                     {
-                        this.props.showCopyAmount &&
+                        showCopyAmount &&
                         <CopyButton
                             onClick={e => {
-                                ClipboardHelper.copy(String(this.props.amount));
+                                ClipboardHelper.copy(String(amount));
                                 if (e) {
                                     e.stopPropagation();
                                 }
@@ -103,16 +105,16 @@ class Output extends Component<OutputProps, OutputState> {
                         />
                     }
                 </div>
-                {this.state.isExpanded && (
+                {isExpanded && (
                     <div className="output margin-l-t">
-                        {this.state.output.type === ALIAS_OUTPUT_TYPE && (
+                        {output.type === ALIAS_OUTPUT_TYPE && (
                         <React.Fragment>
                             <div className="card--label">
                                 Alias id:
                             </div>
                             <div className="card--value row middle">
                                 <Link
-                                    to={`/${this.props.network}/search/${aliasOrNftBech32}`}
+                                    to={`/${network}/search/${aliasOrNftBech32}`}
                                     className="margin-r-t"
                                 >
                                     {aliasOrNftBech32}
@@ -127,15 +129,15 @@ class Output extends Component<OutputProps, OutputState> {
                                 State index:
                             </div>
                             <div className="card--value row">
-                                {this.state.output.stateIndex}
+                                {output.stateIndex}
                             </div>
-                            {this.state.output.stateMetadata && (
+                            {output.stateMetadata && (
                                 <React.Fragment>
                                     <div className="card--label">
                                         State metadata:
                                     </div>
                                     <div className="card--value row">
-                                        {this.state.output.stateMetadata}
+                                        {output.stateMetadata}
                                     </div>
                                 </React.Fragment>
                             )}
@@ -143,19 +145,19 @@ class Output extends Component<OutputProps, OutputState> {
                                 Foundry counter:
                             </div>
                             <div className="card--value row">
-                                {this.state.output.foundryCounter}
+                                {output.foundryCounter}
                             </div>
                         </React.Fragment>
                         )}
 
-                        {this.state.output.type === NFT_OUTPUT_TYPE && (
+                        {output.type === NFT_OUTPUT_TYPE && (
                         <React.Fragment>
                             <div className="card--label">
                                 Nft id:
                             </div>
                             <div className="card--value row middle">
                                 <Link
-                                    to={`/${this.props.network}/search/${aliasOrNftBech32}`}
+                                    to={`/${network}/search/${aliasOrNftBech32}`}
                                     className="margin-r-t"
                                 >
                                     {aliasOrNftBech32}
@@ -168,14 +170,14 @@ class Output extends Component<OutputProps, OutputState> {
                         </React.Fragment>
                         )}
 
-                        {this.state.output.type === FOUNDRY_OUTPUT_TYPE && (
+                        {output.type === FOUNDRY_OUTPUT_TYPE && (
                         <React.Fragment>
                             <div className="card--label">
                                 Foundry id:
                             </div>
                             <div className="card--value row middle">
                                 <Link
-                                    to={`/${this.props.network}/search/${foundryId}`}
+                                    to={`/${network}/search/${foundryId}`}
                                     className="margin-r-t"
                                 >
                                     {foundryId}
@@ -189,33 +191,33 @@ class Output extends Component<OutputProps, OutputState> {
                                 Serial number:
                             </div>
                             <div className="card--value row">
-                                {this.state.output.serialNumber}
+                                {output.serialNumber}
                             </div>
                             <div className="card--label">
                                 Token scheme type:
                             </div>
                             <div className="card--value row">
-                                {this.state.output.tokenScheme.type}
+                                {output.tokenScheme.type}
                             </div>
-                            {this.state.output.tokenScheme.type === SIMPLE_TOKEN_SCHEME_TYPE && (
+                            {output.tokenScheme.type === SIMPLE_TOKEN_SCHEME_TYPE && (
                                 <React.Fragment>
                                     <div className="card--label">
                                         Minted tokens:
                                     </div>
                                     <div className="card--value row">
-                                        {Number(this.state.output.tokenScheme.mintedTokens)}
+                                        {Number(output.tokenScheme.mintedTokens)}
                                     </div>
                                     <div className="card--label">
                                         Melted tokens:
                                     </div>
                                     <div className="card--value row">
-                                        {Number(this.state.output.tokenScheme.meltedTokens)}
+                                        {Number(output.tokenScheme.meltedTokens)}
                                     </div>
                                     <div className="card--label">
                                         Maximum supply:
                                     </div>
                                     <div className="card--value row">
-                                        {Number(this.state.output.tokenScheme.maximumSupply)}
+                                        {Number(output.tokenScheme.maximumSupply)}
                                     </div>
                                 </React.Fragment>
                             )}
@@ -223,23 +225,23 @@ class Output extends Component<OutputProps, OutputState> {
                         )}
 
                         {/* all output types except Treasury have common output conditions */}
-                        {this.state.output.type !== TREASURY_OUTPUT_TYPE && (
+                        {output.type !== TREASURY_OUTPUT_TYPE && (
                         <React.Fragment>
-                            {this.state.output.unlockConditions.map((unlockCondition, idx) => (
+                            {output.unlockConditions.map((unlockCondition, idx) => (
                                 <UnlockCondition
                                     key={idx}
                                     unlockCondition={unlockCondition}
                                 />
                             ))}
-                            {this.state.output.features?.map((feature, idx) => (
+                            {output.features?.map((feature, idx) => (
                                 <Feature
                                     key={idx}
                                     feature={feature}
                                 />
                             ))}
-                            {this.state.output.type !== BASIC_OUTPUT_TYPE && this.state.output.immutableFeatures && (
+                            {output.type !== BASIC_OUTPUT_TYPE && output.immutableFeatures && (
                                 <React.Fragment>
-                                    {this.state.output.immutableFeatures.map((immutableFeature, idx) => (
+                                    {output.immutableFeatures.map((immutableFeature, idx) => (
                                         <Feature
                                             key={idx}
                                             feature={immutableFeature}
@@ -247,16 +249,16 @@ class Output extends Component<OutputProps, OutputState> {
                                     ))}
                                 </React.Fragment>
                             )}
-                            {this.state.output.nativeTokens?.map((token, idx) => (
+                            {output.nativeTokens?.map((token, idx) => (
                                 <React.Fragment key={idx}>
                                     <div className="native-token">
                                         <div
                                             className="card--content__input card--value row middle"
-                                            onClick={() => this.setState({ showNativeToken: !this.state.showNativeToken })}
+                                            onClick={() => this.setState({ showNativeToken: !showNativeToken })}
                                         >
                                             <div className={classNames("margin-r-t", "card--content__input--dropdown",
                                                 "card--content__flex_between",
-                                                { opened: this.state.showNativeToken })}
+                                                { opened: showNativeToken })}
                                             >
                                                 <DropdownIcon />
                                             </div>
@@ -264,7 +266,7 @@ class Output extends Component<OutputProps, OutputState> {
                                                 Native token
                                             </div>
                                         </div>
-                                        {this.state.showNativeToken && (
+                                        {showNativeToken && (
                                         <div className="margin-l-t">
                                             <div className="card--label">
                                                 Token id:
@@ -296,28 +298,29 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The bech32 address.
      */
      private buildAddressForAliasOrNft() {
-        let address: string = "";
-        let addressType: number = 0;
+         const { outputId, output } = this.props;
+         let address: string = "";
+         let addressType: number = 0;
 
-        if (this.state.output.type === ALIAS_OUTPUT_TYPE) {
-            address = this.state.output.aliasId;
-            addressType = ALIAS_ADDRESS_TYPE;
-        } else if (this.state.output.type === NFT_OUTPUT_TYPE) {
-            const nftId = !HexHelper.toBigInt256(this.state.output.nftId).eq(bigInt.zero)
-                ? this.state.output.nftId
-                    // NFT has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
-                    : HexHelper.addPrefix(Converter.bytesToHex(
-                        Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(this.props.id)))
-                    ));
-            address = nftId;
-            addressType = NFT_ADDRESS_TYPE;
-        }
+         if (output.type === ALIAS_OUTPUT_TYPE) {
+             address = output.aliasId;
+             addressType = ALIAS_ADDRESS_TYPE;
+         } else if (output.type === NFT_OUTPUT_TYPE) {
+             const nftId = !HexHelper.toBigInt256(output.nftId).eq(bigInt.zero)
+                 ? output.nftId
+                 // NFT has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
+                     : HexHelper.addPrefix(Converter.bytesToHex(
+                         Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId)))
+                     ));
+                     address = nftId;
+                     addressType = NFT_ADDRESS_TYPE;
+         }
 
-        return Bech32AddressHelper.buildAddress(
-                this.context.bech32Hrp,
-                address,
-                addressType
-            ).bech32;
+         return Bech32AddressHelper.buildAddress(
+             this.context.bech32Hrp,
+             address,
+             addressType
+         ).bech32;
     }
 
     /**
@@ -325,24 +328,26 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The FoundryId string.
      */
      private buildFoundyId() {
-        if (this.state.output.type === FOUNDRY_OUTPUT_TYPE) {
-            const immutableAliasUnlockCondition =
-            this.state.output.unlockConditions[0] as IImmutableAliasUnlockCondition;
-            const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
-            const typeWS = new WriteStream();
-            typeWS.writeUInt8("alias address type", ALIAS_ADDRESS_TYPE);
-            const aliasAddress = HexHelper.addPrefix(
-                `${typeWS.finalHex()}${HexHelper.stripPrefix(aliasId)}`
-            );
-            const serialNumberWS = new WriteStream();
-            serialNumberWS.writeUInt32("serialNumber", this.state.output.serialNumber);
-            const serialNumberHex = serialNumberWS.finalHex();
-            const tokenSchemeTypeWS = new WriteStream();
-            tokenSchemeTypeWS.writeUInt8("tokenSchemeType", this.state.output.tokenScheme.type);
-            const tokenSchemeTypeHex = tokenSchemeTypeWS.finalHex();
+         const { output } = this.props;
 
-            return `${aliasAddress}${serialNumberHex}${tokenSchemeTypeHex}`;
-        }
+         if (output.type === FOUNDRY_OUTPUT_TYPE) {
+             const immutableAliasUnlockCondition =
+                 output.unlockConditions[0] as IImmutableAliasUnlockCondition;
+             const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
+             const typeWS = new WriteStream();
+             typeWS.writeUInt8("alias address type", ALIAS_ADDRESS_TYPE);
+             const aliasAddress = HexHelper.addPrefix(
+                 `${typeWS.finalHex()}${HexHelper.stripPrefix(aliasId)}`
+             );
+             const serialNumberWS = new WriteStream();
+             serialNumberWS.writeUInt32("serialNumber", output.serialNumber);
+             const serialNumberHex = serialNumberWS.finalHex();
+             const tokenSchemeTypeWS = new WriteStream();
+             tokenSchemeTypeWS.writeUInt8("tokenSchemeType", output.tokenScheme.type);
+             const tokenSchemeTypeHex = tokenSchemeTypeWS.finalHex();
+
+             return `${aliasAddress}${serialNumberHex}${tokenSchemeTypeHex}`;
+         }
     }
 }
 

@@ -8,10 +8,10 @@ export interface TransactionPayloadState {
     /**
      * Shows details of the specified output id
      */
-    showOutputDetails?: number;
+    showOutputDetails: number;
 
     /**
      * Toggle balance between raw and formatted amount.
      */
-    isFormattedBalance?: boolean;
+    isFormattedBalance: boolean;
 }
