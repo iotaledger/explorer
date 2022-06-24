@@ -4,7 +4,7 @@ export interface OutputProps {
     /**
      * The output id.
      */
-    id: string;
+    outputId: string;
 
     /**
      * The output to display.
@@ -17,9 +17,9 @@ export interface OutputProps {
     amount: number;
 
     /**
-     * Should hide the label.
+     * Show amount and copy button.
      */
-    hideLabel?: boolean;
+    showCopyAmount: boolean;
 
     /**
      * The network to lookup.

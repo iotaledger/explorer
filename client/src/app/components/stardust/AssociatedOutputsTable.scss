@@ -7,8 +7,12 @@
 .section {
     .associated--table {
       width: 100%;
-      border-spacing: 12px 28px;
+      border-spacing: 12px 16px;
       border-collapse: separate;
+
+      tbody {
+          margin-top: 12px;
+      }
 
       @include tablet-down {
           display: none;
@@ -20,6 +24,10 @@
           color: $gray-7;
           font-family: $inter;
           letter-spacing: 0.5px;
+
+          .card .card--content {
+              padding: 0px;
+          }
 
           th {
               @include font-size(12px);
@@ -49,6 +57,13 @@
             display: block;
 
             .card {
+                .card--content {
+                    padding: 16px 0px 0px 0px;
+                    .card--content__input {
+                        margin-bottom: 0px;
+                    }
+                }
+
                 .field {
                     margin: 8px 0 0 8px;
                     margin-bottom: 8px;
@@ -102,7 +117,7 @@
             .found-in, .date-created {
                 .value {
                     color: $gray-6;
-                } 
+                }
             }
         }
 

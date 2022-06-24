@@ -1,12 +1,14 @@
-import { OutputTypes } from "@iota/iota.js-stardust";
-
 export interface OutputState {
     /**
-     * The output.
+     * Shows details of the native token.
      */
-    output: OutputTypes;
+    showNativeToken: boolean;
     /**
-     * Shows details of the specified output id
+     * Show output details.
      */
-    showOutputDetails: number;
+    isExpanded: boolean;
+    /**
+     * Toggle balance between raw and formatted amount.
+     */
+    isFormattedBalance: boolean;
 }
