@@ -30,6 +30,7 @@ import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
 import { AddressPageState } from "./AddressPageState";
 import INftDetails from "./INftDetails";
+import TransactionHistory from "../../components/stardust/history/TransactionHistory";
 
 /**
  * Component which will show the address page for stardust.
@@ -296,6 +297,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         />
                                     </div>
                                 )}
+                                <TransactionHistory />
                                 {addressBech32 && (
                                     <AssociatedOutputsTable network={networkId} address={addressBech32} />
                                 )}

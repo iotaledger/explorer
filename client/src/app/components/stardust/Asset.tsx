@@ -1,9 +1,9 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
 import React from "react";
-import "./Transaction.scss";
 import { Link } from "react-router-dom";
 import { AssetProps } from "./AssetProps";
+import "./Asset.scss";
 
 /**
  * Component which will display an asset.
@@ -18,7 +18,7 @@ const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, val
     return (
         tableFormat ? (
             <tr>
-                <td className="value code highlight">
+                <td className="highlight">
                     <Link
                         to={`/${network}/search/${name}`}
                         className="margin-r-t"
@@ -32,7 +32,7 @@ const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, val
                 <td style={addPaddingLeft}>{value ?? "-"}</td>
             </tr>
         ) : (
-            <div className="transaction-card">
+            <div className="asset-card">
                 <div className="field">
                     <div className="label">Asset</div>
                     <div className="value message-id">

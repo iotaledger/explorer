@@ -1,12 +1,12 @@
 import React from "react";
-import "./Transaction.scss";
 import { Link } from "react-router-dom";
 import { ControlledFoundryProps } from "./ControlledFoundryProps";
+import "./ControlledFoundry.scss";
 
 const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, tableFormat, network }) => (
     tableFormat ? (
         <tr>
-            <td className="value code highlight">
+            <td className="highlight">
                 <Link
                     to={`/${network}/search/${foundryId}`}
                     className="margin-r-t"

@@ -1,7 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/function-component-definition */
 import React from "react";
-import "./Transaction.scss";
 import "./Activity.scss";
 import { ActivityProps } from "./ActivityProps";
 
@@ -17,7 +16,7 @@ export const Activity: React.FC<ActivityProps> = ({ transactionId, date, action,
             <td className="price">{price}</td>
         </tr>
     ) : (
-        <div className="transaction-card">
+        <div className="activity-card">
             <div className="field">
                 <div className="label">Transaction Id</div>
                 <div className="value message-id">

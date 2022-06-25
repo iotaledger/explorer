@@ -59,7 +59,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
                         <Modal icon="info" data={mainHeaderMessage} />
                     </div>
                 </div>
-                <table className="transaction--table">
+                <table>
                     <thead>
                         <tr>
                             <th>Asset</th>
