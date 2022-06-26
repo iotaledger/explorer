@@ -1,3 +1,9 @@
+@import "../../../scss/fonts";
+@import "../../../scss/media-queries";
+@import "../../../scss/mixins";
+@import "../../../scss/variables";
+@import "../../../scss/themes";
+
 tr {
     @include font-size(14px);
 
