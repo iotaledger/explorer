@@ -6,6 +6,7 @@ import Modal from "../Modal";
 import Pagination from "../Pagination";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import Asset from "./Asset";
+import "./AssetsTable.scss";
 
 interface AssetsTableProps {
     networkId: string;
@@ -59,7 +60,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
                         <Modal icon="info" data={mainHeaderMessage} />
                     </div>
                 </div>
-                <table>
+                <table className="asset-table">
                     <thead>
                         <tr>
                             <th>Asset</th>
@@ -88,7 +89,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
                 </table>
 
                 {/* Only visible in mobile -- Card assets*/}
-                <div className="transaction-cards">
+                <div className="asset-cards">
                     {currentPage.map((token, k) => (
                         <React.Fragment key={`${token?.name}${k}`}>
                             <Asset

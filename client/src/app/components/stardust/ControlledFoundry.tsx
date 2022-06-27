@@ -16,7 +16,7 @@ const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, tableF
             </td>
         </tr>
     ) : (
-        <div className="transaction-card">
+        <div className="controlled-foundry--card">
             <div className="field">
                 <div className="label">Foundry Id</div>
                 <div className="value message-id">
@@ -27,9 +27,6 @@ const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, tableF
                         {foundryId}
                     </Link>
                 </div>
-            </div>
-            <div className="field">
-                <div className="label">Date Created</div>
             </div>
         </div >
     )

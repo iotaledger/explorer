@@ -19,6 +19,15 @@
     font-family: $inter;
     letter-spacing: 0.5px;
 
+    th {
+        @include font-size(12px);
+
+        color: $gray-6;
+        font-weight: 600;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
     td {
       color: var(--body-color);
 
@@ -41,7 +50,7 @@
   @include tablet-down {
     display: block;
 
-    .transaction-card {
+    .controlled-foundry--card {
       margin-bottom: 48px;
 
       .field {

@@ -3,14 +3,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { AssetProps } from "./AssetProps";
-import "./Asset.scss";
 
 /**
  * Component which will display an asset.
  */
 const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, value, tableFormat }) => {
     const shortName = `${name.slice(0, 12)}...${name.slice(-12)}`;
-    const addPaddingLeft = { paddingLeft: "16px" };
+
     /**
      * Render the component.
      * @returns The node to render.
@@ -26,16 +25,16 @@ const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, val
                         {shortName}
                     </Link>
                 </td>
-                <td style={addPaddingLeft}>{symbol ?? "-"}</td>
-                <td style={addPaddingLeft}>{amount ?? "-"}</td>
-                <td style={addPaddingLeft}>{price ?? "-"}</td>
-                <td style={addPaddingLeft}>{value ?? "-"}</td>
+                <td>{symbol ?? "-"}</td>
+                <td>{amount ?? "-"}</td>
+                <td>{price ?? "-"}</td>
+                <td>{value ?? "-"}</td>
             </tr>
         ) : (
             <div className="asset-card">
                 <div className="field">
                     <div className="label">Asset</div>
-                    <div className="value message-id">
+                    <div className="value highlight">
                         <Link
                             to={`/${network}/search/${name}`}
                             className="margin-r-t"

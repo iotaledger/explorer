@@ -7,7 +7,7 @@ import { ActivityProps } from "./ActivityProps";
 export const Activity: React.FC<ActivityProps> = ({ transactionId, date, action, status, price, tableFormat }) =>
     (tableFormat ? (
         <tr>
-            <td className="value code highlight">
+            <td className="value transaction-id">
                 {transactionId.slice(0, 12)}...{transactionId.slice(-12)}
             </td>
             <td className="date">{date}</td>
@@ -19,7 +19,7 @@ export const Activity: React.FC<ActivityProps> = ({ transactionId, date, action,
         <div className="activity-card">
             <div className="field">
                 <div className="label">Transaction Id</div>
-                <div className="value message-id">
+                <div className="value transaction-id">
                     {transactionId.slice(0, 12)}...{transactionId.slice(-12)}
                 </div>
             </div>
