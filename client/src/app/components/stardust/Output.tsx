@@ -49,7 +49,7 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { output, amount, showCopyAmount, network } = this.props;
+        const { outputId, output, amount, showCopyAmount, network } = this.props;
         const { showNativeToken, isExpanded, isFormattedBalance } = this.state;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
@@ -74,8 +74,8 @@ class Output extends Component<OutputProps, OutputState> {
                         {NameHelper.getOutputTypeName(output.type)}
                     </button>
                     <div>
-                        <Link to={`/${network}/search/${this.getOutputIdbyType(output.type)}`} className="margin-r-t">
-                            ({this.getOutputIdbyType(output.type)})
+                        <Link to={`/${network}/search/${outputId}`} className="margin-r-t">
+                            ({outputId})
                         </Link>
                     </div>
                 </div>
@@ -284,24 +284,6 @@ class Output extends Component<OutputProps, OutputState> {
                 )}
             </div>
         );
-    }
-
-    /**
-     * Get output id.
-     * @param type The type to get the output id for.
-     * @returns output id.
-     */
-    private getOutputIdbyType(type: number) {
-        switch (type) {
-            case ALIAS_OUTPUT_TYPE:
-                return this.buildAddressForAliasOrNft();
-            case FOUNDRY_OUTPUT_TYPE:
-                return this.buildFoundyId();
-            case NFT_OUTPUT_TYPE:
-                return this.buildAddressForAliasOrNft();
-            default:
-                return "Unknown Output Id";
-        }
     }
 
     /**
