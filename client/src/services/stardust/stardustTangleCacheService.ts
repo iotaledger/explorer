@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { IBlockMetadata, IOutputResponse } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
 import { IFoundriesRequest } from "../../models/api/stardust/IFoundriesRequest";
 import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
@@ -139,20 +140,29 @@ export class StardustTangleCacheService extends TangleCacheService {
         return this._stardustSearchCache[networkId][outputId]?.data?.output;
     }
 
-    public async associatedOutputs(network: string, address: string) {
-        if (!this._stardustSearchCache[network][address]?.data?.addressAssociatedOutputs) {
+    /**
+     * Get the associated outputs.
+     * @param network The network to search
+     * @param address The address to get the associated outputs for.
+     * @returns The associated outputs response.
+     */
+     public async associatedOutputs(
+         network: string,
+         address: string
+        ): Promise<IAssociatedOutputsResponse | undefined> {
+        if (!this._stardustSearchCache[network][`${address}-associated-outputs`]?.data?.addressAssociatedOutputs) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
             const response = await apiClient.associatedOutputs({ network, address });
 
             if (response.outputs) {
-                this._stardustSearchCache[network][address] = {
+                this._stardustSearchCache[network][`${address}-associated-outputs`] = {
                     data: { addressAssociatedOutputs: response },
                     cached: Date.now()
                 };
             }
         }
 
-        return this._stardustSearchCache[network][address].data?.addressAssociatedOutputs;
+        return this._stardustSearchCache[network][`${address}-associated-outputs`].data?.addressAssociatedOutputs;
     }
 
     /**
