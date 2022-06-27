@@ -66,12 +66,19 @@ class Output extends Component<OutputProps, OutputState> {
                 >
                     <DropdownIcon />
                 </div>
-                <button
-                    type="button"
-                    className="margin-r-t color"
-                >
-                    {NameHelper.getOutputTypeName(output.type)}
-                </button>
+                <div>
+                    <button
+                        type="button"
+                        className="margin-r-t color"
+                    >
+                        {NameHelper.getOutputTypeName(output.type)}
+                    </button>
+                    <div>
+                        <Link to={`/${network}/search/${this.getOutputIdbyType(output.type)}`} className="margin-r-t">
+                            ({this.getOutputIdbyType(output.type)})
+                        </Link>
+                    </div>
+                </div>
                 {showCopyAmount && (
                     <div className="card--value pointer amount-size row end">
                         <span
@@ -277,6 +284,24 @@ class Output extends Component<OutputProps, OutputState> {
                 )}
             </div>
         );
+    }
+
+    /**
+     * Get output id.
+     * @param type The type to get the output id for.
+     * @returns output id.
+     */
+    private getOutputIdbyType(type: number) {
+        switch (type) {
+            case ALIAS_OUTPUT_TYPE:
+                return this.buildAddressForAliasOrNft();
+            case FOUNDRY_OUTPUT_TYPE:
+                return this.buildFoundyId();
+            case NFT_OUTPUT_TYPE:
+                return this.buildAddressForAliasOrNft();
+            default:
+                return "Unknown Output Id";
+        }
     }
 
     /**
