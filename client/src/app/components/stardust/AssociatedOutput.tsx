@@ -12,17 +12,17 @@ interface AssociatedOutputProps {
 }
 
 const ASSOCIATION_TYPE_TO_LABEL = {
-    [AssociationType.BASIC_SENDER]: "Sender Block Feature",
+    [AssociationType.BASIC_SENDER]: "Sender Feature",
     [AssociationType.BASIC_EXPIRATION_RETURN]: "Expiration Return Unlock Condtition",
     [AssociationType.BASIC_STORAGE_RETURN]: "Storage Deposit Return Unlock Condition",
     [AssociationType.ALIAS_STATE_CONTROLLER]: "State Controller Address Unlock Condition",
     [AssociationType.ALIAS_GOVERNOR]: "Governor Address Unlock Condition",
-    [AssociationType.ALIAS_ISSUER]: "Issuer Block Feature",
-    [AssociationType.ALIAS_SENDER]: "Sender Block Feature",
+    [AssociationType.ALIAS_ISSUER]: "Issuer Feature",
+    [AssociationType.ALIAS_SENDER]: "Sender Feature",
     [AssociationType.FOUNDRY_ALIAS]: "Immutable Alias Address Unlock Condition",
     [AssociationType.NFT_STORAGE_RETURN]: "Storage Deposit Return Unlock Condition",
     [AssociationType.NFT_EXPIRATION_RETURN]: "Expiration Return Unlock Condtition",
-    [AssociationType.NFT_SENDER]: "Sender Block Feature"
+    [AssociationType.NFT_SENDER]: "Sender Feature"
 };
 
 const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associatedOutput, isMobile }) => {
