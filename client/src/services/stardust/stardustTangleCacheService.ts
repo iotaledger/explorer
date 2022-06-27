@@ -146,14 +146,23 @@ export class StardustTangleCacheService extends TangleCacheService {
      * @param address The address to get the associated outputs for.
      * @returns The associated outputs response.
      */
-    public async associatedOutputs(
-        network: string,
-        address: string
-    ): Promise<IAssociatedOutputsResponse | undefined>{
-        const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-        const response = await apiClient.associatedOutputs({ network, address });
+     public async associatedOutputs(
+         network: string,
+         address: string
+        ): Promise<IAssociatedOutputsResponse | undefined> {
+        if (!this._stardustSearchCache[network][`${address}-associated-outputs`]?.data?.addressAssociatedOutputs) {
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+            const response = await apiClient.associatedOutputs({ network, address });
 
-        return response;
+            if (response.outputs) {
+                this._stardustSearchCache[network][`${address}-associated-outputs`] = {
+                    data: { addressAssociatedOutputs: response },
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._stardustSearchCache[network][`${address}-associated-outputs`].data?.addressAssociatedOutputs;
     }
 
     /**
