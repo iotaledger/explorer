@@ -15,6 +15,7 @@ import DataToggle from "../../components/DataToggle";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import AssetsTable from "../../components/stardust/AssetsTable";
+import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import ControlledFoundry from "../../components/stardust/ControlledFoundry";
 import NetworkContext from "../../context/NetworkContext";
@@ -245,6 +246,12 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                 )}
                                 {this.state.output && (
                                     <AssetsTable networkId={networkId} outputs={[this.state.output]} />
+                                )}
+                                {this.state.bech32AddressDetails?.bech32 && (
+                                    <AssociatedOutputsTable
+                                        network={networkId}
+                                        address={this.state.bech32AddressDetails.bech32}
+                                    />
                                 )}
                             </div>
                         </div>
