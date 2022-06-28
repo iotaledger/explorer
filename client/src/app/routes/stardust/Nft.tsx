@@ -39,6 +39,11 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
     constructor(props: RouteComponentProps<NftRouteProps>) {
         super(props);
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
+
+        this.state = {
+            bech32AddressDetails: undefined,
+            output: undefined
+        }
     }
 
     /**
@@ -77,6 +82,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { bech32AddressDetails, output, } = this.state;
         const networkId = this.props.match.params.network;
 
         return (
@@ -85,9 +91,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                     <div className="inner">
                         <div className="addr--header">
                             <div className="row middle">
-                                <h1>
-                                    NFT Address
-                                </h1>
+                                <h1>NFT Address</h1>
                             </div>
                         </div>
                         <div className="top">
@@ -95,41 +99,25 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                                 <div className="section">
                                     <div className="section--header">
                                         <div className="row middle">
-                                            <h2>
-                                                General
-                                            </h2>
+                                            <h2>General</h2>
                                         </div>
                                     </div>
                                     <div className="row space-between general-content">
                                         <div className="section--data">
                                             <Bech32Address
-                                                addressDetails={this.state?.bech32AddressDetails}
+                                                addressDetails={bech32AddressDetails}
                                                 advancedMode={true}
                                             />
-                                            <div className="label">
-                                                NFT ID
-                                            </div>
-                                            <div className="value row middle code">
-                                                <span className="margin-r-t">
-                                                    {this.state?.bech32AddressDetails?.hex}
-                                                </span>
-                                                <CopyButton
-                                                    onClick={() => ClipboardHelper.copy(
-                                                        this.state.bech32AddressDetails?.hex
-                                                    )}
-                                                    buttonType="copy"
-                                                />
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                {this.state?.output && (
-                                    <AssetsTable networkId={networkId} outputs={[this.state?.output]} />
+                                {output && (
+                                    <AssetsTable networkId={networkId} outputs={[output]} />
                                 )}
-                                {this.state?.bech32AddressDetails?.bech32 && (
+                                {bech32AddressDetails?.bech32 && (
                                     <AssociatedOutputsTable
                                         network={networkId}
-                                        address={this.state.bech32AddressDetails.bech32}
+                                        address={bech32AddressDetails.bech32}
                                     />
                                 )}
                             </div>

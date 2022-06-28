@@ -52,7 +52,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                 {this.props.advancedMode && this.props.addressDetails?.typeLabel && this.props.addressDetails?.hex && (
                     <div className="section--data">
                         <div className="label">
-                            {this.props.addressDetails.typeLabel} Address
+                            {this.props.addressDetails.typeLabel} Address (hex)
                         </div>
                         <div className="value row middle code">
                             {this.props.history && (

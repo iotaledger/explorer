@@ -98,17 +98,20 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { bech32AddressDetails, areFoundriesLoading, foundries, foundriesPageNumber,
+            output, stateMetadataHex, stateMetadataUtf8, stateMetadataJson } = this.state;
         const networkId = this.props.match.params.network;
-        const hasFoundries = this.state.foundries && this.state.foundries.length > 0;
+
+        const hasFoundries = foundries && foundries.length > 0;
         const TOGGLE_DATA_OPTIONS = [
             {
-                label: this.state.stateMetadataJson ? "JSON" : "Text",
-                content: this.state.stateMetadataJson ?? this.state.stateMetadataUtf8,
-                isJson: this.state.stateMetadataJson !== undefined
+                label: stateMetadataJson ? "JSON" : "Text",
+                content: stateMetadataJson ?? stateMetadataUtf8,
+                isJson: stateMetadataJson !== undefined
             },
             {
                 label: "HEX",
-                content: this.state.stateMetadataHex
+                content: stateMetadataHex
             }
         ];
 
@@ -118,9 +121,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                     <div className="inner">
                         <div className="addr--header">
                             <div className="row middle">
-                                <h1>
-                                    Alias
-                                </h1>
+                                <h1>Alias</h1>
                                 <Modal icon="info" data={mainHeaderMessage} />
                             </div>
                         </div>
@@ -129,49 +130,29 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                 <div className="section">
                                     <div className="section--header">
                                         <div className="row middle">
-                                            <h2>
-                                                General
-                                            </h2>
+                                            <h2>General</h2>
                                         </div>
                                     </div>
                                     <div className="row space-between general-content">
                                         <div className="section--data">
                                             <Bech32Address
-                                                addressDetails={this.state.bech32AddressDetails}
+                                                addressDetails={bech32AddressDetails}
                                                 advancedMode={true}
                                             />
-                                            <div className="label">
-                                                Alias ID
-                                            </div>
-                                            <div className="value row middle code">
-                                                <span className="margin-r-t">
-                                                    {this.state.bech32AddressDetails?.hex}
-                                                </span>
-                                                <CopyButton
-                                                    onClick={() => ClipboardHelper.copy(
-                                                        this.state.bech32AddressDetails?.hex
-                                                    )}
-                                                    buttonType="copy"
-                                                />
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="section">
                                     <div className="section--header">
                                         <div className="row middle">
-                                            <h2>
-                                                State
-                                            </h2>
+                                            <h2>State</h2>
                                         </div>
                                     </div>
                                     <div className="section--data">
                                         <div>
-                                            <div className="label">
-                                                State Index
-                                            </div>
+                                            <div className="label">State Index</div>
                                             <div className="value row middle">
-                                                <span className="margin-r-t">{this.state.output?.stateIndex}</span>
+                                                <span className="margin-r-t">{output?.stateIndex}</span>
                                             </div>
                                         </div>
                                         <div className="margin-t-s">
@@ -183,7 +164,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                         </div>
                                     </div>
                                 </div>
-                                {this.state.areFoundriesLoading && (
+                                {areFoundriesLoading && (
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
                                             <div className="margin-t-s middle row">
@@ -198,7 +179,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                         <div className="section--header row space-between">
                                             <div className="row middle">
                                                 <h2>
-                                                    Controlled foundries ({this.state.foundries?.length})
+                                                    Controlled foundries ({foundries?.length})
                                                 </h2>
                                                 <Modal icon="info" data={mainHeaderMessage} />
                                             </div>
@@ -236,21 +217,21 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                             ))}
                                         </div>
                                         <Pagination
-                                            currentPage={this.state.foundriesPageNumber}
-                                            totalCount={this.state.foundries?.length ?? 0}
+                                            currentPage={foundriesPageNumber}
+                                            totalCount={foundries?.length ?? 0}
                                             pageSize={Alias.FOUNDRIES_PAGE_SIZE}
                                             siblingsCount={1}
                                             onPageChange={page => this.setState({ foundriesPageNumber: page })}
                                         />
                                     </div>
                                 )}
-                                {this.state.output && (
-                                    <AssetsTable networkId={networkId} outputs={[this.state.output]} />
+                                {output && (
+                                    <AssetsTable networkId={networkId} outputs={[output]} />
                                 )}
-                                {this.state.bech32AddressDetails?.bech32 && (
+                                {bech32AddressDetails?.bech32 && (
                                     <AssociatedOutputsTable
                                         network={networkId}
-                                        address={this.state.bech32AddressDetails.bech32}
+                                        address={bech32AddressDetails.bech32}
                                     />
                                 )}
                             </div>
