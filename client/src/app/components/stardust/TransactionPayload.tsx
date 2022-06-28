@@ -9,15 +9,28 @@ import "./TransactionPayload.scss";
 import Input from "./Input";
 import Output from "./Output";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
+import { TransactionPayloadState } from "./TransactionPayloadState";
 
 /**
  * Component which will display a transaction payload.
  */
-class TransactionPayload extends AsyncComponent<TransactionPayloadProps> {
+class TransactionPayload extends AsyncComponent<TransactionPayloadProps, TransactionPayloadState> {
     /**
      * The component context type.
      */
     public static contextType = NetworkContext;
+
+    /**
+     * Create a new instance of TransactionPayload.
+     * @param props The props.
+     */
+    constructor(props: TransactionPayloadProps) {
+        super(props);
+
+        this.state = {
+            isFormattedBalance: false
+        };
+    }
 
     /**
      * The component mounted.
@@ -44,8 +57,17 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps> {
                     </div>
                     <div className="transaction-value">
                         <div>
-                            <span className="value">
-                                {formatAmount(transferTotal, this.context.tokenInfo)}
+                            <span
+                                onClick={() => this.setState({
+                                    isFormattedBalance: !this.state.isFormattedBalance
+                                })}
+                                className="value pointer"
+                            >
+                                {formatAmount(
+                                    transferTotal,
+                                    this.context.tokenInfo,
+                                    this.state.isFormattedBalance
+                                )}
                             </span>
                             <span className="dot-separator">•</span>
                             <span className="fiat-value">

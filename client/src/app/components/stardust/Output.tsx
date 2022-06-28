@@ -82,17 +82,17 @@ class Output extends Component<OutputProps, OutputState> {
                 {showCopyAmount && (
                     <div className="card--value pointer amount-size row end">
                         <span
-                            className="margin-r-t"
+                            className="pointer margin-r-t"
                             onClick={e => {
                                 this.setState({ isFormattedBalance: !isFormattedBalance });
                                 e.stopPropagation();
                             }}
                         >
-                            {
+                            {formatAmount(
+                                amount,
+                                this.context.tokenInfo,
                                 isFormattedBalance
-                                    ? formatAmount(amount, this.context.tokenInfo)
-                                    : amount
-                            }
+                            )}
                         </span>
                     </div>
                 )}

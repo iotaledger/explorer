@@ -32,6 +32,7 @@ interface InputProps {
 const Input: React.FC<InputProps> = ({ input, network, history }) => {
     const { tokenInfo } = useContext(NetworkContext);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [isFormattedBalance, setIsFormattedBalance] = useState(false);
 
     return (
         <React.Fragment>
@@ -55,9 +56,19 @@ const Input: React.FC<InputProps> = ({ input, network, history }) => {
                     showCopyButton={false}
                     labelPosition="bottom"
                 />
-                <div className="card--value amount-size">
-                    {formatAmount(input.amount, tokenInfo)}
-                </div>
+                <span
+                    onClick={e => {
+                        setIsFormattedBalance(!isFormattedBalance);
+                        e.stopPropagation();
+                    }}
+                    className="card--value amount-size pointer"
+                >
+                    {formatAmount(
+                        input.amount,
+                        tokenInfo,
+                        isFormattedBalance
+                    )}
+                </span>
             </div>
 
             {isExpanded && (
