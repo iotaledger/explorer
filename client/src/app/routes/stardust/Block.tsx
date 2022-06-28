@@ -68,7 +68,8 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
 
         this.state = {
             blockTangleStatus: "pending",
-            advancedMode: this._settingsService.get().advancedMode ?? false
+            advancedMode: this._settingsService.get().advancedMode ?? false,
+            isFormattedBalance: false
         };
     }
 
@@ -204,13 +205,18 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                             Value
                                         </div>
                                         <div className="value row middle">
-                                            {
-                                                formatAmount(
+                                            <span
+                                                onClick={() => this.setState({
+                                                    isFormattedBalance: !this.state.isFormattedBalance
+                                                })}
+                                                className="pointer margin-r-5"
+                                            >
+                                                {formatAmount(
                                                     this.state.transferTotal,
-                                                    this.context.tokenInfo
-                                                )
-                                            }
-                                            {" "}
+                                                    this.context.tokenInfo,
+                                                    this.state.isFormattedBalance
+                                                )}
+                                            </span>
                                             (<FiatValue value={this.state.transferTotal} />)
                                         </div>
                                     </div>
