@@ -43,7 +43,10 @@
               color: var(--body-color);
               &:first-child {
                   padding-left: 2px;
-                  width: 368px;
+              }
+
+              .card--content__output {
+                  padding: 0 30px;
               }
           }
       }
@@ -57,11 +60,8 @@
             display: block;
 
             .card {
-                .card--content {
-                    padding: 16px 0px 0px 0px;
-                    .card--content__input {
-                        margin-bottom: 0px;
-                    }
+                .card--content__output {
+                    padding: 8px 8px 4px 4px;
                 }
 
                 .field {
@@ -90,6 +90,17 @@
     }
 
     .associated--table, .associated--cards {
+        .card {
+            .card--content__output {
+                .card-header--wrapper {
+                    margin: 0px;
+                }
+
+                .output-header {
+                    flex-direction: column;
+                }
+            }
+        }
         .output--label {
             display: flex;
 

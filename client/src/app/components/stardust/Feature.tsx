@@ -37,8 +37,8 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
                     className="card--content__input card--value row middle"
                     onClick={() => this.setState({ isExpanded: !this.state.isExpanded })}
                 >
-                    <div className={classNames("margin-r-t", "card--content__input--dropdown",
-                        "card--content__flex_between", { opened: this.state.isExpanded })}
+                    <div className={classNames("margin-r-t", "card--content--dropdown",
+                        { opened: this.state.isExpanded })}
                     >
                         <DropdownIcon />
                     </div>
