@@ -22,12 +22,12 @@
         }
 
         .amount-size {
-            width: 100px;
+            width: 180px;
             text-align: end;
             cursor: pointer;
 
             span {
-                word-break: none;
+                word-break: keep-all;
             }
         }
     }
