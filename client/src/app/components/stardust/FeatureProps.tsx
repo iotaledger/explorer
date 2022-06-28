@@ -5,4 +5,9 @@ export interface FeatureProps {
      * The feature.
      */
     feature: FeatureTypes;
+
+    /**
+     * Is the feature pre-expanded.
+     */
+    isPreExpanded?: boolean;
 }

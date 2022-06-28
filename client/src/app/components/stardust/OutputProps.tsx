@@ -22,6 +22,11 @@ export interface OutputProps {
     showCopyAmount: boolean;
 
     /**
+     * Should the output be pre-expanded
+     */
+    isPreExpanded?: boolean;
+
+    /**
      * The network to lookup.
      */
     network: string;
