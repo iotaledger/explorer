@@ -35,23 +35,25 @@
                 margin: 28px 0;
             }
 
-            .section {
-                padding-top: 44px;
-            }
-
-            .section--header {
-                margin-top: 44px;
-            }
-
             .ouput-page--header {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
             }
 
-            .card.output .card--content {
-                padding-top: 20px;
+            .section {
+                padding-top: 44px;
+
+                .section--header {
+                    margin-top: 44px;
+                }
+
+                .card--content__output {
+                    margin-top: 20px;
+                }
             }
+
+
 
         }
     }
