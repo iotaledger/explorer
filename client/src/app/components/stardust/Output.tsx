@@ -39,7 +39,7 @@ class Output extends Component<OutputProps, OutputState> {
 
         this.state = {
             showNativeToken: false,
-            isExpanded: false,
+            isExpanded: this.props.isPreExpanded ?? false,
             isFormattedBalance: true
         };
     }
@@ -49,7 +49,7 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { outputId, output, amount, showCopyAmount, network } = this.props;
+        const { outputId, output, amount, showCopyAmount, network, isPreExpanded } = this.props;
         const { showNativeToken, isExpanded, isFormattedBalance } = this.state;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
@@ -230,15 +230,19 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type !== TREASURY_OUTPUT_TYPE && (
                         <React.Fragment>
                             {output.unlockConditions.map((unlockCondition, idx) => (
-                                <UnlockCondition key={idx} unlockCondition={unlockCondition} />
+                                <UnlockCondition
+                                    key={idx}
+                                    unlockCondition={unlockCondition}
+                                    isPreExpanded={isPreExpanded}
+                                />
                             ))}
                             {output.features?.map((feature, idx) => (
-                                <Feature key={idx} feature={feature} />
+                                <Feature key={idx} feature={feature} isPreExpanded={isPreExpanded} />
                             ))}
                             {output.type !== BASIC_OUTPUT_TYPE && output.immutableFeatures && (
                                 <React.Fragment>
                                     {output.immutableFeatures.map((immutableFeature, idx) => (
-                                        <Feature key={idx} feature={immutableFeature} />
+                                        <Feature key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} />
                                     ))}
                                 </React.Fragment>
                             )}

@@ -15,7 +15,7 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
         super(props);
 
         this.state = {
-            showOutputDetails: -1
+            isExpanded: this.props.isPreExpanded ?? false
         };
     }
 
@@ -35,10 +35,10 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
             <div className="feature-block">
                 <div
                     className="card--content__input card--value row middle"
-                    onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === 1 ? -1 : 1 })}
+                    onClick={() => this.setState({ isExpanded: !this.state.isExpanded })}
                 >
                     <div className={classNames("margin-r-t", "card--content__input--dropdown",
-                        "card--content__flex_between", { opened: this.state.showOutputDetails === 1 })}
+                        "card--content__flex_between", { opened: this.state.isExpanded })}
                     >
                         <DropdownIcon />
                     </div>
@@ -46,7 +46,7 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
                         {NameHelper.getFeatureTypeName(this.props.feature.type)}
                     </div>
                 </div>
-                {this.state.showOutputDetails === 1 && (
+                {this.state.isExpanded && (
                     <div className="margin-l-t">
                         {this.props.feature.type === SENDER_FEATURE_TYPE && (
                             <Address

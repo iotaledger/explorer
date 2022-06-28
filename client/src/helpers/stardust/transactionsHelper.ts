@@ -1,6 +1,7 @@
 /* eslint-disable no-warning-comments */
 import { Blake2b } from "@iota/crypto.js-stardust";
-import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
+import {
+    BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
     IGovernorAddressUnlockCondition, ED25519_ADDRESS_TYPE, IBlock, ISignatureUnlock,
     IUTXOInput, REFERENCE_UNLOCK_TYPE, SIGNATURE_UNLOCK_TYPE,
     TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
@@ -8,7 +9,8 @@ import { BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlo
     TREASURY_OUTPUT_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
     GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
     ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE, serializeTransactionPayload, FOUNDRY_OUTPUT_TYPE,
-    IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
+    IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition, TransactionHelper
+} from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { DateHelper } from "../../helpers/dateHelper";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
@@ -72,11 +74,10 @@ export class TransactionsHelper {
                 const input = payload.essence.inputs[i];
                 const isGenesis = input.transactionId === GENESIS_HASH;
 
-                const transactionOutputIndex = input.transactionOutputIndex;
-                const toiWriteStream = new WriteStream();
-                toiWriteStream.writeUInt16("transactionOutputIndex", transactionOutputIndex);
-                const outputHash = input.transactionId + toiWriteStream.finalHex();
-
+                const outputHash = TransactionHelper.outputIdFromTransactionData(
+                    input.transactionId,
+                    input.transactionOutputIndex
+                );
                 transactionUrl = `/${network}/search/${outputHash}`;
 
                 const outputResponse = await tangleCacheService.outputDetails(network, outputHash);
@@ -111,10 +112,7 @@ export class TransactionsHelper {
 
             // Outputs
             for (let i = 0; i < payload.essence.outputs.length; i++) {
-                // Compute outputId from transactionPayload
-                const outputIndexWs = new WriteStream();
-                outputIndexWs.writeUInt16("outputIndex", i);
-                const outputId = transactionId + outputIndexWs.finalHex();
+                const outputId = TransactionHelper.outputIdFromTransactionData(transactionId, i);
 
                 if (payload.essence.outputs[i].type === TREASURY_OUTPUT_TYPE) {
                     const output = payload.essence.outputs[i] as ITreasuryOutput;

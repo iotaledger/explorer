@@ -1,3 +1,4 @@
+import { TransactionHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -218,8 +219,12 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.addressDetails?.hex) {
                                     route = "addr";
                                 } else if (response.output) {
-                                    route = "block";
-                                    routeParam = response.output.metadata.blockId;
+                                    route = "output";
+                                    const outputId = TransactionHelper.outputIdFromTransactionData(
+                                        response.output.metadata.transactionId,
+                                        response.output.metadata.outputIndex
+                                    );
+                                    routeParam = outputId;
                                 } else if (response.aliasOutputId) {
                                     route = "alias";
                                     routeParam = response.aliasOutputId;

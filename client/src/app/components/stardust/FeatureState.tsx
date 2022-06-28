@@ -1,7 +1,7 @@
 export interface FeatureState {
     /**
-     * Shows details of the specified output id
+     * Is expanded.
      */
-    showOutputDetails: number;
+    isExpanded: boolean;
 }
 
