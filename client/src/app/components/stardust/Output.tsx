@@ -20,6 +20,7 @@ import Feature from "./Feature";
 import { OutputProps } from "./OutputProps";
 import { OutputState } from "./OutputState";
 import UnlockCondition from "./UnlockCondition";
+import "./Output.scss";
 
 /**
  * Component which will display an output.
@@ -38,7 +39,7 @@ class Output extends Component<OutputProps, OutputState> {
         super(props);
 
         this.state = {
-            showNativeToken: false,
+            showNativeToken: this.props.isPreExpanded ?? false,
             isExpanded: this.props.isPreExpanded ?? false,
             isFormattedBalance: true
         };
@@ -49,7 +50,7 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { output, amount, showCopyAmount, network, isPreExpanded } = this.props;
+        const { outputId, output, amount, showCopyAmount, network, isPreExpanded } = this.props;
         const { showNativeToken, isExpanded, isFormattedBalance } = this.state;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
@@ -57,21 +58,27 @@ class Output extends Component<OutputProps, OutputState> {
 
         const outputHeader = (
             <div
-                className="card--content__input card--value"
                 onClick={() => this.setState({ isExpanded: !isExpanded })}
+                className="card--value card-header--wrapper"
             >
-                <div className={classNames("margin-r-t", "card--content__input--dropdown",
-                                           "card--content__flex_between",
-                                           { opened: isExpanded })}
-                >
+                <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
                 </div>
-                <button
-                    type="button"
-                    className="margin-r-t color"
-                >
-                    {NameHelper.getOutputTypeName(output.type)}
-                </button>
+                <div className="output-header">
+                    <button
+                        type="button"
+                        className="output-type--name margin-r-t color"
+                    >
+                        {NameHelper.getOutputTypeName(output.type)}
+                    </button>
+                    <div className="output-id--link">
+                        (
+                        <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
+                            {outputId}
+                        </Link>
+                        )
+                    </div>
+                </div>
                 {showCopyAmount && (
                     <div className="card--value pointer amount-size row end">
                         <span
@@ -104,7 +111,7 @@ class Output extends Component<OutputProps, OutputState> {
         );
 
         return (
-            <div className="card--content">
+            <div className="card--content__output">
                 {outputHeader}
                 {isExpanded && (
                     <div className="output margin-l-t">
@@ -235,7 +242,11 @@ class Output extends Component<OutputProps, OutputState> {
                             {output.type !== BASIC_OUTPUT_TYPE && output.immutableFeatures && (
                                 <React.Fragment>
                                     {output.immutableFeatures.map((immutableFeature, idx) => (
-                                        <Feature key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} />
+                                        <Feature
+                                            key={idx}
+                                            feature={immutableFeature}
+                                            isPreExpanded={isPreExpanded}
+                                        />
                                     ))}
                                 </React.Fragment>
                             )}
@@ -246,9 +257,8 @@ class Output extends Component<OutputProps, OutputState> {
                                             className="card--content__input card--value row middle"
                                             onClick={() => this.setState({ showNativeToken: !showNativeToken })}
                                         >
-                                            <div className={classNames("margin-r-t", "card--content__input--dropdown",
-                                                "card--content__flex_between",
-                                                { opened: showNativeToken })}
+                                            <div className={classNames("margin-r-t", "card--content--dropdown",
+                                                                       { opened: showNativeToken })}
                                             >
                                                 <DropdownIcon />
                                             </div>

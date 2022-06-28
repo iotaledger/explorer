@@ -49,7 +49,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
 
     // Fetch associated output details
     useEffect(() => {
-        if (associatedOutputs) {
+        if (associatedOutputs && !outputDetailsLoaded) {
             const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
             for (const associatedOutput of associatedOutputs) {

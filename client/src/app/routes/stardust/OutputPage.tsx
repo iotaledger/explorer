@@ -10,7 +10,7 @@ import OutputPageProps from "./OutputPageProps";
 import "./OutputPage.scss";
 
 const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
-    { history, match: { params: { network, outputId } } }
+    { match: { params: { network, outputId } } }
 ) => {
     const [outputDetails, setOutputDetails] = useState<IOutputResponse | undefined>();
 
@@ -38,7 +38,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             </div>
                         </div>
                         <div className="section">
-                            <div className="card output">
+                            <div className="card">
                                 <Output
                                     network={network}
                                     outputId={outputId}
