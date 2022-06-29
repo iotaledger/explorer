@@ -163,7 +163,12 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                         Transaction Id
                                     </div>
                                     <div className="value value__secondary row middle">
-                                        <span className="margin-r-t">{this.state.transactionId}</span>
+                                        <Link
+                                            to={`/${network}/transaction/${this.state.transactionId}`}
+                                            className="margin-r-t"
+                                        >
+                                            {this.state.transactionId}
+                                        </Link>
                                         <CopyButton
                                             onClick={() => ClipboardHelper.copy(
                                                 this.state.transactionId

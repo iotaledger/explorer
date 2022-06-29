@@ -10,6 +10,11 @@ export interface ISearchResponse extends IResponse {
     block?: IBlock;
 
     /**
+     * Transaction included block.
+     */
+    transactionBlock?: IBlock;
+
+    /**
      * Address details when address was found.
      */
     addressDetails?: IAddressDetails;

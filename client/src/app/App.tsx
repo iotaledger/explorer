@@ -52,6 +52,8 @@ import NFTDetails from "./routes/stardust/NFTDetails";
 import OutputPage from "./routes/stardust/OutputPage";
 import OutputPageProps from "./routes/stardust/OutputPageProps";
 import StardustSearch from "./routes/stardust/Search";
+import TransactionPage from "./routes/stardust/TransactionPage";
+import { TransactionPageProps } from "./routes/stardust/TransactionPageProps";
 import StardustVisualizer from "./routes/stardust/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
@@ -231,13 +233,16 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                     )
                                                 }
                                             />
-                                            <Route
-                                                path="/:network/transaction/:hash"
-                                                component={(props: RouteComponentProps<TransactionRouteProps>) =>
-                                                (
-                                                    <Transaction {...props} />
-                                                )}
-                                            />
+                                            {
+                                                !isStardust &&
+                                                    <Route
+                                                        path="/:network/transaction/:hash"
+                                                        component={(props: RouteComponentProps<TransactionRouteProps>) =>
+                                                        (
+                                                            <Transaction {...props} />
+                                                        )}
+                                                    />
+                                            }
                                             <Route
                                                 path="/:network/tag/:hash"
                                                 component={(props: RouteComponentProps<TagRouteProps>) =>
@@ -290,6 +295,13 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 component={(props: RouteComponentProps<BlockProps>) =>
                                                 (
                                                     withNetworkProvider(<StardustBlock {...props} />)
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/transaction/:transactionId"
+                                                component={(props: RouteComponentProps<TransactionPageProps>) =>
+                                                (
+                                                    withNetworkProvider(<TransactionPage {...props} />)
                                                 )}
                                             />
                                             <Route

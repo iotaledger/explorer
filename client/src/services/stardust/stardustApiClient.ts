@@ -16,6 +16,8 @@ import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsRespon
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { ITransactionBlockRequest } from "../../models/api/stardust/ITransactionBlockRequest";
+import { ITransactionBlockResponse } from "../../models/api/stardust/ITransactionBlockResponse";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -56,6 +58,17 @@ export class StardustApiClient extends ApiClient {
     public async blockDetails(request: IBlockDetailsRequest): Promise<IBlockDetailsResponse> {
         return this.callApi<unknown, IBlockDetailsResponse>(
             `stardust/block/${request.network}/${request.blockId}`, "get"
+        );
+    }
+
+    /**
+     * Get the transaction included block.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+     public async transactionIncludedBlockDetails(request: ITransactionBlockRequest): Promise<ITransactionBlockResponse> {
+        return this.callApi<unknown, ITransactionBlockResponse>(
+            `stardust/transaction/${request.network}/${request.transactionId}`, "get"
         );
     }
 
