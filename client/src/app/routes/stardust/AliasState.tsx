@@ -24,11 +24,6 @@ export interface AliasState {
     foundriesPageNumber: number;
 
     /**
-     * Current page of controlled Foundries.
-     */
-    foundriesPage: { foundryId: string }[];
-
-    /**
      * The Alias output.
      */
     output?: IAliasOutput;

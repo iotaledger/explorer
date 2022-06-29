@@ -4,12 +4,10 @@ import { NFT_ADDRESS_TYPE, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
-import CopyButton from "../../components/CopyButton";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
@@ -43,7 +41,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
         this.state = {
             bech32AddressDetails: undefined,
             output: undefined
-        }
+        };
     }
 
     /**
@@ -82,7 +80,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, output, } = this.state;
+        const { bech32AddressDetails, output } = this.state;
         const networkId = this.props.match.params.network;
 
         return (
