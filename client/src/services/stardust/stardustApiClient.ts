@@ -66,7 +66,9 @@ export class StardustApiClient extends ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-     public async transactionIncludedBlockDetails(request: ITransactionBlockRequest): Promise<ITransactionBlockResponse> {
+    public async transactionIncludedBlockDetails(
+        request: ITransactionBlockRequest
+    ): Promise<ITransactionBlockResponse> {
         return this.callApi<unknown, ITransactionBlockResponse>(
             `stardust/transaction/${request.network}/${request.transactionId}`, "get"
         );

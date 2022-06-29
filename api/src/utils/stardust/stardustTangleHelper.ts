@@ -77,7 +77,10 @@ export class StardustTangleHelper {
      * @param transactionId The transaction id to get the details.
      * @returns The item details.
      */
-     public static async transactionIncludedBlockDetails(network: INetwork, transactionId: string): Promise<ITransactionBlockResponse> {
+    public static async transactionIncludedBlockDetails(
+        network: INetwork,
+        transactionId: string
+    ): Promise<ITransactionBlockResponse> {
         try {
             const client = new SingleNodeClient(network.provider, {
                 userName: network.user,

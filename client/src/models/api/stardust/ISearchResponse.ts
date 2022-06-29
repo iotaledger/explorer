@@ -11,7 +11,7 @@ export interface ISearchResponse extends IResponse {
      */
     block?: IBlock;
 
-     /**
+    /**
      * The transaction included block.
      */
     transactionBlock?: IBlock;

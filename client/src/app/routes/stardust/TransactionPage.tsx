@@ -69,7 +69,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                 inputs,
                 outputs,
                 transferTotal,
-                block: block,
+                block,
                 networkId: block.payload.essence.networkId,
                 inputsCommitment: block.payload.essence.inputsCommitment
             });
@@ -155,22 +155,20 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                 </div>
                             )}
                         </div>
-                        <React.Fragment>
-                            {this.state.inputs &&
-                                this.state.outputs &&
-                                this.state.transferTotal !== undefined &&
-                                (
-                                    <div className="section">
-                                        <TransactionPayload
-                                            network={network}
-                                            history={this.props.history}
-                                            inputs={this.state.inputs}
-                                            outputs={this.state.outputs}
-                                            transferTotal={this.state.transferTotal}
-                                        />
-                                    </div>
-                                )}
-                        </React.Fragment>
+                        {this.state.inputs &&
+                            this.state.outputs &&
+                            this.state.transferTotal !== undefined &&
+                            (
+                                <div className="section">
+                                    <TransactionPayload
+                                        network={network}
+                                        history={this.props.history}
+                                        inputs={this.state.inputs}
+                                        outputs={this.state.outputs}
+                                        transferTotal={this.state.transferTotal}
+                                    />
+                                </div>
+                            )}
                     </div>
                 </div>
             </div >

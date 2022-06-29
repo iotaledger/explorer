@@ -1,5 +1,4 @@
 import { IBlock, IUTXOInput } from "@iota/iota.js-stardust";
-import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
 

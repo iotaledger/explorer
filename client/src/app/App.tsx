@@ -233,16 +233,14 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                     )
                                                 }
                                             />
-                                            {
-                                                !isStardust &&
-                                                    <Route
-                                                        path="/:network/transaction/:hash"
-                                                        component={(props: RouteComponentProps<TransactionRouteProps>) =>
-                                                        (
-                                                            <Transaction {...props} />
-                                                        )}
-                                                    />
-                                            }
+                                            {!isStardust &&
+                                                <Route
+                                                    path="/:network/transaction/:hash"
+                                                    component={(props: RouteComponentProps<TransactionRouteProps>) =>
+                                                    (
+                                                        <Transaction {...props} />
+                                                    )}
+                                                />}
                                             <Route
                                                 path="/:network/tag/:hash"
                                                 component={(props: RouteComponentProps<TagRouteProps>) =>
