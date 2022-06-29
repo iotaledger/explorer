@@ -1,0 +1,51 @@
+.card--content__output {
+    padding: 0 30px 20px;
+
+    .card--value.card-header--wrapper {
+        width: 100%;
+        display: flex;
+
+
+        .output-header {
+            display: flex;
+            width: 100%;
+
+            .output-type--name {
+                white-space: nowrap;
+            }
+
+            .output-id--link {
+                a {
+                    margin-right: 0px;
+                }
+            }
+        }
+
+        .amount-size {
+            width: 180px;
+            text-align: end;
+            cursor: pointer;
+
+            span {
+                word-break: keep-all;
+            }
+        }
+    }
+}
+
+.card--content--dropdown {
+    cursor: pointer;
+
+    svg {
+        transition: transform 0.25s ease;
+
+        path {
+            fill: var(--card-color);
+        }
+    }
+
+    &.opened > svg {
+        transform: rotate(90deg);
+    }
+}
+

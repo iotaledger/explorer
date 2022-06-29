@@ -64,4 +64,9 @@ export interface BlockState {
      * The unlock addresses for the transactions.
      */
     unlockAddresses?: IBech32AddressDetails[];
+
+    /**
+     * Format the amount in full.
+     */
+    isFormattedBalance: boolean;
 }

@@ -26,7 +26,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
         super(props);
 
         this.state = {
-            showOutputDetails: -1
+            isExpanded: this.props.isPreExpanded ?? false
         };
     }
 
@@ -42,25 +42,23 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { showOutputDetails } = this.state;
+        const { isExpanded } = this.state;
         const { unlockCondition } = this.props;
 
         return (
             <div className="unlock-condition">
                 <div
                     className="card--content__input card--value row middle"
-                    onClick={() => this.setState({ showOutputDetails: showOutputDetails === 1 ? -1 : 1 })}
+                    onClick={() => this.setState({ isExpanded: !isExpanded })}
                 >
-                    <div className={classNames("margin-r-t", "card--content__input--dropdown",
-                        "card--content__flex_between", { opened: showOutputDetails === 1 })}
-                    >
+                    <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
                         <DropdownIcon />
                     </div>
                     <div className="card--label">
                         {NameHelper.getUnlockConditionTypeName(unlockCondition.type)}
                     </div>
                 </div>
-                {showOutputDetails === 1 && (
+                {isExpanded && (
                     <div className="margin-l-t">
                         {unlockCondition.type === ADDRESS_UNLOCK_CONDITION_TYPE && (
                             <Address
@@ -79,7 +77,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                     Amount:
                                 </div>
                                 <div className="card--value row">
-                                    {formatAmount(Number(unlockCondition.amount), this.context.tokenInfo)}
+                                    {formatAmount(Number(unlockCondition.amount), this.context.tokenInfo, true)}
                                 </div>
                             </React.Fragment>
                         )}

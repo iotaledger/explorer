@@ -325,7 +325,7 @@ export class StardustTangleHelper {
             }
 
             try {
-                const block = await client.transactionIncludedBlock(searchQuery.address.hex);
+                const block = await client.transactionIncludedBlock(searchQuery.blockIdOrTransactionId);
 
                 if (Object.keys(block).length > 0) {
                     const writeStream = new WriteStream();
