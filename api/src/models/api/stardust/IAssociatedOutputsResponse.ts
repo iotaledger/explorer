@@ -1,6 +1,8 @@
 import { IResponse } from "../IResponse";
 
+
 export enum AssociationType {
+    BASIC_ADDRESS,
     BASIC_SENDER,
     BASIC_EXPIRATION_RETURN,
     BASIC_STORAGE_RETURN,
@@ -8,14 +10,23 @@ export enum AssociationType {
     ALIAS_GOVERNOR,
     ALIAS_ISSUER,
     ALIAS_SENDER,
+    ALIAS_ID,
     FOUNDRY_ALIAS,
+    NFT_ADDRESS,
     NFT_STORAGE_RETURN,
     NFT_EXPIRATION_RETURN,
-    NFT_SENDER
+    NFT_SENDER,
+    NFT_ID
 }
 
 export interface IAssociatedOutput {
+    /**
+     * The association type enum value.
+     */
     association: AssociationType;
+    /**
+     * The associated output.
+     */
     outputId: string;
 }
 

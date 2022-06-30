@@ -1,3 +1,5 @@
+@import "../../../scss/media-queries";
+
 .card--content__output {
     padding: 0 30px 20px;
 
@@ -18,6 +20,10 @@
                 a {
                     margin-right: 0px;
                 }
+            }
+
+            @include desktop-down {
+                flex-direction: column;
             }
         }
 
