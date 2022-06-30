@@ -1,9 +1,9 @@
 import { BigInteger } from "big-integer";
 
 /**
- * Address details.
+ * Address details with balance info.
  */
- export default interface IAddressDetails {
+ export default interface IAddressDetailsWithBalance {
     /**
      * The hex for the address the details are for.
      */

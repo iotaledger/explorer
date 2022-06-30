@@ -28,7 +28,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
         super(props);
 
         this.state = {
-            isFormattedBalance: false
+            isFormattedBalance: true
         };
     }
 
@@ -63,11 +63,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 })}
                                 className="value pointer"
                             >
-                                {formatAmount(
-                                    transferTotal,
-                                    this.context.tokenInfo,
-                                    this.state.isFormattedBalance
-                                )}
+                                {formatAmount(transferTotal, this.context.tokenInfo, !this.state.isFormattedBalance)}
                             </span>
                             <span className="dot-separator">•</span>
                             <span className="fiat-value">

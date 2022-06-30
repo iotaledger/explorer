@@ -69,7 +69,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
         this.state = {
             blockTangleStatus: "pending",
             advancedMode: this._settingsService.get().advancedMode ?? false,
-            isFormattedBalance: false
+            isFormattedBalance: true
         };
     }
 
@@ -219,7 +219,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                 {formatAmount(
                                                     this.state.transferTotal,
                                                     this.context.tokenInfo,
-                                                    this.state.isFormattedBalance
+                                                    !this.state.isFormattedBalance
                                                 )}
                                             </span>
                                             (<FiatValue value={this.state.transferTotal} />)

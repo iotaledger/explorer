@@ -1,8 +1,8 @@
-@import "../../scss/fonts";
-@import "../../scss/media-queries";
-@import "../../scss/mixins";
-@import "../../scss/variables";
-@import "../../scss/themes";
+@import "../../../scss/fonts";
+@import "../../../scss/media-queries";
+@import "../../../scss/mixins";
+@import "../../../scss/variables";
+@import "../../../scss/themes";
 
 header {
   display: flex;
@@ -12,6 +12,10 @@ header {
   width: 100%;
   background: var(--navbar-bg);
   backdrop-filter: blur(20px);
+
+  &.shimmer-header-bg {
+      background: var(--shimmer-navbar-bg);
+  }
 
   a {
     outline: none;
@@ -36,9 +40,37 @@ header {
       display: flex;
       align-items: center;
 
+      .shimmer-logo {
+          margin-left: -24px;
+          height: 80px;
+          width: 80px;
+          display: flex;
+          justify-content: center;
+          background: #00E0CA;
+          color: #131f37;
+
+          svg {
+              path {
+                  fill: #131f37
+              }
+          }
+      }
+
+      .shimmer-heading {
+          align-self: center;
+          margin-left: 20px;
+      }
+
+      @include desktop-down {
+          .shimmer-logo {
+              height: 56px;
+          }
+      }
+
       svg {
         width: auto;
         height: 48px;
+        align-self: center;
 
         @include desktop-down {
           height: 40px;

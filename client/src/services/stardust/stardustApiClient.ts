@@ -87,7 +87,9 @@ export class StardustApiClient extends ApiClient {
 
     public async associatedOutputs(request: IAssociatedOutputsRequest) {
         return this.callApi<unknown, IAssociatedOutputsResponse>(
-            `stardust/output/associated/${request.network}/${request.address}`, "get"
+            `stardust/output/associated/${request.network}/${request.addressDetails.bech32}`,
+            "post",
+            { addressDetails: request.addressDetails }
         );
     }
 

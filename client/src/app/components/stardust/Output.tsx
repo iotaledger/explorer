@@ -88,11 +88,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 e.stopPropagation();
                             }}
                         >
-                            {formatAmount(
-                                amount,
-                                this.context.tokenInfo,
-                                isFormattedBalance
-                            )}
+                            {formatAmount(amount, this.context.tokenInfo, !isFormattedBalance)}
                         </span>
                     </div>
                 )}

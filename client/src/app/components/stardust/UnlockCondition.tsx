@@ -77,7 +77,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                     Amount:
                                 </div>
                                 <div className="card--value row">
-                                    {formatAmount(Number(unlockCondition.amount), this.context.tokenInfo)}
+                                    {formatAmount(Number(unlockCondition.amount), this.context.tokenInfo, true)}
                                 </div>
                             </React.Fragment>
                         )}
