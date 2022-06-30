@@ -1,11 +1,12 @@
 import { Magnitudes, UnitsHelper } from "@iota/iota.js-stardust";
+import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
-import { CUSTOM } from "../../../models/config/networkType";
+import { CUSTOM, SHIMMER } from "../../../models/config/networkType";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/stardust/IFilterSettings";
@@ -92,52 +93,112 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { networkConfig, marketCapCurrency, priceCurrency, valuesFilter, formatFull, filteredItems,
+            isFeedPaused, isFilterExpanded, itemsPerSecond,
+            confirmedItemsPerSecond } = this.state;
+
+        const { network } = this.props.match.params;
+        const isShimmerNetwork = network === SHIMMER;
+
+        const defaultInfoBox = (
+            <div className="row space-between info-boxes">
+                <div className="info-box">
+                    <span className="info-box--title">Blocks per sec
+                    </span>
+                    <div className="info-box--value">
+                        <span className="download-rate">
+                            {NumberHelper.roundTo(Number(itemsPerSecond), 1) || "--"}
+                        </span>
+                        <span className="upload-rate">
+                            /{NumberHelper.roundTo(Number(confirmedItemsPerSecond)
+                                                    , 1) || "--"}
+                        </span>
+                    </div>
+                </div>
+                {networkConfig.showMarket && (
+                    <div className="info-box">
+                        <span className="info-box--title">IOTA Market Cap</span>
+                        <span className="info-box--value">{marketCapCurrency}</span>
+                    </div>
+                )}
+                {networkConfig.showMarket && (
+                    <div className="info-box">
+                        <span className="info-box--title">Price / MI</span>
+                        <span className="info-box--value">
+                            {priceCurrency}
+                        </span>
+                    </div>
+                )}
+            </div>
+        );
+
+        const shimmerInfoBox = (
+            <div className={classNames("info-boxes", { "shimmer": isShimmerNetwork })}>
+                <div className="row space-between">
+                    <div className="info-box">
+                        <span className="info-box--title">Tokens created
+                        </span>
+                        <span className="info-box--value">
+                            11.2k
+                        </span>
+                    </div>
+                    {networkConfig.showMarket && (
+                        <div className="info-box">
+                            <span className="info-box--title">NFTs minted</span>
+                            <span className="info-box--value">52.1k</span>
+                        </div>
+                    )}
+                    {networkConfig.showMarket && (
+                        <div className="info-box">
+                            <span className="info-box--title">Active Addresses</span>
+                            <span className="info-box--value">
+                                72.8k
+                            </span>
+                        </div>
+                    )}
+                </div>
+                <div className="row space-between">
+                    <div className="info-box">
+                        <span className="info-box--title">Active Addresses
+                        </span>
+                        <span className="info-box--value">
+                            23.4k
+                        </span>
+                    </div>
+                    {networkConfig.showMarket && (
+                        <div className="info-box">
+                            <span className="info-box--title">Locked storage deposit</span>
+                            <span className="info-box--value">549k SMR</span>
+                        </div>
+                    )}
+                    {networkConfig.showMarket && (
+                        <div className="info-box">
+                            <span className="info-box--title">Daily transactions</span>
+                            <span className="info-box--value">
+                                2.45m
+                            </span>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+
         return (
             <div className="landing">
-                <div className="wrapper header-wrapper">
+                <div className={classNames("wrapper header-wrapper", { "shimmer": isShimmerNetwork })}>
                     <div className="inner">
                         <div className="header">
                             <div className="header--title">
-                                <h2>{this.state.networkConfig.isEnabled ? "Explore network" : ""}</h2>
-                                <div className="row space-between wrap">
-                                    <h1>{this.state.networkConfig.label}</h1>
-                                </div>
+                                <h2>{networkConfig.isEnabled ? "Explore network" : ""}</h2>
+                                <div className="row space-between wrap"><h1>{networkConfig.label}</h1></div>
                             </div>
-                            {this.state.networkConfig.isEnabled && (
-                                <div className="row space-between info-boxes">
-                                    <div className="info-box">
-                                        <span className="info-box--title">Blocks per sec
-                                        </span>
-                                        <div className="info-box--value">
-                                            <span className="download-rate">
-                                                {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1) || "--"}
-                                            </span>
-                                            <span className="upload-rate">
-                                                /{NumberHelper.roundTo(Number(this.state.confirmedItemsPerSecond)
-                                                    , 1) || "--"}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    {this.state.networkConfig.showMarket && (
-                                        <div className="info-box">
-                                            <span className="info-box--title">IOTA Market Cap</span>
-                                            <span className="info-box--value">{this.state.marketCapCurrency}</span>
-                                        </div>
-                                    )}
-                                    {this.state.networkConfig.showMarket && (
-                                        <div className="info-box">
-                                            <span className="info-box--title">Price / MI</span>
-                                            <span className="info-box--value">
-                                                {this.state.priceCurrency}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+
+                            {isShimmerNetwork ? shimmerInfoBox : defaultInfoBox}
+
                         </div>
                     </div>
                 </div>
-                <div className="wrapper feeds-wrapper">
+                <div className={classNames("wrapper feeds-wrapper", { "shimmer": isShimmerNetwork })}>
                     <div className="inner">
                         <div className="feeds-section">
                             <div className="row wrap feeds">
@@ -150,12 +211,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 type="button"
                                                 onClick={() => {
                                                     this.setState({
-                                                        isFeedPaused: !this.state.isFeedPaused,
-                                                        frozenBlocks: this.state.filteredItems
+                                                        isFeedPaused: !isFeedPaused,
+                                                        frozenBlocks: filteredItems
                                                     });
                                                 }}
                                             >
-                                                {this.state.isFeedPaused
+                                                {isFeedPaused
                                                     ? <span className="material-icons">play_arrow</span>
                                                     : <span className="material-icons">pause</span>}
                                             </button>
@@ -164,20 +225,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     type="button"
                                                     className="button--unstyled toggle-filters-button"
                                                     onClick={() => {
-                                                        this.setState({
-                                                            isFilterExpanded: !this.state.isFilterExpanded
-                                                        });
+                                                        this.setState({ isFilterExpanded: !isFilterExpanded });
                                                     }}
                                                 >
-                                                    <span className="material-icons">
-                                                        tune
-                                                    </span>
+                                                    <span className="material-icons">tune</span>
                                                 </button>
                                                 <div className="filters-button-wrapper__counter">
-                                                    {this.state.valuesFilter.filter(f => f.isEnabled).length}
+                                                    {valuesFilter.filter(f => f.isEnabled).length}
                                                 </div>
                                             </div>
-                                            {this.state.isFilterExpanded && (
+                                            {isFilterExpanded && (
                                                 <div className="filter-wrapper">
                                                     <div className="filter">
                                                         <div className="filter-header row space-between middle">
@@ -201,21 +258,19 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                         </div>
 
                                                         <div className="filter-content">
-                                                            {this.state.valuesFilter.map(payload => (
+                                                            {valuesFilter.map(payload => (
                                                                 <React.Fragment key={payload.label}>
                                                                     <label >
                                                                         <input
                                                                             type="checkbox"
                                                                             checked={payload.isEnabled}
                                                                             onChange={
-                                                                                () => (
-                                                                                    this.toggleFilter(payload.label)
-                                                                                )
+                                                                                () => this.toggleFilter(payload.label)
                                                                             }
                                                                         />
                                                                         {payload.label}
                                                                     </label>
-                                                                    {this.state.networkConfig.protocolVersion ===
+                                                                    {networkConfig.protocolVersion ===
                                                                             STARDUST &&
                                                                             payload.label === "Transaction" &&
                                                                             payload.isEnabled && (
@@ -231,9 +286,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     <div
                                                         className="filter--bg"
                                                         onClick={() => {
-                                                            this.setState(
-                                                                { isFilterExpanded: !this.state.isFilterExpanded }
-                                                            );
+                                                            this.setState({ isFilterExpanded: !isFilterExpanded });
                                                         }}
                                                     />
                                                 </div>
@@ -246,16 +299,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             <span className="label">Block id</span>
                                             <span className="label">Payload Type</span>
                                         </div>
-                                        {this.state.filteredItems.length === 0 && (
+                                        {filteredItems.length === 0 && (
                                             <p>There are no items with the current filter.</p>
                                         )}
-                                        {this.state.filteredItems.map(item => (
+                                        {filteredItems.map(item => (
                                             <div className="feed-item" key={item.id}>
                                                 <div className="feed-item__content">
                                                     <span className="feed-item--label">Block id</span>
                                                     <Link
                                                         className="feed-item--hash"
-                                                        to={RouteBuilder.buildItem(this.state.networkConfig, item.id)}
+                                                        to={RouteBuilder.buildItem(networkConfig, item.id)}
                                                     >
                                                         {item.id}
                                                     </Link>
@@ -266,12 +319,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                         <button
                                                             type="button"
                                                             onClick={() => this.setState(
-                                                                {
-                                                                    formatFull: !this.state.formatFull
-                                                                },
+                                                                { formatFull: !formatFull },
                                                                 () => this._settingsService.saveSingle(
                                                                     "formatFull",
-                                                                    this.state.formatFull
+                                                                    formatFull
                                                                 )
                                                             )}
                                                         >
@@ -286,26 +337,26 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             </div>
                             <div className="card margin-t-m">
                                 <div className="card--content description">
-                                    {this.state.networkConfig.description}
+                                    {networkConfig.description}
                                 </div>
-                                {this.state.networkConfig.faucet && (
+                                {networkConfig.faucet && (
                                     <div className="card--content description">
                                         <span>Get tokens from the Faucet:</span>
                                         <a
                                             className="data-link margin-l-t"
-                                            href={this.state.networkConfig.faucet}
+                                            href={networkConfig.faucet}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
-                                            {this.state.networkConfig.faucet}
+                                            {networkConfig.faucet}
                                         </a>
                                     </div>
                                 )}
                             </div>
-                            {!this.state.networkConfig.isEnabled && (
+                            {!networkConfig.isEnabled && (
                                 <div className="card margin-t-m">
                                     <div className="card--content description">
-                                        {this.state.networkConfig.isEnabled === undefined
+                                        {networkConfig.isEnabled === undefined
                                             ? "This network is not recognised."
                                             : "This network is currently disabled in explorer."}
                                     </div>

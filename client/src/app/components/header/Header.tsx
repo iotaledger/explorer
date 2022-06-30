@@ -1,14 +1,17 @@
+/* eslint-disable react/jsx-closing-tag-location */
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ReactComponent as LogoHeader } from "../../assets/logo-header.svg";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { SettingsService } from "../../services/settingsService";
-import FiatSelector from "./FiatSelector";
+import { ReactComponent as Logo } from "../../../assets/logo-header.svg";
+import { ReactComponent as ShimmerLogo } from "../../../assets/shimmer-logo-header.svg";
+import { ServiceFactory } from "../../../factories/serviceFactory";
+import { SHIMMER } from "../../../models/config/networkType";
+import { SettingsService } from "../../../services/settingsService";
+import FiatSelector from "../FiatSelector";
 import "./Header.scss";
+import NetworkSwitcher from "../NetworkSwitcher";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
-import NetworkSwitcher from "./NetworkSwitcher";
 
 /**
  * Component which will show the header.
@@ -51,9 +54,10 @@ class Header extends Component<HeaderProps, HeaderState> {
      */
     public render(): ReactNode {
         const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
+        const isShimmerNetwork = currentNetwork?.network === SHIMMER;
 
         return (
-            <header>
+            <header className={classNames({ "shimmer-header-bg": isShimmerNetwork })}>
                 <nav className="inner">
                     <div className="inner--main">
                         <div className="inner-wrapper">
@@ -62,7 +66,16 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 onClick={() => this.resetExpandedDropdowns()}
                                 className="logo-image--wrapper"
                             >
-                                <LogoHeader />
+                                {
+                                    isShimmerNetwork ?
+                                        <React.Fragment>
+                                            <div className="shimmer-logo">
+                                                <ShimmerLogo />
+                                            </div>
+                                            <h2 className="shimmer-heading">EXPLORER</h2>
+                                        </React.Fragment> :
+                                        <Logo />
+                                }
                             </Link>
                             {pages &&
                                 pages.length > 0 &&

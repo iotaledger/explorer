@@ -40,6 +40,10 @@
     background-color: var(--header-identity);
     letter-spacing: 0.1em;
 
+    &.shimmer-copyright {
+      background-color: var(--shimmer-copyright);
+    }
+
     .copyright-inner {
       max-width: $desktop-width;
       color: $gray-6;
