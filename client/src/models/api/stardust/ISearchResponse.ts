@@ -72,11 +72,6 @@ export interface ISearchResponse extends IResponse {
     milestone?: IMilestoneDetailsResponse;
 
     /**
-     * The included block id.
-     */
-    includedBlockId?: string;
-
-    /**
      * DiD identifier.
      */
     did?: string;

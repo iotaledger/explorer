@@ -4,11 +4,6 @@ import { IOutput } from "../../../models/api/stardust/IOutput";
 
 export interface TransactionPageState {
     /**
-     * The transaction id.
-     */
-    transactionId: string;
-
-    /**
      * The network id.
      */
     networkId?: string;
@@ -37,4 +32,9 @@ export interface TransactionPageState {
      * The total of the transfer excluding remainders.
      */
     transferTotal?: number;
+
+    /**
+     * The included block id
+     */
+    includedBlockId?: string;
 }

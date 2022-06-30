@@ -463,14 +463,14 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
             });
 
             this.setState({
-                actualBlockId: result.includedBlockId ?? blockId,
+                actualBlockId: blockId,
                 block: result.block
             }, async () => {
                 await this.updateBlockDetails();
             });
             if (updateUrl) {
                 window.history.pushState(undefined, window.document.title, `/${this.props.match.params.network
-                    }/block/${result.includedBlockId ?? blockId}`);
+                    }/block/${blockId}`);
             }
         } else {
             this.props.history.replace(`/${this.props.match.params.network

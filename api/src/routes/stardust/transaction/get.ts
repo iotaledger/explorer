@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ITransactionBlockRequest } from "../../../models/api/stardust/ITransactionBlockRequest";
-import { ITransactionBlockResponse } from "../../../models/api/stardust/ITransactionBlockRespose";
+import { ITransactionDetailsRequest } from "../../../models/api/stardust/ITransactionDetailsRequest";
+import { ITransactionDetailsResponse } from "../../../models/api/stardust/ITransactionDetailsResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
@@ -15,8 +15,8 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  */
 export async function get(
     config: IConfiguration,
-    request: ITransactionBlockRequest
-): Promise<ITransactionBlockResponse> {
+    request: ITransactionDetailsRequest
+): Promise<ITransactionDetailsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");

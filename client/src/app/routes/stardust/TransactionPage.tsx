@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -42,7 +43,8 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
         );
 
         this.state = {
-            transactionId: this.props.match.params.transactionId
+            networkId: "",
+            inputsCommitment: ""
         };
     }
 
@@ -53,7 +55,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
         super.componentDidMount();
 
         const block = await this._tangleCacheService.transactionIncludedBlockDetails(
-            this.props.match.params.network, this.state.transactionId
+            this.props.match.params.network, this.props.match.params.transactionId
         );
 
         if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
@@ -71,11 +73,11 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                 transferTotal,
                 block,
                 networkId: block.payload.essence.networkId,
-                inputsCommitment: block.payload.essence.inputsCommitment
+                inputsCommitment: block.payload.essence.inputsCommitment,
+                includedBlockId: TransactionsHelper.computeBlockIdFromBlock(block)
             });
         } else {
-            this.props.history.replace(`/${this.props.match.params.network
-            }/search/${this.state.transactionId}`);
+            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.transactionId}`);
         }
     }
 
@@ -85,6 +87,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
      */
     public render(): ReactNode {
         const network = this.props.match.params.network;
+        const transactionId = this.props.match.params.transactionId;
 
         return (
             <div className="transaction-page">
@@ -110,16 +113,34 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                 </div>
                                 <div className="value code row middle">
                                     <span className="margin-r-t">
-                                        {this.state.transactionId}
+                                        {transactionId}
                                     </span>
                                     <CopyButton
                                         onClick={() => ClipboardHelper.copy(
-                                            this.state.transactionId
+                                            transactionId
                                         )}
                                         buttonType="copy"
                                     />
                                 </div>
                             </div>
+                            {this.state.includedBlockId && (
+                                <div className="section--data">
+                                    <div className="label">
+                                        Included in block
+                                    </div>
+                                    <div className="value code row middle">
+                                        <span className="margin-r-t">
+                                            {this.state.includedBlockId}
+                                        </span>
+                                        <CopyButton
+                                            onClick={() => ClipboardHelper.copy(
+                                                this.state.includedBlockId
+                                            )}
+                                            buttonType="copy"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                             {this.state.networkId && (
                                 <div className="section--data">
                                     <div className="label">

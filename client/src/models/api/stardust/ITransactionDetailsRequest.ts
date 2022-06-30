@@ -1,4 +1,4 @@
-export interface ITransactionBlockRequest {
+export interface ITransactionDetailsRequest {
     /**
      * The network to search on.
      */

@@ -16,8 +16,8 @@ import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsRespon
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
-import { ITransactionBlockRequest } from "../../models/api/stardust/ITransactionBlockRequest";
-import { ITransactionBlockResponse } from "../../models/api/stardust/ITransactionBlockResponse";
+import { ITransactionDetailsRequest } from "../../models/api/stardust/ITransactionDetailsRequest";
+import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -67,9 +67,9 @@ export class StardustApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async transactionIncludedBlockDetails(
-        request: ITransactionBlockRequest
-    ): Promise<ITransactionBlockResponse> {
-        return this.callApi<unknown, ITransactionBlockResponse>(
+        request: ITransactionDetailsRequest
+    ): Promise<ITransactionDetailsResponse> {
+        return this.callApi<unknown, ITransactionDetailsResponse>(
             `stardust/transaction/${request.network}/${request.transactionId}`, "get"
         );
     }

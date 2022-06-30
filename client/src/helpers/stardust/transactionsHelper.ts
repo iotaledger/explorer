@@ -9,7 +9,7 @@ import {
     TREASURY_OUTPUT_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
     GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
     ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE, serializeTransactionPayload, FOUNDRY_OUTPUT_TYPE,
-    IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition, TransactionHelper
+    IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition, TransactionHelper, serializeBlock
 } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import { DateHelper } from "../../helpers/dateHelper";
@@ -166,6 +166,12 @@ export class TransactionsHelper {
         const tpWriteStream = new WriteStream();
         serializeTransactionPayload(tpWriteStream, payload);
         return Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
+    }
+
+    public static computeBlockIdFromBlock(block: IBlock) {
+        const bWriteStream = new WriteStream();
+        serializeBlock(bWriteStream, block);
+        return Converter.bytesToHex(Blake2b.sum256(bWriteStream.finalBytes()), true);
     }
 
     public static async getMessageStatus(

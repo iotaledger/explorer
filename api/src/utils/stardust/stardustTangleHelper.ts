@@ -1,10 +1,9 @@
 /* eslint-disable no-warning-comments */
-import { Blake2b } from "@iota/crypto.js-stardust";
 import {
-    addressBalance, IOutputResponse, serializeBlock, SingleNodeClient,
+    addressBalance, IOutputResponse, SingleNodeClient,
     IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload
 } from "@iota/iota.js-stardust";
-import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
+import { HexHelper } from "@iota/util.js-stardust";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/ITransactionsDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
@@ -12,7 +11,7 @@ import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
-import { ITransactionBlockResponse } from "../../models/api/stardust/ITransactionBlockRespose";
+import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../fetchHelper";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
@@ -80,17 +79,17 @@ export class StardustTangleHelper {
     public static async transactionIncludedBlockDetails(
         network: INetwork,
         transactionId: string
-    ): Promise<ITransactionBlockResponse> {
+    ): Promise<ITransactionDetailsResponse> {
         try {
             const client = new SingleNodeClient(network.provider, {
                 userName: network.user,
                 password: network.password
             });
 
-            const transactionBlock = await client.transactionIncludedBlock(transactionId);
+            const block = await client.transactionIncludedBlock(transactionId);
 
             return {
-                transactionBlock
+                block
             };
         } catch {
         }
@@ -343,13 +342,8 @@ export class StardustTangleHelper {
                 const transactionBlock = await client.transactionIncludedBlock(searchQuery.transactionId);
 
                 if (Object.keys(transactionBlock).length > 0) {
-                    const writeStream = new WriteStream();
-                    serializeBlock(writeStream, transactionBlock);
-                    const includedBlockId = Converter.bytesToHex(Blake2b.sum256(writeStream.finalBytes()));
-
                     return {
-                        transactionBlock,
-                        includedBlockId
+                        transactionBlock
                     };
                 }
             } catch {

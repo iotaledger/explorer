@@ -130,9 +130,9 @@ export class StardustTangleCacheService extends TangleCacheService {
 
             const response = await apiClient.transactionIncludedBlockDetails({ network: networkId, transactionId });
 
-            if (response.transactionBlock) {
+            if (response.block) {
                 this._stardustSearchCache[networkId][transactionId] = {
-                    data: { transactionBlock: response.transactionBlock },
+                    data: { transactionBlock: response.block },
                     cached: Date.now()
                 };
             }

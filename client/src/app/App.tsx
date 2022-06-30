@@ -295,13 +295,16 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                     withNetworkProvider(<StardustBlock {...props} />)
                                                 )}
                                             />
-                                            <Route
-                                                path="/:network/transaction/:transactionId"
-                                                component={(props: RouteComponentProps<TransactionPageProps>) =>
-                                                (
-                                                    withNetworkProvider(<TransactionPage {...props} />)
-                                                )}
-                                            />
+                                            {
+                                                isStardust &&
+                                                    <Route
+                                                        path="/:network/transaction/:transactionId"
+                                                        component={(props: RouteComponentProps<TransactionPageProps>) =>
+                                                        (
+                                                            withNetworkProvider(<TransactionPage {...props} />)
+                                                        )}
+                                                    />
+                                            }
                                             <Route
                                                 path="/:network/output/:outputId"
                                                 component={(props: RouteComponentProps<OutputPageProps>) =>
