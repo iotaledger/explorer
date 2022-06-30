@@ -3,6 +3,7 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -16,9 +17,9 @@ interface AssociatedOutputsTableProps {
      */
     network: string;
     /**
-     * Bech32 address
+     * Address details
      */
-    address: string;
+    addressDetails: IBech32AddressDetails;
 }
 
 const PAGE_SIZE = 10;
@@ -26,7 +27,7 @@ const PAGE_SIZE = 10;
 /**
  * Component to render the Associated Outputs section.
  */
-const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network, address }) => {
+const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network, addressDetails }) => {
     const [associatedOutputs, setAssociatedOutputs] = useState<IAssociatedOutput[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<IAssociatedOutput[]>([]);
@@ -36,7 +37,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
     useEffect(() => {
         const loadAssociatedOutputs = async () => {
             const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
-            const associatedOutputsResponse = await tangleCacheService.associatedOutputs(network, address);
+            const associatedOutputsResponse = await tangleCacheService.associatedOutputs(network, addressDetails);
 
             if (associatedOutputsResponse?.outputs) {
                 setAssociatedOutputs(associatedOutputsResponse.outputs);
@@ -45,7 +46,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
 
         /* eslint-disable @typescript-eslint/no-floating-promises */
         loadAssociatedOutputs();
-    }, [network, address]);
+    }, [network, addressDetails]);
 
     // Fetch associated output details
     useEffect(() => {

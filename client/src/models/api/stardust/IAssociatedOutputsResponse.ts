@@ -10,11 +10,13 @@ export enum AssociationType {
     ALIAS_GOVERNOR,
     ALIAS_ISSUER,
     ALIAS_SENDER,
+    ALIAS_ID,
     FOUNDRY_ALIAS,
     NFT_ADDRESS,
     NFT_STORAGE_RETURN,
     NFT_EXPIRATION_RETURN,
-    NFT_SENDER
+    NFT_SENDER,
+    NFT_ID
 }
 
 export interface IAssociatedOutput {

@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { IBlockMetadata, IOutputResponse } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
 import { IFoundriesRequest } from "../../models/api/stardust/IFoundriesRequest";
 import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
@@ -143,16 +144,17 @@ export class StardustTangleCacheService extends TangleCacheService {
     /**
      * Get the associated outputs.
      * @param network The network to search
-     * @param address The address to get the associated outputs for.
+     * @param addressDetails The address details of the address to get the associated outputs for.
      * @returns The associated outputs response.
      */
      public async associatedOutputs(
          network: string,
-         address: string
+         addressDetails: IBech32AddressDetails
         ): Promise<IAssociatedOutputsResponse | undefined> {
+        const address = addressDetails.bech32;
         if (!this._stardustSearchCache[network][`${address}-associated-outputs`]?.data?.addressAssociatedOutputs) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-            const response = await apiClient.associatedOutputs({ network, address });
+            const response = await apiClient.associatedOutputs({ network, addressDetails });
 
             if (response.outputs) {
                 this._stardustSearchCache[network][`${address}-associated-outputs`] = {

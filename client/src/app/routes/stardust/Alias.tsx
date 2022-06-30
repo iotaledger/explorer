@@ -228,7 +228,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                 {bech32AddressDetails?.bech32 && (
                                     <AssociatedOutputsTable
                                         network={networkId}
-                                        address={bech32AddressDetails.bech32}
+                                        addressDetails={bech32AddressDetails}
                                     />
                                 )}
                             </div>

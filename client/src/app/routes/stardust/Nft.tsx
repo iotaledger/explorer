@@ -115,7 +115,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                                 {bech32AddressDetails?.bech32 && (
                                     <AssociatedOutputsTable
                                         network={networkId}
-                                        address={bech32AddressDetails.bech32}
+                                        addressDetails={bech32AddressDetails}
                                     />
                                 )}
                             </div>
