@@ -30,6 +30,13 @@ export class AssociatedOutputsHelper {
 
         const indexerPlugin = new IndexerPluginClient(client);
 
+        // Basic output -> owner address
+        await this.tryFetchAssociatedOutputs(
+            async query => indexerPlugin.outputs(query),
+            { addressBech32: address },
+            AssociationType.BASIC_ADDRESS
+        );
+
         // Basic output -> storage return address
         await this.tryFetchAssociatedOutputs(
             async query => indexerPlugin.outputs(query),
@@ -84,6 +91,13 @@ export class AssociatedOutputsHelper {
             async query => indexerPlugin.foundries(query),
             { aliasAddressBech32: address },
             AssociationType.FOUNDRY_ALIAS
+        );
+
+        // Nft output -> owner address
+        await this.tryFetchAssociatedOutputs(
+            async query => indexerPlugin.nfts(query),
+            { addressBech32: address },
+            AssociationType.NFT_ADDRESS
         );
 
         // Nft output -> storage return address

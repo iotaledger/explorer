@@ -2,6 +2,7 @@ import { IOutputResponse } from "@iota/iota.js-stardust";
 import { IResponse } from "../IResponse";
 
 export enum AssociationType {
+    BASIC_ADDRESS,
     BASIC_SENDER,
     BASIC_EXPIRATION_RETURN,
     BASIC_STORAGE_RETURN,
@@ -10,6 +11,7 @@ export enum AssociationType {
     ALIAS_ISSUER,
     ALIAS_SENDER,
     FOUNDRY_ALIAS,
+    NFT_ADDRESS,
     NFT_STORAGE_RETURN,
     NFT_EXPIRATION_RETURN,
     NFT_SENDER
