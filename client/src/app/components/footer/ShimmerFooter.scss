@@ -1,23 +1,27 @@
-@import "../../scss/fonts";
-@import "../../scss/media-queries";
-@import "../../scss/mixins";
-@import "../../scss/variables";
+@import "../../../scss/fonts";
+@import "../../../scss/media-queries";
+@import "../../../scss/mixins";
+@import "../../../scss/variables";
 
 footer {
-  .footer--content {
+  .shimmer-footer--content {
     display: flex;
     justify-content: center;
-    padding: 40px 20px 64px 20px;
-    background-color: $gray-11;
+    padding: 40px 20px 0px 20px;
+    background-color: #061A28;
     color: $white;
+
+    .arcs {
+      margin-right: 40px
+    }
 
     @include tablet-down {
       padding: 32px 24px 24px 24px;
     }
 
-    .inner {
+    .shimmer-inner {
       flex: 1;
-      max-width: $desktop-width;
+      max-width: 80%;
 
       img {
         width: 152px;
@@ -27,14 +31,22 @@ footer {
 
       .footer-grid {
         display: grid;
-        grid-gap: 28px;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-gap: 8px;
+        grid-template-columns: 1fr 1fr 1fr 1fr 2fr;
         grid-template-rows: 1fr;
         margin-bottom: 24px;
+
+        section:not(.social--media__wrapper) {
+            padding: 0px 12px;
+        }
 
         @include tablet-down {
           grid-template-columns: 1fr 1fr;
           grid-template-rows: 1fr 1fr;
+
+          section:not(.social--media__wrapper) {
+              padding: 0px;
+          }
         }
       }
 
@@ -99,7 +111,7 @@ footer {
         @include font-size(12px, 20px);
 
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         color: $gray-6;
         font-family: $inter;
 
@@ -151,37 +163,22 @@ footer {
 
   .social--media__wrapper {
     display: flex;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+    align-items: center;
+    justify-content: space-evenly;
+    background-image: radial-gradient(#92A6B4 1px, transparent 0);
+    background-size: 40px 40px;
 
     .social--media__item {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 11px 0;
-      color: #{$white};
-      font-family: $inter;
-      letter-spacing: 0.5px;
-      text-decoration: none;
 
       svg {
         width: 24px;
         height: 24px;
-      }
 
-      @include font-size(16px, 18px);
-
-      span {
-        margin-left: 16px;
-        font-weight: 500;
-      }
-
-      @include desktop-down {
-        padding-bottom: 16px 8px;
-
-        span {
-          display: none;
+        path {
+          fill: #92A6B4;
         }
       }
     }

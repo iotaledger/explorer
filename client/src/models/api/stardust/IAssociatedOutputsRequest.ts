@@ -1,3 +1,5 @@
+import { IBech32AddressDetails } from "../IBech32AddressDetails";
+
 export interface IAssociatedOutputsRequest {
     /**
      * The network to search on.
@@ -5,7 +7,7 @@ export interface IAssociatedOutputsRequest {
     network: string;
 
     /**
-     * The address to get the associated outputs for.
+     * The address details of the address to get the associated outputs for.
      */
-    address: string;
+    addressDetails: IBech32AddressDetails;
 }

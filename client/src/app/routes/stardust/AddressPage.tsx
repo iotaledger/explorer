@@ -128,7 +128,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         const nativeTokensCount = outputResponse ? this.countDistinctNativeTokens(outputResponse) : 0;
         const hasNativeTokens = nativeTokensCount > 0;
         const hasNfts = nfts && nfts.length > 0;
-        const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
 
         return (
             <div className="addr">
@@ -297,9 +296,9 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         />
                                     </div>
                                 )}
-                                <TransactionHistory />
-                                {addressBech32 && (
-                                    <AssociatedOutputsTable network={networkId} address={addressBech32} />
+				  <TransactionHistory />
+                                {bech32AddressDetails && (
+                                    <AssociatedOutputsTable network={networkId} addressDetails={bech32AddressDetails} />
                                 )}
                             </div>
                         </div>
