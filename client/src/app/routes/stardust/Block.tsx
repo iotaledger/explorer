@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import {
     CONFLICT_REASON_STRINGS, IBlockMetadata, MILESTONE_PAYLOAD_TYPE,
     TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE
@@ -98,6 +99,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
      */
     public render(): ReactNode {
         const network = this.props.match.params.network;
+        const blockId = this.props.match.params.blockId;
 
         return (
             <div className="block">
@@ -146,11 +148,11 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                 </div>
                                 <div className="value code row middle">
                                     <span className="margin-r-t">
-                                        {this.state.actualBlockId}
+                                        {blockId}
                                     </span>
                                     <CopyButton
                                         onClick={() => ClipboardHelper.copy(
-                                            this.state.actualBlockId
+                                            blockId
                                         )}
                                         buttonType="copy"
                                     />
@@ -366,7 +368,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
      */
     private async updateBlockDetails(): Promise<void> {
         const details = await this._tangleCacheService.blockDetails(
-            this.props.match.params.network, this.state.actualBlockId ?? ""
+            this.props.match.params.network, this.props.match.params.blockId
         );
 
         this.setState({
@@ -463,7 +465,6 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
             });
 
             this.setState({
-                actualBlockId: blockId,
                 block: result.block
             }, async () => {
                 await this.updateBlockDetails();

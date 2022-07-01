@@ -6,7 +6,7 @@ export interface TransactionPageState {
     /**
      * The network id.
      */
-    networkId?: string;
+    tangleNetworkId?: string;
 
     /**
      * The commitment to the referenced inputs.

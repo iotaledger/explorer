@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
+import { TRANSACTION_PAYLOAD_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -42,10 +42,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
             `tangle-cache-${STARDUST}`
         );
 
-        this.state = {
-            networkId: "",
-            inputsCommitment: ""
-        };
+        this.state = {};
     }
 
     /**
@@ -72,9 +69,9 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                 outputs,
                 transferTotal,
                 block,
-                networkId: block.payload.essence.networkId,
+                tangleNetworkId: block.payload.essence.networkId,
                 inputsCommitment: block.payload.essence.inputsCommitment,
-                includedBlockId: TransactionsHelper.computeBlockIdFromBlock(block)
+                includedBlockId: TransactionHelper.calculateBlockId(block)
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.transactionId}`);
@@ -88,6 +85,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
     public render(): ReactNode {
         const network = this.props.match.params.network;
         const transactionId = this.props.match.params.transactionId;
+        const { inputs, outputs, transferTotal, block, tangleNetworkId, inputsCommitment, includedBlockId } = this.state;
 
         return (
             <div className="transaction-page">
@@ -123,70 +121,70 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                     />
                                 </div>
                             </div>
-                            {this.state.includedBlockId && (
+                            {includedBlockId && (
                                 <div className="section--data">
                                     <div className="label">
                                         Included in block
                                     </div>
                                     <div className="value code row middle">
                                         <span className="margin-r-t">
-                                            {this.state.includedBlockId}
+                                            {includedBlockId}
                                         </span>
                                         <CopyButton
                                             onClick={() => ClipboardHelper.copy(
-                                                this.state.includedBlockId
+                                                includedBlockId
                                             )}
                                             buttonType="copy"
                                         />
                                     </div>
                                 </div>
                             )}
-                            {this.state.networkId && (
+                            {tangleNetworkId && (
                                 <div className="section--data">
                                     <div className="label">
                                         Network ID
                                     </div>
                                     <div className="value code row middle">
                                         <span className="margin-r-t">
-                                            {this.state.networkId}
+                                            {tangleNetworkId}
                                         </span>
                                     </div>
                                 </div>
                             )}
-                            {this.state.inputsCommitment && (
+                            {inputsCommitment && (
                                 <div className="section--data">
                                     <div className="label">
                                         Input commitment
                                     </div>
                                     <div className="value code row middle">
                                         <span className="margin-r-t">
-                                            {this.state.inputsCommitment}
+                                            {inputsCommitment}
                                         </span>
                                     </div>
                                 </div>
                             )}
-                            {this.state.block?.nonce && (
+                            {block?.nonce && (
                                 <div className="section--data">
                                     <div className="label">
                                         Nonce
                                     </div>
                                     <div className="value row middle">
-                                        <span className="margin-r-t">{this.state.block?.nonce}</span>
+                                        <span className="margin-r-t">{block?.nonce}</span>
                                     </div>
                                 </div>
                             )}
                         </div>
-                        {this.state.inputs &&
-                            this.state.outputs &&
-                            this.state.transferTotal !== undefined &&
+                        {inputs &&
+                            outputs &&
+                            transferTotal !== undefined &&
                             (
                                 <div className="section">
                                     <TransactionPayload
                                         network={network}
                                         history={this.props.history}
-                                        inputs={this.state.inputs}
-                                        outputs={this.state.outputs}
-                                        transferTotal={this.state.transferTotal}
+                                        inputs={inputs}
+                                        outputs={outputs}
+                                        transferTotal={transferTotal}
                                     />
                                 </div>
                             )}
