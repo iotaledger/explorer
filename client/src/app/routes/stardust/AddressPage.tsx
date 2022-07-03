@@ -21,6 +21,7 @@ import Spinner from "../../components/Spinner";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
+import TransactionHistory from "../../components/stardust/history/TransactionHistory";
 import Nft from "../../components/stardust/Nft";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
@@ -30,7 +31,6 @@ import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
 import { AddressPageState } from "./AddressPageState";
 import INftDetails from "./INftDetails";
-import TransactionHistory from "../../components/stardust/history/TransactionHistory";
 
 /**
  * Component which will show the address page for stardust.
@@ -128,6 +128,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         const nativeTokensCount = outputResponse ? this.countDistinctNativeTokens(outputResponse) : 0;
         const hasNativeTokens = nativeTokensCount > 0;
         const hasNfts = nfts && nfts.length > 0;
+        const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
 
         return (
             <div className="addr">
@@ -205,7 +206,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         </div>
                                     </div>
                                     {(hasNativeTokens || hasNfts) && (
-                                        <div className="asset-cards row">
+                                        <div className="asset-summary row">
                                             {hasNativeTokens && (
                                                 <div className="section--assets">
                                                     <div className="inner--asset">
@@ -296,7 +297,9 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         />
                                     </div>
                                 )}
-				  <TransactionHistory />
+                                {addressBech32 && (
+                                    <TransactionHistory network={networkId} address={addressBech32} />
+                                )}
                                 {bech32AddressDetails && (
                                     <AssociatedOutputsTable network={networkId} addressDetails={bech32AddressDetails} />
                                 )}

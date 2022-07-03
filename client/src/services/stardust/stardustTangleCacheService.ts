@@ -11,6 +11,8 @@ import { INftDetailsResponse } from "../../models/api/stardust/INftDetailsRespon
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { TangleCacheService } from "../tangleCacheService";
 import { StardustApiClient } from "./stardustApiClient";
@@ -45,15 +47,28 @@ export class StardustTangleCacheService extends TangleCacheService {
     };
 
     /**
+     * The stardust API client service.
+     */
+    private readonly _api: StardustApiClient;
+
+    /**
+     * The key for the API client in service factory.
+     */
+    private readonly API_CLIENT_KEY = `api-client-${STARDUST}`;
+
+    /**
      * Creates a new instance of StardustTangleCacheService.
      */
     constructor() {
         super();
         this._stardustSearchCache = {};
+
         const networks = this._networkService.networks();
         for (const networkConfig of networks) {
             this._stardustSearchCache[networkConfig.network] = {};
         }
+
+        this._api = ServiceFactory.get<StardustApiClient>(this.API_CLIENT_KEY);
     }
 
     /**
@@ -65,10 +80,9 @@ export class StardustTangleCacheService extends TangleCacheService {
      */
     public async search(networkId: string, query: string, cursor?: string): Promise<ISearchResponse | undefined> {
         const fullQuery = query + (cursor ?? "");
-        if (!this._stardustSearchCache[networkId][fullQuery]) {
-            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
-            const response = await apiClient.search({ network: networkId, query });
+        if (!this._stardustSearchCache[networkId][fullQuery]) {
+            const response = await this._api.search({ network: networkId, query });
 
             if (response.addressDetails ||
                 response.block ||
@@ -101,9 +115,7 @@ export class StardustTangleCacheService extends TangleCacheService {
             metadata?: IBlockMetadata;
             error?: string;
         }> {
-        const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-
-        const response = await apiClient.blockDetails({ network: networkId, blockId });
+        const response = await this._api.blockDetails({ network: networkId, blockId });
 
         if (response) {
             return {
@@ -126,9 +138,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         outputId: string
     ): Promise<IOutputResponse | undefined> {
         if (!this._stardustSearchCache[networkId][outputId]?.data?.output) {
-            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-
-            const response = await apiClient.outputDetails({ network: networkId, outputId });
+            const response = await this._api.outputDetails({ network: networkId, outputId });
 
             if (response?.output) {
                 this._stardustSearchCache[networkId][outputId] = {
@@ -153,8 +163,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         ): Promise<IAssociatedOutputsResponse | undefined> {
         const address = addressDetails.bech32;
         if (!this._stardustSearchCache[network][`${address}-associated-outputs`]?.data?.addressAssociatedOutputs) {
-            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-            const response = await apiClient.associatedOutputs({ network, addressDetails });
+            const response = await this._api.associatedOutputs({ network, addressDetails });
 
             if (response.outputs) {
                 this._stardustSearchCache[network][`${address}-associated-outputs`] = {
@@ -179,9 +188,7 @@ export class StardustTangleCacheService extends TangleCacheService {
     ): Promise<IMilestoneDetailsResponse | undefined> {
         const index = milestoneIndex.toString();
         if (!this._stardustSearchCache[networkId][index]?.data?.milestone) {
-            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-
-            const response = await apiClient.milestoneDetails({ network: networkId, milestoneIndex });
+            const response = await this._api.milestoneDetails({ network: networkId, milestoneIndex });
 
             if (response?.milestone) {
                 this._stardustSearchCache[networkId][index] = {
@@ -197,6 +204,34 @@ export class StardustTangleCacheService extends TangleCacheService {
     }
 
     /**
+     * Get the transaction history of an address.
+     * @param request The transaction history request object.
+     * @returns The transaction history response.
+     */
+    public async transactionHistory(
+        request: ITransactionHistoryRequest
+    ): Promise<ITransactionHistoryResponse | undefined> {
+        const networkId = request.network;
+        const key = `${request.address}${request.cursor}`;
+        const cacheEntry = this._stardustSearchCache[networkId][key]?.data?.historyOutputs;
+
+        if (!cacheEntry) {
+            const response: ITransactionHistoryResponse = await this._api.transactionHistory(request);
+
+            if (response.items) {
+                this._stardustSearchCache[networkId][key] = {
+                    data: {
+                        historyOutputs: response
+                    },
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._stardustSearchCache[networkId][key]?.data?.historyOutputs;
+    }
+
+    /**
      * Get the NFT outputs.
      * @param request The request.
      * @param skipCache Skip looking in the cache.
@@ -209,8 +244,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         const cacheEntry = this._stardustSearchCache[request.network][`${request.address}--nft-outputs`];
 
         if (!cacheEntry?.data?.nftOutputs || skipCache) {
-            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-            const nftOutputs = await apiClient.nftOutputs(request);
+            const nftOutputs = await this._api.nftOutputs(request);
 
             this._stardustSearchCache[request.network][`${request.address}--nft-outputs`] = {
                 data: { nftOutputs: nftOutputs.outputs },
@@ -236,8 +270,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         const cacheEntry = this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`];
 
         if (!cacheEntry?.data?.foundryOutputs || skipCache) {
-            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-            const foundryOutputs = await apiClient.aliasFoundries(request);
+            const foundryOutputs = await this._api.aliasFoundries(request);
 
             this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`] = {
                 data: { foundryOutputs: foundryOutputs.foundryOutputsResponse },
@@ -264,9 +297,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`];
 
         if (!cacheEntry?.data?.nftDetails || skipCache) {
-            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-
-            const nftDetails = await apiClient.nftDetails(request);
+            const nftDetails = await this._api.nftDetails(request);
             this._stardustSearchCache[request.network][`${request.nftId}--nft-outputs`] = {
                 data: {
                     nftDetails

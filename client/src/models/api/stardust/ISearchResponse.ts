@@ -4,6 +4,7 @@ import IAddressDetailsWithBalance from "./IAddressDetailsWithBalance";
 import { IAssociatedOutputsResponse } from "./IAssociatedOutputsResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { INftDetailsResponse } from "./INftDetailsResponse";
+import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
@@ -25,6 +26,11 @@ export interface ISearchResponse extends IResponse {
      * Output if it was found (block will also be populated).
      */
     output?: IOutputResponse;
+
+    /**
+     * The outputIds of transaction history request.
+     */
+    historyOutputs?: ITransactionHistoryResponse;
 
     /**
      * Associated outputs of the address.
