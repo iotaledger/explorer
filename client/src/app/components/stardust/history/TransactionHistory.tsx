@@ -25,6 +25,7 @@ interface IOutputDetailsMap {
 }
 
 const PAGE_SIZE: number = 10;
+const SORT: string = "asc";
 
 /**
  * Component which will display transaction history.
@@ -56,7 +57,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
             network,
             address,
             pageSize: PAGE_SIZE,
-            sort: "desc",
+            sort: SORT,
             cursor
         };
 
