@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import {
-    CONFLICT_REASON_STRINGS, IBlockMetadata, MILESTONE_PAYLOAD_TYPE,
-    TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE
+    MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE
 } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
@@ -9,16 +8,16 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
-import { TangleStatus } from "../../../models/tangleStatus";
+import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
 import { SettingsService } from "../../../services/settingsService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
-import InclusionState from "../../components/InclusionState";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
+import InclusionState from "../../components/stardust/InclusionState";
 import MilestonePayload from "../../components/stardust/MilestonePayload";
 import TaggedDataPayload from "../../components/stardust/TaggedDataPayload";
 import TransactionPayload from "../../components/stardust/TransactionPayload";
@@ -79,7 +78,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        await this.loadBlock(this.props.match.params.blockId, false);
+        await this.loadBlock(this.props.match.params.blockId);
     }
 
     /**
@@ -164,7 +163,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     <div className="label">
                                         Transaction Id
                                     </div>
-                                    <div className="value value__secondary row middle">
+                                    <div className="value value__secondary row middle link">
                                         <Link
                                             to={`/${network}/transaction/${this.state.transactionId}`}
                                             className="margin-r-t"
@@ -246,6 +245,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                     inputs={this.state.inputs}
                                                     outputs={this.state.outputs}
                                                     transferTotal={this.state.transferTotal}
+                                                    header="Transaction Payload"
                                                 />
                                             </div>
                                             {
@@ -284,7 +284,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                             </React.Fragment>
                         )}
                         {this.state.advancedMode && (
-                            <div className="section">
+                            <div className="section metadata-section">
                                 <div className="section--header section--header__space-between">
                                     <div className="row middle">
                                         <h2>
@@ -341,7 +341,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                         Parents
                                                     </div>
                                                     {this.state.metadata.parents.map((parent, idx) => (
-                                                        <div key={idx} className="value code">
+                                                        <div key={idx} className="value code link">
                                                             <Link
                                                                 to={`/${network}/block/${parent}`}
                                                                 className="margin-r-t"
@@ -374,8 +374,8 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
         this.setState({
             metadata: details?.metadata,
             metadataError: details?.error,
-            conflictReason: this.calculateConflictReason(details?.metadata),
-            blockTangleStatus: this.calculateStatus(details?.metadata)
+            conflictReason: calculateConflictReason(details?.metadata),
+            blockTangleStatus: calculateStatus(details?.metadata)
         });
 
         if (!details?.metadata?.referencedByMilestoneIndex) {
@@ -386,62 +386,15 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
     }
 
     /**
-     * Calculate the status for the block.
-     * @param metadata The metadata to calculate the status from.
-     * @returns The block status.
-     */
-    private calculateStatus(metadata?: IBlockMetadata): TangleStatus {
-        let blockTangleStatus: TangleStatus = "unknown";
-
-        if (metadata) {
-            if (metadata.milestoneIndex) {
-                blockTangleStatus = "milestone";
-            } else if (metadata.referencedByMilestoneIndex) {
-                blockTangleStatus = "referenced";
-            } else {
-                blockTangleStatus = "pending";
-            }
-        }
-
-        return blockTangleStatus;
-    }
-
-    /**
-     * Calculate the conflict reason for the block.
-     * @param metadata The metadata to calculate the conflict reason from.
-     * @returns The conflict reason.
-     */
-    private calculateConflictReason(metadata?: IBlockMetadata): string {
-        let conflictReason: string = "";
-
-        if (metadata?.ledgerInclusionState === "conflicting") {
-            conflictReason = metadata.conflictReason && CONFLICT_REASON_STRINGS[metadata.conflictReason]
-                ? CONFLICT_REASON_STRINGS[metadata.conflictReason]
-                : "The reason for the conflict is unknown";
-        }
-
-        return conflictReason;
-    }
-
-    /**
      * Load the block with the given id.
      * @param blockId The index to load.
-     * @param updateUrl Update the url.
      */
-    private async loadBlock(blockId: string, updateUrl: boolean): Promise<void> {
+    private async loadBlock(blockId: string): Promise<void> {
         const result = await this._tangleCacheService.search(
             this.props.match.params.network, blockId
         );
 
         if (result?.block) {
-            if (!updateUrl) {
-                window.scrollTo({
-                    left: 0,
-                    top: 0,
-                    behavior: "smooth"
-                });
-            }
-
             const { inputs, outputs, unlockAddresses, transferTotal } =
                 await TransactionsHelper.getInputsAndOutputs(
                     result?.block,
@@ -469,10 +422,6 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
             }, async () => {
                 await this.updateBlockDetails();
             });
-            if (updateUrl) {
-                window.history.pushState(undefined, window.document.title, `/${this.props.match.params.network
-                    }/block/${blockId}`);
-            }
         } else {
             this.props.history.replace(`/${this.props.match.params.network
                 }/search/${blockId}`);

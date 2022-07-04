@@ -48,6 +48,16 @@
                     margin-top: 44px;
                 }
             }
+
+            .link {
+                @include font-size(14px);
+
+                color: $blue-5;
+                font-family: $ibm-plex-mono;
+                font-weight: normal;
+                letter-spacing: 0.02em;
+                line-height: 20px;
+            }
         }
     }
 }

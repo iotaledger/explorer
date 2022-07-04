@@ -28,5 +28,10 @@ export interface TransactionPayloadProps {
      * History for navigation.
      */
     history: H.History;
+
+    /**
+     * The header title of this section.
+     */
+    header: string;
 }
 

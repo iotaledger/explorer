@@ -1,6 +1,7 @@
-import { IBlock, IUTXOInput } from "@iota/iota.js-stardust";
+import { IBlock, IBlockMetadata, IUTXOInput } from "@iota/iota.js-stardust";
 import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
+import { TangleStatus } from "../../../models/tangleStatus";
 
 export interface TransactionPageState {
     /**
@@ -37,4 +38,24 @@ export interface TransactionPageState {
      * The included block id
      */
     includedBlockId?: string;
+
+    /**
+     * Metadata.
+     */
+    metadata?: IBlockMetadata;
+
+    /**
+     * The metadata failed.
+     */
+    metadataError?: string;
+
+    /**
+     * Reason for the conflict.
+     */
+    conflictReason?: string;
+
+    /**
+     * The state of the message on the tangle.
+     */
+    blockTangleStatus: TangleStatus;
 }
