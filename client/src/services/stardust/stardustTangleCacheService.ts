@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { IBlockMetadata, IOutputResponse } from "@iota/iota.js-stardust";
+import { IBlock, IBlockMetadata, IOutputResponse } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
@@ -88,6 +88,7 @@ export class StardustTangleCacheService extends TangleCacheService {
                 response.block ||
                 response.milestone ||
                 response.output ||
+                response.transactionBlock ||
                 response.aliasOutputId ||
                 response.foundryOutputId ||
                 response.nftOutputId ||
@@ -125,6 +126,32 @@ export class StardustTangleCacheService extends TangleCacheService {
         }
 
         return {};
+    }
+
+    /**
+     * Get the block metadata.
+     * @param networkId The network to search
+     * @param transactionId The transaction to get the metadata for.
+     * @returns The details response.
+     */
+     public async transactionIncludedBlockDetails(
+        networkId: string,
+        transactionId: string
+        ): Promise<IBlock | undefined> {
+        if (!this._stardustSearchCache[networkId][transactionId]?.data?.transactionBlock) {
+            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+
+            const response = await apiClient.transactionIncludedBlockDetails({ network: networkId, transactionId });
+
+            if (response.block) {
+                this._stardustSearchCache[networkId][transactionId] = {
+                    data: { transactionBlock: response.block },
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._stardustSearchCache[networkId][transactionId]?.data?.transactionBlock;
     }
 
     /**

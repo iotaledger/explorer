@@ -13,6 +13,11 @@ export interface ISearchResponse extends IResponse {
     block?: IBlock;
 
     /**
+     * The transaction included block.
+     */
+    transactionBlock?: IBlock;
+
+    /**
      * Address details when address was found.
      */
     addressDetails?: IAddressDetailsWithBalance;
@@ -71,11 +76,6 @@ export interface ISearchResponse extends IResponse {
      * Milestone if it was found.
      */
     milestone?: IMilestoneDetailsResponse;
-
-    /**
-     * The included block id.
-     */
-    includedBlockId?: string;
 
     /**
      * DiD identifier.

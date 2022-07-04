@@ -44,15 +44,13 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { network, inputs, outputs, transferTotal, history } = this.props;
+        const { network, inputs, outputs, transferTotal, history, header } = this.props;
 
         return (
             <div className="transaction-payload">
                 <div className="section--header">
                     <div className="row middle">
-                        <h2>
-                            Transaction Payload
-                        </h2>
+                        <h2>{header}</h2>
                         <Modal icon="info" data={transactionPayloadMessage} />
                     </div>
                     <div className="transaction-value">

@@ -1,16 +1,16 @@
 /* eslint-disable no-warning-comments */
-import { Blake2b } from "@iota/crypto.js-stardust";
 import {
-    addressBalance, IOutputResponse, serializeBlock, SingleNodeClient,
+    addressBalance, IOutputResponse, SingleNodeClient,
     IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload,
     IBlockMetadata, IMilestonePayload, IBlock
 } from "@iota/iota.js-stardust";
-import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
+import { HexHelper } from "@iota/util.js-stardust";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
 
@@ -35,6 +35,30 @@ export class StardustTangleHelper {
         if (metadata) {
             return {
                 metadata
+            };
+        }
+    }
+
+    /**
+     * Get the transaction included block.
+     * @param network The network to find the items on.
+     * @param transactionId The transaction id to get the details.
+     * @returns The item details.
+     */
+    public static async transactionIncludedBlock(
+        network: INetwork,
+        transactionId: string
+    ): Promise<ITransactionDetailsResponse> {
+        transactionId = HexHelper.addPrefix(transactionId);
+        const block = await this.fromNodeWithPermanodeFallBack<string, IBlock>(
+            transactionId,
+            "transactionIncludedBlock",
+            network
+        );
+
+        if (block) {
+            return {
+                block
             };
         }
     }
@@ -224,9 +248,9 @@ export class StardustTangleHelper {
             }
         }
 
-        if (searchQuery.blockIdOrTransactionId) {
-            let block = await this.fromNodeWithPermanodeFallBack<string, IBlock>(
-                searchQuery.blockIdOrTransactionId,
+        if (searchQuery.blockId) {
+            const block = await this.fromNodeWithPermanodeFallBack<string, IBlock>(
+                searchQuery.blockId,
                 "block",
                 network
             );
@@ -236,21 +260,18 @@ export class StardustTangleHelper {
                     block
                 };
             }
+        }
 
-            block = await this.fromNodeWithPermanodeFallBack<string, IBlock>(
-                searchQuery.blockIdOrTransactionId,
+        if (searchQuery.transactionId) {
+            const block = await this.fromNodeWithPermanodeFallBack<string, IBlock>(
+                searchQuery.transactionId,
                 "transactionIncludedBlock",
                 network
             );
 
             if (block && Object.keys(block).length > 0) {
-                const writeStream = new WriteStream();
-                serializeBlock(writeStream, block);
-                const includedBlockId = Converter.bytesToHex(Blake2b.sum256(writeStream.finalBytes()));
-
                 return {
-                    block,
-                    includedBlockId
+                    block
                 };
             }
         }

@@ -225,6 +225,8 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                         response.output.metadata.outputIndex
                                     );
                                     routeParam = outputId;
+                                } else if (response.transactionBlock) {
+                                    route = "transaction";
                                 } else if (response.aliasOutputId) {
                                     route = "alias";
                                     routeParam = response.aliasOutputId;
