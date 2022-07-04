@@ -159,8 +159,9 @@ export class AssociatedOutputsHelper {
 
         do {
             try {
-                const outputs = typeof args === "string" ? await fetch(args)
-                    : await fetch({ ...args, cursor });
+                const outputs = typeof args === "string" ?
+                    await fetch(args) :
+                    await fetch({ ...args, cursor });
 
                 if (outputs.items.length > 0) {
                     for (const outputId of outputs.items) {

@@ -1016,7 +1016,7 @@ module.exports = {
             "error"
         ],
         "operator-linebreak": [
-            "error", "after", { "overrides": { "?": "before", ":": "before" } }
+            "error", "after", { "overrides": { "?": "ignore", ":": "ignore" } }
         ],
         "padded-blocks": [
             "error",
