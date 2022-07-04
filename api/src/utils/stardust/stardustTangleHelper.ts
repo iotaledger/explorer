@@ -1,10 +1,9 @@
 /* eslint-disable no-warning-comments */
-import { Blake2b } from "@iota/crypto.js-stardust";
 import {
-    addressBalance, IOutputResponse, serializeBlock, SingleNodeClient,
+    addressBalance, IOutputResponse, SingleNodeClient,
     IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload
 } from "@iota/iota.js-stardust";
-import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
+import { HexHelper } from "@iota/util.js-stardust";
 import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/ITransactionsDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
@@ -12,6 +11,7 @@ import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../fetchHelper";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
@@ -67,6 +67,31 @@ export class StardustTangleHelper {
                 };
             } catch {
             }
+        }
+    }
+
+    /**
+     * Get the block details.
+     * @param network The network to find the items on.
+     * @param transactionId The transaction id to get the details.
+     * @returns The item details.
+     */
+    public static async transactionIncludedBlockDetails(
+        network: INetwork,
+        transactionId: string
+    ): Promise<ITransactionDetailsResponse> {
+        try {
+            const client = new SingleNodeClient(network.provider, {
+                userName: network.user,
+                password: network.password
+            });
+
+            const block = await client.transactionIncludedBlock(transactionId);
+
+            return {
+                block
+            };
+        } catch {
         }
     }
 
@@ -312,29 +337,26 @@ export class StardustTangleHelper {
             }
         }
 
-        if (searchQuery.blockIdOrTransactionId) {
+        if (searchQuery.transactionId) {
             try {
-                const block = await client.block(searchQuery.blockIdOrTransactionId);
+                const transactionBlock = await client.transactionIncludedBlock(searchQuery.transactionId);
 
-                if (Object.keys(block).length > 0) {
+                if (Object.keys(transactionBlock).length > 0) {
                     return {
-                        block
+                        transactionBlock
                     };
                 }
             } catch {
             }
+        }
 
+        if (searchQuery.blockId) {
             try {
-                const block = await client.transactionIncludedBlock(searchQuery.blockIdOrTransactionId);
+                const block = await client.block(searchQuery.blockId);
 
                 if (Object.keys(block).length > 0) {
-                    const writeStream = new WriteStream();
-                    serializeBlock(writeStream, block);
-                    const includedBlockId = Converter.bytesToHex(Blake2b.sum256(writeStream.finalBytes()));
-
                     return {
-                        block,
-                        includedBlockId
+                        block
                     };
                 }
             } catch {

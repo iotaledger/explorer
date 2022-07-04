@@ -10,6 +10,7 @@ import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysal
 import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import AsyncComponent from "../../components/AsyncComponent";
+import InclusionState from "../../components/chrysalis/InclusionState";
 import IndexationPayload from "../../components/chrysalis/IndexationPayload";
 import MessageTangleState from "../../components/chrysalis/MessageTangleState";
 import MessageTree from "../../components/chrysalis/MessageTree";
@@ -18,7 +19,6 @@ import ReceiptPayload from "../../components/chrysalis/ReceiptPayload";
 import TransactionPayload from "../../components/chrysalis/TransactionPayload";
 import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
-import InclusionState from "../../components/InclusionState";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import Switcher from "../../components/Switcher";

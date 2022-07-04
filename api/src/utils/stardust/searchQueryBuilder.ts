@@ -43,9 +43,13 @@ export interface SearchQuery {
      */
     address?: MaybeAddress;
     /**
-     * The blockId or transactionId query.
+     * The blockId query.
      */
-    blockIdOrTransactionId?: string;
+    blockId?: string;
+    /**
+     * The transactionId query.
+     */
+    transactionId?: string;
     /**
      * The outputId query.
      */
@@ -103,7 +107,8 @@ export class SearchQueryBuilder {
      * @returns the SearchQuery object.
      */
     public build(): SearchQuery {
-        let blockIdOrTransactionId: string;
+        let blockId: string;
+        let transactionId: string;
         let output: string;
         let aliasId: string;
         let nftId: string;
@@ -146,7 +151,8 @@ export class SearchQueryBuilder {
 
         // if the hex has 66 characters, it might be a block or transaction id
         if (address?.hex && address.hex.length === 66) {
-            blockIdOrTransactionId = address.hex;
+            blockId = address.hex;
+            transactionId = address.hex;
         }
 
         // if the hex is 70 characters, try and look for an output
@@ -162,7 +168,8 @@ export class SearchQueryBuilder {
             milestoneIndex,
             milestoneId,
             address,
-            blockIdOrTransactionId,
+            blockId,
+            transactionId,
             output,
             aliasId,
             nftId,

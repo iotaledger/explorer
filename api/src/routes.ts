@@ -36,6 +36,10 @@ export const routes: IRoute[] = [
     { path: "/stardust/milestone/:network/:milestoneIndex", method: "get", folder: "stardust/milestone", func: "get" },
     { path: "/stardust/output/:network/:outputId", method: "get", folder: "stardust/output", func: "get" },
     {
+        path: "/stardust/transaction/:network/:transactionId", method: "get",
+        folder: "stardust/transaction", func: "get"
+    },
+    {
         path: "/stardust/output/associated/:network/:address", method: "post",
         folder: "stardust/output/associated", func: "post", dataBody: true
     },
