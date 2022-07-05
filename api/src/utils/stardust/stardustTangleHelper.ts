@@ -213,15 +213,9 @@ export class StardustTangleHelper {
         query: string
     ): Promise<ISearchResponse> {
         const {
-            bechHrp, provider, user, password,
-            permaNodeEndpoint, permaNodeEndpointUser, permaNodeEndpointPassword
+            bechHrp, provider, user, password
         } = network;
-
         const node = new SingleNodeClient(provider, { userName: user, password });
-        const permanode = new SingleNodeClient(
-            permaNodeEndpoint,
-            { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
-        );
         const indexerPlugin = new IndexerPluginClient(node);
 
         const searchQuery: SearchQuery = new SearchQueryBuilder(query, bechHrp).build();
@@ -342,10 +336,7 @@ export class StardustTangleHelper {
 
         if (searchQuery.address?.bech32) {
             try {
-                let addressBalanceDetails = await addressBalance(node, searchQuery.address.bech32);
-                if (!addressBalanceDetails && permaNodeEndpoint) {
-                    addressBalanceDetails = await addressBalance(permanode, searchQuery.address.bech32);
-                }
+                const addressBalanceDetails = await addressBalance(node, searchQuery.address.bech32);
 
                 if (addressBalanceDetails) {
                     const addressDetails = {
