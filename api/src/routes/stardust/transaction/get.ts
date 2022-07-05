@@ -28,5 +28,5 @@ export async function get(
         return {};
     }
 
-    return StardustTangleHelper.transactionIncludedBlockDetails(networkConfig, request.transactionId);
+    return StardustTangleHelper.transactionIncludedBlock(networkConfig, request.transactionId);
 }

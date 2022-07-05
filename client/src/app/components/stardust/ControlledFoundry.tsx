@@ -1,12 +1,12 @@
 import React from "react";
-import "./Transaction.scss";
 import { Link } from "react-router-dom";
 import { ControlledFoundryProps } from "./ControlledFoundryProps";
+import "./ControlledFoundry.scss";
 
 const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, tableFormat, network }) => (
     tableFormat ? (
         <tr>
-            <td className="value code highlight">
+            <td className="highlight">
                 <Link
                     to={`/${network}/search/${foundryId}`}
                     className="margin-r-t"
@@ -16,7 +16,7 @@ const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, tableF
             </td>
         </tr>
     ) : (
-        <div className="transaction-card">
+        <div className="controlled-foundry--card">
             <div className="field">
                 <div className="label">Foundry Id</div>
                 <div className="value message-id">
@@ -27,9 +27,6 @@ const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, tableF
                         {foundryId}
                     </Link>
                 </div>
-            </div>
-            <div className="field">
-                <div className="label">Date Created</div>
             </div>
         </div >
     )

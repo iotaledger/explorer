@@ -22,11 +22,13 @@ import { OgItemsService } from "./services/og/ogItemsService";
 import { OgStatsService } from "./services/og/ogStatsService";
 import { ZmqService } from "./services/og/zmqService";
 import { BaseTokenInfoService } from "./services/stardust/baseTokenInfoService";
+import { ChronicleService } from "./services/stardust/chronicleService";
 import { StardustFeedService } from "./services/stardust/stardustFeedService";
 import { StardustItemsService } from "./services/stardust/stardustItemsService";
 import { StardustStatsService } from "./services/stardust/stardustStatsService";
 
-const isKnownProtocolVersion = (networkConfig: INetwork) => networkConfig.protocolVersion === OG ||
+const isKnownProtocolVersion = (networkConfig: INetwork) =>
+    networkConfig.protocolVersion === OG ||
          networkConfig.protocolVersion === CHRYSALIS ||
              networkConfig.protocolVersion === STARDUST;
 
@@ -75,8 +77,7 @@ export async function initServices(config: IConfiguration) {
         }
 
         if (isKnownProtocolVersion(networkConfig)) {
-            const itemsService = ServiceFactory.get<IItemsService>(
-                `items-${networkConfig.network}`);
+            const itemsService = ServiceFactory.get<IItemsService>(`items-${networkConfig.network}`);
 
             if (itemsService) {
                 itemsService.init();
@@ -187,6 +188,13 @@ function initStardustServices(networkConfig: INetwork): void {
         `base-token-${networkConfig.network}`,
         () => baseTokenInfoService
     );
+
+    if (networkConfig.permaNodeEndpoint) {
+        ServiceFactory.register(
+            `chronicle-${networkConfig.network}`,
+            () => new ChronicleService(networkConfig)
+        );
+    }
 }
 
 /**

@@ -222,7 +222,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                             <Modal icon="info" data={mainHeaderMessage} />
                                         </div>
                                     </div>
-                                    <table className="transaction--table activity--table">
+                                    <table className="activity-table">
                                         <thead>
                                             <tr>
                                                 <th>Transaction Id</th>
@@ -251,7 +251,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                         </tbody>
                                     </table>
                                     {/* Only visible in mobile -- Card assets*/}
-                                    <div className="transaction-cards">
+                                    <div className="activity-cards">
                                         {this.currentPageActivities.map((activity, k) =>
                                             (
                                                 <React.Fragment key={`${activity?.transactionId}${k}`}>

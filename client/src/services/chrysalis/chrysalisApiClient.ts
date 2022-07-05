@@ -4,6 +4,7 @@ import { IMilestoneDetailsResponse } from "../../models/api/chrysalis/IMilestone
 import { IOutputDetailsResponse } from "../../models/api/chrysalis/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
+import { ITransactionsDetailsRequest } from "../../models/api/chrysalis/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ICurrenciesResponse } from "../../models/api/ICurrenciesResponse";
 import { ICurrencyNamesResponse } from "../../models/api/ICurrencyNamesResponse";
@@ -18,7 +19,6 @@ import { IMessageDetailsRequest } from "../../models/api/IMessageDetailsRequest"
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
 import { INetworkGetResponse } from "../../models/api/INetworkGetResponse";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
-import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
 import { IAddressGetRequest } from "../../models/api/og/IAddressGetRequest";
 import { IAddressGetResponse } from "../../models/api/og/IAddressGetResponse";
 import { ITransactionActionRequest } from "../../models/api/og/ITransactionActionRequest";

@@ -31,9 +31,10 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
     const [associatedOutputs, setAssociatedOutputs] = useState<IAssociatedOutput[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<IAssociatedOutput[]>([]);
+    const [associatedOutputsLoaded, setAssociatedOutputsLoaded] = useState(false);
     const [outputDetailsLoaded, setOutputDetailsLoaded] = useState(false);
 
-    // Fetch associated output ids
+    // First fetch associated output ids
     useEffect(() => {
         const loadAssociatedOutputs = async () => {
             const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
@@ -41,6 +42,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
 
             if (associatedOutputsResponse?.outputs) {
                 setAssociatedOutputs(associatedOutputsResponse.outputs);
+                setAssociatedOutputsLoaded(true);
             }
         };
 
@@ -48,40 +50,48 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
         loadAssociatedOutputs();
     }, [network, addressDetails]);
 
-    // Fetch associated output details
+    // Then fetch associated output details
     useEffect(() => {
-        if (associatedOutputs && !outputDetailsLoaded) {
+        if (associatedOutputs.length > 0 && associatedOutputsLoaded) {
             const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
-            for (const associatedOutput of associatedOutputs) {
-                const outputId = associatedOutput.outputId;
+            const loadOutputDetails = async () => {
+                const updatedAssociatedOutputs: IAssociatedOutput[] = [...associatedOutputs];
+                const promises: Promise<void>[] = [];
 
-                tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
-                    if (!associatedOutput.outputDetails) {
-                        setAssociatedOutputs(
-                            prevOutputs =>
-                                prevOutputs.map(prevOutput => (
-                                    associatedOutput.outputId === prevOutput.outputId &&
-                                        associatedOutput.association === prevOutput.association ?
-                                        { ...associatedOutput, outputDetails } :
-                                        prevOutput
-                            ))
-                            .sort((a, b) => {
-                                const timestampBookedA = a.outputDetails?.metadata.milestoneTimestampBooked;
-                                const timestampBookedB = b.outputDetails?.metadata.milestoneTimestampBooked;
-                                return moment(timestampBookedA).isAfter(moment(timestampBookedB)) ? -1 : 1;
-                            })
-                        );
-                    }
-                })
-                .finally(() => {
-                    if (associatedOutputs.length > 0) {
-                        setOutputDetailsLoaded(true);
-                    }
-                });
-            }
+                for (const [idx, associatedOutput] of updatedAssociatedOutputs.entries()) {
+                    const outputId = associatedOutput.outputId;
+
+                    const outputDetailsPromise = new Promise<void>((resolve, reject) => {
+                        tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
+                            if (!outputDetails?.output) {
+                                // eslint-disable-next-line prefer-promise-reject-errors
+                                reject("Couldn't load all associated output details");
+                            }
+
+                            updatedAssociatedOutputs[idx] = { ...associatedOutput, outputDetails };
+                            resolve();
+                        }).catch(e => reject(e));
+                    });
+
+                    promises.push(outputDetailsPromise);
+                }
+
+                Promise.all(promises).then(() => {
+                    updatedAssociatedOutputs.sort((a, b) => {
+                        const timestampBookedA = a.outputDetails?.metadata.milestoneTimestampBooked;
+                        const timestampBookedB = b.outputDetails?.metadata.milestoneTimestampBooked;
+                        return moment(timestampBookedA).isAfter(moment(timestampBookedB)) ? -1 : 1;
+                    });
+
+                    setAssociatedOutputs(updatedAssociatedOutputs);
+                    setOutputDetailsLoaded(true);
+                }).catch(e => console.log(e));
+            };
+
+            loadOutputDetails();
         }
-    }, [associatedOutputs]);
+    }, [associatedOutputsLoaded]);
 
     // On page change handler
     useEffect(() => {

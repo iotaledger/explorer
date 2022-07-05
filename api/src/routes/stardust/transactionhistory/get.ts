@@ -1,22 +1,22 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ITransactionsDetailsRequest } from "../../../models/api/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "../../../models/api/ITransactionsDetailsResponse";
+import { ITransactionHistoryRequest } from "../../../models/api/stardust/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "../../../models/api/stardust/ITransactionHistoryResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelper";
+import { ChronicleService } from "../../../services/stardust/chronicleService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
- * Find the object from the network.
+ * Fetch the transaction history from chronicle stardust.
  * @param config The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function get(
     config: IConfiguration,
-    request: ITransactionsDetailsRequest
-): Promise<{ transactionHistory: ITransactionsDetailsResponse } | unknown> {
+    request: ITransactionHistoryRequest
+): Promise<{ transactionHistory: ITransactionHistoryResponse } | unknown> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -26,7 +26,15 @@ export async function get(
     if (networkConfig.protocolVersion !== STARDUST) {
         return {};
     }
-    return {
-        transactionHistory: await StardustTangleHelper.transactionsDetails(networkConfig, request)
-    };
+
+    if (!networkConfig.permaNodeEndpoint) {
+        return {};
+    }
+
+    const chronicleService = ServiceFactory.get<ChronicleService>(
+        `chronicle-${networkConfig.network}`
+    );
+
+    return chronicleService.transactionHistory(request);
 }
+
