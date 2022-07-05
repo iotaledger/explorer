@@ -30,4 +30,9 @@ export interface SearchState {
      * Redirect to another page.
      */
     redirect: string;
+
+    /**
+     * State to pass to redirected page.
+     */
+    redirectState?: string[];
 }

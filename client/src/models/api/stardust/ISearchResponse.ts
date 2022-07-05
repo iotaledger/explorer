@@ -27,6 +27,11 @@ export interface ISearchResponse extends IResponse {
     output?: IOutputResponse;
 
     /**
+     * Outputs list.
+     */
+    taggedOutputs?: IOutputsResponse;
+
+    /**
      * Associated outputs of the address.
      */
     addressAssociatedOutputs?: IAssociatedOutputsResponse;

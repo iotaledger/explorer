@@ -388,10 +388,8 @@ export class StardustTangleHelper {
                 const taggedOutputs = await indexerPlugin.outputs({ tagHex: searchQuery.tag });
 
                 if (taggedOutputs.items.length > 0) {
-                    const output = await client.output(taggedOutputs.items[0]);
-
                     return {
-                        output
+                        taggedOutputs
                     };
                 }
             } catch {}
