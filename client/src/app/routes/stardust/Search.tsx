@@ -232,6 +232,8 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.taggedOutputs) {
                                     route = "outputs-list";
                                     state = response.taggedOutputs.items;
+                                } else if (response.transactionBlock) {
+                                    route = "transaction";
                                 } else if (response.aliasOutputId) {
                                     route = "alias";
                                     routeParam = response.aliasOutputId;

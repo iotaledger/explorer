@@ -181,7 +181,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                                 <Modal icon="info" data={mainHeaderMessage} />
                                             </div>
                                         </div>
-                                        <table className="transaction--table">
+                                        <table className="controlled-foundry--table">
                                             <thead>
                                                 <tr>
                                                     <th>Foundry Id</th>
@@ -202,7 +202,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                         </table>
 
                                         {/* Only visible in mobile -- Card assets*/}
-                                        <div className="transaction-cards">
+                                        <div className="controlled-foundry--cards">
                                             {this.currentFoundriesPage?.map((foundry, k) => (
                                                 <React.Fragment key={`${foundry?.foundryId}${k}`}>
                                                     <ControlledFoundry

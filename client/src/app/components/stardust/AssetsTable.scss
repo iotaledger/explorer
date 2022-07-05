@@ -1,10 +1,10 @@
 @import "../../../scss/fonts";
-@import "../../../scss/mixins";
 @import "../../../scss/media-queries";
+@import "../../../scss/mixins";
 @import "../../../scss/variables";
 @import "../../../scss/themes";
 
-.activity-table {
+.asset-table {
     width: 100%;
     border-spacing: 12px 28px;
     border-collapse: separate;
@@ -30,7 +30,12 @@
         }
 
         td {
-            &.transaction-id {
+            &:not(:first-child) {
+                padding-left: 16px;
+            }
+            color: var(--body-color);
+
+            &.highlight {
                 color: $blue-5;
                 @include font-size(14px);
 
@@ -39,34 +44,19 @@
                 letter-spacing: 0.02em;
                 line-height: 20px;
             }
-
-            .date {
-                color: #485776
-            }
-
-            .price {
-                color: #36A1AC;
-                font-weight: 600;
-            }
-
-            .status {
-                background: rgba(0, 224, 202, 0.2);
-                padding: 5px 10px 5px 10px;
-                border-radius: 6px;
-                color: #36A1AC;
-            }
         }
     }
 }
 
-.activity-cards {
+.asset-cards {
     display: none;
 
     @include tablet-down {
         display: block;
 
-        .activity-card {
+        .asset-card {
             margin-bottom: 48px;
+
             .field {
                 margin-bottom: 8px;
 
@@ -85,16 +75,15 @@
                     font-family: $metropolis;
                     font-weight: 700;
 
-                    &.transaction-id {
-                        overflow: hidden;
+                    &.highlight {
                         color: $blue-5;
-                        font-family: $ibm-plex-mono;
-                        font-weight: 500;
-                        text-decoration: none;
-                        text-overflow: ellipsis;
-                        word-break: break-word;
-                    }
+                        @include font-size(14px);
 
+                        font-family: $ibm-plex-mono;
+                        font-weight: normal;
+                        letter-spacing: 0.02em;
+                        line-height: 20px;
+                    }
                 }
             }
         }

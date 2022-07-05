@@ -11,11 +11,6 @@ export interface BlockState {
     transactionId?: string;
 
     /**
-     * The actual block Id in the case of an included block.
-     */
-    actualBlockId?: string;
-
-    /**
      * Block.
      */
     block?: IBlock;

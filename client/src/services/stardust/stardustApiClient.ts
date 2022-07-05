@@ -1,3 +1,4 @@
+import { FetchHelper } from "../../helpers/fetchHelper";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
 import { IAssociatedOutputsRequest } from "../../models/api/stardust/IAssociatedOutputsRequest";
@@ -16,6 +17,10 @@ import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsRespon
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { ITransactionDetailsRequest } from "../../models/api/stardust/ITransactionDetailsRequest";
+import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
+import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -60,6 +65,19 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
+     * Get the transaction included block.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async transactionIncludedBlockDetails(
+        request: ITransactionDetailsRequest
+    ): Promise<ITransactionDetailsResponse> {
+        return this.callApi<unknown, ITransactionDetailsResponse>(
+            `stardust/transaction/${request.network}/${request.transactionId}`, "get"
+        );
+    }
+
+    /**
      * Get the output details.
      * @param request The request to send.
      * @returns The response from the request.
@@ -70,6 +88,11 @@ export class StardustApiClient extends ApiClient {
         );
     }
 
+    /**
+     * Get the associated outputs.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
     public async associatedOutputs(request: IAssociatedOutputsRequest) {
         return this.callApi<unknown, IAssociatedOutputsResponse>(
             `stardust/output/associated/${request.network}/${request.addressDetails.bech32}`,
@@ -86,6 +109,25 @@ export class StardustApiClient extends ApiClient {
     public async milestoneDetails(request: IMilestoneDetailsRequest): Promise<IMilestoneDetailsResponse> {
         return this.callApi<unknown, IMilestoneDetailsResponse>(
             `stardust/milestone/${request.network}/${request.milestoneIndex}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the transaction history of an address (chronicle).
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async transactionHistory(request: ITransactionHistoryRequest): Promise<ITransactionHistoryResponse> {
+        const params = {
+            pageSize: request.pageSize,
+            sort: request.sort,
+            startMilestoneIndex: request.startMilestoneIndex,
+            cursor: request.cursor
+        };
+
+        return this.callApi<unknown, ITransactionHistoryResponse>(
+            `stardust/transactionhistory/${request.network}/${request.address}${FetchHelper.urlParams(params)}`,
             "get"
         );
     }

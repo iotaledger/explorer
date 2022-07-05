@@ -1,10 +1,10 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ITransactionsDetailsRequest } from "../../../models/api/chrysalis/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { ITransactionDetailsRequest } from "../../../models/api/stardust/ITransactionDetailsRequest";
+import { ITransactionDetailsResponse } from "../../../models/api/stardust/ITransactionDetailsResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
-import { CHRYSALIS } from "../../../models/db/protocolVersion";
+import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
+import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -15,18 +15,18 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  */
 export async function get(
     config: IConfiguration,
-    request: ITransactionsDetailsRequest
-): Promise<{ transactionHistory: ITransactionsDetailsResponse } | unknown> {
+    request: ITransactionDetailsRequest
+): Promise<ITransactionDetailsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
+    ValidationHelper.string(request.transactionId, "transactionId");
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== CHRYSALIS) {
+    if (networkConfig.protocolVersion !== STARDUST) {
         return {};
     }
-    return {
-        transactionHistory: await ChrysalisTangleHelper.transactionsDetails(networkConfig, request)
-    };
+
+    return StardustTangleHelper.transactionIncludedBlock(networkConfig, request.transactionId);
 }

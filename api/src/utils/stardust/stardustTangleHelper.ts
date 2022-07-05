@@ -1,19 +1,17 @@
 /* eslint-disable no-warning-comments */
-import { Blake2b } from "@iota/crypto.js-stardust";
 import {
-    addressBalance, IOutputResponse, serializeBlock, SingleNodeClient,
-    IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload
+    addressBalance, IOutputResponse, SingleNodeClient,
+    IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload,
+    IBlockMetadata, IMilestonePayload, IBlock
 } from "@iota/iota.js-stardust";
-import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
-import { ITransactionsDetailsRequest } from "../../models/api/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "../../models/api/ITransactionsDetailsResponse";
+import { HexHelper } from "@iota/util.js-stardust";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { INetwork } from "../../models/db/INetwork";
-import { FetchHelper } from "../fetchHelper";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
 
 /**
@@ -21,52 +19,47 @@ import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
  */
 export class StardustTangleHelper {
     /**
-     * Find item on the chrysalis network.
-     * @param network The network to find the items on.
-     * @param query The query to use for finding items.
-     * @returns The item found.
-     */
-    public static async search(network: INetwork, query: string): Promise<ISearchResponse> {
-        return StardustTangleHelper.searchApi(network, query);
-    }
-
-    /**
      * Get the block details.
      * @param network The network to find the items on.
      * @param blockId The block id to get the details.
      * @returns The item details.
      */
     public static async blockDetails(network: INetwork, blockId: string): Promise<IBlockDetailsResponse> {
-        try {
-            const client = new SingleNodeClient(network.provider, {
-                userName: network.user,
-                password: network.password
-            });
+        blockId = HexHelper.addPrefix(blockId);
+        const metadata = await this.fromNodeWithPermanodeFallBack<string, IBlockMetadata>(
+            blockId,
+            "blockMetadata",
+            network
+        );
 
-            blockId = HexHelper.addPrefix(blockId);
-            const metadata = await client.blockMetadata(blockId);
-
+        if (metadata) {
             return {
                 metadata
             };
-        } catch {
         }
+    }
 
-        if (network.permaNodeEndpoint) {
-            try {
-                const client = new SingleNodeClient(network.permaNodeEndpoint, {
-                    userName: network.permaNodeEndpointUser,
-                    password: network.permaNodeEndpointPassword,
-                    basePath: "/"
-                });
+    /**
+     * Get the transaction included block.
+     * @param network The network to find the items on.
+     * @param transactionId The transaction id to get the details.
+     * @returns The item details.
+     */
+    public static async transactionIncludedBlock(
+        network: INetwork,
+        transactionId: string
+    ): Promise<ITransactionDetailsResponse> {
+        transactionId = HexHelper.addPrefix(transactionId);
+        const block = await this.fromNodeWithPermanodeFallBack<string, IBlock>(
+            transactionId,
+            "transactionIncludedBlock",
+            network
+        );
 
-                const metadata = await client.blockMetadata(blockId);
-
-                return {
-                    metadata
-                };
-            } catch {
-            }
+        if (block) {
+            return {
+                block
+            };
         }
     }
 
@@ -77,55 +70,14 @@ export class StardustTangleHelper {
      * @returns The item details.
      */
     public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputResponse | undefined> {
-        try {
-            const client = new SingleNodeClient(network.provider, {
-                userName: network.user,
-                password: network.password
-            });
-            return await client.output(outputId);
-        } catch {
-        }
+        const outputResponse = await this.fromNodeWithPermanodeFallBack<string, IOutputResponse>(
+            outputId,
+            "output",
+            network
+        );
 
-        if (network.permaNodeEndpoint) {
-            try {
-                const client = new SingleNodeClient(network.permaNodeEndpoint, {
-                    userName: network.permaNodeEndpointUser,
-                    password: network.permaNodeEndpointPassword,
-                    basePath: "/"
-                });
-                return await client.output(outputId);
-            } catch {
-            }
-        }
-    }
-
-    /**
-     * Get the transactions of an address.
-     * @param network The network to find the items on.
-     * @param request The request.
-     * @returns The transactions.
-     */
-    public static async transactionsDetails(network: INetwork,
-        request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse | undefined> {
-        if (network.permaNodeEndpoint) {
-            const endpoint = network.permaNodeEndpoint;
-            try {
-                const address = request.address;
-                const params = {
-                    // eslint-disable-next-line camelcase
-                    page_size: request.page_size,
-                    state: request.state
-                };
-
-                const res = await FetchHelper.json<never, ITransactionsDetailsResponse>(
-                    endpoint,
-                    `transactions/ed25519/${address}${params ? `${FetchHelper.urlParams(params)}` : ""}`,
-                    "get"
-                );
-                    return res;
-            } catch (e) {
-                return { error: e };
-            }
+        if (outputResponse) {
+            return outputResponse;
         }
     }
 
@@ -138,14 +90,13 @@ export class StardustTangleHelper {
     public static async milestoneDetailsById(
         network: INetwork, milestoneId: string
     ): Promise<IMilestoneDetailsResponse | undefined> {
-        try {
-            const client: SingleNodeClient = new SingleNodeClient(network.provider, {
-                        userName: network.user,
-                        password: network.password
-                    });
+        const milestonePayload = await this.fromNodeWithPermanodeFallBack<string, IMilestonePayload>(
+            milestoneId,
+            "milestoneById",
+            network
+        );
 
-            const milestonePayload = await client.milestoneById(milestoneId);
-            /* eslint-disable-next-line no-warning-comments */
+        if (milestonePayload) {
             // TODO Fetch protocol version from config/node
             const blockId = blockIdFromMilestonePayload(2, milestonePayload);
 
@@ -154,7 +105,6 @@ export class StardustTangleHelper {
                 milestoneId,
                 milestone: milestonePayload
             };
-        } catch {
         }
     }
 
@@ -167,22 +117,13 @@ export class StardustTangleHelper {
     public static async milestoneDetailsByIndex(
         network: INetwork, milestoneIndex: number
     ): Promise<IMilestoneDetailsResponse | undefined> {
-        try {
-            const client: SingleNodeClient = network.permaNodeEndpoint
-                /* eslint-disable-next-line no-warning-comments */
-                // TODO Test this when permanode exists
-                ? new SingleNodeClient(network.permaNodeEndpoint, {
-                    userName: network.permaNodeEndpointUser,
-                    password: network.permaNodeEndpointPassword,
-                    basePath: "/"
-                })
-                    : new SingleNodeClient(network.provider, {
-                        userName: network.user,
-                        password: network.password
-                    });
+        const milestonePayload = await this.fromNodeWithPermanodeFallBack<number, IMilestonePayload>(
+            milestoneIndex,
+            "milestoneByIndex",
+            network
+        );
 
-            const milestonePayload = await client.milestoneByIndex(milestoneIndex);
-            /* eslint-disable-next-line no-warning-comments */
+        if (milestonePayload) {
             // TODO Fetch protocol version from config/node
             const blockId = blockIdFromMilestonePayload(2, milestonePayload);
             const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
@@ -192,10 +133,8 @@ export class StardustTangleHelper {
                 milestoneId,
                 milestone: milestonePayload
             };
-        } catch {
         }
     }
-
 
     /**
      * Get the nft details.
@@ -207,14 +146,12 @@ export class StardustTangleHelper {
         network: INetwork,
         address: string
     ): Promise<INftOutputsResponse | undefined> {
+        const { provider, user, password } = network;
         try {
-            const client = new SingleNodeClient(network.provider, {
-                userName: network.user,
-                password: network.password
-            });
-            const indexerPlugin = new IndexerPluginClient(client);
-
+            const node = new SingleNodeClient(provider, { userName: user, password });
+            const indexerPlugin = new IndexerPluginClient(node);
             const nftOutputs = await indexerPlugin.nfts({ addressBech32: address });
+
             return {
                 outputs: nftOutputs
             };
@@ -231,12 +168,10 @@ export class StardustTangleHelper {
         network: INetwork,
         aliasAddress: string
     ): Promise<IFoundriesResponse | undefined> {
+        const { provider, user, password } = network;
         try {
-            const client = new SingleNodeClient(network.provider, {
-                userName: network.user,
-                password: network.password
-            });
-            const indexerPlugin = new IndexerPluginClient(client);
+            const node = new SingleNodeClient(provider, { userName: user, password });
+            const indexerPlugin = new IndexerPluginClient(node);
             const foundryOutputsResponse = await indexerPlugin.foundries({ aliasAddressBech32: aliasAddress });
 
             return {
@@ -255,14 +190,12 @@ export class StardustTangleHelper {
         network: INetwork,
         nftId: string
     ): Promise<INftOutputsResponse | undefined> {
+        const { provider, user, password } = network;
         try {
-            const client = new SingleNodeClient(network.provider, {
-                userName: network.user,
-                password: network.password
-            });
-            const indexerPlugin = new IndexerPluginClient(client);
-
+            const node = new SingleNodeClient(provider, { userName: user, password });
+            const indexerPlugin = new IndexerPluginClient(node);
             const nftOutputs = await indexerPlugin.nft(nftId);
+
             return {
                 outputs: nftOutputs
             };
@@ -275,13 +208,16 @@ export class StardustTangleHelper {
      * @param query The query to use for finding items.
      * @returns The item found.
      */
-    private static async searchApi(
+    public static async search(
         network: INetwork,
         query: string
     ): Promise<ISearchResponse> {
-        const { provider, bechHrp, user, password } = network;
-        const client = new SingleNodeClient(provider, { userName: user, password });
-        const indexerPlugin = new IndexerPluginClient(client);
+        const {
+            bechHrp, provider, user, password
+        } = network;
+        const node = new SingleNodeClient(provider, { userName: user, password });
+        const indexerPlugin = new IndexerPluginClient(node);
+
         const searchQuery: SearchQuery = new SearchQueryBuilder(query, bechHrp).build();
 
         if (searchQuery.did) {
@@ -291,68 +227,65 @@ export class StardustTangleHelper {
         }
 
         if (searchQuery.milestoneIndex) {
-            try {
-                const milestoneDetails = await this.milestoneDetailsByIndex(network, searchQuery.milestoneIndex);
-                return {
-                    milestone: milestoneDetails
-                };
-            } catch {
-            }
+            const milestoneDetails = await this.milestoneDetailsByIndex(network, searchQuery.milestoneIndex);
+            return {
+                milestone: milestoneDetails
+            };
         }
 
         if (searchQuery.milestoneId) {
-            try {
-                const milestoneDetails = await this.milestoneDetailsById(network, searchQuery.milestoneId);
-                if (milestoneDetails) {
-                    return {
-                        milestone: milestoneDetails
-                    };
-                }
-            } catch {
+            const milestoneDetails = await this.milestoneDetailsById(network, searchQuery.milestoneId);
+            if (milestoneDetails) {
+                return {
+                    milestone: milestoneDetails
+                };
             }
         }
 
-        if (searchQuery.blockIdOrTransactionId) {
-            try {
-                const block = await client.block(searchQuery.blockIdOrTransactionId);
+        if (searchQuery.blockId) {
+            const block = await this.fromNodeWithPermanodeFallBack<string, IBlock>(
+                searchQuery.blockId,
+                "block",
+                network
+            );
 
-                if (Object.keys(block).length > 0) {
-                    return {
-                        block
-                    };
-                }
-            } catch {
+            if (block && Object.keys(block).length > 0) {
+                return {
+                    block
+                };
             }
+        }
 
-            try {
-                const block = await client.transactionIncludedBlock(searchQuery.blockIdOrTransactionId);
+        if (searchQuery.transactionId) {
+            const block = await this.fromNodeWithPermanodeFallBack<string, IBlock>(
+                searchQuery.transactionId,
+                "transactionIncludedBlock",
+                network
+            );
 
-                if (Object.keys(block).length > 0) {
-                    const writeStream = new WriteStream();
-                    serializeBlock(writeStream, block);
-                    const includedBlockId = Converter.bytesToHex(Blake2b.sum256(writeStream.finalBytes()));
-
-                    return {
-                        block,
-                        includedBlockId
-                    };
-                }
-            } catch {
+            if (block && Object.keys(block).length > 0) {
+                return {
+                    block
+                };
             }
         }
 
         if (searchQuery.output) {
-            try {
-                return {
-                    output: await client.output(searchQuery.output)
-                };
-            } catch {
+            const output = await this.fromNodeWithPermanodeFallBack<string, IOutputResponse>(
+                searchQuery.output,
+                "output",
+                network
+            );
+
+            if (output) {
+                return { output };
             }
         }
 
         if (searchQuery.aliasId) {
             try {
                 const aliasOutputs = await indexerPlugin.alias(searchQuery.aliasId);
+
                 if (aliasOutputs.items.length > 0) {
                     return {
                         aliasOutputId: aliasOutputs.items[0]
@@ -386,7 +319,6 @@ export class StardustTangleHelper {
         if (searchQuery.tag) {
             try {
                 const taggedOutputs = await indexerPlugin.outputs({ tagHex: searchQuery.tag });
-
                 if (taggedOutputs.items.length > 0) {
                     return {
                         taggedOutputs
@@ -397,7 +329,8 @@ export class StardustTangleHelper {
 
         if (searchQuery.address?.bech32) {
             try {
-                const addressBalanceDetails = await addressBalance(client, searchQuery.address.bech32);
+                const addressBalanceDetails = await addressBalance(node, searchQuery.address.bech32);
+
                 if (addressBalanceDetails) {
                     const addressDetails = {
                         ...addressBalanceDetails,
@@ -419,6 +352,49 @@ export class StardustTangleHelper {
         }
 
         return {};
+    }
+
+    /**
+     * Generic helper function to try fetching from node client.
+     * On failure, if configured, we try with permanode.
+     * @param args The argument(s) to pass to the fetch calls.
+     * @param methodName The function to call on the clients.
+     * @param network The network config in context.
+     * @returns The results or null if call(s) failed.
+     */
+    private static async fromNodeWithPermanodeFallBack<A, R>(
+        args: A,
+        methodName: string,
+        network: INetwork
+    ): Promise<R> | null {
+        const {
+            provider, user, password,
+            permaNodeEndpoint, permaNodeEndpointUser, permaNodeEndpointPassword
+        } = network;
+        const node = new SingleNodeClient(provider, { userName: user, password });
+
+        try {
+            // Call on node client with dynamic function name
+            const result: Promise<R> = node[methodName](args);
+            return await result;
+        } catch {}
+
+        if (!permaNodeEndpoint) {
+            return null;
+        }
+
+        const permanode = new SingleNodeClient(
+            permaNodeEndpoint,
+            { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
+        );
+
+        try {
+            // Call on permanode client with dynamic function name
+            const result: Promise<R> = permanode[methodName](args);
+            return await result;
+        } catch {}
+
+        return null;
     }
 }
 

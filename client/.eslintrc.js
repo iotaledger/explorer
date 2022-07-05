@@ -600,7 +600,7 @@ module.exports = {
             "error"
         ],
         "newline-per-chained-call": [
-            "error"
+            "error", { "ignoreChainWithDepth": 3 }
         ],
         "no-alert": [
             "error"

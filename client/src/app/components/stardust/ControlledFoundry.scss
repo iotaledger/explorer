@@ -1,10 +1,9 @@
 @import "../../../scss/fonts";
-@import "../../../scss/mixins";
 @import "../../../scss/media-queries";
+@import "../../../scss/mixins";
 @import "../../../scss/variables";
-@import "../../../scss/themes";
 
-.transaction--table {
+.controlled-foundry--table {
   width: 100%;
   border-spacing: 12px 28px;
   border-collapse: separate;
@@ -21,22 +20,19 @@
     letter-spacing: 0.5px;
 
     th {
-      @include font-size(12px);
+        @include font-size(12px);
 
-      color: $gray-6;
-      font-weight: 600;
-      text-align: left;
-      text-transform: uppercase;
+        color: $gray-6;
+        font-weight: 600;
+        text-align: left;
+        text-transform: uppercase;
     }
 
     td {
       color: var(--body-color);
 
-      .message-tangle-state {
-        margin-left: 0;
-      }
-
-      &.code {
+      &.highlight {
+        color: $blue-5;
         @include font-size(14px);
 
         font-family: $ibm-plex-mono;
@@ -44,35 +40,17 @@
         letter-spacing: 0.02em;
         line-height: 20px;
       }
-
-      &.highlight {
-        color: $blue-5;
-      }
-
-      &.amount {
-        @include font-size(14px, 21px);
-
-        font-weight: 700;
-
-        &.positive {
-          color: $mint-green-7;
-        }
-
-        &.negative {
-          color: var(--expanded-color);
-        }
-      }
     }
   }
 }
 
-.transaction-cards {
+.controlled-foundry--cards {
   display: none;
 
   @include tablet-down {
     display: block;
 
-    .transaction-card {
+    .controlled-foundry--card {
       margin-bottom: 48px;
 
       .field {
@@ -101,29 +79,6 @@
             text-decoration: none;
             text-overflow: ellipsis;
             word-break: break-word;
-          }
-
-          .messages-tangle-state {
-            display: inline-block;
-
-            .message-tangle-state {
-              margin-left: 0;
-            }
-          }
-        }
-
-        .amount {
-          font-family: $inter;
-          font-size: 0.875rem;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-
-          &.positive {
-            color: $mint-green-7;
-          }
-
-          &.negative {
-            color: var(--expanded-color);
           }
         }
       }

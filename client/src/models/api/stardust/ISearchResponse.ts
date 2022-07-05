@@ -4,12 +4,18 @@ import IAddressDetailsWithBalance from "./IAddressDetailsWithBalance";
 import { IAssociatedOutputsResponse } from "./IAssociatedOutputsResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { INftDetailsResponse } from "./INftDetailsResponse";
+import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
      * Block if it was found.
      */
     block?: IBlock;
+
+    /**
+     * The transaction included block.
+     */
+    transactionBlock?: IBlock;
 
     /**
      * Address details when address was found.
@@ -27,9 +33,14 @@ export interface ISearchResponse extends IResponse {
     output?: IOutputResponse;
 
     /**
-     * Outputs list.
+     * Outputs response.
      */
     taggedOutputs?: IOutputsResponse;
+
+    /** 
+     * The outputIds of transaction history request.
+     */
+    historyOutputs?: ITransactionHistoryResponse;
 
     /**
      * Associated outputs of the address.
@@ -70,11 +81,6 @@ export interface ISearchResponse extends IResponse {
      * Milestone if it was found.
      */
     milestone?: IMilestoneDetailsResponse;
-
-    /**
-     * The included block id.
-     */
-    includedBlockId?: string;
 
     /**
      * DiD identifier.

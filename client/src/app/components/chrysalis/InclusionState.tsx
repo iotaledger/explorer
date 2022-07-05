@@ -1,10 +1,24 @@
+import { LedgerInclusionState } from "@iota/iota.js-stardust";
 import React, { Component, ReactNode } from "react";
-import { InclusionStateProps } from "./InclusionStateProps";
+
+export interface InclusionStateProps {
+    /**
+     * The inclusion state.
+     */
+    state?: LedgerInclusionState;
+}
 
 /**
  * Component which will display the inclusion state.
  */
 class InclusionState extends Component<InclusionStateProps> {
+    /**
+     * The default props.
+     */
+    public static defaultProps: InclusionStateProps = {
+        state: undefined
+    };
+
     /**
      * Render the component.
      * @returns The node to render.
