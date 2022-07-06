@@ -20,7 +20,7 @@ export enum AssociationType {
 }
 
 export interface IAssociatedOutput {
-    association: AssociationType;
+    associations: AssociationType[];
     outputId: string;
     outputDetails?: IOutputResponse;
 }

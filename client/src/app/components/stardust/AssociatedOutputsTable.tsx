@@ -119,7 +119,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                     <tbody>
                         {currentPage.map((associatedOutput, idx) => (
                             <AssociatedOutput
-                                key={`${associatedOutput.outputId}${associatedOutput.association}${idx}`}
+                                key={`${associatedOutput.outputId}${idx}`}
                                 network={network}
                                 associatedOutput={associatedOutput}
                                 isMobile={false}
@@ -132,7 +132,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                 <div className="associated--cards">
                     {currentPage.map((associatedOutput, idx) => (
                         <AssociatedOutput
-                            key={`${associatedOutput.outputId}${associatedOutput.association}${idx}`}
+                            key={`${associatedOutput.outputId}${idx}`}
                             network={network}
                             associatedOutput={associatedOutput}
                             isMobile={true}

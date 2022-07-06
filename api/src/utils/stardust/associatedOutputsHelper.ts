@@ -1,7 +1,7 @@
 import {
     SingleNodeClient, IndexerPluginClient, IOutputsResponse, NFT_ADDRESS_TYPE, ALIAS_ADDRESS_TYPE
 } from "@iota/iota.js-stardust";
-import { AssociationType, IAssociatedOutput } from "../../models/api/stardust/IAssociatedOutputsResponse";
+import { AssociationType } from "../../models/api/stardust/IAssociatedOutputsResponse";
 import { IBech32AddressDetails } from "../../models/api/stardust/IBech32AddressDetails";
 import { INetwork } from "../../models/db/INetwork";
 
@@ -9,7 +9,7 @@ import { INetwork } from "../../models/db/INetwork";
  * Helper class to fetch associated outputs of an address on stardust.
  */
 export class AssociatedOutputsHelper {
-    public readonly associatedOutputs: IAssociatedOutput[] = [];
+    public readonly outputIdToAssociations: Map<string, AssociationType[]> = new Map();
 
     private readonly network: INetwork;
 
@@ -30,117 +30,150 @@ export class AssociatedOutputsHelper {
         });
 
         const indexerPlugin = new IndexerPluginClient(client);
+        const promises: Promise<void>[] = [];
 
-        // Basic output -> owner address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.outputs(query),
-            { addressBech32: address },
-            AssociationType.BASIC_ADDRESS
+        promises.push(
+            // Basic output -> owner address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.outputs(query),
+                { addressBech32: address },
+                AssociationType.BASIC_ADDRESS
+            )
         );
 
-        // Basic output -> storage return address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.outputs(query),
-            { storageReturnAddressBech32: address },
-            AssociationType.BASIC_STORAGE_RETURN
+        promises.push(
+            // Basic output -> storage return address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.outputs(query),
+                { storageReturnAddressBech32: address },
+                AssociationType.BASIC_STORAGE_RETURN
+            )
         );
 
-        // Basic output -> expiration return address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.outputs(query),
-            { expirationReturnAddressBech32: address },
-            AssociationType.BASIC_EXPIRATION_RETURN
+        promises.push(
+            // Basic output -> expiration return address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.outputs(query),
+                { expirationReturnAddressBech32: address },
+                AssociationType.BASIC_EXPIRATION_RETURN
+            )
         );
 
-        // Basic output -> sender address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.outputs(query),
-            { senderBech32: address },
-            AssociationType.BASIC_SENDER
+        promises.push(
+            // Basic output -> sender address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.outputs(query),
+                { senderBech32: address },
+                AssociationType.BASIC_SENDER
+            )
         );
 
-        // Alias id
         if (this.addressDetails.type === ALIAS_ADDRESS_TYPE && this.addressDetails.hex) {
             const aliasId = this.addressDetails.hex;
-            await this.tryFetchAssociatedOutputs<string>(
-                async query => indexerPlugin.alias(query),
-                aliasId,
-                AssociationType.ALIAS_ID
+            promises.push(
+                // Alias id
+                this.tryFetchAssociatedOutputs<string>(
+                    async query => indexerPlugin.alias(query),
+                    aliasId,
+                    AssociationType.ALIAS_ID
+                )
             );
         }
 
-        // Alias output -> state controller address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.aliases(query),
-            { stateControllerBech32: address },
-            AssociationType.ALIAS_STATE_CONTROLLER
+        promises.push(
+            // Alias output -> state controller address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.aliases(query),
+                { stateControllerBech32: address },
+                AssociationType.ALIAS_STATE_CONTROLLER
+            )
         );
 
-        // Alias output -> governor address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.aliases(query),
-            { governorBech32: address },
-            AssociationType.ALIAS_GOVERNOR
+        promises.push(
+            // Alias output -> governor address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.aliases(query),
+                { governorBech32: address },
+                AssociationType.ALIAS_GOVERNOR
+            )
         );
 
-        // Alias output -> issuer address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.aliases(query),
-            { issuerBech32: address },
-            AssociationType.ALIAS_ISSUER
+        promises.push(
+            // Alias output -> issuer address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.aliases(query),
+                { issuerBech32: address },
+                AssociationType.ALIAS_ISSUER
+            )
         );
 
-        // Alias output -> sender address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.aliases(query),
-            { senderBech32: address },
-            AssociationType.ALIAS_SENDER
+        promises.push(
+            // Alias output -> sender address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.aliases(query),
+                { senderBech32: address },
+                AssociationType.ALIAS_SENDER
+            )
         );
 
-        // Foundry output ->  alias address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.foundries(query),
-            { aliasAddressBech32: address },
-            AssociationType.FOUNDRY_ALIAS
+        promises.push(
+            // Foundry output ->  alias address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.foundries(query),
+                { aliasAddressBech32: address },
+                AssociationType.FOUNDRY_ALIAS
+            )
         );
 
-        // Nft id
         if (this.addressDetails.type === NFT_ADDRESS_TYPE && this.addressDetails.hex) {
             const nftId = this.addressDetails.hex;
-            await this.tryFetchAssociatedOutputs<string>(
-                async query => indexerPlugin.nft(query),
-                nftId,
-                AssociationType.NFT_ID
+            promises.push(
+                // Nft id
+                this.tryFetchAssociatedOutputs<string>(
+                    async query => indexerPlugin.nft(query),
+                    nftId,
+                    AssociationType.NFT_ID
+                )
             );
         }
 
-        // Nft output -> owner address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.nfts(query),
-            { addressBech32: address },
-            AssociationType.NFT_ADDRESS
+        promises.push(
+            // Nft output -> owner address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.nfts(query),
+                { addressBech32: address },
+                AssociationType.NFT_ADDRESS
+            )
         );
 
-        // Nft output -> storage return address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.nfts(query),
-            { storageReturnAddressBech32: address },
-            AssociationType.NFT_STORAGE_RETURN
+        promises.push(
+            // Nft output -> storage return address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.nfts(query),
+                { storageReturnAddressBech32: address },
+                AssociationType.NFT_STORAGE_RETURN
+            )
         );
 
-        // Nft output -> expiration return address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.nfts(query),
-            { expirationReturnAddressBech32: address },
-            AssociationType.NFT_EXPIRATION_RETURN
+        promises.push(
+            // Nft output -> expiration return address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.nfts(query),
+                { expirationReturnAddressBech32: address },
+                AssociationType.NFT_EXPIRATION_RETURN
+            )
         );
 
-        // Nft output -> sender address
-        await this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-            async query => indexerPlugin.nfts(query),
-            { senderBech32: address },
-            AssociationType.NFT_SENDER
+        promises.push(
+            // Nft output -> sender address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.nfts(query),
+                { senderBech32: address },
+                AssociationType.NFT_SENDER
+            )
         );
+
+        await Promise.all(promises);
     }
 
     /**
@@ -153,8 +186,8 @@ export class AssociatedOutputsHelper {
         fetch: (req: T) => Promise<IOutputsResponse>,
         args: T,
         association: AssociationType
-    ) {
-        const associatedOutputs = this.associatedOutputs;
+    ): Promise<void> {
+        const outputIdToAssociations = this.outputIdToAssociations;
         let cursor: string;
 
         do {
@@ -165,7 +198,14 @@ export class AssociatedOutputsHelper {
 
                 if (outputs.items.length > 0) {
                     for (const outputId of outputs.items) {
-                        associatedOutputs.push({ outputId, association });
+                        const associations = outputIdToAssociations.get(outputId);
+
+                        if (associations) {
+                            associations.push(association);
+                            outputIdToAssociations.set(outputId, associations);
+                        } else {
+                            outputIdToAssociations.set(outputId, [association]);
+                        }
                     }
                 }
 

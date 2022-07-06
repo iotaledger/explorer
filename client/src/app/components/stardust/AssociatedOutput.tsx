@@ -3,6 +3,7 @@
 import React from "react";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { AssociationType, IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";
+import Tooltip from "../Tooltip";
 import Output from "./Output";
 
 interface AssociatedOutputProps {
@@ -34,24 +35,43 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
         return null;
     }
 
-    const output = associatedOutput.outputDetails.output;
-    const outputMetadata = associatedOutput.outputDetails.metadata;
+    const { outputId, outputDetails, associations } = associatedOutput;
+    const output = outputDetails.output;
+    const outputMetadata = outputDetails.metadata;
     const dateCreated = DateHelper.formatShort(outputMetadata.milestoneTimestampBooked * 1000);
-    const associationLabel = ASSOCIATION_TYPE_TO_LABEL[associatedOutput.association];
+
+    const associationLabel = ASSOCIATION_TYPE_TO_LABEL[associations[0]];
+    const additionalAssociationsLabel = associations.length > 1 ? `+${associations.length - 1} more` : null;
+    const additionalAssociations = associations.length > 1 ? (
+        <div>
+            {associations.slice(1).map((a, idx) => (
+                <div key={idx} style={{ marginTop: idx > 0 ? "4px" : "0" }}>{ASSOCIATION_TYPE_TO_LABEL[a]}</div>
+            ))}
+        </div>
+    ) : null;
 
     const outputTableRow = (
         <tr>
             <td className="card">
                 <Output
-                    key={associatedOutput.outputId}
-                    outputId={associatedOutput.outputId}
+                    key={outputId}
+                    outputId={outputId}
                     output={output}
                     amount={Number(output.amount)}
                     network={network}
                     showCopyAmount={false}
                 />
             </td>
-            <td className="found-in">{associationLabel}</td>
+            <td className="found-in">
+                <div className="found-in--wrapper">
+                    {associationLabel}
+                    {additionalAssociationsLabel && (
+                        <Tooltip tooltipContent={additionalAssociations}>
+                            &nbsp;{additionalAssociationsLabel}
+                        </Tooltip>
+                    )}
+                </div>
+            </td>
             <td className="date-created">{dateCreated}</td>
         </tr>
     );
@@ -63,8 +83,8 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
                     Output type
                 </div>
                 <Output
-                    key={associatedOutput.outputId}
-                    outputId={associatedOutput.outputId}
+                    key={outputId}
+                    outputId={outputId}
                     output={output}
                     amount={Number(output.amount)}
                     network={network}
@@ -73,7 +93,15 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
             </div>
             <div className="field found-in">
                 <div className="label">Address found in</div>
-                <div className="value">{associationLabel}</div>
+                <div className="value">
+                    <div className="found-in--wrapper">
+                        {
+                            associations.map((a, idx) => (
+                                <div key={idx}>{ASSOCIATION_TYPE_TO_LABEL[a]}</div>
+                            ))
+                        }
+                    </div>
+                </div>
             </div>
             <div className="field date-created">
                 <div className="label">Date created</div>
