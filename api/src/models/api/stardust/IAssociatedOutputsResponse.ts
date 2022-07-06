@@ -41,7 +41,7 @@ export interface IAssociatedOutputsResponse extends IResponse {
  * Helper map to sort associations by importance to render on client.
  * Greater has more priority.
  */
-export const ASSOCIATION_TYPE_TO_PRORITY = {
+export const ASSOCIATION_TYPE_TO_PRIORITY = {
     [AssociationType.BASIC_ADDRESS]: 1,
     [AssociationType.BASIC_SENDER]: 4,
     [AssociationType.BASIC_EXPIRATION_RETURN]: 3,
