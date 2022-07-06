@@ -517,7 +517,7 @@
                   @include font-size(14px, 20px);
 
                   overflow: hidden;
-                  color: $blue-5;
+                  color: var(--link-color);
                   font-family: $ibm-plex-mono;
                   text-decoration: none;
                   text-overflow: ellipsis;

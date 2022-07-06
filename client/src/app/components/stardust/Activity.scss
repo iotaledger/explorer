@@ -31,7 +31,7 @@
 
         td {
             &.transaction-id {
-                color: $blue-5;
+                color: var(--link-color);
                 @include font-size(14px);
 
                 font-family: $ibm-plex-mono;
@@ -87,7 +87,7 @@
 
                     &.transaction-id {
                         overflow: hidden;
-                        color: $blue-5;
+                        color: var(--link-color);
                         font-family: $ibm-plex-mono;
                         font-weight: 500;
                         text-decoration: none;

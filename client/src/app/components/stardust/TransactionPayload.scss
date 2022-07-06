@@ -73,7 +73,7 @@
         .value {
           @include font-size(14px);
 
-          color: $blue-5;
+          color: var(--link-color);
           font-family: $ibm-plex-mono;
           font-weight: normal;
           letter-spacing: 0.02em;

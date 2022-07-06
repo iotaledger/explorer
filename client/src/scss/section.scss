@@ -58,7 +58,7 @@
       }
 
       &.highlight {
-        color: $blue-5;
+        color: var(--link-color);
       }
 
       &.featured {

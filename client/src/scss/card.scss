@@ -317,7 +317,7 @@
 
     a,
     button {
-      color: $blue-5;
+      color: var(--link-color);
     }
 
     &.card--value__highlight {

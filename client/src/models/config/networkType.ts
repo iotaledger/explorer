@@ -44,3 +44,11 @@ export const getNetworkOrder = (networkType: NetworkType) => {
     }
 };
 
+export const isShimmerNetwork = (networkType: NetworkType | string | undefined) => {
+    if (networkType === ALPHANET || networkType === TESTNET || networkType === SHIMMER) {
+        return true;
+    }
+
+    return false;
+}
+

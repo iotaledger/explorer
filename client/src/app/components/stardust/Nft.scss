@@ -17,12 +17,12 @@
             height: 180px;
             margin-top: 6px;
         }
-    
+
         .nft-name {
             margin-top: 12px;
             font-weight: 600;
         }
-    
+
         .nft-id {
             margin-top: 12px;
             text-align: center;
@@ -31,7 +31,7 @@
             font-weight: normal;
             letter-spacing: 0.02em;
             line-height: 20px;
-            color: $blue-5;
+            color: var(--link-color);
             line-height: 16px;
         }
     }

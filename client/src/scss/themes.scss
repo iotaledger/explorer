@@ -20,6 +20,7 @@
   --fiat-acronym-color: #{$gray-11};
   --expanded-color: #{$gray-7};
   --light-bg: #{$gray-1};
+  --link-color: #{$blue-5};
   --input-border-color: #d9e1ef;
   --input-focus-border-color: #{$gray-7};
   --modal-color: #{$gray-7};
@@ -92,5 +93,9 @@
     --shimmer-feeds-bg: #00121f;
     --shimmer-bg: url("../assets/header-bg-dark.svg");
     --shimmer-copyright: #0f202c;
+  }
+
+  body .shimmer {
+      --link-color: #{$mint-green-7};
   }
 }

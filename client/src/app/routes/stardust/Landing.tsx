@@ -6,7 +6,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
-import { CUSTOM, SHIMMER } from "../../../models/config/networkType";
+import { ALPHANET, CUSTOM, isShimmerNetwork, SHIMMER, TESTNET } from "../../../models/config/networkType";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/stardust/IFilterSettings";
@@ -98,7 +98,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             confirmedItemsPerSecond } = this.state;
 
         const { network } = this.props.match.params;
-        const isShimmerNetwork = network === SHIMMER;
+        const isShimmer = isShimmerNetwork(network);
 
         const defaultInfoBox = (
             <div className="row space-between info-boxes">
@@ -133,7 +133,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         );
 
         const shimmerInfoBox = (
-            <div className={classNames("info-boxes", { "shimmer": isShimmerNetwork })}>
+            <div className={classNames("info-boxes", { "shimmer": isShimmer })}>
                 <div className="row space-between">
                     <div className="info-box">
                         <span className="info-box--title">Tokens created
@@ -185,7 +185,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
         return (
             <div className="landing">
-                <div className={classNames("wrapper header-wrapper", { "shimmer": isShimmerNetwork })}>
+                <div className={classNames("wrapper header-wrapper", { "shimmer": isShimmer })}>
                     <div className="inner">
                         <div className="header">
                             <div className="header--title">
@@ -193,12 +193,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 <div className="row space-between wrap"><h1>{networkConfig.label}</h1></div>
                             </div>
 
-                            {isShimmerNetwork ? shimmerInfoBox : defaultInfoBox}
+                            {isShimmer ? shimmerInfoBox : defaultInfoBox}
 
                         </div>
                     </div>
                 </div>
-                <div className={classNames("wrapper feeds-wrapper", { "shimmer": isShimmerNetwork })}>
+                <div className={classNames("wrapper feeds-wrapper", { "shimmer": isShimmer })}>
                     <div className="inner">
                         <div className="feeds-section">
                             <div className="row wrap feeds">

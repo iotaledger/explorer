@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { ReactComponent as Logo } from "../../../assets/logo-header.svg";
 import { ReactComponent as ShimmerLogo } from "../../../assets/shimmer-logo-header.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { SHIMMER } from "../../../models/config/networkType";
+import { isShimmerNetwork } from "../../../models/config/networkType";
 import { SettingsService } from "../../../services/settingsService";
 import FiatSelector from "../FiatSelector";
 import "./Header.scss";
@@ -54,10 +54,10 @@ class Header extends Component<HeaderProps, HeaderState> {
      */
     public render(): ReactNode {
         const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
-        const isShimmerNetwork = currentNetwork?.network === SHIMMER;
+        const isShimmer = isShimmerNetwork(currentNetwork?.network);
 
         return (
-            <header className={classNames({ "shimmer-header-bg": isShimmerNetwork })}>
+            <header className={classNames({ "shimmer-header-bg": isShimmer })}>
                 <nav className="inner">
                     <div className="inner--main">
                         <div className="inner-wrapper">
@@ -67,7 +67,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 className="logo-image--wrapper"
                             >
                                 {
-                                    isShimmerNetwork ?
+                                    isShimmer ?
                                         <React.Fragment>
                                             <div className="shimmer-logo">
                                                 <ShimmerLogo />

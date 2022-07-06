@@ -134,7 +134,7 @@
 
         button.color {
             font-family: $ibm-plex-mono;
-            color: #108cff;
+            color: var(--link-color);
         }
     }
 
