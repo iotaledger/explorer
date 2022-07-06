@@ -34,5 +34,5 @@ export interface SearchState {
     /**
      * State to pass to redirected page.
      */
-    redirectState?: string[];
+    redirectState?: Record<string, unknown>;
 }

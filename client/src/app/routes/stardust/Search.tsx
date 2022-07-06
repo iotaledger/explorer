@@ -217,7 +217,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                             if (response) {
                                 let route = "";
                                 let routeParam = query;
-                                let state: string[] = [];
+                                let redirectState = {};
                                 if (response.block) {
                                     route = "block";
                                 } else if (response.addressDetails?.hex) {
@@ -230,8 +230,12 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     );
                                     routeParam = outputId;
                                 } else if (response.taggedOutputs) {
-                                    route = "outputs-list";
-                                    state = response.taggedOutputs.items;
+                                    route = "outputs";
+                                    redirectState = {
+                                        outputIds: response.taggedOutputs.items,
+                                        tag: query
+                                    };
+                                    routeParam = "";
                                 } else if (response.transactionBlock) {
                                     route = "transaction";
                                 } else if (response.aliasOutputId) {
@@ -254,7 +258,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     status: "",
                                     statusBusy: false,
                                     redirect: `/${this.props.match.params.network}/${route}/${routeParam}`,
-                                    redirectState: state
+                                    redirectState
                                 });
                             } else {
                                 this.setState({

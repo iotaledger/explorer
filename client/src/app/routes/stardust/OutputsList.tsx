@@ -1,50 +1,76 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, useLocation } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { DateHelper } from "../../../helpers/dateHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
+import Pagination from "../../components/Pagination";
+import Spinner from "../../components/Spinner";
 import Output from "../../components/stardust/Output";
 import "./OutputsList.scss";
 import OutputsListProps from "./OutputsListProps";
 
-const OutputsList: React.FC<RouteComponentProps<OutputsListProps>> = (
-    { match: { params: { network, tag } }, location: { state } }
-) => {
-    const [outputsDetail, setOutputsDetail] = useState<IOutputResponse[] | undefined>();
-    const [outputIds, setOutputIds] = useState<string[]>();
+interface OutputsListState {
+    outputIds: string[];
+    tag: string;
+}
 
+interface OutputsListResponse {
+    output: IOutputResponse;
+    outputId: string;
+}
+
+const TOKEN_PAGE_SIZE: number = 5;
+
+const OutputsList: React.FC<RouteComponentProps<OutputsListProps>> = (
+    { match: { params: { network } } }
+) => {
+    const [outputsDetail, setOutputsDetail] = useState<OutputsListResponse[] | undefined>();
+    const { state } = useLocation<OutputsListState>();
+    const [currentPage, setCurrentPage] = useState<OutputsListResponse[]>([]);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [isLoading, setIsLoading] = useState(true);
+    const { outputIds, tag } = state ?? {
+        outputIds: [],
+        tag: ""
+    };
 
     useEffect(() => {
-        if (state) {
-            // Typecast from unknown to array of strings
-            const ids: string[] = state as string[];
-            setOutputIds(ids);
+        if (outputIds.length > 0) {
+            getOutputDetails(outputIds);
+        } else {
+            setIsLoading(false);
         }
     }, []);
 
     useEffect(() => {
-        if (outputIds && outputIds.length > 0) {
-            getOutputDetails(outputIds);
+        const from = (pageNumber - 1) * TOKEN_PAGE_SIZE;
+        const to = from + TOKEN_PAGE_SIZE;
+        if (outputsDetail) {
+            setCurrentPage(outputsDetail.slice(from, to));
         }
-    }, [outputIds]);
+    }, [outputsDetail, pageNumber]);
 
     const getOutputDetails = async (ids: string[]) => {
         const stardustTangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
-        const outputs: IOutputResponse[] = [];
+        const outputs: OutputsListResponse[] = [];
 
         for (const outputId of ids) {
-                const outputResponse = await stardustTangleCacheService.outputDetails(network, outputId);
-                if (outputResponse) {
-                    outputs.push(outputResponse);
-                }
+            const outputResponse = await stardustTangleCacheService.outputDetails(network, outputId);
+            if (outputResponse) {
+                const response = {
+                    output: outputResponse,
+                    outputId
+                };
+                outputs.push(response);
+            }
         }
         setOutputsDetail(outputs);
+        setIsLoading(false);
     };
 
-    return (
+    return outputsDetail ?
         <div className="output-list">
             <div className="wrapper">
                 <div className="inner">
@@ -55,158 +81,36 @@ const OutputsList: React.FC<RouteComponentProps<OutputsListProps>> = (
                             </h1>
                         </div>
                     </div>
-                    {outputIds && outputsDetail && outputsDetail.length > 0 &&
-                        <div className="section">
-                            {outputsDetail.map((output, index) => (
-                                <div key={index}>
-                                    <div className="card">
-                                        <Output
-                                            network={network}
-                                            outputId={outputIds[index]}
-                                            output={output.output}
-                                            amount={Number(output.output.amount)}
-                                            showCopyAmount={true}
-                                            isPreExpanded={true}
-                                        />
-                                    </div>
-
-                                    <div className="section--header row row--tablet-responsive middle space-between">
-                                        <div className="row middle">
-                                            <h2>Metadata</h2>
-                                        </div>
-                                    </div>
-
-                                    {output.metadata.blockId && (
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Block ID
-                                            </div>
-                                            <div className="value code row middle">
-                                                <span className="margin-r-t">
-                                                    {output.metadata.blockId}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {output.metadata.transactionId && (
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Transaction ID
-                                            </div>
-                                            <div className="value code row middle">
-                                                <span className="margin-r-t">
-                                                    {output.metadata.transactionId}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {output.metadata.outputIndex !== undefined && (
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Output index
-                                            </div>
-                                            <div className="value code row middle">
-                                                <span className="margin-r-t">
-                                                    {output.metadata.outputIndex}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {output.metadata.isSpent !== undefined && (
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Is spent ?
-                                            </div>
-                                            <div className="value code row middle">
-                                                <span className="margin-r-t">
-                                                    {output.metadata.isSpent.toString()}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {output.metadata.milestoneIndexSpent && (
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Spent at milestone
-                                            </div>
-                                            <div className="value code row middle">
-                                                <span className="margin-r-t">
-                                                    {output.metadata.milestoneIndexSpent}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {output.metadata.milestoneTimestampSpent && (
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Spent at milestone timestamp
-                                            </div>
-                                            <div className="value code row middle">
-                                                <span className="margin-r-t">
-                                                    {
-                                                        DateHelper.formatShort(
-                                                            output.metadata.milestoneTimestampSpent * 1000
-                                                        )
-                                                    }
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {output.metadata.transactionIdSpent && (
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Spent in transaction with ID
-                                            </div>
-                                            <div className="value code row middle">
-                                                <span className="margin-r-t">
-                                                    {output.metadata.transactionIdSpent}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {output.metadata.milestoneIndexBooked && (
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Booked at milestone
-                                            </div>
-                                            <div className="value code row middle">
-                                                <span className="margin-r-t">
-                                                    {output.metadata.milestoneIndexBooked}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {output.metadata.milestoneTimestampBooked && (
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Booked on
-                                            </div>
-                                            <div className="value code row middle">
-                                                <span className="margin-r-t">
-                                                    {
-                                                        DateHelper.formatShort(
-                                                            output.metadata.milestoneTimestampBooked * 1000
-                                                        )
-                                                    }
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
+                    {currentPage.length > 0 &&
+                        <div className="section margin-b-s">
+                            {currentPage.map((data, index) => (
+                                <div key={index} className="card margin-b-s">
+                                    <Output
+                                        network={network}
+                                        outputId={data.outputId}
+                                        output={data.output.output}
+                                        amount={Number(data.output.output.amount)}
+                                        showCopyAmount={true}
+                                        isPreExpanded={false}
+                                    />
                                 </div>
                             ))}
                         </div>}
+                    <Pagination
+                        currentPage={pageNumber}
+                        totalCount={outputsDetail?.length ?? 0}
+                        pageSize={TOKEN_PAGE_SIZE}
+                        siblingsCount={1}
+                        onPageChange={number => setPageNumber(number)}
+                    />
                 </div>
             </div>
-        </div>
-    );
+        </div> :
+        <div className="content inner row middle center card">
+            {isLoading ?
+                <Spinner /> :
+                <h2>No data available</h2>}
+        </div>;
 };
 
 

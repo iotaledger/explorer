@@ -37,7 +37,7 @@ export interface ISearchResponse extends IResponse {
      */
     taggedOutputs?: IOutputsResponse;
 
-    /** 
+    /**
      * The outputIds of transaction history request.
      */
     historyOutputs?: ITransactionHistoryResponse;

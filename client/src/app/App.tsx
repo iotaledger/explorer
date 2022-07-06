@@ -318,7 +318,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 )}
                                             />
                                             <Route
-                                                path="/:network/outputs-list/:tag"
+                                                path="/:network/outputs"
                                                 component={(props: RouteComponentProps<OutputsListProps>) =>
                                                 (
                                                     withNetworkProvider(<OutputsList {...props} />)
