@@ -1,9 +1,11 @@
+/* eslint-disable jsdoc/require-param */
+/* eslint-disable jsdoc/require-returns */
 import React, { useRef } from "react";
 import "./Tooltip.scss";
 
 interface TooltipProps {
     tooltipContent: string | React.ReactNode;
-    children: React.ReactNode
+    children: React.ReactNode;
 }
 
 /**
@@ -14,17 +16,17 @@ const Tooltip: React.FC<TooltipProps> = ({ children, tooltipContent }) => {
 
     const onEnter = () => {
         if (tooltip?.current) {
-            tooltip.current.style.visibility = 'visible';
-            tooltip.current.style.opacity = '1';
+            tooltip.current.style.visibility = "visible";
+            tooltip.current.style.opacity = "1";
         }
-    }
+    };
 
     const onLeave = () => {
         if (tooltip?.current) {
-            tooltip.current.style.visibility = 'hidden';
-            tooltip.current.style.opacity = '0';
+            tooltip.current.style.visibility = "hidden";
+            tooltip.current.style.opacity = "0";
         }
-    }
+    };
 
     return (
         <div className="tooltip">
@@ -36,9 +38,8 @@ const Tooltip: React.FC<TooltipProps> = ({ children, tooltipContent }) => {
                 {children}
             </div>
         </div>
-    )
-
-}
+    );
+};
 
 export default Tooltip;
 

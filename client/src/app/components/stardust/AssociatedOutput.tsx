@@ -3,8 +3,8 @@
 import React from "react";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { AssociationType, IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";
-import Output from "./Output";
 import Tooltip from "../Tooltip";
+import Output from "./Output";
 
 interface AssociatedOutputProps {
     network: string;
@@ -42,12 +42,13 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
 
     const associationLabel = ASSOCIATION_TYPE_TO_LABEL[associations[0]];
     const additionalAssociationsLabel = associations.length > 1 ? `+${associations.length - 1} more` : null;
-    const additionalAssociations = associations.length > 1 ?
+    const additionalAssociations = associations.length > 1 ? (
         <div>
             {associations.slice(1).map((a, idx) => (
-                <div key={idx} style={{marginTop: idx > 0 ? "4px": "0"}}>{ASSOCIATION_TYPE_TO_LABEL[a]}</div>
+                <div key={idx} style={{ marginTop: idx > 0 ? "4px" : "0" }}>{ASSOCIATION_TYPE_TO_LABEL[a]}</div>
             ))}
-        </div> : null;
+        </div>
+    ) : null;
 
     const outputTableRow = (
         <tr>

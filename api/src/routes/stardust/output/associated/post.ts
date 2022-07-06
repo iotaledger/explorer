@@ -36,10 +36,10 @@ export async function post(
     const results = helper.outputIdToAssociations;
 
     const outputs: IAssociatedOutput[] = [];
-    for (const [ outputId, associations ] of results.entries()) {
+    for (const [outputId, associations] of results.entries()) {
         // Sort associations by priority
-        associations.sort((a, b) => ASSOCIATION_TYPE_TO_PRORITY[a] < ASSOCIATION_TYPE_TO_PRORITY[b] ? -1 : 1);
-        outputs.push({ outputId, associations })
+        associations.sort((a, b) => (ASSOCIATION_TYPE_TO_PRORITY[a] < ASSOCIATION_TYPE_TO_PRORITY[b] ? -1 : 1));
+        outputs.push({ outputId, associations });
     }
 
     return {
