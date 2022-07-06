@@ -11,7 +11,7 @@ import Output from "../../components/stardust/Output";
 import "./OutputList.scss";
 import OutputListProps from "./OutputListProps";
 
-interface OutputListState {
+interface OutputListLocationProps {
     outputIds: string[];
     tag: string;
 }
@@ -27,7 +27,7 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
     { match: { params: { network } } }
 ) => {
     const [outputDetails, setOutputDetails] = useState<OutputListItem[]>([]);
-    const { outputIds, tag } = useLocation<OutputListState>().state ?? {
+    const { outputIds, tag } = useLocation<OutputListLocationProps>().state ?? {
         outputIds: [],
         tag: ""
     };
