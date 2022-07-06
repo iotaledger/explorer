@@ -8,88 +8,83 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import Output from "../../components/stardust/Output";
-import "./OutputsList.scss";
-import OutputsListProps from "./OutputsListProps";
+import "./OutputList.scss";
+import OutputListProps from "./OutputListProps";
 
-interface OutputsListState {
+interface OutputListState {
     outputIds: string[];
     tag: string;
 }
 
-interface OutputsListResponse {
-    output: IOutputResponse;
+interface OutputListItem {
+    outputDetails: IOutputResponse;
     outputId: string;
 }
 
 const TOKEN_PAGE_SIZE: number = 5;
 
-const OutputsList: React.FC<RouteComponentProps<OutputsListProps>> = (
+const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
     { match: { params: { network } } }
 ) => {
-    const [outputsDetail, setOutputsDetail] = useState<OutputsListResponse[] | undefined>();
-    const { state } = useLocation<OutputsListState>();
-    const [currentPage, setCurrentPage] = useState<OutputsListResponse[]>([]);
-    const [pageNumber, setPageNumber] = useState(1);
-    const [isLoading, setIsLoading] = useState(true);
-    const { outputIds, tag } = state ?? {
+    const [outputDetails, setOutputDetails] = useState<OutputListItem[]>([]);
+    const { outputIds, tag } = useLocation<OutputListState>().state ?? {
         outputIds: [],
         tag: ""
     };
+    const [currentPage, setCurrentPage] = useState<OutputListItem[]>([]);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (outputIds.length > 0) {
-            getOutputDetails(outputIds);
-        } else {
-            setIsLoading(false);
-        }
+        fetchOutputDetails();
     }, []);
 
     useEffect(() => {
         const from = (pageNumber - 1) * TOKEN_PAGE_SIZE;
         const to = from + TOKEN_PAGE_SIZE;
-        if (outputsDetail) {
-            setCurrentPage(outputsDetail.slice(from, to));
-        }
-    }, [outputsDetail, pageNumber]);
+        setCurrentPage(outputDetails.slice(from, to));
+    }, [outputDetails, pageNumber]);
 
-    const getOutputDetails = async (ids: string[]) => {
-        const stardustTangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
-        const outputs: OutputsListResponse[] = [];
+    const fetchOutputDetails = async () => {
+        if (outputIds.length > 0) {
+            const stardustTangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
+            const outputs: OutputListItem[] = [];
 
-        for (const outputId of ids) {
-            const outputResponse = await stardustTangleCacheService.outputDetails(network, outputId);
-            if (outputResponse) {
-                const response = {
-                    output: outputResponse,
-                    outputId
-                };
-                outputs.push(response);
+            for (const outputId of outputIds) {
+                const outputResponse = await stardustTangleCacheService.outputDetails(network, outputId);
+                if (outputResponse) {
+                    const response = {
+                        outputDetails: outputResponse,
+                        outputId
+                    };
+                    outputs.push(response);
+                }
             }
+            setOutputDetails(outputs);
         }
-        setOutputsDetail(outputs);
         setIsLoading(false);
     };
 
-    return outputsDetail ?
+    return outputDetails && outputDetails.length > 0 ?
         <div className="output-list">
             <div className="wrapper">
                 <div className="inner">
                     <div className="output-list--header">
                         <div className="row middle">
                             <h1>
-                                Outputs &quot;{tag}&#34;
+                                Outputs with tag "{tag}"
                             </h1>
                         </div>
                     </div>
                     {currentPage.length > 0 &&
                         <div className="section margin-b-s">
-                            {currentPage.map((data, index) => (
+                            {currentPage.map((item, index) => (
                                 <div key={index} className="card margin-b-s">
                                     <Output
                                         network={network}
-                                        outputId={data.outputId}
-                                        output={data.output.output}
-                                        amount={Number(data.output.output.amount)}
+                                        outputId={item.outputId}
+                                        output={item.outputDetails.output}
+                                        amount={Number(item.outputDetails.output.amount)}
                                         showCopyAmount={true}
                                         isPreExpanded={false}
                                     />
@@ -98,7 +93,7 @@ const OutputsList: React.FC<RouteComponentProps<OutputsListProps>> = (
                         </div>}
                     <Pagination
                         currentPage={pageNumber}
-                        totalCount={outputsDetail?.length ?? 0}
+                        totalCount={outputDetails.length}
                         pageSize={TOKEN_PAGE_SIZE}
                         siblingsCount={1}
                         onPageChange={number => setPageNumber(number)}
@@ -106,7 +101,7 @@ const OutputsList: React.FC<RouteComponentProps<OutputsListProps>> = (
                 </div>
             </div>
         </div> :
-        <div className="content inner row middle center card">
+        <div className="content row center card">
             {isLoading ?
                 <Spinner /> :
                 <h2>No data available</h2>}
@@ -114,4 +109,4 @@ const OutputsList: React.FC<RouteComponentProps<OutputsListProps>> = (
 };
 
 
-export default OutputsList;
+export default OutputList;

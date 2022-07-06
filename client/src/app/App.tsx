@@ -53,8 +53,8 @@ import Nft from "./routes/stardust/Nft";
 import NFTDetails from "./routes/stardust/NFTDetails";
 import OutputPage from "./routes/stardust/OutputPage";
 import OutputPageProps from "./routes/stardust/OutputPageProps";
-import OutputsList from "./routes/stardust/OutputsList";
-import OutputsListProps from "./routes/stardust/OutputsListProps";
+import OutputList from "./routes/stardust/OutputList";
+import OutputListProps from "./routes/stardust/OutputListProps";
 import StardustSearch from "./routes/stardust/Search";
 import TransactionPage from "./routes/stardust/TransactionPage";
 import { TransactionPageProps } from "./routes/stardust/TransactionPageProps";
@@ -319,9 +319,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                             />
                                             <Route
                                                 path="/:network/outputs"
-                                                component={(props: RouteComponentProps<OutputsListProps>) =>
+                                                component={(props: RouteComponentProps<OutputListProps>) =>
                                                 (
-                                                    withNetworkProvider(<OutputsList {...props} />)
+                                                    withNetworkProvider(<OutputList {...props} />)
                                                 )}
                                             />
                                             <Route
