@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IAssociatedOutputsRequest } from "../../../../models/api/stardust/IAssociatedOutputsRequest";
 import { IAssociatedOutputsRequestBody } from "../../../../models/api/stardust/IAssociatedOutputsRequestBody";
-import { IAssociatedOutputsResponse } from "../../../../models/api/stardust/IAssociatedOutputsResponse";
+import { ASSOCIATION_TYPE_TO_PRORITY, IAssociatedOutput, IAssociatedOutputsResponse } from "../../../../models/api/stardust/IAssociatedOutputsResponse";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -33,9 +33,16 @@ export async function post(
 
     const helper = new AssociatedOutputsHelper(networkConfig, body.addressDetails);
     await helper.fetch();
-    const associatedOutputs = helper.associatedOutputs;
+    const results = helper.outputIdToAssociations;
+
+    const outputs: IAssociatedOutput[] = [];
+    for (const [ outputId, associations ] of results.entries()) {
+        // Sort associations by priority
+        associations.sort((a, b) => ASSOCIATION_TYPE_TO_PRORITY[a] < ASSOCIATION_TYPE_TO_PRORITY[b] ? -1 : 1);
+        outputs.push({ outputId, associations })
+    }
 
     return {
-        outputs: associatedOutputs
+        outputs
     };
 }

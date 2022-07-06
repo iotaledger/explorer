@@ -118,6 +118,16 @@
             }
         }
 
+        tr, .card {
+            .found-in--wrapper {
+                display: flex;
+
+                @include desktop-down {
+                    flex-direction: column;
+                }
+            }
+        }
+
         tr {
             .found-in, .date-created {
                 color: $gray-6;

@@ -1,7 +1,7 @@
 import {
     SingleNodeClient, IndexerPluginClient, IOutputsResponse, NFT_ADDRESS_TYPE, ALIAS_ADDRESS_TYPE
 } from "@iota/iota.js-stardust";
-import { AssociationType, IAssociatedOutput } from "../../models/api/stardust/IAssociatedOutputsResponse";
+import { AssociationType } from "../../models/api/stardust/IAssociatedOutputsResponse";
 import { IBech32AddressDetails } from "../../models/api/stardust/IBech32AddressDetails";
 import { INetwork } from "../../models/db/INetwork";
 
@@ -9,7 +9,7 @@ import { INetwork } from "../../models/db/INetwork";
  * Helper class to fetch associated outputs of an address on stardust.
  */
 export class AssociatedOutputsHelper {
-    public readonly associatedOutputs: IAssociatedOutput[] = [];
+    public readonly outputIdToAssociations: Map<string, AssociationType[]> = new Map();
 
     private readonly network: INetwork;
 
@@ -153,8 +153,8 @@ export class AssociatedOutputsHelper {
         fetch: (req: T) => Promise<IOutputsResponse>,
         args: T,
         association: AssociationType
-    ) {
-        const associatedOutputs = this.associatedOutputs;
+    ): Promise<void> {
+        const outputIdToAssociations = this.outputIdToAssociations;
         let cursor: string;
 
         do {
@@ -165,7 +165,14 @@ export class AssociatedOutputsHelper {
 
                 if (outputs.items.length > 0) {
                     for (const outputId of outputs.items) {
-                        associatedOutputs.push({ outputId, association });
+                        const associations = outputIdToAssociations.get(outputId);
+
+                        if (associations) {
+                            associations.push(association);
+                            outputIdToAssociations.set(outputId, associations);
+                        } else {
+                            outputIdToAssociations.set(outputId, [association]);
+                        }
                     }
                 }
 
