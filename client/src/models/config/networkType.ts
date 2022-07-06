@@ -50,5 +50,5 @@ export const isShimmerNetwork = (networkType: NetworkType | string | undefined) 
     }
 
     return false;
-}
+};
 

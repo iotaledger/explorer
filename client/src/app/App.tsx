@@ -136,7 +136,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
         );
 
         return (
-            <div className={classNames("app", {"shimmer": isShimmer})}>
+            <div className={classNames("app", { "shimmer": isShimmer })}>
                 <Header
                     rootPath={`/${currentNetworkConfig?.isEnabled ? this.state.networkId : ""}`}
                     currentNetwork={currentNetworkConfig}

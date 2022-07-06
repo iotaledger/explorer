@@ -6,7 +6,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
-import { ALPHANET, CUSTOM, isShimmerNetwork, SHIMMER, TESTNET } from "../../../models/config/networkType";
+import { CUSTOM, isShimmerNetwork } from "../../../models/config/networkType";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/stardust/IFilterSettings";
