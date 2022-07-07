@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -58,6 +59,8 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
             isMounted.current = false;
         };
     }, []);
+
+    const isMarketed = isMarketedNetwork(network);
 
     return (
         <div className="foundry">
@@ -115,10 +118,14 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                                         {balance && (
                                             <React.Fragment>
                                                 {formatAmount(balance, tokenInfo, true)}
-                                                {" "}
-                                                <span>(</span>
-                                                <FiatValue value={balance} />
-                                                <span>)</span>
+                                                {isMarketed && (
+                                                    <React.Fragment>
+                                                        {" "}
+                                                        <span>(</span>
+                                                        <FiatValue value={balance} />
+                                                        <span>)</span>
+                                                    </React.Fragment>
+                                                )}
                                             </React.Fragment>
                                         )}
                                     </div>

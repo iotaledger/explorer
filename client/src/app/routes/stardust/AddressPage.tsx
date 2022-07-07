@@ -6,6 +6,7 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -125,6 +126,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             outputResponse, formatFull, nfts, nftsPageNumber } = this.state;
 
         const networkId = this.props.match.params.network;
+        const isMarketed = isMarketedNetwork(networkId);
         const nativeTokensCount = outputResponse ? this.countDistinctNativeTokens(outputResponse) : 0;
         const hasNativeTokens = nativeTokensCount > 0;
         const hasNfts = nfts && nfts.length > 0;
@@ -181,9 +183,13 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                                             formatFull
                                                                         )}
                                                                     </span>
-                                                                    <span>(</span>
-                                                                    <FiatValue value={balance} />
-                                                                    <span>)</span>
+                                                                    {isMarketed && (
+                                                                        <React.Fragment>
+                                                                            <span>(</span>
+                                                                            <FiatValue value={balance} />
+                                                                            <span>)</span>
+                                                                        </React.Fragment>
+                                                                    )}
                                                                     <CopyButton
                                                                         onClick={() => ClipboardHelper.copy(
                                                                             String(balance)
