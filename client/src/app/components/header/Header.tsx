@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { ReactComponent as Logo } from "../../../assets/logo-header.svg";
 import { ReactComponent as ShimmerLogo } from "../../../assets/shimmer-logo-header.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { isShimmerNetwork } from "../../../models/config/networkType";
+import { ALPHANET, CUSTOM, isShimmerNetwork, TESTNET } from "../../../models/config/networkType";
 import { SettingsService } from "../../../services/settingsService";
 import FiatSelector from "../FiatSelector";
 import "./Header.scss";
@@ -55,6 +55,9 @@ class Header extends Component<HeaderProps, HeaderState> {
     public render(): ReactNode {
         const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
         const isShimmer = isShimmerNetwork(currentNetwork?.network);
+        const isMarketedNetwork = currentNetwork?.network !== ALPHANET &&
+            currentNetwork?.network !== TESTNET &&
+            currentNetwork?.network !== CUSTOM;
 
         return (
             <header className={classNames({ "shimmer-header-bg": isShimmer })}>
@@ -143,17 +146,21 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 )}
                             </div>
                             {/* ----- Only visible in mobile ----- */}
-                            <div className="mobile-fiat">
-                                <FiatSelector />
-                            </div>
+                            {isMarketedNetwork && (
+                                <div className="mobile-fiat">
+                                    <FiatSelector />
+                                </div>
+                            )}
                             {/* ---------- */}
 
                             {search}
 
                             {/* ----- Only visible in desktop ----- */}
-                            <div className="desktop-fiat">
-                                <FiatSelector />
-                            </div>
+                            {isMarketedNetwork && (
+                                <div className="desktop-fiat">
+                                    <FiatSelector />
+                                </div>
+                            )}
                         </div>
                         {/* ---------- */}
                         <button
