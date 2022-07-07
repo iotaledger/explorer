@@ -26,7 +26,7 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
      */
      public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        this.setState(this.loadPayload());
+        this.setState(this.loadTagOptions());
     }
 
     /**
@@ -98,10 +98,10 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
     }
 
     /**
-     * Load index and data from payload.
-     * @returns Object with indexes and data in raw and utf-8 format.
+     * Load hex and text options from tag.
+     * @returns Tag in raw and utf-8 format.
      */
-     private loadPayload() {
+     private loadTagOptions() {
         let tagHex;
         let tagUtf8;
         let tagJson;
