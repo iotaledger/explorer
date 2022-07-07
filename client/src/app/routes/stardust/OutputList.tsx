@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable react/no-unescaped-entities */
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps, useLocation } from "react-router-dom";
@@ -47,6 +48,7 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
 
     const fetchOutputDetails = async () => {
         if (outputIds.length > 0) {
+            // eslint-disable-next-line max-len
             const stardustTangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
             const outputs: OutputListItem[] = [];
 

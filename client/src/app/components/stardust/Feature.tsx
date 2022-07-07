@@ -1,9 +1,11 @@
 import { ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, SENDER_FEATURE_TYPE, TAG_FEATURE_TYPE } from "@iota/iota.js-stardust";
+import { Converter } from "@iota/util.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import AsyncComponent from "../AsyncComponent";
+import DataToggle from "../DataToggle";
 import Address from "./Address";
 import { FeatureProps } from "./FeatureProps";
 import { FeatureState } from "./FeatureState";
@@ -24,6 +26,7 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
      */
      public async componentDidMount(): Promise<void> {
         super.componentDidMount();
+        this.setState(this.loadPayload());
     }
 
     /**
@@ -31,6 +34,17 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const TOGGLE_TAG_OPTIONS = [
+            {
+                label: this.state.tagJson ? "JSON" : "Text",
+                content: this.state.tagJson ?? this.state.tagUtf8,
+                isJson: this.state.tagJson !== undefined
+            },
+            {
+                label: "HEX",
+                content: this.state.tagHex
+            }
+        ];
         return (
             <div className="feature-block">
                 <div
@@ -69,19 +83,44 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
                             </React.Fragment>
                         )}
                         {this.props.feature.type === TAG_FEATURE_TYPE && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Tag:
-                                </div>
-                                <div className="card--value row">
-                                    {this.props.feature.tag}
-                                </div>
-                            </React.Fragment>
+                            <div>
+                                {TOGGLE_TAG_OPTIONS.some(option => option.content !== undefined) && (
+                                    <DataToggle
+                                        options={TOGGLE_TAG_OPTIONS}
+                                    />
+                                )}
+                            </div>
                         )}
                     </div>
                 )}
             </div>
         );
+    }
+
+    /**
+     * Load index and data from payload.
+     * @returns Object with indexes and data in raw and utf-8 format.
+     */
+     private loadPayload() {
+        let tagHex;
+        let tagUtf8;
+        let tagJson;
+
+        if (this.props.feature.type === TAG_FEATURE_TYPE && this.props.feature.tag) {
+            tagHex = this.props.feature.tag;
+            tagUtf8 = Converter.hexToUtf8(this.props.feature.tag);
+
+            try {
+                if (tagUtf8) {
+                    tagJson = JSON.stringify(JSON.parse(tagUtf8), undefined, "  ");
+                }
+            } catch { }
+        }
+        return {
+            tagUtf8,
+            tagHex,
+            tagJson
+        };
     }
 }
 
