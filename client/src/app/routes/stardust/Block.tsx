@@ -6,6 +6,7 @@ import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
+import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
@@ -99,6 +100,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
     public render(): ReactNode {
         const network = this.props.match.params.network;
         const blockId = this.props.match.params.blockId;
+        const isMarketed = isMarketedNetwork(network);
 
         return (
             <div className="block">
@@ -223,7 +225,9 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                     !this.state.isFormattedBalance
                                                 )}
                                             </span>
-                                            (<FiatValue value={this.state.transferTotal} />)
+                                            {isMarketed && (
+                                                (<FiatValue value={this.state.transferTotal} />)
+                                            )}
                                         </div>
                                     </div>
                                 )}

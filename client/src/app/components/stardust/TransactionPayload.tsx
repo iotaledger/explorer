@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import transactionPayloadMessage from "../../../assets/modals/message/transaction-payload.json";
+import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import AsyncComponent from "../AsyncComponent";
@@ -45,6 +46,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      */
     public render(): ReactNode {
         const { network, inputs, outputs, transferTotal, history, header } = this.props;
+        const isMarketed = isMarketedNetwork(network);
 
         return (
             <div className="transaction-payload">
@@ -64,9 +66,11 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 {formatAmount(transferTotal, this.context.tokenInfo, !this.state.isFormattedBalance)}
                             </span>
                             <span className="dot-separator">•</span>
-                            <span className="fiat-value">
-                                <FiatValue value={transferTotal} />
-                            </span>
+                            {isMarketed && (
+                                <span className="fiat-value">
+                                    <FiatValue value={transferTotal} />
+                                </span>
+                            )}
                         </div>
                     </div>
                 </div>
