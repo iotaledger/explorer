@@ -1,5 +1,4 @@
 import { ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, SENDER_FEATURE_TYPE, TAG_FEATURE_TYPE } from "@iota/iota.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
@@ -26,7 +25,6 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
      */
      public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        this.setState(this.loadTagOptions());
     }
 
     /**
@@ -34,59 +32,52 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const TOGGLE_TAG_OPTIONS = [
-            {
-                label: this.state.tagJson ? "JSON" : "Text",
-                content: this.state.tagJson ?? this.state.tagUtf8,
-                isJson: this.state.tagJson !== undefined
-            },
-            {
-                label: "HEX",
-                content: this.state.tagHex
-            }
-        ];
+        const isExpanded = this.state.isExpanded;
+        const { feature } = this.props;
+
         return (
             <div className="feature-block">
                 <div
                     className="card--content__input card--value row middle"
-                    onClick={() => this.setState({ isExpanded: !this.state.isExpanded })}
+                    onClick={() => this.setState({ isExpanded: !isExpanded })}
                 >
                     <div className={classNames("margin-r-t", "card--content--dropdown",
-                        { opened: this.state.isExpanded })}
+                        { opened: isExpanded })}
                     >
                         <DropdownIcon />
                     </div>
                     <div className="card--label">
-                        {NameHelper.getFeatureTypeName(this.props.feature.type)}
+                        {NameHelper.getFeatureTypeName(feature.type)}
                     </div>
                 </div>
-                {this.state.isExpanded && (
+                {isExpanded && (
                     <div className="margin-l-t">
-                        {this.props.feature.type === SENDER_FEATURE_TYPE && (
+                        {feature.type === SENDER_FEATURE_TYPE && (
                             <Address
-                                address={this.props.feature.address}
+                                address={feature.address}
                             />
                         )}
-                        {this.props.feature.type === ISSUER_FEATURE_TYPE && (
+                        {feature.type === ISSUER_FEATURE_TYPE && (
                             <Address
-                                address={this.props.feature.address}
+                                address={feature.address}
                             />
                         )}
-                        {this.props.feature.type === METADATA_FEATURE_TYPE && (
+                        {feature.type === METADATA_FEATURE_TYPE && (
                             <React.Fragment>
                                 <div className="card--label">
                                     Data:
                                 </div>
                                 <div className="card--value row">
-                                    {this.props.feature.data}
+                                    {feature.data}
                                 </div>
                             </React.Fragment>
                         )}
-                        {this.props.feature.type === TAG_FEATURE_TYPE && (
+                        {feature.type === TAG_FEATURE_TYPE && (
                             <div>
-                                {TOGGLE_TAG_OPTIONS.some(option => option.content !== undefined) && (
+                                {feature.tag && (
                                     <DataToggle
-                                        options={TOGGLE_TAG_OPTIONS}
+                                        sourceData={feature.tag}
+                                        withSpacedHex={true}
                                     />
                                 )}
                             </div>
@@ -95,32 +86,6 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
                 )}
             </div>
         );
-    }
-
-    /**
-     * Load hex and text options from tag.
-     * @returns Tag in raw and utf-8 format.
-     */
-     private loadTagOptions() {
-        let tagHex;
-        let tagUtf8;
-        let tagJson;
-
-        if (this.props.feature.type === TAG_FEATURE_TYPE && this.props.feature.tag) {
-            tagHex = this.props.feature.tag;
-            tagUtf8 = Converter.hexToUtf8(this.props.feature.tag);
-
-            try {
-                if (tagUtf8) {
-                    tagJson = JSON.stringify(JSON.parse(tagUtf8), undefined, "  ");
-                }
-            } catch { }
-        }
-        return {
-            tagUtf8,
-            tagHex,
-            tagJson
-        };
     }
 }
 

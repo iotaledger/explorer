@@ -20,11 +20,6 @@ export interface IndexedState {
     hexIndex?: string;
 
     /**
-     * UTF8 view of index.
-     */
-    utf8Index?: string;
-
-    /**
      * The index length in bytes.
      */
     indexLengthBytes?: number;

@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
 import { ALIAS_ADDRESS_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
-import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
+import { HexHelper, WriteStream } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -78,10 +78,11 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                     bech32Hrp,
                     result.output.aliasId,
                     ALIAS_ADDRESS_TYPE);
-            this.setState(this.loadPayload());
+
             this.setState({
                 bech32AddressDetails,
-                output: result.output
+                output: result.output,
+                stateMetadataHex: result.output?.stateMetadata
             }, async () => {
                 await this.getControlledFoundries();
             });
@@ -95,22 +96,13 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, areFoundriesLoading, foundries, foundriesPageNumber,
-            output, stateMetadataHex, stateMetadataUtf8, stateMetadataJson } = this.state;
+        const {
+            bech32AddressDetails, areFoundriesLoading, foundries,
+            foundriesPageNumber, output, stateMetadataHex
+        } = this.state;
         const networkId = this.props.match.params.network;
 
         const hasFoundries = foundries && foundries.length > 0;
-        const TOGGLE_DATA_OPTIONS = [
-            {
-                label: stateMetadataJson ? "JSON" : "Text",
-                content: stateMetadataJson ?? stateMetadataUtf8,
-                isJson: stateMetadataJson !== undefined
-            },
-            {
-                label: "HEX",
-                content: stateMetadataHex
-            }
-        ];
 
         return (
             <div className="addr">
@@ -152,13 +144,14 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                                 <span className="margin-r-t">{output?.stateIndex}</span>
                                             </div>
                                         </div>
-                                        <div className="margin-t-s">
-                                            {TOGGLE_DATA_OPTIONS.some(option => option.content !== undefined) && (
+                                        {stateMetadataHex && (
+                                            <div className="margin-t-s">
                                                 <DataToggle
-                                                    options={TOGGLE_DATA_OPTIONS}
+                                                    sourceData={stateMetadataHex}
+                                                    withSpacedHex={true}
                                                 />
-                                            )}
-                                        </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 {areFoundriesLoading && (
@@ -303,32 +296,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         const tokenSchemeTypeHex = tokenSchemeTypeWS.finalHex();
 
         return `${aliasAddress}${serialNumberHex}${tokenSchemeTypeHex}`;
-    }
-
-    /**
-     * Load index and data from payload.
-     * @returns Object with indexes and data in raw and utf-8 format.
-     */
-     private loadPayload() {
-        let stateMetadataHex;
-        let stateMetadataUtf8;
-        let stateMetadataJson;
-
-        if (this.state.output?.stateMetadata) {
-            stateMetadataHex = this.state.output?.stateMetadata;
-            stateMetadataUtf8 = Converter.hexToUtf8(this.state.output?.stateMetadata);
-
-            try {
-                if (stateMetadataUtf8) {
-                    stateMetadataJson = JSON.stringify(JSON.parse(stateMetadataUtf8), undefined, "  ");
-                }
-            } catch { }
-        }
-        return {
-            stateMetadataUtf8,
-            stateMetadataHex,
-            stateMetadataJson
-        };
     }
 }
 

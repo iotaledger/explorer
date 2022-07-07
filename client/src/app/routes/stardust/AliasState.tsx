@@ -32,16 +32,5 @@ export interface AliasState {
      * Hex form of state metadata.
      */
     stateMetadataHex?: string;
-
-    /**
-     * UTF8 form of state metadata.
-     */
-    stateMetadataUtf8?: string;
-
-    /**
-     * JSON form of state metadata.
-     */
-    stateMetadataJson?: string;
-
 }
 
