@@ -2,30 +2,18 @@
  * The props for the DataToggle component.
  */
 export interface DataToggleProps {
+    /**
+     * Hex source of the data.
+     */
+    sourceData: string;
 
     /**
-     *  The options to configure DataToggle
+     * The link url.
      */
-    options: {
+    link?: string;
 
-        /**
-         * The label for the content.
-         */
-        label: string;
-
-        /**
-         * The content to be displayed.
-         */
-        content?: string;
-
-        /**
-         * The link url.
-         */
-        link?: string;
-
-        /**
-         * Expected or not json data.
-         */
-        isJson?: boolean;
-    }[];
+    /**
+     * Does the hex data view have spaces between bytes.
+     */
+    withSpacedHex?: boolean;
 }

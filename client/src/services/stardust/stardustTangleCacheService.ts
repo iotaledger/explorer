@@ -88,6 +88,7 @@ export class StardustTangleCacheService extends TangleCacheService {
                 response.block ||
                 response.milestone ||
                 response.output ||
+                response.taggedOutputs ||
                 response.transactionBlock ||
                 response.aliasOutputId ||
                 response.foundryOutputId ||
@@ -139,9 +140,7 @@ export class StardustTangleCacheService extends TangleCacheService {
         transactionId: string
         ): Promise<IBlock | undefined> {
         if (!this._stardustSearchCache[networkId][transactionId]?.data?.transactionBlock) {
-            const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-
-            const response = await apiClient.transactionIncludedBlockDetails({ network: networkId, transactionId });
+            const response = await this._api.transactionIncludedBlockDetails({ network: networkId, transactionId });
 
             if (response.block) {
                 this._stardustSearchCache[networkId][transactionId] = {

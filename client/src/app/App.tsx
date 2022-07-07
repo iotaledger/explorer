@@ -51,6 +51,8 @@ import { FoundryProps } from "./routes/stardust/FoundryProps";
 import StardustLanding from "./routes/stardust/Landing";
 import Nft from "./routes/stardust/Nft";
 import NFTDetails from "./routes/stardust/NFTDetails";
+import OutputList from "./routes/stardust/OutputList";
+import OutputListProps from "./routes/stardust/OutputListProps";
 import OutputPage from "./routes/stardust/OutputPage";
 import OutputPageProps from "./routes/stardust/OutputPageProps";
 import StardustSearch from "./routes/stardust/Search";
@@ -313,6 +315,13 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 component={(props: RouteComponentProps<OutputPageProps>) =>
                                                 (
                                                     withNetworkProvider(<OutputPage {...props} />)
+                                                )}
+                                            />
+                                            <Route
+                                                path="/:network/outputs"
+                                                component={(props: RouteComponentProps<OutputListProps>) =>
+                                                (
+                                                    withNetworkProvider(<OutputList {...props} />)
                                                 )}
                                             />
                                             <Route

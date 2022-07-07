@@ -319,17 +319,10 @@ export class StardustTangleHelper {
         if (searchQuery.tag) {
             try {
                 const taggedOutputs = await indexerPlugin.outputs({ tagHex: searchQuery.tag });
-
                 if (taggedOutputs.items.length > 0) {
-                    const output = await this.fromNodeWithPermanodeFallBack<string, IOutputResponse>(
-                        taggedOutputs.items[0],
-                        "output",
-                        network
-                    );
-
-                    if (output) {
-                        return { output };
-                    }
+                    return {
+                        taggedOutputs
+                    };
                 }
             } catch {}
         }

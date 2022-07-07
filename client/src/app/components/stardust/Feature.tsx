@@ -4,6 +4,7 @@ import React, { ReactNode } from "react";
 import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import AsyncComponent from "../AsyncComponent";
+import DataToggle from "../DataToggle";
 import Address from "./Address";
 import { FeatureProps } from "./FeatureProps";
 import { FeatureState } from "./FeatureState";
@@ -31,52 +32,55 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const isExpanded = this.state.isExpanded;
+        const { feature } = this.props;
+
         return (
             <div className="feature-block">
                 <div
                     className="card--content__input card--value row middle"
-                    onClick={() => this.setState({ isExpanded: !this.state.isExpanded })}
+                    onClick={() => this.setState({ isExpanded: !isExpanded })}
                 >
                     <div className={classNames("margin-r-t", "card--content--dropdown",
-                        { opened: this.state.isExpanded })}
+                        { opened: isExpanded })}
                     >
                         <DropdownIcon />
                     </div>
                     <div className="card--label">
-                        {NameHelper.getFeatureTypeName(this.props.feature.type)}
+                        {NameHelper.getFeatureTypeName(feature.type)}
                     </div>
                 </div>
-                {this.state.isExpanded && (
+                {isExpanded && (
                     <div className="margin-l-t">
-                        {this.props.feature.type === SENDER_FEATURE_TYPE && (
+                        {feature.type === SENDER_FEATURE_TYPE && (
                             <Address
-                                address={this.props.feature.address}
+                                address={feature.address}
                             />
                         )}
-                        {this.props.feature.type === ISSUER_FEATURE_TYPE && (
+                        {feature.type === ISSUER_FEATURE_TYPE && (
                             <Address
-                                address={this.props.feature.address}
+                                address={feature.address}
                             />
                         )}
-                        {this.props.feature.type === METADATA_FEATURE_TYPE && (
+                        {feature.type === METADATA_FEATURE_TYPE && (
                             <React.Fragment>
                                 <div className="card--label">
                                     Data:
                                 </div>
                                 <div className="card--value row">
-                                    {this.props.feature.data}
+                                    {feature.data}
                                 </div>
                             </React.Fragment>
                         )}
-                        {this.props.feature.type === TAG_FEATURE_TYPE && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Tag:
-                                </div>
-                                <div className="card--value row">
-                                    {this.props.feature.tag}
-                                </div>
-                            </React.Fragment>
+                        {feature.type === TAG_FEATURE_TYPE && (
+                            <div>
+                                {feature.tag && (
+                                    <DataToggle
+                                        sourceData={feature.tag}
+                                        withSpacedHex={true}
+                                    />
+                                )}
+                            </div>
                         )}
                     </div>
                 )}
