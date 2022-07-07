@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
-import { getNetworkOrder, MAINNET } from "../../models/config/networkType";
+import { getNetworkOrder } from "../../helpers/networkHelper";
+import { MAINNET } from "../../models/config/networkType";
 import { CHRYSALIS, OG, STARDUST } from "../../models/config/protocolVersion";
 import { ReactComponent as DevnetIcon } from "./../../assets/devnet.svg";
 import { ReactComponent as MainnetIcon } from "./../../assets/mainnet.svg";

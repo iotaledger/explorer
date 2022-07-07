@@ -2,8 +2,9 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
+import { isMarketedNetwork, isShimmerNetwork } from "../helpers/networkHelper";
 import { IConfiguration } from "../models/config/IConfiguration";
-import { isShimmerNetwork, MAINNET } from "../models/config/networkType";
+import { MAINNET } from "../models/config/networkType";
 import { CHRYSALIS, OG, STARDUST } from "../models/config/protocolVersion";
 import { BaseTokenInfoService } from "../services/baseTokenInfoService";
 import { NetworkService } from "../services/networkService";
@@ -108,6 +109,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
     public render(): ReactNode {
         const currentNetworkConfig = this.state.networks.find(n => n.network === this.state.networkId);
         const isShimmer = isShimmerNetwork(currentNetworkConfig?.network);
+        const isMarketed = isMarketedNetwork(currentNetworkConfig?.network);
         const isStardust = currentNetworkConfig?.protocolVersion === STARDUST;
         const baseTokenService = ServiceFactory.get<BaseTokenInfoService>("base-token-info");
         const tokenInfo = baseTokenService.get(this.state.networkId);
@@ -135,6 +137,16 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
             </NetworkContext.Provider>
         );
 
+        const utilities = [];
+        if (this.state.networks.length > 0) {
+            utilities.push({ label: "Streams v0", url: `/${this.state.networkId}/streams/0/` });
+            if (isMarketed) {
+                utilities.push({ label: "Markets", url: `/${this.state.networkId}/markets/` });
+                utilities.push({ label: "Currency Converter", url: `/${this.state.networkId}/currency-converter/` });
+            }
+            utilities.push({ label: "Decentralized Identifier", url: `/${this.state.networkId}/identity-resolver/` });
+        }
+
         return (
             <div className={classNames("app", { "shimmer": isShimmer })}>
                 <Header
@@ -159,24 +171,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                             url: `/${this.state.networkId}/visualizer/`
                         }
                     ] : []}
-                    utilities={this.state.networks.length > 0 ? [
-                        {
-                            label: "Streams v0",
-                            url: `/${this.state.networkId}/streams/0/`
-                        },
-                        {
-                            label: "Markets",
-                            url: `/${this.state.networkId}/markets/`
-                        },
-                        {
-                            label: "Currency Converter",
-                            url: `/${this.state.networkId}/currency-converter/`
-                        },
-                        {
-                            label: "Decentralized Identifier",
-                            url: `/${this.state.networkId}/identity-resolver/`
-                        }
-                    ] : []}
+                    utilities={utilities}
                 />
                 <div className="content">
                     {this.state.networks.length > 0
@@ -193,20 +188,24 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                 {this.props.match.params.network &&
                                     this.state.networks.some(f => f.network === this.props.match.params.network) && (
                                         <Switch>
-                                            <Route
-                                                path="/:network/markets"
-                                                component={() =>
-                                                (
-                                                    <Markets />
-                                                )}
-                                            />
-                                            <Route
-                                                path="/:network/currency-converter"
-                                                component={() =>
-                                                (
-                                                    <CurrencyConverter />
-                                                )}
-                                            />
+                                            {isMarketed && (
+                                                <Route
+                                                    path="/:network/markets"
+                                                    component={() =>
+                                                        (
+                                                            <Markets />
+                                                    )}
+                                                />
+                                            )}
+                                            {isMarketed && (
+                                                <Route
+                                                    path="/:network/currency-converter"
+                                                    component={() =>
+                                                        (
+                                                            <CurrencyConverter />
+                                                    )}
+                                                />
+                                            )}
                                             <Route
                                                 exact={true}
                                                 path="/:network?"
