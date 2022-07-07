@@ -265,7 +265,7 @@ export class StardustTangleHelper {
 
             if (block && Object.keys(block).length > 0) {
                 return {
-                    block
+                    transactionBlock: block
                 };
             }
         }
