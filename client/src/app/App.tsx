@@ -214,7 +214,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 component={(props: RouteComponentProps<LandingRouteProps>) =>
                                                 (
                                                     isStardust
-                                                        ? <StardustLanding {...props} />
+                                                        ? withNetworkProvider(<StardustLanding {...props} />)
                                                         : <ChrysalisLanding {...props} />
                                                 )}
                                             />
