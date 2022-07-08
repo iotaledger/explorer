@@ -10,4 +10,9 @@ export interface FeatureProps {
      * Is the feature pre-expanded.
      */
     isPreExpanded?: boolean;
+
+    /**
+     * Is the feature immutable.
+     */
+    isImmutable: boolean;
 }

@@ -33,7 +33,7 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
      */
     public render(): ReactNode {
         const isExpanded = this.state.isExpanded;
-        const { feature } = this.props;
+        const { feature, isImmutable } = this.props;
 
         return (
             <div className="feature-block">
@@ -47,7 +47,7 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
                         <DropdownIcon />
                     </div>
                     <div className="card--label">
-                        {NameHelper.getFeatureTypeName(feature.type)}
+                        {NameHelper.getFeatureTypeName(feature.type, isImmutable)}
                     </div>
                 </div>
                 {isExpanded && (

@@ -90,17 +90,23 @@ export class NameHelper {
     /**
      * Get the name for the feature type.
      * @param type The type to get the name for.
+     * @param isImmutable Is the feature immutable.
      * @returns The feature type name.
      */
-    public static getFeatureTypeName(type: number): string {
+    public static getFeatureTypeName(type: number, isImmutable: boolean): string {
+        let name: string = "";
         if (type === SENDER_FEATURE_TYPE) {
-            return "Sender Feature";
+            name = "Sender";
         } else if (type === ISSUER_FEATURE_TYPE) {
-            return "Issuer Feature";
+            name = "Issuer";
         } else if (type === METADATA_FEATURE_TYPE) {
-            return "Metadata Feature";
+            name = "Metadata";
         } else if (type === TAG_FEATURE_TYPE) {
-            return "Tag Feature";
+            name = "Tag";
+        }
+
+        if (name) {
+            return isImmutable ? `Immutable ${name}` : name;
         }
         return "Unknown Feature";
     }

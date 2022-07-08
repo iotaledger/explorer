@@ -233,7 +233,12 @@ class Output extends Component<OutputProps, OutputState> {
                                 />
                             ))}
                             {output.features?.map((feature, idx) => (
-                                <Feature key={idx} feature={feature} isPreExpanded={isPreExpanded} />
+                                <Feature
+                                    key={idx}
+                                    feature={feature}
+                                    isPreExpanded={isPreExpanded}
+                                    isImmutable={false}
+                                />
                             ))}
                             {output.type !== BASIC_OUTPUT_TYPE && output.immutableFeatures && (
                                 <React.Fragment>
@@ -242,6 +247,7 @@ class Output extends Component<OutputProps, OutputState> {
                                             key={idx}
                                             feature={immutableFeature}
                                             isPreExpanded={isPreExpanded}
+                                            isImmutable={true}
                                         />
                                     ))}
                                 </React.Fragment>
