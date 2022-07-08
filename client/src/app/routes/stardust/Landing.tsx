@@ -14,6 +14,7 @@ import { IFilterSettings } from "../../../models/services/stardust/IFilterSettin
 import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/stardust/Feeds";
+import NetworkContext, { INetworkContextProps } from "../../context/NetworkContext";
 import "../Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
 import { LandingState } from "./LandingState";
@@ -22,6 +23,11 @@ import { LandingState } from "./LandingState";
  * Component which will show the landing page.
  */
 class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
+
     /**
      * Create a new instance of Landing.
      * @param props The props.
@@ -39,11 +45,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
         this.state = {
             networkConfig: network,
-            valueMinimum: "0",
+            valueMinimum: "",
             valueMinimumMagnitude: "",
-            valueMaximum: "1",
+            valueMaximum: "",
             valuesFilter: getDefaultValueFilter(network.protocolVersion),
-            valueMaximumMagnitude: "T",
+            valueMaximumMagnitude: "",
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
@@ -68,6 +74,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      */
     public async componentDidMount(): Promise<void> {
         await super.componentDidMount();
+        const { tokenInfo: { decimals } } = this.context as INetworkContextProps;
+        const unitMagnitude = UnitsHelper.calculateBest(Math.pow(10, decimals)) ?? "";
 
         const settings = this._settingsService.get();
 
@@ -81,10 +89,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         this.setState({
             valueMinimum: filterSettings?.valueMinimum ?? "0",
             valueMinimumMagnitude: filterSettings?.valueMinimumMagnitude ?? "",
-            valueMaximum: filterSettings?.valueMaximum ?? "3",
+            valueMaximum: filterSettings?.valueMaximum ?? "1000",
             valuesFilter: filterSettings?.valuesFilter ??
                 getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "stardust"),
-            valueMaximumMagnitude: filterSettings?.valueMaximumMagnitude ?? "P",
+            valueMaximumMagnitude: filterSettings?.valueMaximumMagnitude ?? unitMagnitude,
             formatFull: settings.formatFull
         });
     }
@@ -414,7 +422,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 this.state.valueMaximumMagnitude,
                 ""
             );
-
             const filters = [
                 {
                     payloadType: "Zero only",
@@ -478,8 +485,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             }
                         }
                         return aux;
-                    }
-                    )
+                    })
                     .slice(0, 10)
             });
         }
@@ -553,16 +559,22 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * Reset filters to default values
      */
     private resetFilters(): void {
+        const { tokenInfo: { decimals } } = this.context as INetworkContextProps;
+        const unitMagnitude = UnitsHelper.calculateBest(Math.pow(10, decimals)) ?? "";
+
         this.setState({
             valueMinimum: "0",
             valueMinimumMagnitude: "",
-            valueMaximum: "1",
-            valueMaximumMagnitude: "T",
+            valueMaximum: "1000",
+            valueMaximumMagnitude: unitMagnitude,
             valuesFilter: this.state.valuesFilter.map(filter => ({ ...filter, isEnabled: true }))
         }, async () => this.updateFilters());
     }
 
     private transactionDropdown(type: "minimum" | "maximum"): ReactNode {
+        const { tokenInfo: { unit, subunit, decimals } } = this.context as INetworkContextProps;
+        const unitMagnitude = UnitsHelper.calculateBest(Math.pow(10, decimals)) ?? "";
+
         return (
             <div className="col">
                 <span className="label margin-b-2">
@@ -609,23 +621,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
                             }
                         >
-                            <option value="i">
-                                i
-                            </option>
-                            <option value="Ki">
-                                Ki
-                            </option>
-                            <option value="Mi">
-                                Mi
-                            </option>
-                            <option value="Gi">
-                                Gi
-                            </option>
-                            <option value="Ti">
-                                Ti
-                            </option>
-                            <option value="Pi">
-                                Pi
+                            {subunit && (
+                                <option value="">
+                                    {subunit}
+                                </option>
+                            )}
+                            <option value={unitMagnitude}>
+                                {unit}
                             </option>
                         </select>
                         <span className="material-icons">
