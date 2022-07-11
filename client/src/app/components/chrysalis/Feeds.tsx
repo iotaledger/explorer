@@ -193,8 +193,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                 const itemsPerSecond = ips.itemsPerSecond ?? 0;
                 const confirmedItemsPerSecond = ips.confirmedItemsPerSecond ?? 0;
                 const confirmedRate = ips.confirmationRate ?
-                    ips.confirmationRate > 100 ? 100 : ips.confirmationRate :
-                    0;
+                    (ips.confirmationRate > 100 ? 100 : ips.confirmationRate) : 0;
 
                 this.setState({
                     itemsPerSecond: itemsPerSecond >= 0 ? itemsPerSecond.toFixed(2) : "--",
