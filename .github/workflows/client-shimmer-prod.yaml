@@ -10,13 +10,13 @@ on:
   workflow_dispatch:
     inputs:
       logLevel:
-        description: 'Log level'     
+        description: 'Log level'
         required: true
         default: 'warning'
       tags:
         description: 'Test scenario tags'
 
-concurrency: 
+concurrency:
   group: client-${{ github.ref }}
   cancel-in-progress: true
 
