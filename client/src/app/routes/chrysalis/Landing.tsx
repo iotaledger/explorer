@@ -118,6 +118,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             </span>
                                         </div>
                                     </div>
+                                    <div className="info-box">
+                                        <span className="info-box--title">Inclusion rate</span>
+                                        <span className="info-box--value">
+                                            {this.state.confirmedItemsPerSecondPercent}
+                                        </span>
+                                    </div>
                                     {this.state.networkConfig.showMarket && (
                                         <div className="info-box">
                                             <span className="info-box--title">IOTA Market Cap</span>
