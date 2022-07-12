@@ -42,7 +42,7 @@ jobs:
         with:
           script: |
             const fs = require('fs')
-            fs.writeFileSync('./api/src/data/config.staging.json', process.env.CONFIG_JSON)
+            fs.writeFileSync('./api/src/data/config.shimmer-staging.json', process.env.CONFIG_JSON)
             fs.writeFileSync('./api/dispatch.yaml', process.env.DISPATCH_YAML)
             fs.writeFileSync('./api/app.yaml', process.env.APP_YAML)
       - uses: google-github-actions/setup-gcloud@v0
