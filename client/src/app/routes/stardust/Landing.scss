@@ -242,8 +242,9 @@
         }
     }
 
-    .feeds-wrapper {
+    .feeds-wrapper.shimmer {
         display: flex;
+        background: var(--shimmer-feeds-bg);
         justify-content: center;
         padding: 0 $inner-padding 44px;
 
