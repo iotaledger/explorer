@@ -227,6 +227,22 @@
               padding-left: 0;
             }
 
+            .feed--metrics {
+              padding-left: 8px;
+              margin-bottom: 34px;
+
+              h3 {
+                color: var(--header-color);
+              }
+
+              .metrics-value {
+                color: var(--body-color);
+                font-family: $inter;
+                font-weight: 600;
+                text-decoration: none;
+              }
+            }
+
             .feed--actions {
               display: flex;
               position: relative;

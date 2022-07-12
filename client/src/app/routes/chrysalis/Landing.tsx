@@ -42,6 +42,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMaximum: "1",
             valueMaximumUnits: "Ti",
             valuesFilter: getDefaultValueFilter(network.protocolVersion),
+            latestMilestoneIndex: 0,
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
@@ -142,6 +143,20 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         <div className="feeds-section">
                             <div className="row wrap feeds">
                                 <div className="feed section">
+                                    <div className="feed--metrics row space-between">
+                                        <div className="row space-between">
+                                            <h3>Latest Milestone Index:</h3>
+                                            <span className="metrics-value margin-l-s">
+                                                {this.state.latestMilestoneIndex}
+                                            </span>
+                                        </div>
+                                        <div className="row space-between">
+                                            <h3>Last & Target:</h3>
+                                            <span className="metrics-value  margin-l-s">
+                                                {this.state.latestMilestoneIndex}
+                                            </span>
+                                        </div>
+                                    </div>
                                     <div className="section--header row space-between padding-l-8">
                                         <h2>Latest messages</h2>
                                         <div className="feed--actions">

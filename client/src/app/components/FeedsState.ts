@@ -17,6 +17,11 @@ export interface FeedsState extends CurrencyState {
     confirmedItemsPerSecondPercent: string;
 
     /**
+     * The latest milestone index.
+     */
+    latestMilestoneIndex?: number;
+
+    /**
      * The items per second.
      */
     itemsPerSecondHistory: number[];

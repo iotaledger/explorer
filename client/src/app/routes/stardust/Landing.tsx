@@ -53,6 +53,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
+            latestMilestoneIndex: 0,
             itemsPerSecondHistory: [],
             marketCapEUR: 0,
             marketCapCurrency: "--",
@@ -104,7 +105,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     public render(): ReactNode {
         const { networkConfig, marketCapCurrency, priceCurrency, valuesFilter, formatFull, filteredItems,
             isFeedPaused, isFilterExpanded, itemsPerSecond,
-            confirmedItemsPerSecond } = this.state;
+            confirmedItemsPerSecond, latestMilestoneIndex } = this.state;
 
         const { network } = this.props.match.params;
         const isShimmer = isShimmerNetwork(network);
@@ -212,6 +213,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         <div className="feeds-section">
                             <div className="row wrap feeds">
                                 <div className="feed section">
+                                    <div className="feed--metrics row space-between">
+                                        <div className="row space-between">
+                                            <h3>Latest Milestone Index:</h3>
+                                            <span className="metrics-value margin-l-t">{latestMilestoneIndex}</span>
+                                        </div>
+                                        <div className="row space-between">
+                                            <h3>Last & Target:</h3>
+                                            <span className="metrics-value margin-l-t">{latestMilestoneIndex}</span>
+                                        </div>
+                                    </div>
                                     <div className="section--header row space-between padding-l-8">
                                         <h2>Latest blocks</h2>
                                         <div className="feed--actions">
