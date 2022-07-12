@@ -255,7 +255,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                     </div>
                     <div className="inner--networks">
                         <NetworkSwitcher
-                            eyebrow="Selected currentNetwork"
+                            eyebrow="Selected Network"
                             label={currentNetwork?.label}
                             networks={networks}
                             isExpanded={this.state.isNetworkSwitcherExpanded}
