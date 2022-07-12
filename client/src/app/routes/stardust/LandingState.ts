@@ -81,4 +81,8 @@ export interface LandingState extends CurrencyState, FeedsState {
      */
     frozenBlocks: IFeedItem[];
 
+    /**
+     * The number of seconds passed since last milestone.
+     */
+    secondsSinceLastMilestone: number;
 }

@@ -80,4 +80,9 @@ export interface LandingState extends CurrencyState, FeedsState {
      * Messages snapshot when feed is paused.
      */
     frozenMessages: IFeedItem[];
+
+    /**
+     * The number of seconds passed since last milestone.
+     */
+    secondsSinceLastMilestone: number;
 }

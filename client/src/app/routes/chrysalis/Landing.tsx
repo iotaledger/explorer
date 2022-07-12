@@ -1,4 +1,5 @@
 import { Units, UnitsHelper } from "@iota/iota.js";
+import moment from "moment";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -20,6 +21,11 @@ import { LandingState } from "../LandingState";
  * Component which will show the landing page.
  */
 class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState> {
+    /**
+     * Timer id for seconds since last milestone.
+     */
+    private _secondsTimer?: NodeJS.Timer;
+
     /**
      * Create a new instance of Landing.
      * @param props The props.
@@ -43,6 +49,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMaximumUnits: "Ti",
             valuesFilter: getDefaultValueFilter(network.protocolVersion),
             latestMilestoneIndex: 0,
+            latestMilestoneTimestamp: 0,
+            secondsSinceLastMilestone: 0,
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
@@ -86,6 +94,31 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "chrysalis"),
             formatFull: settings.formatFull
         });
+
+        this.updateSecondsSinceLastMilesone();
+    }
+
+    public componentWillUnmount(): void {
+        super.componentWillUnmount();
+        if (this._secondsTimer) {
+            clearInterval(this._secondsTimer);
+            this._secondsTimer = undefined;
+        }
+    }
+
+    private updateSecondsSinceLastMilesone() {
+        if (this.state.latestMilestoneTimestamp !== 0) {
+            const from = moment(this.state.latestMilestoneTimestamp);
+            const to = moment();
+
+            const secondsSinceLastMilestone = to.diff(from, "seconds");
+
+            this.setState({
+                secondsSinceLastMilestone
+            });
+        }
+
+        this._secondsTimer = setInterval(() => this.updateSecondsSinceLastMilesone(), 1000);
     }
 
     /**
@@ -151,9 +184,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             </span>
                                         </div>
                                         <div className="row space-between">
-                                            <h3>Last & Target:</h3>
+                                            <h3>Last:</h3>
                                             <span className="metrics-value  margin-l-s">
-                                                {this.state.latestMilestoneIndex}
+                                                {this.state.secondsSinceLastMilestone}s
                                             </span>
                                         </div>
                                     </div>

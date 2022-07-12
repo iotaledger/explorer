@@ -1,5 +1,6 @@
 import { Magnitudes, UnitsHelper } from "@iota/iota.js-stardust";
 import classNames from "classnames";
+import moment from "moment";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -29,6 +30,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     public static contextType = NetworkContext;
 
     /**
+     * Timer id for seconds since last milestone.
+     */
+    private _secondsTimer?: NodeJS.Timer;
+
+    /**
      * Create a new instance of Landing.
      * @param props The props.
      */
@@ -54,6 +60,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
             latestMilestoneIndex: 0,
+            latestMilestoneTimestamp: 0,
+            secondsSinceLastMilestone: 0,
             itemsPerSecondHistory: [],
             marketCapEUR: 0,
             marketCapCurrency: "--",
@@ -96,6 +104,30 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMaximumMagnitude: filterSettings?.valueMaximumMagnitude ?? unitMagnitude,
             formatFull: settings.formatFull
         });
+
+        this.updateSecondsSinceLastMilesone();
+    }
+
+    public componentWillUnmount(): void {
+        if (this._secondsTimer) {
+            clearInterval(this._secondsTimer);
+            this._secondsTimer = undefined;
+        }
+    }
+
+    private updateSecondsSinceLastMilesone() {
+        if (this.state.latestMilestoneTimestamp !== 0) {
+            const from = moment(this.state.latestMilestoneTimestamp);
+            const to = moment();
+
+            const secondsSinceLastMilestone = to.diff(from, "seconds");
+
+            this.setState({
+                secondsSinceLastMilestone
+            });
+        }
+
+        this._secondsTimer = setInterval(() => this.updateSecondsSinceLastMilesone(), 1000);
     }
 
     /**
@@ -103,9 +135,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { networkConfig, marketCapCurrency, priceCurrency, valuesFilter, formatFull, filteredItems,
+        const {
+            networkConfig, marketCapCurrency, priceCurrency,
+            valuesFilter, formatFull, filteredItems,
             isFeedPaused, isFilterExpanded, itemsPerSecond,
-            confirmedItemsPerSecond, latestMilestoneIndex } = this.state;
+            confirmedItemsPerSecond, latestMilestoneIndex,
+            secondsSinceLastMilestone
+        } = this.state;
 
         const { network } = this.props.match.params;
         const isShimmer = isShimmerNetwork(network);
@@ -218,10 +254,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             <h3>Latest Milestone Index:</h3>
                                             <span className="metrics-value margin-l-t">{latestMilestoneIndex}</span>
                                         </div>
-                                        <div className="row space-between">
-                                            <h3>Last & Target:</h3>
-                                            <span className="metrics-value margin-l-t">{latestMilestoneIndex}</span>
-                                        </div>
+                                        {secondsSinceLastMilestone !== 0 && (
+                                            <div className="row space-between">
+                                                <h3>Last:</h3>
+                                                <span className="metrics-value margin-l-t">{secondsSinceLastMilestone}s</span>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="section--header row space-between padding-l-8">
                                         <h2>Latest blocks</h2>
