@@ -52,6 +52,6 @@ jobs:
       - name: Client Deploy
         run: |
           TS="$( date +%s )"
-          npx vercel --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_SCOPE }} --force -m githubCommitSha=${{ github.sha }}  -m timestamp=$TS --build-env REACT_APP_CONFIG_ID=$CONFIG_ID
+          npx vercel --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_SCOPE }} --force -m githubCommitSha=${{ github.sha }} -m timestamp=$TS --build-env REACT_APP_CONFIG_ID=$CONFIG_ID
           VERCEL_DEPLOYMENT_URL=$(npx vercel ls --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_SCOPE }} -m githubCommitSha=${{ github.sha }} -m timestamp=$TS 2>&1 | grep $VERCEL_PROJECT_NAME | awk {'print $2'})
           npx vercel alias --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_SCOPE }} $VERCEL_DEPLOYMENT_URL $VERCEL_DOMAIN
