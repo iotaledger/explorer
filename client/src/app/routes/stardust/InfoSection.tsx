@@ -5,7 +5,7 @@ interface InfoSectionProps {
 }
 
 const InfoSection: React.FC<InfoSectionProps> = ({ visible }) => (
-    <div style={{ display: visible ? "flex" : "none" }} className="extended-info-boxes">
+    <div style={{ display: visible ? "grid" : "none" }} className="extended-info-boxes">
         <div className="row space-between">
             <div className="info-box">
                 <span className="info-box--title">Tokens created
