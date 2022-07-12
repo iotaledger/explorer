@@ -6,7 +6,15 @@ on:
     paths:
       - "api/**"
       - ".github/workflows/api-prod.yaml"
-
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'
+        
 concurrency: 
   group: api-${{ github.ref }}
   cancel-in-progress: true
