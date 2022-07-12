@@ -12,7 +12,7 @@ import { IFilterSettings } from "../../../models/services/IFilterSettings";
 import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/chrysalis/Feeds";
-import "../Landing.scss";
+import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
 import { LandingState } from "../LandingState";
 
@@ -93,7 +93,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      */
     public render(): ReactNode {
         return (
-            <div className="landing">
+            <div className="landing-chrysalis">
                 <div className="wrapper header-wrapper">
                     <div className="inner">
                         <div className="header">
