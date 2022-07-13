@@ -8,7 +8,7 @@ import { isShimmerNetwork } from "../../../helpers/networkHelper";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
-import { CUSTOM } from "../../../models/config/networkType";
+import { ALPHANET, CUSTOM } from "../../../models/config/networkType";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/stardust/IFilterSettings";
@@ -16,8 +16,9 @@ import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/stardust/Feeds";
 import NetworkContext, { INetworkContextProps } from "../../context/NetworkContext";
-import "../Landing.scss";
+import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
+import InfoSection from "./InfoSection";
 import { LandingState } from "./LandingState";
 
 /**
@@ -138,7 +139,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             networkConfig, marketCapCurrency, priceCurrency,
             valuesFilter, formatFull, filteredItems,
             isFeedPaused, isFilterExpanded, itemsPerSecond,
-            confirmedItemsPerSecond, latestMilestoneIndex,
+            confirmedItemsPerSecondPercent, latestMilestoneIndex,
             secondsSinceLastMilestone
         } = this.state;
 
@@ -146,7 +147,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const isShimmer = isShimmerNetwork(network);
 
         const defaultInfoBox = (
-            <div className="row space-between info-boxes">
+            <div className="main-info-boxes">
                 <div className="info-box">
                     <span className="info-box--title">Blocks per sec
                     </span>
@@ -154,19 +155,21 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         <span className="download-rate">
                             {NumberHelper.roundTo(Number(itemsPerSecond), 1) || "--"}
                         </span>
-                        <span className="upload-rate">
-                            /{NumberHelper.roundTo(Number(confirmedItemsPerSecond)
-                                                    , 1) || "--"}
-                        </span>
                     </div>
                 </div>
-                {networkConfig.showMarket && (
+                <div className="info-box">
+                    <span className="info-box--title">Inclusion rate</span>
+                    <span className="info-box--value">
+                        {confirmedItemsPerSecondPercent}
+                    </span>
+                </div>
+                {!isShimmer && networkConfig.showMarket && (
                     <div className="info-box">
                         <span className="info-box--title">IOTA Market Cap</span>
                         <span className="info-box--value">{marketCapCurrency}</span>
                     </div>
                 )}
-                {networkConfig.showMarket && (
+                {!isShimmer && networkConfig.showMarket && (
                     <div className="info-box">
                         <span className="info-box--title">Price / MI</span>
                         <span className="info-box--value">
@@ -177,73 +180,21 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             </div>
         );
 
-        const shimmerInfoBox = (
-            <div className={classNames("info-boxes", { "shimmer": isShimmer })}>
-                <div className="row space-between">
-                    <div className="info-box">
-                        <span className="info-box--title">Tokens created
-                        </span>
-                        <span className="info-box--value">
-                            11.2k
-                        </span>
-                    </div>
-                    {networkConfig.showMarket && (
-                        <div className="info-box">
-                            <span className="info-box--title">NFTs minted</span>
-                            <span className="info-box--value">52.1k</span>
-                        </div>
-                    )}
-                    {networkConfig.showMarket && (
-                        <div className="info-box">
-                            <span className="info-box--title">Active Addresses</span>
-                            <span className="info-box--value">
-                                72.8k
-                            </span>
-                        </div>
-                    )}
-                </div>
-                <div className="row space-between">
-                    <div className="info-box">
-                        <span className="info-box--title">Active Addresses
-                        </span>
-                        <span className="info-box--value">
-                            23.4k
-                        </span>
-                    </div>
-                    {networkConfig.showMarket && (
-                        <div className="info-box">
-                            <span className="info-box--title">Locked storage deposit</span>
-                            <span className="info-box--value">549k SMR</span>
-                        </div>
-                    )}
-                    {networkConfig.showMarket && (
-                        <div className="info-box">
-                            <span className="info-box--title">Daily transactions</span>
-                            <span className="info-box--value">
-                                2.45m
-                            </span>
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-
         return (
-            <div className="landing">
-                <div className={classNames("wrapper header-wrapper", { "shimmer": isShimmer })}>
+            <div className="landing-stardust">
+                <div className={classNames("header-wrapper", { "shimmer": isShimmer })}>
                     <div className="inner">
                         <div className="header">
                             <div className="header--title">
                                 <h2>{networkConfig.isEnabled ? "Explore network" : ""}</h2>
-                                <div className="row space-between wrap"><h1>{networkConfig.label}</h1></div>
+                                <div className="network-name"><h1>{networkConfig.label}</h1></div>
                             </div>
-
-                            {isShimmer ? shimmerInfoBox : defaultInfoBox}
-
+                            {defaultInfoBox}
                         </div>
                     </div>
+                    <InfoSection visible={network === ALPHANET} />
                 </div>
-                <div className={classNames("wrapper feeds-wrapper", { "shimmer": isShimmer })}>
+                <div className={classNames("feeds-wrapper", { "shimmer": isShimmer })}>
                     <div className="inner">
                         <div className="feeds-section">
                             <div className="row wrap feeds">
@@ -703,6 +654,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         );
     }
 }
+
 
 export default Landing;
 

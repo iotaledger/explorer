@@ -6,6 +6,14 @@ on:
     paths:
       - "api/**"
       - ".github/workflows/api-staging.yaml"
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'
 
 concurrency:
   group: api-${{ github.ref }}
@@ -46,4 +54,3 @@ jobs:
         run: |
           cd api
           gcloud app deploy app.yaml dispatch.yaml --quiet
-
