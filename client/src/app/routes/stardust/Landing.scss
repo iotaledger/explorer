@@ -287,11 +287,22 @@
                         }
 
                         .feed--metrics {
-                            padding-left: 8px;
-                            margin-bottom: 34px;
+                            display: flex;
+                            width: fit-content;
+                            align-self: center;
+                            flex-direction: column;
+                            margin-bottom: 44px;
 
-                            h3 {
-                                color: var(--header-color);
+                            .latest-index {
+                                margin-bottom: 4px;
+                            }
+
+                            .latest-index, .seconds {
+                                display: flex;
+
+                                h3 {
+                                    color: var(--header-color);
+                                }
                             }
 
                             .metrics-value {

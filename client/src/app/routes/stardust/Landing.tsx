@@ -181,13 +181,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         <div className="feeds-section">
                             <div className="row wrap feeds">
                                 <div className="feed section">
-                                    <div className="feed--metrics row space-between">
-                                        <div className="row space-between">
-                                            <h3>Latest Milestone Index:</h3>
+                                    <div className="feed--metrics">
+                                        <div className="latest-index">
+                                            <h3>Latest Milestone:</h3>
                                             <span className="metrics-value margin-l-t">{latestMilestoneIndex}</span>
                                         </div>
                                         {secondsSinceLastMilestone !== undefined && (
-                                            <div className="row space-between">
+                                            <div className="seconds">
                                                 <h3>Last:</h3>
                                                 <span className="metrics-value margin-l-t">
                                                     {secondsSinceLastMilestone}s
