@@ -106,21 +106,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         }
     }
 
-    private updateSecondsSinceLastMilesone() {
-        if (this.state.latestMilestoneTimestamp !== 0) {
-            const from = moment(this.state.latestMilestoneTimestamp);
-            const to = moment();
-
-            const secondsSinceLastMilestone = to.diff(from, "seconds");
-
-            this.setState({
-                secondsSinceLastMilestone
-            });
-        }
-
-        this._secondsTimer = setInterval(() => this.updateSecondsSinceLastMilesone(), 1000);
-    }
-
     /**
      * Render the component.
      * @returns The node to render.
@@ -423,8 +408,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
     /**
      * Filter the items and update the feed.
+     * @param newItems If called with new items.
      */
-    protected itemsUpdated(items?: IFeedItem[]): void {
+    protected itemsUpdated(newItems?: IFeedItem[]): void {
         if (this._isMounted && this._feedClient) {
             const minLimit = UnitsHelper.convertUnits(
                 Number.parseFloat(this.state.valueMinimum), this.state.valueMinimumUnits, "i");
@@ -499,8 +485,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             });
         }
 
-        if (items) {
-            items.filter(i => i.payloadType === "MS").forEach(ms => {
+        if (newItems) {
+            const milestones = newItems.filter(i => i.payloadType === "MS");
+            for (const ms of milestones) {
                 const index: number | undefined = ms.properties?.index as number;
                 const currentIndex = this.state.latestMilestoneIndex;
                 if (index && currentIndex !== undefined && index > currentIndex) {
@@ -512,7 +499,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         });
                     }
                 }
-            });
+            }
         }
     }
 
@@ -662,6 +649,23 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 </span>
             </div>
         );
+    }
+
+    private updateSecondsSinceLastMilesone() {
+        if (this.state.latestMilestoneTimestamp !== 0) {
+            const from = moment(this.state.latestMilestoneTimestamp);
+            const to = moment();
+
+            const secondsSinceLastMilestone = to.diff(from, "seconds");
+
+            this.setState({
+                secondsSinceLastMilestone
+            });
+        }
+
+        if (this._isMounted) {
+            this._secondsTimer = setInterval(() => this.updateSecondsSinceLastMilesone(), 1000);
+        }
     }
 }
 

@@ -208,7 +208,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                 console.error(err);
             })
             .finally(() => {
-                this._timerId = setTimeout(async () => this.updateTps(), 1000);
+                this._timerId = setTimeout(async () => this.updateTps(), 4000);
             });
         }
     }
