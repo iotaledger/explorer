@@ -391,10 +391,18 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     }
 
     /**
-     * Filter the items and update the feed.
-     * @param newItems If called with new items.
+     * The items have been updated.
+     * @param newItems The updated items.
      */
-    protected itemsUpdated(newItems?: IFeedItem[]): void {
+    protected itemsUpdated(newItems: IFeedItem[]): void {
+        super.itemsUpdated(newItems);
+        this.applyFilters();
+    }
+
+    /**
+     * Filter the items and update the feed.
+     */
+    private applyFilters(): void {
         if (this._isMounted && this._feedClient) {
             const minLimit = UnitsHelper.convertUnits(
                 Number.parseFloat(this.state.valueMinimum),
@@ -458,8 +466,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 ? this.state.frozenBlocks
                 : this._feedClient.getItems();
 
-            this.setState({
-                filteredItems: filteredBlocks
+                this.setState({
+                    filteredItems: filteredBlocks
                     .filter(item => {
                         let aux = false;
                         for (const f of filters) {
@@ -471,24 +479,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         return aux;
                     })
                     .slice(0, 10)
-            });
-        }
-
-        if (newItems) {
-            const milestones = newItems.filter(i => i.payloadType === "MS");
-            for (const ms of milestones) {
-                const index: number | undefined = ms.properties?.index as number;
-                const currentIndex = this.state.latestMilestoneIndex;
-                if (index && currentIndex !== undefined && index > currentIndex) {
-                    const timestamp: number | undefined = ms.properties?.timestamp as number;
-                    if (timestamp) {
-                        this.setState({
-                            latestMilestoneIndex: index,
-                            latestMilestoneTimestamp: timestamp * 1000
-                        });
-                    }
-                }
-            }
+                });
         }
     }
 
@@ -537,8 +528,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             };
 
             this._settingsService.save();
-
-            this.itemsUpdated();
+            this.applyFilters();
         }
     }
 

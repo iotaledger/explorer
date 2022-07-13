@@ -1,6 +1,7 @@
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { INetwork } from "../../../models/config/INetwork";
+import { CUSTOM, LEGACY_MAINNET } from "../../../models/config/networkType";
 import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
@@ -107,9 +108,29 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
     /**
      * The items have been updated.
-     * @param items The updated items.
+     * @param newItems The updated items.
      */
-    protected itemsUpdated(items: IFeedItem[]): void {
+    protected itemsUpdated(newItems: IFeedItem[]): void {
+        const isLatestMilesontFeedInfoEnabled = this._networkConfig &&
+            this._networkConfig.network !== LEGACY_MAINNET &&
+            this._networkConfig.network !== CUSTOM;
+
+        if (isLatestMilesontFeedInfoEnabled && newItems) {
+            const milestones = newItems.filter(i => i.payloadType === "MS");
+            for (const ms of milestones) {
+                const index: number | undefined = ms.properties?.index as number;
+                const currentIndex = this.state.latestMilestoneIndex;
+                if (index && currentIndex !== undefined && index > currentIndex) {
+                    const timestamp: number | undefined = ms.properties?.timestamp as number;
+                    if (timestamp) {
+                        this.setState({
+                            latestMilestoneIndex: index,
+                            latestMilestoneTimestamp: timestamp * 1000
+                        });
+                    }
+                }
+            }
+        }
     }
 
     /**
