@@ -6,7 +6,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
-import { CUSTOM } from "../../../models/config/networkType";
+import { CUSTOM, LEGACY_MAINNET, NetworkType } from "../../../models/config/networkType";
 import { CHRYSALIS, OG } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/IFilterSettings";
@@ -95,7 +95,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             formatFull: settings.formatFull
         });
 
-        this.updateSecondsSinceLastMilesone();
+        if (this._networkConfig) {
+            this.updateSecondsSinceLastMilesone(this._networkConfig.network);
+        }
     }
 
     public componentWillUnmount(): void {
@@ -111,6 +113,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const isLatestMilesontFeedInfoEnabled = this._networkConfig &&
+            this._networkConfig.network !== LEGACY_MAINNET &&
+            this._networkConfig.network !== CUSTOM;
+
         return (
             <div className="landing-chrysalis">
                 <div className="wrapper header-wrapper">
@@ -167,22 +173,24 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         <div className="feeds-section">
                             <div className="row wrap feeds">
                                 <div className="feed section">
-                                    <div className="feed--metrics row space-between">
-                                        <div className="row space-between">
-                                            <h3>Latest Milestone Index:</h3>
-                                            <span className="metrics-value margin-l-s">
-                                                {this.state.latestMilestoneIndex}
-                                            </span>
-                                        </div>
-                                        {this.state.secondsSinceLastMilestone !== undefined && (
+                                    {isLatestMilesontFeedInfoEnabled && (
+                                        <div className="feed--metrics row space-between">
                                             <div className="row space-between">
-                                                <h3>Last:</h3>
-                                                <span className="metrics-value  margin-l-s">
-                                                    {this.state.secondsSinceLastMilestone}s
+                                                <h3>Latest Milestone Index:</h3>
+                                                <span className="metrics-value margin-l-s">
+                                                    {this.state.latestMilestoneIndex}
                                                 </span>
                                             </div>
-                                        )}
-                                    </div>
+                                            {this.state.secondsSinceLastMilestone !== undefined && (
+                                                <div className="row space-between">
+                                                    <h3>Last:</h3>
+                                                    <span className="metrics-value  margin-l-s">
+                                                        {this.state.secondsSinceLastMilestone}s
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                     <div className="section--header row space-between padding-l-8">
                                         <h2>Latest messages</h2>
                                         <div className="feed--actions">
@@ -485,7 +493,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             });
         }
 
-        if (newItems) {
+        const isLatestMilesontFeedInfoEnabled = this._networkConfig &&
+            this._networkConfig.network !== LEGACY_MAINNET &&
+            this._networkConfig.network !== CUSTOM;
+
+        if (isLatestMilesontFeedInfoEnabled && newItems) {
             const milestones = newItems.filter(i => i.payloadType === "MS");
             for (const ms of milestones) {
                 const index: number | undefined = ms.properties?.index as number;
@@ -651,8 +663,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         );
     }
 
-    private updateSecondsSinceLastMilesone() {
-        if (this.state.latestMilestoneTimestamp !== 0) {
+    private updateSecondsSinceLastMilesone(network: NetworkType) {
+        const isEnabled = network !== LEGACY_MAINNET && network !== CUSTOM;
+        if (this.state.latestMilestoneTimestamp !== 0 && isEnabled) {
             const from = moment(this.state.latestMilestoneTimestamp);
             const to = moment();
 
@@ -663,8 +676,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             });
         }
 
-        if (this._isMounted) {
-            this._secondsTimer = setInterval(() => this.updateSecondsSinceLastMilesone(), 1000);
+        if (this._isMounted && isEnabled) {
+            this._secondsTimer = setInterval(() => this.updateSecondsSinceLastMilesone(network), 1000);
         }
     }
 }
