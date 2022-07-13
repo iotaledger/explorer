@@ -194,7 +194,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                     </div>
                     <InfoSection visible={network === ALPHANET} />
                 </div>
-                <div className={classNames("feeds-wrapper", { "shimmer": isShimmer })}>
+                <div className={classNames("wrapper feeds-wrapper", { "shimmer": isShimmer })}>
                     <div className="inner">
                         <div className="feeds-section">
                             <div className="row wrap feeds">
