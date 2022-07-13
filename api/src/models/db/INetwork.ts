@@ -119,4 +119,9 @@ export interface INetwork {
      * Url for faucet.
      */
     faucet?: string;
+
+    /**
+     * Targeted time in seconds to add latest milestone.
+     */
+    milestoneFrequencyTarget?: number;
 }

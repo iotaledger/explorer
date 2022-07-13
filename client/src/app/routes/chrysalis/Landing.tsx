@@ -170,24 +170,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         <div className="feeds-section">
                             <div className="row wrap feeds">
                                 <div className="feed section">
-                                    {isLatestMilesontFeedInfoEnabled && (
-                                        <div className="feed--metrics">
-                                            <div className="latest-index">
-                                                <h3>Latest Milestone:</h3>
-                                                <span className="metrics-value margin-l-s">
-                                                    {this.state.latestMilestoneIndex}
-                                                </span>
-                                            </div>
-                                            {this.state.secondsSinceLastMilestone !== undefined && (
-                                                <div className="seconds">
-                                                    <h3>Last:</h3>
-                                                    <span className="metrics-value  margin-l-s">
-                                                        {this.state.secondsSinceLastMilestone}s
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
                                     <div className="section--header row space-between padding-l-8">
                                         <h2>Latest messages</h2>
                                         <div className="feed--actions">
@@ -291,7 +273,28 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             )}
                                         </div>
                                     </div>
-
+                                    {isLatestMilesontFeedInfoEnabled && (
+                                        <div className="feed--metrics padding-l-8">
+                                            <div className="latest-index">
+                                                <h3>Latest Milestone:</h3>
+                                                <span className="metrics-value margin-l-s">
+                                                    {this.state.latestMilestoneIndex}
+                                                </span>
+                                            </div>
+                                            {this.state.secondsSinceLastMilestone !== undefined && (
+                                                <div className="seconds">
+                                                    <h3>Last & Target:</h3>
+                                                    <span className="metrics-value  margin-l-s">
+                                                        {this.state.secondsSinceLastMilestone}s / {
+                                                        this._networkConfig?.milestoneFrequencyTarget
+                                                        ? this._networkConfig.milestoneFrequencyTarget
+                                                        : 10
+                                                    }s
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
                                             <span className="label">
