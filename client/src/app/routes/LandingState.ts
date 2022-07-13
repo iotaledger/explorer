@@ -82,7 +82,17 @@ export interface LandingState extends CurrencyState, FeedsState {
     frozenMessages: IFeedItem[];
 
     /**
+     * The latest milestone index.
+     */
+    latestMilestoneIndex?: number;
+
+    /**
+     * The latest milestone timestamp.
+     */
+    latestMilestoneTimestamp?: number;
+
+    /**
      * The number of seconds passed since last milestone.
      */
-    secondsSinceLastMilestone: number;
+    secondsSinceLastMilestone?: number;
 }

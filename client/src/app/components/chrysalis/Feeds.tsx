@@ -192,15 +192,11 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             }).then(ips => {
                 const itemsPerSecond = ips.itemsPerSecond ?? 0;
                 const confirmedItemsPerSecond = ips.confirmedItemsPerSecond ?? 0;
-                const latestMilestoneIndex = ips.latestMilestoneIndex ?? 0;
-                const latestMilestoneTimestamp = ips.latestMilestoneIndexTime ?? 0;
                 const confirmedRate = ips.confirmationRate ?? 0;
 
                 this.setState({
                     itemsPerSecond: itemsPerSecond >= 0 ? itemsPerSecond.toFixed(2) : "--",
                     confirmedItemsPerSecond: confirmedItemsPerSecond >= 0 ? confirmedItemsPerSecond.toFixed(2) : "--",
-                    latestMilestoneIndex,
-                    latestMilestoneTimestamp,
                     confirmedItemsPerSecondPercent: confirmedRate > 0
                         ? `${confirmedRate.toFixed(2)}%` : "--",
                     // Increase values by +100 to add more area under the graph

@@ -61,7 +61,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             confirmedItemsPerSecondPercent: "--",
             latestMilestoneIndex: 0,
             latestMilestoneTimestamp: 0,
-            secondsSinceLastMilestone: 0,
+            secondsSinceLastMilestone: undefined,
             itemsPerSecondHistory: [],
             marketCapEUR: 0,
             marketCapCurrency: "--",
@@ -88,9 +88,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
         const settings = this._settingsService.get();
 
-
         let filterSettings: IFilterSettings | undefined;
-
         if (this._networkConfig && settings.filters) {
             filterSettings = settings.filters[this._networkConfig.network];
         }
@@ -109,6 +107,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     }
 
     public componentWillUnmount(): void {
+        super.componentWillUnmount();
         if (this._secondsTimer) {
             clearInterval(this._secondsTimer);
             this._secondsTimer = undefined;
@@ -254,7 +253,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             <h3>Latest Milestone Index:</h3>
                                             <span className="metrics-value margin-l-t">{latestMilestoneIndex}</span>
                                         </div>
-                                        {secondsSinceLastMilestone !== 0 && (
+                                        {secondsSinceLastMilestone !== undefined && (
                                             <div className="row space-between">
                                                 <h3>Last:</h3>
                                                 <span className="metrics-value margin-l-t">{secondsSinceLastMilestone}s</span>
@@ -459,7 +458,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     /**
      * Filter the items and update the feed.
      */
-    protected itemsUpdated(): void {
+    protected itemsUpdated(items?: IFeedItem[]): void {
         if (this._isMounted && this._feedClient) {
             const minLimit = UnitsHelper.convertUnits(
                 Number.parseFloat(this.state.valueMinimum),
@@ -536,6 +535,22 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         return aux;
                     })
                     .slice(0, 10)
+            });
+        }
+
+        if (items) {
+            items.filter(i => i.payloadType === "MS").forEach(ms => {
+                const index: number | undefined = ms.properties?.index as number;
+                const currentIndex = this.state.latestMilestoneIndex;
+                if (index && currentIndex !== undefined && index > currentIndex) {
+                    const timestamp: number | undefined = ms.properties?.timestamp as number;
+                    if (timestamp) {
+                        this.setState({
+                            latestMilestoneIndex: index,
+                            latestMilestoneTimestamp: timestamp * 1000
+                        });
+                    }
+                }
             });
         }
     }
@@ -688,7 +703,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         );
     }
 }
-
 
 export default Landing;
 
