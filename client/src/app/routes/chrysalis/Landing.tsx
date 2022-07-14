@@ -282,16 +282,21 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 </span>
                                             </div>
                                             {this.state.secondsSinceLastMilestone !== undefined && (
-                                                <div className="seconds">
-                                                    <h3>Last & Target:</h3>
-                                                    <span className="metrics-value  margin-l-s">
-                                                        {this.state.secondsSinceLastMilestone}s / {
-                                                        this._networkConfig?.milestoneFrequencyTarget
-                                                        ? this._networkConfig.milestoneFrequencyTarget
-                                                        : 10
-                                                    }s
-                                                    </span>
-                                                </div>
+                                                this._networkConfig?.milestoneFrequencyTarget ?
+                                                    <div className="seconds">
+                                                        <h3>Last & Target:</h3>
+                                                        <span className="metrics-value  margin-l-s">
+                                                            {this.state.secondsSinceLastMilestone}s / {
+                                                            this._networkConfig.milestoneFrequencyTarget
+                                                        }s
+                                                        </span>
+                                                    </div> :
+                                                    <div className="seconds">
+                                                        <h3>Last:</h3>
+                                                        <span className="metrics-value  margin-l-s">
+                                                            {this.state.secondsSinceLastMilestone}s
+                                                        </span>
+                                                    </div>
                                             )}
                                         </div>
                                     )}

@@ -277,16 +277,21 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             <span className="metrics-value margin-l-t">{latestMilestoneIndex}</span>
                                         </div>
                                         {secondsSinceLastMilestone !== undefined && (
-                                            <div className="seconds">
-                                                <h3>Last & Target:</h3>
-                                                <span className="metrics-value margin-l-t">
-                                                    {secondsSinceLastMilestone}s / {
-                                                    networkConfig?.milestoneFrequencyTarget
-                                                    ? networkConfig.milestoneFrequencyTarget
-                                                    : 10
-                                                }s
-                                                </span>
-                                            </div>
+                                            networkConfig?.milestoneFrequencyTarget ?
+                                                <div className="seconds">
+                                                    <h3>Last & Target:</h3>
+                                                    <span className="metrics-value margin-l-t">
+                                                        {secondsSinceLastMilestone}s / {
+                                                        networkConfig.milestoneFrequencyTarget
+                                                    }s
+                                                    </span>
+                                                </div> :
+                                                <div className="seconds">
+                                                    <h3>Last:</h3>
+                                                    <span className="metrics-value margin-l-t">
+                                                        {secondsSinceLastMilestone}s
+                                                    </span>
+                                                </div>
                                         )}
                                     </div>
 
