@@ -1,4 +1,4 @@
-import { IFeedSubscriptionItem } from "../api/IFeedSubscriptionItem";
+import { IFeedSubscriptionItem } from "../../api/stardust/IFeedSubscriptionItem";
 
 /**
  * Interface definition for an items service.
