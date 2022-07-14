@@ -7,8 +7,9 @@ import { IMarket } from "./models/db/IMarket";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
 import { INetwork } from "./models/db/INetwork";
 import { CHRYSALIS, OG, STARDUST } from "./models/db/protocolVersion";
+import { IItemsService as IItemsServiceChrysalis } from "./models/services/chrysalis/IItemsService";
 import { IFeedService } from "./models/services/IFeedService";
-import { IItemsService } from "./models/services/IItemsService";
+import { IItemsService as IItemsServiceStardust } from "./models/services/stardust/IItemsService";
 import { AmazonDynamoDbService } from "./services/amazonDynamoDbService";
 import { ChrysalisFeedService } from "./services/chrysalis/chrysalisFeedService";
 import { ChrysalisItemsService } from "./services/chrysalis/chrysalisItemsService";
@@ -77,7 +78,9 @@ export async function initServices(config: IConfiguration) {
         }
 
         if (isKnownProtocolVersion(networkConfig)) {
-            const itemsService = ServiceFactory.get<IItemsService>(`items-${networkConfig.network}`);
+            const itemsService = ServiceFactory.get<IItemsServiceChrysalis | IItemsServiceStardust>(
+                `items-${networkConfig.network}`
+            );
 
             if (itemsService) {
                 itemsService.init();
