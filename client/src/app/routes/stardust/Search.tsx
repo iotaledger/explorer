@@ -222,6 +222,10 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     route = "block";
                                 } else if (response.addressDetails?.hex) {
                                     route = "addr";
+                                    redirectState = {
+                                        addressDetails: response.addressDetails,
+                                        addressOutputIds: response.addressOutputIds
+                                    };
                                 } else if (response.output) {
                                     route = "output";
                                     const outputId = TransactionHelper.outputIdFromTransactionData(

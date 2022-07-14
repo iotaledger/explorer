@@ -9,6 +9,7 @@ import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
+import IAddressDetailsWithBalance from "../../../models/api/stardust/IAddressDetailsWithBalance";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -32,6 +33,11 @@ import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
 import { AddressPageState } from "./AddressPageState";
 import INftDetails from "./INftDetails";
+
+interface IAddressPageLocationProps {
+    addressDetails: IAddressDetailsWithBalance;
+    addressOutputIds: string[];
+}
 
 /**
  * Component which will show the address page for stardust.
@@ -89,11 +95,9 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
-        const result = await this._tangleCacheService.search(
-            this.props.match.params.network, this.props.match.params.address
-        );
+        const { addressDetails } = this.props.location.state as IAddressPageLocationProps;
 
-        if (result?.addressDetails?.hex) {
+        if (addressDetails?.hex) {
             window.scrollTo({
                 left: 0,
                 top: 0,
@@ -103,11 +107,10 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             this.setState({
                 bech32AddressDetails: Bech32AddressHelper.buildAddress(
                     this._bechHrp,
-                    result.addressDetails?.hex,
-                    result.addressDetails?.type ?? 0
+                    addressDetails?.hex,
+                    addressDetails?.type ?? 0
                 ),
-                balance: Number(result.addressDetails?.balance),
-                outputIds: result.addressOutputIds
+                balance: Number(addressDetails?.balance)
             }, async () => {
                 await this.getOutputs();
                 await this.getNfts();
@@ -122,8 +125,10 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, balance, areNftsLoading,
-            outputResponse, formatFull, nfts, nftsPageNumber } = this.state;
+        const {
+            bech32AddressDetails, balance, areNftsLoading,
+            outputResponse, formatFull, nfts, nftsPageNumber
+        } = this.state;
 
         const networkId = this.props.match.params.network;
         const isMarketed = isMarketedNetwork(networkId);
@@ -339,13 +344,15 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
     }
 
     private async getOutputs() {
-        if (!this.state.outputIds || this.state.outputIds?.length === 0) {
+        const { addressOutputIds } = this.props.location.state as IAddressPageLocationProps;
+        if (!addressOutputIds || addressOutputIds.length === 0) {
             return;
         }
+
         const networkId = this.props.match.params.network;
         const outputResponse: IOutputResponse[] = [];
 
-        for (const outputId of this.state.outputIds) {
+        for (const outputId of addressOutputIds) {
             const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
             if (outputDetails) {
                 outputResponse.push(outputDetails);

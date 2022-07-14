@@ -20,11 +20,6 @@ export interface AddressPageState {
     areNftsLoading: boolean;
 
     /**
-     * The output ids for the address.
-     */
-    outputIds?: string[];
-
-    /**
      * The outputs for the address.
      */
     outputResponse?: IOutputResponse[];
