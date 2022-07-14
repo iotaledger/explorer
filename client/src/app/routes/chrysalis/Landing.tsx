@@ -13,6 +13,7 @@ import { IFilterSettings } from "../../../models/services/IFilterSettings";
 import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/chrysalis/Feeds";
+import FeedInfo from "../../components/FeedInfo";
 import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
 import { LandingState } from "../LandingState";
@@ -274,31 +275,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         </div>
                                     </div>
                                     {isLatestMilesontFeedInfoEnabled && (
-                                        <div className="feed--metrics padding-l-8">
-                                            <div className="latest-index">
-                                                <h3>Latest Milestone:</h3>
-                                                <span className="metrics-value margin-l-s">
-                                                    {this.state.latestMilestoneIndex}
-                                                </span>
-                                            </div>
-                                            {this.state.secondsSinceLastMilestone !== undefined && (
-                                                this._networkConfig?.milestoneFrequencyTarget ?
-                                                    <div className="seconds">
-                                                        <h3>Last & Target:</h3>
-                                                        <span className="metrics-value  margin-l-s">
-                                                            {this.state.secondsSinceLastMilestone}s / {
-                                                            this._networkConfig.milestoneFrequencyTarget
-                                                        }s
-                                                        </span>
-                                                    </div> :
-                                                    <div className="seconds">
-                                                        <h3>Last:</h3>
-                                                        <span className="metrics-value  margin-l-s">
-                                                            {this.state.secondsSinceLastMilestone}s
-                                                        </span>
-                                                    </div>
-                                            )}
-                                        </div>
+                                        <FeedInfo
+                                            latestMilestoneIndex={this.state.latestMilestoneIndex}
+                                            secondsSinceLastMilestone={this.state.secondsSinceLastMilestone}
+                                            milestoneFrequencyTarget={this._networkConfig
+                                                ? this._networkConfig.milestoneFrequencyTarget
+                                                : undefined}
+                                        />
                                     )}
                                     <div className="feed-items">
                                         <div className="row feed-item--header">

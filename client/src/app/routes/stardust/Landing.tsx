@@ -14,6 +14,7 @@ import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/stardust/IFilterSettings";
 import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
+import FeedInfo from "../../components/FeedInfo";
 import Feeds from "../../components/stardust/Feeds";
 import NetworkContext, { INetworkContextProps } from "../../context/NetworkContext";
 import "./Landing.scss";
@@ -271,29 +272,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             )}
                                         </div>
                                     </div>
-                                    <div className="feed--metrics padding-l-8">
-                                        <div className="latest-index">
-                                            <h3>Latest Milestone:</h3>
-                                            <span className="metrics-value margin-l-t">{latestMilestoneIndex}</span>
-                                        </div>
-                                        {secondsSinceLastMilestone !== undefined && (
-                                            networkConfig?.milestoneFrequencyTarget ?
-                                                <div className="seconds">
-                                                    <h3>Last & Target:</h3>
-                                                    <span className="metrics-value margin-l-t">
-                                                        {secondsSinceLastMilestone}s / {
-                                                        networkConfig.milestoneFrequencyTarget
-                                                    }s
-                                                    </span>
-                                                </div> :
-                                                <div className="seconds">
-                                                    <h3>Last:</h3>
-                                                    <span className="metrics-value margin-l-t">
-                                                        {secondsSinceLastMilestone}s
-                                                    </span>
-                                                </div>
-                                        )}
-                                    </div>
+                                    <FeedInfo
+                                        latestMilestoneIndex={latestMilestoneIndex}
+                                        secondsSinceLastMilestone={secondsSinceLastMilestone}
+                                        milestoneFrequencyTarget={networkConfig.milestoneFrequencyTarget}
+                                    />
 
                                     <div className="feed-items">
                                         <div className="row feed-item--header">

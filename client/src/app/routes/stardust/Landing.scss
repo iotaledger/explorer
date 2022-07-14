@@ -286,33 +286,6 @@
                             padding-left: 0;
                         }
 
-                        .feed--metrics {
-                            display: flex;
-                            width: fit-content;
-                            align-self: left;
-                            flex-direction: column;
-                            margin-bottom: 34px;
-
-                            .latest-index {
-                                margin-bottom: 4px;
-                            }
-
-                            .latest-index, .seconds {
-                                display: flex;
-
-                                h3 {
-                                    color: var(--header-color);
-                                }
-                            }
-
-                            .metrics-value {
-                                color: var(--body-color);
-                                font-family: $inter;
-                                font-weight: 600;
-                                text-decoration: none;
-                            }
-                        }
-
                         .feed--actions {
                             display: flex;
                             position: relative;
