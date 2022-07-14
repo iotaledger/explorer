@@ -3,7 +3,8 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
-import { IItemsService } from "../../models/services/IItemsService";
+import { IItemsService as IItemsServiceChrysalis } from "../../models/services/chrysalis/IItemsService";
+import { IItemsService as IItemsServiceStardust } from "../../models/services/stardust/IItemsService";
 import { NetworkService } from "../../services/networkService";
 import { ValidationHelper } from "../../utils/validationHelper";
 
@@ -26,7 +27,9 @@ export async function subscribe(
         const networks = networkService.networkNames();
         ValidationHelper.oneOf(request.network, networks, "network");
 
-        const itemsService = ServiceFactory.get<IItemsService>(`items-${request.network}`);
+        const itemsService = ServiceFactory.get<IItemsServiceChrysalis | IItemsServiceStardust>(
+            `items-${request.network}`
+        );
 
         if (itemsService) {
             itemsService.subscribe(socket.id, async data => {
