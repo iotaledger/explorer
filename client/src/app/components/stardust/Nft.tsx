@@ -8,31 +8,27 @@ import { NftProps } from "./NftProps";
 /**
  * Component which will display a NFT.
  */
-const Nft: React.FC<NftProps> = ({ id, name, network, image }) => {
-    const shortId = `${id.slice(0, 12)}...${id.slice(-12)}`;
-
-    /**
-     * Render the component.
-     * @returns The node to render.
-     */
-    return (
-        <div className="NFT-row">
+const Nft: React.FC<NftProps> = ({ id, name, network, image }) => (
+    <div className="NFT-row">
+        <div className="nft-data">
             <Link
                 to={`/${network}/nft/${id}`}
                 className="margin-r-t"
             >
-                <div className="nft-data">
-                    <img
-                        src={image}
-                        alt="bundle"
-                        className="nft-image"
-                    />
-                    {name && <span className="nft-name">Token: {name}</span>}
-                    <span className="nft-id">NFT Id: {shortId}</span>
-                </div>
+                <img
+                    src={image}
+                    alt="bundle"
+                    className="nft-image"
+                />
             </Link>
+            {name && <span className="nft-name">Token: {name}</span>}
+            <span className="nft-id"><span>NFT Id: </span>
+                <Link to={`/${network}/nft/${id}`} className="margin-r-t" >
+                    {id}
+                </Link>
+            </span>
         </div>
-    );
-};
+    </div>
+);
 
 export default Nft;

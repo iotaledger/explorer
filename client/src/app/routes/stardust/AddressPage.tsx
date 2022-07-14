@@ -250,7 +250,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                 <NftSection
                                     network={networkId}
                                     bech32Address={addressBech32}
-                                    onNftsLoaded={count => this.setNftsCount(count)}
+                                    onNftsLoaded={count => this.setNftsCount(count as number)}
                                 />
                                 {addressBech32 && (
                                     <TransactionHistory network={networkId} address={addressBech32} />
