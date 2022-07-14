@@ -2,10 +2,10 @@ import { IBlockMetadata } from "@iota/iota.js-stardust";
 import type { IMqttClient } from "@iota/mqtt.js-stardust";
 import { Converter } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedItemMetadata } from "../../models/api/IFeedItemMetadata";
-import { IFeedSubscriptionItem } from "../../models/api/IFeedSubscriptionItem";
+import { IFeedItemMetadata } from "../../models/api/stardust/IFeedItemMetadata";
+import { IFeedSubscriptionItem } from "../../models/api/stardust/IFeedSubscriptionItem";
 import { IFeedService } from "../../models/services/IFeedService";
-import { IItemsService } from "../../models/services/IItemsService";
+import { IItemsService } from "../../models/services/stardust/IItemsService";
 
 /**
  * Service to handle blocks on stardust.
@@ -181,6 +181,7 @@ export class StardustItemsService implements IItemsService {
                     referenced: metadata.referencedByMilestoneIndex,
                     solid: metadata.isSolid,
                     conflicting: metadata.ledgerInclusionState === "conflicting",
+                    conflictReason: metadata.conflictReason,
                     included: metadata.ledgerInclusionState === "included",
                     ...this._itemMetadata[metadata.blockId]
                 };

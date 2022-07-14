@@ -2,10 +2,10 @@ import { IMessageMetadata } from "@iota/iota.js";
 import type { IMqttClient } from "@iota/mqtt.js";
 import { Converter } from "@iota/util.js";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedItemMetadata } from "../../models/api/IFeedItemMetadata";
-import { IFeedSubscriptionItem } from "../../models/api/IFeedSubscriptionItem";
+import { IFeedItemMetadata } from "../../models/api/chrysalis/IFeedItemMetadata";
+import { IFeedSubscriptionItem } from "../../models/api/chrysalis/IFeedSubscriptionItem";
+import { IItemsService } from "../../models/services/chrysalis/IItemsService";
 import { IFeedService } from "../../models/services/IFeedService";
-import { IItemsService } from "../../models/services/IItemsService";
 
 /**
  * Class to handle messages service.
