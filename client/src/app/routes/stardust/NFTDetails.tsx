@@ -1,9 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable max-len */
-/* eslint-disable react/no-unescaped-entities */
-/* eslint-disable no-warning-comments */
-/* eslint-disable operator-linebreak */
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -78,11 +72,13 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { currentPage, pageSize, showGeneralItems, nftDetails } = this.state;
+
         return (
             <div className="nft">
                 <div className="wrapper">
                     {
-                        this.state.nftDetails.activityHistory ?
+                        nftDetails.activityHistory ?
                             <div className="inner">
                                 <div className="nft--header">
                                     <div className="row middle">
@@ -94,7 +90,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                 <div className="section">
                                     <div className="section--data section-nft-detail">
                                         <img
-                                            src={this.state.nftDetails.imageSrc}
+                                            src={nftDetails.imageSrc}
                                             alt="bundle"
                                             className="nft-image"
                                         />
@@ -106,35 +102,39 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                         Buying Price
                                                     </div>
                                                     <div className="value featured">
-                                                        <span>{this.state.nftDetails.quantity} Gi (${this.state.nftDetails.amount})</span>
+                                                        <span>{nftDetails.quantity} Gi (${nftDetails.amount})</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="nft-list">
                                                 <div
                                                     className={classNames("list--dropdown", "item",
-                                                    { opened: this.state.showGeneralItems })}
+                                                    { opened: showGeneralItems })}
                                                     onClick={() =>
-                                                        this.setState({ showGeneralItems: !this.state.showGeneralItems })}
+                                                        this.setState({ showGeneralItems: !showGeneralItems })}
                                                 >
                                                     <div className="margin-r-t icon">
                                                         <DropdownIcon />
                                                     </div>
                                                     <h2>General</h2>
                                                 </div>
-                                                {this.state.showGeneralItems &&
+                                                {showGeneralItems &&
                                                     <ul className="general-items">
                                                         <li className="list">
                                                             <span className="label name">Token Standard</span>
-                                                            <span className="label value margin-r-t">{this.state.nftDetails?.generalData?.standard}</span>
+                                                            <span className="label value margin-r-t">
+                                                                {nftDetails?.generalData?.standard}
+                                                            </span>
                                                         </li>
                                                         <li className="list">
                                                             <span className="label name">Token ID</span>
                                                             <div className="value code row middle">
-                                                                <span className="label value">{this.state.nftDetails?.generalData?.tokenId}</span>
+                                                                <span className="label value">
+                                                                    {nftDetails?.generalData?.tokenId}
+                                                                </span>
                                                                 <CopyButton
                                                                     onClick={() => ClipboardHelper.copy(
-                                                                        this.state.nftDetails?.generalData?.tokenId
+                                                                        nftDetails?.generalData?.tokenId
                                                                     )}
                                                                     buttonType="copy"
                                                                 />
@@ -144,11 +144,11 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                             <span className="label name">Contact Address</span>
                                                             <div className="value code row middle">
                                                                 <span className="label value">
-                                                                    {this.state.nftDetails?.generalData?.contractAddress.slice(0, 6)}...{this.state?.nftDetails?.generalData?.contractAddress.slice(-2)}
+                                                                    {nftDetails?.generalData?.contractAddress}
                                                                 </span>
                                                                 <CopyButton
                                                                     onClick={() => ClipboardHelper.copy(
-                                                                        this.state.nftDetails?.generalData?.contractAddress
+                                                                        nftDetails?.generalData?.contractAddress
                                                                     )}
                                                                     buttonType="copy"
                                                                 />
@@ -158,11 +158,11 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                             <span className="label name">Creator Address</span>
                                                             <div className="value code row middle">
                                                                 <span className="label value">
-                                                                    {this.state.nftDetails?.generalData?.creatorAddress.slice(0, 6)}...{this.state.nftDetails?.generalData?.creatorAddress.slice(-2)}
+                                                                    {nftDetails?.generalData?.creatorAddress}
                                                                 </span>
                                                                 <CopyButton
                                                                     onClick={() => ClipboardHelper.copy(
-                                                                        this.state.nftDetails?.generalData?.creatorAddress
+                                                                        nftDetails?.generalData?.creatorAddress
                                                                     )}
                                                                     buttonType="copy"
                                                                 />
@@ -172,11 +172,11 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                             <span className="label name">Sender Address</span>
                                                             <div className="value code row middle">
                                                                 <span className="label value">
-                                                                    {this.state.nftDetails?.generalData?.senderAddress.slice(0, 6)}...{this.state.nftDetails?.generalData?.senderAddress.slice(-2)}
+                                                                    {nftDetails?.generalData?.senderAddress}
                                                                 </span>
                                                                 <CopyButton
                                                                     onClick={() => ClipboardHelper.copy(
-                                                                        this.state.nftDetails?.generalData?.senderAddress
+                                                                        nftDetails?.generalData?.senderAddress
                                                                     )}
                                                                     buttonType="copy"
                                                                 />
@@ -184,11 +184,15 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                                         </li>
                                                         <li className="list">
                                                             <span className="label name">File Type</span>
-                                                            <span className="label value margin-r-t">{this.state.nftDetails?.generalData?.fileType}</span>
+                                                            <span className="label value margin-r-t">
+                                                                {nftDetails?.generalData?.fileType}
+                                                            </span>
                                                         </li>
                                                         <li className="list">
                                                             <span className="label name">Network</span>
-                                                            <span className="label value margin-r-t">{this.state.nftDetails?.generalData?.network}</span>
+                                                            <span className="label value margin-r-t">
+                                                                {nftDetails?.generalData?.network}
+                                                            </span>
                                                         </li>
                                                     </ul>}
                                                 <div
@@ -269,17 +273,11 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                             ))}
                                     </div>
                                     <Pagination
-                                        currentPage={this.state.currentPage}
-                                        totalCount={this.state.nftDetails.activityHistory.length}
-                                        pageSize={this.state.pageSize}
+                                        currentPage={currentPage}
+                                        totalCount={nftDetails.activityHistory.length}
+                                        pageSize={pageSize}
                                         siblingsCount={1}
-                                        onPageChange={page =>
-                                            this.setState({ currentPage: page },
-                                                () => {
-                                                    const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
-                                                    // Check if last page
-                                                    const lastPageIndex = (this.state.currentPage === Math.ceil(this.state.nftDetails.activityHistory.length / this.state.pageSize)) ? this.state.nftDetails.activityHistory.length : firstPageIndex + this.state.pageSize;
-                                            })}
+                                        onPageChange={page => this.setState({ currentPage: page })}
                                     />
                                 </div>
                             </div> :
