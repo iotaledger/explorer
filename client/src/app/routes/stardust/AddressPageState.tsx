@@ -1,7 +1,6 @@
 /* eslint-disable no-shadow */
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
-import INftDetails from "./INftDetails";
 
 export interface AddressPageState {
     /**
@@ -15,11 +14,6 @@ export interface AddressPageState {
     balance?: number;
 
     /**
-     * Are the component NFTs loading.
-     */
-    areNftsLoading: boolean;
-
-    /**
      * The outputs for the address.
      */
     outputResponse?: IOutputResponse[];
@@ -30,18 +24,8 @@ export interface AddressPageState {
     formatFull: boolean;
 
     /**
-     * List of nfts of the address.
+     * Number of NFTs owned by the address.
      */
-    nfts?: INftDetails[];
-
-    /**
-     * Current page number in nft history table.
-     */
-    nftsPageNumber: number;
-
-    /**
-     * Current page in nft history table.
-     */
-    nftsPage: INftDetails[];
+    nftsCount?: number;
 }
 
