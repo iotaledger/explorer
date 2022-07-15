@@ -281,7 +281,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
                                     />
                                 </div>
                             </div> :
-                            <div className="content inner row middle center card">
+                            <div className="row middle center inner card no-data">
                                 <h2>No data available</h2>
                             </div>
                     }
