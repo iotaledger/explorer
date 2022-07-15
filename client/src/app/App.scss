@@ -9,9 +9,11 @@
   flex-direction: column;
 
   .content {
+    position: relative;
     flex: 1;
     min-height: 300px;
     margin-top: $navbar-height-desktop;
+    padding-bottom: 52px;
 
     @include desktop-down {
       margin-top: calc(2 * #{$navbar-height-mobile});
@@ -33,6 +35,9 @@
   }
 
   .copyright {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
