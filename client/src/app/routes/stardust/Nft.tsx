@@ -101,12 +101,10 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                                         </div>
                                     </div>
                                     <div className="row space-between general-content">
-                                        <div className="section--data">
-                                            <Bech32Address
-                                                addressDetails={bech32AddressDetails}
-                                                advancedMode={true}
-                                            />
-                                        </div>
+                                        <Bech32Address
+                                            addressDetails={bech32AddressDetails}
+                                            advancedMode={true}
+                                        />
                                     </div>
                                 </div>
                                 {output && (

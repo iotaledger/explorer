@@ -76,7 +76,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, onNftsL
 
     return (
         nfts.length > 0 ? (
-            <div className="section transaction--section no-border">
+            <div className="section transaction--section">
                 <div className="section--header row space-between">
                     <div className="row middle">
                         <h2>
