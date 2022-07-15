@@ -114,4 +114,9 @@ export interface INetwork {
      * Url for faucet.
      */
     faucet?: string;
+
+    /**
+     * Targeted interval in seconds between milestones.
+     */
+    milestoneInterval?: number;
 }

@@ -45,7 +45,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
         document.addEventListener("mousedown", this.outsideClickHandler);
         this._currencyService.loadCurrencyNames().then(
             currencyNames => {
-                if (currencyNames) {
+                if (currencyNames && this._isMounted) {
                     this.setState({ currencyNames });
                 }
             }
@@ -57,6 +57,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
      * The component is about to Unmount.
      */
     public componentWillUnmount() {
+        super.componentWillUnmount();
         document.removeEventListener("mousedown", this.outsideClickHandler);
     }
 

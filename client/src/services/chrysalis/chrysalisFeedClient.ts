@@ -176,7 +176,8 @@ export class ChrysalisFeedClient extends FeedClient {
                     }
                 } else if (message.payload?.type === MILESTONE_PAYLOAD_TYPE) {
                     payloadType = "MS";
-                    properties.MS = message.payload.index;
+                    properties.index = message.payload.index;
+                    properties.timestamp = message.payload.timestamp;
                 } else if (message.payload?.type === INDEXATION_PAYLOAD_TYPE) {
                     payloadType = "Index";
                     properties.Index = message.payload.index;

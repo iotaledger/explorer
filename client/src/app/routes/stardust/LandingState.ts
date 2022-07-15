@@ -75,5 +75,4 @@ export interface LandingState extends CurrencyState, FeedsState {
      * Blocks snapshot when feed is paused.
      */
     frozenBlocks: IFeedItem[];
-
 }
