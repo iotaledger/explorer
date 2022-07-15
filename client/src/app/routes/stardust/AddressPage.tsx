@@ -80,6 +80,21 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
+        if (!this.props.location.state) {
+            const result = await this._tangleCacheService.search(
+                this.props.match.params.network, this.props.match.params.address
+            );
+
+            this.props.location.state = {
+                addressDetails: result?.addressDetails,
+                addressOutputIds: result?.addressOutputIds
+            }
+        }
+
+        if (!(this.props.location.state as IAddressPageLocationProps)?.addressDetails) {
+            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
+        }
+
         const { addressDetails } = this.props.location.state as IAddressPageLocationProps;
 
         if (addressDetails?.hex) {
@@ -99,8 +114,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             }, async () => {
                 await this.getOutputs();
             });
-        } else {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
         }
     }
 
