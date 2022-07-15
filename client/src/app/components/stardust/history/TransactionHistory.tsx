@@ -71,11 +71,9 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
 
         tangleService().transactionHistory(request)
             .then((response: ITransactionHistoryResponse | undefined) => {
-                if (response?.items) {
-                    if (mounted.current) {
-                        setHistory([...history, ...response.items]);
-                        setCursor(response.cursor);
-                    }
+                if (response?.items && mounted.current) {
+                    setHistory([...history, ...response.items]);
+                    setCursor(response.cursor);
                 }
             })
             .catch(e => console.log(e));
@@ -122,7 +120,6 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
         if (mounted.current) {
             setHistoryPage(page);
         }
-
     }, [currentPageNumber, history]);
 
     const loadMoreHandler = () => {

@@ -100,7 +100,6 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
 
             loadOutputDetails();
         }
-
     }, [associatedOutputsLoaded]);
 
     // On page change handler
@@ -114,7 +113,6 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                 setCurrentPage(page);
             }
         }
-
     }, [associatedOutputs, pageNumber, outputDetailsLoaded]);
 
     return (
