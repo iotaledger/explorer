@@ -31,10 +31,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     public static contextType = NetworkContext;
 
     /**
-     * Timer id for seconds since last milestone.
-     */
-
-    /**
      * Create a new instance of Landing.
      * @param props The props.
      */

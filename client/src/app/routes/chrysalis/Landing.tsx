@@ -22,10 +22,6 @@ import { LandingState } from "./LandingState";
  */
 class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState> {
     /**
-     * Timer id for seconds since last milestone.
-     */
-
-    /**
      * Create a new instance of Landing.
      * @param props The props.
      */
