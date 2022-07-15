@@ -68,7 +68,10 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
                                     Data:
                                 </div>
                                 <div className="card--value row">
-                                    {feature.data}
+                                    <DataToggle
+                                        sourceData={feature.data}
+                                        withSpacedHex={true}
+                                    />
                                 </div>
                             </React.Fragment>
                         )}

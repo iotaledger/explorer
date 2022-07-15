@@ -2,8 +2,8 @@ import { ADDRESS_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, GOVERN
     IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE,
     STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
-import moment from "moment";
 import React, { ReactNode } from "react";
+import { DateHelper } from "../../../helpers/dateHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
@@ -26,6 +26,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
         super(props);
 
         this.state = {
+            isFormattedBalance: true,
             isExpanded: this.props.isPreExpanded ?? false
         };
     }
@@ -42,8 +43,9 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { isExpanded } = this.state;
+        const { isFormattedBalance, isExpanded } = this.state;
         const { unlockCondition } = this.props;
+        const { tokenInfo } = this.context;
 
         return (
             <div className="unlock-condition">
@@ -77,7 +79,12 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                     Amount:
                                 </div>
                                 <div className="card--value row">
-                                    {formatAmount(Number(unlockCondition.amount), this.context.tokenInfo, true)}
+                                    <span
+                                        className="pointer margin-r-t"
+                                        onClick={() => this.setState({ isFormattedBalance: !isFormattedBalance })}
+                                    >
+                                        {formatAmount(Number(unlockCondition.amount), tokenInfo, !isFormattedBalance)}
+                                    </span>
                                 </div>
                             </React.Fragment>
                         )}
@@ -88,7 +95,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                         Unix time
                                     </div>
                                     <div className="card--value row">
-                                        {this.formatUnixTime(unlockCondition.unixTime)}
+                                        {DateHelper.formatShort(unlockCondition.unixTime)}
                                     </div>
                                 </React.Fragment>
                         )}
@@ -103,7 +110,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                             Unix time
                                         </div>
                                         <div className="card--value row">
-                                            {this.formatUnixTime(unlockCondition.unixTime)}
+                                            {DateHelper.formatShort(unlockCondition.unixTime)}
                                         </div>
                                     </React.Fragment>
                                 )}
@@ -129,8 +136,6 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
             </div>
         );
     }
-
-    private readonly formatUnixTime = (timestamp: number) => moment.unix(timestamp).format("DD/MM/YYYY HH:MM:ss");
 }
 
 export default UnlockCondition;

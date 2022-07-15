@@ -36,7 +36,7 @@ export class DateHelper {
      * @returns The formated value.
      */
     public static formatShort(valueInMs: number): string {
-        return moment(valueInMs).format("YYYY-MM-DD HH:mm");
+        return moment(valueInMs).format("YYYY-MM-DD HH:mm:ss");
     }
 
     /**

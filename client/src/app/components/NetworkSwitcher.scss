@@ -5,6 +5,8 @@
 @import "../../scss/themes";
 
 .network--switcher {
+  width: 180px;
+
   @include tablet-down {
     &::before {
       content: "";
@@ -18,8 +20,8 @@
   }
 
   .network--switcher__header {
+    justify-content: center;
     font-family: $metropolis;
-    cursor: pointer;
 
     &.opened {
       .icon {
@@ -30,6 +32,8 @@
     }
 
     .network--switcher__dropdown {
+      text-align: center;
+
       .label {
         @include font-size(16px, 18px);
 
@@ -47,13 +51,13 @@
         text-transform: uppercase;
       }
 
-      @include tablet-down {
+      @include desktop-down {
         width: 100%;
       }
     }
 
     .icon {
-      margin-left: 40px;
+      margin-left: 12px;
 
       span {
         transition: transform 0.2s ease;

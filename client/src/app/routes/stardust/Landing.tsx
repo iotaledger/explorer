@@ -65,7 +65,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             milestones: [],
             currency: "USD",
             currencies: [],
-            formatFull: false,
             isFeedPaused: false,
             isFilterExpanded: false
         };
@@ -92,11 +91,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMaximum: filterSettings?.valueMaximum ?? "1000",
             valuesFilter: filterSettings?.valuesFilter ??
                 getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "stardust"),
-            valueMaximumMagnitude: filterSettings?.valueMaximumMagnitude ?? unitMagnitude,
-            formatFull: settings.formatFull
+            valueMaximumMagnitude: filterSettings?.valueMaximumMagnitude ?? unitMagnitude
         });
     }
-
 
     /**
      * Render the component.
@@ -105,9 +102,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     public render(): ReactNode {
         const {
             networkConfig, marketCapCurrency, priceCurrency,
-            valuesFilter, formatFull, filteredItems,
-            isFeedPaused, isFilterExpanded, itemsPerSecond,
-            confirmedItemsPerSecondPercent, latestMilestoneIndex, latestMilestoneTimestamp
+            valuesFilter, filteredItems, isFeedPaused,
+            isFilterExpanded, itemsPerSecond, confirmedItemsPerSecondPercent,
+            latestMilestoneIndex, latestMilestoneTimestamp
         } = this.state;
 
         const { network } = this.props.match.params;
@@ -283,19 +280,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 </div>
                                                 <div className="feed-item__content">
                                                     <span className="feed-item--label">Payload Type</span>
-                                                    <span className="feed-item--value">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => this.setState(
-                                                                { formatFull: !formatFull },
-                                                                () => this._settingsService.saveSingle(
-                                                                    "formatFull",
-                                                                    formatFull
-                                                                )
-                                                            )}
-                                                        >
-                                                            {item.payloadType}
-                                                        </button>
+                                                    <span className="feed-item--value payload-type">
+                                                        {item.payloadType}
                                                     </span>
                                                 </div>
                                             </div>
@@ -442,8 +428,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 ? this.state.frozenBlocks
                 : this._feedClient.getItems();
 
-                this.setState({
-                    filteredItems: filteredBlocks
+            this.setState({
+                filteredItems: filteredBlocks
                     .filter(item => {
                         let aux = false;
                         for (const f of filters) {
@@ -455,7 +441,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         return aux;
                     })
                     .slice(0, 10)
-                });
+            });
         }
     }
 

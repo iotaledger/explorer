@@ -751,7 +751,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         if (data.feedItem) {
             for (const key in data.feedItem.properties) {
                 const val = data.feedItem.properties[key] as string;
-                if (typeof val === "string" && Converter.isHex(val) && regEx.test(Converter.hexToUtf8(val))) {
+                if (typeof val === "string" && Converter.isHex(val, true) && regEx.test(Converter.hexToUtf8(val))) {
                     return true;
                 }
             }

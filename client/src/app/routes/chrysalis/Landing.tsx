@@ -88,7 +88,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         });
     }
 
-
     /**
      * Render the component.
      * @returns The node to render.

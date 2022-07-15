@@ -339,13 +339,19 @@ export class StardustTangleHelper {
                         type: searchQuery.address.addressType
                     };
 
-                    const addressOutputs = await indexerPlugin.outputs(
-                        { addressBech32: searchQuery.address.bech32 }
-                    );
+                    let cursor: string | undefined;
+                    let addressOutputIds: string[] = [];
+                    do {
+                        const outputIdsResponse = await indexerPlugin.outputs(
+                            { addressBech32: searchQuery.address.bech32, cursor }
+                        );
+                        addressOutputIds = addressOutputIds.concat(outputIdsResponse.items);
+                        cursor = outputIdsResponse.cursor;
+                    } while (cursor);
 
                     return {
                         addressDetails,
-                        addressOutputIds: addressOutputs.items
+                        addressOutputIds
                     };
                 }
             } catch {}

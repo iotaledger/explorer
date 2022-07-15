@@ -6,6 +6,7 @@
 
 .data-toggle {
   @include font-size(14px, 21px);
+  width: 100%;
 
   display: flex;
   align-items: center;

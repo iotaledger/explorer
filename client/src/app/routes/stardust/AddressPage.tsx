@@ -1,7 +1,4 @@
-import { Blake2b } from "@iota/crypto.js-stardust";
-import { IOutputResponse, NFT_OUTPUT_TYPE, TREASURY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
-import { Converter, HexHelper } from "@iota/util.js-stardust";
-import bigInt from "big-integer";
+import { IOutputResponse, TREASURY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -9,6 +6,7 @@ import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
+import IAddressDetailsWithBalance from "../../../models/api/stardust/IAddressDetailsWithBalance";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -17,13 +15,10 @@ import QR from "../../components/chrysalis/QR";
 import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
-import Pagination from "../../components/Pagination";
-import Spinner from "../../components/Spinner";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
-import Nft from "../../components/stardust/Nft";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
 import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
@@ -31,7 +26,12 @@ import mainHeaderMessage from "./../../../assets/modals/address/main-header.json
 import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
 import { AddressPageState } from "./AddressPageState";
-import INftDetails from "./INftDetails";
+import NftSection from "./NftSection";
+
+interface IAddressPageLocationProps {
+    addressDetails: IAddressDetailsWithBalance;
+    addressOutputIds: string[];
+}
 
 /**
  * Component which will show the address page for stardust.
@@ -41,11 +41,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * The component context type.
      */
     public static contextType = NetworkContext;
-
-    /**
-     * Nfts page size.
-     */
-    private static readonly NFTS_PAGE_SIZE: number = 10;
 
     /**
      * API Client for tangle requests.
@@ -75,11 +70,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
         this.state = {
             ...Bech32AddressHelper.buildAddress(this._bechHrp, props.match.params.address),
-            formatFull: true,
-            areNftsLoading: true,
-            nfts: [],
-            nftsPageNumber: 1,
-            nftsPage: []
+            formatFull: true
         };
     }
 
@@ -89,11 +80,24 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
-        const result = await this._tangleCacheService.search(
-            this.props.match.params.network, this.props.match.params.address
-        );
+        if (!this.props.location.state) {
+            const result = await this._tangleCacheService.search(
+                this.props.match.params.network, this.props.match.params.address
+            );
 
-        if (result?.addressDetails?.hex) {
+            this.props.location.state = {
+                addressDetails: result?.addressDetails,
+                addressOutputIds: result?.addressOutputIds
+            };
+        }
+
+        if (!(this.props.location.state as IAddressPageLocationProps)?.addressDetails) {
+            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
+        }
+
+        const { addressDetails } = this.props.location.state as IAddressPageLocationProps;
+
+        if (addressDetails?.hex) {
             window.scrollTo({
                 left: 0,
                 top: 0,
@@ -103,17 +107,13 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             this.setState({
                 bech32AddressDetails: Bech32AddressHelper.buildAddress(
                     this._bechHrp,
-                    result.addressDetails?.hex,
-                    result.addressDetails?.type ?? 0
+                    addressDetails?.hex,
+                    addressDetails?.type ?? 0
                 ),
-                balance: Number(result.addressDetails?.balance),
-                outputIds: result.addressOutputIds
+                balance: Number(addressDetails?.balance)
             }, async () => {
                 await this.getOutputs();
-                await this.getNfts();
             });
-        } else {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
         }
     }
 
@@ -122,14 +122,13 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, balance, areNftsLoading,
-            outputResponse, formatFull, nfts, nftsPageNumber } = this.state;
+        const { bech32AddressDetails, balance, outputResponse, formatFull, nftsCount } = this.state;
 
         const networkId = this.props.match.params.network;
         const isMarketed = isMarketedNetwork(networkId);
         const nativeTokensCount = outputResponse ? this.countDistinctNativeTokens(outputResponse) : 0;
         const hasNativeTokens = nativeTokensCount > 0;
-        const hasNfts = nfts && nfts.length > 0;
+        const hasNfts = Boolean(nftsCount);
         const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
 
         return (
@@ -161,7 +160,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                 advancedMode={true}
                                                 showCopyButton={true}
                                             />
-                                            {balance && (
+                                            {balance !== undefined && (
                                                 <div className="row middle">
                                                     <Icon icon="wallet" boxed />
                                                     <div className="balance">
@@ -234,7 +233,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                     <div className="inner--asset">
                                                         <div className="section--data assets">
                                                             <span className="label">
-                                                                NFTs in wallet ({nfts?.length})
+                                                                NFTs in wallet ({nftsCount})
                                                             </span>
                                                         </div>
                                                         <img
@@ -261,48 +260,11 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                     networkId={networkId}
                                     outputs={outputResponse?.map(output => output.output)}
                                 />
-                                {areNftsLoading && (
-                                    <div className="section transaction--section no-border">
-                                        <div className="section--header row space-between">
-                                            <div className="margin-t-s middle row">
-                                                <Spinner />
-                                                <p className="status">Loading NFTs...</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                                {hasNfts && (
-                                    <div className="section transaction--section no-border">
-                                        <div className="section--header row space-between">
-                                            <div className="row middle">
-                                                <h2>
-                                                    NFTs in Wallet ({nfts?.length})
-                                                </h2>
-                                                <Modal icon="info" data={mainHeaderMessage} />
-                                            </div>
-                                        </div>
-                                        <div className="nft--section">
-                                            { this.currentNftsPage?.map((nft, k) => (
-                                                <React.Fragment key={`${nft.id}${k}`}>
-                                                    <Nft
-                                                        key={k}
-                                                        id={nft.id}
-                                                        name={nft.name}
-                                                        network={networkId}
-                                                        image={nft.image}
-                                                    />
-                                                </React.Fragment>
-                                            ))}
-                                        </div>
-                                        <Pagination
-                                            currentPage={nftsPageNumber}
-                                            totalCount={nfts?.length ?? 0}
-                                            pageSize={AddressPage.NFTS_PAGE_SIZE}
-                                            siblingsCount={1}
-                                            onPageChange={page => this.setState({ nftsPageNumber: page })}
-                                        />
-                                    </div>
-                                )}
+                                <NftSection
+                                    network={networkId}
+                                    bech32Address={addressBech32}
+                                    onNftsLoaded={count => this.setNftsCount(count as number)}
+                                />
                                 {addressBech32 && (
                                     <TransactionHistory network={networkId} address={addressBech32} />
                                 )}
@@ -315,6 +277,12 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                 </div >
             </div >
         );
+    }
+
+    private setNftsCount(nftsCount: number): void {
+        if (nftsCount > 0) {
+            this.setState({ nftsCount });
+        }
     }
 
     private countDistinctNativeTokens(outputResponse: IOutputResponse[]): number {
@@ -331,21 +299,16 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         return distinctNativeTokens.length;
     }
 
-    private get currentNftsPage() {
-        const from = (this.state.nftsPageNumber - 1) * AddressPage.NFTS_PAGE_SIZE;
-        const to = from + AddressPage.NFTS_PAGE_SIZE;
-
-        return this.state.nfts?.slice(from, to);
-    }
-
     private async getOutputs() {
-        if (!this.state.outputIds || this.state.outputIds?.length === 0) {
+        const { addressOutputIds } = this.props.location.state as IAddressPageLocationProps;
+        if (!addressOutputIds || addressOutputIds.length === 0) {
             return;
         }
+
         const networkId = this.props.match.params.network;
         const outputResponse: IOutputResponse[] = [];
 
-        for (const outputId of this.state.outputIds) {
+        for (const outputId of addressOutputIds) {
             const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
             if (outputDetails) {
                 outputResponse.push(outputDetails);
@@ -353,47 +316,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         }
 
         this.setState({ outputResponse });
-    }
-
-
-    private async getNfts() {
-        if (!this.state.bech32AddressDetails?.bech32) {
-            this.setState({ areNftsLoading: false });
-            return;
-        }
-        const networkId = this.props.match.params.network;
-
-        const nfts: INftDetails[] = [];
-
-        const nftOutputs = await this._tangleCacheService.nfts({
-            network: networkId,
-            address: this.state.bech32AddressDetails?.bech32
-        });
-
-        if (nftOutputs?.outputs && nftOutputs?.outputs?.items.length > 0) {
-            for (const outputId of nftOutputs.outputs.items) {
-                const output = await this._tangleCacheService.outputDetails(networkId, outputId);
-                if (output && !output.metadata.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
-                    const nftOutput = output.output;
-                    const nftId = !HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero)
-                        ? nftOutput.nftId
-                        // NFT has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
-                        : HexHelper.addPrefix(Converter.bytesToHex(
-                            Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId)))
-                        ));
-
-                    nfts.push({
-                        id: nftId,
-                        image: "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png"
-                    });
-                }
-            }
-        }
-
-        this.setState({
-            nfts,
-            areNftsLoading: false
-        });
     }
 }
 

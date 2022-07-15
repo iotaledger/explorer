@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
 import { IOutputResponse } from "@iota/iota.js-stardust";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import transactionHistoryMessage from "../../../../assets/modals/address/transaction-history.json";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { ITransactionHistoryRequest } from "../../../../models/api/stardust/ITransactionHistoryRequest";
@@ -31,6 +31,7 @@ const SORT: string = "asc";
  * Component which will display transaction history.
  */
 const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, address }) => {
+    const mounted = useRef(false);
     const [currentPageNumber, setCurrentPageNumber] = useState<number>(1);
     const [history, setHistory] = useState<ITransactionHistoryItem[]>([]);
     const [historyPage, setHistoryPage] = useState<ITransactionHistoryItem[]>([]);
@@ -42,14 +43,21 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
     const [isLoading, setIsLoading] = useState(true);
     const [allOutputDetailsLoaded, setAllOutputDetailsLoaded] = useState(false);
 
+    const unmount = () => {
+        mounted.current = false;
+    };
+
     const tangleService = useCallback(
         () => ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`),
         [network, address]
     );
 
     useEffect(() => {
+        mounted.current = true;
         loadHistory();
         setHistoryPage(history);
+
+        return unmount;
     }, [network, address]);
 
     const loadHistory = () => {
@@ -63,7 +71,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
 
         tangleService().transactionHistory(request)
             .then((response: ITransactionHistoryResponse | undefined) => {
-                if (response?.items) {
+                if (response?.items && mounted.current) {
                     setHistory([...history, ...response.items]);
                     setCursor(response.cursor);
                 }
@@ -91,10 +99,12 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
 
                 await Promise.all(promises);
 
-                setOutputDetailsMap(detailsPage);
-                setAllOutputDetailsLoaded(true);
-                setIsLoading(false);
-                setTotalCount(history.length);
+                if (mounted.current) {
+                    setOutputDetailsMap(detailsPage);
+                    setAllOutputDetailsLoaded(true);
+                    setIsLoading(false);
+                    setTotalCount(history.length);
+                }
             };
 
             /* eslint-disable @typescript-eslint/no-floating-promises */
@@ -107,13 +117,17 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
         const to = from + PAGE_SIZE;
         const page = history?.slice(from, to);
 
-        setHistoryPage(page);
+        if (mounted.current) {
+            setHistoryPage(page);
+        }
     }, [currentPageNumber, history]);
 
     const loadMoreHandler = () => {
-        setAllOutputDetailsLoaded(false);
-        setIsLoading(true);
-        loadHistory();
+        if (mounted.current) {
+            setAllOutputDetailsLoaded(false);
+            setIsLoading(true);
+            loadHistory();
+        }
     };
 
     return (totalCount > 0 ? (
