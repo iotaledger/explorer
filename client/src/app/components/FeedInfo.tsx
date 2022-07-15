@@ -9,8 +9,8 @@ export interface FeedInfoProps {
 }
 
 const FeedInfo: React.FC<FeedInfoProps> = ({ milestoneIndex, milestoneTimestamp, frequencyTarget }) => {
-    const [from, setFrom] = useState<moment.Moment | undefined>(undefined);
-    const [seconds, setSeconds] = useState<number | undefined>(undefined);
+    const [from, setFrom] = useState<moment.Moment | undefined>();
+    const [seconds, setSeconds] = useState<number | undefined>();
 
     useEffect(() => {
         const now = moment();
