@@ -3,7 +3,7 @@ import { Blake2b } from "@iota/crypto.js-stardust";
 import { NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -20,11 +20,17 @@ interface NftSectionProps {
 const PAGE_SIZE = 10;
 
 const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, onNftsLoaded }) => {
+    const mounted = useRef(false);
     const [nfts, setNfts] = useState<INftDetails[]>([]);
     const [page, setPage] = useState<INftDetails[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
 
+    const unmount = () => {
+        mounted.current = false;
+    };
+
     useEffect(() => {
+        mounted.current = true;
         const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
         const theNfts: INftDetails[] = [];
 
@@ -58,20 +64,27 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, onNftsL
                 }
             }
 
-            setNfts(theNfts);
-            if (onNftsLoaded) {
+            if (mounted.current) {
+                setNfts(theNfts);
+            }
+
+            if (onNftsLoaded && mounted.current) {
                 onNftsLoaded(theNfts.length);
             }
         };
 
         fetchNfts();
+
+        return unmount;
     }, [network, bech32Address]);
 
     // On page change handler
     useEffect(() => {
         const from = (pageNumber - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE;
-        setPage(nfts?.slice(from, to));
+        if (mounted.current) {
+            setPage(nfts?.slice(from, to));
+        }
     }, [nfts, pageNumber]);
 
     return (

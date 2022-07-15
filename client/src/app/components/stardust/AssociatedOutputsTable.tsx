@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";
@@ -28,19 +28,25 @@ const PAGE_SIZE = 10;
  * Component to render the Associated Outputs section.
  */
 const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network, addressDetails }) => {
+    const mounted = useRef(false);
     const [associatedOutputs, setAssociatedOutputs] = useState<IAssociatedOutput[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<IAssociatedOutput[]>([]);
     const [associatedOutputsLoaded, setAssociatedOutputsLoaded] = useState(false);
     const [outputDetailsLoaded, setOutputDetailsLoaded] = useState(false);
 
+    const unmount = () => {
+        mounted.current = false;
+    };
+
     // First fetch associated output ids
     useEffect(() => {
+        mounted.current = true;
         const loadAssociatedOutputs = async () => {
             const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
             const associatedOutputsResponse = await tangleCacheService.associatedOutputs(network, addressDetails);
 
-            if (associatedOutputsResponse?.outputs) {
+            if (associatedOutputsResponse?.outputs && mounted.current) {
                 setAssociatedOutputs(associatedOutputsResponse.outputs);
                 setAssociatedOutputsLoaded(true);
             }
@@ -48,6 +54,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
 
         /* eslint-disable @typescript-eslint/no-floating-promises */
         loadAssociatedOutputs();
+        return unmount;
     }, [network, addressDetails]);
 
     // Then fetch associated output details
@@ -84,13 +91,16 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                         return moment(timestampBookedA).isAfter(moment(timestampBookedB)) ? -1 : 1;
                     });
 
-                    setAssociatedOutputs(updatedAssociatedOutputs);
-                    setOutputDetailsLoaded(true);
+                    if (mounted.current) {
+                        setAssociatedOutputs(updatedAssociatedOutputs);
+                        setOutputDetailsLoaded(true);
+                    }
                 }).catch(e => console.log(e));
             };
 
             loadOutputDetails();
         }
+
     }, [associatedOutputsLoaded]);
 
     // On page change handler
@@ -100,8 +110,11 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
             const to = from + PAGE_SIZE;
 
             const page = associatedOutputs?.slice(from, to);
-            setCurrentPage(page);
+            if (mounted.current) {
+                setCurrentPage(page);
+            }
         }
+
     }, [associatedOutputs, pageNumber, outputDetailsLoaded]);
 
     return (
