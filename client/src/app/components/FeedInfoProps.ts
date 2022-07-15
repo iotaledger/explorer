@@ -1,3 +1,5 @@
+import { NetworkType } from "../../models/config/networkType";
+
 export interface FeedInfoProps {
     /**
      * The latest milestone index.
@@ -5,12 +7,17 @@ export interface FeedInfoProps {
     latestMilestoneIndex?: number;
 
     /**
-     * The number of seconds passed since last milestone.
-     */
-    secondsSinceLastMilestone?: number;
-
-    /**
      * Targeted time in seconds to add latest milestone.
      */
     milestoneFrequencyTarget?: number;
+
+    /**
+     * The latest milestone timestamp.
+     */
+    latestMilestoneTimestamp?: number;
+
+    /**
+     * The network type.
+     */
+    network?: NetworkType;
 }

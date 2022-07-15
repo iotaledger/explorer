@@ -1,12 +1,11 @@
 import { Units, UnitsHelper } from "@iota/iota.js";
-import moment from "moment";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
-import { CUSTOM, LEGACY_MAINNET, NetworkType } from "../../../models/config/networkType";
+import { CUSTOM, LEGACY_MAINNET } from "../../../models/config/networkType";
 import { CHRYSALIS, OG } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/IFilterSettings";
@@ -25,7 +24,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     /**
      * Timer id for seconds since last milestone.
      */
-    private _secondsTimer?: NodeJS.Timer;
 
     /**
      * Create a new instance of Landing.
@@ -92,19 +90,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "chrysalis"),
             formatFull: settings.formatFull
         });
-
-        if (this._networkConfig) {
-            this.updateSecondsSinceLastMilesone(this._networkConfig.network);
-        }
     }
 
-    public componentWillUnmount(): void {
-        super.componentWillUnmount();
-        if (this._secondsTimer) {
-            clearInterval(this._secondsTimer);
-            this._secondsTimer = undefined;
-        }
-    }
 
     /**
      * Render the component.
@@ -277,10 +264,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     {isLatestMilesontFeedInfoEnabled && (
                                         <FeedInfo
                                             latestMilestoneIndex={this.state.latestMilestoneIndex}
-                                            secondsSinceLastMilestone={this.state.secondsSinceLastMilestone}
-                                            milestoneFrequencyTarget={this._networkConfig
-                                                ? this._networkConfig.milestoneFrequencyTarget
-                                                : undefined}
+                                            latestMilestoneTimestamp={this.state.latestMilestoneTimestamp}
+                                            milestoneFrequencyTarget={this._networkConfig?.milestoneFrequencyTarget}
+                                            network={this._networkConfig?.network}
                                         />
                                     )}
                                     <div className="feed-items">
@@ -636,24 +622,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 </span>
             </div>
         );
-    }
-
-    private updateSecondsSinceLastMilesone(network: NetworkType) {
-        const isEnabled = network !== LEGACY_MAINNET && network !== CUSTOM;
-        if (this.state.latestMilestoneTimestamp !== 0 && isEnabled) {
-            const from = moment(this.state.latestMilestoneTimestamp);
-            const to = moment();
-
-            const secondsSinceLastMilestone = to.diff(from, "seconds");
-
-            this.setState({
-                secondsSinceLastMilestone
-            });
-        }
-
-        if (this._isMounted && isEnabled) {
-            this._secondsTimer = setInterval(() => this.updateSecondsSinceLastMilesone(network), 1000);
-        }
     }
 }
 

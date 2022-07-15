@@ -1,6 +1,5 @@
 import { Magnitudes, UnitsHelper } from "@iota/iota.js-stardust";
 import classNames from "classnames";
-import moment from "moment";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -34,7 +33,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     /**
      * Timer id for seconds since last milestone.
      */
-    private _secondsTimer?: NodeJS.Timer;
 
     /**
      * Create a new instance of Landing.
@@ -101,17 +99,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMaximumMagnitude: filterSettings?.valueMaximumMagnitude ?? unitMagnitude,
             formatFull: settings.formatFull
         });
-
-        this.updateSecondsSinceLastMilesone();
     }
 
-    public componentWillUnmount(): void {
-        super.componentWillUnmount();
-        if (this._secondsTimer) {
-            clearInterval(this._secondsTimer);
-            this._secondsTimer = undefined;
-        }
-    }
 
     /**
      * Render the component.
@@ -122,8 +111,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             networkConfig, marketCapCurrency, priceCurrency,
             valuesFilter, formatFull, filteredItems,
             isFeedPaused, isFilterExpanded, itemsPerSecond,
-            confirmedItemsPerSecondPercent, latestMilestoneIndex,
-            secondsSinceLastMilestone
+            confirmedItemsPerSecondPercent, latestMilestoneIndex, latestMilestoneTimestamp
         } = this.state;
 
         const { network } = this.props.match.params;
@@ -274,8 +262,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     </div>
                                     <FeedInfo
                                         latestMilestoneIndex={latestMilestoneIndex}
-                                        secondsSinceLastMilestone={secondsSinceLastMilestone}
+                                        latestMilestoneTimestamp={latestMilestoneTimestamp}
                                         milestoneFrequencyTarget={networkConfig.milestoneFrequencyTarget}
+                                        network={networkConfig.network}
                                     />
 
                                     <div className="feed-items">
@@ -620,23 +609,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 </span>
             </div>
         );
-    }
-
-    private updateSecondsSinceLastMilesone() {
-        if (this.state.latestMilestoneTimestamp !== 0) {
-            const from = moment(this.state.latestMilestoneTimestamp);
-            const to = moment();
-
-            const secondsSinceLastMilestone = to.diff(from, "seconds");
-
-            this.setState({
-                secondsSinceLastMilestone
-            });
-        }
-
-        if (this._isMounted) {
-            this._secondsTimer = setInterval(() => this.updateSecondsSinceLastMilesone(), 1000);
-        }
     }
 }
 
