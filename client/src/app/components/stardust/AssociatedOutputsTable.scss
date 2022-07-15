@@ -7,8 +7,6 @@
 .section {
     .associated--table {
       width: 100%;
-      border-spacing: 12px 16px;
-      border-collapse: separate;
 
       tbody {
           margin-top: 12px;
@@ -41,6 +39,7 @@
           td {
               border: none;
               color: var(--body-color);
+              padding: 8px 4px;
               &:first-child {
                   padding-left: 2px;
               }
