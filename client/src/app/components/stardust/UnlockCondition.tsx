@@ -26,6 +26,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
         super(props);
 
         this.state = {
+            isFormattedBalance: true,
             isExpanded: this.props.isPreExpanded ?? false
         };
     }
@@ -42,8 +43,9 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { isExpanded } = this.state;
+        const { isFormattedBalance, isExpanded } = this.state;
         const { unlockCondition } = this.props;
+        const { tokenInfo } = this.context;
 
         return (
             <div className="unlock-condition">
@@ -77,8 +79,13 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                     Amount:
                                 </div>
                                 <div className="card--value row">
-                                    {formatAmount(Number(unlockCondition.amount), this.context.tokenInfo, true)}
                                 </div>
+                                <span
+                                    className="pointer margin-r-t"
+                                    onClick={() => this.setState({ isFormattedBalance: !isFormattedBalance })}
+                                >
+                                    {formatAmount(Number(unlockCondition.amount), tokenInfo, !isFormattedBalance)}
+                                </span>
                             </React.Fragment>
                         )}
                         {unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE &&

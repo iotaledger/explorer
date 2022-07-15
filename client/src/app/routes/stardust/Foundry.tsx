@@ -28,6 +28,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     const [maximumSupply, setMaximumSupply] = useState<number>();
     const [mintedTokens, setMintedTokens] = useState<number>();
     const [meltedTokens, setMeltedTokens] = useState<number>();
+    const [isFormattedBalance, setIsFormattedBalance] = useState<boolean>(true);
 
     useEffect(() => {
         isMounted.current = true;
@@ -117,7 +118,12 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                                     <div className="value featured">
                                         {balance && (
                                             <React.Fragment>
-                                                {formatAmount(balance, tokenInfo, true)}
+                                                <span
+                                                    onClick={() => setIsFormattedBalance(!isFormattedBalance)}
+                                                    className="pointer margin-r-5"
+                                                >
+                                                    {formatAmount(balance, tokenInfo, !isFormattedBalance)}
+                                                </span>
                                                 {isMarketed && (
                                                     <React.Fragment>
                                                         {" "}
