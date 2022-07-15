@@ -507,14 +507,14 @@
                                 display: flex;
                                 align-items: center;
                                 justify-content: space-between;
-                                padding: 8px 8px;
+                                padding: 8px;
 
                                 @include tablet-down {
+                                    padding: 12px;
                                     flex-direction: column;
                                     align-items: flex-start;
                                     justify-content: flex-start;
-                                    margin-bottom: 32px;
-                                    padding: 0;
+                                    margin-bottom: 4px;
                                 }
 
                                 &:hover {
@@ -529,7 +529,7 @@
                                         flex-direction: column;
 
                                         &:first-child {
-                                            margin-bottom: 16px;
+                                            margin-bottom: 8px;
                                         }
                                     }
                                 }
@@ -554,16 +554,12 @@
                                     color: $main-green;
                                     font-family: $inter;
 
-                                    button {
+                                    &.payload-type {
+                                        font-family: $metropolis;
                                         @include font-size(14px, 21px);
-
-                                        padding: 0;
-                                        border: 0;
-                                        background: transparent;
                                         color: var(--header-color);
                                         font-weight: 700;
                                         text-align: left;
-                                        cursor: pointer;
 
                                         @include tablet-down {
                                             color: var(--type-color);

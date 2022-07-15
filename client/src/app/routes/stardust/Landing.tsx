@@ -64,7 +64,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             milestones: [],
             currency: "USD",
             currencies: [],
-            formatFull: false,
             isFeedPaused: false,
             isFilterExpanded: false
         };
@@ -94,7 +93,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valuesFilter: filterSettings?.valuesFilter ??
                 getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "stardust"),
             valueMaximumMagnitude: filterSettings?.valueMaximumMagnitude ?? unitMagnitude,
-            formatFull: settings.formatFull
         });
     }
 
@@ -103,7 +101,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { networkConfig, marketCapCurrency, priceCurrency, valuesFilter, formatFull, filteredItems,
+        const { networkConfig, marketCapCurrency, priceCurrency, valuesFilter, filteredItems,
             isFeedPaused, isFilterExpanded, itemsPerSecond, confirmedItemsPerSecondPercent } = this.state;
 
         const { network } = this.props.match.params;
@@ -274,19 +272,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 </div>
                                                 <div className="feed-item__content">
                                                     <span className="feed-item--label">Payload Type</span>
-                                                    <span className="feed-item--value">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => this.setState(
-                                                                { formatFull: !formatFull },
-                                                                () => this._settingsService.saveSingle(
-                                                                    "formatFull",
-                                                                    formatFull
-                                                                )
-                                                            )}
-                                                        >
-                                                            {item.payloadType}
-                                                        </button>
+                                                    <span className="feed-item--value payload-type">
+                                                        {item.payloadType}
                                                     </span>
                                                 </div>
                                             </div>
