@@ -26,23 +26,27 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
         const { label, eyebrow, networks, isExpanded, onChange, onClick } = this.props;
 
         networks.sort((a, b) => getNetworkOrder(a.network) - getNetworkOrder(b.network));
+        const isSingleNetwork = networks.length === 1;
+        const headerStyle = isSingleNetwork ? {} : { cursor: "pointer" };
 
         return (
             <div className="network--switcher">
                 <div
+                    style={headerStyle}
                     className={classNames("network--switcher__header row middle space-between", { opened: isExpanded })}
-                    onClick={onClick}
+                    onClick={isSingleNetwork ? () => {} : onClick}
                 >
                     <div className="network--switcher__dropdown">
                         <div className="eyebrow">{eyebrow}</div>
                         <div className="label">{label}</div>
                     </div>
-                    <div className="icon">
-                        <span className="material-icons">
-                            expand_more
-                        </span>
-                    </div>
-
+                    {!isSingleNetwork && (
+                        <div className="icon">
+                            <span className="material-icons">
+                                expand_more
+                            </span>
+                        </div>
+                    )}
 
                     <div className={classNames("network--expanded", { opened: isExpanded })}>
                         <div className="networks">
