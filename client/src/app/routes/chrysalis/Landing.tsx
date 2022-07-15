@@ -263,10 +263,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     </div>
                                     {isLatestMilesontFeedInfoEnabled && (
                                         <FeedInfo
-                                            latestMilestoneIndex={this.state.latestMilestoneIndex}
-                                            latestMilestoneTimestamp={this.state.latestMilestoneTimestamp}
-                                            milestoneFrequencyTarget={this._networkConfig?.milestoneFrequencyTarget}
-                                            network={this._networkConfig?.network}
+                                            milestoneIndex={this.state.latestMilestoneIndex}
+                                            milestoneTimestamp={this.state.latestMilestoneTimestamp}
+                                            frequencyTarget={this._networkConfig?.milestoneFrequencyTarget}
                                         />
                                     )}
                                     <div className="feed-items">
