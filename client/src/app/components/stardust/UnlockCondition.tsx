@@ -2,8 +2,8 @@ import { ADDRESS_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, GOVERN
     IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE,
     STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
-import moment from "moment";
 import React, { ReactNode } from "react";
+import { DateHelper } from "../../../helpers/dateHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
@@ -88,7 +88,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                         Unix time
                                     </div>
                                     <div className="card--value row">
-                                        {this.formatUnixTime(unlockCondition.unixTime)}
+                                        {DateHelper.formatShort(unlockCondition.unixTime)}
                                     </div>
                                 </React.Fragment>
                         )}
@@ -103,7 +103,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                             Unix time
                                         </div>
                                         <div className="card--value row">
-                                            {this.formatUnixTime(unlockCondition.unixTime)}
+                                            {DateHelper.formatShort(unlockCondition.unixTime)}
                                         </div>
                                     </React.Fragment>
                                 )}
@@ -129,8 +129,6 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
             </div>
         );
     }
-
-    private readonly formatUnixTime = (timestamp: number) => moment.unix(timestamp).format("DD/MM/YYYY HH:MM:ss");
 }
 
 export default UnlockCondition;

@@ -88,7 +88,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             this.props.location.state = {
                 addressDetails: result?.addressDetails,
                 addressOutputIds: result?.addressOutputIds
-            }
+            };
         }
 
         if (!(this.props.location.state as IAddressPageLocationProps)?.addressDetails) {
