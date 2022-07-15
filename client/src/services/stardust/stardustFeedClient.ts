@@ -159,7 +159,8 @@ export class StardustFeedClient extends FeedClient {
                 }
             } else if (block.payload?.type === MILESTONE_PAYLOAD_TYPE) {
                 payloadType = "MS";
-                properties.MS = block.payload.index;
+                properties.index = block.payload.index;
+                properties.timestamp = block.payload.timestamp;
             } else if (block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
                 payloadType = "Data";
                 properties.Index = block.payload.tag;

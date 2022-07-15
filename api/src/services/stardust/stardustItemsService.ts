@@ -191,6 +191,7 @@ export class StardustItemsService implements IItemsService {
             (milestone: number, id: string, timestamp: number) => {
                 this._itemMetadata[id] = {
                     milestone,
+                    timestamp,
                     ...this._itemMetadata[id]
                 };
             });

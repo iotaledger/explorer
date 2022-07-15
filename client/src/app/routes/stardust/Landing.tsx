@@ -13,6 +13,7 @@ import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/stardust/IFilterSettings";
 import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
+import FeedInfo from "../../components/FeedInfo";
 import Feeds from "../../components/stardust/Feeds";
 import NetworkContext, { INetworkContextProps } from "../../context/NetworkContext";
 import "./Landing.scss";
@@ -80,9 +81,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
         const settings = this._settingsService.get();
 
-
         let filterSettings: IFilterSettings | undefined;
-
         if (this._networkConfig && settings.filters) {
             filterSettings = settings.filters[this._networkConfig.network];
         }
@@ -98,13 +97,18 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         });
     }
 
+
     /**
      * Render the component.
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { networkConfig, marketCapCurrency, priceCurrency, valuesFilter, formatFull, filteredItems,
-            isFeedPaused, isFilterExpanded, itemsPerSecond, confirmedItemsPerSecondPercent } = this.state;
+        const {
+            networkConfig, marketCapCurrency, priceCurrency,
+            valuesFilter, formatFull, filteredItems,
+            isFeedPaused, isFilterExpanded, itemsPerSecond,
+            confirmedItemsPerSecondPercent, latestMilestoneIndex, latestMilestoneTimestamp
+        } = this.state;
 
         const { network } = this.props.match.params;
         const isShimmer = isShimmerNetwork(network);
@@ -157,7 +161,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                     </div>
                     <InfoSection visible={network === ALPHANET} />
                 </div>
-                <div className={classNames("feeds-wrapper", { "shimmer": isShimmer })}>
+                <div className={classNames("wrapper feeds-wrapper", { "shimmer": isShimmer })}>
                     <div className="inner">
                         <div className="feeds-section">
                             <div className="row wrap feeds">
@@ -252,6 +256,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             )}
                                         </div>
                                     </div>
+                                    <FeedInfo
+                                        milestoneIndex={latestMilestoneIndex}
+                                        milestoneTimestamp={latestMilestoneTimestamp}
+                                        frequencyTarget={networkConfig.milestoneInterval}
+                                    />
 
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
@@ -358,9 +367,18 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     }
 
     /**
+     * The items have been updated.
+     * @param newItems The updated items.
+     */
+    protected itemsUpdated(newItems: IFeedItem[]): void {
+        super.itemsUpdated(newItems);
+        this.applyFilters();
+    }
+
+    /**
      * Filter the items and update the feed.
      */
-    protected itemsUpdated(): void {
+    private applyFilters(): void {
         if (this._isMounted && this._feedClient) {
             const minLimit = UnitsHelper.convertUnits(
                 Number.parseFloat(this.state.valueMinimum),
@@ -424,8 +442,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 ? this.state.frozenBlocks
                 : this._feedClient.getItems();
 
-            this.setState({
-                filteredItems: filteredBlocks
+                this.setState({
+                    filteredItems: filteredBlocks
                     .filter(item => {
                         let aux = false;
                         for (const f of filters) {
@@ -437,7 +455,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         return aux;
                     })
                     .slice(0, 10)
-            });
+                });
         }
     }
 
@@ -486,8 +504,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             };
 
             this._settingsService.save();
-
-            this.itemsUpdated();
+            this.applyFilters();
         }
     }
 

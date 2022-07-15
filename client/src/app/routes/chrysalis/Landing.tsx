@@ -5,16 +5,17 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
-import { CUSTOM } from "../../../models/config/networkType";
+import { CUSTOM, LEGACY_MAINNET } from "../../../models/config/networkType";
 import { CHRYSALIS, OG } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/IFilterSettings";
 import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/chrysalis/Feeds";
+import FeedInfo from "../../components/FeedInfo";
 import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
-import { LandingState } from "../LandingState";
+import { LandingState } from "./LandingState";
 
 /**
  * Component which will show the landing page.
@@ -87,11 +88,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         });
     }
 
+
     /**
      * Render the component.
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const isLatestMilesontFeedInfoEnabled = this._networkConfig &&
+            this._networkConfig.network !== LEGACY_MAINNET &&
+            this._networkConfig.network !== CUSTOM;
+
         return (
             <div className="landing-chrysalis">
                 <div className="wrapper header-wrapper">
@@ -251,7 +257,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             )}
                                         </div>
                                     </div>
-
+                                    {isLatestMilesontFeedInfoEnabled && (
+                                        <FeedInfo
+                                            milestoneIndex={this.state.latestMilestoneIndex}
+                                            milestoneTimestamp={this.state.latestMilestoneTimestamp}
+                                            frequencyTarget={this._networkConfig?.milestoneInterval}
+                                        />
+                                    )}
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
                                             <span className="label">
@@ -372,81 +384,90 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     }
 
     /**
+     * The items have been updated.
+     * @param newItems The updated items.
+     */
+    protected itemsUpdated(newItems: IFeedItem[]): void {
+        super.itemsUpdated(newItems);
+        this.applyFilters();
+    }
+
+    /**
      * Filter the items and update the feed.
      */
-    protected itemsUpdated(): void {
+    private applyFilters(): void {
         if (this._isMounted && this._feedClient) {
             const minLimit = UnitsHelper.convertUnits(
                 Number.parseFloat(this.state.valueMinimum), this.state.valueMinimumUnits, "i");
-            const maxLimit = UnitsHelper.convertUnits(
-                Number.parseFloat(this.state.valueMaximum), this.state.valueMaximumUnits, "i");
+                const maxLimit = UnitsHelper.convertUnits(
+                    Number.parseFloat(this.state.valueMaximum), this.state.valueMaximumUnits, "i");
 
-            const filters = [
-                {
-                    payloadType: "Zero only",
-                    filter: (item: IFeedItem) => item.value === 0
-                },
-                {
-                    payloadType: "Non-zero only",
-                    filter: (item: IFeedItem) =>
-                        item.value !== undefined &&
-                        item.value !== 0 &&
-                        Math.abs(item.value) >= minLimit &&
-                        Math.abs(item.value) <= maxLimit
-                },
-                {
-                    payloadType: "Transaction",
-                    filter: (item: IFeedItem) =>
-                        item.value !== undefined &&
-                        item.value !== 0 &&
-                        Math.abs(item.value) >= minLimit &&
-                        Math.abs(item.value) <= maxLimit
-                },
-                {
-                    payloadType: "Milestone",
-                    filter: (item: IFeedItem) =>
-                        item.payloadType === "MS"
+                    const filters = [
+                        {
+                            payloadType: "Zero only",
+                            filter: (item: IFeedItem) => item.value === 0
+                        },
+                        {
+                            payloadType: "Non-zero only",
+                            filter: (item: IFeedItem) =>
+                                item.value !== undefined &&
+                                item.value !== 0 &&
+                                Math.abs(item.value) >= minLimit &&
+                                Math.abs(item.value) <= maxLimit
+                        },
+                        {
+                            payloadType: "Transaction",
+                            filter: (item: IFeedItem) =>
+                                item.value !== undefined &&
+                                item.value !== 0 &&
+                                Math.abs(item.value) >= minLimit &&
+                                Math.abs(item.value) <= maxLimit
+                        },
+                        {
+                            payloadType: "Milestone",
+                            filter: (item: IFeedItem) =>
+                                item.payloadType === "MS"
 
-                },
-                {
-                    payloadType: "Indexed",
-                    filter: (item: IFeedItem) =>
-                        item.payloadType === "Index"
-                },
-                {
-                    payloadType: "No payload",
-                    filter: (item: IFeedItem) =>
-                        item.payloadType === "None"
+                        },
+                        {
+                            payloadType: "Indexed",
+                            filter: (item: IFeedItem) =>
+                                item.payloadType === "Index"
+                        },
+                        {
+                            payloadType: "No payload",
+                            filter: (item: IFeedItem) =>
+                                item.payloadType === "None"
 
-                }
-            ].filter(f => {
-                let aux = false;
-                for (const payload of this.state.valuesFilter) {
-                    if (f.payloadType === payload.label && payload.isEnabled) {
-                        aux = true;
-                    }
-                }
-                return aux;
-            });
-
-            const filteredMessages = this.state.isFeedPaused
-                ? this.state.frozenMessages
-                : this._feedClient.getItems();
-            this.setState({
-                filteredItems: filteredMessages
-                    .filter(item => {
+                        }
+                    ].filter(f => {
                         let aux = false;
-                        for (const f of filters) {
-                            const filter = f.filter;
-                            if (filter(item)) {
+                        for (const payload of this.state.valuesFilter) {
+                            if (f.payloadType === payload.label && payload.isEnabled) {
                                 aux = true;
                             }
                         }
                         return aux;
-                    }
-                    )
-                    .slice(0, 10)
-            });
+                    });
+
+                    const filteredMessages = this.state.isFeedPaused
+                        ? this.state.frozenMessages
+                        : this._feedClient.getItems();
+                        this.setState({
+                            filteredItems: filteredMessages
+                            .filter(item => {
+                                let aux = false;
+                                for (const f of filters) {
+                                    const filter = f.filter;
+                                    if (filter(item)) {
+                                        aux = true;
+                                    }
+                                }
+                                return aux;
+                            }
+                                   )
+                                   .slice(0, 10)
+                        });
         }
     }
 
@@ -496,7 +517,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
             this._settingsService.save();
 
-            this.itemsUpdated();
+            this.applyFilters();
         }
     }
 

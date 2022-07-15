@@ -5,6 +5,11 @@ export interface IFeedItemMetadata {
     milestone?: number;
 
     /**
+     * Timestamp of the milestone.
+     */
+    timestamp?: number;
+
+    /**
      * Is the item confirmed, only applies to OG.
      */
     confirmed?: number;

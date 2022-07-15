@@ -66,7 +66,8 @@ abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S>
     /**
      * The component will unmount so unsubscribe from currency service.
      */
-     public componentWillUnmount(): void {
+    public componentWillUnmount(): void {
+        super.componentWillUnmount();
         if (this._subscriptionId) {
             this._currencyService.unsubscribe(this._subscriptionId);
             this._subscriptionId = undefined;
