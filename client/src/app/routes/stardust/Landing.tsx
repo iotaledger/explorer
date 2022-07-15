@@ -92,7 +92,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMaximum: filterSettings?.valueMaximum ?? "1000",
             valuesFilter: filterSettings?.valuesFilter ??
                 getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "stardust"),
-            valueMaximumMagnitude: filterSettings?.valueMaximumMagnitude ?? unitMagnitude,
+            valueMaximumMagnitude: filterSettings?.valueMaximumMagnitude ?? unitMagnitude
         });
     }
 

@@ -79,13 +79,13 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                     Amount:
                                 </div>
                                 <div className="card--value row">
+                                    <span
+                                        className="pointer margin-r-t"
+                                        onClick={() => this.setState({ isFormattedBalance: !isFormattedBalance })}
+                                    >
+                                        {formatAmount(Number(unlockCondition.amount), tokenInfo, !isFormattedBalance)}
+                                    </span>
                                 </div>
-                                <span
-                                    className="pointer margin-r-t"
-                                    onClick={() => this.setState({ isFormattedBalance: !isFormattedBalance })}
-                                >
-                                    {formatAmount(Number(unlockCondition.amount), tokenInfo, !isFormattedBalance)}
-                                </span>
                             </React.Fragment>
                         )}
                         {unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE &&

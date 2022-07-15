@@ -160,7 +160,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                 advancedMode={true}
                                                 showCopyButton={true}
                                             />
-                                            {balance != undefined && (
+                                            {balance !== undefined && (
                                                 <div className="row middle">
                                                     <Icon icon="wallet" boxed />
                                                     <div className="balance">

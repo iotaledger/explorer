@@ -292,67 +292,63 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                     <ChrysalisMessage {...props} />
                                                 )}
                                             />
-                                            <Route
-                                                path="/:network/block/:blockId"
-                                                component={(props: RouteComponentProps<BlockProps>) =>
-                                                (
-                                                    withNetworkProvider(<StardustBlock {...props} />)
-                                                )}
-                                            />
-                                            {
-                                                isStardust &&
+                                            {isStardust && (
+                                                <React.Fragment>
+                                                    <Route
+                                                        path="/:network/block/:blockId"
+                                                        component={(props: RouteComponentProps<BlockProps>) =>
+                                                            (withNetworkProvider(<StardustBlock {...props} />))}
+                                                    />
                                                     <Route
                                                         path="/:network/transaction/:transactionId"
                                                         component={(props: RouteComponentProps<TransactionPageProps>) =>
-                                                        (
-                                                            withNetworkProvider(<TransactionPage {...props} />)
+                                                            (
+                                                                withNetworkProvider(<TransactionPage {...props} />)
                                                         )}
                                                     />
-                                            }
-                                            <Route
-                                                path="/:network/output/:outputId"
-                                                component={(props: RouteComponentProps<OutputPageProps>) =>
-                                                (
-                                                    withNetworkProvider(<OutputPage {...props} />)
-                                                )}
-                                            />
-                                            <Route
-                                                path="/:network/outputs"
-                                                component={(props: RouteComponentProps<OutputListProps>) =>
-                                                (
-                                                    withNetworkProvider(<OutputList {...props} />)
-                                                )}
-                                            />
-                                            <Route
-                                                path="/:network/foundry/:outputId"
-                                                component={(props: RouteComponentProps<FoundryProps>) => (
-                                                    withNetworkProvider(<Foundry {...props} />)
-                                                )}
-                                            />
-                                            {
-                                                isStardust &&
+                                                    <Route
+                                                        path="/:network/output/:outputId"
+                                                        component={(props: RouteComponentProps<OutputPageProps>) =>
+                                                            (
+                                                                withNetworkProvider(<OutputPage {...props} />)
+                                                        )}
+                                                    />
+                                                    <Route
+                                                        path="/:network/outputs"
+                                                        component={(props: RouteComponentProps<OutputListProps>) =>
+                                                            (
+                                                                withNetworkProvider(<OutputList {...props} />)
+                                                        )}
+                                                    />
+                                                    <Route
+                                                        path="/:network/foundry/:outputId"
+                                                        component={(props: RouteComponentProps<FoundryProps>) => (
+                                                            withNetworkProvider(<Foundry {...props} />)
+                                                        )}
+                                                    />
                                                     <Route
                                                         path="/:network/nft/:nftId"
                                                         component={(props: RouteComponentProps<NFTDetailsRouteProps>) =>
-                                                        (
-                                                            <NFTDetails
-                                                                {...props}
-                                                            />
+                                                            (
+                                                                <NFTDetails
+                                                                    {...props}
+                                                                />
                                                         )}
                                                     />
-                                            }
-                                            <Route
-                                                path="/:network/alias/:aliasId"
-                                                component={(props: RouteComponentProps<AliasRouteProps>) => (
-                                                    withNetworkProvider(<Alias {...props} />)
-                                                )}
-                                            />
-                                            <Route
-                                                path="/:network/nft-address/:nftId"
-                                                component={(props: RouteComponentProps<NftRouteProps>) => (
-                                                    withNetworkProvider(<Nft {...props} />)
-                                                )}
-                                            />
+                                                    <Route
+                                                        path="/:network/alias/:aliasId"
+                                                        component={(props: RouteComponentProps<AliasRouteProps>) => (
+                                                            withNetworkProvider(<Alias {...props} />)
+                                                        )}
+                                                    />
+                                                    <Route
+                                                        path="/:network/nft-address/:nftId"
+                                                        component={(props: RouteComponentProps<NftRouteProps>) => (
+                                                            withNetworkProvider(<Nft {...props} />)
+                                                        )}
+                                                    />
+                                                </React.Fragment>
+                                            )}
                                             <Route
                                                 path="/:network/indexed/:index"
                                                 component={(props: RouteComponentProps<IndexedRouteProps>) =>
