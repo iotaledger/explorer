@@ -114,7 +114,7 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type === ALIAS_OUTPUT_TYPE && (
                         <React.Fragment>
                             <div className="card--label">
-                                Alias id:
+                                Alias address:
                             </div>
                             <div className="card--value row middle">
                                 <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
@@ -154,7 +154,7 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type === NFT_OUTPUT_TYPE && (
                         <React.Fragment>
                             <div className="card--label">
-                                Nft id:
+                                Nft address:
                             </div>
                             <div className="card--value row middle">
                                 <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
