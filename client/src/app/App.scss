@@ -35,12 +35,12 @@
   }
 
   .copyright {
-    position: absolute;
-    width: 100%;
-    bottom: 0;
     display: flex;
+    position: absolute;
+    bottom: 0;
     align-items: center;
     justify-content: center;
+    width: 100%;
     height: 52px;
     background-color: var(--header-identity);
     letter-spacing: 0.1em;

@@ -12,8 +12,8 @@
   border-bottom: 1px solid var(--border-color);
 
   &:last-child {
-      border-bottom: none;
-      padding-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: none;
   }
 
   @include tablet-down {
@@ -31,7 +31,7 @@
     margin-bottom: 26px;
 
     &:last-child {
-        margin-bottom: 0;
+      margin-bottom: 0;
     }
 
     .label {
