@@ -126,7 +126,7 @@ header {
 
     .inner--networks {
       flex-shrink: 1;
-      padding-right: 24px;
+      padding: 0 12px;
 
       @include desktop-down {
         padding: 0 24px;
@@ -229,7 +229,7 @@ header {
     }
 
     .search-input {
-      margin-left: 64px;
+      margin-left: 24px;
 
       @include tablet-down {
         margin-left: 16px;

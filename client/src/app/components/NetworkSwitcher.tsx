@@ -33,7 +33,7 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
             <div className="network--switcher">
                 <div
                     style={headerStyle}
-                    className={classNames("network--switcher__header row middle space-between", { opened: isExpanded })}
+                    className={classNames("network--switcher__header row middle", { opened: isExpanded })}
                     onClick={isSingleNetwork ? () => {} : onClick}
                 >
                     <div className="network--switcher__dropdown">
