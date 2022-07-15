@@ -121,7 +121,7 @@ export interface INetwork {
     faucet?: string;
 
     /**
-     * Targeted time in seconds to add latest milestone.
+     * Targeted interval in seconds between milestones.
      */
-    milestoneFrequencyTarget?: number;
+    milestoneInterval?: number;
 }

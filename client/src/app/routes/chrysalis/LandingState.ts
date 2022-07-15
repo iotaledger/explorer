@@ -1,9 +1,9 @@
 import { Units } from "@iota/iota.js";
-import { INetwork } from "../../models/config/INetwork";
-import { IFeedItem } from "../../models/feed/IFeedItem";
-import { ValueFilter } from "../../models/services/valueFilter";
-import { CurrencyState } from "../components/CurrencyState";
-import { FeedsState } from "../components/FeedsState";
+import { INetwork } from "../../../models/config/INetwork";
+import { IFeedItem } from "../../../models/feed/IFeedItem";
+import { ValueFilter } from "../../../models/services/valueFilter";
+import { CurrencyState } from "../../components/CurrencyState";
+import { FeedsState } from "../../components/FeedsState";
 
 export interface LandingState extends CurrencyState, FeedsState {
     /**
@@ -80,9 +80,4 @@ export interface LandingState extends CurrencyState, FeedsState {
      * Messages snapshot when feed is paused.
      */
     frozenMessages: IFeedItem[];
-
-    /**
-     * The number of seconds passed since last milestone.
-     */
-    secondsSinceLastMilestone?: number;
 }

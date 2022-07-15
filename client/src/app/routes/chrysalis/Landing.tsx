@@ -15,7 +15,7 @@ import Feeds from "../../components/chrysalis/Feeds";
 import FeedInfo from "../../components/FeedInfo";
 import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
-import { LandingState } from "../LandingState";
+import { LandingState } from "./LandingState";
 
 /**
  * Component which will show the landing page.
@@ -265,7 +265,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         <FeedInfo
                                             milestoneIndex={this.state.latestMilestoneIndex}
                                             milestoneTimestamp={this.state.latestMilestoneTimestamp}
-                                            frequencyTarget={this._networkConfig?.milestoneFrequencyTarget}
+                                            frequencyTarget={this._networkConfig?.milestoneInterval}
                                         />
                                     )}
                                     <div className="feed-items">

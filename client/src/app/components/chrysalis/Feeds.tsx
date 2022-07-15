@@ -117,18 +117,24 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
         if (isLatestMilesontFeedInfoEnabled && newItems) {
             const milestones = newItems.filter(i => i.payloadType === "MS");
+            let newIndex;
+            let newTimestamp;
             for (const ms of milestones) {
                 const index: number | undefined = ms.properties?.index as number;
                 const currentIndex = this.state.latestMilestoneIndex;
                 if (index && currentIndex !== undefined && index > currentIndex) {
                     const timestamp: number | undefined = ms.properties?.timestamp as number;
                     if (timestamp) {
-                        this.setState({
-                            latestMilestoneIndex: index,
-                            latestMilestoneTimestamp: timestamp * 1000
-                        });
+                        newIndex = index;
+                        newTimestamp = timestamp;
                     }
                 }
+            }
+            if (newIndex && newTimestamp) {
+                this.setState({
+                    latestMilestoneIndex: newIndex,
+                    latestMilestoneTimestamp: newTimestamp * 1000
+                });
             }
         }
     }
