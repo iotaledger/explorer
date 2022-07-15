@@ -9,22 +9,32 @@ export interface FeedInfoProps {
 }
 
 const FeedInfo: React.FC<FeedInfoProps> = ({ milestoneIndex, milestoneTimestamp, frequencyTarget }) => {
-    const [seconds, setSeconds] = useState<number | undefined>(0);
+    const [from, setFrom] = useState<moment.Moment | undefined>(undefined);
+    const [seconds, setSeconds] = useState<number | undefined>(undefined);
+
+    useEffect(() => {
+        const now = moment();
+        // This is needed because clock seconds might not be synced around the world.
+        setFrom(
+            now.isBefore(moment(milestoneTimestamp)) ?
+                now :
+                moment(milestoneTimestamp)
+        );
+    }, [milestoneIndex, milestoneTimestamp]);
 
     useEffect(() => {
         const interval = setInterval(() => {
             if (milestoneTimestamp !== 0) {
-                const from = moment(milestoneTimestamp);
                 const to = moment();
                 const updatedSeconds = to.diff(from, "seconds");
                 setSeconds(updatedSeconds);
             }
-        }, 200);
+        }, 400);
 
         return () => {
             clearInterval(interval);
         };
-    }, [milestoneIndex, milestoneTimestamp]);
+    }, [from]);
 
     return (
         <div className="feed--metrics padding-l-8">
