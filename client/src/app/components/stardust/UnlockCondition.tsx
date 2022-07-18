@@ -95,7 +95,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                         Unix time
                                     </div>
                                     <div className="card--value row">
-                                        {DateHelper.formatShort(unlockCondition.unixTime)}
+                                        {DateHelper.formatShort(unlockCondition.unixTime * 1000)}
                                     </div>
                                 </React.Fragment>
                         )}
@@ -110,7 +110,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                             Unix time
                                         </div>
                                         <div className="card--value row">
-                                            {DateHelper.formatShort(unlockCondition.unixTime)}
+                                            {DateHelper.formatShort(unlockCondition.unixTime * 1000)}
                                         </div>
                                     </React.Fragment>
                                 )}
