@@ -12,7 +12,11 @@ footer {
     color: $white;
 
     .arcs {
-      margin-right: 40px
+      margin-right: 40px;
+
+      @include phone-down {
+        margin-right: 0px;
+      }
     }
 
     @include tablet-down {
@@ -47,6 +51,11 @@ footer {
           section:not(.social--media__wrapper) {
               padding: 0px;
           }
+        }
+
+        @include phone-down {
+          grid-template-columns: 1fr;
+          grid-template-rows: 1fr;
         }
       }
 
