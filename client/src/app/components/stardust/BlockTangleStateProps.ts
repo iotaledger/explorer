@@ -22,6 +22,11 @@ export interface BlockTangleStateProps {
     hasConflicts?: boolean;
 
     /**
+     * The conflict reason.
+     */
+    conflictReason?: string;
+
+    /**
      * The button click.
      */
     onClick?(blockId?: string): void;

@@ -1,3 +1,5 @@
+@import "../../scss/variables";
+
 .tooltip {
     position: relative;
     display: flex;
@@ -18,6 +20,10 @@
         opacity: 0;
         transition: all 250ms;
 
+        &.left {
+            right: 0;
+        }
+
         .arrow {
             background: var(--modal-color);
             width: 12px;
@@ -25,6 +31,10 @@
             position: absolute;
             top: -6px;
             transform: rotate(45deg);
+
+            &.left {
+                right: 12px;
+            }
         }
     }
 
@@ -33,5 +43,9 @@
         font-weight: 600;
         color: var(--link-color);
         cursor: pointer;
+    }
+
+    .error {
+        color: $error;
     }
 }
