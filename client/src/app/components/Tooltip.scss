@@ -18,6 +18,8 @@
         opacity: 0;
         transition: all 250ms;
         right: 0;
+        width: 300px;
+        white-space: break-spaces;
 
         .arrow {
             background: var(--modal-color);
