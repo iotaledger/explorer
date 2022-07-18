@@ -1,19 +1,17 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import classNames from "classnames";
 import React, { useRef } from "react";
 import "./Tooltip.scss";
 
 interface TooltipProps {
     tooltipContent: string | React.ReactNode;
     children: React.ReactNode;
-    position: "right" | "left";
 }
 
 /**
  * Component to display a tooltip on hover.
  */
-const Tooltip: React.FC<TooltipProps> = ({ children, tooltipContent, position }) => {
+const Tooltip: React.FC<TooltipProps> = ({ children, tooltipContent }) => {
     const tooltip = useRef<HTMLDivElement>(null);
 
     const onEnter = () => {
@@ -32,15 +30,11 @@ const Tooltip: React.FC<TooltipProps> = ({ children, tooltipContent, position })
 
     return (
         <div className="tooltip">
-            <div className={classNames("wrap", position)} ref={tooltip}>
-                <div className={classNames("arrow", position)} />
+            <div className="wrap" ref={tooltip}>
+                <div className="arrow" />
                 {tooltipContent}
             </div>
-            <div
-                className={classNames("children", position === "left" ? "error" : "")}
-                onMouseEnter={onEnter}
-                onMouseLeave={onLeave}
-            >
+            <div className="children" onMouseEnter={onEnter} onMouseLeave={onLeave}>
                 {children}
             </div>
         </div>

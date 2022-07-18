@@ -123,8 +123,8 @@ class BlockTangleState extends AsyncComponent<BlockTangleStateProps, BlockTangle
                         {this.props.status === "referenced" && !this.props.hasConflicts && ("Confirmed")}
                         {this.props.status === "pending" && ("Pending")}
                         {this.props.hasConflicts &&
-                            <Tooltip tooltipContent={this.props.conflictReason} position="left">
-                                Conflicting
+                            <Tooltip tooltipContent={this.props.conflictReason}>
+                                <span style={{ color: "#ca493d" }}>Conflicting</span>
                             </Tooltip>}
                     </div>}
             </div>

@@ -66,7 +66,7 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
                 <div className="found-in--wrapper">
                     {associationLabel}
                     {additionalAssociationsLabel && (
-                        <Tooltip tooltipContent={additionalAssociations} position="right">
+                        <Tooltip tooltipContent={additionalAssociations}>
                             &nbsp;{additionalAssociationsLabel}
                         </Tooltip>
                     )}
