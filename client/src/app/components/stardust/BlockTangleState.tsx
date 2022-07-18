@@ -5,6 +5,7 @@ import { DateHelper } from "../../../helpers/dateHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../AsyncComponent";
+import Tooltip from "../Tooltip";
 import { BlockTangleStateProps } from "./BlockTangleStateProps";
 import { BlockTangleStateState } from "./BlockTangleStateState";
 import "./BlockTangleState.scss";
@@ -121,7 +122,10 @@ class BlockTangleState extends AsyncComponent<BlockTangleStateProps, BlockTangle
                         {this.props.status === "unknown" && ("Unknown")}
                         {this.props.status === "referenced" && !this.props.hasConflicts && ("Confirmed")}
                         {this.props.status === "pending" && ("Pending")}
-                        {this.props.hasConflicts && ("Conflicting")}
+                        {this.props.hasConflicts &&
+                            <Tooltip tooltipContent={this.props.conflictReason}>
+                                <span style={{ color: "#ca493d" }}>Conflicting</span>
+                            </Tooltip>}
                     </div>}
             </div>
         );

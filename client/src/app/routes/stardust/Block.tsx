@@ -138,6 +138,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
                                         this.state.metadata?.milestoneIndex}
                                     hasConflicts={this.state.metadata?.ledgerInclusionState === "conflicting"}
+                                    conflictReason={this.state.conflictReason}
                                     onClick={this.state.metadata?.referencedByMilestoneIndex
                                         ? (blockId: string) => this.props.history.push(`/${network}/search/${blockId}`)
                                         : undefined}
