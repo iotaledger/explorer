@@ -29,6 +29,10 @@ footer {
       flex: 1;
       max-width: 80%;
 
+      @include phone-down {
+        text-align: center;
+      }
+
       img {
         width: 152px;
         height: 48px;
@@ -172,9 +176,6 @@ footer {
             }
           }
         }
-      }
-      @include phone-down {
-        text-align: center;
       }
     }
   }
