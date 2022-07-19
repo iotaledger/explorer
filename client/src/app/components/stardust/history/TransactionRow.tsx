@@ -7,7 +7,7 @@ import NetworkContext from "../../../context/NetworkContext";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
 
 const TransactionRow: React.FC<ITransactionEntryProps> = (
-    { blockId, date, value, isSpent, isFormattedAmounts, setIsFormattedAmounts }
+    { transactionId, date, value, isSpent, isFormattedAmounts, setIsFormattedAmounts }
 ) => {
     const { name: network, tokenInfo } = useContext(NetworkContext);
 
@@ -20,8 +20,8 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
     return (
         <tr>
             <td className="block-id">
-                <Link to={`/${network}/block/${blockId}`} className="margin-r-t">
-                    {blockId}
+                <Link to={`/${network}/transaction/${transactionId}`} className="margin-r-t">
+                    {transactionId}
                 </Link>
             </td>
             <td className="date">{DateHelper.formatShort(date * 1000)}</td>

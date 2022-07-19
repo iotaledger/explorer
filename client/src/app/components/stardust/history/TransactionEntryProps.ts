@@ -1,8 +1,8 @@
 export interface ITransactionEntryProps {
     /**
-     * The block id.
+     * The transaction id.
      */
-    blockId: string;
+    transactionId: string;
 
     /**
      * The date of the transaction.

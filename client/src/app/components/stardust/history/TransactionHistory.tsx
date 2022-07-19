@@ -146,7 +146,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
             <table className="transaction-history--table">
                 <thead>
                     <tr>
-                        <th>Block Id</th>
+                        <th>Transaction Id</th>
                         <th>Date</th>
                         <th>Value</th>
                     </tr>
@@ -155,11 +155,21 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                     {historyPage.length > 0 && (
                         historyPage.map((historyItem, idx) => {
                             const outputDetails = outputDetailsMap[historyItem.outputId];
+                            if (!outputDetails) {
+                                return null;
+                            }
+                            const transactionId = historyItem.isSpent ?
+                                outputDetails.metadata.transactionIdSpent :
+                                outputDetails.metadata.transactionId;
+
+                            if (!transactionId) {
+                                return null;
+                            }
 
                             return outputDetails ? (
                                 <React.Fragment key={idx}>
                                     <TransactionRow
-                                        blockId={outputDetails.metadata.blockId}
+                                        transactionId={transactionId}
                                         date={historyItem.milestoneTimestamp}
                                         value={Number(outputDetails.output.amount)}
                                         isSpent={historyItem.isSpent}
@@ -177,18 +187,27 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                 {historyPage.length > 0 && (
                     historyPage.map((historyItem, idx) => {
                         const outputDetails = outputDetailsMap[historyItem.outputId];
+                        if (!outputDetails) {
+                            return null;
+                        }
+                        const transactionId = historyItem.isSpent ?
+                            outputDetails.metadata.transactionIdSpent :
+                            outputDetails.metadata.transactionId;
 
-                        return outputDetails ? (
-                            <React.Fragment key={idx}>
-                                <TransactionCard
-                                    blockId={outputDetails.metadata.blockId}
-                                    date={historyItem.milestoneTimestamp}
-                                    value={Number(outputDetails.output.amount)}
-                                    isSpent={historyItem.isSpent}
-                                    isFormattedAmounts={isFormattedAmounts}
-                                    setIsFormattedAmounts={setIsFormattedAmounts}
-                                />
-                            </React.Fragment>) : null;
+                        if (!transactionId) {
+                            return null;
+                        }
+
+                        return (<React.Fragment key={idx}>
+                            <TransactionCard
+                                transactionId={transactionId}
+                                date={historyItem.milestoneTimestamp}
+                                value={Number(outputDetails.output.amount)}
+                                isSpent={historyItem.isSpent}
+                                isFormattedAmounts={isFormattedAmounts}
+                                setIsFormattedAmounts={setIsFormattedAmounts}
+                            />
+                        </React.Fragment>);
                     })
                 )}
             </div>

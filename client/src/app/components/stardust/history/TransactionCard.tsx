@@ -7,7 +7,7 @@ import NetworkContext from "../../../context/NetworkContext";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
 
 const TransactionCard: React.FC<ITransactionEntryProps> = (
-    { blockId, date, value, isSpent, isFormattedAmounts, setIsFormattedAmounts }
+    { transactionId, date, value, isSpent, isFormattedAmounts, setIsFormattedAmounts }
 ) => {
     const { name: network, tokenInfo } = useContext(NetworkContext);
 
@@ -21,11 +21,11 @@ const TransactionCard: React.FC<ITransactionEntryProps> = (
         <div className="card">
             <div className="field">
                 <div className="label">
-                    Block Id
+                    Transaction Id
                 </div>
                 <div className="card--value">
-                    <Link to={`/${network}/block/${blockId}`} className="margin-r-t">
-                        {blockId}
+                    <Link to={`/${network}/transaction/${transactionId}`} className="margin-r-t">
+                        {transactionId}
                     </Link>
                 </div>
             </div>
