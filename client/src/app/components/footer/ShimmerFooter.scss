@@ -15,7 +15,9 @@ footer {
       margin-right: 40px;
 
       @include phone-down {
-        margin-right: 0px;
+        position: absolute;
+        left: 0;
+        opacity: 0.2;
       }
     }
 
@@ -170,14 +172,10 @@ footer {
             }
           }
         }
-        @include phone-down {
-          position: absolute;
-          left: 20px;
-        }
       }
-    }
-    @include phone-down {
-      min-height: 1200px;
+      @include phone-down {
+        text-align: center;
+      }
     }
   }
 
