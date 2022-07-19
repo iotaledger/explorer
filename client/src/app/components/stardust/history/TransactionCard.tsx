@@ -8,10 +8,11 @@ import NetworkContext from "../../../context/NetworkContext";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
 
 const TransactionCard: React.FC<ITransactionEntryProps> = (
-    { transactionId, date, value, isSpent, isFormattedAmounts, setIsFormattedAmounts }
+    { outputId, transactionId, date, value, isSpent, isFormattedAmounts, setIsFormattedAmounts }
 ) => {
     const { name: network, tokenInfo } = useContext(NetworkContext);
-    const transactionIdShort = `${transactionId.slice(0, 19)}....${transactionId.slice(-19)}`
+    const outputIdShort = `${outputId.slice(0, 11)}....${outputId.slice(-11)}`;
+    const transactionIdShort = `${transactionId.slice(0, 11)}....${transactionId.slice(-11)}`;
     const ago = moment(date * 1000).fromNow();
 
     const valueView = (
@@ -29,6 +30,16 @@ const TransactionCard: React.FC<ITransactionEntryProps> = (
                 <div className="card--value">
                     <Link to={`/${network}/transaction/${transactionId}`} className="margin-r-t">
                         {transactionIdShort}
+                    </Link>
+                </div>
+            </div>
+            <div className="field">
+                <div className="label">
+                    Output Id
+                </div>
+                <div className="card--value">
+                    <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
+                        {outputIdShort}
                     </Link>
                 </div>
             </div>
