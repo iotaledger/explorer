@@ -25,7 +25,7 @@ interface IOutputDetailsMap {
 }
 
 const PAGE_SIZE: number = 10;
-const SORT: string = "asc";
+const SORT: string = "newest";
 
 /**
  * Component which will display transaction history.
