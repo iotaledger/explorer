@@ -115,7 +115,14 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
     useEffect(() => {
         const from = (currentPageNumber - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE;
-        const page = history?.slice(from, to);
+        const page = history?.slice(from, to).sort((a, b) => {
+            // Ensure that entries with equal timestamp, but different isSpent,
+            // have the spending before the depositing
+            if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
+                return !a.isSpent ? -1 : 1;
+            }
+            return 1;
+        });
 
         if (mounted.current) {
             setHistoryPage(page);
