@@ -75,5 +75,9 @@
                 cursor: default;
             }
         }
+
+        @include phone-down {
+            margin: auto;
+        }
     }
 }

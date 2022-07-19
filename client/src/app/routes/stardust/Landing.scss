@@ -167,6 +167,10 @@
                 @include tablet-down {
                     text-align: center;
                 }
+
+                @include phone-down {
+                    font-size: 10px;
+                }
             }
 
             .info-box--value {
@@ -182,6 +186,10 @@
 
                 @include tablet-down {
                     text-align: center;
+                }
+
+                @include phone-down {
+                    font-size: 14px;
                 }
 
                 .upload-rate {

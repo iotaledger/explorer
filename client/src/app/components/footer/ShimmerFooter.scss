@@ -12,7 +12,13 @@ footer {
     color: $white;
 
     .arcs {
-      margin-right: 40px
+      margin-right: 40px;
+
+      @include phone-down {
+        position: absolute;
+        left: 0;
+        opacity: 0.2;
+      }
     }
 
     @include tablet-down {
@@ -22,6 +28,10 @@ footer {
     .shimmer-inner {
       flex: 1;
       max-width: 80%;
+
+      @include phone-down {
+        text-align: center;
+      }
 
       img {
         width: 152px;
@@ -47,6 +57,11 @@ footer {
           section:not(.social--media__wrapper) {
               padding: 0px;
           }
+        }
+
+        @include phone-down {
+          grid-template-columns: 1fr;
+          grid-template-rows: 1fr;
         }
       }
 
@@ -105,6 +120,10 @@ footer {
         margin-bottom: 24px;
         border: 0;
         border-top: 1px solid rgba(255, 255, 255, 0.12);
+
+        @include phone-down {
+          display: none;
+        }
       }
 
       .foundation-data {
