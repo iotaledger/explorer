@@ -32,7 +32,7 @@
             }
 
             td {
-                &.block-id {
+                &.transaction-id {
                     @include font-size(14px);
                     color: var(--link-color);
                     font-family: $ibm-plex-mono;
@@ -43,7 +43,8 @@
                 }
 
                 &.date {
-                    @include font-size(16px);
+                    @include font-size(14px);
+                    font-family: $ibm-plex-mono;
                 }
 
                 &.amount {
