@@ -114,6 +114,10 @@ footer {
         margin-bottom: 24px;
         border: 0;
         border-top: 1px solid rgba(255, 255, 255, 0.12);
+
+        @include phone-down {
+          display: none;
+        }
       }
 
       .foundation-data {
@@ -166,7 +170,14 @@ footer {
             }
           }
         }
+        @include phone-down {
+          position: absolute;
+          left: 20px;
+        }
       }
+    }
+    @include phone-down {
+      min-height: 1200px;
     }
   }
 

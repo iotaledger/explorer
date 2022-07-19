@@ -169,19 +169,27 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                         </div>
                                                         <div className="value featured">
                                                             {balance > 0 ? (
-                                                                <div className="row middle">
-                                                                    <span
-                                                                        onClick={() => this.setState({
-                                                                            formatFull: !formatFull
-                                                                        })}
-                                                                        className="pointer margin-r-5"
-                                                                    >
-                                                                        {formatAmount(
-                                                                            balance,
-                                                                            this.context.tokenInfo,
-                                                                            formatFull
-                                                                        )}
-                                                                    </span>
+                                                                <div>
+                                                                    <div className="row middle">
+                                                                        <span
+                                                                            onClick={() => this.setState({
+                                                                                formatFull: !formatFull
+                                                                            })}
+                                                                            className="pointer margin-r-5"
+                                                                        >
+                                                                            {formatAmount(
+                                                                                balance,
+                                                                                this.context.tokenInfo,
+                                                                                formatFull
+                                                                            )}
+                                                                        </span>
+                                                                        <CopyButton
+                                                                            onClick={() => ClipboardHelper.copy(
+                                                                                String(balance)
+                                                                            )}
+                                                                            buttonType="copy"
+                                                                        />
+                                                                    </div>
                                                                     {isMarketed && (
                                                                         <React.Fragment>
                                                                             <span>(</span>
@@ -189,12 +197,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                                             <span>)</span>
                                                                         </React.Fragment>
                                                                     )}
-                                                                    <CopyButton
-                                                                        onClick={() => ClipboardHelper.copy(
-                                                                            String(balance)
-                                                                        )}
-                                                                        buttonType="copy"
-                                                                    />
                                                                 </div>
                                                             ) : 0}
                                                         </div>
