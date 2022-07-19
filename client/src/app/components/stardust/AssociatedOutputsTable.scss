@@ -131,6 +131,10 @@
             .found-in, .date-created {
                 color: $gray-6;
             }
+
+            .date-created {
+                font-family: $ibm-plex-mono;
+            }
         }
 
         .card {
@@ -138,6 +142,10 @@
                 .value {
                     color: $gray-6;
                 }
+            }
+
+            .date-created .value {
+                font-family: $ibm-plex-mono;
             }
         }
 
