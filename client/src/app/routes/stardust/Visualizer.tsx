@@ -231,7 +231,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             <div className="card--value">
                                 {this.state.itemCount}
                             </div>
-                            <div className="card--label">MPS / CMPS</div>
+                            <div className="card--label">BPS / CBPS</div>
                             <div className="card--value">
                                 {this.state.itemsPerSecond} / {this.state.confirmedItemsPerSecond}
                             </div>
