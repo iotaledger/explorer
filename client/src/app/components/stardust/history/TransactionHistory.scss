@@ -8,8 +8,7 @@
 
     .transaction-history--table {
         width: 100%;
-        border-spacing: 12px 24px;
-        border-collapse: separate;
+        border-spacing: 0 0;
 
         @include tablet-down {
             display: none;
@@ -18,13 +17,20 @@
         tr {
             @include font-size(14px);
 
+            border: 1px solid;
+            border-radius: 4px;
             color: $gray-7;
             font-family: $inter;
             letter-spacing: 0.5px;
 
+            &.dark {
+                background: $gray-1;
+            }
+
             th {
                 @include font-size(12px);
 
+                text-align: center!important;
                 color: $gray-6;
                 font-weight: 600;
                 text-align: left;
@@ -32,7 +38,10 @@
             }
 
             td {
-                &.block-id {
+                padding: 16px 0;
+                text-align: center;
+
+                &.transaction-id, &.output-id {
                     @include font-size(14px);
                     color: var(--link-color);
                     font-family: $ibm-plex-mono;
@@ -42,8 +51,15 @@
                     word-break: break-all;
                 }
 
+                &.output-id .highlight {
+                    font-weight: 500;
+                    color: $gray-6;
+                    margin-left: 2px;
+                }
+
                 &.date {
-                    @include font-size(16px);
+                    @include font-size(14px);
+                    font-family: $ibm-plex-mono;
                 }
 
                 &.amount {

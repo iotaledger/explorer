@@ -1,8 +1,13 @@
 export interface ITransactionEntryProps {
     /**
-     * The block id.
+     * The output id.
      */
-    blockId: string;
+    outputId: string;
+
+    /**
+     * The transaction id.
+     */
+    transactionId: string;
 
     /**
      * The date of the transaction.
@@ -28,5 +33,11 @@ export interface ITransactionEntryProps {
      * The setter for formatted amounts toggle.
      */
     setIsFormattedAmounts: React.Dispatch<React.SetStateAction<boolean>>;
+
+    /**
+     * To colour the transaction row ligter/darker, alternating on
+     * unrelated transactions.
+     */
+    darkBackgroundRow?: boolean;
 }
 

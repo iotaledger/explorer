@@ -25,7 +25,7 @@ interface IOutputDetailsMap {
 }
 
 const PAGE_SIZE: number = 10;
-const SORT: string = "asc";
+const SORT: string = "newest";
 
 /**
  * Component which will display transaction history.
@@ -115,7 +115,14 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
     useEffect(() => {
         const from = (currentPageNumber - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE;
-        const page = history?.slice(from, to);
+        const page = history?.slice(from, to).sort((a, b) => {
+            // Ensure that entries with equal timestamp, but different isSpent,
+            // have the spending before the depositing
+            if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
+                return !a.isSpent ? -1 : 1;
+            }
+            return 1;
+        });
 
         if (mounted.current) {
             setHistoryPage(page);
@@ -129,6 +136,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
             loadHistory();
         }
     };
+
+    let isDarkBackgroundRow = false;
 
     return (totalCount > 0 ? (
         <div className="section transaction-history--section">
@@ -146,7 +155,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
             <table className="transaction-history--table">
                 <thead>
                     <tr>
-                        <th>Block Id</th>
+                        <th>Transaction Id</th>
+                        <th>Output Id</th>
                         <th>Date</th>
                         <th>Value</th>
                     </tr>
@@ -155,18 +165,46 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                     {historyPage.length > 0 && (
                         historyPage.map((historyItem, idx) => {
                             const outputDetails = outputDetailsMap[historyItem.outputId];
+                            if (!outputDetails) {
+                                return null;
+                            }
+                            const transactionId = historyItem.isSpent ?
+                                outputDetails.metadata.transactionIdSpent :
+                                outputDetails.metadata.transactionId;
 
-                            return outputDetails ? (
+                            if (!transactionId) {
+                                return null;
+                            }
+
+                            // rotate row background colour for different transaction ids
+                            if (idx > 0) {
+                                const previousItemDetails = outputDetailsMap[historyPage[idx - 1].outputId];
+                                const previousSpent = historyPage[idx - 1].isSpent;
+                                if (previousItemDetails) {
+                                    const previousTransactionId = previousSpent ?
+                                        previousItemDetails.metadata.transactionIdSpent :
+                                        previousItemDetails.metadata.transactionId;
+
+                                    if (transactionId !== previousTransactionId) {
+                                        isDarkBackgroundRow = !isDarkBackgroundRow;
+                                    }
+                                }
+                            }
+
+                            return (
                                 <React.Fragment key={idx}>
                                     <TransactionRow
-                                        blockId={outputDetails.metadata.blockId}
+                                        outputId={historyItem.outputId}
+                                        transactionId={transactionId}
                                         date={historyItem.milestoneTimestamp}
                                         value={Number(outputDetails.output.amount)}
                                         isSpent={historyItem.isSpent}
                                         isFormattedAmounts={isFormattedAmounts}
                                         setIsFormattedAmounts={setIsFormattedAmounts}
+                                        darkBackgroundRow={isDarkBackgroundRow}
                                     />
-                                </React.Fragment>) : null;
+                                </React.Fragment>
+                            );
                         })
                     )}
                 </tbody>
@@ -177,18 +215,30 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                 {historyPage.length > 0 && (
                     historyPage.map((historyItem, idx) => {
                         const outputDetails = outputDetailsMap[historyItem.outputId];
+                        if (!outputDetails) {
+                            return null;
+                        }
+                        const transactionId = historyItem.isSpent ?
+                            outputDetails.metadata.transactionIdSpent :
+                            outputDetails.metadata.transactionId;
 
-                        return outputDetails ? (
+                        if (!transactionId) {
+                            return null;
+                        }
+
+                        return (
                             <React.Fragment key={idx}>
                                 <TransactionCard
-                                    blockId={outputDetails.metadata.blockId}
+                                    outputId={historyItem.outputId}
+                                    transactionId={transactionId}
                                     date={historyItem.milestoneTimestamp}
                                     value={Number(outputDetails.output.amount)}
                                     isSpent={historyItem.isSpent}
                                     isFormattedAmounts={isFormattedAmounts}
                                     setIsFormattedAmounts={setIsFormattedAmounts}
                                 />
-                            </React.Fragment>) : null;
+                            </React.Fragment>
+                        );
                     })
                 )}
             </div>
