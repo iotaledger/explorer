@@ -2,7 +2,6 @@ import { Converter, HexHelper } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
-import { buildCircleNodeShader } from "../../../helpers/circleNodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
@@ -51,42 +50,42 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Vertex pending zero colour.
      */
-    private static readonly COLOR_PENDING: string = "0xbbbbbb";
+    private static readonly COLOR_PENDING: string = "bbbbbb";
 
     /**
      * Vertex confirmed zero colour.
      */
-    private static readonly COLOR_ZERO_CONFIRMED: string = "0x0fc1b7";
+    private static readonly COLOR_ZERO_CONFIRMED: string = "0fc1b7";
 
     /**
      * Vertex confirmed value colour.
      */
-    private static readonly COLOR_VALUE_CONFIRMED: string = "0x3f985a";
+    private static readonly COLOR_VALUE_CONFIRMED: string = "3f985a";
 
     /**
      * Vertex referenced colour.
      */
-    private static readonly COLOR_REFERENCED: string = "0x61e884";
+    private static readonly COLOR_REFERENCED: string = "61e884";
 
     /**
      * Vertex conflicting colour.
      */
-    private static readonly COLOR_CONFLICTING: string = "0xff8b5c";
+    private static readonly COLOR_CONFLICTING: string = "ff8b5c";
 
     /**
      * Vertex included colour.
      */
-    private static readonly COLOR_INCLUDED: string = "0x4caaff";
+    private static readonly COLOR_INCLUDED: string = "4caaff";
 
     /**
      * Vertex milestone colour.
      */
-    private static readonly COLOR_MILESTONE: string = "0x666af6";
+    private static readonly COLOR_MILESTONE: string = "666af6";
 
     /**
      * Vertex highlighted colour.
      */
-    private static readonly COLOR_SEARCH_RESULT: string = "0xe79c18";
+    private static readonly COLOR_SEARCH_RESULT: string = "e79c18";
 
     /**
      * The graph instance.
@@ -492,10 +491,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 theta: 0.8
             });
 
-            this._graphics.setNodeProgram(buildCircleNodeShader());
-
-            this._graphics.node(node => this.calculateNodeStyle(
-                node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data)));
+            this._graphics.node(node => {
+                const { size, color } = this.calculateNodeStyle(
+                    node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data));
+                return Viva.Graph.View.webglSquare(size, `#${color}`);
+            });
 
             this._graphics.link(() => Viva.Graph.View.webglLine(this._darkMode
                 ? Visualizer.EDGE_COLOR_DARK : Visualizer.EDGE_COLOR_LIGHT));
@@ -565,7 +565,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             const nodeUI = this._graphics.getNodeUI(node.id);
             if (nodeUI) {
                 const { color, size } = this.calculateNodeStyle(node, highlight);
-                nodeUI.color = color;
+                nodeUI.color = `0x${color}`;
                 nodeUI.size = size;
             }
         }
