@@ -191,7 +191,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                                 }
                             }
 
-                            return outputDetails ? (
+                            return (
                                 <React.Fragment key={idx}>
                                     <TransactionRow
                                         outputId={historyItem.outputId}
@@ -203,7 +203,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                                         setIsFormattedAmounts={setIsFormattedAmounts}
                                         darkBackgroundRow={isDarkBackgroundRow}
                                     />
-                                </React.Fragment>) : null;
+                                </React.Fragment>
+                            );
                         })
                     )}
                 </tbody>
