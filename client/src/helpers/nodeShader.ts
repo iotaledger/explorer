@@ -6,14 +6,15 @@ import Viva from "vivagraphjs";
  * Generate a WebGL node shader.
  * @returns The program for the shader.
  */
-export function buildCircleNodeShader(): WebGLProgram {
+export function buildNodeShader(): WebGLProgram {
     // For each primitive we need 4 attributes: x, y, color and size.
     const ATTRIBUTES_PER_PRIMITIVE = 4;
     const nodesFS = [
         "precision mediump float;",
         "varying vec4 color;",
         "void main(void) {",
-        "   if ((gl_PointCoord.x - 0.5) * (gl_PointCoord.x - 0.5) + (gl_PointCoord.y - 0.5) * (gl_PointCoord.y - 0.5) < 0.25) {",
+        "   if (gl_PointCoord.x > 0.2 && gl_PointCoord.x < 0.8 && ",
+        "       gl_PointCoord.y > 0.2 && gl_PointCoord.y < 0.8) {",
         "     gl_FragColor = color;",
         "   } else {",
         "     gl_FragColor = vec4(0);",

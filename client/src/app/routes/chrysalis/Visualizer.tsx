@@ -3,7 +3,7 @@ import { Converter } from "@iota/util.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
-import { buildCircleNodeShader } from "../../../helpers/circleNodeShader";
+import { buildNodeShader } from "../../../helpers/nodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { CHRYSALIS, OG } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
@@ -572,7 +572,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 theta: 0.8
             });
 
-            this._graphics.setNodeProgram(buildCircleNodeShader());
+            this._graphics.setNodeProgram(buildNodeShader());
 
             this._graphics.node(node => this.calculateNodeStyle(
                 node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data)));
