@@ -232,7 +232,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                         RouteComponentProps<VisualizerRouteProps>) =>
                                                     (
                                                         isStardust
-                                                            ? <StardustVisualizer {...props} />
+                                                            ? withNetworkProvider(<StardustVisualizer {...props} />)
                                                               : <ChrysalisVisualizer {...props} />
                                                     )
                                                 }

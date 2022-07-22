@@ -324,12 +324,20 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                     Value
                                                 </div>
                                                 <div className="card--value">
-                                                    {
-                                                        formatAmount(
-                                                            this.state.selectedFeedItem?.value,
-                                                            this.context.tokenInfo
-                                                        )
-                                                    }
+                                                    <span
+                                                        onClick={() => this.setState({
+                                                            isFormatAmountsFull: !this.state.isFormatAmountsFull
+                                                        })}
+                                                        className="pointer margin-r-5"
+                                                    >
+                                                        {
+                                                            formatAmount(
+                                                                this.state.selectedFeedItem?.value,
+                                                                this.context.tokenInfo,
+                                                                this.state.isFormatAmountsFull
+                                                            )
+                                                        }
+                                                    </span>
                                                 </div>
                                             </React.Fragment>
                                         )}
