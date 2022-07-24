@@ -2,6 +2,7 @@ import { Converter, HexHelper } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
+import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
 import { buildNodeShader } from "../../../helpers/nodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
@@ -10,7 +11,7 @@ import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { INodeData } from "../../../models/graph/INodeData";
 import Feeds from "../../components/stardust/Feeds";
 import NetworkContext from "../../context/NetworkContext";
-import "../Visualizer.scss";
+import "./Visualizer.scss";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerState } from "../VisualizerState";
 
@@ -124,11 +125,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private _graphElement: HTMLElement | null;
 
     /**
-     * Last time a node was clicked.
-     */
-    private _lastClick: number;
-
-    /**
      * Skip the initial load.
      */
     private _hadInitialLoad: boolean;
@@ -146,7 +142,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         super(props);
 
         this._existingIds = [];
-        this._lastClick = 0;
         this._removeNodes = [];
         this._hadInitialLoad = false;
         this._darkMode = this._settingsService.get().darkMode;
@@ -198,53 +193,74 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const {
+            itemCount, selectedFeedItem, filter, isActive, isFormatAmountsFull,
+            itemsPerSecond, confirmedItemsPerSecond, confirmedItemsPerSecondPercent
+        } = this.state;
+
         if (this._darkMode !== this._settingsService.get().darkMode) {
             this._darkMode = this._settingsService.get().darkMode;
             this.styleConnections();
         }
         return (
-            <div className="visualizer">
+            <div className="visualizer-stardust">
                 <div className="row middle">
                     <h1 className="margin-r-t margin-b-t">Visualizer</h1>
-                    <div className="card margin-b-s filter fill">
+                    <div className="card search-filter fill">
                         <div className="card--content row middle">
-                            <div className="card--label margin-r-s">
-                                Search
-                            </div>
+                            <div className="card--label margin-r-s">Search</div>
                             <input
                                 className="input form-input-long"
                                 type="text"
-                                value={this.state.filter}
+                                value={filter}
                                 onChange={e => this.setState({ filter: e.target.value }, () => this.restyleNodes())}
                                 maxLength={2000}
                             />
                         </div>
                     </div>
                 </div>
-                <div className="row stretch">
-                    <div className="sidepanel-border card phone-hidden margin-r-s">
-                        <div className="card--header">
-                            <h2>Statistics</h2>
+                <div className="graph-border">
+                    <div
+                        className="viva"
+                        ref={r => this.setupGraph(r)}
+                    />
+                    <div className="action-panel-container">
+                        <div className="card">
+                            <button className="pause-button" type="button" onClick={() => this.toggleActivity()}>
+                                {isActive
+                                    ? <span className="material-icons">pause</span>
+                                    : <span className="material-icons">play_arrow</span>}
+                            </button>
                         </div>
+                    </div>
+                </div>
+                <div className="stats-panel-container">
+                    <div className="card stats-panel">
                         <div className="card--content">
                             <div className="card--label">Blocks</div>
                             <div className="card--value">
-                                {this.state.itemCount}
+                                {itemCount}
                             </div>
-                            <div className="card--label">MPS / CMPS</div>
+                            <div className="card--label">BPS / CBPS</div>
                             <div className="card--value">
-                                {this.state.itemsPerSecond} / {this.state.confirmedItemsPerSecond}
+                                {itemsPerSecond} / {confirmedItemsPerSecond}
                             </div>
                             <div className="card--label">Referenced Rate</div>
                             <div className="card--value">
-                                {this.state.confirmedItemsPerSecondPercent}
+                                {confirmedItemsPerSecondPercent}
                             </div>
                         </div>
-                        {this.state.selectedFeedItem && (
-                            <React.Fragment>
-                                <div className="card--header">
-                                    <h2>Selected</h2>
-                                </div>
+                    </div>
+                </div>
+                {selectedFeedItem && (
+                    <div className="info-panel-container">
+                        <div className="card fill padding-m">
+                            <div className="row middle spread">
+                                <button type="button" className="icon-button" onClick={() => this.selectNode()}>
+                                    <CloseIcon />
+                                </button>
+                            </div>
+                            <div className="col">
                                 <div className="card--content">
                                     <div className="card--label">Block</div>
                                     <div className="card--value overflow-ellipsis">
@@ -254,156 +270,107 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                             rel="noopener noreferrer"
                                             href={
                                                 `${window.location.origin}${RouteBuilder.buildItem(
-                                                    this._networkConfig, this.state.selectedFeedItem.id)}`
+                                                    this._networkConfig, selectedFeedItem.id)}`
                                             }
                                         >
-                                            {this.state.selectedFeedItem.id}
+                                            {selectedFeedItem.id}
                                         </a>
                                     </div>
-                                    {this.state.selectedFeedItem?.properties?.Tag &&
-                                        this.state.selectedFeedItem.metaData?.milestone === undefined && (
+                                    {selectedFeedItem?.properties?.Tag &&
+                                        selectedFeedItem.metaData?.milestone === undefined && (
                                             <React.Fragment>
-                                                <div className="card--label">
-                                                    Tag
-                                                </div>
+                                                <div className="card--label">Tag</div>
                                                 <div className="card--value overflow-ellipsis">
-                                                    <a
-                                                        className="button"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        {this.state.selectedFeedItem?.properties.Tag as string}
+                                                    <a className="button" target="_blank" rel="noopener noreferrer">
+                                                        {selectedFeedItem?.properties.Tag as string}
                                                     </a>
                                                 </div>
                                             </React.Fragment>
-                                        )}
-                                    {this.state.selectedFeedItem?.properties?.Index && (
+                                    )}
+                                    {selectedFeedItem?.properties?.Index && (
                                         <React.Fragment>
-                                            <div className="card--label">
-                                                Tag
-                                            </div>
+                                            <div className="card--label">Tag</div>
                                             <div className="card--value overflow-ellipsis">
-                                                <a
-                                                    className="button"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                >
-                                                    {Converter.hexToUtf8(
-                                                        this.state.selectedFeedItem?.properties.Index as string
-                                                    )}
+                                                <a className="button" target="_blank" rel="noopener noreferrer">
+                                                    {Converter.hexToUtf8(selectedFeedItem?.properties.Index as string)}
                                                 </a>
                                             </div>
                                             <div className="card--label">
                                                 Index Hex
                                             </div>
                                             <div className="card--value overflow-ellipsis">
-                                                <a
-                                                    className="button"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                >
-                                                    {this.state.selectedFeedItem?.properties.Index as string}
+                                                <a className="button" target="_blank" rel="noopener noreferrer">
+                                                    {selectedFeedItem?.properties.Index as string}
                                                 </a>
                                             </div>
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem.metaData?.milestone !== undefined && (
+                                    {selectedFeedItem.metaData?.milestone !== undefined && (
                                         <React.Fragment>
                                             <div className="card--label">
                                                 Milestone
                                             </div>
                                             <div className="card--value">
-                                                {this.state.selectedFeedItem.metaData.milestone}
+                                                {selectedFeedItem.metaData.milestone}
                                             </div>
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem?.value !== undefined &&
-                                        this.state.selectedFeedItem.metaData?.milestone === undefined && (
+                                    {selectedFeedItem?.value !== undefined &&
+                                        selectedFeedItem.metaData?.milestone === undefined && (
                                             <React.Fragment>
-                                                <div className="card--label">
-                                                    Value
-                                                </div>
+                                                <div className="card--label">Value</div>
                                                 <div className="card--value">
                                                     <span
                                                         onClick={() => this.setState({
-                                                            isFormatAmountsFull: !this.state.isFormatAmountsFull
+                                                            isFormatAmountsFull: !isFormatAmountsFull
                                                         })}
                                                         className="pointer margin-r-5"
                                                     >
                                                         {
                                                             formatAmount(
-                                                                this.state.selectedFeedItem?.value,
+                                                                selectedFeedItem?.value,
                                                                 this.context.tokenInfo,
-                                                                this.state.isFormatAmountsFull
+                                                                isFormatAmountsFull
                                                             )
                                                         }
                                                     </span>
                                                 </div>
                                             </React.Fragment>
-                                        )}
+                                    )}
                                 </div>
-                            </React.Fragment>
-                        )}
-                    </div>
-                    <div className="graph-border">
-                        <div
-                            className="viva"
-                            onClick={() => {
-                                if (Date.now() - this._lastClick > 300) {
-                                    this.selectNode();
-                                }
-                            }}
-                            ref={r => this.setupGraph(r)}
-                        />
-                        <div className="action-panel-container">
-                            <div className="card">
-                                <button
-                                    className="pause-button"
-                                    type="button"
-                                    onClick={() => this.toggleActivity()}
-                                >
-                                    {this.state.isActive
-                                        ? <span className="material-icons">pause</span>
-                                        : <span className="material-icons">play_arrow</span>}
-                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="row middle margin-t-s">
-                    <div className="card key fill">
-                        <div className="card--content row row--tablet-responsive middle wrap">
-                            <div className="card--label margin-r-s margin-b-t">
-                                Key
-                            </div>
-                            <div className="visualizer--key visualizer--key__value pending">
-                                Pending
-                            </div>
-                            <div
-                                className="visualizer--key visualizer--key__value referenced"
-                            >
-                                Referenced
-                            </div>
-                            <div
-                                className="visualizer--key visualizer--key__value included"
-                            >
-                                Included
-                            </div>
-                            <div
-                                className="visualizer--key visualizer--key__value conflicting"
-                            >
-                                Conflicting
-                            </div>
-                            <div className="visualizer--key visualizer--key__value milestone">
-                                Milestone
-                            </div>
-                            <div className="visualizer--key visualizer--key__value search-result">
-                                Search Result
-                            </div>
+                )}
+                <div className="key-panel-container">
+                    <div className="card key-panel">
+                        <div className="key-panel-item">
+                            <div className="key-marker vertex-state--pending" />
+                            <div className="key-label">Pending</div>
+                        </div>
+                        <div className="key-panel-item">
+                            <div className="key-marker vertex-state--included" />
+                            <div className="key-label">Included</div>
+                        </div>
+                        <div className="key-panel-item">
+                            <div className="key-marker vertex-state--referenced" />
+                            <div className="key-label">Referenced</div>
+                        </div>
+                        <div className="key-panel-item">
+                            <div className="key-marker vertex-state--conflicting" />
+                            <div className="key-label">Conflicting</div>
+                        </div>
+                        <div className="key-panel-item">
+                            <div className="key-marker vertex-state--milestone" />
+                            <div className="key-label">Milestone</div>
+                        </div>
+                        <div className="key-panel-item">
+                            <div className="key-marker vertex-state--search-result" />
+                            <div className="key-label">Search result</div>
                         </div>
                     </div>
                 </div>
-            </div >
+            </div>
         );
     }
 
@@ -668,8 +635,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         if (!isDeselect && node) {
             this.highlightConnections(node.id);
         }
-
-        this._lastClick = Date.now();
     }
 
     /**

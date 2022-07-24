@@ -10,7 +10,7 @@ import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { INodeData } from "../../../models/graph/INodeData";
 import Feeds from "../../components/chrysalis/Feeds";
-import "../Visualizer.scss";
+import "./Visualizer.scss";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerState } from "../VisualizerState";
 
@@ -198,7 +198,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this.styleConnections();
         }
         return (
-            <div className="visualizer">
+            <div className="visualizer-chrysalis">
                 <div className="row middle">
                     <h1 className="margin-r-t margin-b-t">Visualizer</h1>
                     <div className="card margin-b-s filter fill">
