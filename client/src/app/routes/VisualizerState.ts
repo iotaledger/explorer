@@ -22,4 +22,9 @@ export interface VisualizerState extends FeedsState {
      * Is Visualizer active flag.
      */
     isActive: boolean;
+
+    /**
+     * Format amounts in full.
+     */
+    isFormatAmountsFull?: boolean;
 }

@@ -3,14 +3,14 @@ import { Converter } from "@iota/util.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
-import { buildCircleNodeShader } from "../../../helpers/circleNodeShader";
+import { buildNodeShader } from "../../../helpers/nodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { CHRYSALIS, OG } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { INodeData } from "../../../models/graph/INodeData";
 import Feeds from "../../components/chrysalis/Feeds";
-import "../Visualizer.scss";
+import "./Visualizer.scss";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerState } from "../VisualizerState";
 
@@ -198,7 +198,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this.styleConnections();
         }
         return (
-            <div className="visualizer">
+            <div className="visualizer-chrysalis">
                 <div className="row middle">
                     <h1 className="margin-r-t margin-b-t">Visualizer</h1>
                     <div className="card margin-b-s filter fill">
@@ -572,7 +572,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 theta: 0.8
             });
 
-            this._graphics.setNodeProgram(buildCircleNodeShader());
+            this._graphics.setNodeProgram(buildNodeShader());
 
             this._graphics.node(node => this.calculateNodeStyle(
                 node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data)));

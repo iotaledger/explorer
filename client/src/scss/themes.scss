@@ -95,6 +95,10 @@
     --shimmer-copyright: #0f202c;
   }
 
+  body.shimmer.darkmode {
+    --body-background: #00121f;
+  }
+
   body .shimmer {
     --link-color: #{$mint-green-7};
   }

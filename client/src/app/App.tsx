@@ -149,6 +149,11 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
             utilities.push({ label: "Decentralized Identifier", url: `/${this.state.networkId}/identity-resolver/` });
         }
 
+        if (isShimmer) {
+            const body = document.querySelector("body");
+            body?.classList.add("shimmer");
+        }
+
         return (
             <div className={classNames("app", { "shimmer": isShimmer })}>
                 <Header
@@ -232,7 +237,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                         RouteComponentProps<VisualizerRouteProps>) =>
                                                     (
                                                         isStardust
-                                                            ? <StardustVisualizer {...props} />
+                                                            ? withNetworkProvider(<StardustVisualizer {...props} />)
                                                               : <ChrysalisVisualizer {...props} />
                                                     )
                                                 }
