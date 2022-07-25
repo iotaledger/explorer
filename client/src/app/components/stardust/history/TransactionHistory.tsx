@@ -9,7 +9,6 @@ import { ITransactionHistoryItem, ITransactionHistoryResponse } from "../../../.
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
 import Modal from "../../../components/Modal";
-import Pagination from "../../../components/Pagination";
 import Spinner from "../../Spinner";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
@@ -32,16 +31,14 @@ const SORT: string = "newest";
  */
 const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, address }) => {
     const mounted = useRef(false);
-    const [currentPageNumber, setCurrentPageNumber] = useState<number>(1);
     const [history, setHistory] = useState<ITransactionHistoryItem[]>([]);
-    const [historyPage, setHistoryPage] = useState<ITransactionHistoryItem[]>([]);
     const [outputDetailsMap, setOutputDetailsMap] = useState<IOutputDetailsMap>({});
+    const [historyView, setHistoryView] = useState<ITransactionHistoryItem[]>([]);
+
     const [cursor, setCursor] = useState<string | undefined>();
     const [isFormattedAmounts, setIsFormattedAmounts] = useState(true);
 
-    const [totalCount, setTotalCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [allOutputDetailsLoaded, setAllOutputDetailsLoaded] = useState(false);
 
     const unmount = () => {
         mounted.current = false;
@@ -55,7 +52,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
     useEffect(() => {
         mounted.current = true;
         loadHistory();
-        setHistoryPage(history);
+        setHistoryView(history);
 
         return unmount;
     }, [network, address]);
@@ -80,7 +77,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
     };
 
     useEffect(() => {
-        if (history.length > 0 && !allOutputDetailsLoaded) {
+        if (history.length > 0) {
             const promises: Promise<void>[] = [];
             const detailsPage: IOutputDetailsMap = {};
 
@@ -101,9 +98,17 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
 
                 if (mounted.current) {
                     setOutputDetailsMap(detailsPage);
-                    setAllOutputDetailsLoaded(true);
                     setIsLoading(false);
-                    setTotalCount(history.length);
+                    const updatedHistoryView = [...history].sort((a, b) => {
+                        // Ensure that entries with equal timestamp, but different isSpent,
+                        // have the spending before the depositing
+                        if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
+                            return !a.isSpent ? -1 : 1;
+                        }
+                        return 1;
+                    });
+
+                    setHistoryView(updatedHistoryView);
                 }
             };
 
@@ -112,26 +117,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
         }
     }, [history]);
 
-    useEffect(() => {
-        const from = (currentPageNumber - 1) * PAGE_SIZE;
-        const to = from + PAGE_SIZE;
-        const page = history?.slice(from, to).sort((a, b) => {
-            // Ensure that entries with equal timestamp, but different isSpent,
-            // have the spending before the depositing
-            if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
-                return !a.isSpent ? -1 : 1;
-            }
-            return 1;
-        });
-
-        if (mounted.current) {
-            setHistoryPage(page);
-        }
-    }, [currentPageNumber, history]);
-
     const loadMoreHandler = () => {
         if (mounted.current) {
-            setAllOutputDetailsLoaded(false);
             setIsLoading(true);
             loadHistory();
         }
@@ -139,7 +126,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
 
     let isDarkBackgroundRow = false;
 
-    return (totalCount > 0 ? (
+    return (historyView.length > 0 ? (
         <div className="section transaction-history--section">
             <div className="section--header row space-between">
                 <div className="row middle">
@@ -162,8 +149,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                     </tr>
                 </thead>
                 <tbody>
-                    {historyPage.length > 0 && (
-                        historyPage.map((historyItem, idx) => {
+                    {historyView.length > 0 && (
+                        historyView.map((historyItem, idx) => {
                             const outputDetails = outputDetailsMap[historyItem.outputId];
                             if (!outputDetails) {
                                 return null;
@@ -178,8 +165,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
 
                             // rotate row background colour for different transaction ids
                             if (idx > 0) {
-                                const previousItemDetails = outputDetailsMap[historyPage[idx - 1].outputId];
-                                const previousSpent = historyPage[idx - 1].isSpent;
+                                const previousItemDetails = outputDetailsMap[historyView[idx - 1].outputId];
+                                const previousSpent = historyView[idx - 1].isSpent;
                                 if (previousItemDetails) {
                                     const previousTransactionId = previousSpent ?
                                         previousItemDetails.metadata.transactionIdSpent :
@@ -212,8 +199,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
 
             {/* Only visible in mobile -- Card transactions*/}
             <div className="transaction-history--cards">
-                {historyPage.length > 0 && (
-                    historyPage.map((historyItem, idx) => {
+                {historyView.length > 0 && (
+                    historyView.map((historyItem, idx) => {
                         const outputDetails = outputDetailsMap[historyItem.outputId];
                         if (!outputDetails) {
                             return null;
@@ -242,14 +229,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                     })
                 )}
             </div>
-            <Pagination
-                currentPage={currentPageNumber}
-                totalCount={totalCount}
-                pageSize={PAGE_SIZE}
-                siblingsCount={1}
-                onPageChange={setCurrentPageNumber}
-            />
-            {cursor && totalCount > 0 && (
+            {cursor && historyView.length > 0 && (
                 <div className="card load-more--button" onClick={loadMoreHandler}>
                     <button type="button">Load more...</button>
                 </div>
