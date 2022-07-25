@@ -147,14 +147,17 @@
         font-family: $metropolis;
         width: fit-content;
         padding: 4px 8px;
+        cursor: pointer;
+
+        &:hover {
+            button {
+                color: $main-green-highlight;
+            }
+        }
 
         button {
             padding: 6px;
             color: var(--header-icon-color);
-
-            &:hover {
-                color: $main-green-highlight;
-            }
         }
     }
 
