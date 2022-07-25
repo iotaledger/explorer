@@ -24,7 +24,7 @@
             letter-spacing: 0.5px;
 
             &.dark {
-                background: $gray-1;
+                background: var(--transaction-history-dark-row);
             }
 
             th {

@@ -46,6 +46,7 @@
   --shimmer-header-bg: #f2f6f9;
   --shimmer-bg: url("../assets/header-bg-light.svg");
   --shimmer-copyright: #{$white};
+  --transaction-history-dark-row: #{$gray-1};
 
   body.darkmode {
     --body-background: #091326;
@@ -93,6 +94,7 @@
     --shimmer-feeds-bg: #00121f;
     --shimmer-bg: url("../assets/header-bg-dark.svg");
     --shimmer-copyright: #0f202c;
+    --transaction-history-dark-row: #{$gray-9};
   }
 
   body.shimmer.darkmode {
