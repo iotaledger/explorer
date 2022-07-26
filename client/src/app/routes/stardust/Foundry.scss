@@ -44,6 +44,24 @@
             .balance {
                 margin-left: 16px;
             }
+
+            .feature-block {
+                .card--label {
+                    @include font-size(12px);
+
+                    display: flex;
+                    align-items: center;
+                    height: 32px;
+                    color: var(--card-color);
+                    font-family: $inter;
+                    font-weight: 500;
+                    letter-spacing: 0.5px;
+                    white-space: nowrap;
+                }
+                .data-toggle {
+                    margin-top: 12px;
+                }
+            }
         }
     }
 }

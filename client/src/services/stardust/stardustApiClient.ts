@@ -1,6 +1,8 @@
 import { FetchHelper } from "../../helpers/fetchHelper";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
+import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
+import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociatedOutputsRequest } from "../../models/api/stardust/IAssociatedOutputsRequest";
 import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
 import { IBaseTokenGetRequest } from "../../models/api/stardust/IBaseTokenGetRequest";
@@ -9,7 +11,11 @@ import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsReq
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IFoundriesRequest } from "../../models/api/stardust/IFoundriesRequest";
 import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
+import { IFoundryRequest } from "../../models/api/stardust/IFoundryRequest";
+import { IFoundryResponse } from "../../models/api/stardust/IFoundryResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
+import { INftAddressDetailsRequest } from "../../models/api/stardust/INftAddressDetailsRequest";
+import { INftAddressDetailsResponse } from "../../models/api/stardust/INftAddressDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
 import { INftDetailsResponse } from "../../models/api/stardust/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
@@ -133,7 +139,7 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
-     * Get the nft details.
+     * Get the nfts of an address.
      * @param request The request to send.
      * @returns The response from the request.
      */
@@ -145,7 +151,19 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
-     * Get the nft details.
+     * Get the nft details by NFT address.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+     public async nftAddressDetails(request: INftAddressDetailsRequest): Promise<INftAddressDetailsResponse> {
+        return this.callApi<unknown, INftAddressDetailsResponse>(
+            `stardust/nft-address/${request.network}/${request.nftId}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the nft details (mock).
      * @param request The request to send.
      * @returns The response from the request.
      */
@@ -157,13 +175,37 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
+     * Get the alias output details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async aliasDetails(request: IAliasRequest): Promise<IAliasResponse> {
+        return this.callApi<unknown, IAliasResponse>(
+            `stardust/alias/${request.network}/${request.aliasId}`,
+            "get"
+        );
+    }
+
+    /**
      * Get the foundries controlled by an alias address.
      * @param request The request to send.
      * @returns The response from the request.
      */
     public async aliasFoundries(request: IFoundriesRequest): Promise<IFoundriesResponse> {
         return this.callApi<unknown, IFoundriesResponse>(
-            `stardust/foundries/${request.network}/${request.aliasAddress}`,
+            `stardust/alias/foundries/${request.network}/${request.aliasAddress}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the foundry output details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async foundryDetails(request: IFoundryRequest): Promise<IFoundryResponse> {
+        return this.callApi<unknown, IAliasResponse>(
+            `stardust/foundry/${request.network}/${request.foundryId}`,
             "get"
         );
     }

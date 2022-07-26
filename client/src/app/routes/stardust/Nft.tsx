@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
-import { NFT_ADDRESS_TYPE, NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
+import { INftOutput } from "@iota/iota.js-stardust";
+import { HexHelper } from "@iota/util.js-stardust";
+import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -11,6 +13,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
+import Feature from "../../components/stardust/Feature";
 import NetworkContext from "../../context/NetworkContext";
 import { NftRouteProps } from "../NftRouteProps";
 import "./AddressPage.scss";
@@ -50,29 +53,33 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
         const bech32Hrp = this.context.bech32Hrp;
-        const networkId = this.props.match.params.network;
-        const nftId = this.props.match.params.nftId;
+        const network = this.props.match.params.network;
+        const nftAddress = this.props.match.params.nftAddress;
+        const nftAddressDetails = Bech32AddressHelper.buildAddress(bech32Hrp, nftAddress);
 
-        const result = await this._tangleCacheService.outputDetails(networkId, nftId);
-
-        if (result?.output?.type === NFT_OUTPUT_TYPE) {
-            window.scrollTo({
-                left: 0,
-                top: 0,
-                behavior: "smooth"
+        optional(nftAddressDetails.hex).map(async nftId => {
+            const response = await this._tangleCacheService.nftAddressDetails({
+                network,
+                nftId: HexHelper.addPrefix(nftId)
             });
 
-            const bech32AddressDetails = Bech32AddressHelper.buildAddress(
-                    bech32Hrp,
-                    result.output.nftId,
-                    NFT_ADDRESS_TYPE);
-            this.setState({
-                bech32AddressDetails,
-                output: result.output
-            });
-        } else {
-            this.props.history.replace(`/${networkId}/search/${nftId}`);
-        }
+            if (response) {
+                window.scrollTo({
+                    left: 0,
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+                const output = response.nftAddressDetails?.output as INftOutput;
+
+                this.setState({
+                    bech32AddressDetails: nftAddressDetails,
+                    output
+                });
+            } else {
+                this.props.history.replace(`/${network}/search/${nftId}`);
+            }
+        });
     }
 
     /**
@@ -82,6 +89,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
     public render(): ReactNode {
         const { bech32AddressDetails, output } = this.state;
         const networkId = this.props.match.params.network;
+        console.log(output);
 
         return (
             <div className="addr">
@@ -107,6 +115,33 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                                         />
                                     </div>
                                 </div>
+
+                                {optional(output?.features).nonEmpty() && (
+                                    <div className="section">
+                                        <div className="section--header row row--tablet-responsive middle space-between">
+                                            <div className="row middle">
+                                                <h2>Features</h2>
+                                            </div>
+                                        </div>
+                                        {output?.features?.map((feature, idx) => (
+                                            <Feature key={idx} feature={feature} isImmutable={false} />
+                                        ))}
+                                    </div>
+                                )}
+
+                                {optional(output?.immutableFeatures).nonEmpty() && (
+                                    <div className="section">
+                                        <div className="section--header row row--tablet-responsive middle space-between">
+                                            <div className="row middle">
+                                                <h2>Immutable features</h2>
+                                            </div>
+                                        </div>
+                                        {output?.immutableFeatures?.map((feature, idx) => (
+                                            <Feature key={idx} feature={feature} isImmutable={true} />
+                                        ))}
+                                    </div>
+                                )}
+
                                 {output && (
                                     <AssetsTable networkId={networkId} outputs={[output]} />
                                 )}
@@ -118,9 +153,9 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                                 )}
                             </div>
                         </div>
-                    </div >
-                </div >
-            </div >
+                    </div>
+                </div>
+            </div>
         );
     }
 }

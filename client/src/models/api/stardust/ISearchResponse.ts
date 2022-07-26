@@ -48,24 +48,39 @@ export interface ISearchResponse extends IResponse {
     addressAssociatedOutputs?: IAssociatedOutputsResponse;
 
     /**
-     * Alias output id if it was found.
+     * Alias id if it was found.
      */
-    aliasOutputId?: string;
+    aliasId?: string;
 
     /**
-     * Foundry output if it was found.
+     * Alias details.
      */
-    foundryOutputId?: string;
+    aliasDetails?: IOutputResponse;
 
     /**
-     * Nft output if it was found.
+     * Foundry id if it was found.
      */
-    nftOutputId?: string;
+    foundryId?: string;
+
+    /**
+     * Foundry details.
+     */
+    foundryDetails?: IOutputResponse;
+
+    /**
+     * Nft id if it was found.
+     */
+    nftId?: string;
 
     /**
      * Nft outputs.
      */
     nftOutputs?: IOutputsResponse;
+
+    /**
+     * Nft address details.
+     */
+    nftAddressDetails?: IOutputResponse;
 
     /**
      * Nft Details.

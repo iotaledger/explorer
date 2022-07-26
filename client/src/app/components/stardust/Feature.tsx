@@ -63,17 +63,12 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
                             />
                         )}
                         {feature.type === METADATA_FEATURE_TYPE && (
-                            <React.Fragment>
-                                <div className="card--label">
-                                    Data:
-                                </div>
-                                <div className="card--value row">
-                                    <DataToggle
-                                        sourceData={feature.data}
-                                        withSpacedHex={true}
-                                    />
-                                </div>
-                            </React.Fragment>
+                            <div className="card--value row">
+                                <DataToggle
+                                    sourceData={feature.data}
+                                    withSpacedHex={true}
+                                />
+                            </div>
                         )}
                         {feature.type === TAG_FEATURE_TYPE && (
                             <div>

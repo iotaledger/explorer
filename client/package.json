@@ -55,6 +55,7 @@
     ],
     "devDependencies": {
         "@craco/craco": "^6.4.3",
+        "@ruffy/ts-optional": "^1.1.1",
         "@types/bluebird": "^3.5.36",
         "@types/chartist": "^0.11.1",
         "@types/classnames": "^2.3.1",

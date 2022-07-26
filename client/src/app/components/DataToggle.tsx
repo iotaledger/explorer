@@ -92,9 +92,11 @@ class DataToggle extends Component<DataToggleProps, DataToggleState> {
          let utf8View;
          let jsonView;
          let hexView = this.state.hexView;
+         const checkValidUtf8 = true;
+
          const isSpacesBetweenBytes = this.props.withSpacedHex ?? false;
 
-         if (TextHelper.isUTF8(Converter.hexToBytes(hexView))) {
+         if (!checkValidUtf8 || (checkValidUtf8 && TextHelper.isUTF8(Converter.hexToBytes(hexView)))) {
              utf8View = Converter.hexToUtf8(hexView);
          }
 

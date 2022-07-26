@@ -1,4 +1,5 @@
 import { IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
+import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -11,47 +12,36 @@ import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
 import AssetsTable from "../../components/stardust/AssetsTable";
+import Feature from "../../components/stardust/Feature";
 import NetworkContext from "../../context/NetworkContext";
 import { FoundryProps } from "./FoundryProps";
 import "./Foundry.scss";
 
 const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
-    { history, match: { params: { network, outputId } } }
+    { history, match: { params: { network, foundryId } } }
 ) => {
     const isMounted = useRef(false);
     const { tokenInfo } = useContext(NetworkContext);
-    const [output, setOutput] = useState<IFoundryOutput>();
-    const [serialNumber, setSerialNumber] = useState<number>();
+    const [foundryOutput, setFoundryOutput] = useState<IFoundryOutput>();
     const [controllerAlias, setControllerAlias] = useState<string>();
-    const [balance, setBalance] = useState<number>();
-    const [tokenScheme, setTokenScheme] = useState<number>();
-    const [maximumSupply, setMaximumSupply] = useState<number>();
-    const [mintedTokens, setMintedTokens] = useState<number>();
-    const [meltedTokens, setMeltedTokens] = useState<number>();
     const [isFormattedBalance, setIsFormattedBalance] = useState<boolean>(true);
 
     useEffect(() => {
         isMounted.current = true;
         const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
-        tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
-            if (outputDetails) {
-                const foundryOutput = outputDetails.output as IFoundryOutput;
+        tangleCacheService.foundryDetails({ network, foundryId }).then(response => {
+            if (response) {
+                const theFoundryOutput = response.foundryDetails?.output as IFoundryOutput;
                 const immutableAliasUnlockCondition =
-                    foundryOutput.unlockConditions[0] as IImmutableAliasUnlockCondition;
+                    theFoundryOutput.unlockConditions[0] as IImmutableAliasUnlockCondition;
                 const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
 
                 if (isMounted.current) {
-                    setOutput(foundryOutput);
-                    setSerialNumber(foundryOutput.serialNumber);
+                    setFoundryOutput(theFoundryOutput);
                     setControllerAlias(aliasId);
-                    setBalance(Number(foundryOutput.amount));
-                    setTokenScheme(foundryOutput.tokenScheme.type);
-                    setMaximumSupply(Number(foundryOutput.tokenScheme.maximumSupply));
-                    setMintedTokens(Number(foundryOutput.tokenScheme.mintedTokens));
-                    setMeltedTokens(Number(foundryOutput.tokenScheme.meltedTokens));
                 }
             } else {
-                history.replace(`/${network}/search/${outputId}`);
+                history.replace(`/${network}/search/${foundryId}`);
             }
         })
         .catch(_ => {});
@@ -62,6 +52,17 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     }, []);
 
     const isMarketed = isMarketedNetwork(network);
+
+    if (!foundryOutput) {
+        return null;
+    }
+
+    const serialNumber = foundryOutput.serialNumber;
+    const balance = Number(foundryOutput.amount);
+    const tokenScheme = foundryOutput.tokenScheme.type;
+    const maximumSupply = Number(foundryOutput.tokenScheme.maximumSupply);
+    const mintedTokens = Number(foundryOutput.tokenScheme.mintedTokens);
+    const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
 
     return (
         <div className="foundry">
@@ -192,13 +193,42 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             </div>
                         </div>
 
-                        {output && (
-                            <AssetsTable networkId={network} outputs={[output]} />
+                        {foundryOutput && (
+                            <AssetsTable networkId={network} outputs={[foundryOutput]} />
                         )}
                     </div>
+
+                    {optional(foundryOutput.features).nonEmpty() && (
+                        <div className="section">
+                            <div className="section--header row row--tablet-responsive middle space-between">
+                                <div className="row middle">
+                                    <h2>Features</h2>
+                                </div>
+                            </div>
+                            {foundryOutput.features?.map((feature, idx) => (
+                                <Feature key={idx} feature={feature} isImmutable={false} />
+                            ))}
+                        </div>
+                    )}
+
+                    {optional(foundryOutput.immutableFeatures).nonEmpty() && (
+                        <div className="section">
+                            <div className="section--header row row--tablet-responsive middle space-between">
+                                <div className="row middle">
+                                    <h2>Immutable features</h2>
+                                </div>
+                            </div>
+                            {foundryOutput.immutableFeatures?.map((feature, idx) => (
+                                <Feature key={idx} feature={feature} isImmutable={true} />
+                            ))}
+                        </div>
+                    )}
+
                 </div>
             </div>
         </div>
     );
 };
+
 export default Foundry;
+

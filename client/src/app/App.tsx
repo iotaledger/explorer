@@ -278,7 +278,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                 component={(props: RouteComponentProps<SearchRouteProps>) =>
                                                 (
                                                     isStardust
-                                                        ? <StardustSearch {...props} />
+                                                        ? withNetworkProvider(<StardustSearch {...props} />)
                                                         : <ChrysalisSearch {...props} />
                                                 )}
                                             />
@@ -326,7 +326,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                         )}
                                                     />
                                                     <Route
-                                                        path="/:network/foundry/:outputId"
+                                                        path="/:network/foundry/:foundryId"
                                                         component={(props: RouteComponentProps<FoundryProps>) => (
                                                             withNetworkProvider(<Foundry {...props} />)
                                                         )}
@@ -341,13 +341,13 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                         )}
                                                     />
                                                     <Route
-                                                        path="/:network/alias/:aliasId"
+                                                        path="/:network/alias/:aliasAddress"
                                                         component={(props: RouteComponentProps<AliasRouteProps>) => (
                                                             withNetworkProvider(<Alias {...props} />)
                                                         )}
                                                     />
                                                     <Route
-                                                        path="/:network/nft-address/:nftId"
+                                                        path="/:network/nft-address/:nftAddress"
                                                         component={(props: RouteComponentProps<NftRouteProps>) => (
                                                             withNetworkProvider(<Nft {...props} />)
                                                         )}
