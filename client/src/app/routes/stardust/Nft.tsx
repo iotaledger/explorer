@@ -89,7 +89,6 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
     public render(): ReactNode {
         const { bech32AddressDetails, output } = this.state;
         const networkId = this.props.match.params.network;
-        console.log(output);
 
         return (
             <div className="addr">
