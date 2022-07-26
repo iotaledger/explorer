@@ -3,8 +3,8 @@ import { IResponse } from "../IResponse";
 import IAddressDetailsWithBalance from "./IAddressDetailsWithBalance";
 import { IAssociatedOutputsResponse } from "./IAssociatedOutputsResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
-import { INftDetailsResponse } from "./INftDetailsResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
+import { INftDetailsResponse } from "./nft/INftDetailsResponse";
 
 export interface ISearchResponse extends IResponse {
     /**

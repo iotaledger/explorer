@@ -1,4 +1,4 @@
-import { INftDetailsResponse } from "../../../models/api/stardust/INftDetailsResponse";
+import { INftDetailsResponse } from "../../../models/api/stardust/nft/INftDetailsResponse";
 
 export interface NFTDetailsState {
     /**
