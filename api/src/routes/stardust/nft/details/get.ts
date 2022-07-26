@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { INftAddressDetailsRequest } from "../../../../models/api/stardust/INftAddressDetailsRequest";
-import { INftAddressDetailsResponse } from "../../../../models/api/stardust/INftAddressDetailsResponse";
+import { INftAddressDetailsRequest } from "../../../../models/api/stardust/nft/INftAddressDetailsRequest";
+import { INftAddressDetailsResponse } from "../../../../models/api/stardust/nft/INftAddressDetailsResponse";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";

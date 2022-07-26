@@ -5,15 +5,15 @@ import {
     IBlockMetadata, IMilestonePayload, IBlock
 } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
+import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
+import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
-import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
-import { IFoundryResponse } from "../../models/api/stardust/IFoundryResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
-import { INftAddressDetailsResponse } from "../../models/api/stardust/INftAddressDetailsResponse";
-import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
+import { INftAddressDetailsResponse } from "../../models/api/stardust/nft/INftAddressDetailsResponse";
+import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
 

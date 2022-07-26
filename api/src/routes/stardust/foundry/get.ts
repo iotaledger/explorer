@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IFoundryRequest } from "../../../models/api/stardust/IFoundryRequest";
-import { IFoundryResponse } from "../../../models/api/stardust/IFoundryResponse";
+import { IFoundryRequest } from "../../../models/api/stardust/foundry/IFoundryRequest";
+import { IFoundryResponse } from "../../../models/api/stardust/foundry/IFoundryResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
