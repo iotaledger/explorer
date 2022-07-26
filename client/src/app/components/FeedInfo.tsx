@@ -26,10 +26,10 @@ const FeedInfo: React.FC<FeedInfoProps> = ({ milestoneIndex, milestoneTimestamp,
         const interval = setInterval(() => {
             if (milestoneTimestamp !== 0) {
                 const to = moment();
-                const updatedSeconds = to.diff(from, "seconds");
+                const updatedSeconds = to.diff(from, "seconds", true);
                 setSeconds(updatedSeconds);
             }
-        }, 400);
+        }, 80);
 
         return () => {
             clearInterval(interval);
@@ -46,7 +46,7 @@ const FeedInfo: React.FC<FeedInfoProps> = ({ milestoneIndex, milestoneTimestamp,
                 <div className="seconds">
                     <h3>Last{frequencyTarget ? " / Target" : ""}:</h3>
                     <span className="metrics-value margin-l-t">
-                        {seconds}s{frequencyTarget ? ` / ${frequencyTarget}s` : ""}
+                        {seconds.toFixed(2)} s{frequencyTarget ? ` / ${frequencyTarget} s` : ""}
                     </span>
                 </div>
             )}
