@@ -206,7 +206,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                                 </div>
                             </div>
                             {foundryOutput.features?.map((feature, idx) => (
-                                <Feature key={idx} feature={feature} isImmutable={false} />
+                                <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={false} />
                             ))}
                         </div>
                     )}
@@ -219,7 +219,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                                 </div>
                             </div>
                             {foundryOutput.immutableFeatures?.map((feature, idx) => (
-                                <Feature key={idx} feature={feature} isImmutable={true} />
+                                <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={true} />
                             ))}
                         </div>
                     )}

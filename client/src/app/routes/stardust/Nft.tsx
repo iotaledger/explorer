@@ -123,7 +123,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                                             </div>
                                         </div>
                                         {output?.features?.map((feature, idx) => (
-                                            <Feature key={idx} feature={feature} isImmutable={false} />
+                                            <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={false} />
                                         ))}
                                     </div>
                                 )}
@@ -136,7 +136,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                                             </div>
                                         </div>
                                         {output?.immutableFeatures?.map((feature, idx) => (
-                                            <Feature key={idx} feature={feature} isImmutable={true} />
+                                            <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={true} />
                                         ))}
                                     </div>
                                 )}
