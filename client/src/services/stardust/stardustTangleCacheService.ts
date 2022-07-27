@@ -13,12 +13,12 @@ import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneD
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
-import { INftAddressDetailsRequest } from "../../models/api/stardust/nft/INftAddressDetailsRequest";
-import { INftAddressDetailsResponse } from "../../models/api/stardust/nft/INftAddressDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsRequest";
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
+import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
+import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { TangleCacheService } from "../tangleCacheService";
 import { StardustApiClient } from "./stardustApiClient";
@@ -375,33 +375,7 @@ export class StardustTangleCacheService extends TangleCacheService {
     }
 
     /**
-     * Get the NFT address details.
-     * @param request The request.
-     * @param skipCache Skip looking in the cache.
-     * @returns The NFT outputs response.
-     */
-     public async nftAddressDetails(
-        request: INftAddressDetailsRequest,
-        skipCache: boolean = false
-    ): Promise<INftAddressDetailsResponse | undefined> {
-        const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-address-details`];
-
-        if (!cacheEntry?.data?.nftDetails || skipCache) {
-            const response = await this._api.nftAddressDetails(request);
-            this._stardustSearchCache[request.network][`${request.nftId}--nft-address-details`] = {
-                data: { nftAddressDetails: response.nftAddressDetails },
-                cached: Date.now()
-            };
-        }
-
-        return {
-            nftAddressDetails: this._stardustSearchCache[request.network][`${request.nftId}--nft-address-details`]
-                ?.data?.nftAddressDetails
-        };
-    }
-
-    /**
-     * Get the NFT Details (mock impl).
+     * Get the NFT details.
      * @param request The request.
      * @param skipCache Skip looking in the cache.
      * @returns The NFT outputs response.
@@ -410,19 +384,46 @@ export class StardustTangleCacheService extends TangleCacheService {
         request: INftDetailsRequest,
         skipCache: boolean = false
     ): Promise<INftDetailsResponse | undefined> {
-        const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-details`];
+        const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-address-details`];
 
         if (!cacheEntry?.data?.nftDetails || skipCache) {
-            const nftDetails = await this._api.nftDetails(request);
-            this._stardustSearchCache[request.network][`${request.nftId}--nft-details`] = {
+            const response = await this._api.nftDetails(request);
+            this._stardustSearchCache[request.network][`${request.nftId}--nft-address-details`] = {
+                data: { nftDetails: response.nftDetails },
+                cached: Date.now()
+            };
+        }
+
+        return {
+            nftDetails: this._stardustSearchCache[request.network][`${request.nftId}--nft-address-details`]
+                ?.data?.nftDetails
+        };
+    }
+
+    /**
+     * Get the NFT registry details (mock impl).
+     * @param request The request.
+     * @param skipCache Skip looking in the cache.
+     * @returns The NFT outputs response.
+     */
+     public async nftRegistryDetails(
+        request: INftRegistryDetailsRequest,
+        skipCache: boolean = false
+    ): Promise<INftRegistryDetailsResponse | undefined> {
+        const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-mock-details`];
+
+        if (!cacheEntry?.data?.nftRegistryDetails || skipCache) {
+            const nftRegistryDetails = await this._api.nftRegistryDetails(request);
+            this._stardustSearchCache[request.network][`${request.nftId}--nft-mock-details`] = {
                 data: {
-                    nftDetails
+                    nftRegistryDetails
                 },
                 cached: Date.now()
             };
         }
 
-        return this._stardustSearchCache[request.network][`${request.nftId}--nft-details`]?.data?.nftDetails;
+        return this._stardustSearchCache[request.network][`${request.nftId}--nft-mock-details`]
+            ?.data?.nftRegistryDetails;
     }
 
     /**

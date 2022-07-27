@@ -1,4 +1,4 @@
-export interface NFTDetailsRouteProps {
+export interface NftRegistryDetailsProps {
     /**
      * The network to lookup.
      */

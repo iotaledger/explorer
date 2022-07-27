@@ -58,7 +58,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
         const nftAddressDetails = Bech32AddressHelper.buildAddress(bech32Hrp, nftAddress);
 
         optional(nftAddressDetails.hex).map(async nftId => {
-            const response = await this._tangleCacheService.nftAddressDetails({
+            const response = await this._tangleCacheService.nftDetails({
                 network,
                 nftId: HexHelper.addPrefix(nftId)
             });
@@ -70,7 +70,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                     behavior: "smooth"
                 });
 
-                const output = response.nftAddressDetails?.output as INftOutput;
+                const output = response.nftDetails?.output as INftOutput;
 
                 this.setState({
                     bech32AddressDetails: nftAddressDetails,

@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { INftAddressDetailsRequest } from "../../../../models/api/stardust/nft/INftAddressDetailsRequest";
-import { INftAddressDetailsResponse } from "../../../../models/api/stardust/nft/INftAddressDetailsResponse";
+import { INftDetailsRequest } from "../../../../models/api/stardust/nft/INftDetailsRequest";
+import { INftDetailsResponse } from "../../../../models/api/stardust/nft/INftDetailsResponse";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -15,8 +15,8 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  */
 export async function get(
     config: IConfiguration,
-    request: INftAddressDetailsRequest
-): Promise<INftAddressDetailsResponse> {
+    request: INftDetailsRequest
+): Promise<INftDetailsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");

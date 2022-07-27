@@ -259,7 +259,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     route = "foundry";
                                     routeParam = response.foundryId;
                                 } else if (response.nftId) {
-                                    route = "nft-address";
+                                    route = "nft";
                                     const nftAddress = this.buildAddressFromIdAndType(
                                         response.nftId,
                                         NFT_ADDRESS_TYPE

@@ -4,7 +4,7 @@ import IAddressDetailsWithBalance from "./IAddressDetailsWithBalance";
 import { IAssociatedOutputsResponse } from "./IAssociatedOutputsResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
-import { INftDetailsResponse } from "./nft/INftDetailsResponse";
+import { INftRegistryDetailsResponse } from "./nft/INftRegistryDetailsResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
@@ -78,14 +78,14 @@ export interface ISearchResponse extends IResponse {
     nftOutputs?: IOutputsResponse;
 
     /**
-     * Nft address details.
+     * Nft details.
      */
-    nftAddressDetails?: IOutputResponse;
+    nftDetails?: IOutputResponse;
 
     /**
-     * Nft Details.
+     * Nft registry details (mock).
      */
-    nftDetails?: INftDetailsResponse;
+    nftRegistryDetails?: INftRegistryDetailsResponse;
 
     /**
      * Foundry outputs.

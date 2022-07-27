@@ -1,9 +1,11 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
+import mainHeaderMessage from "../../../assets/modals/block/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { INftActivityHistory } from "../../../models/api/stardust/nft/INftDetailsResponse";
+import { INftActivityHistory } from "../../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -12,16 +14,14 @@ import Icon from "../../components/Icon";
 import Modal from "../../components/Modal";
 import Pagination from "../../components/Pagination";
 import { Activity } from "../../components/stardust/Activity";
-import { NFTDetailsRouteProps } from "../NFTDetailsRouteProps";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import mainHeaderMessage from "./../../../assets/modals/block/main-header.json";
-import { NFTDetailsState } from "./NFTDetailsState";
-import "./NFTDetails.scss";
+import { NftRegistryDetailsProps } from "./NftRegistryDetailsProps";
+import { NftRegistryDetailsState } from "./NftRegistryDetailsState";
+import "./NftRegistryDetails.scss";
 
 /**
  * Component which will show the nft detail page.
  */
-class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps>, NFTDetailsState> {
+class NftRegistryDetails extends AsyncComponent<RouteComponentProps<NftRegistryDetailsProps>, NftRegistryDetailsState> {
     /**
      * API Client for tangle requests.
      */
@@ -31,7 +31,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
      * Create a new instance of Indexed.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<NFTDetailsRouteProps>) {
+    constructor(props: RouteComponentProps<NftRegistryDetailsProps>) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
@@ -301,7 +301,7 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
         const networkId = this.props.match.params.network;
         const nftId = this.props.match.params.nftId;
 
-        const result = await this._tangleCacheService.nftDetails({
+        const result = await this._tangleCacheService.nftRegistryDetails({
             network: networkId,
             nftId
         });
@@ -312,4 +312,4 @@ class NFTDetails extends AsyncComponent<RouteComponentProps<NFTDetailsRouteProps
     }
 }
 
-export default NFTDetails;
+export default NftRegistryDetails;

@@ -12,7 +12,7 @@ import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsRe
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
-import { INftAddressDetailsResponse } from "../../models/api/stardust/nft/INftAddressDetailsResponse";
+import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
@@ -244,7 +244,7 @@ export class StardustTangleHelper {
     public static async nftDetails(
         network: INetwork,
         nftId: string
-    ): Promise<INftAddressDetailsResponse | undefined> {
+    ): Promise<INftDetailsResponse | undefined> {
         const { provider, user, password } = network;
         try {
             const node = new SingleNodeClient(provider, { userName: user, password });
@@ -252,11 +252,11 @@ export class StardustTangleHelper {
             const nftOutputs = await indexerPlugin.nft(nftId);
 
             if (nftOutputs.items.length > 0) {
-                const nftAddressDetails = await this.outputDetails(network, nftOutputs.items[0]);
+                const nftDetails = await this.outputDetails(network, nftOutputs.items[0]);
 
-                if (nftAddressDetails) {
+                if (nftDetails) {
                     return {
-                        nftAddressDetails
+                        nftDetails
                     };
                 }
             }

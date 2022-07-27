@@ -21,12 +21,12 @@ import { ITransactionDetailsRequest } from "../../models/api/stardust/ITransacti
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
-import { INftAddressDetailsRequest } from "../../models/api/stardust/nft/INftAddressDetailsRequest";
-import { INftAddressDetailsResponse } from "../../models/api/stardust/nft/INftAddressDetailsResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsRequest";
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
+import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
+import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -145,7 +145,7 @@ export class StardustApiClient extends ApiClient {
      */
     public async nftOutputs(request: INftOutputsRequest): Promise<INftOutputsResponse> {
         return this.callApi<unknown, INftOutputsResponse>(
-            `stardust/nfts/${request.network}/${request.address}`,
+            `stardust/nft/outputs/${request.network}/${request.address}`,
             "get"
         );
     }
@@ -155,9 +155,9 @@ export class StardustApiClient extends ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-     public async nftAddressDetails(request: INftAddressDetailsRequest): Promise<INftAddressDetailsResponse> {
-        return this.callApi<unknown, INftAddressDetailsResponse>(
-            `stardust/nft-address/${request.network}/${request.nftId}`,
+     public async nftDetails(request: INftDetailsRequest): Promise<INftDetailsResponse> {
+        return this.callApi<unknown, INftDetailsResponse>(
+            `stardust/nft/${request.network}/${request.nftId}`,
             "get"
         );
     }
@@ -167,9 +167,9 @@ export class StardustApiClient extends ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-     public async nftDetails(request: INftDetailsRequest): Promise<INftDetailsResponse> {
-        return this.callApi<unknown, INftDetailsResponse>(
-            `stardust/nft/${request.network}/${request.nftId}`,
+     public async nftRegistryDetails(request: INftRegistryDetailsRequest): Promise<INftRegistryDetailsResponse> {
+        return this.callApi<unknown, INftRegistryDetailsResponse>(
+            `stardust/nft/mock/${request.network}/${request.nftId}`,
             "get"
         );
     }
