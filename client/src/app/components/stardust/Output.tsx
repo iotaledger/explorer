@@ -15,6 +15,7 @@ import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import CopyButton from "../CopyButton";
+import DataToggle from "../DataToggle";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Feature from "./Feature";
 import { OutputProps } from "./OutputProps";
@@ -138,7 +139,10 @@ class Output extends Component<OutputProps, OutputState> {
                                         State metadata:
                                     </div>
                                     <div className="card--value row">
-                                        {output.stateMetadata}
+                                        <DataToggle
+                                            sourceData={output.stateMetadata}
+                                            withSpacedHex={true}
+                                        />
                                     </div>
                                 </React.Fragment>
                             )}

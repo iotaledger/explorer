@@ -1,17 +1,17 @@
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { INftDetailsRequest } from "../../../models/api/stardust/INftDetailsRequest";
-import { INftDetailsResponse } from "../../../models/api/stardust/INftDetailsResponse";
-import { IConfiguration } from "../../../models/configuration/IConfiguration";
-import { STARDUST } from "../../../models/db/protocolVersion";
-import { NetworkService } from "../../../services/networkService";
-import { ValidationHelper } from "../../../utils/validationHelper";
+import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { INftRegistryDetailsRequest } from "../../../../models/api/stardust/nft/INftRegistryDetailsRequest";
+import { INftRegistryDetailsResponse } from "../../../../models/api/stardust/nft/INftRegistryDetailsResponse";
+import { IConfiguration } from "../../../../models/configuration/IConfiguration";
+import { STARDUST } from "../../../../models/db/protocolVersion";
+import { NetworkService } from "../../../../services/networkService";
+import { ValidationHelper } from "../../../../utils/validationHelper";
 import "dotenv/config";
 
 /**
  * Get mock nft detils
  * @returns nft details.
  */
-const getMockNftDetails = (): INftDetailsResponse => (
+const getMockNftDetails = (): INftRegistryDetailsResponse => (
     {
         imageSrc: "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png",
         amount: 100,
@@ -66,8 +66,8 @@ const getMockNftDetails = (): INftDetailsResponse => (
  */
 export async function get(
     config: IConfiguration,
-    request: INftDetailsRequest
-): Promise<INftDetailsResponse> {
+    request: INftRegistryDetailsRequest
+): Promise<INftRegistryDetailsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");

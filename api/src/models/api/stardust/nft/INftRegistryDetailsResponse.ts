@@ -1,4 +1,4 @@
-import { IResponse } from "../IResponse";
+import { IResponse } from "../../IResponse";
 
 export interface INftActivityHistory {
     /**
@@ -54,7 +54,7 @@ export interface INftGeneral {
     network: string;
 }
 
-export interface INftDetailsResponse extends IResponse {
+export interface INftRegistryDetailsResponse extends IResponse {
     /**
      * Nft image url
      */

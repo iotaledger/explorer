@@ -1,11 +1,11 @@
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IFoundriesRequest } from "../../../models/api/stardust/IFoundriesRequest";
-import { IFoundriesResponse } from "../../../models/api/stardust/IFoundriesResponse";
-import { IConfiguration } from "../../../models/configuration/IConfiguration";
-import { STARDUST } from "../../../models/db/protocolVersion";
-import { NetworkService } from "../../../services/networkService";
-import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelper";
-import { ValidationHelper } from "../../../utils/validationHelper";
+import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { IFoundriesRequest } from "../../../../models/api/stardust/foundry/IFoundriesRequest";
+import { IFoundriesResponse } from "../../../../models/api/stardust/foundry/IFoundriesResponse";
+import { IConfiguration } from "../../../../models/configuration/IConfiguration";
+import { STARDUST } from "../../../../models/db/protocolVersion";
+import { NetworkService } from "../../../../services/networkService";
+import { StardustTangleHelper } from "../../../../utils/stardust/stardustTangleHelper";
+import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
  * Get controlled Foundry output id by controller Alias address

@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { INftOutputsRequest } from "../../../models/api/stardust/INftOutputsRequest";
-import { INftOutputsResponse } from "../../../models/api/stardust/INftOutputsResponse";
+import { IAliasRequest } from "../../../models/api/stardust/IAliasRequest";
+import { IAliasResponse } from "../../../models/api/stardust/IAliasResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
@@ -8,19 +8,19 @@ import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelp
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
- * Find the object from the network.
+ * Get alias output details by Alias address
  * @param config The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function get(
     config: IConfiguration,
-    request: INftOutputsRequest
-): Promise<INftOutputsResponse> {
+    request: IAliasRequest
+): Promise<IAliasResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
-    ValidationHelper.string(request.address, "address");
+    ValidationHelper.string(request.aliasId, "aliasId");
 
     const networkConfig = networkService.get(request.network);
 
@@ -28,5 +28,5 @@ export async function get(
         return {};
     }
 
-    return StardustTangleHelper.nftOutputs(networkConfig, request.address);
+    return StardustTangleHelper.aliasDetails(networkConfig, request.aliasId);
 }

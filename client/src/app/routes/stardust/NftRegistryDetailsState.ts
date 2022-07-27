@@ -1,6 +1,6 @@
-import { INftDetailsResponse } from "../../../models/api/stardust/INftDetailsResponse";
+import { INftRegistryDetailsResponse } from "../../../models/api/stardust/nft/INftRegistryDetailsResponse";
 
-export interface NFTDetailsState {
+export interface NftRegistryDetailsState {
     /**
      * Current page in activity history table.
      */
@@ -24,6 +24,6 @@ export interface NFTDetailsState {
     /**
      * History details
      */
-    nftDetails: INftDetailsResponse;
+    nftDetails: INftRegistryDetailsResponse;
 
 }

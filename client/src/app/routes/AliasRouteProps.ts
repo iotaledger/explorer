@@ -5,7 +5,7 @@ export interface AliasRouteProps {
     network: string;
 
     /**
-     * The aliasId to lookup.
+     * The aliasAddress to lookup.
      */
-    aliasId: string;
+    aliasAddress: string;
 }

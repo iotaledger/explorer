@@ -5,7 +5,8 @@ export interface INftDetailsRequest {
     network: string;
 
     /**
-     * The address get the transactions for.
+     * The nft id to get the nft details for.
      */
-    nftId: string;
+    nftId?: string;
 }
+

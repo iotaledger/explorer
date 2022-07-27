@@ -1,10 +1,12 @@
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
+import CopyButton from "../../components/CopyButton";
 import Output from "../../components/stardust/Output";
 import OutputPageProps from "./OutputPageProps";
 import "./OutputPage.scss";
@@ -62,10 +64,18 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="label">
                                     Block ID
                                 </div>
-                                <div className="value code row middle">
-                                    <span className="margin-r-t">
+                                <div className="value code row middle highlight">
+                                    <Link
+                                        to={`/${network}/block/${blockId}`}
+                                        className="margin-r-t"
+                                    >
                                         {blockId}
-                                    </span>
+                                    </Link>
+                                    <CopyButton
+                                        onClick={() => ClipboardHelper.copy(blockId)}
+                                        buttonType="copy"
+                                        labelPosition="bottom"
+                                    />
                                 </div>
                             </div>
                         )}
@@ -75,10 +85,18 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="label">
                                     Transaction ID
                                 </div>
-                                <div className="value code row middle">
-                                    <span className="margin-r-t">
+                                <div className="value code row middle highlight">
+                                    <Link
+                                        to={`/${network}/transaction/${transactionId}`}
+                                        className="margin-r-t"
+                                    >
                                         {transactionId}
-                                    </span>
+                                    </Link>
+                                    <CopyButton
+                                        onClick={() => ClipboardHelper.copy(transactionId)}
+                                        buttonType="copy"
+                                        labelPosition="bottom"
+                                    />
                                 </div>
                             </div>
                         )}
