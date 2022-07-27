@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 import { INftOutput } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
-import { optional } from "@ruffy/ts-optional/dist/Optional";
+import { optional } from "@ruffy/ts-optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";

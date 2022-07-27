@@ -1,5 +1,5 @@
 import { IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
-import { optional } from "@ruffy/ts-optional/dist/Optional";
+import { optional } from "@ruffy/ts-optional";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { Link } from "react-router-dom";
