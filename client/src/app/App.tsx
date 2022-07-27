@@ -332,7 +332,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
                                                         )}
                                                     />
                                                     <Route
-                                                        path="/:network/nft/registry/:nftId"
+                                                        path="/:network/nft-registry/:nftId"
                                                         component={
                                                             (props: RouteComponentProps<NftRegistryDetailsProps>) => (
                                                                 <NftRegistryDetails {...props} />
