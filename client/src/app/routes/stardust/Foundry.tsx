@@ -2,6 +2,7 @@ import { IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@
 import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { RouteComponentProps } from "react-router";
+import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
@@ -98,10 +99,10 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             <div className="label">
                                 Controller Alias
                             </div>
-                            <div className="value code row middle">
-                                <span className="margin-r-t">
+                            <div className="value code row middle highlight">
+                                <Link to={`/${network}/search/${controllerAlias}`} className="margin-r-t">
                                     {controllerAlias}
-                                </span>
+                                </Link>
                                 <CopyButton
                                     buttonType="copy"
                                     onClick={() => ClipboardHelper.copy(controllerAlias)}

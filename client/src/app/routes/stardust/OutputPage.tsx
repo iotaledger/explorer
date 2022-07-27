@@ -64,7 +64,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="label">
                                     Block ID
                                 </div>
-                                <div className="value code row middle">
+                                <div className="value code row middle highlight">
                                     <Link
                                         to={`/${network}/block/${blockId}`}
                                         className="margin-r-t"
@@ -85,7 +85,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="label">
                                     Transaction ID
                                 </div>
-                                <div className="value code row middle">
+                                <div className="value code row middle highlight">
                                     <Link
                                         to={`/${network}/transaction/${transactionId}`}
                                         className="margin-r-t"
