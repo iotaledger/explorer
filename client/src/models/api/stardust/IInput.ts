@@ -1,6 +1,7 @@
+import { IUTXOInput } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 
-export interface IInput {
+interface IInputExtend {
     /**
      * The output hash.
      */
@@ -30,3 +31,6 @@ export interface IInput {
      */
     amount: number;
 }
+
+export type IInput = IUTXOInput & IInputExtend;
+

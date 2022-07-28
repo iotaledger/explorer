@@ -3,7 +3,7 @@ import { Blake2b } from "@iota/crypto.js-stardust";
 import {
     BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
     IGovernorAddressUnlockCondition, ED25519_ADDRESS_TYPE, IBlock, ISignatureUnlock,
-    IUTXOInput, REFERENCE_UNLOCK_TYPE, SIGNATURE_UNLOCK_TYPE,
+    REFERENCE_UNLOCK_TYPE, SIGNATURE_UNLOCK_TYPE,
     TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
     IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
     TREASURY_OUTPUT_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
@@ -21,7 +21,7 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
 import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 
 interface TransactionInputsAndOutputsResponse {
-    inputs: (IUTXOInput & IInput)[];
+    inputs: IInput[];
     outputs: IOutput[];
     unlockAddresses: IBech32AddressDetails[];
     transferTotal: number;
@@ -32,7 +32,7 @@ export class TransactionsHelper {
                                             _bechHrp: string, tangleCacheService: StardustTangleCacheService
                                            ): Promise<TransactionInputsAndOutputsResponse> {
         const GENESIS_HASH = "0".repeat(64);
-        const inputs: (IUTXOInput & IInput)[] = [];
+        const inputs: IInput[] = [];
         const outputs: IOutput[] = [];
         const remainderOutputs: IOutput[] = [];
         const unlockAddresses: IBech32AddressDetails[] = [];
@@ -119,7 +119,6 @@ export class TransactionsHelper {
 
                     outputs.push({
                         id: outputId,
-                        type: payload.essence.outputs[i].type,
                         output,
                         amount: Number(payload.essence.outputs[i].amount)
                     });
@@ -135,7 +134,6 @@ export class TransactionsHelper {
                     if (isRemainder) {
                         remainderOutputs.push({
                             id: outputId,
-                            type: payload.essence.outputs[i].type,
                             address,
                             amount: Number(payload.essence.outputs[i].amount),
                             isRemainder,
@@ -144,7 +142,6 @@ export class TransactionsHelper {
                     } else {
                         outputs.push({
                             id: outputId,
-                            type: payload.essence.outputs[i].type,
                             address,
                             amount: Number(payload.essence.outputs[i].amount),
                             isRemainder,
