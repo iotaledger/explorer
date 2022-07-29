@@ -56,7 +56,7 @@ export class NodeInfoService implements INodeService {
             this._nodeInfo = {
                 baseToken: info.baseToken,
                 protocolVersion: info.protocol.protocolVersion,
-                bech32Hrp: info.protocol.bech32HRP
+                bech32Hrp: info.protocol.bech32Hrp
             };
             console.log("Node info", this._network.network, this._nodeInfo);
         })
