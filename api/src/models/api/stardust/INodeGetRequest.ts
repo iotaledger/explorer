@@ -1,4 +1,4 @@
-export interface IBaseTokenGetRequest {
+export interface INodeGetRequest {
     /**
      * The network to search on.
      */

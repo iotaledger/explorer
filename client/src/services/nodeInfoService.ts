@@ -1,6 +1,6 @@
 import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { IBaseTokenGetResponse } from "../models/api/stardust/IBaseTokenGetResponse";
+import { INodeGetResponse } from "../models/api/stardust/INodeGetResponse";
 import { STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { StardustApiClient } from "./stardust/stardustApiClient";
@@ -8,31 +8,41 @@ import { StardustApiClient } from "./stardust/stardustApiClient";
 /**
  * The default fallback base token info.
  */
-export const DEFAULT_BASE_TOKEN_INFO: INodeInfoBaseToken = {
-    name: "IOTA",
-    tickerSymbol: "MIOTA",
-    unit: "i",
-    decimals: 0,
-    subunit: undefined,
-    useMetricPrefix: true
+ interface INodeAndTokenInfo {
+    baseToken: INodeInfoBaseToken;
+    protocolVersion: number;
+    bech32Hrp: string;
+}
+
+export const DEFAULT_NODE_INFO: INodeAndTokenInfo = {
+    baseToken: {
+        name: "IOTA",
+        tickerSymbol: "MIOTA",
+        unit: "i",
+        decimals: 0,
+        subunit: undefined,
+        useMetricPrefix: true
+    },
+    protocolVersion: 2,
+    bech32Hrp: "rms"
 };
 
 /**
  * Service to handle base token info.
  */
-export class BaseTokenInfoService {
+export class NodeInfoService {
     /**
      * Cache of the base taken infos.
      */
-    private _cache: { [network: string]: INodeInfoBaseToken } = {};
+    private _cache: { [network: string]: INodeAndTokenInfo } = {};
 
     /**
      * Get the base token info by network.
      * @param network The name of the network.
      * @returns The base token info.
      */
-    public get(network: string): INodeInfoBaseToken {
-        return this._cache[network] ?? DEFAULT_BASE_TOKEN_INFO;
+    public get(network: string): INodeAndTokenInfo {
+        return this._cache[network] ?? DEFAULT_NODE_INFO;
     }
 
     /**
@@ -45,11 +55,11 @@ export class BaseTokenInfoService {
         for (const networkDetails of allNetworks) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
             const network = networkDetails.network;
-            const response: IBaseTokenGetResponse = await apiClient.baseTokenInfo({ network });
-            const { name, tickerSymbol, unit, subunit, decimals, useMetricPrefix } = response;
+            const response: INodeGetResponse = await apiClient.nodeInfo({ network });
+            const { baseToken, protocolVersion, bech32Hrp } = response;
 
-            if (name && tickerSymbol && unit && decimals && useMetricPrefix !== undefined) {
-                this._cache[network] = { name, tickerSymbol, unit, subunit, decimals, useMetricPrefix };
+            if (baseToken && protocolVersion && bech32Hrp) {
+                this._cache[network] = { baseToken, protocolVersion, bech32Hrp };
             }
         }
     }

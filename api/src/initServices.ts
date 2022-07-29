@@ -22,8 +22,8 @@ import { OgFeedService } from "./services/og/ogFeedService";
 import { OgItemsService } from "./services/og/ogItemsService";
 import { OgStatsService } from "./services/og/ogStatsService";
 import { ZmqService } from "./services/og/zmqService";
-import { BaseTokenInfoService } from "./services/stardust/baseTokenInfoService";
 import { ChronicleService } from "./services/stardust/chronicleService";
+import { NodeInfoService } from "./services/stardust/nodeInfoService";
 import { StardustFeedService } from "./services/stardust/stardustFeedService";
 import { StardustItemsService } from "./services/stardust/stardustItemsService";
 import { StardustStatsService } from "./services/stardust/stardustStatsService";
@@ -186,10 +186,10 @@ function initStardustServices(networkConfig: INetwork): void {
         () => new StardustStatsService(networkConfig)
     );
 
-    const baseTokenInfoService = new BaseTokenInfoService(networkConfig);
+    const nodeInfoService = new NodeInfoService(networkConfig);
     ServiceFactory.register(
-        `base-token-${networkConfig.network}`,
-        () => baseTokenInfoService
+        `node-info-${networkConfig.network}`,
+        () => nodeInfoService
     );
 
     if (networkConfig.permaNodeEndpoint) {
