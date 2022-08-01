@@ -2,7 +2,7 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
 import {
     BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
-    IGovernorAddressUnlockCondition, ED25519_ADDRESS_TYPE, IBlock,
+    IGovernorAddressUnlockCondition, IBlock,
     ISignatureUnlock, REFERENCE_UNLOCK_TYPE, SIGNATURE_UNLOCK_TYPE,
     TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
     IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
@@ -10,9 +10,9 @@ import {
     GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, ALIAS_OUTPUT_TYPE,
     NFT_OUTPUT_TYPE, serializeTransactionPayload, FOUNDRY_OUTPUT_TYPE,
     IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition,
-    TransactionHelper, IReferenceUnlock
+    TransactionHelper, IReferenceUnlock, Ed25519Address
 } from "@iota/iota.js-stardust";
-import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
+import { Converter, WriteStream } from "@iota/util.js-stardust";
 import { DateHelper } from "../../helpers/dateHelper";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";
@@ -67,14 +67,11 @@ export class TransactionsHelper {
 
             // unlock Addresses computed from public keys in unlocks
             for (let i = 0; i < unlocks.length; i++) {
+                const hex = Converter.bytesToHex(
+                    new Ed25519Address(Converter.hexToBytes(unlocks[i].signature.publicKey)).toAddress()
+                );
                 unlockAddresses.push(
-                    Bech32AddressHelper.buildAddress(
-                        _bechHrp,
-                        HexHelper.stripPrefix(
-                            unlocks[i].signature.publicKey
-                        ),
-                        ED25519_ADDRESS_TYPE
-                    )
+                    Bech32AddressHelper.buildAddress(_bechHrp, hex)
                 );
             }
 
