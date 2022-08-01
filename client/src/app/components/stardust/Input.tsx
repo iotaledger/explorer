@@ -43,15 +43,17 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
                 <div style={{ flexGrow: 1 }} className="card--value">
                     <button type="button">Output</button>
                 </div>
-                <span
-                    onClick={e => {
-                        setIsFormattedBalance(!isFormattedBalance);
-                        e.stopPropagation();
-                    }}
-                    className="card--value amount-size pointer"
-                >
-                    {formatAmount(input.amount, tokenInfo, !isFormattedBalance)}
-                </span>
+                {input.amount && (
+                    <span
+                        onClick={e => {
+                            setIsFormattedBalance(!isFormattedBalance);
+                            e.stopPropagation();
+                        }}
+                        className="card--value amount-size pointer"
+                    >
+                        {formatAmount(input.amount, tokenInfo, !isFormattedBalance)}
+                    </span>
+                )}
             </div>
 
             {isExpanded && (

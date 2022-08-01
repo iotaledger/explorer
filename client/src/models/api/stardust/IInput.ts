@@ -17,7 +17,7 @@ interface IInputExtension {
     /**
      * The amount.
      */
-    amount: number;
+    amount?: number;
     /**
      * The is genesis flag.
      */

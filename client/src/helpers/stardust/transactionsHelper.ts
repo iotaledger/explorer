@@ -77,7 +77,7 @@ export class TransactionsHelper {
 
             // Inputs
             for (let i = 0; i < payload.essence.inputs.length; i++) {
-                let amount = 0;
+                let amount;
                 const address = unlockAddresses[i];
                 const input = payload.essence.inputs[i];
                 const isGenesis = input.transactionId === GENESIS_HASH;
