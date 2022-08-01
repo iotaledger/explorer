@@ -1,5 +1,4 @@
-import { IUTXOInput } from "@iota/iota.js-stardust";
-import * as H from "history";
+import { ISignatureUnlock } from "@iota/iota.js-stardust";
 import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
 
@@ -12,7 +11,12 @@ export interface TransactionPayloadProps {
     /**
      * The inputs.
      */
-    inputs: (IUTXOInput & IInput)[];
+    inputs: IInput[];
+
+    /**
+     * The unlocks of the transaction.
+     */
+    unlocks: ISignatureUnlock[];
 
     /**
      * The outputs.
@@ -23,11 +27,6 @@ export interface TransactionPayloadProps {
      * The total of the transfer excluding remainders.
      */
     transferTotal: number;
-
-    /**
-     * History for navigation.
-     */
-    history: H.History;
 
     /**
      * The header title of this section.

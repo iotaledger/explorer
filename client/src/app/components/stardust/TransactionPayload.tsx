@@ -1,3 +1,4 @@
+import { TransactionHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import transactionPayloadMessage from "../../../assets/modals/message/transaction-payload.json";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
@@ -11,6 +12,7 @@ import Input from "./Input";
 import Output from "./Output";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
 import { TransactionPayloadState } from "./TransactionPayloadState";
+import Unlocks from "./Unlocks";
 
 /**
  * Component which will display a transaction payload.
@@ -45,7 +47,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { network, inputs, outputs, transferTotal, history, header } = this.props;
+        const { network, inputs, unlocks, outputs, transferTotal, header } = this.props;
         const isMarketed = isMarketedNetwork(network);
 
         return (
@@ -81,10 +83,28 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                             <span className="dot-separator">•</span>
                             <span>{inputs.length}</span>
                         </div>
-                        <div className="card--content">
-                            {inputs.map((input, idx) => (
-                                <Input key={idx} input={input} network={network} history={history} />
-                            ))}
+                        <div className="transaction-from card--content">
+                            {inputs.map((input, idx) => {
+                                if (!input.output) {
+                                    return <Input key={idx} network={network} input={input} />;
+                                }
+
+                                const outputId = TransactionHelper.outputIdFromTransactionData(
+                                    input.transactionId, input.transactionOutputIndex
+                                );
+
+                                return (
+                                    <Output
+                                        key={idx}
+                                        outputId={outputId}
+                                        output={input.output.output}
+                                        amount={Number(input.output.output.amount)}
+                                        network={network}
+                                        showCopyAmount={true}
+                                    />
+                                );
+                            })}
+                            <Unlocks unlocks={unlocks} />
                         </div>
                     </div>
 

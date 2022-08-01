@@ -1,36 +1,28 @@
-import { IUTXOInput } from "@iota/iota.js-stardust";
+import { IOutputResponse, IUTXOInput } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 
-interface IInputExtend {
+interface IInputExtension {
     /**
-     * The output hash.
+     * The output id.
      */
-    outputHash: string;
+    outputId: string;
     /**
-     * The is genesis flag.
+     * The output used as input.
      */
-    isGenesis: boolean;
-    /**
-     * The transaction URL.
-     */
-    transactionUrl: string;
+    output?: IOutputResponse;
     /**
      * The transaction address details.
      */
-    transactionAddress: IBech32AddressDetails;
-    /**
-     * The signature.
-     */
-    signature: string;
-    /**
-     * The public key.
-     */
-    publicKey: string;
+    address: IBech32AddressDetails;
     /**
      * The amount.
      */
     amount: number;
+    /**
+     * The is genesis flag.
+     */
+    isGenesis: boolean;
 }
 
-export type IInput = IUTXOInput & IInputExtend;
+export type IInput = IUTXOInput & IInputExtension;
 
