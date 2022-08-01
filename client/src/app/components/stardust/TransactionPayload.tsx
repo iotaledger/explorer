@@ -1,4 +1,3 @@
-import { TransactionHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import transactionPayloadMessage from "../../../assets/modals/message/transaction-payload.json";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
@@ -84,26 +83,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                             <span>{inputs.length}</span>
                         </div>
                         <div className="transaction-from card--content">
-                            {inputs.map((input, idx) => {
-                                if (!input.output) {
-                                    return <Input key={idx} network={network} input={input} />;
-                                }
-
-                                const outputId = TransactionHelper.outputIdFromTransactionData(
-                                    input.transactionId, input.transactionOutputIndex
-                                );
-
-                                return (
-                                    <Output
-                                        key={idx}
-                                        outputId={outputId}
-                                        output={input.output.output}
-                                        amount={Number(input.output.output.amount)}
-                                        network={network}
-                                        showCopyAmount={true}
-                                    />
-                                );
-                            })}
+                            {inputs.map((input, idx) => <Input key={idx} network={network} input={input} />)}
                             <Unlocks unlocks={unlocks} />
                         </div>
                     </div>

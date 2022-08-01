@@ -1,5 +1,6 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
+import { TransactionHelper } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { useContext, useState } from "react";
 import { useHistory, Link } from "react-router-dom";
@@ -8,6 +9,7 @@ import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IInput } from "../../../models/api/stardust/IInput";
 import NetworkContext from "../../context/NetworkContext";
 import Bech32Address from "./Bech32Address";
+import Output from "./Output";
 
 interface InputProps {
     /**
@@ -29,7 +31,7 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
-    return (
+    const fallbackInputView = (
         <React.Fragment>
             <div
                 className="card--content__input"
@@ -78,6 +80,19 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
                 </React.Fragment>)}
         </React.Fragment>
     );
+
+    const outputId = TransactionHelper.outputIdFromTransactionData(
+        input.transactionId, input.transactionOutputIndex
+    );
+
+    return input.output ?
+        <Output
+            outputId={outputId}
+            output={input.output.output}
+            amount={Number(input.output.output.amount)}
+            network={network}
+            showCopyAmount={true}
+        /> : fallbackInputView;
 };
 
 export default Input;
