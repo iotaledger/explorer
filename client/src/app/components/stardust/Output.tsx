@@ -18,6 +18,7 @@ import CopyButton from "../CopyButton";
 import DataToggle from "../DataToggle";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Feature from "./Feature";
+import NativeToken from "./NativeToken";
 import { OutputProps } from "./OutputProps";
 import { OutputState } from "./OutputState";
 import UnlockCondition from "./UnlockCondition";
@@ -40,7 +41,6 @@ class Output extends Component<OutputProps, OutputState> {
         super(props);
 
         this.state = {
-            showNativeToken: this.props.isPreExpanded ?? false,
             isExpanded: this.props.isPreExpanded ?? false,
             isFormattedBalance: true
         };
@@ -52,7 +52,7 @@ class Output extends Component<OutputProps, OutputState> {
      */
     public render(): ReactNode {
         const { outputId, output, amount, showCopyAmount, network, isPreExpanded } = this.props;
-        const { showNativeToken, isExpanded, isFormattedBalance } = this.state;
+        const { isExpanded, isFormattedBalance } = this.state;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
         const foundryId = this.buildFoundyId();
@@ -261,39 +261,12 @@ class Output extends Component<OutputProps, OutputState> {
                                 </React.Fragment>
                             )}
                             {output.nativeTokens?.map((token, idx) => (
-                                <React.Fragment key={idx}>
-                                    <div className="native-token">
-                                        <div
-                                            className="card--content__input card--value row middle"
-                                            onClick={() => this.setState({ showNativeToken: !showNativeToken })}
-                                        >
-                                            <div className={classNames("margin-r-t", "card--content--dropdown",
-                                                                       { opened: showNativeToken })}
-                                            >
-                                                <DropdownIcon />
-                                            </div>
-                                            <div className="card--label">
-                                                Native token
-                                            </div>
-                                        </div>
-                                        {showNativeToken && (
-                                        <div className="margin-l-t">
-                                            <div className="card--label">
-                                                Token id:
-                                            </div>
-                                            <div className="card--value row">
-                                                {token.id}
-                                            </div>
-                                            <div className="card--label">
-                                                Amount:
-                                            </div>
-                                            <div className="card--value row">
-                                                {Number(token.amount)}
-                                            </div>
-                                        </div>
-                                        )}
-                                    </div>
-                                </React.Fragment>
+                                <NativeToken
+                                    key={idx}
+                                    tokenId={token.id}
+                                    amount={Number(token.amount)}
+                                    isPreExpanded={isPreExpanded}
+                                />
                             ))}
                         </React.Fragment>
                         )}
