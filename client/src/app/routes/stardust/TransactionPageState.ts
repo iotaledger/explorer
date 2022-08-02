@@ -60,7 +60,7 @@ export interface TransactionPageState {
     conflictReason?: string;
 
     /**
-     * The state of the message on the tangle.
+     * The state of the blocks on the tangle.
      */
     blockTangleStatus: TangleStatus;
 }

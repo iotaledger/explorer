@@ -158,7 +158,7 @@ export class TransactionsHelper {
         return Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
     }
 
-    public static async getMessageStatus(
+    public static async getBlockStatus(
         network: string,
         blockId: string,
         tangleCacheService: StardustTangleCacheService
