@@ -18,9 +18,20 @@ export function formatAmount(
         return `${value} ${tokenInfo.subunit ? tokenInfo.subunit : tokenInfo.unit}`;
     }
     const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
-    const amount = tokenInfo.useMetricPrefix
+    const amount = tokenInfo.useMetricPrefix && baseTokenValue
         ? UnitsHelper.formatBest(baseTokenValue)
-        : `${Number.parseFloat(baseTokenValue.toFixed(decimalPlaces))} `;
+        : `${toFixedNoRound(baseTokenValue, decimalPlaces)} `;
 
         return `${amount}${tokenInfo.unit}`;
+}
+
+/**
+ * Format amount to two decimal places without rounding off.
+ * @param value The raw amount to format.
+ * @param precision The decimal places to show.
+ * @returns The formatted amount.
+ */
+function toFixedNoRound(value: number, precision: number = 2) {
+    const factor = Math.pow(10, precision);
+    return Math.floor(value * factor) / factor;
 }
