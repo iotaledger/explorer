@@ -42,7 +42,7 @@ export class StardustApiClient extends ApiClient {
      */
     public async nodeInfo(request: INodeInfoRequest): Promise<INodeInfoResponse> {
         return this.callApi<unknown, INodeInfoResponse>(
-            `token/${request.network}`,
+            `node-info/${request.network}`,
             "get"
         );
     }

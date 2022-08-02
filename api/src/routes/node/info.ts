@@ -13,7 +13,7 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(
+export async function info(
     config: IConfiguration,
     request: INodeInfoRequest
 ): Promise<INodeInfoResponse> {

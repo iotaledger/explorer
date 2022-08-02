@@ -17,6 +17,7 @@ export const routes: IRoute[] = [
     },
     { path: "/init", method: "get", func: "init" },
     { path: "/networks", method: "get", folder: "networks", func: "get" },
+    { path: "/node-info/:network", method: "get", folder: "node", func: "info" },
     { path: "/currencies", method: "get", folder: "currency", func: "get", sign: true },
     { path: "/currency/names", method: "get", folder: "currency/names", func: "get", sign: true },
     { path: "/transactions/:network/:hash", method: "get", folder: "og/transactions", func: "get" },
@@ -56,7 +57,6 @@ export const routes: IRoute[] = [
         folder: "stardust/alias/foundries", func: "get"
     },
     { path: "/stardust/foundry/:network/:foundryId", method: "get", folder: "stardust/foundry", func: "get" },
-    { path: "/token/:network", method: "get", folder: "token", func: "get" },
     { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
     { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
     { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true },
