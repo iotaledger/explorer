@@ -18,7 +18,7 @@ export function formatAmount(
         return `${value} ${tokenInfo.subunit ? tokenInfo.subunit : tokenInfo.unit}`;
     }
     const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
-    const amount = tokenInfo.useMetricPrefix && baseTokenValue
+    const amount = tokenInfo.useMetricPrefix
         ? UnitsHelper.formatBest(baseTokenValue)
         : `${toFixedNoRound(baseTokenValue, decimalPlaces)} `;
 
