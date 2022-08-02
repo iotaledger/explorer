@@ -57,6 +57,9 @@ class Output extends Component<OutputProps, OutputState> {
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
         const foundryId = this.buildFoundyId();
 
+        const outputIdTransactionPart = outputId.slice(0, -4);
+        const outputIdIndexPart = outputId.slice(-4);
+
         const outputHeader = (
             <div
                 onClick={() => this.setState({ isExpanded: !isExpanded })}
@@ -75,7 +78,8 @@ class Output extends Component<OutputProps, OutputState> {
                     <div className="output-id--link">
                         (
                         <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
-                            {outputId}
+                            <span>{outputIdTransactionPart}</span>
+                            <span className="highlight">{outputIdIndexPart}</span>
                         </Link>
                         )
                     </div>
