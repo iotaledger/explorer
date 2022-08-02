@@ -11,6 +11,7 @@ import Input from "./Input";
 import Output from "./Output";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
 import { TransactionPayloadState } from "./TransactionPayloadState";
+import Unlocks from "./Unlocks";
 
 /**
  * Component which will display a transaction payload.
@@ -45,7 +46,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { network, inputs, outputs, transferTotal, history, header } = this.props;
+        const { network, inputs, unlocks, outputs, transferTotal, header } = this.props;
         const isMarketed = isMarketedNetwork(network);
 
         return (
@@ -81,10 +82,9 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                             <span className="dot-separator">•</span>
                             <span>{inputs.length}</span>
                         </div>
-                        <div className="card--content">
-                            {inputs.map((input, idx) => (
-                                <Input key={idx} input={input} network={network} history={history} />
-                            ))}
+                        <div className="transaction-from card--content">
+                            {inputs.map((input, idx) => <Input key={idx} network={network} input={input} />)}
+                            <Unlocks unlocks={unlocks} />
                         </div>
                     </div>
 
