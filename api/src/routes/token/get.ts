@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { INodeGetRequest } from "../../models/api/stardust/INodeGetRequest";
-import { INodeGetResponse } from "../../models/api/stardust/INodeGetResponse";
+import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
+import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { STARDUST } from "../../models/db/protocolVersion";
 import { INodeService } from "../../models/services/INodeService";
@@ -15,8 +15,8 @@ import { ValidationHelper } from "../../utils/validationHelper";
  */
 export async function get(
     config: IConfiguration,
-    request: INodeGetRequest
-): Promise<INodeGetResponse> {
+    request: INodeInfoRequest
+): Promise<INodeInfoResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
 

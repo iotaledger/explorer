@@ -12,8 +12,8 @@ import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociate
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
-import { INodeGetRequest } from "../../models/api/stardust/INodeGetRequest";
-import { INodeGetResponse } from "../../models/api/stardust/INodeGetResponse";
+import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
+import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -40,8 +40,8 @@ export class StardustApiClient extends ApiClient {
      * @param request The Base token request.
      * @returns The response from the request.
      */
-    public async nodeInfo(request: INodeGetRequest): Promise<INodeGetResponse> {
-        return this.callApi<unknown, INodeGetResponse>(
+    public async nodeInfo(request: INodeInfoRequest): Promise<INodeInfoResponse> {
+        return this.callApi<unknown, INodeInfoResponse>(
             `token/${request.network}`,
             "get"
         );

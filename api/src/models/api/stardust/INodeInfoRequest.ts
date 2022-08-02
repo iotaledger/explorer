@@ -1,4 +1,4 @@
-export interface INodeGetRequest {
+export interface INodeInfoRequest {
     /**
      * The network to search on.
      */

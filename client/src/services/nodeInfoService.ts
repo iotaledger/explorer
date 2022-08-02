@@ -1,6 +1,6 @@
 import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { INodeGetResponse } from "../models/api/stardust/INodeGetResponse";
+import { INodeInfoResponse } from "../models/api/stardust/INodeInfoResponse";
 import { STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { StardustApiClient } from "./stardust/stardustApiClient";
@@ -55,7 +55,7 @@ export class NodeInfoService {
         for (const networkDetails of allNetworks) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
             const network = networkDetails.network;
-            const response: INodeGetResponse = await apiClient.nodeInfo({ network });
+            const response: INodeInfoResponse = await apiClient.nodeInfo({ network });
             const { baseToken, protocolVersion, bech32Hrp } = response;
 
             if (baseToken && protocolVersion && bech32Hrp) {
