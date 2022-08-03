@@ -3,8 +3,8 @@ import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
 import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { STARDUST } from "../../models/db/protocolVersion";
-import { INodeService } from "../../models/services/INodeService";
 import { NetworkService } from "../../services/networkService";
+import { NodeInfoService } from "../../services/stardust/nodeInfoService";
 import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
@@ -27,7 +27,7 @@ export async function info(
         return {};
     }
 
-    const nodeService = ServiceFactory.get<INodeService>(`node-info-${request.network}`);
+    const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${request.network}`);
 
-    return nodeService.getNodeAndTokenInfo();
+    return nodeService.getNodeInfo();
 }

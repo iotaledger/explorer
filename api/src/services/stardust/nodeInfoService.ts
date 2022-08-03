@@ -1,14 +1,13 @@
 import { INodeInfoBaseToken, SingleNodeClient } from "@iota/iota.js-stardust";
 import { INetwork } from "../../models/db/INetwork";
-import { INodeService } from "../../models/services/INodeService";
 
-interface INodeAndTokenInfo {
+interface INodeInfo {
     baseToken: INodeInfoBaseToken;
     protocolVersion: number;
     bech32Hrp: string;
 }
 
-const DEFAULT_NODE_INFO: INodeAndTokenInfo = {
+const DEFAULT_NODE_INFO: INodeInfo = {
     baseToken: {
         name: "IOTA",
         tickerSymbol: "MIOTA",
@@ -24,7 +23,7 @@ const DEFAULT_NODE_INFO: INodeAndTokenInfo = {
 /**
  * Class to handle Stardust protocol node info.
  */
-export class NodeInfoService implements INodeService {
+export class NodeInfoService {
     /**
      * The network configuration.
      */
@@ -33,7 +32,7 @@ export class NodeInfoService implements INodeService {
     /**
      * The node and token info.
      */
-    protected _nodeInfo: INodeAndTokenInfo = DEFAULT_NODE_INFO;
+    protected _nodeInfo: INodeInfo = DEFAULT_NODE_INFO;
 
     /**
      * Create a new instance of NodeInfoService.
@@ -44,7 +43,7 @@ export class NodeInfoService implements INodeService {
         this.init();
     }
 
-    public getNodeAndTokenInfo(): INodeAndTokenInfo {
+    public getNodeInfo(): INodeInfo {
         return this._nodeInfo;
     }
 

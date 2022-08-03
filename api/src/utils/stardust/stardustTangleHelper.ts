@@ -16,7 +16,7 @@ import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransact
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
 import { INetwork } from "../../models/db/INetwork";
-import { INodeService } from "../../models/services/INodeService";
+import { NodeInfoService } from "../../services/stardust/nodeInfoService";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
 
 /**
@@ -102,8 +102,8 @@ export class StardustTangleHelper {
         );
 
         if (milestonePayload) {
-            const nodeInfoService = ServiceFactory.get<INodeService>(`node-info-${network.network}`);
-            const protocolVersion = nodeInfoService.getNodeAndTokenInfo().protocolVersion;
+            const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${network.network}`);
+            const protocolVersion = nodeInfoService.getNodeInfo().protocolVersion;
             const blockId = blockIdFromMilestonePayload(protocolVersion, milestonePayload);
 
             return {
