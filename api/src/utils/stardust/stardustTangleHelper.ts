@@ -5,6 +5,7 @@ import {
     IBlockMetadata, IMilestonePayload, IBlock
 } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
+import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
@@ -15,6 +16,7 @@ import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransact
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
 import { INetwork } from "../../models/db/INetwork";
+import { NodeInfoService } from "../../services/stardust/nodeInfoService";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
 
 /**
@@ -100,8 +102,9 @@ export class StardustTangleHelper {
         );
 
         if (milestonePayload) {
-            // TODO Fetch protocol version from config/node
-            const blockId = blockIdFromMilestonePayload(2, milestonePayload);
+            const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${network.network}`);
+            const protocolVersion = nodeInfoService.getNodeInfo().protocolVersion;
+            const blockId = blockIdFromMilestonePayload(protocolVersion, milestonePayload);
 
             return {
                 blockId,
@@ -127,8 +130,10 @@ export class StardustTangleHelper {
         );
 
         if (milestonePayload) {
-            // TODO Fetch protocol version from config/node
-            const blockId = blockIdFromMilestonePayload(2, milestonePayload);
+            const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${network.network}`);
+            const protocolVersion = nodeInfoService.getNodeInfo().protocolVersion;
+
+            const blockId = blockIdFromMilestonePayload(protocolVersion, milestonePayload);
             const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
 
             return {
@@ -266,16 +271,16 @@ export class StardustTangleHelper {
     /**
      * Find item on the stardust network.
      * @param network The network config.
+     * @param bechHrp The bech32 human readable part of the network.
      * @param query The query to use for finding items.
      * @returns The item found.
      */
     public static async search(
         network: INetwork,
+        bechHrp: string,
         query: string
     ): Promise<ISearchResponse> {
-        const {
-            bechHrp, provider, user, password
-        } = network;
+        const { provider, user, password } = network;
         const node = new SingleNodeClient(provider, { userName: user, password });
         const indexerPlugin = new IndexerPluginClient(node);
 

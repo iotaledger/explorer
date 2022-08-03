@@ -4,6 +4,7 @@ import compression from "compression";
 import express, { Application } from "express";
 import { Server } from "http";
 import { Server as SocketIOServer } from "socket.io";
+import { NetworkConfigurationError } from "./errors/networkConfigurationError";
 import { initServices } from "./initServices";
 import { IFeedSubscribeRequest } from "./models/api/IFeedSubscribeRequest";
 import { IConfiguration } from "./models/configuration/IConfiguration";
@@ -127,6 +128,10 @@ server.listen(port, async () => {
         await initServices(config);
         console.log("Services Initialized");
     } catch (err) {
+        if (err instanceof NetworkConfigurationError) {
+            throw err;
+        }
+
         console.error(err);
     }
 });
