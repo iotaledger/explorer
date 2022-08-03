@@ -5,6 +5,8 @@ import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesR
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
+import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
+import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociatedOutputsRequest } from "../../models/api/stardust/IAssociatedOutputsRequest";
@@ -43,6 +45,18 @@ export class StardustApiClient extends ApiClient {
     public async baseTokenInfo(request: IBaseTokenGetRequest): Promise<IBaseTokenGetResponse> {
         return this.callApi<unknown, IBaseTokenGetResponse>(
             `token/${request.network}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the balance of and address from chronicle.
+     * @param request The Address Balance request.
+     * @returns The Address balance reponse
+     */
+    public async addressBalance(request: IAddressBalanceRequest): Promise<IAddressBalanceResponse> {
+        return this.callApi<unknown, IAddressBalanceResponse>(
+            `stardust/balance/${request.network}/${request.address}`,
             "get"
         );
     }
