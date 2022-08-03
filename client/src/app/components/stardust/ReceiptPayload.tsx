@@ -1,9 +1,7 @@
 /* eslint-disable max-len */
 import React, { Component, ReactNode } from "react";
-import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
-import { NetworkService } from "../../../services/networkService";
 import NetworkContext from "../../context/NetworkContext";
 import { ReceiptPayloadState } from "../ReceiptPayloadState";
 import Bech32Address from "./Bech32Address";
@@ -19,23 +17,11 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
     public static contextType = NetworkContext;
 
     /**
-     * The bech32 hrp from the node.
-     */
-    private readonly _bech32Hrp: string;
-
-    /**
      * Create a new instance of ReceiptPayload.
      * @param props The props.
      */
     constructor(props: ReceiptPayloadProps) {
         super(props);
-
-        const networkService = ServiceFactory.get<NetworkService>("network");
-        const networkConfig = this.props.network
-            ? networkService.get(this.props.network)
-            : undefined;
-
-        this._bech32Hrp = networkConfig?.bechHrp ?? "iota";
 
         this.state = {
             formatFull: false
@@ -47,6 +33,8 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const { bech32Hrp, tokenInfo } = this.context;
+
         return (
             <div className="indexation-payload">
                 <div className="card--header">
@@ -82,7 +70,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                             <div className="card--value card--value__mono">
                                 <Bech32Address
                                     addressDetails={
-                                        Bech32AddressHelper.buildAddress(this._bech32Hrp, f.address)
+                                        Bech32AddressHelper.buildAddress(bech32Hrp, f.address)
                                     }
                                     advancedMode={this.props.advancedMode}
                                     history={this.props.history}
@@ -106,7 +94,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                                     {
                                         formatAmount(
                                             Number(f.deposit),
-                                            this.context.tokenInfo,
+                                            tokenInfo,
                                             this.state.formatFull
                                         )
                                     }
@@ -136,7 +124,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                             {
                                 formatAmount(
                                     Number(this.props.payload.transaction.output.amount),
-                                    this.context.tokenInfo,
+                                    tokenInfo,
                                     this.state.formatFull
                                 )
                             }

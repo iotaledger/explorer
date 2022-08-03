@@ -6,8 +6,8 @@ import { isMarketedNetwork, isShimmerNetwork } from "../helpers/networkHelper";
 import { IConfiguration } from "../models/config/IConfiguration";
 import { MAINNET } from "../models/config/networkType";
 import { CHRYSALIS, OG, STARDUST } from "../models/config/protocolVersion";
-import { BaseTokenInfoService } from "../services/baseTokenInfoService";
 import { NetworkService } from "../services/networkService";
+import { NodeInfoService } from "../services/nodeInfoService";
 import "./App.scss";
 import { AppRouteProps } from "./AppRouteProps";
 import { AppState } from "./AppState";
@@ -113,8 +113,8 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
         const isShimmer = isShimmerNetwork(currentNetworkConfig?.network);
         const isMarketed = isMarketedNetwork(currentNetworkConfig?.network);
         const isStardust = currentNetworkConfig?.protocolVersion === STARDUST;
-        const baseTokenService = ServiceFactory.get<BaseTokenInfoService>("base-token-info");
-        const tokenInfo = baseTokenService.get(this.state.networkId);
+        const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
+        const nodeInfo = nodeService.get(this.state.networkId);
 
         const copyrightInnerContent = "This explorer implementation is inspired by ";
         const copyrightInner = (
@@ -131,8 +131,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
         const withNetworkProvider = (wrappedComponent: ReactNode) => (
             <NetworkContext.Provider value={{
                     name: this.state.networkId,
-                    tokenInfo,
-                    bech32Hrp: currentNetworkConfig?.bechHrp ?? "iota"
+                    tokenInfo: nodeInfo.baseToken,
+                    bech32Hrp: nodeInfo.bech32Hrp,
+                    protocolVersion: nodeInfo.protocolVersion
                 }}
             >
                 {wrappedComponent}

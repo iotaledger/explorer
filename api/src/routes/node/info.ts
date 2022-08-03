@@ -1,22 +1,22 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IBaseTokenGetRequest } from "../../models/api/stardust/IBaseTokenGetRequest";
-import { IBaseTokenGetResponse } from "../../models/api/stardust/IBaseTokenGetResponse";
+import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
+import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { STARDUST } from "../../models/db/protocolVersion";
-import { IBaseTokenService } from "../../models/services/IBaseTokenService";
 import { NetworkService } from "../../services/networkService";
+import { NodeInfoService } from "../../services/stardust/nodeInfoService";
 import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
- * Get the base token info of the network.
+ * Get the node info of the network.
  * @param config The configuration.
  * @param request The request.
  * @returns The response.
  */
-export async function get(
+export async function info(
     config: IConfiguration,
-    request: IBaseTokenGetRequest
-): Promise<IBaseTokenGetResponse> {
+    request: INodeInfoRequest
+): Promise<INodeInfoResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
 
@@ -27,7 +27,7 @@ export async function get(
         return {};
     }
 
-    const baseTokenService = ServiceFactory.get<IBaseTokenService>(`base-token-${request.network}`);
+    const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${request.network}`);
 
-    return baseTokenService.getBaseTokenInfo();
+    return nodeService.getNodeInfo();
 }

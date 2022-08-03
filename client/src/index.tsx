@@ -9,7 +9,6 @@ import { ServiceFactory } from "./factories/serviceFactory";
 import "./index.scss";
 import { IConfiguration } from "./models/config/IConfiguration";
 import { CHRYSALIS, STARDUST } from "./models/config/protocolVersion";
-import { BaseTokenInfoService } from "./services/baseTokenInfoService";
 import { ChrysalisApiClient } from "./services/chrysalis/chrysalisApiClient";
 import { ChrysalisFeedClient } from "./services/chrysalis/chrysalisFeedClient";
 import { ChrysalisTangleCacheService } from "./services/chrysalis/chrysalisTangleCacheService";
@@ -18,6 +17,7 @@ import { IdentityService } from "./services/identityService";
 import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesClient } from "./services/milestonesClient";
 import { NetworkService } from "./services/networkService";
+import { NodeInfoService } from "./services/nodeInfoService";
 import { SettingsService } from "./services/settingsService";
 import { StardustApiClient } from "./services/stardust/stardustApiClient";
 import { StardustFeedClient } from "./services/stardust/stardustFeedClient";
@@ -59,9 +59,9 @@ async function initialiseServices(): Promise<void> {
     await networkService.buildCache();
     ServiceFactory.register("network", () => networkService);
 
-    const baseTokenInfoService = new BaseTokenInfoService();
-    await baseTokenInfoService.buildCache();
-    ServiceFactory.register("base-token-info", () => baseTokenInfoService);
+    const nodeInfoService = new NodeInfoService();
+    await nodeInfoService.buildCache();
+    ServiceFactory.register("node-info", () => nodeInfoService);
 
     ServiceFactory.register("currency", () => new CurrencyService(config.apiEndpoint));
     ServiceFactory.register(`tangle-cache-${CHRYSALIS}`, () => new ChrysalisTangleCacheService());

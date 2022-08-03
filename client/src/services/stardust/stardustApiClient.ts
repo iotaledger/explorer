@@ -9,11 +9,11 @@ import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociatedOutputsRequest } from "../../models/api/stardust/IAssociatedOutputsRequest";
 import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
-import { IBaseTokenGetRequest } from "../../models/api/stardust/IBaseTokenGetRequest";
-import { IBaseTokenGetResponse } from "../../models/api/stardust/IBaseTokenGetResponse";
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
+import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
+import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -40,9 +40,9 @@ export class StardustApiClient extends ApiClient {
      * @param request The Base token request.
      * @returns The response from the request.
      */
-    public async baseTokenInfo(request: IBaseTokenGetRequest): Promise<IBaseTokenGetResponse> {
-        return this.callApi<unknown, IBaseTokenGetResponse>(
-            `token/${request.network}`,
+    public async nodeInfo(request: INodeInfoRequest): Promise<INodeInfoResponse> {
+        return this.callApi<unknown, INodeInfoResponse>(
+            `node-info/${request.network}`,
             "get"
         );
     }
