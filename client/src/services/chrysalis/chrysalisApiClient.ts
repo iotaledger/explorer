@@ -1,4 +1,5 @@
 import { FetchHelper } from "../../helpers/fetchHelper";
+import { IMessageDetailsRequest } from "../../models/api/chrysalis/IMessageDetailsRequest";
 import { IMessageDetailsResponse } from "../../models/api/chrysalis/IMessageDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/chrysalis/IMilestoneDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/chrysalis/IOutputDetailsResponse";
@@ -15,7 +16,6 @@ import { IIdentityDiffHistoryRequest } from "../../models/api/IIdentityDiffHisto
 import { IIdentityDidResolveResponse } from "../../models/api/IIdentityResolveResponse";
 import { IMarketGetRequest } from "../../models/api/IMarketGetRequest";
 import { IMarketGetResponse } from "../../models/api/IMarketGetResponse";
-import { IMessageDetailsRequest } from "../../models/api/IMessageDetailsRequest";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
 import { INetworkGetResponse } from "../../models/api/INetworkGetResponse";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
