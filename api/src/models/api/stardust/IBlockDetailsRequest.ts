@@ -5,7 +5,7 @@ export interface IBlockDetailsRequest {
     network: string;
 
     /**
-     * The message id to get the details for.
+     * The block id to get the details for.
      */
     blockId: string;
 }
