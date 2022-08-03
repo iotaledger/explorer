@@ -31,7 +31,7 @@ export interface BlockState {
     conflictReason?: string;
 
     /**
-     * The state of the message on the tangle.
+     * The state of the block on the tangle.
      */
     blockTangleStatus: TangleStatus;
 

@@ -110,7 +110,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     {this.state.protocolVersion === STARDUST && (
                                         <React.Fragment>
                                             <p>
-                                                We could not find any messages, addresses, outputs, milestones
+                                                We could not find any blocks, addresses, outputs, milestones
                                                 or indexes for the query.
                                             </p>
                                             <br />

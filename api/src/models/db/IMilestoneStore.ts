@@ -9,7 +9,7 @@ export interface IMilestoneStore {
      */
     indexes: {
         /**
-         * The id for the transaction or message.
+         * The id for the transaction or block.
          */
         id: string;
 
