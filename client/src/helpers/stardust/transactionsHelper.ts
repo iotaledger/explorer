@@ -13,11 +13,9 @@ import {
     TransactionHelper, IReferenceUnlock, Ed25519Address
 } from "@iota/iota.js-stardust";
 import { Converter, WriteStream } from "@iota/util.js-stardust";
-import { DateHelper } from "../../helpers/dateHelper";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
-import { TangleStatus } from "../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
 import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 
@@ -156,36 +154,6 @@ export class TransactionsHelper {
         const tpWriteStream = new WriteStream();
         serializeTransactionPayload(tpWriteStream, payload);
         return Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
-    }
-
-    public static async getBlockStatus(
-        network: string,
-        blockId: string,
-        tangleCacheService: StardustTangleCacheService
-    ): Promise<{ blockTangleStatus: TangleStatus; date: string }> {
-        let blockTangleStatus: TangleStatus = "unknown";
-        let date: string = "";
-        const details = await tangleCacheService.blockDetails(network, blockId);
-        if (details) {
-            if (details?.metadata) {
-                if (details.metadata.milestoneIndex) {
-                    blockTangleStatus = "milestone";
-                } else if (details.metadata.referencedByMilestoneIndex) {
-                    blockTangleStatus = "referenced";
-                } else {
-                    blockTangleStatus = "pending";
-                }
-            }
-            const milestoneIndex = details?.metadata?.referencedByMilestoneIndex;
-            if (milestoneIndex) {
-                const result = await tangleCacheService.milestoneDetails(
-                    network, milestoneIndex);
-                if (result?.milestone?.timestamp) {
-                    date = DateHelper.formatShort(DateHelper.milliseconds(result.milestone.timestamp));
-                }
-            }
-        }
-        return { blockTangleStatus, date };
     }
 
     private static bechAddressFromAddressUnlockCondition(
