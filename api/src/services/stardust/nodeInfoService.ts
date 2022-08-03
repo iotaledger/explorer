@@ -1,24 +1,24 @@
 import { INodeInfoBaseToken, SingleNodeClient } from "@iota/iota.js-stardust";
+import { NodeInfoError } from "../../errors/nodeInfoError";
 import { INetwork } from "../../models/db/INetwork";
 
-interface INodeInfo {
+/**
+ * The reduced node info fields relevant for Explorer.
+ */
+interface IReducedNodeInfo {
+    /**
+     * The base token info of the node.
+     */
     baseToken: INodeInfoBaseToken;
+    /**
+     * The protocol version.
+     */
     protocolVersion: number;
+    /**
+     * The version of node.
+     */
     bech32Hrp: string;
 }
-
-const DEFAULT_NODE_INFO: INodeInfo = {
-    baseToken: {
-        name: "IOTA",
-        tickerSymbol: "MIOTA",
-        unit: "i",
-        decimals: 0,
-        subunit: undefined,
-        useMetricPrefix: true
-    },
-    protocolVersion: 2,
-    bech32Hrp: "rms"
-};
 
 /**
  * Class to handle Stardust protocol node info.
@@ -32,7 +32,7 @@ export class NodeInfoService {
     /**
      * The node and token info.
      */
-    protected _nodeInfo: INodeInfo = DEFAULT_NODE_INFO;
+    protected _nodeInfo: IReducedNodeInfo;
 
     /**
      * Create a new instance of NodeInfoService.
@@ -43,24 +43,21 @@ export class NodeInfoService {
         this.init();
     }
 
-    public getNodeInfo(): INodeInfo {
+    public getNodeInfo(): IReducedNodeInfo {
         return this._nodeInfo;
     }
 
-    private init(): void {
+    public init(): void {
         const endpoint = this._network.provider;
         const apiClient = new SingleNodeClient(endpoint);
-        apiClient.info()
-        .then(info => {
+        apiClient.info().then(nodeInfo => {
             this._nodeInfo = {
-                baseToken: info.baseToken,
-                protocolVersion: info.protocol.version,
-                bech32Hrp: info.protocol.bech32Hrp
+                baseToken: nodeInfo.baseToken,
+                protocolVersion: nodeInfo.protocol.version,
+                bech32Hrp: nodeInfo.protocol.bech32Hrp
             };
-            console.log("Node info", this._network.network, this._nodeInfo);
-        })
-        .catch(err => {
-            console.log(err);
+        }).catch(err => {
+            throw new NodeInfoError(`Failed to fetch node info for "${this._network.network}" with error:\n${err}`);
         });
     }
 }

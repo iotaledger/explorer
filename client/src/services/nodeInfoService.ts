@@ -6,26 +6,22 @@ import { NetworkService } from "../services/networkService";
 import { StardustApiClient } from "./stardust/stardustApiClient";
 
 /**
- * The default fallback base token info.
+ * The reduced node info fields relevant for Explorer.
  */
- interface INodeAndTokenInfo {
+interface IReducedNodeInfo {
+    /**
+     * The base token info of the node.
+     */
     baseToken: INodeInfoBaseToken;
+    /**
+     * The protocol version.
+     */
     protocolVersion: number;
+    /**
+     * The version of node.
+     */
     bech32Hrp: string;
 }
-
-export const DEFAULT_NODE_INFO: INodeAndTokenInfo = {
-    baseToken: {
-        name: "IOTA",
-        tickerSymbol: "MIOTA",
-        unit: "i",
-        decimals: 0,
-        subunit: undefined,
-        useMetricPrefix: true
-    },
-    protocolVersion: 2,
-    bech32Hrp: "rms"
-};
 
 /**
  * Service to handle base token info.
@@ -34,15 +30,15 @@ export class NodeInfoService {
     /**
      * Cache of the base taken infos.
      */
-    private _cache: { [network: string]: INodeAndTokenInfo } = {};
+    private _cache: { [network: string]: IReducedNodeInfo } = {};
 
     /**
      * Get the base token info by network.
      * @param network The name of the network.
      * @returns The base token info.
      */
-    public get(network: string): INodeAndTokenInfo {
-        return this._cache[network] ?? DEFAULT_NODE_INFO;
+    public get(network: string): IReducedNodeInfo {
+        return this._cache[network];
     }
 
     /**

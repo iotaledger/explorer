@@ -104,9 +104,7 @@ export async function initServices(config: IConfiguration) {
         console.log(log);
     };
 
-    setInterval(
-        update,
-        60000);
+    setInterval(update, 60000);
 
     await update();
 }
@@ -166,6 +164,13 @@ function initChrysalisServices(networkConfig: INetwork): void {
  * @param networkConfig The Network Config.
  */
 function initStardustServices(networkConfig: INetwork): void {
+    const nodeInfoService = new NodeInfoService(networkConfig);
+
+    ServiceFactory.register(
+        `node-info-${networkConfig.network}`,
+        () => nodeInfoService
+    );
+
     ServiceFactory.register(
         `mqtt-${networkConfig.network}`, () => new StardustMqttClient(
             networkConfig.feedEndpoint.split(";"))
@@ -184,12 +189,6 @@ function initStardustServices(networkConfig: INetwork): void {
     ServiceFactory.register(
         `stats-${networkConfig.network}`,
         () => new StardustStatsService(networkConfig)
-    );
-
-    const nodeInfoService = new NodeInfoService(networkConfig);
-    ServiceFactory.register(
-        `node-info-${networkConfig.network}`,
-        () => nodeInfoService
     );
 
     if (networkConfig.permaNodeEndpoint) {

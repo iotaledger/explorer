@@ -114,7 +114,7 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
         const isMarketed = isMarketedNetwork(currentNetworkConfig?.network);
         const isStardust = currentNetworkConfig?.protocolVersion === STARDUST;
         const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
-        const nodeAndTokenInfo = nodeService.get(this.state.networkId);
+        const nodeInfo = nodeService.get(this.state.networkId);
 
         const copyrightInnerContent = "This explorer implementation is inspired by ";
         const copyrightInner = (
@@ -131,9 +131,9 @@ class App extends Component<RouteComponentProps<AppRouteProps> & { config: IConf
         const withNetworkProvider = (wrappedComponent: ReactNode) => (
             <NetworkContext.Provider value={{
                     name: this.state.networkId,
-                    tokenInfo: nodeAndTokenInfo.baseToken,
-                    bech32Hrp: nodeAndTokenInfo.bech32Hrp,
-                    protocolVersion: nodeAndTokenInfo.protocolVersion
+                    tokenInfo: nodeInfo.baseToken,
+                    bech32Hrp: nodeInfo.bech32Hrp,
+                    protocolVersion: nodeInfo.protocolVersion
                 }}
             >
                 {wrappedComponent}

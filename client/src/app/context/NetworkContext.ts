@@ -1,22 +1,40 @@
 import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import { createContext } from "react";
-import { DEFAULT_NODE_INFO } from "../../services/nodeInfoService";
 
 /**
  * The network context object.
  */
 export interface INetworkContextProps {
+    /**
+     * The network name.
+     */
     name: string;
+    /**
+     * The base token info of the node.
+     */
     tokenInfo: INodeInfoBaseToken;
-    bech32Hrp: string;
+    /**
+     * The protocol version.
+     */
     protocolVersion: number;
+    /**
+     * The version of node.
+     */
+    bech32Hrp: string;
 }
 
 const defaultState = {
   name: "",
-  tokenInfo: DEFAULT_NODE_INFO.baseToken,
-  bech32Hrp: DEFAULT_NODE_INFO.bech32Hrp,
-  protocolVersion: DEFAULT_NODE_INFO.protocolVersion
+  tokenInfo: {
+      name: "",
+      tickerSymbol: "",
+      unit: "",
+      decimals: 0,
+      subunit: undefined,
+      useMetricPrefix: true
+  },
+  bech32Hrp: "",
+  protocolVersion: -1
 };
 
 const networkContext = createContext<INetworkContextProps>(defaultState);

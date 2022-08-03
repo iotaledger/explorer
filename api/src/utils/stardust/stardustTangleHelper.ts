@@ -130,8 +130,9 @@ export class StardustTangleHelper {
         );
 
         if (milestonePayload) {
-            const nodeInfoService = ServiceFactory.get<INodeService>(`node-info-${network.network}`);
-            const protocolVersion = nodeInfoService.getNodeAndTokenInfo().protocolVersion;
+            const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${network.network}`);
+            const protocolVersion = nodeInfoService.getNodeInfo().protocolVersion;
+
             const blockId = blockIdFromMilestonePayload(protocolVersion, milestonePayload);
             const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
 
