@@ -64,7 +64,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
 
         this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
 
-        this._bechHrp = networkConfig?.bechHrp ?? "iot";
+        this._bechHrp = networkConfig?.bechHrp ?? "iota";
 
         this.state = {
             ...Bech32AddressHelper.buildAddress(

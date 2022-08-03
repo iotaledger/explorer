@@ -8,7 +8,6 @@ import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelp
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import IAddressDetailsWithBalance from "../../../models/api/stardust/IAddressDetailsWithBalance";
 import { STARDUST } from "../../../models/config/protocolVersion";
-import { NetworkService } from "../../../services/networkService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import QR from "../../components/chrysalis/QR";
@@ -48,28 +47,15 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
     private readonly _tangleCacheService: StardustTangleCacheService;
 
     /**
-     * The hrp of bech addresses.
-     */
-    private readonly _bechHrp: string;
-
-    /**
      * Create a new instance of AddressPage.
      * @param props The props.
      */
     constructor(props: RouteComponentProps<AddressRouteProps>) {
         super(props);
 
-        const networkService = ServiceFactory.get<NetworkService>("network");
-        const networkConfig = this.props.match.params.network
-            ? networkService.get(this.props.match.params.network)
-            : undefined;
-
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
-        this._bechHrp = networkConfig?.bechHrp ?? "iota";
-
         this.state = {
-            ...Bech32AddressHelper.buildAddress(this._bechHrp, props.match.params.address),
             formatFull: true
         };
     }
@@ -79,6 +65,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
+        const { bech32Hrp } = this.context;
 
         if (!this.props.location.state) {
             const result = await this._tangleCacheService.search(
@@ -106,7 +93,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
             this.setState({
                 bech32AddressDetails: Bech32AddressHelper.buildAddress(
-                    this._bechHrp,
+                    bech32Hrp,
                     addressDetails?.hex,
                     addressDetails?.type ?? 0
                 ),

@@ -271,16 +271,16 @@ export class StardustTangleHelper {
     /**
      * Find item on the stardust network.
      * @param network The network config.
+     * @param bechHrp The bech32 human readable part of the network.
      * @param query The query to use for finding items.
      * @returns The item found.
      */
     public static async search(
         network: INetwork,
+        bechHrp: string,
         query: string
     ): Promise<ISearchResponse> {
-        const {
-            bechHrp, provider, user, password
-        } = network;
+        const { provider, user, password } = network;
         const node = new SingleNodeClient(provider, { userName: user, password });
         const indexerPlugin = new IndexerPluginClient(node);
 
