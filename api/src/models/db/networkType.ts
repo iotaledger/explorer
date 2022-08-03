@@ -22,6 +22,5 @@ const networkTypes = [
  */
 export type NetworkType = (typeof networkTypes)[number];
 
-
 export const isValidNetwork = (n: any): n is NetworkType => networkTypes.includes(n);
 

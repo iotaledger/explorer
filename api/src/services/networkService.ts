@@ -2,6 +2,7 @@ import { NetworkConfigurationError } from "../errors/networkConfigurationError";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { INetwork } from "../models/db/INetwork";
 import { isValidNetwork } from "../models/db/networkType";
+import { isValidProtocol } from "../models/db/protocolVersion";
 import { IStorageService } from "../models/services/IStorageService";
 /**
  * Class to handle networks service.
@@ -82,6 +83,12 @@ export class NetworkService {
     private validate(network: INetwork) {
         if (!isValidNetwork(network.network)) {
             throw new NetworkConfigurationError(`Network ${network.network} is not one of the valid network types.`);
+        }
+
+        if (!isValidProtocol(network.protocolVersion)) {
+            throw new NetworkConfigurationError(
+                `Network ${network.network} has invalid protocol version "${network.protocolVersion}".`
+            );
         }
     }
 }
