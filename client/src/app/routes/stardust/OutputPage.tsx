@@ -158,10 +158,18 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="label">
                                     Spent in transaction with ID
                                 </div>
-                                <div className="value code row middle">
-                                    <span className="margin-r-t">
+                                <div className="value code row middle highlight">
+                                    <Link
+                                        to={`/${network}/transaction/${transactionIdSpent}`}
+                                        className="margin-r-t"
+                                    >
                                         {transactionIdSpent}
-                                    </span>
+                                    </Link>
+                                    <CopyButton
+                                        onClick={() => ClipboardHelper.copy(transactionIdSpent)}
+                                        buttonType="copy"
+                                        labelPosition="bottom"
+                                    />
                                 </div>
                             </div>
                         )}
