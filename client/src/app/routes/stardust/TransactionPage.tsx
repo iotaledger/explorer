@@ -288,7 +288,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                                     Parents
                                                 </div>
                                                 {metadata.parents.map((parent, idx) => (
-                                                    <div key={idx} className="value code link">
+                                                    <div key={idx} style={{marginTop: "8px"}} className="value code link">
                                                         <Link
                                                             to={`/${network}/block/${parent}`}
                                                             className="margin-r-t"
