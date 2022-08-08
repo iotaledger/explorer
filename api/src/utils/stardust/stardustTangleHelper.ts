@@ -31,7 +31,7 @@ export class StardustTangleHelper {
      */
     public static async blockDetails(network: INetwork, blockId: string): Promise<IBlockDetailsResponse> {
         blockId = HexHelper.addPrefix(blockId);
-        const metadata = await this.fromNodeWithPermanodeFallBack<string, IBlockMetadata>(
+        const metadata = await this.tryFetchPermanodeThenNode<string, IBlockMetadata>(
             blockId,
             "blockMetadata",
             network
@@ -55,7 +55,7 @@ export class StardustTangleHelper {
         transactionId: string
     ): Promise<ITransactionDetailsResponse> {
         transactionId = HexHelper.addPrefix(transactionId);
-        const block = await this.fromNodeWithPermanodeFallBack<string, IBlock>(
+        const block = await this.tryFetchPermanodeThenNode<string, IBlock>(
             transactionId,
             "transactionIncludedBlock",
             network
@@ -75,7 +75,7 @@ export class StardustTangleHelper {
      * @returns The item details.
      */
     public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputResponse | undefined> {
-        const outputResponse = await this.fromNodeWithPermanodeFallBack<string, IOutputResponse>(
+        const outputResponse = await this.tryFetchPermanodeThenNode<string, IOutputResponse>(
             outputId,
             "output",
             network
@@ -95,7 +95,7 @@ export class StardustTangleHelper {
     public static async milestoneDetailsById(
         network: INetwork, milestoneId: string
     ): Promise<IMilestoneDetailsResponse | undefined> {
-        const milestonePayload = await this.fromNodeWithPermanodeFallBack<string, IMilestonePayload>(
+        const milestonePayload = await this.tryFetchPermanodeThenNode<string, IMilestonePayload>(
             milestoneId,
             "milestoneById",
             network
@@ -123,7 +123,7 @@ export class StardustTangleHelper {
     public static async milestoneDetailsByIndex(
         network: INetwork, milestoneIndex: number
     ): Promise<IMilestoneDetailsResponse | undefined> {
-        const milestonePayload = await this.fromNodeWithPermanodeFallBack<number, IMilestonePayload>(
+        const milestonePayload = await this.tryFetchPermanodeThenNode<number, IMilestonePayload>(
             milestoneIndex,
             "milestoneByIndex",
             network
@@ -309,7 +309,7 @@ export class StardustTangleHelper {
         }
 
         if (searchQuery.blockId) {
-            const block = await this.fromNodeWithPermanodeFallBack<string, IBlock>(
+            const block = await this.tryFetchPermanodeThenNode<string, IBlock>(
                 searchQuery.blockId,
                 "block",
                 network
@@ -323,7 +323,7 @@ export class StardustTangleHelper {
         }
 
         if (searchQuery.transactionId) {
-            const block = await this.fromNodeWithPermanodeFallBack<string, IBlock>(
+            const block = await this.tryFetchPermanodeThenNode<string, IBlock>(
                 searchQuery.transactionId,
                 "transactionIncludedBlock",
                 network
@@ -337,7 +337,7 @@ export class StardustTangleHelper {
         }
 
         if (searchQuery.output) {
-            const output = await this.fromNodeWithPermanodeFallBack<string, IOutputResponse>(
+            const output = await this.tryFetchPermanodeThenNode<string, IOutputResponse>(
                 searchQuery.output,
                 "output",
                 network
@@ -427,14 +427,14 @@ export class StardustTangleHelper {
     }
 
     /**
-     * Generic helper function to try fetching from node client.
-     * On failure, if configured, we try with permanode.
+     * Generic helper function to try fetching from permanode client (if configured).
+     * On failure (or not present), we try to fetch from node.
      * @param args The argument(s) to pass to the fetch calls.
      * @param methodName The function to call on the clients.
      * @param network The network config in context.
      * @returns The results or null if call(s) failed.
      */
-    private static async fromNodeWithPermanodeFallBack<A, R>(
+    private static async tryFetchPermanodeThenNode<A, R>(
         args: A,
         methodName: string,
         network: INetwork
@@ -443,26 +443,24 @@ export class StardustTangleHelper {
             provider, user, password,
             permaNodeEndpoint, permaNodeEndpointUser, permaNodeEndpointPassword
         } = network;
+        if (permaNodeEndpoint) {
+            try {
+                const permanode = new SingleNodeClient(
+                    permaNodeEndpoint,
+                    { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
+                );
+
+                // try fetch from permanode (chronicle)
+                const result: Promise<R> = permanode[methodName](args);
+                return await result;
+            } catch {}
+        }
+
         const node = new SingleNodeClient(provider, { userName: user, password });
 
         try {
-            // Call on node client with dynamic function name
+            // try fetch from node
             const result: Promise<R> = node[methodName](args);
-            return await result;
-        } catch {}
-
-        if (!permaNodeEndpoint) {
-            return null;
-        }
-
-        const permanode = new SingleNodeClient(
-            permaNodeEndpoint,
-            { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
-        );
-
-        try {
-            // Call on permanode client with dynamic function name
-            const result: Promise<R> = permanode[methodName](args);
             return await result;
         } catch {}
 
