@@ -6,6 +6,8 @@ import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesR
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
+import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
+import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
@@ -75,6 +77,15 @@ export class StardustTangleCacheService extends TangleCacheService {
         }
 
         this._api = ServiceFactory.get<StardustApiClient>(this.API_CLIENT_KEY);
+    }
+
+    /**
+     * Fetch the balance of an address from chronicle.
+     * @param request The address balance request.
+     * @returns The details response.
+     */
+    public async addressBalance(request: IAddressBalanceRequest): Promise<IAddressBalanceResponse | undefined> {
+        return this._api.addressBalance(request);
     }
 
     /**

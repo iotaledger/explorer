@@ -291,7 +291,8 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                                     <div
                                                         key={idx}
                                                         style={{ marginTop: "8px" }}
-                                                        className="value code link">
+                                                        className="value code link"
+                                                    >
                                                         <Link
                                                             to={`/${network}/block/${parent}`}
                                                             className="margin-r-t"
