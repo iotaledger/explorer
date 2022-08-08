@@ -22,8 +22,8 @@ import { OgFeedService } from "./services/og/ogFeedService";
 import { OgItemsService } from "./services/og/ogItemsService";
 import { OgStatsService } from "./services/og/ogStatsService";
 import { ZmqService } from "./services/og/zmqService";
-import { BaseTokenInfoService } from "./services/stardust/baseTokenInfoService";
 import { ChronicleService } from "./services/stardust/chronicleService";
+import { NodeInfoService } from "./services/stardust/nodeInfoService";
 import { StardustFeedService } from "./services/stardust/stardustFeedService";
 import { StardustItemsService } from "./services/stardust/stardustItemsService";
 import { StardustStatsService } from "./services/stardust/stardustStatsService";
@@ -104,9 +104,7 @@ export async function initServices(config: IConfiguration) {
         console.log(log);
     };
 
-    setInterval(
-        update,
-        60000);
+    setInterval(update, 60000);
 
     await update();
 }
@@ -166,6 +164,13 @@ function initChrysalisServices(networkConfig: INetwork): void {
  * @param networkConfig The Network Config.
  */
 function initStardustServices(networkConfig: INetwork): void {
+    const nodeInfoService = new NodeInfoService(networkConfig);
+
+    ServiceFactory.register(
+        `node-info-${networkConfig.network}`,
+        () => nodeInfoService
+    );
+
     ServiceFactory.register(
         `mqtt-${networkConfig.network}`, () => new StardustMqttClient(
             networkConfig.feedEndpoint.split(";"))
@@ -184,12 +189,6 @@ function initStardustServices(networkConfig: INetwork): void {
     ServiceFactory.register(
         `stats-${networkConfig.network}`,
         () => new StardustStatsService(networkConfig)
-    );
-
-    const baseTokenInfoService = new BaseTokenInfoService(networkConfig);
-    ServiceFactory.register(
-        `base-token-${networkConfig.network}`,
-        () => baseTokenInfoService
     );
 
     if (networkConfig.permaNodeEndpoint) {

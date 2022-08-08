@@ -1,4 +1,4 @@
-import { IBlock, IBlockMetadata, IUTXOInput } from "@iota/iota.js-stardust";
+import { IBlock, IBlockMetadata, ISignatureUnlock, IUTXOInput } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
@@ -31,7 +31,7 @@ export interface BlockState {
     conflictReason?: string;
 
     /**
-     * The state of the message on the tangle.
+     * The state of the block on the tangle.
      */
     blockTangleStatus: TangleStatus;
 
@@ -41,9 +41,14 @@ export interface BlockState {
     advancedMode: boolean;
 
     /**
-     * The unlock addresses for the transactions.
+     * The inputs of the transaction
      */
     inputs?: (IUTXOInput & IInput)[];
+
+    /**
+     * The unlocks of the transaction.
+     */
+    unlocks?: ISignatureUnlock[];
 
     /**
      * The outputs.

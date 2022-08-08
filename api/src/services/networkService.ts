@@ -1,7 +1,9 @@
+import { NetworkConfigurationError } from "../errors/networkConfigurationError";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { INetwork } from "../models/db/INetwork";
+import { isValidNetwork } from "../models/db/networkType";
+import { isValidProtocol } from "../models/db/protocolVersion";
 import { IStorageService } from "../models/services/IStorageService";
-
 /**
  * Class to handle networks service.
  */
@@ -33,21 +35,19 @@ export class NetworkService {
      * Initialise the local cache.
      */
     public async buildCache(): Promise<void> {
-        try {
-            const networks = await this._networkStorageService.getAll();
+        const networks = await this._networkStorageService.getAll();
 
-            const newCache = {};
+        const newCache = {};
 
-            for (const network of networks) {
-                newCache[network.network] = network;
-            }
+        for (const network of networks) {
+            this.validate(network);
 
-            if (Object.keys(newCache).length > 0) {
-                this._cache = newCache;
-                this._cacheNames = Object.values(this._cache).map(n => n.network);
-            }
-        } catch (err) {
-            console.error(err);
+            newCache[network.network] = network;
+        }
+
+        if (Object.keys(newCache).length > 0) {
+            this._cache = newCache;
+            this._cacheNames = Object.values(this._cache).map(n => n.network);
         }
     }
 
@@ -75,4 +75,21 @@ export class NetworkService {
     public networkNames(): string[] {
         return this._cacheNames;
     }
+
+    /**
+     * Validates the loaded network configurations.
+     * @param network The network config.
+     */
+    private validate(network: INetwork) {
+        if (!isValidNetwork(network.network)) {
+            throw new NetworkConfigurationError(`Network ${network.network} is not one of the valid network types.`);
+        }
+
+        if (!isValidProtocol(network.protocolVersion)) {
+            throw new NetworkConfigurationError(
+                `Network ${network.network} has invalid protocol version "${network.protocolVersion}".`
+            );
+        }
+    }
 }
+

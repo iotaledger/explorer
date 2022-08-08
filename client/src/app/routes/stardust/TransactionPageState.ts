@@ -1,4 +1,4 @@
-import { IBlock, IBlockMetadata, IUTXOInput } from "@iota/iota.js-stardust";
+import { IBlock, IBlockMetadata, ISignatureUnlock, IUTXOInput } from "@iota/iota.js-stardust";
 import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
 import { TangleStatus } from "../../../models/tangleStatus";
@@ -23,6 +23,11 @@ export interface TransactionPageState {
      * The unlock addresses for the transactions.
      */
     inputs?: (IUTXOInput & IInput)[];
+
+    /**
+     * The unlocks of the transaction.
+     */
+    unlocks?: ISignatureUnlock[];
 
     /**
      * The outputs.
@@ -55,7 +60,7 @@ export interface TransactionPageState {
     conflictReason?: string;
 
     /**
-     * The state of the message on the tangle.
+     * The state of the block on the tangle.
      */
     blockTangleStatus: TangleStatus;
 }

@@ -6,7 +6,7 @@ export interface IMilestonesGetResponse extends IResponse {
      */
     milestones?: {
         /**
-         * The transaction hash or milestone message id.
+         * The transaction hash or milestone block id.
          */
         id: string;
 

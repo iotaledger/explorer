@@ -1,12 +1,14 @@
-import { TransactionHelper } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { ProtocolVersion, STARDUST } from "../../../models/config/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Spinner from "../../components/Spinner";
+import NetworkContext from "../../context/NetworkContext";
 import "../Search.scss";
 import { SearchRouteProps } from "../SearchRouteProps";
 import { SearchState } from "../SearchState";
@@ -15,6 +17,11 @@ import { SearchState } from "../SearchState";
  * Component which will show the search page.
  */
 class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, SearchState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
+
     /**
      * API Client for tangle requests.
      */
@@ -103,7 +110,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     {this.state.protocolVersion === STARDUST && (
                                         <React.Fragment>
                                             <p>
-                                                We could not find any messages, addresses, outputs, milestones
+                                                We could not find any blocks, addresses, outputs, milestones
                                                 or indexes for the query.
                                             </p>
                                             <br />
@@ -242,15 +249,22 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     routeParam = "";
                                 } else if (response.transactionBlock) {
                                     route = "transaction";
-                                } else if (response.aliasOutputId) {
+                                } else if (response.aliasId) {
                                     route = "alias";
-                                    routeParam = response.aliasOutputId;
-                                } else if (response.foundryOutputId) {
+                                    const aliasAddress = this.buildAddressFromIdAndType(
+                                        response.aliasId, ALIAS_ADDRESS_TYPE
+                                    );
+                                    routeParam = aliasAddress.bech32;
+                                } else if (response.foundryId) {
                                     route = "foundry";
-                                    routeParam = response.foundryOutputId;
-                                } else if (response.nftOutputId) {
-                                    route = "nft-address";
-                                    routeParam = response.nftOutputId;
+                                    routeParam = response.foundryId;
+                                } else if (response.nftId) {
+                                    route = "nft";
+                                    const nftAddress = this.buildAddressFromIdAndType(
+                                        response.nftId,
+                                        NFT_ADDRESS_TYPE
+                                    );
+                                    routeParam = nftAddress.bech32;
                                 } else if (response.milestone?.blockId) {
                                     route = "block";
                                     routeParam = response.milestone?.blockId;
@@ -286,6 +300,10 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             redirect,
             invalidError
         });
+    }
+
+    private buildAddressFromIdAndType(id: string, type: number) {
+        return Bech32AddressHelper.buildAddress(this.context.bech32Hrp, id, type);
     }
 }
 

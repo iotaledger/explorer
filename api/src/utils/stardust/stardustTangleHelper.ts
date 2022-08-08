@@ -5,13 +5,18 @@ import {
     IBlockMetadata, IMilestonePayload, IBlock
 } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
+import { ServiceFactory } from "../../factories/serviceFactory";
+import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
+import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
+import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
-import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
-import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
+import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
+import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
 import { INetwork } from "../../models/db/INetwork";
+import { NodeInfoService } from "../../services/stardust/nodeInfoService";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
 
 /**
@@ -97,8 +102,9 @@ export class StardustTangleHelper {
         );
 
         if (milestonePayload) {
-            // TODO Fetch protocol version from config/node
-            const blockId = blockIdFromMilestonePayload(2, milestonePayload);
+            const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${network.network}`);
+            const protocolVersion = nodeInfoService.getNodeInfo().protocolVersion;
+            const blockId = blockIdFromMilestonePayload(protocolVersion, milestonePayload);
 
             return {
                 blockId,
@@ -124,8 +130,10 @@ export class StardustTangleHelper {
         );
 
         if (milestonePayload) {
-            // TODO Fetch protocol version from config/node
-            const blockId = blockIdFromMilestonePayload(2, milestonePayload);
+            const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${network.network}`);
+            const protocolVersion = nodeInfoService.getNodeInfo().protocolVersion;
+
+            const blockId = blockIdFromMilestonePayload(protocolVersion, milestonePayload);
             const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
 
             return {
@@ -137,25 +145,29 @@ export class StardustTangleHelper {
     }
 
     /**
-     * Get the nft details.
+     * Get the alias details.
      * @param network The network to find the items on.
-     * @param address The address to get the details for.
-     * @returns The nft details.
+     * @param aliasId The aliasId to get the details for.
+     * @returns The alias details.
      */
-    public static async nftOutputs(
+    public static async aliasDetails(
         network: INetwork,
-        address: string
-    ): Promise<INftOutputsResponse | undefined> {
+        aliasId: string
+    ): Promise<IAliasResponse | undefined> {
         const { provider, user, password } = network;
-        try {
-            const node = new SingleNodeClient(provider, { userName: user, password });
-            const indexerPlugin = new IndexerPluginClient(node);
-            const nftOutputs = await indexerPlugin.nfts({ addressBech32: address });
+        const node = new SingleNodeClient(provider, { userName: user, password });
+        const indexerPlugin = new IndexerPluginClient(node);
+        const aliasOutput = await indexerPlugin.alias(aliasId);
 
-            return {
-                outputs: nftOutputs
-            };
-        } catch {}
+        if (aliasOutput.items.length > 0) {
+            const aliasDetails = await this.outputDetails(network, aliasOutput.items[0]);
+
+            if (aliasDetails) {
+                return {
+                    aliasDetails
+                };
+            }
+        }
     }
 
     /**
@@ -181,20 +193,46 @@ export class StardustTangleHelper {
     }
 
     /**
-     * Get the nft details by nftId.
+     * Get the foundry details.
      * @param network The network to find the items on.
-     * @param nftId The nftId to get the details for.
+     * @param foundryId The foundryId to get the details for.
+     * @returns The foundry details.
+     */
+    public static async foundryDetails(
+        network: INetwork,
+        foundryId: string
+    ): Promise<IFoundryResponse | undefined> {
+        const { provider, user, password } = network;
+        const node = new SingleNodeClient(provider, { userName: user, password });
+        const indexerPlugin = new IndexerPluginClient(node);
+        const foundryOutput = await indexerPlugin.foundry(foundryId);
+
+        if (foundryOutput.items.length > 0) {
+            const foundryDetails = await this.outputDetails(network, foundryOutput.items[0]);
+
+            if (foundryDetails) {
+                return {
+                    foundryDetails
+                };
+            }
+        }
+    }
+
+    /**
+     * Get the nft outputs by address.
+     * @param network The network to find the items on.
+     * @param address The address to get the details for.
      * @returns The nft details.
      */
-    public static async nftDetails(
+    public static async nftOutputs(
         network: INetwork,
-        nftId: string
+        address: string
     ): Promise<INftOutputsResponse | undefined> {
         const { provider, user, password } = network;
         try {
             const node = new SingleNodeClient(provider, { userName: user, password });
             const indexerPlugin = new IndexerPluginClient(node);
-            const nftOutputs = await indexerPlugin.nft(nftId);
+            const nftOutputs = await indexerPlugin.nfts({ addressBech32: address });
 
             return {
                 outputs: nftOutputs
@@ -203,18 +241,46 @@ export class StardustTangleHelper {
     }
 
     /**
+     * Get the nft details by nftId.
+     * @param network The network to find the items on.
+     * @param nftId The nftId to get the details for.
+     * @returns The nft details.
+     */
+    public static async nftDetails(
+        network: INetwork,
+        nftId: string
+    ): Promise<INftDetailsResponse | undefined> {
+        const { provider, user, password } = network;
+        try {
+            const node = new SingleNodeClient(provider, { userName: user, password });
+            const indexerPlugin = new IndexerPluginClient(node);
+            const nftOutputs = await indexerPlugin.nft(nftId);
+
+            if (nftOutputs.items.length > 0) {
+                const nftDetails = await this.outputDetails(network, nftOutputs.items[0]);
+
+                if (nftDetails) {
+                    return {
+                        nftDetails
+                    };
+                }
+            }
+        } catch {}
+    }
+
+    /**
      * Find item on the stardust network.
      * @param network The network config.
+     * @param bechHrp The bech32 human readable part of the network.
      * @param query The query to use for finding items.
      * @returns The item found.
      */
     public static async search(
         network: INetwork,
+        bechHrp: string,
         query: string
     ): Promise<ISearchResponse> {
-        const {
-            bechHrp, provider, user, password
-        } = network;
+        const { provider, user, password } = network;
         const node = new SingleNodeClient(provider, { userName: user, password });
         const indexerPlugin = new IndexerPluginClient(node);
 
@@ -288,7 +354,7 @@ export class StardustTangleHelper {
 
                 if (aliasOutputs.items.length > 0) {
                     return {
-                        aliasOutputId: aliasOutputs.items[0]
+                        aliasId: searchQuery.aliasId
                     };
                 }
             } catch {}
@@ -299,7 +365,7 @@ export class StardustTangleHelper {
                 const nftOutputs = await indexerPlugin.nft(searchQuery.nftId);
                 if (nftOutputs.items.length > 0) {
                     return {
-                        nftOutputId: nftOutputs.items[0]
+                        nftId: searchQuery.nftId
                     };
                 }
             } catch {}
@@ -310,7 +376,7 @@ export class StardustTangleHelper {
                 const foundryOutputs = await indexerPlugin.foundry(searchQuery.foundryId);
                 if (foundryOutputs.items.length > 0) {
                     return {
-                        foundryOutputId: foundryOutputs.items[0]
+                        foundryId: searchQuery.foundryId
                     };
                 }
             } catch {}

@@ -1,7 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
-import { ALIAS_ADDRESS_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, FOUNDRY_OUTPUT_TYPE, IAliasOutput } from "@iota/iota.js-stardust";
 import { HexHelper, WriteStream } from "@iota/util.js-stardust";
+import { optional } from "@ruffy/ts-optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -63,32 +64,34 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         super.componentDidMount();
         const bech32Hrp = this.context.bech32Hrp;
         const networkId = this.props.match.params.network;
-        const aliasId = this.props.match.params.aliasId;
+        const aliasAddress: string = this.props.match.params.aliasAddress;
+        const aliasAddressDetails = Bech32AddressHelper.buildAddress(bech32Hrp, aliasAddress);
 
-        const result = await this._tangleCacheService.outputDetails(networkId, aliasId);
-
-        if (result?.output?.type === ALIAS_OUTPUT_TYPE) {
-            window.scrollTo({
-                left: 0,
-                top: 0,
-                behavior: "smooth"
+        optional(aliasAddressDetails.hex).map(async aliasId => {
+            const response = await this._tangleCacheService.aliasDetails({
+                network: networkId,
+                aliasId: HexHelper.addPrefix(aliasId)
             });
+            if (response) {
+                window.scrollTo({
+                    left: 0,
+                    top: 0,
+                    behavior: "smooth"
+                });
 
-            const bech32AddressDetails = Bech32AddressHelper.buildAddress(
-                    bech32Hrp,
-                    result.output.aliasId,
-                    ALIAS_ADDRESS_TYPE);
+                const output = response.aliasDetails?.output as IAliasOutput;
 
-            this.setState({
-                bech32AddressDetails,
-                output: result.output,
-                stateMetadataHex: result.output?.stateMetadata
-            }, async () => {
-                await this.getControlledFoundries();
-            });
-        } else {
-            this.props.history.replace(`/${networkId}/search/${aliasId}`);
-        }
+                this.setState({
+                    bech32AddressDetails: aliasAddressDetails,
+                    output,
+                    stateMetadataHex: output.stateMetadata
+                }, async () => {
+                    await this.getControlledFoundries();
+                });
+            } else {
+                this.props.history.replace(`/${networkId}/search/${aliasAddress}`);
+            }
+        });
     }
 
     /**
@@ -101,7 +104,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
             foundriesPageNumber, output, stateMetadataHex
         } = this.state;
         const networkId = this.props.match.params.network;
-
         const hasFoundries = foundries && foundries.length > 0;
 
         return (
@@ -140,16 +142,19 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                     <div className="section--data">
                                         <div>
                                             <div className="label">State Index</div>
-                                            <div className="value row middle">
+                                            <div className="value row middle margin-t-t">
                                                 <span className="margin-r-t">{output?.stateIndex}</span>
                                             </div>
                                         </div>
                                         {stateMetadataHex && (
-                                            <div className="margin-t-s">
-                                                <DataToggle
-                                                    sourceData={stateMetadataHex}
-                                                    withSpacedHex={true}
-                                                />
+                                            <div>
+                                                <div className="label margin-t-m">State Metadata</div>
+                                                <div className="value row middle margin-t-t">
+                                                    <DataToggle
+                                                        sourceData={stateMetadataHex}
+                                                        withSpacedHex={true}
+                                                    />
+                                                </div>
                                             </div>
                                         )}
                                     </div>

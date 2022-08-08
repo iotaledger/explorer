@@ -2,26 +2,26 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
 import {
     BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
-    IGovernorAddressUnlockCondition, ED25519_ADDRESS_TYPE, IBlock, ISignatureUnlock,
-    IUTXOInput, REFERENCE_UNLOCK_TYPE, SIGNATURE_UNLOCK_TYPE,
+    IGovernorAddressUnlockCondition, IBlock,
+    ISignatureUnlock, REFERENCE_UNLOCK_TYPE, SIGNATURE_UNLOCK_TYPE,
     TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
     IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
     TREASURY_OUTPUT_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
-    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
-    ALIAS_OUTPUT_TYPE, NFT_OUTPUT_TYPE, serializeTransactionPayload, FOUNDRY_OUTPUT_TYPE,
-    IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition, TransactionHelper
+    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, ALIAS_OUTPUT_TYPE,
+    NFT_OUTPUT_TYPE, serializeTransactionPayload, FOUNDRY_OUTPUT_TYPE,
+    IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition,
+    TransactionHelper, IReferenceUnlock, Ed25519Address
 } from "@iota/iota.js-stardust";
-import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
-import { DateHelper } from "../../helpers/dateHelper";
+import { Converter, WriteStream } from "@iota/util.js-stardust";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
-import { TangleStatus } from "../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
 import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 
 interface TransactionInputsAndOutputsResponse {
-    inputs: (IUTXOInput & IInput)[];
+    inputs: IInput[];
+    unlocks: ISignatureUnlock[];
     outputs: IOutput[];
     unlockAddresses: IBech32AddressDetails[];
     transferTotal: number;
@@ -32,7 +32,8 @@ export class TransactionsHelper {
                                             _bechHrp: string, tangleCacheService: StardustTangleCacheService
                                            ): Promise<TransactionInputsAndOutputsResponse> {
         const GENESIS_HASH = "0".repeat(64);
-        const inputs: (IUTXOInput & IInput)[] = [];
+        const inputs: IInput[] = [];
+        const unlocks: ISignatureUnlock[] = [];
         const outputs: IOutput[] = [];
         const remainderOutputs: IOutput[] = [];
         const unlockAddresses: IBech32AddressDetails[] = [];
@@ -40,73 +41,63 @@ export class TransactionsHelper {
 
         if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
             const payload: ITransactionPayload = block.payload;
-            const signatureBlocks: ISignatureUnlock[] = [];
             const transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(payload);
 
             // Signatures
             for (let i = 0; i < payload.unlocks.length; i++) {
                 const unlock = payload.unlocks[i];
                 if (unlock.type === SIGNATURE_UNLOCK_TYPE) {
-                    signatureBlocks.push(unlock);
+                    unlocks.push(unlock);
                 } else if (unlock.type === REFERENCE_UNLOCK_TYPE) {
-                    signatureBlocks.push(payload.unlocks[unlock.reference] as ISignatureUnlock);
+                    let refUnlockIdx = i;
+                    let signatureUnlock: ISignatureUnlock;
+                    // unlock references can be transitive,
+                    // so we need to follow the path until we find the signature
+                    do {
+                        const referenceUnlock = payload.unlocks[refUnlockIdx] as IReferenceUnlock;
+                        signatureUnlock = payload.unlocks[referenceUnlock.reference] as ISignatureUnlock;
+                        refUnlockIdx = referenceUnlock.reference;
+                    } while (!signatureUnlock.signature);
+
+                    unlocks.push(signatureUnlock);
                 }
             }
 
-            // Unlock Addresses (Computed from public keys in UnlockBlocks)
-            for (let i = 0; i < signatureBlocks.length; i++) {
+            // unlock Addresses computed from public keys in unlocks
+            for (let i = 0; i < unlocks.length; i++) {
+                const hex = Converter.bytesToHex(
+                    new Ed25519Address(Converter.hexToBytes(unlocks[i].signature.publicKey)).toAddress()
+                );
                 unlockAddresses.push(
-                    Bech32AddressHelper.buildAddress(
-                        _bechHrp,
-                        HexHelper.stripPrefix(
-                            signatureBlocks[i].signature.publicKey
-                        ),
-                        ED25519_ADDRESS_TYPE
-                    )
+                    Bech32AddressHelper.buildAddress(_bechHrp, hex)
                 );
             }
 
             // Inputs
             for (let i = 0; i < payload.essence.inputs.length; i++) {
-                let amount = 0;
-                let transactionUrl;
-                let transactionAddress = unlockAddresses[i];
+                let amount;
+                const address = unlockAddresses[i];
                 const input = payload.essence.inputs[i];
                 const isGenesis = input.transactionId === GENESIS_HASH;
 
-                const outputHash = TransactionHelper.outputIdFromTransactionData(
+                const outputId = TransactionHelper.outputIdFromTransactionData(
                     input.transactionId,
                     input.transactionOutputIndex
                 );
-                transactionUrl = `/${network}/search/${outputHash}`;
 
-                const outputResponse = await tangleCacheService.outputDetails(network, outputHash);
+                const outputResponse = await tangleCacheService.outputDetails(network, outputId);
+
                 if (outputResponse) {
                     amount = Number(outputResponse.output.amount);
-
-                    if (outputResponse.output.type !== TREASURY_OUTPUT_TYPE) {
-                        const address: IBech32AddressDetails = TransactionsHelper.bechAddressFromAddressUnlockCondition(
-                            outputResponse.output.unlockConditions,
-                            _bechHrp,
-                            outputResponse.output.type
-                        );
-
-                        if (address.bech32 !== "") {
-                            transactionAddress = address;
-                            transactionUrl = `/${network}/message/${outputResponse.metadata.blockId}`;
-                        }
-                    }
                 }
 
                 inputs.push({
                     ...input,
                     amount,
                     isGenesis,
-                    outputHash,
-                    transactionUrl,
-                    transactionAddress,
-                    signature: signatureBlocks[i]?.signature.signature,
-                    publicKey: signatureBlocks[i]?.signature.publicKey
+                    outputId,
+                    output: outputResponse,
+                    address
                 });
             }
 
@@ -119,7 +110,6 @@ export class TransactionsHelper {
 
                     outputs.push({
                         id: outputId,
-                        type: payload.essence.outputs[i].type,
                         output,
                         amount: Number(payload.essence.outputs[i].amount)
                     });
@@ -130,12 +120,11 @@ export class TransactionsHelper {
                     const address: IBech32AddressDetails = TransactionsHelper
                     .bechAddressFromAddressUnlockCondition(output.unlockConditions, _bechHrp, output.type);
 
-                    const isRemainder = inputs.some(input => input.transactionAddress.bech32 === address.bech32);
+                    const isRemainder = inputs.some(input => input.address.bech32 === address.bech32);
 
                     if (isRemainder) {
                         remainderOutputs.push({
                             id: outputId,
-                            type: payload.essence.outputs[i].type,
                             address,
                             amount: Number(payload.essence.outputs[i].amount),
                             isRemainder,
@@ -144,7 +133,6 @@ export class TransactionsHelper {
                     } else {
                         outputs.push({
                             id: outputId,
-                            type: payload.essence.outputs[i].type,
                             address,
                             amount: Number(payload.essence.outputs[i].amount),
                             isRemainder,
@@ -159,43 +147,13 @@ export class TransactionsHelper {
             }
         }
 
-        return { inputs, outputs: [...outputs, ...remainderOutputs], unlockAddresses, transferTotal };
+        return { inputs, unlocks, outputs: [...outputs, ...remainderOutputs], unlockAddresses, transferTotal };
     }
 
     public static computeTransactionIdFromTransactionPayload(payload: ITransactionPayload) {
         const tpWriteStream = new WriteStream();
         serializeTransactionPayload(tpWriteStream, payload);
         return Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
-    }
-
-    public static async getMessageStatus(
-        network: string,
-        blockId: string,
-        tangleCacheService: StardustTangleCacheService
-    ): Promise<{ blockTangleStatus: TangleStatus; date: string }> {
-        let blockTangleStatus: TangleStatus = "unknown";
-        let date: string = "";
-        const details = await tangleCacheService.blockDetails(network, blockId);
-        if (details) {
-            if (details?.metadata) {
-                if (details.metadata.milestoneIndex) {
-                    blockTangleStatus = "milestone";
-                } else if (details.metadata.referencedByMilestoneIndex) {
-                    blockTangleStatus = "referenced";
-                } else {
-                    blockTangleStatus = "pending";
-                }
-            }
-            const milestoneIndex = details?.metadata?.referencedByMilestoneIndex;
-            if (milestoneIndex) {
-                const result = await tangleCacheService.milestoneDetails(
-                    network, milestoneIndex);
-                if (result?.milestone?.timestamp) {
-                    date = DateHelper.formatShort(DateHelper.milliseconds(result.milestone.timestamp));
-                }
-            }
-        }
-        return { blockTangleStatus, date };
     }
 
     private static bechAddressFromAddressUnlockCondition(

@@ -62,12 +62,12 @@ export interface LandingState extends CurrencyState, FeedsState {
     filteredItems: IFeedItem[];
 
     /**
-     * Is the messages feed paused.
+     * Is the blocks feed paused.
      */
     isFeedPaused: boolean;
 
     /**
-     * Is the filter of messages opened.
+     * Is the filter of blocks opened.
      */
     isFilterExpanded: boolean;
 

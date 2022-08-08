@@ -65,7 +65,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
         );
 
         if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-            const { inputs, outputs, transferTotal } =
+            const { inputs, unlocks, outputs, transferTotal } =
             await TransactionsHelper.getInputsAndOutputs(
                 block,
                 this.props.match.params.network,
@@ -77,6 +77,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
 
             this.setState({
                 inputs,
+                unlocks,
                 outputs,
                 transferTotal,
                 block,
@@ -110,7 +111,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
         const network = this.props.match.params.network;
         const transactionId = this.props.match.params.transactionId;
         const {
-            inputs, outputs, transferTotal, block,
+            inputs, unlocks, outputs, transferTotal, block,
             tangleNetworkId, inputsCommitment, includedBlockId,
             blockTangleStatus, metadata, metadataError, conflictReason
         } = this.state;
@@ -217,20 +218,21 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                             )}
                         </div>
                         {inputs &&
+                            unlocks &&
                             outputs &&
                             transferTotal !== undefined &&
                             (
                                 <div className="section">
                                     <TransactionPayload
                                         network={network}
-                                        history={this.props.history}
                                         inputs={inputs}
+                                        unlocks={unlocks}
                                         outputs={outputs}
                                         transferTotal={transferTotal}
                                         header="Content"
                                     />
                                 </div>
-                            )}
+                        )}
                         <div className="section metadata-section">
                             <div className="section--header section--header__space-between">
                                 <div className="row middle">
@@ -286,7 +288,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                                     Parents
                                                 </div>
                                                 {metadata.parents.map((parent, idx) => (
-                                                    <div key={idx} className="value code link">
+                                                    <div key={idx} style={{marginTop: "8px"}} className="value code link">
                                                         <Link
                                                             to={`/${network}/block/${parent}`}
                                                             className="margin-r-t"

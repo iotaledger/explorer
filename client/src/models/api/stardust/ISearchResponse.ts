@@ -3,8 +3,8 @@ import { IResponse } from "../IResponse";
 import IAddressDetailsWithBalance from "./IAddressDetailsWithBalance";
 import { IAssociatedOutputsResponse } from "./IAssociatedOutputsResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
-import { INftDetailsResponse } from "./INftDetailsResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
+import { INftRegistryDetailsResponse } from "./nft/INftRegistryDetailsResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
@@ -48,19 +48,29 @@ export interface ISearchResponse extends IResponse {
     addressAssociatedOutputs?: IAssociatedOutputsResponse;
 
     /**
-     * Alias output id if it was found.
+     * Alias id if it was found.
      */
-    aliasOutputId?: string;
+    aliasId?: string;
 
     /**
-     * Foundry output if it was found.
+     * Alias details.
      */
-    foundryOutputId?: string;
+    aliasDetails?: IOutputResponse;
 
     /**
-     * Nft output if it was found.
+     * Foundry id if it was found.
      */
-    nftOutputId?: string;
+    foundryId?: string;
+
+    /**
+     * Foundry details.
+     */
+    foundryDetails?: IOutputResponse;
+
+    /**
+     * Nft id if it was found.
+     */
+    nftId?: string;
 
     /**
      * Nft outputs.
@@ -68,9 +78,14 @@ export interface ISearchResponse extends IResponse {
     nftOutputs?: IOutputsResponse;
 
     /**
-     * Nft Details.
+     * Nft details.
      */
-    nftDetails?: INftDetailsResponse;
+    nftDetails?: IOutputResponse;
+
+    /**
+     * Nft registry details (mock).
+     */
+    nftRegistryDetails?: INftRegistryDetailsResponse;
 
     /**
      * Foundry outputs.

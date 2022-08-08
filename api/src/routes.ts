@@ -17,6 +17,7 @@ export const routes: IRoute[] = [
     },
     { path: "/init", method: "get", func: "init" },
     { path: "/networks", method: "get", folder: "networks", func: "get" },
+    { path: "/node-info/:network", method: "get", folder: "node", func: "info" },
     { path: "/currencies", method: "get", folder: "currency", func: "get", sign: true },
     { path: "/currency/names", method: "get", folder: "currency/names", func: "get", sign: true },
     { path: "/transactions/:network/:hash", method: "get", folder: "og/transactions", func: "get" },
@@ -47,10 +48,15 @@ export const routes: IRoute[] = [
         path: "/stardust/transactionhistory/:network/:address", method: "get",
         folder: "stardust/transactionhistory", func: "get"
     },
-    { path: "/stardust/nft/:network/:nftId", method: "get", folder: "stardust/nftDetails", func: "get" },
-    { path: "/stardust/nfts/:network/:address", method: "get", folder: "stardust/nfts", func: "get" },
-    { path: "/stardust/foundries/:network/:aliasAddress", method: "get", folder: "stardust/foundries", func: "get" },
-    { path: "/token/:network", method: "get", folder: "token", func: "get" },
+    { path: "/stardust/nft/outputs/:network/:address", method: "get", folder: "stardust/nft/outputs", func: "get" },
+    { path: "/stardust/nft/:network/:nftId", method: "get", folder: "stardust/nft/details", func: "get" },
+    { path: "/stardust/nft/mock/:network/:nftId", method: "get", folder: "stardust/nft/registry", func: "get" },
+    { path: "/stardust/alias/:network/:aliasId", method: "get", folder: "stardust/alias", func: "get" },
+    {
+        path: "/stardust/alias/foundries/:network/:aliasAddress", method: "get",
+        folder: "stardust/alias/foundries", func: "get"
+    },
+    { path: "/stardust/foundry/:network/:foundryId", method: "get", folder: "stardust/foundry", func: "get" },
     { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
     { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
     { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true },

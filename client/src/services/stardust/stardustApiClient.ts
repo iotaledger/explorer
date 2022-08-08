@@ -1,19 +1,19 @@
 import { FetchHelper } from "../../helpers/fetchHelper";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
+import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
+import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
+import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
+import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
+import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
+import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociatedOutputsRequest } from "../../models/api/stardust/IAssociatedOutputsRequest";
 import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
-import { IBaseTokenGetRequest } from "../../models/api/stardust/IBaseTokenGetRequest";
-import { IBaseTokenGetResponse } from "../../models/api/stardust/IBaseTokenGetResponse";
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
-import { IFoundriesRequest } from "../../models/api/stardust/IFoundriesRequest";
-import { IFoundriesResponse } from "../../models/api/stardust/IFoundriesResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
-import { INftDetailsRequest } from "../../models/api/stardust/INftDetailsRequest";
-import { INftDetailsResponse } from "../../models/api/stardust/INftDetailsResponse";
-import { INftOutputsRequest } from "../../models/api/stardust/INftOutputsRequest";
-import { INftOutputsResponse } from "../../models/api/stardust/INftOutputsResponse";
+import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
+import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -21,6 +21,12 @@ import { ITransactionDetailsRequest } from "../../models/api/stardust/ITransacti
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
+import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsRequest";
+import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
+import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
+import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
+import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
+import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -34,9 +40,9 @@ export class StardustApiClient extends ApiClient {
      * @param request The Base token request.
      * @returns The response from the request.
      */
-    public async baseTokenInfo(request: IBaseTokenGetRequest): Promise<IBaseTokenGetResponse> {
-        return this.callApi<unknown, IBaseTokenGetResponse>(
-            `token/${request.network}`,
+    public async nodeInfo(request: INodeInfoRequest): Promise<INodeInfoResponse> {
+        return this.callApi<unknown, INodeInfoResponse>(
+            `node-info/${request.network}`,
             "get"
         );
     }
@@ -133,19 +139,19 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
-     * Get the nft details.
+     * Get the nfts of an address.
      * @param request The request to send.
      * @returns The response from the request.
      */
     public async nftOutputs(request: INftOutputsRequest): Promise<INftOutputsResponse> {
         return this.callApi<unknown, INftOutputsResponse>(
-            `stardust/nfts/${request.network}/${request.address}`,
+            `stardust/nft/outputs/${request.network}/${request.address}`,
             "get"
         );
     }
 
     /**
-     * Get the nft details.
+     * Get the nft details by NFT address.
      * @param request The request to send.
      * @returns The response from the request.
      */
@@ -157,13 +163,49 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
+     * Get the nft details (mock).
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+     public async nftRegistryDetails(request: INftRegistryDetailsRequest): Promise<INftRegistryDetailsResponse> {
+        return this.callApi<unknown, INftRegistryDetailsResponse>(
+            `stardust/nft/mock/${request.network}/${request.nftId}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the alias output details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async aliasDetails(request: IAliasRequest): Promise<IAliasResponse> {
+        return this.callApi<unknown, IAliasResponse>(
+            `stardust/alias/${request.network}/${request.aliasId}`,
+            "get"
+        );
+    }
+
+    /**
      * Get the foundries controlled by an alias address.
      * @param request The request to send.
      * @returns The response from the request.
      */
     public async aliasFoundries(request: IFoundriesRequest): Promise<IFoundriesResponse> {
         return this.callApi<unknown, IFoundriesResponse>(
-            `stardust/foundries/${request.network}/${request.aliasAddress}`,
+            `stardust/alias/foundries/${request.network}/${request.aliasAddress}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the foundry output details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async foundryDetails(request: IFoundryRequest): Promise<IFoundryResponse> {
+        return this.callApi<unknown, IAliasResponse>(
+            `stardust/foundry/${request.network}/${request.foundryId}`,
             "get"
         );
     }

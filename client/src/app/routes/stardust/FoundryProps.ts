@@ -5,7 +5,7 @@ export interface FoundryProps {
     network: string;
 
     /**
-     * The foundry output id to lookup.
+     * The foundry id to lookup.
      */
-    outputId: string;
+    foundryId: string;
 }

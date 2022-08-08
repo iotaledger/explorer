@@ -1,4 +1,5 @@
 @import "../../../scss/media-queries";
+@import "../../../scss/variables";
 
 .card--content__output {
     padding: 0 30px 20px;
@@ -19,6 +20,12 @@
             .output-id--link {
                 a {
                     margin-right: 0px;
+                }
+
+                .highlight {
+                    font-weight: 500;
+                    color: $gray-6;
+                    margin-left: 2px;
                 }
             }
 

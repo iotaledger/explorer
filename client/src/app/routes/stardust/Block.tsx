@@ -239,6 +239,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                             <React.Fragment>
                                 {this.state.block.payload.type === TRANSACTION_PAYLOAD_TYPE &&
                                     this.state.inputs &&
+                                    this.state.unlocks &&
                                     this.state.outputs &&
                                     this.state.transferTotal !== undefined &&
                                     (
@@ -246,8 +247,8 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                             <div className="section">
                                                 <TransactionPayload
                                                     network={network}
-                                                    history={this.props.history}
                                                     inputs={this.state.inputs}
+                                                    unlocks={this.state.unlocks}
                                                     outputs={this.state.outputs}
                                                     transferTotal={this.state.transferTotal}
                                                     header="Transaction Payload"
@@ -346,7 +347,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                         Parents
                                                     </div>
                                                     {this.state.metadata.parents.map((parent, idx) => (
-                                                        <div key={idx} className="value code link">
+                                                        <div key={idx} style={{marginTop: "8px"}} className="value code link">
                                                             <Link
                                                                 to={`/${network}/block/${parent}`}
                                                                 className="margin-r-t"
@@ -400,7 +401,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
         );
 
         if (result?.block) {
-            const { inputs, outputs, unlockAddresses, transferTotal } =
+            const { inputs, unlocks, outputs, unlockAddresses, transferTotal } =
                 await TransactionsHelper.getInputsAndOutputs(
                     result?.block,
                     this.props.match.params.network,
@@ -417,6 +418,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
 
             this.setState({
                 inputs,
+                unlocks,
                 outputs,
                 unlockAddresses,
                 transferTotal

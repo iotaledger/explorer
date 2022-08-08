@@ -147,7 +147,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                 {parents?.length > 0 && (
                     <div className="section--data">
                         <div className="label">
-                            Parent message Ids
+                            Parent block Ids
                         </div>
                         {parents.map((id, idx) => (
                             <div key={idx} className="value code">
