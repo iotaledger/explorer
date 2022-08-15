@@ -1,3 +1,4 @@
+import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { INetwork } from "../../models/db/INetwork";
@@ -9,7 +10,9 @@ export class ChronicleService {
      */
     private readonly _endpoint: string;
 
-    private readonly BY_ADDRESS_API_ROUTE = "/api/history/v2/ledger/updates/by-address/";
+    private readonly UPDATED_BY_ADDRESS_ENDPOINT = "/api/history/v2/ledger/updates/by-address/";
+
+    private readonly BALANCE_ENDPOINT = "/api/history/v2/balance/";
 
     constructor(config: INetwork) {
         this._endpoint = config.permaNodeEndpoint;
@@ -33,7 +36,28 @@ export class ChronicleService {
 
             return await FetchHelper.json<never, ITransactionHistoryResponse>(
                 this._endpoint,
-                `${this.BY_ADDRESS_API_ROUTE}${request.address}${params ? `${FetchHelper.urlParams(params)}` : ""}`,
+                `${this.UPDATED_BY_ADDRESS_ENDPOINT}${request.address}${params ?
+                    `${FetchHelper.urlParams(params)}` :
+                    ""}`,
+                "get"
+            );
+        } catch (error) {
+            return { error };
+        }
+    }
+
+    /**
+     * Get the current address balance info.
+     * @param address The address to fetch the balance for.
+     * @returns The address balance response.
+     */
+    public async addressBalance(
+        address: string
+    ): Promise<IAddressBalanceResponse | undefined> {
+        try {
+            return await FetchHelper.json<never, IAddressBalanceResponse>(
+                this._endpoint,
+                `${this.BALANCE_ENDPOINT}${address}`,
                 "get"
             );
         } catch (error) {

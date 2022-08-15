@@ -1,26 +1,21 @@
-import { IOutputResponse, TREASURY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
+import { IOutputResponse } from "@iota/iota.js-stardust";
+import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
-import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import IAddressDetailsWithBalance from "../../../models/api/stardust/IAddressDetailsWithBalance";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import QR from "../../components/chrysalis/QR";
-import CopyButton from "../../components/CopyButton";
-import FiatValue from "../../components/FiatValue";
-import Icon from "../../components/Icon";
+import AddressBalance from "../../components/stardust/AddressBalance";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
-import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
@@ -28,7 +23,13 @@ import { AddressPageState } from "./AddressPageState";
 import NftSection from "./NftSection";
 
 interface IAddressPageLocationProps {
+    /**
+     * address details from location props
+     */
     addressDetails: IAddressDetailsWithBalance;
+    /**
+     * address unspent output ids
+     */
     addressOutputIds: string[];
 }
 
@@ -55,9 +56,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
-        this.state = {
-            formatFull: true
-        };
+        this.state = {};
     }
 
     /**
@@ -65,7 +64,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        const { bech32Hrp } = this.context;
+        const { bech32Hrp, name: network } = this.context;
 
         if (!this.props.location.state) {
             const result = await this._tangleCacheService.search(
@@ -102,6 +101,21 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                 await this.getOutputs();
             });
         }
+
+        // Try get balance from chronicle
+        optional(addressDetails.bech32).foreach(async addressBech32 => {
+            const response = await this._tangleCacheService.addressBalance({
+                network,
+                address: addressBech32
+            });
+
+            if (response) {
+                this.setState({
+                    balance: response.totalBalance,
+                    sigLockedBalance: response.sigLockedBalance
+                });
+            }
+        });
     }
 
     /**
@@ -109,13 +123,9 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, balance, outputResponse, formatFull, nftsCount } = this.state;
+        const { bech32AddressDetails, balance, sigLockedBalance, outputResponse } = this.state;
 
         const networkId = this.props.match.params.network;
-        const isMarketed = isMarketedNetwork(networkId);
-        const nativeTokensCount = outputResponse ? this.countDistinctNativeTokens(outputResponse) : 0;
-        const hasNativeTokens = nativeTokensCount > 0;
-        const hasNfts = Boolean(nftsCount);
         const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
 
         return (
@@ -148,47 +158,10 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                 showCopyButton={true}
                                             />
                                             {balance !== undefined && (
-                                                <div className="row middle">
-                                                    <Icon icon="wallet" boxed />
-                                                    <div className="balance">
-                                                        <div className="label">
-                                                            Final balance
-                                                        </div>
-                                                        <div className="value featured">
-                                                            {balance > 0 ? (
-                                                                <div>
-                                                                    <div className="row middle">
-                                                                        <span
-                                                                            onClick={() => this.setState({
-                                                                                formatFull: !formatFull
-                                                                            })}
-                                                                            className="pointer margin-r-5"
-                                                                        >
-                                                                            {formatAmount(
-                                                                                balance,
-                                                                                this.context.tokenInfo,
-                                                                                formatFull
-                                                                            )}
-                                                                        </span>
-                                                                        <CopyButton
-                                                                            onClick={() => ClipboardHelper.copy(
-                                                                                String(balance)
-                                                                            )}
-                                                                            buttonType="copy"
-                                                                        />
-                                                                    </div>
-                                                                    {isMarketed && (
-                                                                        <React.Fragment>
-                                                                            <span>(</span>
-                                                                            <FiatValue value={balance} />
-                                                                            <span>)</span>
-                                                                        </React.Fragment>
-                                                                    )}
-                                                                </div>
-                                                            ) : 0}
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <AddressBalance
+                                                    balance={balance}
+                                                    spendableBalance={sigLockedBalance}
+                                                />
                                             )}
                                         </div>
                                         <div className="section--data">
@@ -199,42 +172,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                 )}
                                         </div>
                                     </div>
-                                    {(hasNativeTokens || hasNfts) && (
-                                        <div className="asset-summary row">
-                                            {hasNativeTokens && (
-                                                <div className="section--assets">
-                                                    <div className="inner--asset">
-                                                        <div className="section--data assets">
-                                                            <span className="label">
-                                                                Assets in wallet ({nativeTokensCount})
-                                                            </span>
-                                                        </div>
-                                                        <img
-                                                            src={chevronRightGray}
-                                                            alt="bundle"
-                                                            className="svg-navigation"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {hasNfts && (
-                                                <div className="section--NFT">
-                                                    <div className="inner--asset">
-                                                        <div className="section--data assets">
-                                                            <span className="label">
-                                                                NFTs in wallet ({nftsCount})
-                                                            </span>
-                                                        </div>
-                                                        <img
-                                                            src={chevronRightGray}
-                                                            alt="bundle"
-                                                            className="svg-navigation"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
                                 </div>
                                 {outputResponse && outputResponse.length === 0 && (
                                     <div className="section">
@@ -252,7 +189,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                 <NftSection
                                     network={networkId}
                                     bech32Address={addressBech32}
-                                    onNftsLoaded={count => this.setNftsCount(count as number)}
                                 />
                                 {addressBech32 && (
                                     <TransactionHistory network={networkId} address={addressBech32} />
@@ -266,26 +202,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                 </div >
             </div >
         );
-    }
-
-    private setNftsCount(nftsCount: number): void {
-        if (nftsCount > 0) {
-            this.setState({ nftsCount });
-        }
-    }
-
-    private countDistinctNativeTokens(outputResponse: IOutputResponse[]): number {
-        const distinctNativeTokens: string[] = [];
-        for (const response of outputResponse) {
-            if (response.output.type !== TREASURY_OUTPUT_TYPE && response.output.nativeTokens) {
-                for (const nativeToken of response.output.nativeTokens) {
-                    if (!distinctNativeTokens.includes(nativeToken.id)) {
-                        distinctNativeTokens.push(nativeToken.id);
-                    }
-                }
-            }
-        }
-        return distinctNativeTokens.length;
     }
 
     private async getOutputs() {

@@ -9,23 +9,18 @@ export interface AddressPageState {
     bech32AddressDetails?: IBech32AddressDetails;
 
     /**
-     * The address balance.
+     * The total balance (including Expiration, Timelock and StorageDepositReturn outputs)
      */
     balance?: number;
+
+    /**
+     * The balance of trivialy unlockable outputs with address unlock condition.
+     */
+    sigLockedBalance?: number;
 
     /**
      * The outputs for the address.
      */
     outputResponse?: IOutputResponse[];
-
-    /**
-     * Format the amount in full.
-     */
-    formatFull: boolean;
-
-    /**
-     * Number of NFTs owned by the address.
-     */
-    nftsCount?: number;
 }
 

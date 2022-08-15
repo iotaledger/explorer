@@ -8,7 +8,7 @@ import { ChronicleService } from "../../../services/stardust/chronicleService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
- * Fetch the balance for an address from chronicle stardust.
+ * Fetch the transaction history from chronicle stardust.
  * @param config The configuration.
  * @param request The request.
  * @returns The response.
@@ -16,7 +16,7 @@ import { ValidationHelper } from "../../../utils/validationHelper";
 export async function get(
     config: IConfiguration,
     request: IAddressBalanceRequest
-): Promise<IAddressBalanceResponse | unknown> {
+): Promise<IAddressBalanceResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");

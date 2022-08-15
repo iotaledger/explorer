@@ -40,19 +40,14 @@
     text-transform: uppercase;
     animation-fill-mode: forwards;
 
-    @include tablet-down {
-      top: -12px;
-      transform: translateX(25%);
-    }
-
     &.bottom {
         top: 25px;
-        right: 40px;
+        transform: translateX(25%);
     }
 
     &.top {
         top: -20px;
-        right: 40px;
+        transform: translateX(25%);
     }
   }
 
