@@ -1,4 +1,4 @@
-import { IOutputResponse, TREASURY_OUTPUT_TYPE } from "@iota/iota.js-stardust";
+import { IOutputResponse } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -16,7 +16,6 @@ import Bech32Address from "../../components/stardust/Bech32Address";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
-import chevronRightGray from "./../../../assets/chevron-right-gray.svg";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
@@ -124,12 +123,9 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, balance, sigLockedBalance, outputResponse, nftsCount } = this.state;
+        const { bech32AddressDetails, balance, sigLockedBalance, outputResponse } = this.state;
 
         const networkId = this.props.match.params.network;
-        const nativeTokensCount = outputResponse ? this.countDistinctNativeTokens(outputResponse) : 0;
-        const hasNativeTokens = nativeTokensCount > 0;
-        const hasNfts = Boolean(nftsCount);
         const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
 
         return (
@@ -176,42 +172,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                 )}
                                         </div>
                                     </div>
-                                    {(hasNativeTokens || hasNfts) && (
-                                        <div className="asset-summary row">
-                                            {hasNativeTokens && (
-                                                <div className="section--assets">
-                                                    <div className="inner--asset">
-                                                        <div className="section--data assets">
-                                                            <span className="label">
-                                                                Assets in wallet ({nativeTokensCount})
-                                                            </span>
-                                                        </div>
-                                                        <img
-                                                            src={chevronRightGray}
-                                                            alt="bundle"
-                                                            className="svg-navigation"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {hasNfts && (
-                                                <div className="section--NFT">
-                                                    <div className="inner--asset">
-                                                        <div className="section--data assets">
-                                                            <span className="label">
-                                                                NFTs in wallet ({nftsCount})
-                                                            </span>
-                                                        </div>
-                                                        <img
-                                                            src={chevronRightGray}
-                                                            alt="bundle"
-                                                            className="svg-navigation"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
                                 </div>
                                 {outputResponse && outputResponse.length === 0 && (
                                     <div className="section">
@@ -229,7 +189,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                 <NftSection
                                     network={networkId}
                                     bech32Address={addressBech32}
-                                    onNftsLoaded={count => this.setNftsCount(count as number)}
                                 />
                                 {addressBech32 && (
                                     <TransactionHistory network={networkId} address={addressBech32} />
@@ -243,26 +202,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                 </div >
             </div >
         );
-    }
-
-    private setNftsCount(nftsCount: number): void {
-        if (nftsCount > 0) {
-            this.setState({ nftsCount });
-        }
-    }
-
-    private countDistinctNativeTokens(outputResponse: IOutputResponse[]): number {
-        const distinctNativeTokens: string[] = [];
-        for (const response of outputResponse) {
-            if (response.output.type !== TREASURY_OUTPUT_TYPE && response.output.nativeTokens) {
-                for (const nativeToken of response.output.nativeTokens) {
-                    if (!distinctNativeTokens.includes(nativeToken.id)) {
-                        distinctNativeTokens.push(nativeToken.id);
-                    }
-                }
-            }
-        }
-        return distinctNativeTokens.length;
     }
 
     private async getOutputs() {

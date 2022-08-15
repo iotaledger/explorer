@@ -22,10 +22,5 @@ export interface AddressPageState {
      * The outputs for the address.
      */
     outputResponse?: IOutputResponse[];
-
-    /**
-     * Number of NFTs owned by the address.
-     */
-    nftsCount?: number;
 }
 

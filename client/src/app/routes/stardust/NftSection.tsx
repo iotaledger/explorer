@@ -14,12 +14,11 @@ import INftDetails from "./INftDetails";
 interface NftSectionProps {
     network: string;
     bech32Address?: string;
-    onNftsLoaded?: (param: unknown) => void;
 }
 
 const PAGE_SIZE = 10;
 
-const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, onNftsLoaded }) => {
+const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address }) => {
     const mounted = useRef(false);
     const [nfts, setNfts] = useState<INftDetails[]>([]);
     const [page, setPage] = useState<INftDetails[]>([]);
@@ -66,10 +65,6 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, onNftsL
 
             if (mounted.current) {
                 setNfts(theNfts);
-            }
-
-            if (onNftsLoaded && mounted.current) {
-                onNftsLoaded(theNfts.length);
             }
         };
 
@@ -121,8 +116,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, onNftsL
 };
 
 NftSection.defaultProps = {
-    bech32Address: undefined,
-    onNftsLoaded: undefined
+    bech32Address: undefined
 };
 
 export default NftSection;
