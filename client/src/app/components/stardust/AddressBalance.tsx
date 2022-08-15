@@ -21,25 +21,26 @@ interface AddressBalanceProps {
     spendableBalance?: number;
 }
 
+const CONDITIONAL_BALANCE_INFO =
+"These funds reside within outputs with additional unlock conditions which might be potentially un-lockable";
+
 const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalance }) => {
     const { name: network, tokenInfo } = useContext(NetworkContext);
     const [formatBalanceFull, setFormatBalanceFull] = useState(false);
     const [formatConditionalBalanceFull, setFormatConditionalBalanceFull] = useState(false);
-    // eslint-disable-next-line max-len
-    const lockedReason = "These funds reside within outputs with additional unlock conditions which might be potentially un-lockable";
 
     const buildBalanceView = (
         label: string,
         amount: number,
         isFormatFull: boolean,
-        showInfo: boolean,
-        setIsFormatFull: React.Dispatch<React.SetStateAction<boolean>>
+        setIsFormatFull: React.Dispatch<React.SetStateAction<boolean>>,
+        showInfo: boolean
     ) => (
         <div className="balance">
             <div className="row middle">
                 <div className="label">{label}</div>
                 {showInfo &&
-                <Tooltip tooltipContent={lockedReason}>
+                <Tooltip tooltipContent={CONDITIONAL_BALANCE_INFO}>
                     <span className="material-icons">
                         info
                     </span>
@@ -90,15 +91,15 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                             "Spendable Balance",
                             spendableBalance,
                             formatBalanceFull,
-                            false,
-                            setFormatBalanceFull
+                            setFormatBalanceFull,
+                            false
                         )}
                         {buildBalanceView(
                             "Conditionally Locked Balance",
                             conditionalBalance,
                             formatConditionalBalanceFull,
-                            true,
-                            setFormatConditionalBalanceFull
+                            setFormatConditionalBalanceFull,
+                            true
                         )}
                     </React.Fragment>
                 ) : (
@@ -106,8 +107,8 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                         "Balance",
                         balance,
                         formatBalanceFull,
-                        false,
-                        setFormatBalanceFull
+                        setFormatBalanceFull,
+                        false
                     )
                 )}
             </div>
