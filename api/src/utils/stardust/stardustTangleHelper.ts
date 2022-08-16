@@ -2,7 +2,7 @@
 import {
     addressBalance, IOutputResponse, SingleNodeClient,
     IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload,
-    IBlockMetadata, IMilestonePayload, IBlock
+    IBlockMetadata, IMilestonePayload, IBlock, IOutputsResponse
 } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -154,10 +154,12 @@ export class StardustTangleHelper {
         network: INetwork,
         aliasId: string
     ): Promise<IAliasResponse | undefined> {
-        const { provider, user, password } = network;
-        const node = new SingleNodeClient(provider, { userName: user, password });
-        const indexerPlugin = new IndexerPluginClient(node);
-        const aliasOutput = await indexerPlugin.alias(aliasId);
+        const aliasOutput = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
+            aliasId,
+            "alias",
+            network,
+            true
+        );
 
         if (aliasOutput.items.length > 0) {
             const aliasDetails = await this.outputDetails(network, aliasOutput.items[0]);
@@ -180,15 +182,19 @@ export class StardustTangleHelper {
         network: INetwork,
         aliasAddress: string
     ): Promise<IFoundriesResponse | undefined> {
-        const { provider, user, password } = network;
         try {
-            const node = new SingleNodeClient(provider, { userName: user, password });
-            const indexerPlugin = new IndexerPluginClient(node);
-            const foundryOutputsResponse = await indexerPlugin.foundries({ aliasAddressBech32: aliasAddress });
+            const response = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+                { aliasAddressBech32: aliasAddress },
+                "foundries",
+                network,
+                true
+            );
 
-            return {
-                foundryOutputsResponse
-            };
+            if (response) {
+                return {
+                    foundryOutputsResponse: response
+                };
+            }
         } catch {}
     }
 
@@ -202,10 +208,12 @@ export class StardustTangleHelper {
         network: INetwork,
         foundryId: string
     ): Promise<IFoundryResponse | undefined> {
-        const { provider, user, password } = network;
-        const node = new SingleNodeClient(provider, { userName: user, password });
-        const indexerPlugin = new IndexerPluginClient(node);
-        const foundryOutput = await indexerPlugin.foundry(foundryId);
+        const foundryOutput = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
+            foundryId,
+            "foundry",
+            network,
+            true
+        );
 
         if (foundryOutput.items.length > 0) {
             const foundryDetails = await this.outputDetails(network, foundryOutput.items[0]);
@@ -228,15 +236,19 @@ export class StardustTangleHelper {
         network: INetwork,
         address: string
     ): Promise<INftOutputsResponse | undefined> {
-        const { provider, user, password } = network;
         try {
-            const node = new SingleNodeClient(provider, { userName: user, password });
-            const indexerPlugin = new IndexerPluginClient(node);
-            const nftOutputs = await indexerPlugin.nfts({ addressBech32: address });
+            const nftOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+                { addressBech32: address },
+                "nfts",
+                network,
+                true
+            );
 
-            return {
-                outputs: nftOutputs
-            };
+            if (nftOutputs) {
+                return {
+                    outputs: nftOutputs
+                };
+            }
         } catch {}
     }
 
@@ -250,11 +262,13 @@ export class StardustTangleHelper {
         network: INetwork,
         nftId: string
     ): Promise<INftDetailsResponse | undefined> {
-        const { provider, user, password } = network;
         try {
-            const node = new SingleNodeClient(provider, { userName: user, password });
-            const indexerPlugin = new IndexerPluginClient(node);
-            const nftOutputs = await indexerPlugin.nft(nftId);
+            const nftOutputs = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
+                nftId,
+                "nft",
+                network,
+                true
+            );
 
             if (nftOutputs.items.length > 0) {
                 const nftDetails = await this.outputDetails(network, nftOutputs.items[0]);
@@ -280,10 +294,6 @@ export class StardustTangleHelper {
         bechHrp: string,
         query: string
     ): Promise<ISearchResponse> {
-        const { provider, user, password } = network;
-        const node = new SingleNodeClient(provider, { userName: user, password });
-        const indexerPlugin = new IndexerPluginClient(node);
-
         const searchQuery: SearchQuery = new SearchQueryBuilder(query, bechHrp).build();
 
         if (searchQuery.did) {
@@ -350,7 +360,12 @@ export class StardustTangleHelper {
 
         if (searchQuery.aliasId) {
             try {
-                const aliasOutputs = await indexerPlugin.alias(searchQuery.aliasId);
+                const aliasOutputs = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
+                    searchQuery.aliasId,
+                    "alias",
+                    network,
+                    true
+                );
 
                 if (aliasOutputs.items.length > 0) {
                     return {
@@ -362,7 +377,13 @@ export class StardustTangleHelper {
 
         if (searchQuery.nftId) {
             try {
-                const nftOutputs = await indexerPlugin.nft(searchQuery.nftId);
+                const nftOutputs = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
+                    searchQuery.nftId,
+                    "nft",
+                    network,
+                    true
+                );
+
                 if (nftOutputs.items.length > 0) {
                     return {
                         nftId: searchQuery.nftId
@@ -373,7 +394,13 @@ export class StardustTangleHelper {
 
         if (searchQuery.foundryId) {
             try {
-                const foundryOutputs = await indexerPlugin.foundry(searchQuery.foundryId);
+                const foundryOutputs = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
+                    searchQuery.foundryId,
+                    "foundry",
+                    network,
+                    true
+                );
+
                 if (foundryOutputs.items.length > 0) {
                     return {
                         foundryId: searchQuery.foundryId
@@ -384,7 +411,13 @@ export class StardustTangleHelper {
 
         if (searchQuery.tag) {
             try {
-                const taggedOutputs = await indexerPlugin.outputs({ tagHex: searchQuery.tag });
+                const taggedOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+                    { tagHex: searchQuery.tag },
+                    "outputs",
+                    network,
+                    true
+                );
+
                 if (taggedOutputs.items.length > 0) {
                     return {
                         taggedOutputs
@@ -394,6 +427,9 @@ export class StardustTangleHelper {
         }
 
         if (searchQuery.address?.bech32) {
+            const { provider, user, password } = network;
+            const node = new SingleNodeClient(provider, { userName: user, password });
+
             try {
                 const addressBalanceDetails = await addressBalance(node, searchQuery.address.bech32);
 
@@ -408,9 +444,14 @@ export class StardustTangleHelper {
                     let cursor: string | undefined;
                     let addressOutputIds: string[] = [];
                     do {
-                        const outputIdsResponse = await indexerPlugin.outputs(
-                            { addressBech32: searchQuery.address.bech32, cursor }
+                        const outputIdsResponse =
+                            await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+                                { addressBech32: searchQuery.address.bech32, cursor },
+                                "outputs",
+                                network,
+                                true
                         );
+
                         addressOutputIds = addressOutputIds.concat(outputIdsResponse.items);
                         cursor = outputIdsResponse.cursor;
                     } while (cursor);
@@ -430,33 +471,50 @@ export class StardustTangleHelper {
      * Generic helper function to try fetching from permanode client (if configured).
      * On failure (or not present), we try to fetch from node.
      * @param args The argument(s) to pass to the fetch calls.
-     * @param methodName The function to call on the clients.
+     * @param methodName The function to call on the client.
      * @param network The network config in context.
+     * @param isIndexerCall The boolean flag for indexer api instead of core api.
      * @returns The results or null if call(s) failed.
      */
     private static async tryFetchPermanodeThenNode<A, R>(
         args: A,
         methodName: string,
-        network: INetwork
+        network: INetwork,
+        isIndexerCall: boolean = false
     ): Promise<R> | null {
         const {
             provider, user, password,
             permaNodeEndpoint, permaNodeEndpointUser, permaNodeEndpointPassword
         } = network;
+        if (isIndexerCall) {
+            console.log("indexer call here!");
+        }
+
         if (permaNodeEndpoint) {
-            try {
-                const permanode = new SingleNodeClient(
+            const permanode = !isIndexerCall ?
+                new SingleNodeClient(
                     permaNodeEndpoint,
                     { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
-                );
+            ) :
+                new IndexerPluginClient(
+                    new SingleNodeClient(
+                        permaNodeEndpoint,
+                        { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
+                    )
+            );
 
+            try {
                 // try fetch from permanode (chronicle)
                 const result: Promise<R> = permanode[methodName](args);
                 return await result;
             } catch {}
         }
 
-        const node = new SingleNodeClient(provider, { userName: user, password });
+        const node = !isIndexerCall ?
+            new SingleNodeClient(provider, { userName: user, password }) :
+            new IndexerPluginClient(
+                new SingleNodeClient(provider, { userName: user, password })
+            );
 
         try {
             // try fetch from node
