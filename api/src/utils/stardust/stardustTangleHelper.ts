@@ -486,10 +486,6 @@ export class StardustTangleHelper {
             provider, user, password,
             permaNodeEndpoint, permaNodeEndpointUser, permaNodeEndpointPassword
         } = network;
-        if (isIndexerCall) {
-            console.log("indexer call here!");
-        }
-
         if (permaNodeEndpoint) {
             const permanode = !isIndexerCall ?
                 new SingleNodeClient(
