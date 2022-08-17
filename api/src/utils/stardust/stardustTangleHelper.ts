@@ -413,7 +413,7 @@ export class StardustTangleHelper {
             try {
                 const taggedOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
                     { tagHex: searchQuery.tag },
-                    "outputs",
+                    "basicOutputs",
                     network,
                     true
                 );
@@ -447,7 +447,7 @@ export class StardustTangleHelper {
                         const outputIdsResponse =
                             await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
                                 { addressBech32: searchQuery.address.bech32, cursor },
-                                "outputs",
+                                "basicOutputs",
                                 network,
                                 true
                         );
