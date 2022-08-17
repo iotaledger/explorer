@@ -125,6 +125,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                             <th>Output type</th>
                             <th>Address found in</th>
                             <th>Date created</th>
+                            <th>Amount</th>
                         </tr>
                     </thead>
                     <tbody>

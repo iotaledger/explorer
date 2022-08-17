@@ -128,7 +128,7 @@
         }
 
         tr {
-            .found-in, .date-created {
+            .found-in, .date-created, .amount {
                 color: $gray-6;
             }
 
@@ -138,7 +138,7 @@
         }
 
         .card {
-            .found-in, .date-created {
+            .found-in, .date-created, .amount {
                 .value {
                     color: $gray-6;
                 }
