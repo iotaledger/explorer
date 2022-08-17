@@ -103,8 +103,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const {
             networkConfig, marketCapCurrency, priceCurrency,
             valuesFilter, filteredItems, isFeedPaused,
-            isFilterExpanded, itemsPerSecond, confirmedItemsPerSecondPercent,
-            latestMilestoneIndex, latestMilestoneTimestamp
+            isFilterExpanded, itemsPerSecond, confirmedItemsPerSecondPercent, latestMilestoneIndex
         } = this.state;
 
         const { network } = this.props.match.params;
@@ -255,7 +254,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     </div>
                                     <FeedInfo
                                         milestoneIndex={latestMilestoneIndex}
-                                        milestoneTimestamp={latestMilestoneTimestamp}
                                         frequencyTarget={networkConfig.milestoneInterval}
                                     />
 

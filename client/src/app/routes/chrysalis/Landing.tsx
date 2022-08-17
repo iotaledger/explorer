@@ -93,7 +93,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const isLatestMilesontFeedInfoEnabled = this._networkConfig &&
+        const isLatestMilestoneFeedInfoEnabled = this._networkConfig &&
             this._networkConfig.network !== LEGACY_MAINNET &&
             this._networkConfig.network !== CUSTOM;
 
@@ -256,10 +256,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             )}
                                         </div>
                                     </div>
-                                    {isLatestMilesontFeedInfoEnabled && (
+                                    {isLatestMilestoneFeedInfoEnabled && (
                                         <FeedInfo
                                             milestoneIndex={this.state.latestMilestoneIndex}
-                                            milestoneTimestamp={this.state.latestMilestoneTimestamp}
                                             frequencyTarget={this._networkConfig?.milestoneInterval}
                                         />
                                     )}

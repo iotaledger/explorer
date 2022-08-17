@@ -22,11 +22,6 @@ export interface FeedsState extends CurrencyState {
     latestMilestoneIndex?: number;
 
     /**
-     * The latest milestone timestamp.
-     */
-    latestMilestoneTimestamp?: number;
-
-    /**
      * The items per second.
      */
     itemsPerSecondHistory: number[];

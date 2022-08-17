@@ -5,30 +5,21 @@ import "./FeedInfo.scss";
 export interface FeedInfoProps {
     milestoneIndex?: number;
     frequencyTarget?: number;
-    milestoneTimestamp?: number;
 }
 
-const FeedInfo: React.FC<FeedInfoProps> = ({ milestoneIndex, milestoneTimestamp, frequencyTarget }) => {
+const FeedInfo: React.FC<FeedInfoProps> = ({ milestoneIndex, frequencyTarget }) => {
     const [from, setFrom] = useState<moment.Moment | undefined>();
     const [seconds, setSeconds] = useState<number | undefined>();
 
     useEffect(() => {
-        const now = moment();
-        // This is needed because clock seconds might not be synced around the world.
-        setFrom(
-            now.isBefore(moment(milestoneTimestamp)) ?
-                now :
-                moment(milestoneTimestamp)
-        );
-    }, [milestoneIndex, milestoneTimestamp]);
+        setFrom(moment());
+    }, [milestoneIndex]);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            if (milestoneTimestamp !== 0) {
-                const to = moment();
-                const updatedSeconds = to.diff(from, "seconds", true);
-                setSeconds(updatedSeconds);
-            }
+            const to = moment();
+            const updatedSeconds = to.diff(from, "seconds", true);
+            setSeconds(updatedSeconds);
         }, 80);
 
         return () => {
@@ -56,8 +47,7 @@ const FeedInfo: React.FC<FeedInfoProps> = ({ milestoneIndex, milestoneTimestamp,
 
 FeedInfo.defaultProps = {
     frequencyTarget: undefined,
-    milestoneIndex: undefined,
-    milestoneTimestamp: undefined
+    milestoneIndex: undefined
 };
 
 export default FeedInfo;
