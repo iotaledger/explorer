@@ -3,7 +3,7 @@ import { Blake2b } from "@iota/crypto.js-stardust";
 import {
     BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
     IGovernorAddressUnlockCondition, IBlock,
-    ISignatureUnlock, REFERENCE_UNLOCK_TYPE, SIGNATURE_UNLOCK_TYPE,
+    ISignatureUnlock, SIGNATURE_UNLOCK_TYPE,
     TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
     IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
     TREASURY_OUTPUT_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
@@ -48,7 +48,7 @@ export class TransactionsHelper {
                 const unlock = payload.unlocks[i];
                 if (unlock.type === SIGNATURE_UNLOCK_TYPE) {
                     unlocks.push(unlock);
-                } else if (unlock.type === REFERENCE_UNLOCK_TYPE) {
+                } else {
                     let refUnlockIdx = i;
                     let signatureUnlock: ISignatureUnlock;
                     // unlock references can be transitive,
