@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IAddressBalanceRequest } from "../../../models/api/stardust/IAddressBalanceRequest";
-import { IAddressBalanceResponse } from "../../../models/api/stardust/IAddressBalanceResponse";
+import { ITransactionHistoryRequest } from "../../../models/api/stardust/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "../../../models/api/stardust/ITransactionHistoryResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
@@ -8,15 +8,15 @@ import { ChronicleService } from "../../../services/stardust/chronicleService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
- * Fetch the balance for an address from chronicle stardust.
+ * Fetch the transaction history from chronicle stardust.
  * @param config The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function get(
     config: IConfiguration,
-    request: IAddressBalanceRequest
-): Promise<IAddressBalanceResponse | unknown> {
+    request: ITransactionHistoryRequest
+): Promise<{ transactionHistory: ITransactionHistoryResponse } | unknown> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -35,6 +35,6 @@ export async function get(
         `chronicle-${networkConfig.network}`
     );
 
-    return chronicleService.addressBalance(request.address);
+    return chronicleService.transactionHistory(request);
 }
 
