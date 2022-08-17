@@ -111,11 +111,11 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * @param newItems The updated items.
      */
     protected itemsUpdated(newItems: IFeedItem[]): void {
-        const isLatestMilesoneFeedInfoEnabled = this._networkConfig &&
+        const isLatestMilestoneFeedInfoEnabled = this._networkConfig &&
             this._networkConfig.network !== LEGACY_MAINNET &&
             this._networkConfig.network !== CUSTOM;
 
-        if (isLatestMilesoneFeedInfoEnabled && newItems) {
+        if (isLatestMilestoneFeedInfoEnabled && newItems) {
             const milestones = newItems.filter(i => i.payloadType === "MS");
             let newIndex;
             for (const ms of milestones) {
