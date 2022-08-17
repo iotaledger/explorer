@@ -35,7 +35,7 @@ export class AssociatedOutputsHelper {
         promises.push(
             // Basic output -> owner address
             this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-                async query => indexerPlugin.outputs(query),
+                async query => indexerPlugin.basicOutputs(query),
                 { addressBech32: address },
                 AssociationType.BASIC_ADDRESS
             )
@@ -44,8 +44,8 @@ export class AssociatedOutputsHelper {
         promises.push(
             // Basic output -> storage return address
             this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-                async query => indexerPlugin.outputs(query),
-                { storageReturnAddressBech32: address },
+                async query => indexerPlugin.basicOutputs(query),
+                { storageDepositReturnAddressBech32: address },
                 AssociationType.BASIC_STORAGE_RETURN
             )
         );
@@ -53,7 +53,7 @@ export class AssociatedOutputsHelper {
         promises.push(
             // Basic output -> expiration return address
             this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-                async query => indexerPlugin.outputs(query),
+                async query => indexerPlugin.basicOutputs(query),
                 { expirationReturnAddressBech32: address },
                 AssociationType.BASIC_EXPIRATION_RETURN
             )
@@ -62,7 +62,7 @@ export class AssociatedOutputsHelper {
         promises.push(
             // Basic output -> sender address
             this.tryFetchAssociatedOutputs<Record<string, unknown>>(
-                async query => indexerPlugin.outputs(query),
+                async query => indexerPlugin.basicOutputs(query),
                 { senderBech32: address },
                 AssociationType.BASIC_SENDER
             )
@@ -150,7 +150,7 @@ export class AssociatedOutputsHelper {
             // Nft output -> storage return address
             this.tryFetchAssociatedOutputs<Record<string, unknown>>(
                 async query => indexerPlugin.nfts(query),
-                { storageReturnAddressBech32: address },
+                { storageDepositReturnAddressBech32: address },
                 AssociationType.NFT_STORAGE_RETURN
             )
         );

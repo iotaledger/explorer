@@ -384,7 +384,7 @@ export class StardustTangleHelper {
 
         if (searchQuery.tag) {
             try {
-                const taggedOutputs = await indexerPlugin.outputs({ tagHex: searchQuery.tag });
+                const taggedOutputs = await indexerPlugin.basicOutputs({ tagHex: searchQuery.tag });
                 if (taggedOutputs.items.length > 0) {
                     return {
                         taggedOutputs
@@ -408,7 +408,7 @@ export class StardustTangleHelper {
                     let cursor: string | undefined;
                     let addressOutputIds: string[] = [];
                     do {
-                        const outputIdsResponse = await indexerPlugin.outputs(
+                        const outputIdsResponse = await indexerPlugin.basicOutputs(
                             { addressBech32: searchQuery.address.bech32, cursor }
                         );
                         addressOutputIds = addressOutputIds.concat(outputIdsResponse.items);
