@@ -492,11 +492,10 @@ export class CurrencyService {
             { value: 1e15, symbol: "P" },
             { value: 1e18, symbol: "E" }
         ];
-        const regex = /\.0+$|(\.\d*[1-9])0+$/;
         const item = units.slice().reverse()
             .find(unit => value >= unit.value);
 
-        return item ? (value / item.value).toFixed(digits).replace(regex, "1") + item.symbol : "0";
+        return item ? (value / item.value).toFixed(digits) + item.symbol : "0";
     }
 
     /**
