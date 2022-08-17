@@ -109,7 +109,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                 address: addressBech32
             });
 
-            if (response) {
+            if (response?.totalBalance !== undefined) {
                 this.setState({
                     balance: response.totalBalance,
                     sigLockedBalance: response.sigLockedBalance
