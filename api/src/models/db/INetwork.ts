@@ -124,4 +124,11 @@ export interface INetwork {
      * Targeted interval in seconds between milestones.
      */
     milestoneInterval?: number;
+
+    /**
+     * Is API calls fallback disabled.
+     * If both permanode and node are configured, and this is true, API calls will only try calling permanode
+     * without falling back on node on failure.
+     */
+    disableApiFallback?: boolean;
 }

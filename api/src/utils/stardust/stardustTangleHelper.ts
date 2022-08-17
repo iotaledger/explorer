@@ -483,9 +483,11 @@ export class StardustTangleHelper {
         isIndexerCall: boolean = false
     ): Promise<R> | null {
         const {
-            provider, user, password,
-            permaNodeEndpoint, permaNodeEndpointUser, permaNodeEndpointPassword
+            provider, user, password, permaNodeEndpoint,
+            permaNodeEndpointUser, permaNodeEndpointPassword, disableApiFallback
         } = network;
+        const isFallbackEnabled = !disableApiFallback;
+
         if (permaNodeEndpoint) {
             const permanode = !isIndexerCall ?
                 new SingleNodeClient(
@@ -506,17 +508,19 @@ export class StardustTangleHelper {
             } catch {}
         }
 
-        const node = !isIndexerCall ?
-            new SingleNodeClient(provider, { userName: user, password }) :
-            new IndexerPluginClient(
-                new SingleNodeClient(provider, { userName: user, password })
+        if (!permaNodeEndpoint || isFallbackEnabled) {
+            const node = !isIndexerCall ?
+                new SingleNodeClient(provider, { userName: user, password }) :
+                new IndexerPluginClient(
+                    new SingleNodeClient(provider, { userName: user, password })
             );
 
-        try {
-            // try fetch from node
-            const result: Promise<R> = node[methodName](args);
-            return await result;
-        } catch {}
+            try {
+                // try fetch from node
+                const result: Promise<R> = node[methodName](args);
+                return await result;
+            } catch {}
+        }
 
         return null;
     }
