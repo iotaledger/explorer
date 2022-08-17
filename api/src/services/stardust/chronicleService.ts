@@ -10,9 +10,9 @@ export class ChronicleService {
      */
     private readonly _endpoint: string;
 
-    private readonly UPDATED_BY_ADDRESS_ENDPOINT = "/api/history/v2/ledger/updates/by-address/";
+    private readonly UPDATED_BY_ADDRESS_ENDPOINT = "/api/explorer/v2/ledger/updates/by-address/";
 
-    private readonly BALANCE_ENDPOINT = "/api/history/v2/balance/";
+    private readonly BALANCE_ENDPOINT = "/api/explorer/v2/balance/";
 
     constructor(config: INetwork) {
         this._endpoint = config.permaNodeEndpoint;
