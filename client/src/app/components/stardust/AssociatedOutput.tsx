@@ -1,5 +1,6 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
+import moment from "moment";
 import React, { useContext, useState } from "react";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
@@ -41,6 +42,7 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
     const output = outputDetails.output;
     const outputMetadata = outputDetails.metadata;
     const dateCreated = DateHelper.formatShort(outputMetadata.milestoneTimestampBooked * 1000);
+    const days = moment(outputMetadata.milestoneTimestampBooked * 1000).fromNow();
     const { tokenInfo } = useContext(NetworkContext);
     const [formatBalance, setFormatBalance] = useState(false);
     const amount = output.amount;
@@ -77,7 +79,7 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
                     )}
                 </div>
             </td>
-            <td className="date-created">{dateCreated}</td>
+            <td className="date-created">{dateCreated} ({days})</td>
             <td className="amount">
                 <span
                     onClick={() => setFormatBalance(!formatBalance)}
@@ -118,7 +120,7 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
             </div>
             <div className="field date-created">
                 <div className="label">Date created</div>
-                <div className="value">{dateCreated}</div>
+                <div className="value">{dateCreated} ({days})</div>
             </div>
             <div className="field amount">
                 <div className="label">Amount</div>
