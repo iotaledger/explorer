@@ -1,0 +1,11 @@
+{
+    "title": "State Transition",
+    "description": "<p>Transaction B represents a state transition of the alias. As the name suggests, a state transition must be initiated by the State Controller, therefore it is the stateControllerAddress that needs to sign the transaction. During a state transition, the following constraints need to be met:</p><ol><li>the alias can't be destroyed,</li><li>token balances of the output may be changed, the State Controller can transfer funds in- and out of the alias account,</li><li>State Index must be incremented,</li><li>State Metadata may be updated,</li></ol>",
+    "links": [
+      {
+        "label": "Read more",
+        "href": "https://wiki.iota.org/introduction/develop/explanations/ledger/alias#state-transition",
+        "isExternal": true
+      }
+    ]
+}

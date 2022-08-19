@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import React, { Component, ReactNode } from "react";
 import Modal from "../../components/Modal";
-import taggedDataPayloadMessage from "./../../../assets/modals/message/indexation-payload.json";
+import taggedDataPayloadMessage from "./../../../assets/modals/block/tagged-data-payload.json";
 import DataToggle from "./../DataToggle";
 import { TaggedDataPayloadProps } from "./TaggedDataPayloadProps";
 import { TaggedDataPayloadState } from "./TaggedDataPayloadState";

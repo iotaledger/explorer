@@ -1,0 +1,11 @@
+{
+    "title": "NFT as a wallet",
+    "description": "<p>Each NFT has its own unique NFT ID that also functions as an address on protocol level. The address can be deterministically generated from the ID as outlined in TIP-31, basically prepending NFT ID with the NFT Address Type and encoding it as a Bech32 string.</p><br><p>What this means is that any output (except for a foundry) can be locked to an NFT Address in the protocol. An NFT Address is a first class citizen on protocol level, just like an Ed25519 Address.</p>",
+    "links": [
+      {
+        "label": "Read more",
+        "href": "https://wiki.iota.org/introduction/develop/explanations/ledger/nft#nft-as-a-wallet",
+        "isExternal": true
+      }
+    ]
+}

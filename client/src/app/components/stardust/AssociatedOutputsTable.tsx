@@ -8,6 +8,8 @@ import { IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutpu
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Pagination from "../../components/Pagination";
+import Modal from "../Modal";
+import associatedOuputsMessage from "./../../../assets/modals/address/associated-outputs.json";
 import AssociatedOutput from "./AssociatedOutput";
 import "./AssociatedOutputsTable.scss";
 
@@ -118,7 +120,10 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
     return (
         outputDetailsLoaded ?
             <div className="section">
-                <div className="section--header"><h2>Associated Outputs</h2></div>
+                <div className="section--header">
+                    <h2>Associated Outputs</h2>
+                    <Modal icon="info" data={associatedOuputsMessage} />
+                </div>
                 <table className="associated--table">
                     <thead>
                         <tr>

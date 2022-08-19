@@ -19,7 +19,9 @@ import Bech32Address from "../../components/stardust/Bech32Address";
 import ControlledFoundry from "../../components/stardust/ControlledFoundry";
 import NetworkContext from "../../context/NetworkContext";
 import { AliasRouteProps } from "../AliasRouteProps";
-import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
+import aliasMessage from "./../../../assets/modals/address/alias.json";
+import foundriesMessage from "./../../../assets/modals/address/foundries.json";
+import stateMessage from "./../../../assets/modals/address/state.json";
 import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
 import { AliasState } from "./AliasState";
@@ -113,7 +115,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                         <div className="addr--header">
                             <div className="row middle">
                                 <h1>Alias</h1>
-                                <Modal icon="info" data={mainHeaderMessage} />
+                                <Modal icon="info" data={aliasMessage} />
                             </div>
                         </div>
                         <div className="top">
@@ -137,6 +139,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                     <div className="section--header">
                                         <div className="row middle">
                                             <h2>State</h2>
+                                            <Modal icon="info" data={stateMessage} />
                                         </div>
                                     </div>
                                     <div className="section--data">
@@ -176,7 +179,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                                 <h2>
                                                     Controlled foundries ({foundries?.length})
                                                 </h2>
-                                                <Modal icon="info" data={mainHeaderMessage} />
+                                                <Modal icon="info" data={foundriesMessage} />
                                             </div>
                                         </div>
                                         <table className="controlled-foundry--table">

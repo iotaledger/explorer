@@ -1,10 +1,10 @@
 {
     "title": "Transaction History",
-    "description": "<p>The history of all transactions for this address. Transactions are the cornerstone of value-based transfers in the IOTA network.</p>",
+    "description": "<p>Your transaction history is broken down within your wallets. When you select Wallets from your dashboard, you will see a column with all of the transactions you made within the respective wallet.</p>",
     "links": [
       {
         "label": "Read more",
-        "href": "https://wiki.iota.org/iota.rs/libraries/nodejs/examples#messages-payload-and-transactions",
+        "href": "https://wiki.iota.org/wallets/firefly/faq-and-troubleshooting#where-can-i-see-my-transaction-history",
         "isExternal": true
       }
     ]

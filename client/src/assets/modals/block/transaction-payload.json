@@ -1,10 +1,10 @@
 {
     "title": "Transaction Payload",
-    "description": "<p>A transaction payload is made up of two parts:</p> <ol><li>The Transaction Essence part, which contains the inputs, outputs, and an optional embedded payload.</li> <li>The Unlock Blocks, which unlocks the Transaction Essence's inputs. In case the unlock block contains a signature, it signs the entire Transaction Essence part.</li></ol>",
+    "description": "<p>A simple transaction moves funds from one user account to another. On a high level, transactions must define 3 things:</p> <ol><li>TInputs: previously created unpsent transaction outputs holding funds that the transaction consumes,</li> <li>Unlock Blocks: they hold the signatures authorizing the consumption of inputs,</li><li>Outputs: newly created outputs holding transferred funds.</li></ol>",
     "links": [
       {
         "label": "Read more",
-        "href": "https://wiki.iota.org/learn/about-iota/blocks#transaction-payload",
+        "href": "https://wiki.iota.org/introduction/develop/explanations/ledger/simple_transfers",
         "isExternal": true
       }
     ]

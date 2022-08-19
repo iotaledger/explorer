@@ -2,6 +2,7 @@
 import { TRANSACTION_PAYLOAD_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import transactionPayloadMessage from "../../../assets/modals/block/transaction-payload.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -9,6 +10,7 @@ import { calculateConflictReason, calculateStatus } from "../../../models/tangle
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import CopyButton from "../../components/CopyButton";
+import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import InclusionState from "../../components/stardust/InclusionState";
@@ -122,10 +124,12 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                     <div className="inner">
                         <div className="transaction-page--header">
                             <div className="row row--tablet-responsive middle space-between middle">
-                                <h1>
-                                    Transaction
-                                </h1>
-
+                                <div className="row middle">
+                                    <h1>
+                                        Transaction
+                                    </h1>
+                                    <Modal icon="info" data={transactionPayloadMessage} />
+                                </div>
                                 <BlockTangleState
                                     network={network}
                                     status={blockTangleStatus}

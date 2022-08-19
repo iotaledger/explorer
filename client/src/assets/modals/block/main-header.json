@@ -1,10 +1,10 @@
 {
     "title": "Block",
-    "description": "<p>A Block consists of basic information that defines the type and structure of the block, and it can also contain different payloads. A payload is an attachment that can include an IOTA transaction and many other kinds of data.</p>",
+    "description": "<p>The Tangle is the graph data structure behind IOTA. In the legacy IOTA protocol, the vertices of the Tangle are represented by transactions. This document proposes an abstraction of this idea where the vertices are generalized blocks, which then contain the transactions or other structures that are processed by the IOTA protocol. Just as before, each block directly approves other blocks, which are known as parents.</p><br><p>The blocks can contain payloads. These are core payloads that will be processed by all nodes as part of the IOTA protocol. Some payloads may have other nested payloads embedded inside. Hence, parsing is done layer by layer.</p>",
     "links": [
       {
         "label": "Read more",
-        "href": "https://wiki.iota.org/learn/about-iota/data-transfer#what-is-an-iota-block",
+        "href": "https://github.com/Wollac/protocol-rfcs/blob/tangle-message-data/tips/TIP-0024/tip-0024.md",
         "isExternal": true
       }
     ]

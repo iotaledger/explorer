@@ -1,10 +1,10 @@
 {
     "title": "Tagged Data Payload",
-    "description": "<p>The concept of the payload allows for the addition of a tag to the encapsulating block, as well as some arbitrary data. Nodes expose an application programming interface that enables the querying of blocks by the index. Tagged Data payloads may also be contained within a transaction payload.</p>",
+    "description": "<p>A Tag Feature is a small piece of data intended to be used as an indexation tag for the output by custom applications built around the network. It becomes possible to map data (Metadata Feature) stored in the ledger by a specific party (Sender Feature) for a specific purpose (Tag Feature).</p>",
     "links": [
       {
         "label": "Read more",
-        "href": "https://wiki.iota.org/learn/about-iota/blocks#indexation-payload",
+        "href": "https://wiki.iota.org/introduction/develop/explanations/what_is_stardust/output_features#tag",
         "isExternal": true
       }
     ]

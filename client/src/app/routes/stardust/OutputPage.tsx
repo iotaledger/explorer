@@ -1,12 +1,14 @@
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import outputMessage from "../../../assets/modals/block/output.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import CopyButton from "../../components/CopyButton";
+import Modal from "../../components/Modal";
 import Output from "../../components/stardust/Output";
 import OutputPageProps from "./OutputPageProps";
 import "./OutputPage.scss";
@@ -39,6 +41,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             <h1>
                                 Output
                             </h1>
+                            <Modal icon="info" data={outputMessage} />
                         </div>
                     </div>
                     <div className="section">
