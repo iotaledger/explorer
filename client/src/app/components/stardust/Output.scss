@@ -2,7 +2,7 @@
 @import "../../../scss/variables";
 
 .card--content__output {
-    padding: 0 30px 20px;
+    padding: 0 30px;
 
     .card--value.card-header--wrapper {
         width: 100%;
@@ -18,6 +18,8 @@
             }
 
             .output-id--link {
+                display: flex;
+
                 a {
                     margin-right: 0px;
                 }
@@ -27,10 +29,10 @@
                     color: $gray-6;
                     margin-left: 2px;
                 }
-            }
 
-            @include desktop-down {
-                flex-direction: column;
+                .copy-button {
+                    margin-left: 4px;
+                }
             }
         }
 

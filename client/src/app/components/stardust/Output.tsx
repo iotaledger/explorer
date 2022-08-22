@@ -51,13 +51,15 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { outputId, output, amount, showCopyAmount, network, isPreExpanded } = this.props;
+        const { outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId } = this.props;
         const { isExpanded, isFormattedBalance } = this.state;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
         const foundryId = this.buildFoundyId();
 
-        const outputIdTransactionPart = outputId.slice(0, -4);
+        const outputIdTransactionPart = displayFullOutputId ?
+            `${outputId.slice(0, -4)}` :
+            `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
         const outputIdIndexPart = outputId.slice(-4);
 
         const outputHeader = (
@@ -82,6 +84,16 @@ class Output extends Component<OutputProps, OutputState> {
                             <span className="highlight">{outputIdIndexPart}</span>
                         </Link>
                         )
+                        <CopyButton
+                            onClick={e => {
+                                ClipboardHelper.copy(String(outputId));
+                                if (e) {
+                                    e.stopPropagation();
+                                }
+                            }}
+                            buttonType="copy"
+                            labelPosition="bottom"
+                        />
                     </div>
                 </div>
                 {showCopyAmount && (

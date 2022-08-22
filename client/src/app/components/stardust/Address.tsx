@@ -26,6 +26,7 @@ class Address extends Component<AddressProps> {
             this.props.address
         ).bech32;
 
+        const bech32Short = `${bech32.slice(0, 12)}....${bech32.slice(-12)}`;
         return (
             <div className="address-type">
                 <div className="card--label">
@@ -36,7 +37,7 @@ class Address extends Component<AddressProps> {
                         to={`/${this.context.name}/addr/${bech32}`}
                         className="margin-r-t"
                     >
-                        {bech32}
+                        {bech32Short}
                     </Link>
                     <CopyButton
                         onClick={() => ClipboardHelper.copy(bech32)}
