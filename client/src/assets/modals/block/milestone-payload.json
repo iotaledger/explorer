@@ -4,7 +4,7 @@
     "links": [
       {
         "label": "Read more",
-        "href": "https://wiki.iota.org/learn/about-iota/blocks#milestone-payload",
+        "href": "https://github.com/iotaledger/tips/blob/milestone-with-signature-blocks/tips/TIP-0029/tip-0029.md",
         "isExternal": true
       }
     ]

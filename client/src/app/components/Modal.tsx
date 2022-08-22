@@ -85,11 +85,23 @@ class Modal extends Component<ModalProps, ModalState> {
     }
 
     private handleShow(): void {
-        this.setState({ show: true });
+        this.setState({ show: true },
+            () => {
+                if (this.props?.showModal) {
+                    this.props.showModal(this.state.show);
+                }
+            }
+        );
     }
 
     private handleHide(): void {
-        this.setState({ show: false });
+        this.setState({ show: false },
+            () => {
+                if (this.props?.showModal) {
+                    this.props.showModal(this.state.show);
+                }
+            }
+        );
     }
 }
 

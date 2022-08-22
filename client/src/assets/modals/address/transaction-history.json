@@ -1,6 +1,6 @@
 {
     "title": "Transaction History",
-    "description": "<p>Your transaction history is broken down within your wallets. When you select Wallets from your dashboard, you will see a column with all of the transactions you made within the respective wallet.</p>",
+    "description": "<p>The history of all transactions for this address. Transactions are the cornerstone of value-based transfers in the IOTA network.</p>",
     "links": [
       {
         "label": "Read more",

@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import transactionPayloadMessage from "../../../assets/modals/block/transaction-payload.json";
+import transactionPayloadMessage from "../../../assets/modals/transaction/transaction-payload.json";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";

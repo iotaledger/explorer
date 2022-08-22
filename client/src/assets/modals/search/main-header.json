@@ -1,0 +1,4 @@
+{
+    "title": "Search Criteria",
+    "description": "<p>Supported formats:</p> <ol><li><b>Messages</b> 64 Hex characters</li><li><b>Message using Transaction Id</b> 64 Hex characters</li><li><b>Addresses</b> 64 Hex characters or Bech32 Format</li><li><b>Outputs</b> 68 Hex characters</li><li><b>Milestone Index</b> Numeric</li><li><b>Indexes</b> Maximum 64 UTF-8 chars or maximum 128 hex chars</li><li><b>DID</b> 64 Hex characters starting with did:iota:</li></ol>"
+}

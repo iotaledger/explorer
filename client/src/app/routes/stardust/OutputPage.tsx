@@ -1,7 +1,7 @@
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import outputMessage from "../../../assets/modals/block/output.json";
+import mainMessage from "../../../assets/modals/output/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -41,7 +41,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             <h1>
                                 Output
                             </h1>
-                            <Modal icon="info" data={outputMessage} />
+                            <Modal icon="info" data={mainMessage} />
                         </div>
                     </div>
                     <div className="section">

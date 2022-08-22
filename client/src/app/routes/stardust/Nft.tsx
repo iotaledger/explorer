@@ -16,7 +16,7 @@ import Bech32Address from "../../components/stardust/Bech32Address";
 import Feature from "../../components/stardust/Feature";
 import NetworkContext from "../../context/NetworkContext";
 import { NftRouteProps } from "../NftRouteProps";
-import nftMessage from "./../../../assets/modals/address/nft.json";
+import mainMessage from "./../../../assets/modals/nft/main-header.json";
 import Modal from "./../../components/Modal";
 import "./Nft.scss";
 import { NftState } from "./NftState";
@@ -99,7 +99,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                         <div className="nft--header">
                             <div className="row middle">
                                 <h1>NFT Address</h1>
-                                <Modal icon="info" data={nftMessage} />
+                                <Modal icon="info" data={mainMessage} />
                             </div>
                         </div>
                         <div className="top">

@@ -19,9 +19,9 @@ import Bech32Address from "../../components/stardust/Bech32Address";
 import ControlledFoundry from "../../components/stardust/ControlledFoundry";
 import NetworkContext from "../../context/NetworkContext";
 import { AliasRouteProps } from "../AliasRouteProps";
-import aliasMessage from "./../../../assets/modals/address/alias.json";
-import foundriesMessage from "./../../../assets/modals/address/foundries.json";
-import stateMessage from "./../../../assets/modals/address/state.json";
+import foundriesMessage from "./../../../assets/modals/alias/foundries.json";
+import mainMessage from "./../../../assets/modals/alias/main-header.json";
+import stateMessage from "./../../../assets/modals/alias/state.json";
 import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
 import { AliasState } from "./AliasState";
@@ -115,7 +115,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                         <div className="addr--header">
                             <div className="row middle">
                                 <h1>Alias</h1>
-                                <Modal icon="info" data={aliasMessage} />
+                                <Modal icon="info" data={mainMessage} />
                             </div>
                         </div>
                         <div className="top">

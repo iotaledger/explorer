@@ -1,0 +1,4 @@
+{
+    "title": "Search Criteria",
+    "description": "<p>Supported formats:</p> <ol><li><b>Blocks</b> 64 Hex characters</li><li><b>Block using Transaction Id</b> 64 Hex characters</li><li><b>Addresses</b> 64 Hex characters or Bech32 Format</li><li><b>Nft/Alias Addresses</b> 66 Hex characters or Bech32 Format</li><li><b>Outputs</b> 68 Hex characters</li><li><b>Alias Id</b> 64 Hex characters</li><li><b>Foundry Id</b> 76 Hex characters</li><li><b>Token Id</b> 76 Hex characters</li><li><b>NFT Id</b> 64 Hex characters</li><li><b>Milestone Id</b> 64 Hex characters</li><li><b>Milestone Index</b> Numeric</li></ol>"
+}
