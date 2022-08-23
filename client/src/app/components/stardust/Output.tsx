@@ -268,8 +268,14 @@ class Output extends Component<OutputProps, OutputState> {
          let addressType: number = 0;
 
          if (output.type === ALIAS_OUTPUT_TYPE) {
-             address = output.aliasId;
-             addressType = ALIAS_ADDRESS_TYPE;
+            const aliasId = !HexHelper.toBigInt256(output.aliasId).eq(bigInt.zero) ?
+            output.aliasId :
+            // Alias has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
+            HexHelper.addPrefix(
+                Converter.bytesToHex(Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId))))
+            );
+            address = aliasId;
+            addressType = ALIAS_ADDRESS_TYPE;
          } else if (output.type === NFT_OUTPUT_TYPE) {
              const nftId = !HexHelper.toBigInt256(output.nftId).eq(bigInt.zero) ?
                  output.nftId :
