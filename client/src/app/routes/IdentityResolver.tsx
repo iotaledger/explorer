@@ -4,7 +4,6 @@ import React, { Fragment, ReactNode } from "react";
 import { HiDownload } from "react-icons/hi";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../helpers/downloadHelper";
 import { CHRYSALIS } from "../../models/config/protocolVersion";
 import { TangleStatus } from "../../models/tangleStatus";
@@ -241,10 +240,7 @@ class IdentityResolver extends AsyncComponent<
                                                     <div className="label">DID</div>
                                                     <div className="row middle value code highlight margin-b-s">
                                                         <div className="margin-r-t">{this.state.did}</div>
-                                                        <CopyButton
-                                                            onClick={() => ClipboardHelper.copy(this.state.did)}
-                                                            buttonType="copy"
-                                                        />
+                                                        <CopyButton copy={this.state.did} />
                                                     </div>
                                                     {this.state.resolvedIdentity &&
                                                         !this.state.error &&
@@ -257,12 +253,7 @@ class IdentityResolver extends AsyncComponent<
                                                                         {this.state.resolvedIdentity?.messageId}
                                                                     </div>
                                                                     <CopyButton
-                                                                        onClick={() =>
-                                                                            ClipboardHelper.copy(
-                                                                                this.state.resolvedIdentity
-                                                                                    ?.messageId
-                                                                            )}
-                                                                        buttonType="copy"
+                                                                        copy={this.state.resolvedIdentity?.messageId}
                                                                     />
                                                                 </div>
                                                             </Fragment>

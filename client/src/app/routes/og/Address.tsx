@@ -4,7 +4,6 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
@@ -191,12 +190,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                     {this.state.checksum}
                                                 </span>
                                             </span>
-                                            <CopyButton
-                                                onClick={() => ClipboardHelper.copy(
-                                                    `${this.state.address}${this.state.checksum}`
-                                                )}
-                                                buttonType="copy"
-                                            />
+                                            <CopyButton copy={`${this.state.address}${this.state.checksum}`} />
                                         </div>
                                         {this.state.balance !== undefined && this.state.balance !== 0 && (
                                             <div className="row fill margin-t-s margin-b-s value-buttons">

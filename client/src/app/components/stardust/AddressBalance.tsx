@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import CopyButton from "../../components/CopyButton";
@@ -56,11 +55,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                             >
                                 {formatAmount(amount, tokenInfo, isFormatFull)}
                             </span>
-                            <CopyButton
-                                onClick={() => ClipboardHelper.copy(String(amount))}
-                                buttonType="copy"
-                                labelPosition="bottom"
-                            />
+                            <CopyButton copy={String(amount)} />
                         </div>
                         {isMarketed && (
                             <React.Fragment>

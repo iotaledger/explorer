@@ -1,6 +1,5 @@
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import NetworkContext from "../../context/NetworkContext";
@@ -39,11 +38,7 @@ class Address extends Component<AddressProps> {
                     >
                         {bech32Short}
                     </Link>
-                    <CopyButton
-                        onClick={() => ClipboardHelper.copy(bech32)}
-                        buttonType="copy"
-                        labelPosition="bottom"
-                    />
+                    <CopyButton copy={bech32} />
                 </div>
             </div>
         );

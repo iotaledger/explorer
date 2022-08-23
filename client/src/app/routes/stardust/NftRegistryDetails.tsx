@@ -4,7 +4,6 @@ import { RouteComponentProps } from "react-router-dom";
 import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
 import mainHeaderMessage from "../../../assets/modals/block/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { INftActivityHistory } from "../../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -132,12 +131,7 @@ class NftRegistryDetails extends AsyncComponent<RouteComponentProps<NftRegistryD
                                                                 <span className="label value">
                                                                     {nftDetails?.generalData?.tokenId}
                                                                 </span>
-                                                                <CopyButton
-                                                                    onClick={() => ClipboardHelper.copy(
-                                                                        nftDetails?.generalData?.tokenId
-                                                                    )}
-                                                                    buttonType="copy"
-                                                                />
+                                                                <CopyButton copy={nftDetails?.generalData?.tokenId} />
                                                             </div>
                                                         </li>
                                                         <li className="list">
@@ -147,10 +141,7 @@ class NftRegistryDetails extends AsyncComponent<RouteComponentProps<NftRegistryD
                                                                     {nftDetails?.generalData?.contractAddress}
                                                                 </span>
                                                                 <CopyButton
-                                                                    onClick={() => ClipboardHelper.copy(
-                                                                        nftDetails?.generalData?.contractAddress
-                                                                    )}
-                                                                    buttonType="copy"
+                                                                    copy={nftDetails?.generalData?.contractAddress}
                                                                 />
                                                             </div>
                                                         </li>
@@ -161,10 +152,7 @@ class NftRegistryDetails extends AsyncComponent<RouteComponentProps<NftRegistryD
                                                                     {nftDetails?.generalData?.creatorAddress}
                                                                 </span>
                                                                 <CopyButton
-                                                                    onClick={() => ClipboardHelper.copy(
-                                                                        nftDetails?.generalData?.creatorAddress
-                                                                    )}
-                                                                    buttonType="copy"
+                                                                    copy={nftDetails?.generalData?.creatorAddress}
                                                                 />
                                                             </div>
                                                         </li>
@@ -175,10 +163,7 @@ class NftRegistryDetails extends AsyncComponent<RouteComponentProps<NftRegistryD
                                                                     {nftDetails?.generalData?.senderAddress}
                                                                 </span>
                                                                 <CopyButton
-                                                                    onClick={() => ClipboardHelper.copy(
-                                                                        nftDetails?.generalData?.senderAddress
-                                                                    )}
-                                                                    buttonType="copy"
+                                                                    copy={nftDetails?.generalData?.senderAddress}
                                                                 />
                                                             </div>
                                                         </li>

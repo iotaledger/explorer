@@ -9,7 +9,6 @@ import bigInt from "big-integer";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
@@ -84,16 +83,7 @@ class Output extends Component<OutputProps, OutputState> {
                             <span className="highlight">{outputIdIndexPart}</span>
                         </Link>
                         )
-                        <CopyButton
-                            onClick={e => {
-                                ClipboardHelper.copy(String(outputId));
-                                if (e) {
-                                    e.stopPropagation();
-                                }
-                            }}
-                            buttonType="copy"
-                            labelPosition="bottom"
-                        />
+                        <CopyButton copy={String(outputId)} />
                     </div>
                 </div>
                 {showCopyAmount && (
@@ -109,17 +99,7 @@ class Output extends Component<OutputProps, OutputState> {
                         </span>
                     </div>
                 )}
-                {showCopyAmount &&
-                    <CopyButton
-                        onClick={e => {
-                            ClipboardHelper.copy(String(amount));
-                            if (e) {
-                                e.stopPropagation();
-                            }
-                        }}
-                        buttonType="copy"
-                        labelPosition="bottom"
-                    />}
+                {showCopyAmount && <CopyButton copy={String(amount)} />}
             </div>
         );
 
@@ -137,11 +117,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
                                     {aliasOrNftBech32}
                                 </Link>
-                                <CopyButton
-                                    onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
-                                    buttonType="copy"
-                                    labelPosition="bottom"
-                                />
+                                <CopyButton copy={aliasOrNftBech32} />
                             </div>
                             <div className="card--label">
                                 State index:
@@ -180,10 +156,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
                                     {aliasOrNftBech32}
                                 </Link>
-                                <CopyButton
-                                    onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
-                                    buttonType="copy"
-                                />
+                                <CopyButton copy={aliasOrNftBech32} />
                             </div>
                         </React.Fragment>
                         )}
@@ -200,10 +173,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 >
                                     {foundryId}
                                 </Link>
-                                <CopyButton
-                                    onClick={() => ClipboardHelper.copy(foundryId)}
-                                    buttonType="copy"
-                                />
+                                <CopyButton copy={foundryId} />
                             </div>
                             <div className="card--label">
                                 Serial number:

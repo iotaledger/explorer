@@ -3,7 +3,6 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { TransactionsHelper } from "../../../helpers/chrysalis/transactionsHelper";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { TangleStatus } from "../../../models/tangleStatus";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
@@ -154,12 +153,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                     <span className="margin-r-t">
                                         {this.state.actualMessageId}
                                     </span>
-                                    <CopyButton
-                                        onClick={() => ClipboardHelper.copy(
-                                            this.state.actualMessageId
-                                        )}
-                                        buttonType="copy"
-                                    />
+                                    <CopyButton copy={this.state.actualMessageId} />
                                 </div>
                             </div>
 
@@ -170,12 +164,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                     </div>
                                     <div className="value value__secondary row middle">
                                         <span className="margin-r-t">{this.state.paramMessageId}</span>
-                                        <CopyButton
-                                            onClick={() => ClipboardHelper.copy(
-                                                this.state.paramMessageId
-                                            )}
-                                            buttonType="copy"
-                                        />
+                                        <CopyButton copy={this.state.paramMessageId} />
                                     </div>
                                 </div>
                             )}

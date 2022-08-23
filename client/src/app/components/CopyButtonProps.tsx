@@ -1,16 +1,6 @@
 export interface CopyButtonProps {
     /**
-     * The type of button to show.
+     * The string to copy to clipboard.
      */
-    buttonType: "copy";
-
-    /**
-     * Position to show copied label.
-     */
-    labelPosition?: "top" | "right" | "bottom";
-
-    /**
-     * The button click.
-     */
-    onClick(event?: React.MouseEvent): void;
+    copy: string | undefined;
 }
