@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
+import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import "./CopyButton.scss";
 import { CopyButtonProps } from "./CopyButtonProps";
 import { CopyButtonState } from "./CopyButtonState";
@@ -16,8 +17,7 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
         super(props);
 
         this.state = {
-            active: false,
-            message: props.buttonType === "copy" ? "Copied" : ""
+            active: false
         };
     }
 
@@ -28,24 +28,20 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
     public render(): ReactNode {
         return (
             <div className="copy-button">
-                <button
-                    type="button"
-                    className={classNames(
-                        "copy-button-btn",
-                        { "copy-button-btn--active": this.state.active }
-                    )}
-                    onClick={e => this.activate(e)}
-                >
-                    {this.props.buttonType === "copy" && (
+                {!this.state.active ? (
+                    <button
+                        type="button"
+                        className={classNames("copy-button-btn", { "copy-button-btn--active": this.state.active })}
+                        onClick={e => this.activate(e)}
+                    >
                         <span className="material-icons">
                             content_copy
                         </span>
-                    )}
-                </button>
-                {this.state.active && this.state.message && (
-                    <span className={classNames("copy-button--message", this.props.labelPosition)}>
-                        {this.state.message}
-                    </span>
+                    </button>
+                ) : (
+                    <div className="copy-button--message">
+                        <span className="material-icons">done</span>
+                    </div>
                 )}
             </div>
         );
@@ -56,7 +52,10 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
      * @param event The mouse click event
      */
     private activate(event: React.MouseEvent): void {
-        this.props.onClick(event);
+        ClipboardHelper.copy(this.props.copy);
+        if (event) {
+            event.stopPropagation();
+        }
 
         this.setState({ active: true });
         setTimeout(

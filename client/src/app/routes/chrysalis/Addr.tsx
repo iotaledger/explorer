@@ -7,7 +7,6 @@ import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/chrysalis/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/chrysalis/transactionsHelper";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import {
     HistoricInput, HistoricOutput,
     ITransaction, ITransactionsDetailsResponse
@@ -206,10 +205,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                                                                     <span>(</span>
                                                                     <FiatValue value={this.state.balance} />
                                                                     <span>)</span>
-                                                                    <CopyButton
-                                                                        onClick={() => ClipboardHelper.copy(String(this.state.balance))}
-                                                                        buttonType="copy"
-                                                                    />
+                                                                    <CopyButton copy={String(this.state.balance)} />
                                                                 </div>
                                                             ) : 0}
                                                         </div>

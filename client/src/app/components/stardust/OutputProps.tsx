@@ -22,9 +22,14 @@ export interface OutputProps {
     showCopyAmount: boolean;
 
     /**
-     * Should the output be pre-expanded
+     * Should the output be pre-expanded.
      */
     isPreExpanded?: boolean;
+
+    /**
+     * Should the outputId be displayed in full (default truncated).
+     */
+    displayFullOutputId?: boolean;
 
     /**
      * The network to lookup.

@@ -4,62 +4,32 @@
 @import "../../scss/media-queries";
 
 .copy-button {
-  position: relative;
-
   .copy-button-btn {
     border: 0;
     outline: none;
+    padding: 0;
     background: none;
     cursor: pointer;
 
     span {
-      color: $gray-10;
-      font-size: 16px;
+      color: $gray-10!important;
+      font-size: 16px!important;
     }
 
     &:hover {
+      text-decoration: none!important;
       span {
-        color: $main-green-highlight;
+        color: $main-green-highlight!important;
       }
     }
   }
 
   .copy-button--message {
-    @include font-size(10px, 12px);
+    line-height: 0!important;
 
-    position: absolute;
-    top: 10px;
-    right: 0;
-    min-width: 50px;
-    transform: translateX(100%);
-    animation: fade 2s linear;
-    opacity: 1;
-    color: $main-green;
-    font-family: $metropolis;
-    font-weight: bold;
-    text-transform: uppercase;
-    animation-fill-mode: forwards;
-
-    &.bottom {
-        top: 25px;
-        transform: translateX(25%);
-    }
-
-    &.top {
-        top: -20px;
-        transform: translateX(25%);
-    }
-  }
-
-
-  @keyframes fade {
-    0%,
-    100% {
-      opacity: 0;
-    }
-
-    50% {
-      opacity: 1;
+    span {
+        color: $main-green!important;
+        font-size: 16px!important;
     }
   }
 }

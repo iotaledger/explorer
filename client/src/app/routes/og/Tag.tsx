@@ -3,7 +3,6 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
@@ -186,11 +185,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                                     {this.state.tagFill}
                                                 </span>
                                             </span>
-                                            <CopyButton
-                                                onClick={() => ClipboardHelper.copy(
-                                                    this.state.tag)}
-                                                buttonType="copy"
-                                            />
+                                            <CopyButton copy={this.state.tag} />
                                         </div>
                                         <div className="card--label">
                                             Transaction Filter

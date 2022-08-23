@@ -3,7 +3,6 @@ import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import AsyncComponent from "../AsyncComponent";
 import CopyButton from "../CopyButton";
 import FiatValue from "../FiatValue";
@@ -174,11 +173,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             >
                                                 {this.state.isFormattedBalance ? output.amount : UnitsHelper.formatBest(output.amount)}
                                             </span>
-                                            <CopyButton
-                                                onClick={() => ClipboardHelper.copy(String(output.amount))}
-                                                buttonType="copy"
-                                                labelPosition="bottom"
-                                            />
+                                            <CopyButton copy={String(output.amount)} />
                                         </div>
                                     </div>
 

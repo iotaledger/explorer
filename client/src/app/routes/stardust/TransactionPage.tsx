@@ -3,7 +3,6 @@ import { TRANSACTION_PAYLOAD_TYPE, TransactionHelper } from "@iota/iota.js-stard
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -151,12 +150,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                     <span className="margin-r-t">
                                         {transactionId}
                                     </span>
-                                    <CopyButton
-                                        onClick={() => ClipboardHelper.copy(
-                                            transactionId
-                                        )}
-                                        buttonType="copy"
-                                    />
+                                    <CopyButton copy={transactionId} />
                                 </div>
                             </div>
                             {includedBlockId && (
@@ -173,12 +167,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                                 {includedBlockId}
                                             </Link>
                                         </span>
-                                        <CopyButton
-                                            onClick={() => ClipboardHelper.copy(
-                                                includedBlockId
-                                            )}
-                                            buttonType="copy"
-                                        />
+                                        <CopyButton copy={includedBlockId} />
                                     </div>
                                 </div>
                             )}

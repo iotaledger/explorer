@@ -2,7 +2,6 @@ import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -71,11 +70,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                     >
                                         {blockId}
                                     </Link>
-                                    <CopyButton
-                                        onClick={() => ClipboardHelper.copy(blockId)}
-                                        buttonType="copy"
-                                        labelPosition="bottom"
-                                    />
+                                    <CopyButton copy={blockId} />
                                 </div>
                             </div>
                         )}
@@ -92,11 +87,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                     >
                                         {transactionId}
                                     </Link>
-                                    <CopyButton
-                                        onClick={() => ClipboardHelper.copy(transactionId)}
-                                        buttonType="copy"
-                                        labelPosition="bottom"
-                                    />
+                                    <CopyButton copy={transactionId} />
                                 </div>
                             </div>
                         )}
@@ -165,11 +156,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                     >
                                         {transactionIdSpent}
                                     </Link>
-                                    <CopyButton
-                                        onClick={() => ClipboardHelper.copy(transactionIdSpent)}
-                                        buttonType="copy"
-                                        labelPosition="bottom"
-                                    />
+                                    <CopyButton copy={transactionIdSpent} />
                                 </div>
                             </div>
                         )}
