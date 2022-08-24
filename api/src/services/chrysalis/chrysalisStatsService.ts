@@ -1,5 +1,5 @@
 import { SingleNodeClient } from "@iota/iota.js";
-import { BaseStatsService } from "../baseStatsService";
+import { BaseStatsService } from "./baseStatsService";
 
 /**
  * Class to handle stats service.

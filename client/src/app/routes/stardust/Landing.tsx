@@ -7,7 +7,7 @@ import { isShimmerNetwork } from "../../../helpers/networkHelper";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
-import { ALPHANET, CUSTOM } from "../../../models/config/networkType";
+import { CUSTOM } from "../../../models/config/networkType";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFilterSettings } from "../../../models/services/stardust/IFilterSettings";
@@ -102,12 +102,14 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     public render(): ReactNode {
         const {
             networkConfig, marketCapCurrency, priceCurrency,
-            valuesFilter, filteredItems, isFeedPaused,
-            isFilterExpanded, itemsPerSecond, confirmedItemsPerSecondPercent, latestMilestoneIndex
+            valuesFilter, filteredItems, isFeedPaused, isFilterExpanded,
+            itemsPerSecond, confirmedItemsPerSecondPercent, latestMilestoneIndex,
+            networkAnalytics
         } = this.state;
 
         const { network } = this.props.match.params;
         const isShimmer = isShimmerNetwork(network);
+        const { tokenInfo } = this.context as INetworkContextProps;
 
         const defaultInfoBox = (
             <div className="main-info-boxes">
@@ -155,7 +157,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             {defaultInfoBox}
                         </div>
                     </div>
-                    <InfoSection visible={network === ALPHANET} />
+                    <InfoSection analytics={networkAnalytics} tokenInfo={tokenInfo} />
                 </div>
                 <div className={classNames("wrapper feeds-wrapper", { "shimmer": isShimmer })}>
                     <div className="inner">
