@@ -9,6 +9,7 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import QR from "../../components/chrysalis/QR";
+import Spinner from "../../components/Spinner";
 import AddressBalance from "../../components/stardust/AddressBalance";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
@@ -151,6 +152,10 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         </div>
                                     </div>
                                     <div className="row space-between general-content">
+                                        {!bech32AddressDetails &&
+                                        <div className="section--data">
+                                            <Spinner />
+                                        </div>}
                                         <div className="section--data">
                                             <Bech32Address
                                                 addressDetails={bech32AddressDetails}
