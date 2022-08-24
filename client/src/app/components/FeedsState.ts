@@ -1,3 +1,4 @@
+import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { CurrencyState } from "./CurrencyState";
 
 export interface FeedsState extends CurrencyState {
@@ -39,4 +40,9 @@ export interface FeedsState extends CurrencyState {
          */
         milestoneIndex: number;
     }[];
+
+    /**
+     * The chonicle analytic stats.
+     */
+    networkAnalytics?: IAnalyticStats;
 }

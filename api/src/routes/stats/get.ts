@@ -23,7 +23,7 @@ export async function get(
     const statsService = ServiceFactory.get<IStatsService>(`stats-${request.network}`);
 
     const stats = statsService?.getStats();
-    let itemsPerSecondHistory;
+    let itemsPerSecondHistory: number[];
 
     if (request.includeHistory) {
         itemsPerSecondHistory = statsService?.getItemsPerSecondHistory();

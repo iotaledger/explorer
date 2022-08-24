@@ -2,6 +2,7 @@ import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { MqttClient as StardustMqttClient } from "@iota/mqtt.js-stardust";
 import { ServiceFactory } from "./factories/serviceFactory";
 import { IConfiguration } from "./models/configuration/IConfiguration";
+import { IAnalyticsStore } from "./models/db/IAnalyticsStore";
 import { ICurrencyState } from "./models/db/ICurrencyState";
 import { IMarket } from "./models/db/IMarket";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
@@ -186,9 +187,10 @@ function initStardustServices(networkConfig: INetwork): void {
         () => new StardustItemsService(networkConfig.network)
     );
 
+    const stardustStatsService = new StardustStatsService(networkConfig);
     ServiceFactory.register(
         `stats-${networkConfig.network}`,
-        () => new StardustStatsService(networkConfig)
+        () => stardustStatsService
     );
 
     if (networkConfig.permaNodeEndpoint) {
@@ -216,6 +218,9 @@ function registerStorageServices(config: IConfiguration): void {
 
         ServiceFactory.register("market-storage", () => new LocalStorageService<IMarket>(
             config.rootStorageFolder, "market", "currency"));
+
+        ServiceFactory.register("analytics-storage", () => new LocalStorageService<IAnalyticsStore>(
+            config.rootStorageFolder, "analytics", "network"));
     } else if (config.dynamoDbConnection) {
         ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<IMarket>(
             config.dynamoDbConnection, "network", "network"));
@@ -228,5 +233,8 @@ function registerStorageServices(config: IConfiguration): void {
 
         ServiceFactory.register("market-storage", () => new AmazonDynamoDbService<IMarket>(
             config.dynamoDbConnection, "market", "currency"));
+
+        ServiceFactory.register("analytics-storage", () => new AmazonDynamoDbService<IAnalyticsStore>(
+            config.dynamoDbConnection, "analytics", "network"));
     }
 }

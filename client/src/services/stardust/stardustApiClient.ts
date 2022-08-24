@@ -29,6 +29,8 @@ import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsReq
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
 import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
 import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
+import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
+import { IAnalyticStatsRequest } from "../../models/api/stats/IAnalyticStatsRequest";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -222,6 +224,15 @@ export class StardustApiClient extends ApiClient {
             `stardust/foundry/${request.network}/${request.foundryId}`,
             "get"
         );
+    }
+
+    /**
+     * Get the chronicle analytic stats.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async analytics(request: IAnalyticStatsRequest): Promise<IAnalyticStats> {
+        return this.callApi<unknown, IAnalyticStats>(`analytics/${request.network}`, "get");
     }
 
     /**

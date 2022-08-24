@@ -275,6 +275,22 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     }
 
     /**
+     * Fetch the chronicle analytics.
+     */
+    private async fetchAnalytics(): Promise<void> {
+        if (this._networkConfig?.network) {
+            const analytics = await this._apiClient?.analytics({ network: this._networkConfig?.network });
+            const hasAnaytics = Object.getOwnPropertyNames(analytics).length > 0;
+
+            if (hasAnaytics) {
+                this.setState({
+                    networkAnalytics: analytics
+                });
+            }
+        }
+    }
+
+    /**
      * Initialise the services for the network.
      */
     private initNetworkServices(): void {
@@ -293,6 +309,8 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         this.updateTps();
         this.buildItems();
         this.buildMilestones();
+        // eslint-disable-next-line no-void
+        void this.fetchAnalytics();
 
         this._timerId = setTimeout(async () => this.updateTps(), 4000);
     }
