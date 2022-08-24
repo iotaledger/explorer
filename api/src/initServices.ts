@@ -39,7 +39,7 @@ const isKnownProtocolVersion = (networkConfig: INetwork) =>
  * @param config The configuration to initialisation the service with.
  */
 export async function initServices(config: IConfiguration) {
-    registerStorageServices(config);
+    await registerStorageServices(config);
 
     const networkService = new NetworkService();
     ServiceFactory.register("network", () => networkService);
@@ -205,7 +205,7 @@ function initStardustServices(networkConfig: INetwork): void {
  * Register the storage services.
  * @param config The config.
  */
-function registerStorageServices(config: IConfiguration): void {
+async function registerStorageServices(config: IConfiguration): Promise<void> {
     if (config.rootStorageFolder) {
         ServiceFactory.register("network-storage", () => new LocalStorageService<INetwork>(
             config.rootStorageFolder, "network", "network"));
@@ -238,9 +238,7 @@ function registerStorageServices(config: IConfiguration): void {
             config.dynamoDbConnection, "analytics", "network"
         );
         // eslint-disable-next-line no-void
-        void analyticsStore.create().then(result => {
-            console.log(result);
-        });
+        await analyticsStore.create();
         ServiceFactory.register("analytics-storage", () => analyticsStore);
     }
 }
