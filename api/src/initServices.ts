@@ -234,7 +234,13 @@ function registerStorageServices(config: IConfiguration): void {
         ServiceFactory.register("market-storage", () => new AmazonDynamoDbService<IMarket>(
             config.dynamoDbConnection, "market", "currency"));
 
-        ServiceFactory.register("analytics-storage", () => new AmazonDynamoDbService<IAnalyticsStore>(
-            config.dynamoDbConnection, "analytics", "network"));
+        const analyticsStore = new AmazonDynamoDbService<IAnalyticsStore>(
+            config.dynamoDbConnection, "analytics", "network"
+        );
+        // eslint-disable-next-line no-void
+        void analyticsStore.create().then(result => {
+            console.log(result);
+        });
+        ServiceFactory.register("analytics-storage", () => analyticsStore);
     }
 }
