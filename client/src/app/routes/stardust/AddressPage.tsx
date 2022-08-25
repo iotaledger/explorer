@@ -132,78 +132,81 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         return (
             <div className="addr">
                 <div className="wrapper">
-                    <div className="inner">
-                        <div className="addr--header">
-                            <div className="row middle">
-                                <h1>
-                                    Address
-                                </h1>
-                                <Modal icon="info" data={mainHeaderMessage} />
-                            </div>
-                        </div>
-                        <div className="top">
-                            <div className="sections">
-                                <div className="section">
-                                    <div className="section--header">
-                                        <div className="row middle">
-                                            <h2>
-                                                General
-                                            </h2>
-                                        </div>
-                                    </div>
-                                    <div className="row space-between general-content">
-                                        {!bech32AddressDetails &&
-                                        <div className="section--data">
-                                            <Spinner />
-                                        </div>}
-                                        <div className="section--data">
-                                            <Bech32Address
-                                                addressDetails={bech32AddressDetails}
-                                                advancedMode={true}
-                                                showCopyButton={true}
-                                            />
-                                            {balance !== undefined && (
-                                                <AddressBalance
-                                                    balance={balance}
-                                                    spendableBalance={sigLockedBalance}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className="section--data">
-                                            {bech32AddressDetails?.bech32 &&
-                                                (
-                                                    //  eslint-disable-next-line react/jsx-pascal-case
-                                                    <QR data={bech32AddressDetails.bech32} />
-                                                )}
-                                        </div>
-                                    </div>
+                    {bech32AddressDetails ?
+                        <div className="inner">
+                            <div className="addr--header">
+                                <div className="row middle">
+                                    <h1>
+                                        Address
+                                    </h1>
+                                    <Modal icon="info" data={mainHeaderMessage} />
                                 </div>
-                                {outputResponse && outputResponse.length === 0 && (
+                            </div>
+                            <div className="top">
+                                <div className="sections">
                                     <div className="section">
-                                        <div className="section--data">
-                                            <p>
-                                                There are no transactions for this address.
-                                            </p>
+                                        <div className="section--header">
+                                            <div className="row middle">
+                                                <h2>
+                                                    General
+                                                </h2>
+                                            </div>
+                                        </div>
+                                        <div className="row space-between general-content">
+                                            <div className="section--data">
+                                                <Bech32Address
+                                                    addressDetails={bech32AddressDetails}
+                                                    advancedMode={true}
+                                                    showCopyButton={true}
+                                                />
+                                                {balance !== undefined && (
+                                                    <AddressBalance
+                                                        balance={balance}
+                                                        spendableBalance={sigLockedBalance}
+                                                    />
+                                                )}
+                                            </div>
+                                            <div className="section--data">
+                                                {bech32AddressDetails?.bech32 &&
+                                                    (
+                                                        //  eslint-disable-next-line react/jsx-pascal-case
+                                                        <QR data={bech32AddressDetails.bech32} />
+                                                    )}
+                                            </div>
                                         </div>
                                     </div>
-                                )}
-                                <AssetsTable
-                                    networkId={networkId}
-                                    outputs={outputResponse?.map(output => output.output)}
-                                />
-                                <NftSection
-                                    network={networkId}
-                                    bech32Address={addressBech32}
-                                />
-                                {addressBech32 && (
-                                    <TransactionHistory network={networkId} address={addressBech32} />
-                                )}
-                                {bech32AddressDetails && (
-                                    <AssociatedOutputsTable network={networkId} addressDetails={bech32AddressDetails} />
-                                )}
+                                    {outputResponse && outputResponse.length === 0 && (
+                                        <div className="section">
+                                            <div className="section--data">
+                                                <p>
+                                                    There are no transactions for this address.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <AssetsTable
+                                        networkId={networkId}
+                                        outputs={outputResponse?.map(output => output.output)}
+                                    />
+                                    <NftSection
+                                        network={networkId}
+                                        bech32Address={addressBech32}
+                                    />
+                                    {addressBech32 && (
+                                        <TransactionHistory network={networkId} address={addressBech32} />
+                                    )}
+                                    {bech32AddressDetails && (
+                                        <AssociatedOutputsTable
+                                            network={networkId}
+                                            addressDetails={bech32AddressDetails}
+                                        />
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    </div >
+                        </div > :
+                        <div className="inner row middle center loader">
+                            <Spinner />
+                        </div>}
                 </div >
             </div >
         );
