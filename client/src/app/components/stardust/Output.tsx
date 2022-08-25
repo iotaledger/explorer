@@ -262,30 +262,40 @@ class Output extends Component<OutputProps, OutputState> {
      * Build bech32 address.
      * @returns The bech32 address.
      */
-     private buildAddressForAliasOrNft() {
-         const { outputId, output } = this.props;
-         let address: string = "";
-         let addressType: number = 0;
+    private buildAddressForAliasOrNft() {
+        const { outputId, output } = this.props;
+        let address: string = "";
+        let addressType: number = 0;
 
-         if (output.type === ALIAS_OUTPUT_TYPE) {
-             address = output.aliasId;
-             addressType = ALIAS_ADDRESS_TYPE;
-         } else if (output.type === NFT_OUTPUT_TYPE) {
-             const nftId = !HexHelper.toBigInt256(output.nftId).eq(bigInt.zero) ?
-                 output.nftId :
-                 // NFT has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
-                 HexHelper.addPrefix(
-                     Converter.bytesToHex(Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId))))
-                 );
-             address = nftId;
-             addressType = NFT_ADDRESS_TYPE;
-         }
+        if (output.type === ALIAS_OUTPUT_TYPE) {
+            const aliasId = this.buildHashForAliasOrNft(output.aliasId, outputId);
+            address = aliasId;
+            addressType = ALIAS_ADDRESS_TYPE;
+        } else if (output.type === NFT_OUTPUT_TYPE) {
+            const nftId = this.buildHashForAliasOrNft(output.nftId, outputId);
+            address = nftId;
+            addressType = NFT_ADDRESS_TYPE;
+        }
 
-         return Bech32AddressHelper.buildAddress(
-             this.context.bech32Hrp,
-             address,
-             addressType
-         ).bech32;
+        return Bech32AddressHelper.buildAddress(
+            this.context.bech32Hrp,
+            address,
+            addressType
+        ).bech32;
+    }
+
+    /**
+     * Compute BLAKE2b-256 hash for alias or nft which has Id 0.
+     * @param aliasOrNftId Alias or Nft id.
+     * @param outputId Output id.
+     * @returns The BLAKE2b-256 hash for Alias or Nft Id.
+     */
+    private buildHashForAliasOrNft(aliasOrNftId: string, outputId: string): string {
+        return !HexHelper.toBigInt256(aliasOrNftId).eq(bigInt.zero) ?
+        aliasOrNftId :
+        HexHelper.addPrefix(
+            Converter.bytesToHex(Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId))))
+        );
     }
 
     /**
