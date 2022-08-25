@@ -343,7 +343,11 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      */
     private setupFeedLivenessProbe(): void {
         this._feedProbeTimerId = setInterval(() => {
-            const msSinceLast = Date.now() - this._lastUpdateItems!!;
+            if (!this._lastUpdateItems) {
+                this._lastUpdateItems = Date.now();
+            }
+
+            const msSinceLast = Date.now() - this._lastUpdateItems;
 
             if (this._lastUpdateItems && msSinceLast > this.FEER_PROBE_THRESHOLD) {
                 this.closeItems();
@@ -351,7 +355,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
                 this.initNetworkServices();
             }
-        }, this.FEER_PROBE_THRESHOLD)
+        }, this.FEER_PROBE_THRESHOLD);
     }
 }
 
