@@ -2,24 +2,17 @@
 
 ## Configuration
 
-You should copy `./src/assets/config/config.template` to `./src/assets/config/config.local.json` and modify it with your own settings.
+Add the URL of the api endpoint in `./public/env.js`.
 
-```js
-{
-    "apiEndpoint": "ENDPOINT",                    /* The URL of the api endpoint e.g. https://api.my-domain.com */
-    "googleAnalyticsId": "GOOGLE-ANALYTICS-ID",    /* Optional, google analytics id */
-    "identityResolverEnabled": false               /* Enable or disable the Identity Resolver Tool.
-}
+e.g. To run it locally.
+
+```
+window.env = {
+  API_ENDPOINT: 'http://localhost:4000/'
+};
 ```
 
-e.g. To run it locally with the API
-
-```json
-{
-    "apiEndpoint": "http://localhost:4000/",
-    "identityResolverEnabled": false
-}
-```
+Set `REACT_APP_IDENTITY_RESOLVER_ENABLED` to `true` in `./.env` to Enable the Identity Resolver Tool.
 
 ## Build
 

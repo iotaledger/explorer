@@ -23,8 +23,14 @@ import { StardustApiClient } from "./services/stardust/stardustApiClient";
 import { StardustFeedClient } from "./services/stardust/stardustFeedClient";
 import { StardustTangleCacheService } from "./services/stardust/stardustTangleCacheService";
 
-const configId = process.env.REACT_APP_CONFIG_ID ?? "local";
-const config: IConfiguration = require(`./assets/config/config.${configId}.json`);
+// Build config
+const identityResolverEnabled = process.env.REACT_APP_IDENTITY_RESOLVER_ENABLED === "true";
+const apiEndpoint = (window as any).env.API_ENDPOINT;
+
+const config: IConfiguration = {
+    apiEndpoint,
+    identityResolverEnabled
+}
 
 initialiseServices().then(() => {
     ReactDOM.render(
