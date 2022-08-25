@@ -78,7 +78,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguratio
                     />
                 }
                 pages={getPages(network ?? "", networks)}
-                utilities={buildUtilities(network ?? "", networks, isMarketed)}
+                utilities={buildUtilities(network ?? "", networks, isMarketed, identityResolverEnabled)}
             />
             <div className="content">
                 {networks.length > 0 ?
