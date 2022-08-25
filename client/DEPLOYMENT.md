@@ -2,7 +2,7 @@
 
 ## Configuration
 
-Add the URL of the api endpoint in `./public/env.js`.
+Add the URL of the api endpoint in `./public/env.js` (rename `./public/env.js.template`).
 
 e.g. To run it locally.
 
