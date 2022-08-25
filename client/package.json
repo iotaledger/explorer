@@ -18,7 +18,7 @@
         "chartist": "^0.11.4",
         "chartist-plugin-tooltips-updated": "^0.1.4",
         "classnames": "^2.3.1",
-        "moment": "^2.29.1",
+        "moment": "^2.29.4",
         "qr.js": "0.0.0",
         "react": "^17.0.2",
         "react-chartist": "^0.14.4",
