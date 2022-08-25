@@ -47,14 +47,29 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     protected _miSubscriptionId?: string;
 
     /**
-     * Timer id.
+     * Update tps timer id.
      */
-    protected _timerId?: NodeJS.Timer;
+    protected _updateTpstimerId?: NodeJS.Timer;
+
+    /**
+     * Feed liveness probe timer id.
+     */
+    protected _feedProbeTimerId?: NodeJS.Timer;
+
+    /**
+     * The last update items call in epoch time.
+     */
+    protected _lastUpdateItems?: number;
 
     /**
      * The network configuration;
      */
     protected _networkConfig: INetwork | undefined;
+
+    /**
+     * The feed probe threshold in ms.
+     */
+    private readonly FEER_PROBE_THRESHOLD: number = 1500;
 
     constructor(props: P) {
         super(props);
@@ -178,9 +193,15 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             this._feedClient = undefined;
         }
 
-        if (this._timerId) {
-            clearInterval(this._timerId);
-            this._timerId = undefined;
+        if (this._updateTpstimerId) {
+            clearInterval(this._updateTpstimerId);
+            this._updateTpstimerId = undefined;
+        }
+
+        this._lastUpdateItems = undefined;
+        if (this._feedProbeTimerId) {
+            clearInterval(this._feedProbeTimerId);
+            this._feedProbeTimerId = undefined;
         }
     }
 
@@ -190,6 +211,8 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * @param metaData New confirmed items.
      */
     private updateItems(newItems: IFeedItem[], metaData: { [id: string]: IFeedItemMetadata }): void {
+        this._lastUpdateItems = Date.now();
+
         this.itemsUpdated(newItems);
         this.metadataUpdated(metaData);
     }
@@ -224,7 +247,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                 console.error(err);
             })
             .finally(() => {
-                this._timerId = setTimeout(async () => this.updateTps(), 4000);
+                this._updateTpstimerId = setTimeout(async () => this.updateTps(), 4000);
             });
         }
     }
@@ -312,7 +335,23 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         // eslint-disable-next-line no-void
         void this.fetchAnalytics();
 
-        this._timerId = setTimeout(async () => this.updateTps(), 4000);
+        this.setupFeedLivenessProbe();
+    }
+
+    /**
+     * Sets up a check at interval to catch the case when feed stops streaming.
+     */
+    private setupFeedLivenessProbe(): void {
+        this._feedProbeTimerId = setInterval(() => {
+            const msSinceLast = Date.now() - this._lastUpdateItems!!;
+
+            if (this._lastUpdateItems && msSinceLast > this.FEER_PROBE_THRESHOLD) {
+                this.closeItems();
+                this.closeMilestones();
+
+                this.initNetworkServices();
+            }
+        }, this.FEER_PROBE_THRESHOLD)
     }
 }
 
