@@ -39,7 +39,7 @@
           td {
               border: none;
               color: var(--body-color);
-              padding: 8px 4px;
+              padding: 12px 4px;
               &:first-child {
                   padding-left: 2px;
               }
@@ -94,12 +94,9 @@
                 .card-header--wrapper {
                     margin: 0px;
                 }
-
-                .output-header {
-                    flex-direction: column;
-                }
             }
         }
+
         .output--label {
             display: flex;
 
@@ -128,17 +125,23 @@
         }
 
         tr {
-            .found-in, .date-created, .amount {
+            .found-in, .date-created {
                 color: $gray-6;
             }
 
             .date-created {
                 font-family: $ibm-plex-mono;
             }
+
+            .amount {
+                color: $mint-green-7;
+                @include font-size(16px, 21px);
+                font-weight: 700;
+            }
         }
 
         .card {
-            .found-in, .date-created, .amount {
+            .found-in, .date-created {
                 .value {
                     color: $gray-6;
                 }
@@ -146,6 +149,12 @@
 
             .date-created .value {
                 font-family: $ibm-plex-mono;
+            }
+
+            .amount .value {
+                color: $mint-green-7;
+                @include font-size(16px, 21px);
+                font-weight: 700;
             }
         }
 

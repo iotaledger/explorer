@@ -2,7 +2,6 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import { CHRYSALIS } from "../../models/config/protocolVersion";
 import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
@@ -252,11 +251,11 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                         )}
                                                     </span>
                                                     <CopyButton
-                                                        onClick={() => ClipboardHelper.copy(
-                                                            item.showRawMessageTrytes
-                                                                ? item.rawMessageTrytes
-                                                                : item.message)}
-                                                        buttonType="copy"
+                                                        copy={
+                                                            item.showRawMessageTrytes ?
+                                                            item.rawMessageTrytes :
+                                                            item.message
+                                                        }
                                                     />
                                                 </div>
                                                 <div

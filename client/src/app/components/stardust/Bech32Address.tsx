@@ -1,5 +1,4 @@
 import React, { Component, ReactNode } from "react";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressProps } from "../Bech32AddressProps";
 import CopyButton from "../CopyButton";
 
@@ -39,13 +38,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                             {!this.props.history && (
                                 <span className="margin-r-t">{this.props.addressDetails.bech32}</span>
                             )}
-                            {this.props.showCopyButton && (
-                                <CopyButton
-                                    onClick={() => ClipboardHelper.copy(this.props.addressDetails?.bech32)}
-                                    buttonType="copy"
-                                    labelPosition={this.props.labelPosition ?? "right"}
-                                />
-                            )}
+                            {this.props.showCopyButton && <CopyButton copy={this.props.addressDetails?.bech32} />}
                         </div>
                     </div>
                 )}
@@ -69,11 +62,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                             {!this.props.history && (
                                 <span className="margin-r-t">{this.props.addressDetails?.hex}</span>
                             )}
-                            <CopyButton
-                                onClick={() => ClipboardHelper.copy(this.props.addressDetails?.hex)}
-                                buttonType="copy"
-                                labelPosition={this.props.labelPosition ?? "right"}
-                            />
+                            <CopyButton copy={this.props.addressDetails?.hex} />
                         </div>
                     </div>
                 )}

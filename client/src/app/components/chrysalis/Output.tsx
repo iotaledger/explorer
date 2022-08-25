@@ -4,7 +4,6 @@ import { WriteStream } from "@iota/util.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { NameHelper } from "../../../helpers/chrysalis/nameHelper";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import CopyButton from "../CopyButton";
 import { OutputState } from "../OutputState";
 import { OutputProps } from "./OutputProps";
@@ -61,12 +60,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 >
                                     {this.props.output.messageId}
                                 </Link>
-                                <CopyButton
-                                    onClick={() => ClipboardHelper.copy(
-                                        this.props.output.messageId
-                                    )}
-                                    buttonType="copy"
-                                />
+                                <CopyButton copy={this.props.output.messageId} />
                             </React.Fragment>
                         )}
                     </div>
@@ -92,12 +86,7 @@ class Output extends Component<OutputProps, OutputState> {
                                                 {this.props.output.transactionId}
                                             </Link>
                                         </span>
-                                        <CopyButton
-                                            onClick={() => ClipboardHelper.copy(
-                                                this.props.output.transactionId
-                                            )}
-                                            buttonType="copy"
-                                        />
+                                        <CopyButton copy={this.props.output.transactionId} />
                                     </React.Fragment>
                                 )}
                             </div>
