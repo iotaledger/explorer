@@ -26,8 +26,7 @@ jobs:
 
     env:
       # Build specific env vars
-      CONFIG_ID: prod
-      CONFIG_JSON: ${{ secrets.CLIENT_SHIMMER_PROD_CONFIG }}
+      CONFIG_API_URL: ${{ secrets.API_SHIMMER_PROD_URL }}
       VERCEL_DOMAIN: ${{ secrets.VERCEL_CLIENT_SHIMMER_PROD_DOMAIN }}
 
       # Global Vercel env vars
@@ -42,7 +41,7 @@ jobs:
         with:
           script: |
             const fs = require('fs')
-            fs.writeFileSync('./client/src/assets/config/config.prod.json', process.env.CONFIG_JSON)
+            fs.writeFileSync('./client/public/env.js', `window.env = { API_ENDPOINT: "${process.env.CONFIG_API_URL}" };`)
       - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:
