@@ -25,8 +25,7 @@ import { StardustTangleCacheService } from "./services/stardust/stardustTangleCa
 
 // Build config
 const identityResolverEnabled = process.env.REACT_APP_IDENTITY_RESOLVER_ENABLED === "true";
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const apiEndpoint = (window as any).env.API_ENDPOINT;
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "";
 
 const config: IConfiguration = {
     apiEndpoint,

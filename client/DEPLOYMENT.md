@@ -2,17 +2,9 @@
 
 ## Configuration
 
-Add the URL of the api endpoint in `./public/env.js` (rename `./public/env.js.template`).
+The API endpoint URL is configured through `REACT_APP_API_ENDPOINT` env variable.
 
-e.g. To run it locally.
-
-```
-window.env = {
-  API_ENDPOINT: 'http://localhost:4000/'
-};
-```
-
-Set `REACT_APP_IDENTITY_RESOLVER_ENABLED` to `true` in `./.env` to Enable the Identity Resolver Tool.
+Set `REACT_APP_IDENTITY_RESOLVER_ENABLED` env variable as `true`, to Enable the Identity Resolver Tool.
 
 ## Build
 
