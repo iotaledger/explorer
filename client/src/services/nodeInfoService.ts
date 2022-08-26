@@ -8,7 +8,7 @@ import { StardustApiClient } from "./stardust/stardustApiClient";
 /**
  * The reduced node info fields relevant for Explorer.
  */
-interface IReducedNodeInfo {
+export interface IReducedNodeInfo {
     /**
      * The base token info of the node.
      */

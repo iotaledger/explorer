@@ -9,7 +9,6 @@ import bigInt from "big-integer";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
@@ -51,13 +50,15 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { outputId, output, amount, showCopyAmount, network, isPreExpanded } = this.props;
+        const { outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId } = this.props;
         const { isExpanded, isFormattedBalance } = this.state;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
         const foundryId = this.buildFoundyId();
 
-        const outputIdTransactionPart = outputId.slice(0, -4);
+        const outputIdTransactionPart = displayFullOutputId ?
+            `${outputId.slice(0, -4)}` :
+            `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
         const outputIdIndexPart = outputId.slice(-4);
 
         const outputHeader = (
@@ -82,6 +83,7 @@ class Output extends Component<OutputProps, OutputState> {
                             <span className="highlight">{outputIdIndexPart}</span>
                         </Link>
                         )
+                        <CopyButton copy={String(outputId)} />
                     </div>
                 </div>
                 {showCopyAmount && (
@@ -97,17 +99,7 @@ class Output extends Component<OutputProps, OutputState> {
                         </span>
                     </div>
                 )}
-                {showCopyAmount &&
-                    <CopyButton
-                        onClick={e => {
-                            ClipboardHelper.copy(String(amount));
-                            if (e) {
-                                e.stopPropagation();
-                            }
-                        }}
-                        buttonType="copy"
-                        labelPosition="bottom"
-                    />}
+                {showCopyAmount && <CopyButton copy={String(amount)} />}
             </div>
         );
 
@@ -125,11 +117,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
                                     {aliasOrNftBech32}
                                 </Link>
-                                <CopyButton
-                                    onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
-                                    buttonType="copy"
-                                    labelPosition="bottom"
-                                />
+                                <CopyButton copy={aliasOrNftBech32} />
                             </div>
                             <div className="card--label">
                                 State index:
@@ -168,10 +156,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
                                     {aliasOrNftBech32}
                                 </Link>
-                                <CopyButton
-                                    onClick={() => ClipboardHelper.copy(aliasOrNftBech32)}
-                                    buttonType="copy"
-                                />
+                                <CopyButton copy={aliasOrNftBech32} />
                             </div>
                         </React.Fragment>
                         )}
@@ -188,10 +173,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 >
                                     {foundryId}
                                 </Link>
-                                <CopyButton
-                                    onClick={() => ClipboardHelper.copy(foundryId)}
-                                    buttonType="copy"
-                                />
+                                <CopyButton copy={foundryId} />
                             </div>
                             <div className="card--label">
                                 Serial number:
@@ -280,30 +262,40 @@ class Output extends Component<OutputProps, OutputState> {
      * Build bech32 address.
      * @returns The bech32 address.
      */
-     private buildAddressForAliasOrNft() {
-         const { outputId, output } = this.props;
-         let address: string = "";
-         let addressType: number = 0;
+    private buildAddressForAliasOrNft() {
+        const { outputId, output } = this.props;
+        let address: string = "";
+        let addressType: number = 0;
 
-         if (output.type === ALIAS_OUTPUT_TYPE) {
-             address = output.aliasId;
-             addressType = ALIAS_ADDRESS_TYPE;
-         } else if (output.type === NFT_OUTPUT_TYPE) {
-             const nftId = !HexHelper.toBigInt256(output.nftId).eq(bigInt.zero) ?
-                 output.nftId :
-                 // NFT has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
-                 HexHelper.addPrefix(
-                     Converter.bytesToHex(Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId))))
-                 );
-             address = nftId;
-             addressType = NFT_ADDRESS_TYPE;
-         }
+        if (output.type === ALIAS_OUTPUT_TYPE) {
+            const aliasId = this.buildHashForAliasOrNft(output.aliasId, outputId);
+            address = aliasId;
+            addressType = ALIAS_ADDRESS_TYPE;
+        } else if (output.type === NFT_OUTPUT_TYPE) {
+            const nftId = this.buildHashForAliasOrNft(output.nftId, outputId);
+            address = nftId;
+            addressType = NFT_ADDRESS_TYPE;
+        }
 
-         return Bech32AddressHelper.buildAddress(
-             this.context.bech32Hrp,
-             address,
-             addressType
-         ).bech32;
+        return Bech32AddressHelper.buildAddress(
+            this.context.bech32Hrp,
+            address,
+            addressType
+        ).bech32;
+    }
+
+    /**
+     * Compute BLAKE2b-256 hash for alias or nft which has Id 0.
+     * @param aliasOrNftId Alias or Nft id.
+     * @param outputId Output id.
+     * @returns The BLAKE2b-256 hash for Alias or Nft Id.
+     */
+    private buildHashForAliasOrNft(aliasOrNftId: string, outputId: string): string {
+        return !HexHelper.toBigInt256(aliasOrNftId).eq(bigInt.zero) ?
+        aliasOrNftId :
+        HexHelper.addPrefix(
+            Converter.bytesToHex(Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId))))
+        );
     }
 
     /**

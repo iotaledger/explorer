@@ -1,5 +1,6 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IConfiguration } from "../models/configuration/IConfiguration";
+import { IAnalyticsStore } from "../models/db/IAnalyticsStore";
 import { ICurrencyState } from "../models/db/ICurrencyState";
 import { IMarket } from "../models/db/IMarket";
 import { IMilestoneStore } from "../models/db/IMilestoneStore";
@@ -34,6 +35,11 @@ export async function init(config: IConfiguration): Promise<string[]> {
         const milestoneStorageService = ServiceFactory.get<IStorageService<IMilestoneStore>>("milestone-storage");
         if (milestoneStorageService) {
             log += await milestoneStorageService.create();
+        }
+
+        const analyticsStorageService = ServiceFactory.get<IStorageService<IAnalyticsStore>>("analytics-storage");
+        if (analyticsStorageService) {
+            log += await analyticsStorageService.create();
         }
 
         const currencyService = new CurrencyService(config);

@@ -2,6 +2,7 @@ import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { MqttClient as StardustMqttClient } from "@iota/mqtt.js-stardust";
 import { ServiceFactory } from "./factories/serviceFactory";
 import { IConfiguration } from "./models/configuration/IConfiguration";
+import { IAnalyticsStore } from "./models/db/IAnalyticsStore";
 import { ICurrencyState } from "./models/db/ICurrencyState";
 import { IMarket } from "./models/db/IMarket";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
@@ -38,7 +39,7 @@ const isKnownProtocolVersion = (networkConfig: INetwork) =>
  * @param config The configuration to initialisation the service with.
  */
 export async function initServices(config: IConfiguration) {
-    registerStorageServices(config);
+    await registerStorageServices(config);
 
     const networkService = new NetworkService();
     ServiceFactory.register("network", () => networkService);
@@ -186,9 +187,10 @@ function initStardustServices(networkConfig: INetwork): void {
         () => new StardustItemsService(networkConfig.network)
     );
 
+    const stardustStatsService = new StardustStatsService(networkConfig);
     ServiceFactory.register(
         `stats-${networkConfig.network}`,
-        () => new StardustStatsService(networkConfig)
+        () => stardustStatsService
     );
 
     if (networkConfig.permaNodeEndpoint) {
@@ -203,7 +205,7 @@ function initStardustServices(networkConfig: INetwork): void {
  * Register the storage services.
  * @param config The config.
  */
-function registerStorageServices(config: IConfiguration): void {
+async function registerStorageServices(config: IConfiguration): Promise<void> {
     if (config.rootStorageFolder) {
         ServiceFactory.register("network-storage", () => new LocalStorageService<INetwork>(
             config.rootStorageFolder, "network", "network"));
@@ -216,6 +218,9 @@ function registerStorageServices(config: IConfiguration): void {
 
         ServiceFactory.register("market-storage", () => new LocalStorageService<IMarket>(
             config.rootStorageFolder, "market", "currency"));
+
+        ServiceFactory.register("analytics-storage", () => new LocalStorageService<IAnalyticsStore>(
+            config.rootStorageFolder, "analytics", "network"));
     } else if (config.dynamoDbConnection) {
         ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<IMarket>(
             config.dynamoDbConnection, "network", "network"));
@@ -228,5 +233,12 @@ function registerStorageServices(config: IConfiguration): void {
 
         ServiceFactory.register("market-storage", () => new AmazonDynamoDbService<IMarket>(
             config.dynamoDbConnection, "market", "currency"));
+
+        const analyticsStore = new AmazonDynamoDbService<IAnalyticsStore>(
+            config.dynamoDbConnection, "analytics", "network"
+        );
+        // eslint-disable-next-line no-void
+        await analyticsStore.create();
+        ServiceFactory.register("analytics-storage", () => analyticsStore);
     }
 }

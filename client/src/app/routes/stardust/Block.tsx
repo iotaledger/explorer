@@ -5,7 +5,6 @@ import {
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -152,12 +151,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     <span className="margin-r-t">
                                         {blockId}
                                     </span>
-                                    <CopyButton
-                                        onClick={() => ClipboardHelper.copy(
-                                            blockId
-                                        )}
-                                        buttonType="copy"
-                                    />
+                                    <CopyButton copy={blockId} />
                                 </div>
                             </div>
 
@@ -173,12 +167,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                         >
                                             {this.state.transactionId}
                                         </Link>
-                                        <CopyButton
-                                            onClick={() => ClipboardHelper.copy(
-                                                this.state.transactionId
-                                            )}
-                                            buttonType="copy"
-                                        />
+                                        <CopyButton copy={this.state.transactionId} />
                                     </div>
                                 </div>
                             )}

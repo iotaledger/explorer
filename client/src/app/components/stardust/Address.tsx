@@ -1,6 +1,5 @@
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import NetworkContext from "../../context/NetworkContext";
@@ -26,6 +25,7 @@ class Address extends Component<AddressProps> {
             this.props.address
         ).bech32;
 
+        const bech32Short = `${bech32.slice(0, 12)}....${bech32.slice(-12)}`;
         return (
             <div className="address-type">
                 <div className="card--label">
@@ -36,13 +36,9 @@ class Address extends Component<AddressProps> {
                         to={`/${this.context.name}/addr/${bech32}`}
                         className="margin-r-t"
                     >
-                        {bech32}
+                        {bech32Short}
                     </Link>
-                    <CopyButton
-                        onClick={() => ClipboardHelper.copy(bech32)}
-                        buttonType="copy"
-                        labelPosition="bottom"
-                    />
+                    <CopyButton copy={bech32} />
                 </div>
             </div>
         );

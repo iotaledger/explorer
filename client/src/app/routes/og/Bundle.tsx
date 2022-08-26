@@ -2,7 +2,6 @@ import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
@@ -217,11 +216,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                         </div>
                                         <div className="card--value row middle">
                                             <span className="margin-r-t">{this.state.bundle}</span>
-                                            <CopyButton
-                                                onClick={() => ClipboardHelper.copy(
-                                                    this.state.bundle)}
-                                                buttonType="copy"
-                                            />
+                                            <CopyButton copy={this.state.bundle} />
                                         </div>
                                     </div>
                                 </div>

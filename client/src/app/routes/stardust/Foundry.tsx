@@ -4,7 +4,6 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -103,10 +102,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                                 <Link to={`/${network}/search/${controllerAlias}`} className="margin-r-t">
                                     {controllerAlias}
                                 </Link>
-                                <CopyButton
-                                    buttonType="copy"
-                                    onClick={() => ClipboardHelper.copy(controllerAlias)}
-                                />
+                                <CopyButton copy={controllerAlias} />
                             </div>
                         </div>
 

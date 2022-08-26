@@ -14,3 +14,4 @@ config.local.json
 config.local.feed.json
 config.staging.json
 config.prod.json
+env.js

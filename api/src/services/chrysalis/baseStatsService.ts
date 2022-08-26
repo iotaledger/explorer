@@ -1,6 +1,6 @@
-import { INetwork } from "../models/db/INetwork";
-import { IStatistics } from "../models/services/IStatistics";
-import { IStatsService } from "../models/services/IStatsService";
+import { INetwork } from "../../models/db/INetwork";
+import { IStatistics } from "../../models/services/IStatistics";
+import { IStatsService } from "../../models/services/IStatsService";
 
 /**
  * Class to handle stats service.
