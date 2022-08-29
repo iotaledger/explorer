@@ -213,7 +213,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             status = "Detecting query type...";
             statusBusy = true;
             if (this._isMounted) {
-                setImmediate(
+                setTimeout(
                     async () => {
                         if (this._isMounted) {
                             const response = await this._tangleCacheService.search(
@@ -286,7 +286,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 });
                             }
                         }
-                    });
+                    }, 0);
             }
         } else {
             invalidError = "the query is empty";
@@ -303,7 +303,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
     }
 
     private buildAddressFromIdAndType(id: string, type: number) {
-        return Bech32AddressHelper.buildAddress(this.context.bech32Hrp, id, type);
+        return Bech32AddressHelper.buildAddress(this.context.bech32Hrp as string, id, type);
     }
 }
 

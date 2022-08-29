@@ -193,6 +193,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const {
+            itemCount, selectedFeedItem, filter, isActive,
+            itemsPerSecond, confirmedItemsPerSecond, confirmedItemsPerSecondPercent
+        } = this.state;
         if (this._darkMode !== this._settingsService.get().darkMode) {
             this._darkMode = this._settingsService.get().darkMode;
             this.styleConnections();
@@ -209,7 +213,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             <input
                                 className="input form-input-long"
                                 type="text"
-                                value={this.state.filter}
+                                value={filter}
                                 onChange={e => this.setState(
                                     {
                                         filter: this._networkConfig?.protocolVersion === OG
@@ -232,23 +236,23 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 {this._networkConfig?.protocolVersion === OG ? "Transactions" : "Messages"}
                             </div>
                             <div className="card--value">
-                                {this.state.itemCount}
+                                {itemCount}
                             </div>
                             <div className="card--label">
                                 {this._networkConfig?.protocolVersion === CHRYSALIS ? "MPS / CMPS" : "TPS / CTPS"}
                             </div>
                             <div className="card--value">
-                                {this.state.itemsPerSecond} / {this.state.confirmedItemsPerSecond}
+                                {itemsPerSecond} / {confirmedItemsPerSecond}
                             </div>
                             <div className="card--label">
                                 {this._networkConfig?.protocolVersion === CHRYSALIS
                                     ? "Referenced Rate" : "Confirmation Rate"}
                             </div>
                             <div className="card--value">
-                                {this.state.confirmedItemsPerSecondPercent}
+                                {confirmedItemsPerSecondPercent}
                             </div>
                         </div>
-                        {this.state.selectedFeedItem && (
+                        {selectedFeedItem && (
                             <React.Fragment>
                                 <div className="card--header">
                                     <h2>Selected</h2>
@@ -264,15 +268,15 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                             rel="noopener noreferrer"
                                             href={
                                                 `${window.location.origin}${RouteBuilder.buildItem(
-                                                    this._networkConfig, this.state.selectedFeedItem.id)}`
+                                                    this._networkConfig, selectedFeedItem.id)}`
                                             }
                                         >
-                                            {this.state.selectedFeedItem.id}
+                                            {selectedFeedItem.id}
                                         </a>
                                     </div>
                                     {this._networkConfig?.protocolVersion === OG && (
                                         <React.Fragment>
-                                            {this.state.selectedFeedItem?.properties?.Address && (
+                                            {selectedFeedItem?.properties?.Address && (
                                                 <React.Fragment>
                                                     <div className="card--label">
                                                         Address
@@ -285,16 +289,16 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                             href={
                                                                 `${window.location.origin
                                                                 }/${this.props.match.params.network
-                                                                }/address/${this
-                                                                    .state.selectedFeedItem?.properties.Address}`
+                                                                }/address/${selectedFeedItem?.properties
+                                                                .Address as string}`
                                                             }
                                                         >
-                                                            {this.state.selectedFeedItem?.properties.Address as string}
+                                                            {selectedFeedItem?.properties.Address as string}
                                                         </a>
                                                     </div>
                                                 </React.Fragment>
                                             )}
-                                            {this.state.selectedFeedItem?.properties?.Bundle && (
+                                            {selectedFeedItem?.properties?.Bundle && (
                                                 <React.Fragment>
                                                     <div className="card--label">
                                                         Bundle
@@ -307,19 +311,19 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                             href={
                                                                 `${window.location.origin
                                                                 }/${this.props.match.params.network
-                                                                }/bundle/${this
-                                                                    .state.selectedFeedItem?.properties.Bundle}`
+                                                                }/bundle/${selectedFeedItem?.properties
+                                                                .Bundle as string}`
                                                             }
                                                         >
-                                                            {this.state.selectedFeedItem?.properties.Bundle as string}
+                                                            {selectedFeedItem?.properties.Bundle as string}
                                                         </a>
                                                     </div>
                                                 </React.Fragment>
                                             )}
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem?.properties?.Tag &&
-                                        this.state.selectedFeedItem.metaData?.milestone === undefined && (
+                                    {selectedFeedItem?.properties?.Tag &&
+                                        selectedFeedItem.metaData?.milestone === undefined && (
                                             <React.Fragment>
                                                 <div className="card--label">
                                                     Tag
@@ -331,15 +335,15 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                         rel="noopener noreferrer"
                                                         href={
                                                             `${window.location.origin}/${this.props.match.params.network
-                                                            }/tag/${this.state.selectedFeedItem?.properties.Tag}`
+                                                            }/tag/${selectedFeedItem?.properties.Tag as string}`
                                                         }
                                                     >
-                                                        {this.state.selectedFeedItem?.properties.Tag as string}
+                                                        {selectedFeedItem?.properties.Tag as string}
                                                     </a>
                                                 </div>
                                             </React.Fragment>
                                         )}
-                                    {this.state.selectedFeedItem?.properties?.Index && (
+                                    {selectedFeedItem?.properties?.Index && (
                                         <React.Fragment>
                                             <div className="card--label">
                                                 Index UTF8
@@ -351,11 +355,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                     rel="noopener noreferrer"
                                                     href={
                                                         `${window.location.origin}/${this.props.match.params.network
-                                                        }/indexed/${this.state.selectedFeedItem?.properties.Index}`
+                                                        }/indexed/${selectedFeedItem?.properties.Index as string}`
                                                     }
                                                 >
                                                     {Converter.hexToUtf8(
-                                                        this.state.selectedFeedItem?.properties.Index as string
+                                                        selectedFeedItem?.properties.Index as string
                                                     )}
                                                 </a>
                                             </div>
@@ -369,32 +373,32 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                     rel="noopener noreferrer"
                                                     href={
                                                         `${window.location.origin}/${this.props.match.params.network
-                                                        }/indexed/${this.state.selectedFeedItem?.properties.Index}`
+                                                        }/indexed/${selectedFeedItem?.properties.Index as string}`
                                                     }
                                                 >
-                                                    {this.state.selectedFeedItem?.properties.Index as string}
+                                                    {selectedFeedItem?.properties.Index as string}
                                                 </a>
                                             </div>
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem.metaData?.milestone !== undefined && (
+                                    {selectedFeedItem.metaData?.milestone !== undefined && (
                                         <React.Fragment>
                                             <div className="card--label">
                                                 Milestone
                                             </div>
                                             <div className="card--value">
-                                                {this.state.selectedFeedItem.metaData.milestone}
+                                                {selectedFeedItem.metaData.milestone}
                                             </div>
                                         </React.Fragment>
                                     )}
-                                    {this.state.selectedFeedItem?.value !== undefined &&
-                                        this.state.selectedFeedItem.metaData?.milestone === undefined && (
+                                    {selectedFeedItem?.value !== undefined &&
+                                        selectedFeedItem.metaData?.milestone === undefined && (
                                             <React.Fragment>
                                                 <div className="card--label">
                                                     Value
                                                 </div>
                                                 <div className="card--value">
-                                                    {UnitsHelper.formatBest(this.state.selectedFeedItem?.value)}
+                                                    {UnitsHelper.formatBest(selectedFeedItem?.value)}
                                                 </div>
                                             </React.Fragment>
                                         )}
@@ -419,7 +423,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     type="button"
                                     onClick={() => this.toggleActivity()}
                                 >
-                                    {this.state.isActive
+                                    {isActive
                                         ? <span className="material-icons">pause</span>
                                         : <span className="material-icons">play_arrow</span>}
                                 </button>

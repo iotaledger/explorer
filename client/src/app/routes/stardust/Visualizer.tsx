@@ -1,3 +1,4 @@
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -197,6 +198,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             itemCount, selectedFeedItem, filter, isActive, isFormatAmountsFull,
             itemsPerSecond, confirmedItemsPerSecond, confirmedItemsPerSecondPercent
         } = this.state;
+        const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         if (this._darkMode !== this._settingsService.get().darkMode) {
             this._darkMode = this._settingsService.get().darkMode;
@@ -329,7 +331,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                         {
                                                             formatAmount(
                                                                 selectedFeedItem?.value,
-                                                                this.context.tokenInfo,
+                                                                tokenInfo,
                                                                 isFormatAmountsFull
                                                             )
                                                         }

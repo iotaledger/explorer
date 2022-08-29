@@ -3,7 +3,8 @@ import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_T
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
     NFT_ADDRESS_TYPE,
     IImmutableAliasUnlockCondition,
-    IAliasAddress } from "@iota/iota.js-stardust";
+    IAliasAddress,
+    INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import classNames from "classnames";
@@ -52,6 +53,7 @@ class Output extends Component<OutputProps, OutputState> {
     public render(): ReactNode {
         const { outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId } = this.props;
         const { isExpanded, isFormattedBalance } = this.state;
+        const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
         const foundryId = this.buildFoundyId();
@@ -95,7 +97,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 e.stopPropagation();
                             }}
                         >
-                            {formatAmount(amount, this.context.tokenInfo, !isFormattedBalance)}
+                            {formatAmount(amount, tokenInfo, !isFormattedBalance)}
                         </span>
                     </div>
                 )}
@@ -278,7 +280,7 @@ class Output extends Component<OutputProps, OutputState> {
         }
 
         return Bech32AddressHelper.buildAddress(
-            this.context.bech32Hrp,
+            this.context.bech32Hrp as string,
             address,
             addressType
         ).bech32;

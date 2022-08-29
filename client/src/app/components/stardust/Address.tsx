@@ -21,7 +21,7 @@ class Address extends Component<AddressProps> {
      */
     public render(): ReactNode {
         const bech32 = Bech32AddressHelper.buildAddress(
-            this.context.bech32Hrp,
+            this.context.bech32Hrp as string,
             this.props.address
         ).bech32;
 

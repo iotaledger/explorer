@@ -58,6 +58,13 @@ class NftRegistryDetails extends AsyncComponent<RouteComponentProps<NftRegistryD
         };
     }
 
+    private get currentPageActivities(): INftActivityHistory[] {
+        const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
+        const lastPageIndex = firstPageIndex + this.state.pageSize;
+
+        return this.state.nftDetails.activityHistory.slice(firstPageIndex, lastPageIndex);
+    }
+
     /**
      * The component mounted.
      */
@@ -273,13 +280,6 @@ class NftRegistryDetails extends AsyncComponent<RouteComponentProps<NftRegistryD
                 </div>
             </div>
         );
-    }
-
-    private get currentPageActivities(): INftActivityHistory[] {
-        const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
-        const lastPageIndex = firstPageIndex + this.state.pageSize;
-
-        return this.state.nftDetails.activityHistory.slice(firstPageIndex, lastPageIndex);
     }
 
     private async getNftDetails() {

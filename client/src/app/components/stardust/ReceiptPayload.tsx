@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React, { Component, ReactNode } from "react";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
@@ -33,7 +34,8 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32Hrp, tokenInfo } = this.context;
+        const bech32Hrp: string = this.context.bech32Hrp;
+        const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         return (
             <div className="indexation-payload">

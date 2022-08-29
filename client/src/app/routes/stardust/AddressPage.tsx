@@ -93,7 +93,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
             this.setState({
                 bech32AddressDetails: Bech32AddressHelper.buildAddress(
-                    bech32Hrp,
+                    bech32Hrp as string,
                     addressDetails?.hex,
                     addressDetails?.type ?? 0
                 ),

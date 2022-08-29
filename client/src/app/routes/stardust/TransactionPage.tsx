@@ -68,7 +68,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
             await TransactionsHelper.getInputsAndOutputs(
                 block,
                 this.props.match.params.network,
-                this.context.bech32Hrp,
+                this.context.bech32Hrp as string,
                 this._tangleCacheService
             );
 

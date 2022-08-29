@@ -8,6 +8,14 @@
         "url": "https://github.com/iotaledger/explorer.git/tree/main/client"
     },
     "license": "Apache-2.0",
+    "scripts": {
+        "start": "cross-env PORT=3000 craco start",
+        "lint": "eslint src --ext .tsx,.ts",
+        "sass-lint": "stylelint ./src/**/*.scss",
+        "build-internal": "craco build",
+        "build": "run-s lint sass-lint build-internal",
+        "test": "craco test"
+    },
     "dependencies": {
         "@iota/crypto.js": "^1.8.6",
         "@iota/crypto.js-stardust": "npm:@iota/crypto.js@^1.9.0-stardust.6",
@@ -21,6 +29,7 @@
         "chartist": "^0.11.4",
         "chartist-plugin-tooltips-updated": "^0.1.4",
         "classnames": "^2.3.1",
+        "crypto": "npm:crypto-browserify",
         "moment": "^2.29.4",
         "qr.js": "0.0.0",
         "react": "^17.0.2",
@@ -29,33 +38,17 @@
         "react-dom": "^17.0.2",
         "react-icons": "^4.3.1",
         "react-router-dom": "^5.3.0",
-        "react-scripts": "^4.0.3",
+        "react-scripts": "^5.0.1",
         "react-sizeme": "^3.0.2",
         "socket.io-client": "^4.2.0",
+        "stream": "npm:stream-browserify",
         "universal-cookie": "^4.0.4",
         "vivagraphjs": "^0.12.0"
     },
-    "engines": {
-        "node": ">=14"
-    },
-    "scripts": {
-        "start": "cross-env PORT=3000 craco start",
-        "lint": "eslint src --ext .tsx,.ts",
-        "sass-lint": "stylelint ./src/**/*.scss",
-        "build-internal": "craco build",
-        "build": "run-s lint sass-lint build-internal",
-        "test": "craco test",
-        "eject": "react-scripts eject"
-    },
-    "browserslist": [
-        ">0.2%",
-        "not dead",
-        "not ie <= 11",
-        "not op_mini all"
-    ],
     "devDependencies": {
-        "@craco/craco": "^6.4.3",
+        "@craco/craco": "^5.9.0",
         "@ruffy/ts-optional": "^1.1.1",
+        "@svgr/webpack": "^6.3.1",
         "@types/bluebird": "^3.5.36",
         "@types/chartist": "^0.11.1",
         "@types/classnames": "^2.3.1",
@@ -64,16 +57,20 @@
         "@types/react": "^17.0.28",
         "@types/react-dom": "^17.0.9",
         "@types/react-router-dom": "^5.3.1",
-        "@typescript-eslint/eslint-plugin": "^4.31.1",
-        "@typescript-eslint/parser": "^4.31.1",
+        "@typescript-eslint/eslint-plugin": "^5.35.1",
+        "@typescript-eslint/parser": "^5.35.1",
+        "buffer": "^6.0.3",
         "cross-env": "^7.0.3",
-        "eslint": "^7.32.0",
-        "eslint-plugin-import": "^2.24.2",
-        "eslint-plugin-jsdoc": "^36.1.1",
-        "eslint-plugin-react": "^7.29.4",
-        "eslint-plugin-unicorn": "^36.0.0",
+        "crypto-browserify": "^3.12.0",
+        "eslint": "^8.1.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-jsdoc": "^39.3.6",
+        "eslint-plugin-react": "^7.31.1",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-unicorn": "^39.0.0",
         "npm-run-all": "^4.1.5",
         "sass": "^1.51.0",
+        "stream-browserify": "^3.0.0",
         "stylelint": "^13.13.1",
         "stylelint-config-property-sort-order-smacss": "^7.1.0",
         "stylelint-config-recommended": "^5.0.0",
@@ -81,6 +78,19 @@
         "stylelint-config-sass-guidelines": "^8.0.0",
         "stylelint-config-standard": "^22.0.0",
         "stylelint-scss": "^3.21.0",
-        "typescript": "^4.4.3"
-    }
+        "typescript": "^4.4.3",
+        "util": "^0.12.4"
+    },
+    "overrides": {
+        "@svgr/webpack": "$@svgr/webpack"
+    },
+    "engines": {
+        "node": ">=14"
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not ie <= 11",
+        "not op_mini all"
+    ]
 }

@@ -57,12 +57,19 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         };
     }
 
+    private get currentFoundriesPage() {
+        const from = (this.state.foundriesPageNumber - 1) * Alias.FOUNDRIES_PAGE_SIZE;
+        const to = from + Alias.FOUNDRIES_PAGE_SIZE;
+
+        return this.state.foundries?.slice(from, to);
+    }
+
     /**
      * The component mounted.
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        const bech32Hrp = this.context.bech32Hrp;
+        const bech32Hrp: string = this.context.bech32Hrp;
         const networkId = this.props.match.params.network;
         const aliasAddress: string = this.props.match.params.aliasAddress;
         const aliasAddressDetails = Bech32AddressHelper.buildAddress(bech32Hrp, aliasAddress);
@@ -235,13 +242,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                 </div >
             </div >
         );
-    }
-
-    private get currentFoundriesPage() {
-        const from = (this.state.foundriesPageNumber - 1) * Alias.FOUNDRIES_PAGE_SIZE;
-        const to = from + Alias.FOUNDRIES_PAGE_SIZE;
-
-        return this.state.foundries?.slice(from, to);
     }
 
     private async getControlledFoundries() {

@@ -1,6 +1,6 @@
 import { ADDRESS_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
     IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE,
-    STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
+    STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE, INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -45,7 +45,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
     public render(): ReactNode {
         const { isFormattedBalance, isExpanded } = this.state;
         const { unlockCondition } = this.props;
-        const { tokenInfo } = this.context;
+        const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         return (
             <div className="unlock-condition">
