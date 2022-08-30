@@ -5,7 +5,7 @@ import { IResponse } from "../IResponse";
 /**
  * The count stat.
  */
-export interface ICountStat {
+interface ICountStat {
     count: number;
 }
 
@@ -19,12 +19,12 @@ interface IValueStat {
 /**
  * Count and value analytic stats used for native tokens & nfts.
  */
-export type ICountAndValueStats = ICountStat & IValueStat;
+type ICountAndValueStats = ICountStat & IValueStat;
 
 /**
  * The addresses stats.
  */
-export interface IAddressesStats {
+interface IAddressesStats {
     totalActiveAddresses: string;
     receivingAddresses: string;
     sendingAddresses: string;

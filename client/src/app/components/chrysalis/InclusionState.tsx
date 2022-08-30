@@ -1,7 +1,7 @@
 import { LedgerInclusionState } from "@iota/iota.js-stardust";
 import React, { Component, ReactNode } from "react";
 
-export interface InclusionStateProps {
+interface InclusionStateProps {
     /**
      * The inclusion state.
      */

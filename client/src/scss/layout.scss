@@ -6,6 +6,16 @@
   display: flex;
   flex-direction: row;
 
+  @include tablet-down {
+    &.row--tablet-responsive {
+      flex-direction: column;
+
+      &.middle {
+        align-items: flex-start;
+      }
+    }
+  }
+
   &.center {
     justify-content: center;
   }
@@ -32,16 +42,6 @@
 
   &.bottom {
     align-items: flex-end;
-  }
-
-  @include tablet-down {
-    &.row--tablet-responsive {
-      flex-direction: column;
-
-      &.middle {
-        align-items: flex-start;
-      }
-    }
   }
 }
 
@@ -197,8 +197,8 @@
 }
 
 .dot-separator {
+  @include font-size(20px);
+
   margin: 0 6px;
   color: $gray-6;
-
-  @include font-size(20px);
 }

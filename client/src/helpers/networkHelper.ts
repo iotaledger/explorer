@@ -19,7 +19,6 @@ export const getNetworkOrder = (networkType: NetworkType) => {
             return 4;
         case ALPHANET:
             return 5;
-        case CUSTOM:
         default:
             return 6;
     }

@@ -12,7 +12,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
      */
     public render(): ReactNode {
         const truncatedAddress =
-            `${this.props.addressDetails?.bech32?.slice(0, 7)}...${this.props.addressDetails?.bech32?.slice(-7)}` ?? "";
+            `${this.props.addressDetails?.bech32?.slice(0, 7)}...${this.props.addressDetails?.bech32?.slice(-7)}`;
 
         return (
             <div className="bech32-address">

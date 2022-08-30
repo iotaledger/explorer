@@ -23,6 +23,11 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
     public static contextType = NetworkContext;
 
     /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
+    /**
      * API Client for tangle requests.
      */
     private readonly _tangleCacheService: StardustTangleCacheService;
@@ -213,7 +218,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             status = "Detecting query type...";
             statusBusy = true;
             if (this._isMounted) {
-                setImmediate(
+                setTimeout(
                     async () => {
                         if (this._isMounted) {
                             const response = await this._tangleCacheService.search(
@@ -286,7 +291,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 });
                             }
                         }
-                    });
+                    }, 0);
             }
         } else {
             invalidError = "the query is empty";
@@ -308,3 +313,4 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
 }
 
 export default Search;
+

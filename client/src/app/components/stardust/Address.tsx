@@ -16,6 +16,11 @@ class Address extends Component<AddressProps> {
     public static contextType = NetworkContext;
 
     /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
+    /**
      * Render the component.
      * @returns The node to render.
      */
