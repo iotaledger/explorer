@@ -22,5 +22,6 @@ const networkTypes = [
  */
 export type NetworkType = (typeof networkTypes)[number];
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 export const isValidNetwork = (n: any): n is NetworkType => networkTypes.includes(n);
 

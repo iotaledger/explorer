@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Ed25519 } from "@iota/crypto.js";
 import { Converter } from "@iota/util.js";
 import path from "path";

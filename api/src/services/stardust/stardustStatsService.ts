@@ -54,8 +54,7 @@ export class StardustStatsService extends BaseStatsService {
                 const analyitcsMsFirst = analyticsStore.dailyMilestones?.first;
                 const analyticsMsLast = analyticsStore.dailyMilestones?.last;
 
-                const yesterdaysFirstMilestone = analyitcsMsFirst ?
-                    analyitcsMsFirst : this._statistics[0].latestMilestoneIndex;
+                const yesterdaysFirstMilestone = analyitcsMsFirst ?? this._statistics[0].latestMilestoneIndex;
 
                 const yesterdaysLastMilestone =
                     (analyticsMsLast && analyticsMsLast > yesterdaysFirstMilestone) ?

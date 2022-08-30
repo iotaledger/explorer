@@ -110,7 +110,7 @@ async function resolveLegacyHistory(
 
         for (const element of receipt.integrationChainData()) {
             const integrationMessage = {
-                document: IdentityHelper.convertLegacyDocument(element.toJSON()),
+                document: IdentityHelper.convertLegacyDocument(element.toJSON() as Record<string, unknown>),
                 messageId: element.messageId
             };
             integrationChainData.push(integrationMessage);
