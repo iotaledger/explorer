@@ -182,6 +182,10 @@
   overflow: hidden;
 }
 
+.overflow-unset {
+  overflow: unset;
+}
+
 .overflow-ellipsis {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
