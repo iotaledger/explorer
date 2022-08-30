@@ -1,6 +1,6 @@
 import { IResponse } from "../IResponse";
 
-export interface Output {
+interface Output {
     output?: {
         address: {
             type?: number;
@@ -12,13 +12,13 @@ export interface Output {
     spendingMessageId?: string;
 }
 
-export interface Input {
+interface Input {
     transactionId?: string;
     transactionOutputIndex?: string;
     type?: number;
 }
 
-export interface ITransaction {
+interface ITransaction {
     /**
      * The message id the output was contained in.
      */

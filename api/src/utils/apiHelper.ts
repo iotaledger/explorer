@@ -11,36 +11,6 @@ import { IRoute } from "../models/app/IRoute";
 import { IConfiguration } from "../models/configuration/IConfiguration";
 
 /**
- * Find a route to match
- * @param findRoutes The routes to match against.
- * @param url The url to find.
- * @param method The method to find.
- * @returns The matching route if there is one and any extracted params.
- */
-export function findRoute(findRoutes: IRoute[], url: string, method: string): {
-    /**
-     * The matching route.
-     */
-    route: IRoute;
-    /**
-     * Matching parameters for the route.
-     */
-    params: { [id: string]: string };
-} | undefined {
-    const lowerMethod = method.toLowerCase();
-    const methodRoutes = findRoutes.filter(r => r.method === lowerMethod);
-
-    const match = matchRouteUrl(methodRoutes.map(m => m.path), url);
-
-    if (match) {
-        return {
-            route: methodRoutes[match.index],
-            params: match.params
-        };
-    }
-}
-
-/**
  * Match a route url
  * @param matchUrls The urls to match against.
  * @param url The url to find.

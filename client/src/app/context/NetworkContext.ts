@@ -4,7 +4,7 @@ import { createContext } from "react";
 /**
  * The network context object.
  */
-export interface INetworkContextProps {
+interface INetworkContextProps {
     /**
      * The network name.
      */

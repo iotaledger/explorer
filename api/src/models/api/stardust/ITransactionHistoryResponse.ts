@@ -3,7 +3,7 @@ import { IResponse } from "../IResponse";
 /**
  * A transaction history item.
  */
-export interface ITransactionHistoryItem {
+interface ITransactionHistoryItem {
     /**
      * The milestone index this item is included in.
      */

@@ -7,7 +7,7 @@ export interface IIdentityDidHistoryResponse {
     error?: string;
 }
 
-export interface IntegrationChainData {
+interface IntegrationChainData {
     document: IIdentityDocument;
     messageId: string;
 }

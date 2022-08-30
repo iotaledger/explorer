@@ -23,7 +23,7 @@ export interface INftActivityHistory {
     price: string;
 }
 
-export interface INftGeneral {
+interface INftGeneral {
     /**
      * token standard
      */
