@@ -1,9 +1,9 @@
-@import "./fonts";
-@import "./layout";
-@import "./media-queries";
-@import "./mixins";
-@import "./variables";
-@import "./themes";
+@import './fonts';
+@import './layout';
+@import './media-queries';
+@import './mixins';
+@import './variables';
+@import './themes';
 
 .section {
   display: flex;
@@ -11,13 +11,13 @@
   padding: 52px 0;
   border-bottom: 1px solid var(--border-color);
 
-  &:last-child {
-    padding-bottom: 12px;
-    border-bottom: none;
-  }
-
   @include tablet-down {
     padding-top: 24px;
+  }
+
+  &:last-child {
+    padding-bottom: 12px;
+    border-bottom: 0;
   }
 
   .section--header {
