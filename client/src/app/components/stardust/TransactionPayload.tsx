@@ -1,3 +1,4 @@
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import transactionPayloadMessage from "../../../assets/modals/message/transaction-payload.json";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
@@ -21,6 +22,11 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      * The component context type.
      */
     public static contextType = NetworkContext;
+
+    /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
 
     /**
      * Create a new instance of TransactionPayload.
@@ -47,6 +53,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      */
     public render(): ReactNode {
         const { network, inputs, unlocks, outputs, transferTotal, header } = this.props;
+        const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
         const isMarketed = isMarketedNetwork(network);
 
         return (
@@ -64,7 +71,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 })}
                                 className="value pointer"
                             >
-                                {formatAmount(transferTotal, this.context.tokenInfo, !this.state.isFormattedBalance)}
+                                {formatAmount(transferTotal, tokenInfo, !this.state.isFormattedBalance)}
                             </span>
                             <span className="dot-separator">•</span>
                             {isMarketed && (

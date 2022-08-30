@@ -6,7 +6,7 @@ import { TangleStatus } from "../../models/tangleStatus";
 import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import { Bech32AddressHelper } from "../chrysalis/bech32AddressHelper";
 
-export interface Input {
+interface Input {
     outputHash: string;
     isGenesis: boolean;
     transactionUrl: string;
@@ -16,9 +16,10 @@ export interface Input {
     amount: number;
 }
 
-export interface Output {
+interface Output {
     index: number; type: 0 | 1; address: IBech32AddressDetails; amount: number; isRemainder: boolean;
 }
+
 export class TransactionsHelper {
     public static async getInputsAndOutputs(
         transactionMessage: IMessage | undefined,

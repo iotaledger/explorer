@@ -50,10 +50,10 @@ export class TrytesHelper {
         /**
          * Is the message plain text.
          */
-        messageType: "Trytes" | "ASCII" | "JSON";
+        messageType: "Trytes" | "ascii" | "JSON";
     } {
         let message = trytes;
-        let messageType: "Trytes" | "ASCII" | "JSON" = "Trytes";
+        let messageType: "Trytes" | "ascii" | "JSON" = "Trytes";
         try {
             // Trim trailing 9s
             let trimmed = message.replace(/\9+$/, "");
@@ -81,7 +81,7 @@ export class TrytesHelper {
                             }
                         } catch {
                             message = decoded;
-                            messageType = "ASCII";
+                            messageType = "ascii";
                         }
                     }
                 }

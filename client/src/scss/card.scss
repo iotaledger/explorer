@@ -1,9 +1,10 @@
-@import "./fonts";
-@import "./layout";
-@import "./media-queries";
-@import "./mixins";
-@import "./variables";
-@import "./themes";
+@use 'sass:color';
+@import './fonts';
+@import './layout';
+@import './media-queries';
+@import './mixins';
+@import './variables';
+@import './themes';
 
 .card {
   display: flex;
@@ -12,10 +13,6 @@
   border: 1px solid var(--input-border-color);
   border-radius: 6px;
   background-color: transparent;
-
-  &.card__secondary {
-    background-color: #fcfcfc;
-  }
 
   h2 {
     display: flex;
@@ -27,25 +24,23 @@
     align-items: center;
   }
 
-  input {
-    &[type="checkbox"] {
-      @include font-size(24px);
+  input[type='checkbox'] {
+    @include font-size(24px);
 
-      width: 24px;
-      height: 24px;
-      padding: 0;
-      font-weight: bold;
-      vertical-align: middle;
-      appearance: none;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    font-weight: bold;
+    vertical-align: middle;
+    appearance: none;
 
-      &:checked {
-        &::after {
-          content: "\2713";
-          position: relative;
-          bottom: 4px;
-          left: 0;
-          color: $main-green;
-        }
+    &:checked {
+      &::after {
+        content: '\2713';
+        position: relative;
+        bottom: 4px;
+        left: 0;
+        color: $main-green;
       }
     }
   }
@@ -149,28 +144,33 @@
     flex-direction: row;
     align-items: center;
     min-height: 50px;
-    margin: 20px 26px 0 26px;
+    margin: 20px 26px 0;
     padding-bottom: 14px;
     color: var(--body-color);
 
-    .card--header__title {
-      line-height: 100%;
+    @include phone-down {
+      min-height: unset;
+      margin: 20px 20px 0;
+    }
 
-      @include font-size(14px, 21px);
-
-      & + .dot-separator {
-        & + span {
-          @include font-size(14px, 14px);
-
-          color: $gray-6;
-          font-family: $inter;
-        }
+    @include tablet-down {
+      &.card--header__tablet-responsive {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
 
-    @include phone-down {
-      min-height: unset;
-      margin: 20px 20px 0 20px;
+    .card--header__title {
+      @include font-size(14px, 21px);
+
+      line-height: 100%;
+
+      + .dot-separator + span {
+        @include font-size(14px, 14px);
+
+        color: $gray-6;
+        font-family: $inter;
+      }
     }
 
     &.card--header__space-between {
@@ -184,13 +184,6 @@
         &.select-wrapper--card-header {
           display: inline-block;
         }
-      }
-    }
-
-    @include tablet-down {
-      &.card--header__tablet-responsive {
-        flex-direction: column;
-        align-items: flex-start;
       }
     }
 
@@ -296,6 +289,11 @@
   .card--value {
     @include font-size(14px, 20px);
 
+    margin-bottom: 12px;
+    color: var(--body-color);
+    font-family: $ibm-plex-mono;
+    word-break: break-all;
+
     .section--data {
       .label {
         color: var(--card-color);
@@ -306,15 +304,10 @@
       padding: 0 20px;
       background-color: var(--body-background);
 
-      &[type="checkbox"] {
+      &[type='checkbox'] {
         padding: 0;
       }
     }
-
-    margin-bottom: 12px;
-    color: var(--body-color);
-    font-family: $ibm-plex-mono;
-    word-break: break-all;
 
     a,
     button {
@@ -366,14 +359,14 @@
 
       &.card--value-textarea__hex {
         max-height: 350px;
-        font-family: "Courier New", Courier, monospace;
+        font-family: 'Courier New', Courier, monospace;
         word-break: break-word;
         white-space: pre-wrap;
       }
 
       &.card--value-textarea__json {
         max-height: 350px;
-        font-family: "Courier New", Courier, monospace;
+        font-family: 'Courier New', Courier, monospace;
         white-space: pre-wrap;
       }
 
@@ -395,7 +388,7 @@
       &:hover {
         &.card--value__light,
         .card--value__light {
-          color: lighten($main-green-highlight, 10%);
+          color: color.adjust($main-green-highlight, $red: 10);
         }
       }
     }

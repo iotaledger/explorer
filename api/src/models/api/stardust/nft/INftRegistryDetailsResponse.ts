@@ -1,6 +1,6 @@
 import { IResponse } from "../../IResponse";
 
-export interface INftActivityHistory {
+interface INftActivityHistory {
     /**
      * transaction Id
      */
@@ -23,7 +23,7 @@ export interface INftActivityHistory {
     price: string;
 }
 
-export interface INftGeneral {
+interface INftGeneral {
     /**
      * token standard
      */

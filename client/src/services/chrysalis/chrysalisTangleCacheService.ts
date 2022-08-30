@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { IMessageMetadata, IMilestoneResponse, IOutputResponse } from "@iota/iota.js";
 import { mamFetch as mamFetchOg, MamMode } from "@iota/mam-legacy";
 import { mamFetch as mamFetchChrysalis } from "@iota/mam.js";

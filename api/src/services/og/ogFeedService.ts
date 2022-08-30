@@ -50,7 +50,7 @@ export class OgFeedService implements IFeedService {
      * Unsubscribe from subscription.
      * @param subscriptionId The subscription id.
      */
-    public unsubscribe(subscriptionId): void {
+    public unsubscribe(subscriptionId: string): void {
         this._zmqService.unsubscribe(subscriptionId);
     }
 }

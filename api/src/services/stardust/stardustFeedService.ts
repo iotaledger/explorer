@@ -75,7 +75,7 @@ export class StardustFeedService implements IFeedService {
      * Unsubscribe from subscription.
      * @param subscriptionId The subscription id.
      */
-    public unsubscribe(subscriptionId): void {
+    public unsubscribe(subscriptionId: string): void {
         this._mqttClient.unsubscribe(subscriptionId);
     }
 }

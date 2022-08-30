@@ -238,7 +238,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                         status = "Detecting hash type...";
                         statusBusy = true;
                         if (this._isMounted) {
-                            setImmediate(
+                            setTimeout(
                                 async () => {
                                     if (this._isMounted) {
                                         const { hashType } = await this._tangleCacheService.findTransactionHashes(
@@ -269,7 +269,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                             });
                                         }
                                     }
-                                });
+                                }, 0);
                         }
                     } else {
                         invalidError = `the hash length ${query.length} is not valid`;
@@ -283,7 +283,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                 status = "Detecting query type...";
                 statusBusy = true;
                 if (this._isMounted) {
-                    setImmediate(
+                    setTimeout(
                         async () => {
                             if (this._isMounted) {
                                 const response = await this._tangleCacheService.search(
@@ -323,7 +323,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     });
                                 }
                             }
-                        });
+                        }, 0);
                 }
             }
         } else {

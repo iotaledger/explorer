@@ -37,7 +37,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
     /**
      * Maximum page size for permanode request.
      */
-     private static readonly MAX_PAGE_SIZE: number = 500;
+    private static readonly MAX_PAGE_SIZE: number = 500;
 
     /**
      * API Client for tangle requests.
@@ -82,6 +82,30 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
         };
     }
 
+    private get currentPageTransactions() {
+        const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
+        const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
+        const transactionsPage = this.txsHistory
+        .slice(firstPageIndex, lastPageIndex)
+        /* eslint-disable-next-line unicorn/no-array-reduce */
+        .reduce((acc: ITransaction[], curr: ITransaction) => {
+            acc.push(curr);
+            if (curr.relatedSpentTransaction) {
+                acc.push(curr.relatedSpentTransaction);
+            }
+            return acc;
+        }, []);
+
+        const sortedTransactions: ITransaction[] = transactionsPage.sort((a, b) => (
+             moment(a.date).isAfter(moment(b.date)) ? -1 : 1
+        ));
+        return sortedTransactions;
+    }
+
+    private get txsHistory() {
+        return this.state.transactionHistory?.transactionHistory?.transactions ?? [];
+    }
+
     /**
      * The component mounted.
      */
@@ -113,6 +137,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
         }
     }
+
 
     /**
      * Render the component.
@@ -331,30 +356,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                 </div>
             </div>
         );
-    }
-
-    private get currentPageTransactions() {
-        const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
-        const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
-        const transactionsPage = this.txsHistory
-        .slice(firstPageIndex, lastPageIndex)
-        /* eslint-disable-next-line unicorn/no-array-reduce */
-        .reduce((acc: ITransaction[], curr: ITransaction) => {
-            acc.push(curr);
-            if (curr.relatedSpentTransaction) {
-                acc.push(curr.relatedSpentTransaction);
-            }
-            return acc;
-        }, []);
-
-        const sortedTransactions: ITransaction[] = transactionsPage.sort((a, b) => (
-             moment(a.date).isAfter(moment(b.date)) ? -1 : 1
-        ));
-        return sortedTransactions;
-    }
-
-    private get txsHistory() {
-        return this.state.transactionHistory?.transactionHistory?.transactions ?? [];
     }
 
     private async getTransactionHistory() {
