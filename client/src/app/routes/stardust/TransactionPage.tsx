@@ -28,6 +28,11 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
     public static contextType = NetworkContext;
 
     /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
+    /**
      * API Client for tangle requests.
      */
     private readonly _tangleCacheService: StardustTangleCacheService;
@@ -68,7 +73,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
             await TransactionsHelper.getInputsAndOutputs(
                 block,
                 this.props.match.params.network,
-                this.context.bech32Hrp as string,
+                this.context.bech32Hrp,
                 this._tangleCacheService
             );
 
@@ -326,3 +331,4 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
 }
 
 export default TransactionPage;
+

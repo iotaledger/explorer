@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-useless-fragment */
 import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
@@ -89,6 +90,11 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * Vertex highlighted colour.
      */
     private static readonly COLOR_SEARCH_RESULT: string = "0xe79c18";
+
+    /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
 
     /**
      * The graph instance.
@@ -264,81 +270,89 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             </div>
                             <div className="col">
                                 <div className="card--content">
-                                    <div className="card--label">Block</div>
-                                    <div className="card--value overflow-ellipsis">
-                                        <a
-                                            className="button"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            href={
-                                                `${window.location.origin}${RouteBuilder.buildItem(
-                                                    this._networkConfig, selectedFeedItem.id)}`
-                                            }
-                                        >
-                                            {selectedFeedItem.id}
-                                        </a>
-                                    </div>
-                                    {selectedFeedItem?.properties?.Tag &&
-                                        selectedFeedItem.metaData?.milestone === undefined && (
+                                    <>
+                                        <div className="card--label">Block</div>
+                                        <div className="card--value overflow-ellipsis">
+                                            <a
+                                                className="button"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                href={
+                                                    `${window.location.origin}${RouteBuilder.buildItem(
+                                                        this._networkConfig, selectedFeedItem.id)}`
+                                                }
+                                            >
+                                                {selectedFeedItem.id}
+                                            </a>
+                                        </div>
+                                        {selectedFeedItem?.properties?.Tag &&
+                                                selectedFeedItem.metaData?.milestone === undefined && (
+                                                    <React.Fragment>
+                                                        <div className="card--label">Tag</div>
+                                                        <div className="card--value overflow-ellipsis">
+                                                            <a
+                                                                className="button"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                {selectedFeedItem?.properties.Tag as string}
+                                                            </a>
+                                                        </div>
+                                                    </React.Fragment>
+                                                )}
+                                        {selectedFeedItem?.properties?.Index && (
                                             <React.Fragment>
                                                 <div className="card--label">Tag</div>
                                                 <div className="card--value overflow-ellipsis">
                                                     <a className="button" target="_blank" rel="noopener noreferrer">
-                                                        {selectedFeedItem?.properties.Tag as string}
+                                                        {Converter.hexToUtf8(
+                                                            selectedFeedItem?.properties.Index as string
+                                                        )}
+                                                    </a>
+                                                </div>
+                                                <div className="card--label">
+                                                    Index Hex
+                                                </div>
+                                                <div className="card--value overflow-ellipsis">
+                                                    <a className="button" target="_blank" rel="noopener noreferrer">
+                                                        {selectedFeedItem?.properties.Index as string}
                                                     </a>
                                                 </div>
                                             </React.Fragment>
-                                    )}
-                                    {selectedFeedItem?.properties?.Index && (
-                                        <React.Fragment>
-                                            <div className="card--label">Tag</div>
-                                            <div className="card--value overflow-ellipsis">
-                                                <a className="button" target="_blank" rel="noopener noreferrer">
-                                                    {Converter.hexToUtf8(selectedFeedItem?.properties.Index as string)}
-                                                </a>
-                                            </div>
-                                            <div className="card--label">
-                                                Index Hex
-                                            </div>
-                                            <div className="card--value overflow-ellipsis">
-                                                <a className="button" target="_blank" rel="noopener noreferrer">
-                                                    {selectedFeedItem?.properties.Index as string}
-                                                </a>
-                                            </div>
-                                        </React.Fragment>
-                                    )}
-                                    {selectedFeedItem.metaData?.milestone !== undefined && (
-                                        <React.Fragment>
-                                            <div className="card--label">
-                                                Milestone
-                                            </div>
-                                            <div className="card--value">
-                                                {selectedFeedItem.metaData.milestone}
-                                            </div>
-                                        </React.Fragment>
-                                    )}
-                                    {selectedFeedItem?.value !== undefined &&
-                                        selectedFeedItem.metaData?.milestone === undefined && (
+                                        )}
+                                        {selectedFeedItem.metaData?.milestone !== undefined && (
                                             <React.Fragment>
-                                                <div className="card--label">Value</div>
+                                                <div className="card--label">
+                                                    Milestone
+                                                </div>
                                                 <div className="card--value">
-                                                    <span
-                                                        onClick={() => this.setState({
-                                                            isFormatAmountsFull: !isFormatAmountsFull
-                                                        })}
-                                                        className="pointer margin-r-5"
-                                                    >
-                                                        {
-                                                            formatAmount(
-                                                                selectedFeedItem?.value,
-                                                                tokenInfo,
-                                                                isFormatAmountsFull
-                                                            )
-                                                        }
-                                                    </span>
+                                                    {selectedFeedItem.metaData.milestone}
                                                 </div>
                                             </React.Fragment>
-                                    )}
+                                        )}
+                                        {selectedFeedItem?.value !== undefined &&
+                                                selectedFeedItem.metaData?.milestone === undefined && (
+                                                    <React.Fragment>
+                                                        <div className="card--label">Value</div>
+                                                        <div className="card--value">
+                                                            <span
+                                                                onClick={() => this.setState({
+                                                                    isFormatAmountsFull: !isFormatAmountsFull
+                                                                })}
+                                                                className="pointer margin-r-5"
+                                                            >
+                                                                {
+                                                                    formatAmount(
+                                                                        selectedFeedItem?.value,
+                                                                        tokenInfo,
+                                                                        isFormatAmountsFull
+                                                                    )
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    </React.Fragment>
+                                                )}
+                                    </>
                                 </div>
                             </div>
                         </div>
@@ -793,3 +807,4 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 }
 
 export default Visualizer;
+

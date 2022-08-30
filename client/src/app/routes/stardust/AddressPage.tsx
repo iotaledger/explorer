@@ -44,6 +44,11 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
     public static contextType = NetworkContext;
 
     /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
+    /**
      * API Client for tangle requests.
      */
     private readonly _tangleCacheService: StardustTangleCacheService;
@@ -93,7 +98,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
             this.setState({
                 bech32AddressDetails: Bech32AddressHelper.buildAddress(
-                    bech32Hrp as string,
+                    bech32Hrp,
                     addressDetails?.hex,
                     addressDetails?.type ?? 0
                 ),

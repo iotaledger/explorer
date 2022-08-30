@@ -22,6 +22,11 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
      */
     public static contextType = NetworkContext;
 
+    /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
     constructor(props: UnlockConditionProps) {
         super(props);
 
@@ -139,3 +144,4 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
 }
 
 export default UnlockCondition;
+

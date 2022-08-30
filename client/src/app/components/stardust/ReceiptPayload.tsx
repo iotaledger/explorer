@@ -18,6 +18,11 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
     public static contextType = NetworkContext;
 
     /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
+    /**
      * Create a new instance of ReceiptPayload.
      * @param props The props.
      */

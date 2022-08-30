@@ -23,6 +23,11 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
     public static contextType = NetworkContext;
 
     /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
+    /**
      * API Client for tangle requests.
      */
     private readonly _tangleCacheService: StardustTangleCacheService;
@@ -303,8 +308,9 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
     }
 
     private buildAddressFromIdAndType(id: string, type: number) {
-        return Bech32AddressHelper.buildAddress(this.context.bech32Hrp as string, id, type);
+        return Bech32AddressHelper.buildAddress(this.context.bech32Hrp, id, type);
     }
 }
 
 export default Search;
+

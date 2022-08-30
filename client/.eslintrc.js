@@ -1,7 +1,8 @@
 module.exports = {
     "env": {
         "browser": true,
-        "node": true
+        "node": true,
+        "es2022": true
     },
     "extends": [
         "eslint:all",
@@ -19,6 +20,7 @@ module.exports = {
         "project": "tsconfig.json",
         "tsconfigRootDir": __dirname,
         "sourceType": "module",
+        "ecmaVersion": "latest",
         "ecmaFeatures": {
             "jsx": true,
         }
@@ -1150,10 +1152,7 @@ module.exports = {
         "react/jsx-first-prop-new-line": [
             2
         ],
-        "react/jsx-fragments": [
-            "error",
-            "element"
-        ],
+        "react/jsx-fragments": [ "off" ],
         "react/jsx-handler-names": [
             2
         ],

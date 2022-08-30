@@ -16,12 +16,17 @@ class Address extends Component<AddressProps> {
     public static contextType = NetworkContext;
 
     /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
+    /**
      * Render the component.
      * @returns The node to render.
      */
     public render(): ReactNode {
         const bech32 = Bech32AddressHelper.buildAddress(
-            this.context.bech32Hrp as string,
+            this.context.bech32Hrp,
             this.props.address
         ).bech32;
 

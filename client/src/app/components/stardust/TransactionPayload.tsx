@@ -24,6 +24,11 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
     public static contextType = NetworkContext;
 
     /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
+    /**
      * Create a new instance of TransactionPayload.
      * @param props The props.
      */

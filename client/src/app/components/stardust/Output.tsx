@@ -34,6 +34,11 @@ class Output extends Component<OutputProps, OutputState> {
     public static contextType = NetworkContext;
 
     /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
+    /**
      * Create a new instance of NewOutput.
      * @param props The props.
      */
@@ -280,7 +285,7 @@ class Output extends Component<OutputProps, OutputState> {
         }
 
         return Bech32AddressHelper.buildAddress(
-            this.context.bech32Hrp as string,
+            this.context.bech32Hrp,
             address,
             addressType
         ).bech32;

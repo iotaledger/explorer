@@ -40,6 +40,11 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
     public static contextType = NetworkContext;
 
     /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
+    /**
      * API Client for tangle requests.
      */
     private readonly _tangleCacheService: StardustTangleCacheService;
@@ -399,7 +404,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                 await TransactionsHelper.getInputsAndOutputs(
                     result?.block,
                     this.props.match.params.network,
-                    this.context.bech32Hrp as string,
+                    this.context.bech32Hrp,
                     this._tangleCacheService
             );
 
