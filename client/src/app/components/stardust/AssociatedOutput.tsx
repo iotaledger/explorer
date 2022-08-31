@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
 import moment from "moment";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { AssociationType, IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";

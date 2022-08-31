@@ -3,18 +3,20 @@ import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_T
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
     NFT_ADDRESS_TYPE, IImmutableAliasUnlockCondition, IAliasAddress, INodeInfoBaseToken,
     UnlockConditionTypes, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE,
-    TIMELOCK_UNLOCK_CONDITION_TYPE} from "@iota/iota.js-stardust";
+    TIMELOCK_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { DateHelper } from "../../../helpers/dateHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import CopyButton from "../CopyButton";
 import DataToggle from "../DataToggle";
+import Tooltip from "../Tooltip";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Feature from "./Feature";
 import NativeToken from "./NativeToken";
@@ -22,8 +24,6 @@ import { OutputProps } from "./OutputProps";
 import { OutputState } from "./OutputState";
 import UnlockCondition from "./UnlockCondition";
 import "./Output.scss";
-import { DateHelper } from "../../../helpers/dateHelper";
-import Tooltip from "../Tooltip";
 
 /**
  * Component which will display an output.
@@ -367,6 +367,7 @@ class Output extends Component<OutputProps, OutputState> {
 
     /**
      * Get tooltip content for special condition i.e SDRUC, EUC and TUC.
+     * @param unlockCondition Unlock condition of output.
      * @returns The tooltip content.
      */
      private getSpecialUnlockConditionContent(unlockCondition: UnlockConditionTypes): string {
@@ -380,7 +381,7 @@ class Output extends Component<OutputProps, OutputState> {
             return `Timelock Unlock Condition \n Time: ${time}`;
         }
         return "";
-    };
+    }
 }
 
 export default Output;
