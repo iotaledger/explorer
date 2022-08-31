@@ -91,8 +91,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         } = this.state;
 
         const { network } = this.props.match.params;
-        const isShimmer = isShimmerNetwork(network);
         const { tokenInfo } = this.context;
+        const isShimmer = isShimmerNetwork(network);
 
         const defaultInfoBox = (
             <div className="main-info-boxes">

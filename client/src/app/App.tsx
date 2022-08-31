@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { RouteComponentProps, Switch } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { isMarketedNetwork, isShimmerNetwork } from "../helpers/networkHelper";
 import { IConfiguration } from "../models/config/IConfiguration";
@@ -92,11 +92,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguratio
                                 </div>
                             </div>
                         )}
-                        {currentNetworkConfig && (
-                            <Switch>
-                                {routes}
-                            </Switch>
-                        )}
+                        {currentNetworkConfig && routes}
                         <div className={classNames("copyright", { "shimmer-copyright": isShimmer })}>
                             <div className="copyright-inner">{copyrightInner}</div>
                         </div>
