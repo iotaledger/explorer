@@ -20,6 +20,7 @@ import "./Landing.scss";
 import { LandingRouteProps } from "../../LandingRouteProps";
 import InfoSection from "../InfoSection";
 import { getDefaultLandingState, LandingState } from "./LandingState";
+import { getFilterAppliers } from "./LandingUtils";
 
 /**
  * Component which will show the landing page.
@@ -175,7 +176,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     <span className="material-icons">tune</span>
                                                 </button>
                                                 <div className="filters-button-wrapper__counter">
-                                                    {valuesFilter.filter(f => f.isEnabled).length}
+                                                    {valuesFilter.filter(applier => applier.isEnabled).length}
                                                 </div>
                                             </div>
                                             {isFilterExpanded && (
@@ -241,7 +242,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         milestoneIndex={latestMilestoneIndex}
                                         frequencyTarget={networkConfig.milestoneInterval}
                                     />
-
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
                                             <span className="label">Block id</span>
@@ -357,71 +357,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 this.state.valueMaximumMagnitude,
                 ""
             );
-            const filters = [
-                {
-                    payloadType: "Zero only",
-                    filter: (item: IFeedItem) => item.value === 0
-                },
-                {
-                    payloadType: "Non-zero only",
-                    filter: (item: IFeedItem) =>
-                        item.value !== undefined &&
-                        item.value !== 0 &&
-                        Math.abs(item.value) >= minLimit &&
-                        Math.abs(item.value) <= maxLimit
-                },
-                {
-                    payloadType: "Transaction",
-                    filter: (item: IFeedItem) =>
-                        item.value !== undefined &&
-                        item.value !== 0 &&
-                        Math.abs(item.value) >= minLimit &&
-                        Math.abs(item.value) <= maxLimit
-                },
-                {
-                    payloadType: "Milestone",
-                    filter: (item: IFeedItem) =>
-                        item.payloadType === "MS"
+            const filterAppliers = getFilterAppliers(minLimit, maxLimit).filter(applier => (
+                this.state.valuesFilter.some(value => applier.payloadType === value.label && value.isEnabled))
+            );
+            const itemsToFilter = this.state.isFeedPaused ? this.state.frozenBlocks : this._feedClient.getItems();
 
-                },
-                {
-                    payloadType: "Data",
-                    filter: (item: IFeedItem) =>
-                        item.payloadType === "Data"
-                },
-                {
-                    payloadType: "No payload",
-                    filter: (item: IFeedItem) =>
-                        item.payloadType === "None"
+            const filteredItems = itemsToFilter.filter(
+                item => filterAppliers.some(applier => applier.apply(item))
+            ).slice(0, 10);
 
-                }
-            ].filter(f => {
-                let aux = false;
-                for (const payload of this.state.valuesFilter) {
-                    if (f.payloadType === payload.label && payload.isEnabled) {
-                        aux = true;
-                    }
-                }
-                return aux;
-            });
-
-            const filteredBlocks = this.state.isFeedPaused
-                ? this.state.frozenBlocks
-                : this._feedClient.getItems();
-
-            this.setState({
-                filteredItems: filteredBlocks
-                    .filter(item => {
-                        let aux = false;
-                        for (const f of filters) {
-                            const filter = f.filter;
-                            if (filter(item)) {
-                                aux = true;
-                            }
-                        }
-                        return aux;
-                    }).slice(0, 10)
-            });
+            this.setState({ filteredItems });
         }
     }
 
