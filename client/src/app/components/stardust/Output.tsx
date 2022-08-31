@@ -48,23 +48,8 @@ class Output extends Component<OutputProps, OutputState> {
 
         this.state = {
             isExpanded: this.props.isPreExpanded ?? false,
-            isFormattedBalance: true,
-            isSpecialCondition: false
+            isFormattedBalance: true
         };
-    }
-
-    /**
-     * The component mounted.
-     */
-    public componentDidMount(): void {
-        if (this.props.output.type !== TREASURY_OUTPUT_TYPE) {
-            const specialUnlockConditionExists = this.props.output.unlockConditions.some(condition =>
-                condition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE ||
-                condition.type === EXPIRATION_UNLOCK_CONDITION_TYPE ||
-                condition.type === TIMELOCK_UNLOCK_CONDITION_TYPE
-            );
-            this.setState({ isSpecialCondition: specialUnlockConditionExists });
-        }
     }
 
     /**
@@ -73,7 +58,7 @@ class Output extends Component<OutputProps, OutputState> {
      */
     public render(): ReactNode {
         const { outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId } = this.props;
-        const { isExpanded, isFormattedBalance, isSpecialCondition } = this.state;
+        const { isExpanded, isFormattedBalance } = this.state;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
@@ -83,6 +68,7 @@ class Output extends Component<OutputProps, OutputState> {
             `${outputId.slice(0, -4)}` :
             `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
         const outputIdIndexPart = outputId.slice(-4);
+        const isSpecialCondition = this.hasSpecialCondition();
 
         const specialUnlockCondition = (
             output.type !== TREASURY_OUTPUT_TYPE && isSpecialCondition) && (
@@ -370,7 +356,7 @@ class Output extends Component<OutputProps, OutputState> {
      * @param unlockCondition Unlock condition of output.
      * @returns The tooltip content.
      */
-     private getSpecialUnlockConditionContent(unlockCondition: UnlockConditionTypes): string {
+    private getSpecialUnlockConditionContent(unlockCondition: UnlockConditionTypes): string {
         if (unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) {
             return `Storage Deposit Return Unlock Condition \n Return Amount: ${unlockCondition.amount} glow`;
         } else if (unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE) {
@@ -381,6 +367,22 @@ class Output extends Component<OutputProps, OutputState> {
             return `Timelock Unlock Condition \n Time: ${time}`;
         }
         return "";
+    }
+
+    /**
+     * Check if output has special condition i.e SDRUC, EUC and TUC.
+     * @returns special condition exists.
+     */
+    private hasSpecialCondition(): boolean {
+        let specialUnlockConditionExists = false;
+        if (this.props.output.type !== TREASURY_OUTPUT_TYPE) {
+            specialUnlockConditionExists = this.props.output.unlockConditions.some(condition =>
+                condition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE ||
+                condition.type === EXPIRATION_UNLOCK_CONDITION_TYPE ||
+                condition.type === TIMELOCK_UNLOCK_CONDITION_TYPE
+            );
+        }
+        return specialUnlockConditionExists;
     }
 }
 

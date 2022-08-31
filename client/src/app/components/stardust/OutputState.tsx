@@ -7,9 +7,4 @@ export interface OutputState {
      * Toggle balance between raw and formatted amount.
      */
     isFormattedBalance: boolean;
-
-    /**
-     * Show special unlock condition.
-     */
-    isSpecialCondition: boolean;
 }
