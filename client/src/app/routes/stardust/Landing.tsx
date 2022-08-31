@@ -19,7 +19,7 @@ import NetworkContext from "../../context/NetworkContext";
 import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
 import InfoSection from "./InfoSection";
-import { LandingState } from "./LandingState";
+import { getDefaultLandingState, LandingState } from "./LandingState";
 
 /**
  * Component which will show the landing page.
@@ -50,29 +50,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             isEnabled: false
         };
 
-        this.state = {
-            networkConfig: network,
-            valueMinimum: "",
-            valueMinimumMagnitude: "",
-            valueMaximum: "",
-            valuesFilter: getDefaultValueFilter(network.protocolVersion),
-            valueMaximumMagnitude: "",
-            itemsPerSecond: "--",
-            confirmedItemsPerSecond: "--",
-            confirmedItemsPerSecondPercent: "--",
-            itemsPerSecondHistory: [],
-            marketCapEUR: 0,
-            marketCapCurrency: "--",
-            priceEUR: 0,
-            priceCurrency: "--",
-            filteredItems: [],
-            frozenBlocks: [],
-            milestones: [],
-            currency: "USD",
-            currencies: [],
-            isFeedPaused: false,
-            isFilterExpanded: false
-        };
+        this.state = getDefaultLandingState(network);
     }
 
     /**
@@ -444,8 +422,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             }
                         }
                         return aux;
-                    })
-                    .slice(0, 10)
+                    }).slice(0, 10)
             });
         }
     }
