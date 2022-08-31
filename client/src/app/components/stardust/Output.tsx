@@ -74,7 +74,7 @@ class Output extends Component<OutputProps, OutputState> {
             output.type !== TREASURY_OUTPUT_TYPE && isSpecialCondition) && (
                 output.unlockConditions.map((unlockCondition, idx) => (
                     <Tooltip key={idx} tooltipContent={this.getSpecialUnlockConditionContent(unlockCondition)}>
-                        <span className="material-icons icon">
+                        <span className="material-icons unlock-condiiton-icon">
                             {unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE &&
                             "arrow_back"}
                             {unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE &&
