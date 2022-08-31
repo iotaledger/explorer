@@ -2,23 +2,23 @@ import { Magnitudes, UnitsHelper } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { isShimmerNetwork } from "../../../helpers/networkHelper";
-import { NumberHelper } from "../../../helpers/numberHelper";
-import { RouteBuilder } from "../../../helpers/routeBuilder";
-import { INetwork } from "../../../models/config/INetwork";
-import { CUSTOM } from "../../../models/config/networkType";
-import { STARDUST } from "../../../models/config/protocolVersion";
-import { IFeedItem } from "../../../models/feed/IFeedItem";
-import { IFilterSettings } from "../../../models/services/stardust/IFilterSettings";
-import { getDefaultValueFilter } from "../../../models/services/valueFilter";
-import { NetworkService } from "../../../services/networkService";
-import FeedInfo from "../../components/FeedInfo";
-import Feeds from "../../components/stardust/Feeds";
-import NetworkContext from "../../context/NetworkContext";
+import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { isShimmerNetwork } from "../../../../helpers/networkHelper";
+import { NumberHelper } from "../../../../helpers/numberHelper";
+import { RouteBuilder } from "../../../../helpers/routeBuilder";
+import { INetwork } from "../../../../models/config/INetwork";
+import { CUSTOM } from "../../../../models/config/networkType";
+import { STARDUST } from "../../../../models/config/protocolVersion";
+import { IFeedItem } from "../../../../models/feed/IFeedItem";
+import { IFilterSettings } from "../../../../models/services/stardust/IFilterSettings";
+import { getDefaultValueFilter } from "../../../../models/services/valueFilter";
+import { NetworkService } from "../../../../services/networkService";
+import FeedInfo from "../../../components/FeedInfo";
+import Feeds from "../../../components/stardust/Feeds";
+import NetworkContext from "../../../context/NetworkContext";
 import "./Landing.scss";
-import { LandingRouteProps } from "../LandingRouteProps";
-import InfoSection from "./InfoSection";
+import { LandingRouteProps } from "../../LandingRouteProps";
+import InfoSection from "../InfoSection";
 import { getDefaultLandingState, LandingState } from "./LandingState";
 
 /**
@@ -273,9 +273,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 </div>
                             </div>
                             <div className="card margin-t-m">
-                                <div className="card--content description">
-                                    {networkConfig.description}
-                                </div>
+                                <div className="card--content description">{networkConfig.description}</div>
                                 {networkConfig.faucet && (
                                     <div className="card--content description">
                                         <span>Get tokens from the Faucet:</span>
@@ -517,57 +515,29 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 </span>
                 <span className="filter--value">
                     <input
-                        className="input-plus"
                         type="text"
+                        className="input-plus"
                         value={type === "minimum" ? this.state.valueMinimum : this.state.valueMaximum}
-                        onChange={
-                            e =>
-                            (type === "minimum"
-                                ? this.updateMinimum(e.target.value)
-                                : this.updateMaximum(e.target.value)
-                            )
-                        }
+                        onChange={e => (type === "minimum" ?
+                                        this.updateMinimum(e.target.value) :
+                                        this.updateMaximum(e.target.value))}
                     />
                     <div className="select-wrapper">
                         <select
                             className="select-plus"
-                            value={
-                                type === "minimum"
-                                    ? this.state.valueMinimumMagnitude
-                                    : this.state.valueMaximumMagnitude
-                            }
-                            onChange={
-                                e =>
-                                (type === "minimum" ? this.setState(
-                                    {
-                                        valueMinimumMagnitude:
-                                            e.target.value as Magnitudes
-                                    },
-                                    async () =>
-                                        this.updateFilters()
-                                ) : this.setState(
-                                    {
-                                        valueMaximumMagnitude:
-                                            e.target.value as Magnitudes
-                                    },
-                                    async () =>
-                                        this.updateFilters()
-                                ))
-
-                            }
+                            value={type === "minimum" ?
+                                this.state.valueMinimumMagnitude :
+                                this.state.valueMaximumMagnitude}
+                            onChange={e => (type === "minimum" ?
+                                            this.setState({ valueMinimumMagnitude: e.target.value as Magnitudes },
+                                                async () => this.updateFilters()) :
+                                this.setState({ valueMaximumMagnitude: e.target.value as Magnitudes },
+                                    async () => this.updateFilters()))}
                         >
-                            {subunit && (
-                                <option value="">
-                                    {subunit}
-                                </option>
-                            )}
-                            <option value={unitMagnitude}>
-                                {unit}
-                            </option>
+                            {subunit && (<option value="">{subunit}</option>)}
+                            <option value={unitMagnitude}>{unit}</option>
                         </select>
-                        <span className="material-icons">
-                            arrow_drop_down
-                        </span>
+                        <span className="material-icons">arrow_drop_down</span>
                     </div>
                 </span>
             </div>

@@ -29,7 +29,7 @@ import StardustAddressPage from "./routes/stardust/AddressPage";
 import Alias from "./routes/stardust/Alias";
 import StardustBlock from "./routes/stardust/Block";
 import Foundry from "./routes/stardust/Foundry";
-import StardustLanding from "./routes/stardust/Landing";
+import StardustLanding from "./routes/stardust/landing/Landing";
 import Nft from "./routes/stardust/Nft";
 import NftRegistryDetails from "./routes/stardust/NftRegistryDetails";
 import OutputList from "./routes/stardust/OutputList";

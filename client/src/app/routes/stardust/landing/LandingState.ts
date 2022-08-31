@@ -1,9 +1,9 @@
 import { Magnitudes } from "@iota/iota.js-stardust";
-import { INetwork } from "../../../models/config/INetwork";
-import { IFeedItem } from "../../../models/feed/IFeedItem";
-import { getDefaultValueFilter, ValueFilter } from "../../../models/services/valueFilter";
-import { CurrencyState } from "../../components/CurrencyState";
-import { FeedsState } from "../../components/FeedsState";
+import { INetwork } from "../../../../models/config/INetwork";
+import { IFeedItem } from "../../../../models/feed/IFeedItem";
+import { getDefaultValueFilter, ValueFilter } from "../../../../models/services/valueFilter";
+import { CurrencyState } from "../../../components/CurrencyState";
+import { FeedsState } from "../../../components/FeedsState";
 
 export interface LandingState extends CurrencyState, FeedsState {
     /**
