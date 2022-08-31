@@ -1,10 +1,9 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
-    NFT_ADDRESS_TYPE,
-    IImmutableAliasUnlockCondition,
-    IAliasAddress,
-    INodeInfoBaseToken } from "@iota/iota.js-stardust";
+    NFT_ADDRESS_TYPE, IImmutableAliasUnlockCondition, IAliasAddress, INodeInfoBaseToken,
+    UnlockConditionTypes, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE,
+    TIMELOCK_UNLOCK_CONDITION_TYPE} from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import classNames from "classnames";
@@ -23,6 +22,8 @@ import { OutputProps } from "./OutputProps";
 import { OutputState } from "./OutputState";
 import UnlockCondition from "./UnlockCondition";
 import "./Output.scss";
+import { DateHelper } from "../../../helpers/dateHelper";
+import Tooltip from "../Tooltip";
 
 /**
  * Component which will display an output.
@@ -47,8 +48,23 @@ class Output extends Component<OutputProps, OutputState> {
 
         this.state = {
             isExpanded: this.props.isPreExpanded ?? false,
-            isFormattedBalance: true
+            isFormattedBalance: true,
+            isSpecialCondition: false
         };
+    }
+
+    /**
+     * The component mounted.
+     */
+    public componentDidMount(): void {
+        if (this.props.output.type !== TREASURY_OUTPUT_TYPE) {
+            const specialUnlockConditionExists = this.props.output.unlockConditions.some(condition =>
+                condition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE ||
+                condition.type === EXPIRATION_UNLOCK_CONDITION_TYPE ||
+                condition.type === TIMELOCK_UNLOCK_CONDITION_TYPE
+            );
+            this.setState({ isSpecialCondition: specialUnlockConditionExists });
+        }
     }
 
     /**
@@ -57,7 +73,7 @@ class Output extends Component<OutputProps, OutputState> {
      */
     public render(): ReactNode {
         const { outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId } = this.props;
-        const { isExpanded, isFormattedBalance } = this.state;
+        const { isExpanded, isFormattedBalance, isSpecialCondition } = this.state;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
@@ -67,6 +83,22 @@ class Output extends Component<OutputProps, OutputState> {
             `${outputId.slice(0, -4)}` :
             `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
         const outputIdIndexPart = outputId.slice(-4);
+
+        const specialUnlockCondition = (
+            output.type !== TREASURY_OUTPUT_TYPE && isSpecialCondition) && (
+                output.unlockConditions.map((unlockCondition, idx) => (
+                    <Tooltip key={idx} tooltipContent={this.getSpecialUnlockConditionContent(unlockCondition)}>
+                        <span className="material-icons icon">
+                            {unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE &&
+                            "arrow_back"}
+                            {unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE &&
+                            "hourglass_bottom"}
+                            {unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE &&
+                            "schedule"}
+                        </span>
+                    </Tooltip>
+                ))
+        );
 
         const outputHeader = (
             <div
@@ -92,6 +124,7 @@ class Output extends Component<OutputProps, OutputState> {
                         )
                         <CopyButton copy={String(outputId)} />
                     </div>
+                    {specialUnlockCondition}
                 </div>
                 {showCopyAmount && (
                     <div className="card--value pointer amount-size row end">
@@ -331,6 +364,23 @@ class Output extends Component<OutputProps, OutputState> {
              return `${aliasAddress}${serialNumberHex}${tokenSchemeTypeHex}`;
          }
     }
+
+    /**
+     * Get tooltip content for special condition i.e SDRUC, EUC and TUC.
+     * @returns The tooltip content.
+     */
+     private getSpecialUnlockConditionContent(unlockCondition: UnlockConditionTypes): string {
+        if (unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) {
+            return `Storage Deposit Return Unlock Condition \n Return Amount: ${unlockCondition.amount} glow`;
+        } else if (unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE) {
+            const time = DateHelper.format(DateHelper.milliseconds(unlockCondition.unixTime));
+            return `Expiration Unlock Condition \n Time: ${time}`;
+        } else if (unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE) {
+            const time = DateHelper.format(DateHelper.milliseconds(unlockCondition.unixTime));
+            return `Timelock Unlock Condition \n Time: ${time}`;
+        }
+        return "";
+    };
 }
 
 export default Output;

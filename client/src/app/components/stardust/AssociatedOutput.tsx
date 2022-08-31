@@ -1,7 +1,5 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { TREASURY_OUTPUT_TYPE } from "@iota/iota.js";
-import { EXPIRATION_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE, UnlockConditionTypes } from "@iota/iota.js-stardust";
 import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -35,25 +33,11 @@ const ASSOCIATION_TYPE_TO_LABEL = {
     [AssociationType.NFT_SENDER]: "Sender Feature"
 };
 
-const getSpecialUnlockConditionContent = (unlockCondition: UnlockConditionTypes): string => {
-    if (unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) {
-        return `Storage Deposit Return Unlock Condition \n Return Amount: ${unlockCondition.amount} glow`;
-    } else if (unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE) {
-        const time = DateHelper.format(DateHelper.milliseconds(unlockCondition.unixTime));
-        return `Expiration Unlock Condition \n Time: ${time}`;
-    } else if (unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE) {
-        const time = DateHelper.format(DateHelper.milliseconds(unlockCondition.unixTime));
-        return `Timelock Unlock Condition \n Time: ${time}`;
-    }
-    return "";
-};
-
 const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associatedOutput, isMobile }) => {
     if (!associatedOutput.outputDetails) {
         return null;
     }
 
-    const [isSpecialCondition, setIsSpecialCondition] = useState(false);
     const { outputId, outputDetails, associations } = associatedOutput;
     const output = outputDetails.output;
     const outputMetadata = outputDetails.metadata;
@@ -73,36 +57,9 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
         </div>
     ) : null;
 
-    useEffect(() => {
-        if (output.type !== TREASURY_OUTPUT_TYPE) {
-            const specialUnlockConditionExists = output.unlockConditions.some(condition =>
-                condition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE ||
-                condition.type === EXPIRATION_UNLOCK_CONDITION_TYPE ||
-                condition.type === TIMELOCK_UNLOCK_CONDITION_TYPE
-            );
-            setIsSpecialCondition(specialUnlockConditionExists);
-        }
-    }, []);
-
-    const specialUnlockCondition = (
-        output.type !== TREASURY_OUTPUT_TYPE && isSpecialCondition) && (
-            output.unlockConditions.map((unlockCondition, idx) => (
-                <Tooltip key={idx} tooltipContent={getSpecialUnlockConditionContent(unlockCondition)}>
-                    <span className="material-icons icon">
-                        {unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE &&
-                        "arrow_back"}
-                        {unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE &&
-                        "hourglass_bottom"}
-                        {unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE &&
-                        "schedule"}
-                    </span>
-                </Tooltip>
-            ))
-    );
-
     const outputTableRow = (
         <tr>
-            <td className="card row middle overflow-unset ">
+            <td className="card overflow-unset">
                 <Output
                     key={outputId}
                     outputId={outputId}
@@ -111,7 +68,6 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
                     network={network}
                     showCopyAmount={false}
                 />
-                {specialUnlockCondition}
             </td>
             <td className="found-in">
                 <div className="found-in--wrapper">
@@ -141,17 +97,14 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
                 <div className="label">
                     Output type
                 </div>
-                <div className="row middle">
-                    <Output
-                        key={outputId}
-                        outputId={outputId}
-                        output={output}
-                        amount={Number(output.amount)}
-                        network={network}
-                        showCopyAmount={false}
-                    />
-                    {specialUnlockCondition}
-                </div>
+                <Output
+                    key={outputId}
+                    outputId={outputId}
+                    output={output}
+                    amount={Number(output.amount)}
+                    network={network}
+                    showCopyAmount={false}
+                />
             </div>
             <div className="field found-in">
                 <div className="label">Address found in</div>
