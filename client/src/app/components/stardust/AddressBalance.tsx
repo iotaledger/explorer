@@ -65,9 +65,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                             </React.Fragment>
                         )}
                     </div>
-                ) : (
-                    <span className="margin-r-5">0</span>
-                )}
+                ) : <span className="margin-r-5">0</span>}
             </div>
         </div>
     );
