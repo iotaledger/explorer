@@ -1,7 +1,7 @@
 import { Magnitudes } from "@iota/iota.js-stardust";
 import { INetwork } from "../../../../models/config/INetwork";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
-import { getDefaultValueFilter, ValueFilter } from "../../../../models/services/valueFilter";
+import { getFilterFieldDefaults, FilterField } from "../../../../models/services/filterField";
 import { CurrencyState } from "../../../components/CurrencyState";
 import { FeedsState } from "../../../components/FeedsState";
 
@@ -32,34 +32,34 @@ export interface LandingState extends CurrencyState, FeedsState {
     priceCurrency: string;
 
     /**
-     * Limit the transactions by value.
+     * Lower limit filter of the transactions value.
      */
-    valueMinimum: string;
+    minValue: string;
 
     /**
      * The unit type.
      */
-    valueMinimumMagnitude: Magnitudes;
+    minMagnitude: Magnitudes;
 
     /**
-     * Limit the transactions by value.
+     * Upper limit filter of the transactions value.
      */
-    valueMaximum: string;
+    maxValue: string;
 
     /**
      * The unit type.
      */
-    valueMaximumMagnitude: Magnitudes;
+    maxMagnitude: Magnitudes;
 
     /**
      * Filter specific value types.
      */
-    valuesFilter: ValueFilter[];
+    filterFields: FilterField[];
 
     /**
-     * Latest transactions.
+     * The items of the feed that are filtered in.
      */
-    filteredItems: IFeedItem[];
+    currentItems: IFeedItem[];
 
     /**
      * Is the blocks feed paused.
@@ -80,11 +80,11 @@ export interface LandingState extends CurrencyState, FeedsState {
 export const getDefaultLandingState = (networkConfig: INetwork): LandingState => (
     {
         networkConfig,
-        valueMinimum: "",
-        valueMinimumMagnitude: "",
-        valueMaximum: "",
-        valuesFilter: getDefaultValueFilter(networkConfig.protocolVersion),
-        valueMaximumMagnitude: "",
+        minValue: "",
+        minMagnitude: "",
+        maxValue: "",
+        maxMagnitude: "",
+        filterFields: getFilterFieldDefaults(networkConfig.protocolVersion),
         itemsPerSecond: "--",
         confirmedItemsPerSecond: "--",
         confirmedItemsPerSecondPercent: "--",
@@ -93,7 +93,7 @@ export const getDefaultLandingState = (networkConfig: INetwork): LandingState =>
         marketCapCurrency: "--",
         priceEUR: 0,
         priceCurrency: "--",
-        filteredItems: [],
+        currentItems: [],
         frozenBlocks: [],
         milestones: [],
         currency: "USD",

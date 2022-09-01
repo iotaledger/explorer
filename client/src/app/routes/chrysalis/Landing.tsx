@@ -8,8 +8,8 @@ import { INetwork } from "../../../models/config/INetwork";
 import { CUSTOM, LEGACY_MAINNET } from "../../../models/config/networkType";
 import { CHRYSALIS, OG } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
+import { getFilterFieldDefaults } from "../../../models/services/filterField";
 import { IFilterSettings } from "../../../models/services/IFilterSettings";
-import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/chrysalis/Feeds";
 import FeedInfo from "../../components/FeedInfo";
@@ -42,7 +42,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMinimumUnits: "i",
             valueMaximum: "1",
             valueMaximumUnits: "Ti",
-            valuesFilter: getDefaultValueFilter(network.protocolVersion),
+            valuesFilter: getFilterFieldDefaults(network.protocolVersion),
             itemsPerSecond: "--",
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
@@ -83,7 +83,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMaximum: filterSettings?.valueMaximum ?? "3",
             valueMaximumUnits: filterSettings?.valueMaximumUnits ?? "Pi",
             valuesFilter: filterSettings?.valuesFilter ??
-                getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "chrysalis"),
+                getFilterFieldDefaults(this._networkConfig?.protocolVersion ?? "chrysalis"),
             formatFull: settings.formatFull
         });
     }

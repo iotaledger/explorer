@@ -10,8 +10,8 @@ import { INetwork } from "../../../../models/config/INetwork";
 import { CUSTOM } from "../../../../models/config/networkType";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
+import { getFilterFieldDefaults } from "../../../../models/services/filterField";
 import { IFilterSettings } from "../../../../models/services/stardust/IFilterSettings";
-import { getDefaultValueFilter } from "../../../../models/services/valueFilter";
 import { NetworkService } from "../../../../services/networkService";
 import FeedInfo from "../../../components/FeedInfo";
 import Feeds from "../../../components/stardust/Feeds";
@@ -70,12 +70,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         }
 
         this.setState({
-            valueMinimum: filterSettings?.valueMinimum ?? "0",
-            valueMinimumMagnitude: filterSettings?.valueMinimumMagnitude ?? "",
-            valueMaximum: filterSettings?.valueMaximum ?? "1000",
-            valuesFilter: filterSettings?.valuesFilter ??
-                getDefaultValueFilter(this._networkConfig?.protocolVersion ?? "stardust"),
-            valueMaximumMagnitude: filterSettings?.valueMaximumMagnitude ?? unitMagnitude
+            minValue: filterSettings?.valueMinimum ?? "0",
+            minMagnitude: filterSettings?.valueMinimumMagnitude ?? "",
+            maxValue: filterSettings?.valueMaximum ?? "1000",
+            maxMagnitude: filterSettings?.valueMaximumMagnitude ?? unitMagnitude,
+            filterFields: filterSettings?.valuesFilter ??
+                getFilterFieldDefaults(this._networkConfig?.protocolVersion ?? "stardust")
         });
     }
 
@@ -86,7 +86,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     public render(): ReactNode {
         const {
             networkConfig, marketCapCurrency, priceCurrency,
-            valuesFilter, filteredItems, isFeedPaused, isFilterExpanded,
+            filterFields, currentItems, isFeedPaused, isFilterExpanded,
             itemsPerSecond, confirmedItemsPerSecondPercent, latestMilestoneIndex,
             networkAnalytics
         } = this.state;
@@ -157,7 +157,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 onClick={() => {
                                                     this.setState({
                                                         isFeedPaused: !isFeedPaused,
-                                                        frozenBlocks: filteredItems
+                                                        frozenBlocks: currentItems
                                                     });
                                                 }}
                                             >
@@ -176,7 +176,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     <span className="material-icons">tune</span>
                                                 </button>
                                                 <div className="filters-button-wrapper__counter">
-                                                    {valuesFilter.filter(applier => applier.isEnabled).length}
+                                                    {filterFields.filter(field => field.isEnabled).length}
                                                 </div>
                                             </div>
                                             {isFilterExpanded && (
@@ -203,22 +203,22 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                         </div>
 
                                                         <div className="filter-content">
-                                                            {valuesFilter.map(payload => (
-                                                                <React.Fragment key={payload.label}>
+                                                            {filterFields.map(field => (
+                                                                <React.Fragment key={field.label}>
                                                                     <label >
                                                                         <input
                                                                             type="checkbox"
-                                                                            checked={payload.isEnabled}
+                                                                            checked={field.isEnabled}
                                                                             onChange={
-                                                                                () => this.toggleFilter(payload.label)
+                                                                                () => this.toggleFilter(field.label)
                                                                             }
                                                                         />
-                                                                        {payload.label}
+                                                                        {field.label}
                                                                     </label>
                                                                     {networkConfig.protocolVersion ===
                                                                             STARDUST &&
-                                                                            payload.label === "Transaction" &&
-                                                                            payload.isEnabled && (
+                                                                            field.label === "Transaction" &&
+                                                                            field.isEnabled && (
                                                                             <div className="row">
                                                                                 {this.transactionDropdown("minimum")}
                                                                                 {this.transactionDropdown("maximum")}
@@ -247,10 +247,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             <span className="label">Block id</span>
                                             <span className="label">Payload Type</span>
                                         </div>
-                                        {filteredItems.length === 0 && (
+                                        {currentItems.length === 0 && (
                                             <p>There are no items with the current filter.</p>
                                         )}
-                                        {filteredItems.map(item => (
+                                        {currentItems.map(item => (
                                             <div className="feed-item" key={item.id}>
                                                 <div className="feed-item__content">
                                                     <span className="feed-item--label">Block id</span>
@@ -348,25 +348,25 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     private applyFilters(): void {
         if (this._isMounted && this._feedClient) {
             const minLimit = UnitsHelper.convertUnits(
-                Number.parseFloat(this.state.valueMinimum),
-                this.state.valueMinimumMagnitude,
+                Number.parseFloat(this.state.minValue),
+                this.state.minMagnitude,
                 ""
             );
             const maxLimit = UnitsHelper.convertUnits(
-                Number.parseFloat(this.state.valueMaximum),
-                this.state.valueMaximumMagnitude,
+                Number.parseFloat(this.state.maxValue),
+                this.state.maxMagnitude,
                 ""
             );
             const filterAppliers = getFilterAppliers(minLimit, maxLimit).filter(applier => (
-                this.state.valuesFilter.some(value => applier.payloadType === value.label && value.isEnabled))
+                this.state.filterFields.some(field => applier.payloadType === field.label && field.isEnabled))
             );
             const itemsToFilter = this.state.isFeedPaused ? this.state.frozenBlocks : this._feedClient.getItems();
 
-            const filteredItems = itemsToFilter.filter(
+            const currentItems = itemsToFilter.filter(
                 item => filterAppliers.some(applier => applier.apply(item))
             ).slice(0, 10);
 
-            this.setState({ filteredItems });
+            this.setState({ currentItems });
         }
     }
 
@@ -378,9 +378,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const val = Number.parseFloat(min);
 
         if (!Number.isNaN(val)) {
-            this.setState({ valueMinimum: val.toString() }, async () => this.updateFilters());
+            this.setState({ minValue: val.toString() }, async () => this.updateFilters());
         } else {
-            this.setState({ valueMinimum: "" });
+            this.setState({ minValue: "" });
         }
     }
 
@@ -392,9 +392,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const val = Number.parseFloat(max);
 
         if (!Number.isNaN(val)) {
-            this.setState({ valueMaximum: val.toString() }, async () => this.updateFilters());
+            this.setState({ maxValue: val.toString() }, async () => this.updateFilters());
         } else {
-            this.setState({ valueMaximum: "" });
+            this.setState({ maxValue: "" });
         }
     }
 
@@ -407,11 +407,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
             settings.filters = settings.filters ?? {};
             settings.filters[this._networkConfig?.network] = {
-                valuesFilter: this.state.valuesFilter,
-                valueMinimum: this.state.valueMinimum,
-                valueMinimumMagnitude: this.state.valueMinimumMagnitude,
-                valueMaximum: this.state.valueMaximum,
-                valueMaximumMagnitude: this.state.valueMaximumMagnitude
+                valuesFilter: this.state.filterFields,
+                valueMinimum: this.state.minValue,
+                valueMinimumMagnitude: this.state.minMagnitude,
+                valueMaximum: this.state.maxValue,
+                valueMaximumMagnitude: this.state.maxMagnitude
             };
 
             this._settingsService.save();
@@ -424,13 +424,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * @param payloadType The payload type to toggle.
      */
     private toggleFilter(payloadType: string): void {
-        const valuesFilter = this.state.valuesFilter.map(payload => {
-            if (payload.label === payloadType) {
-                payload.isEnabled = !payload.isEnabled;
+        const filterFields = this.state.filterFields.map(field => {
+            if (field.label === payloadType) {
+                field.isEnabled = !field.isEnabled;
             }
-            return payload;
+            return field;
         });
-        this.setState({ valuesFilter }, async () => this.updateFilters());
+        this.setState({ filterFields }, async () => this.updateFilters());
     }
 
     /**
@@ -441,11 +441,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const unitMagnitude = UnitsHelper.calculateBest(Math.pow(10, decimals)) ?? "";
 
         this.setState({
-            valueMinimum: "0",
-            valueMinimumMagnitude: "",
-            valueMaximum: "1000",
-            valueMaximumMagnitude: unitMagnitude,
-            valuesFilter: this.state.valuesFilter.map(filter => ({ ...filter, isEnabled: true }))
+            minValue: "0",
+            minMagnitude: "",
+            maxValue: "10000",
+            maxMagnitude: unitMagnitude,
+            filterFields: this.state.filterFields.map(field => ({ ...field, isEnabled: true }))
         }, async () => this.updateFilters());
     }
 
@@ -462,7 +462,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                     <input
                         type="text"
                         className="input-plus"
-                        value={type === "minimum" ? this.state.valueMinimum : this.state.valueMaximum}
+                        value={type === "minimum" ? this.state.minValue : this.state.maxValue}
                         onChange={e => (type === "minimum" ?
                                         this.updateMinimum(e.target.value) :
                                         this.updateMaximum(e.target.value))}
@@ -471,12 +471,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         <select
                             className="select-plus"
                             value={type === "minimum" ?
-                                this.state.valueMinimumMagnitude :
-                                this.state.valueMaximumMagnitude}
+                                this.state.minMagnitude :
+                                this.state.maxMagnitude}
                             onChange={e => (type === "minimum" ?
-                                            this.setState({ valueMinimumMagnitude: e.target.value as Magnitudes },
+                                            this.setState({ minMagnitude: e.target.value as Magnitudes },
                                                 async () => this.updateFilters()) :
-                                this.setState({ valueMaximumMagnitude: e.target.value as Magnitudes },
+                                this.setState({ maxMagnitude: e.target.value as Magnitudes },
                                     async () => this.updateFilters()))}
                         >
                             {subunit && (<option value="">{subunit}</option>)}
