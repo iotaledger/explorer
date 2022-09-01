@@ -5,6 +5,7 @@ import { Converter, HexHelper } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import React, { useEffect, useRef, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { PromiseResolver, ResolverStatus } from "../../../helpers/promiseResolver";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Pagination from "../../components/Pagination";
@@ -16,9 +17,16 @@ interface NftSectionProps {
     bech32Address?: string;
 }
 
+// extract this and use where needed
+interface PromiseResolverProps {
+    onAsyncStatus: (status: ResolverStatus) => void;
+}
+
 const PAGE_SIZE = 10;
 
-const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address }) => {
+const NftSection: React.FC<NftSectionProps & PromiseResolverProps> = (
+    { network, bech32Address, onAsyncStatus }
+) => {
     const mounted = useRef(false);
     const [nfts, setNfts] = useState<INftDetails[]>([]);
     const [page, setPage] = useState<INftDetails[]>([]);
@@ -38,34 +46,41 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address }) => {
                 return;
             }
 
-            const nftOutputs = await tangleCacheService.nfts({
-                network,
-                address: bech32Address
+            const asyncResolver = new PromiseResolver((status: ResolverStatus) => {
+                onAsyncStatus(status);
+                if (status === ResolverStatus.DONE && mounted.current) {
+                    setNfts(theNfts);
+                }
             });
 
-            if (nftOutputs?.outputs && nftOutputs?.outputs?.items.length > 0) {
-                for (const outputId of nftOutputs.outputs.items) {
-                    const output = await tangleCacheService.outputDetails(network, outputId);
-                    if (output && !output.metadata.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
-                        const nftOutput = output.output;
-                        const nftId = !HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero)
-                            ? nftOutput.nftId
-                            // NFT has Id 0 because it hasn't move, but we can compute it as a hash of the outputId
-                                : HexHelper.addPrefix(Converter.bytesToHex(
-                                    Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId)))
-                                ));
+            const nftOutputsPromise = tangleCacheService.nfts({ network, address: bech32Address }).then(nftOutputs => {
+                if (nftOutputs?.outputs && nftOutputs?.outputs?.items.length > 0) {
+                    for (const outputId of nftOutputs.outputs.items) {
+                        const outputPromise = tangleCacheService.outputDetails(network, outputId).then(output => {
+                            if (output && !output.metadata.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
+                                const nftOutput = output.output;
+                                const nftId = !HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero)
+                                    ? nftOutput.nftId
+                                    // NFT has Id 0 because it hasn't move,
+                                    // but we can compute it as a hash of the outputId
+                                        : HexHelper.addPrefix(Converter.bytesToHex(
+                                            Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId)))
+                                        ));
 
-                                theNfts.push({
-                                    id: nftId,
-                                    image: "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png"
-                                });
+                                        theNfts.push({
+                                            id: nftId,
+                                            image:
+                                                "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png"
+                                        });
+                            }
+                        });
+
+                        asyncResolver.enqueue(async () => outputPromise);
                     }
                 }
-            }
+            });
 
-            if (mounted.current) {
-                setNfts(theNfts);
-            }
+            asyncResolver.enqueue(async () => nftOutputsPromise);
         };
 
         fetchNfts();

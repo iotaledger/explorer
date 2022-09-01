@@ -3,6 +3,7 @@ import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { ResolverStatus } from "../../../helpers/promiseResolver";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import IAddressDetailsWithBalance from "../../../models/api/stardust/IAddressDetailsWithBalance";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -34,10 +35,22 @@ interface IAddressPageLocationProps {
     addressOutputIds: string[];
 }
 
+// extract this and use where needed
+interface PromiseResolverState {
+    /**
+     * The statuses for async calls.
+     */
+    asyncStatuses: {
+        [jobName: string]: ResolverStatus;
+    };
+}
+
+type State = AddressPageState & PromiseResolverState;
+
 /**
  * Component which will show the address page for stardust.
  */
-class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddressPageState> {
+class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>, State> {
     /**
      * The component context type.
      */
@@ -62,7 +75,9 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
-        this.state = {};
+        this.state = {
+            asyncStatuses: {}
+        };
     }
 
     /**
@@ -129,10 +144,14 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, balance, sigLockedBalance, outputResponse } = this.state;
+        const { bech32AddressDetails, balance, sigLockedBalance, outputResponse, asyncStatuses } = this.state;
 
         const networkId = this.props.match.params.network;
         const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
+
+        // Are async calls still in flight ?
+        const isLoading = Object.values(asyncStatuses).some(status => status !== ResolverStatus.DONE);
+        console.log("loading...", isLoading, asyncStatuses);
 
         return (
             <div className="addr">
@@ -196,6 +215,14 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                     <NftSection
                                         network={networkId}
                                         bech32Address={addressBech32}
+                                        onAsyncStatus={status => {
+                                            this.setState({
+                                                asyncStatuses: {
+                                                    ...asyncStatuses,
+                                                    "nfts": status
+                                                }
+                                            });
+                                        }}
                                     />
                                     {addressBech32 && (
                                         <TransactionHistory network={networkId} address={addressBech32} />
