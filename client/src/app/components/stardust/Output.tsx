@@ -356,17 +356,31 @@ class Output extends Component<OutputProps, OutputState> {
      * @param unlockCondition Unlock condition of output.
      * @returns The tooltip content.
      */
-    private getSpecialUnlockConditionContent(unlockCondition: UnlockConditionTypes): string {
+    private getSpecialUnlockConditionContent(unlockCondition: UnlockConditionTypes): React.ReactNode {
         if (unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) {
-            return `Storage Deposit Return Unlock Condition \n Return Amount: ${unlockCondition.amount} glow`;
+            return (
+                <React.Fragment>
+                    <span>Storage Deposit Return Unlock Condition</span> <br />
+                    <span>Return Amount: {unlockCondition.amount} glow</span>
+                </React.Fragment>
+            );
         } else if (unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE) {
             const time = DateHelper.format(DateHelper.milliseconds(unlockCondition.unixTime));
-            return `Expiration Unlock Condition \n Time: ${time}`;
+            return (
+                <React.Fragment>
+                    <span>Expiration Unlock Condition</span> <br />
+                    <span>Time: {time} </span>
+                </React.Fragment>
+            );
         } else if (unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE) {
             const time = DateHelper.format(DateHelper.milliseconds(unlockCondition.unixTime));
-            return `Timelock Unlock Condition \n Time: ${time}`;
+            return (
+                <React.Fragment>
+                    <span>Timelock Unlock Condition</span> <br />
+                    <span>Time: {time} </span>
+                </React.Fragment>
+            );
         }
-        return "";
     }
 
     /**
