@@ -36,7 +36,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
         showInfo: boolean
     ) => (
         <div className="balance">
-            <div className="row middle">
+            <div className="row balance-heading">
                 <div className="label">{label}</div>
                 {showInfo &&
                 <Tooltip tooltipContent={CONDITIONAL_BALANCE_INFO}>
@@ -65,7 +65,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                             </React.Fragment>
                         )}
                     </div>
-                ) : 0}
+                ) : <span className="margin-r-5">0</span>}
             </div>
         </div>
     );
