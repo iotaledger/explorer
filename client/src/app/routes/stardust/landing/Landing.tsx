@@ -3,7 +3,6 @@ import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { isShimmerNetwork } from "../../../../helpers/networkHelper";
-import { NumberHelper } from "../../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../../helpers/routeBuilder";
 import { INetwork } from "../../../../models/config/INetwork";
 import { CUSTOM } from "../../../../models/config/networkType";
@@ -14,8 +13,9 @@ import FeedInfo from "../../../components/FeedInfo";
 import Feeds from "../../../components/stardust/Feeds";
 import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
-import InfoSection from "../InfoSection";
+import AnalyticStats from "./AnalyticStats";
 import FeedFilters from "./FeedFilters";
+import InfoBox from "./InfoBox";
 import { getDefaultLandingState, LandingState } from "./LandingState";
 import "./Landing.scss";
 
@@ -66,40 +66,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const { tokenInfo } = this.context;
         const isShimmer = isShimmerNetwork(network);
 
-        const defaultInfoBox = (
-            <div className="main-info-boxes">
-                <div className="info-box">
-                    <span className="info-box--title">Blocks per sec
-                    </span>
-                    <div className="info-box--value">
-                        <span className="download-rate">
-                            {NumberHelper.roundTo(Number(itemsPerSecond), 1) || "--"}
-                        </span>
-                    </div>
-                </div>
-                <div className="info-box">
-                    <span className="info-box--title">Inclusion rate</span>
-                    <span className="info-box--value">
-                        {confirmedItemsPerSecondPercent}
-                    </span>
-                </div>
-                {!isShimmer && networkConfig.showMarket && (
-                    <div className="info-box">
-                        <span className="info-box--title">IOTA Market Cap</span>
-                        <span className="info-box--value">{marketCapCurrency}</span>
-                    </div>
-                )}
-                {!isShimmer && networkConfig.showMarket && (
-                    <div className="info-box">
-                        <span className="info-box--title">Price / MI</span>
-                        <span className="info-box--value">
-                            {priceCurrency}
-                        </span>
-                    </div>
-                )}
-            </div>
-        );
-
         return (
             <div className="landing-stardust">
                 <div className={classNames("header-wrapper", { "shimmer": isShimmer })}>
@@ -109,10 +75,17 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 <h2>{networkConfig.isEnabled ? "Explore network" : ""}</h2>
                                 <div className="network-name"><h1>{networkConfig.label}</h1></div>
                             </div>
-                            {defaultInfoBox}
+                            <InfoBox
+                                itemsPerSecond={itemsPerSecond}
+                                confirmedItemsPerSecondPercent={confirmedItemsPerSecondPercent}
+                                marketCapCurrency={marketCapCurrency}
+                                priceCurrency={priceCurrency}
+                                isShimmer={isShimmer}
+                                showMarket={networkConfig.showMarket ?? false}
+                            />
                         </div>
                     </div>
-                    <InfoSection analytics={networkAnalytics} tokenInfo={tokenInfo} />
+                    <AnalyticStats analytics={networkAnalytics} tokenInfo={tokenInfo} />
                 </div>
                 <div className={classNames("wrapper feeds-wrapper", { "shimmer": isShimmer })}>
                     <div className="inner">
