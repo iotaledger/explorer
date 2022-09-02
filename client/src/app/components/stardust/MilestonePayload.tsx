@@ -10,6 +10,7 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
+import DataToggle from "../DataToggle";
 import ReceiptPayload from "../stardust/ReceiptPayload";
 import milestoneMessage from "./../../../assets/modals/block/milestone-payload.json";
 import "./MilestonePayload.scss";
@@ -175,14 +176,17 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                             </div>
                         </div>
                         {metadata && (
-                            <React.Fragment>
-                                <div className="card--label">
+                            <div className="section--data">
+                                <div className="label">
                                     Metadata
                                 </div>
-                                <div className="card--value card--value__mono">
-                                    {metadata}
+                                <div className="value">
+                                    <DataToggle
+                                        sourceData={metadata}
+                                        withSpacedHex={true}
+                                    />
                                 </div>
-                            </React.Fragment>
+                            </div>
                         )}
                         {protocolParamsMilestoneOption && (
                             <React.Fragment>

@@ -1,6 +1,6 @@
-@import "./fonts";
-@import "./mixins";
-@import "./variables";
+@import './fonts';
+@import './mixins';
+@import './variables';
 
 button {
   @include font-size(16px);
@@ -36,7 +36,7 @@ button {
   }
 
   &.button--unstyled {
-    border: none;
+    border: 0;
     background-color: transparent;
 
     &:focus {

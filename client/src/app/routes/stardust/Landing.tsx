@@ -15,7 +15,7 @@ import { getDefaultValueFilter } from "../../../models/services/valueFilter";
 import { NetworkService } from "../../../services/networkService";
 import FeedInfo from "../../components/FeedInfo";
 import Feeds from "../../components/stardust/Feeds";
-import NetworkContext, { INetworkContextProps } from "../../context/NetworkContext";
+import NetworkContext from "../../context/NetworkContext";
 import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
 import InfoSection from "./InfoSection";
@@ -29,6 +29,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * The component context type.
      */
     public static contextType = NetworkContext;
+
+    /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
 
     /**
      * Create a new instance of Landing.
@@ -75,7 +80,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      */
     public async componentDidMount(): Promise<void> {
         await super.componentDidMount();
-        const { tokenInfo: { decimals } } = this.context as INetworkContextProps;
+        const { tokenInfo: { decimals } } = this.context;
         const unitMagnitude = UnitsHelper.calculateBest(Math.pow(10, decimals)) ?? "";
 
         const settings = this._settingsService.get();
@@ -109,7 +114,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
         const { network } = this.props.match.params;
         const isShimmer = isShimmerNetwork(network);
-        const { tokenInfo } = this.context as INetworkContextProps;
+        const { tokenInfo } = this.context;
 
         const defaultInfoBox = (
             <div className="main-info-boxes">
@@ -512,7 +517,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * Reset filters to default values
      */
     private resetFilters(): void {
-        const { tokenInfo: { decimals } } = this.context as INetworkContextProps;
+        const { tokenInfo: { decimals } } = this.context;
         const unitMagnitude = UnitsHelper.calculateBest(Math.pow(10, decimals)) ?? "";
 
         this.setState({
@@ -525,7 +530,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     }
 
     private transactionDropdown(type: "minimum" | "maximum"): ReactNode {
-        const { tokenInfo: { unit, subunit, decimals } } = this.context as INetworkContextProps;
+        const { tokenInfo: { unit, subunit, decimals } } = this.context;
         const unitMagnitude = UnitsHelper.calculateBest(Math.pow(10, decimals)) ?? "";
 
         return (
@@ -592,7 +597,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         );
     }
 }
-
 
 export default Landing;
 

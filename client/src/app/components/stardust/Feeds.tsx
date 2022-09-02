@@ -237,8 +237,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                     confirmedItemsPerSecond: confirmedItemsPerSecond >= 0 ? confirmedItemsPerSecond.toFixed(2) : "--",
                     confirmedItemsPerSecondPercent: confirmedRate > 0
                         ? `${confirmedRate.toFixed(2)}%` : "--",
-                    latestMilestoneIndex: this.state.latestMilestoneIndex ? this.state.latestMilestoneIndex :
-                        ips.latestMilestoneIndex,
+                    latestMilestoneIndex: this.state.latestMilestoneIndex ?? ips.latestMilestoneIndex,
                     // Increase values by +100 to add more area under the graph
                     itemsPerSecondHistory: (ips.itemsPerSecondHistory ?? []).map(v => v + 100)
                 });

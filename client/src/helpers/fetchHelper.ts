@@ -68,7 +68,7 @@ export class FetchHelper {
         const urlParams = [];
         for (const key in params) {
             if (params[key] !== null && params[key] !== undefined) {
-                urlParams.push(`${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
+                urlParams.push(`${encodeURIComponent(key.toString())}=${encodeURIComponent(params[key] as string)}`);
             }
         }
         return urlParams.length > 0 ? `?${urlParams.join("&")}` : "";

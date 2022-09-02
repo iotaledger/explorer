@@ -19,6 +19,7 @@
 
             .output-id--link {
                 display: flex;
+                margin-right: 2px;
 
                 a {
                     margin-right: 0px;
@@ -45,6 +46,11 @@
                 word-break: keep-all;
             }
         }
+    }
+
+    .unlock-condiiton-icon {
+        color: #FEC900;
+        font-size: 18px;
     }
 }
 

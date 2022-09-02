@@ -1,20 +1,22 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
-    NFT_ADDRESS_TYPE,
-    IImmutableAliasUnlockCondition,
-    IAliasAddress } from "@iota/iota.js-stardust";
+    NFT_ADDRESS_TYPE, IImmutableAliasUnlockCondition, IAliasAddress, INodeInfoBaseToken,
+    UnlockConditionTypes, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE,
+    TIMELOCK_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { DateHelper } from "../../../helpers/dateHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import CopyButton from "../CopyButton";
 import DataToggle from "../DataToggle";
+import Tooltip from "../Tooltip";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import Feature from "./Feature";
 import NativeToken from "./NativeToken";
@@ -31,6 +33,11 @@ class Output extends Component<OutputProps, OutputState> {
      * The component context type.
      */
     public static contextType = NetworkContext;
+
+    /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
 
     /**
      * Create a new instance of NewOutput.
@@ -52,6 +59,7 @@ class Output extends Component<OutputProps, OutputState> {
     public render(): ReactNode {
         const { outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId } = this.props;
         const { isExpanded, isFormattedBalance } = this.state;
+        const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
         const foundryId = this.buildFoundyId();
@@ -60,6 +68,23 @@ class Output extends Component<OutputProps, OutputState> {
             `${outputId.slice(0, -4)}` :
             `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
         const outputIdIndexPart = outputId.slice(-4);
+        const isSpecialCondition = this.hasSpecialCondition();
+
+        const specialUnlockCondition = (
+            output.type !== TREASURY_OUTPUT_TYPE && isSpecialCondition) && (
+                output.unlockConditions.map((unlockCondition, idx) => (
+                    <Tooltip key={idx} tooltipContent={this.getSpecialUnlockConditionContent(unlockCondition)}>
+                        <span className="material-icons unlock-condiiton-icon">
+                            {unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE &&
+                            "arrow_back"}
+                            {unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE &&
+                            "hourglass_bottom"}
+                            {unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE &&
+                            "schedule"}
+                        </span>
+                    </Tooltip>
+                ))
+        );
 
         const outputHeader = (
             <div
@@ -85,6 +110,7 @@ class Output extends Component<OutputProps, OutputState> {
                         )
                         <CopyButton copy={String(outputId)} />
                     </div>
+                    {specialUnlockCondition}
                 </div>
                 {showCopyAmount && (
                     <div className="card--value pointer amount-size row end">
@@ -95,7 +121,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 e.stopPropagation();
                             }}
                         >
-                            {formatAmount(amount, this.context.tokenInfo, !isFormattedBalance)}
+                            {formatAmount(amount, tokenInfo, !isFormattedBalance)}
                         </span>
                     </div>
                 )}
@@ -323,6 +349,54 @@ class Output extends Component<OutputProps, OutputState> {
 
              return `${aliasAddress}${serialNumberHex}${tokenSchemeTypeHex}`;
          }
+    }
+
+    /**
+     * Get tooltip content for special condition i.e SDRUC, EUC and TUC.
+     * @param unlockCondition Unlock condition of output.
+     * @returns The tooltip content.
+     */
+    private getSpecialUnlockConditionContent(unlockCondition: UnlockConditionTypes): React.ReactNode {
+        if (unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) {
+            return (
+                <React.Fragment>
+                    <span>Storage Deposit Return Unlock Condition</span> <br />
+                    <span>Return Amount: {unlockCondition.amount} glow</span>
+                </React.Fragment>
+            );
+        } else if (unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE) {
+            const time = DateHelper.format(DateHelper.milliseconds(unlockCondition.unixTime));
+            return (
+                <React.Fragment>
+                    <span>Expiration Unlock Condition</span> <br />
+                    <span>Time: {time} </span>
+                </React.Fragment>
+            );
+        } else if (unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE) {
+            const time = DateHelper.format(DateHelper.milliseconds(unlockCondition.unixTime));
+            return (
+                <React.Fragment>
+                    <span>Timelock Unlock Condition</span> <br />
+                    <span>Time: {time} </span>
+                </React.Fragment>
+            );
+        }
+    }
+
+    /**
+     * Check if output has special condition i.e SDRUC, EUC and TUC.
+     * @returns special condition exists.
+     */
+    private hasSpecialCondition(): boolean {
+        let specialUnlockConditionExists = false;
+        if (this.props.output.type !== TREASURY_OUTPUT_TYPE) {
+            specialUnlockConditionExists = this.props.output.unlockConditions.some(condition =>
+                condition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE ||
+                condition.type === EXPIRATION_UNLOCK_CONDITION_TYPE ||
+                condition.type === TIMELOCK_UNLOCK_CONDITION_TYPE
+            );
+        }
+        return specialUnlockConditionExists;
     }
 }
 

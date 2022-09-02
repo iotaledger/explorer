@@ -118,14 +118,14 @@ async function resolveLegacyDiff(
 
         const diffChainData = [];
 
-        const chainData = receipt.chainData();
+        const chainData: identityLegacy.DocumentDiff[] = receipt.chainData();
 
         for (let i = 0; i < chainData.length; i++) {
             document.merge(chainData[i]);
 
             const integrationMessage = {
                 message: receiptObj.chainData[i],
-                document: IdentityHelper.convertLegacyDocument(document.toJSON()),
+                document: IdentityHelper.convertLegacyDocument(document.toJSON() as Record<string, unknown>),
                 messageId: chainData[i].messageId
             };
             diffChainData.push(integrationMessage);

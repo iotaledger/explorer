@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import {
-    MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE
+    MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, INodeInfoBaseToken
 } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
@@ -38,6 +38,11 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
      * The component context type.
      */
     public static contextType = NetworkContext;
+
+    /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
 
     /**
      * API Client for tangle requests.
@@ -99,6 +104,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
     public render(): ReactNode {
         const network = this.props.match.params.network;
         const blockId = this.props.match.params.blockId;
+        const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
         const isMarketed = isMarketedNetwork(network);
 
         return (
@@ -211,7 +217,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                             >
                                                 {formatAmount(
                                                     this.state.transferTotal,
-                                                    this.context.tokenInfo,
+                                                    tokenInfo,
                                                     !this.state.isFormattedBalance
                                                 )}
                                             </span>

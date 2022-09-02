@@ -2,7 +2,7 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import "./FeedInfo.scss";
 
-export interface FeedInfoProps {
+interface FeedInfoProps {
     milestoneIndex?: number;
     frequencyTarget?: number;
 }

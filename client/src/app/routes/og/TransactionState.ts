@@ -64,7 +64,7 @@ export interface TransactionState {
     /**
      * The decoded message.
      */
-    messageType?: "Trytes" | "ASCII" | "JSON";
+    messageType?: "Trytes" | "ascii" | "JSON";
 
     /**
      * Does the decoded message span transactions.

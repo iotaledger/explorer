@@ -79,7 +79,7 @@ export async function get(
         return {};
     }
     if (process.env.FAKE_NFT_DETAILS === "true") {
-        return Promise.resolve(getMockNftDetails());
+        return getMockNftDetails();
     }
-    return Promise.resolve({});
+    return {};
 }

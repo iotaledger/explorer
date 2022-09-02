@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable unicorn/prefer-top-level-await */
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
 import App from "./app/App";
 import { AppRouteProps } from "./app/AppRouteProps";
@@ -34,22 +33,21 @@ const config: IConfiguration = {
 };
 
 initialiseServices().then(() => {
-    ReactDOM.render(
-        (
-            <BrowserRouter>
-                <Route
-                    exact={true}
-                    path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
-                    component={(props: RouteComponentProps<AppRouteProps>) => (
-                        <App {...props} config={config} />)}
-                />
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const container = document.querySelector("#root")!;
+    const root = createRoot(container);
+    root.render(
+        <BrowserRouter>
+            <Route
+                exact={true}
+                path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
+                component={(props: RouteComponentProps<AppRouteProps>) => (
+                    <App {...props} config={config} />)}
+            />
 
-            </BrowserRouter>
-        ),
-        document.querySelector("#root")
+        </BrowserRouter>
     );
-})
-    .catch(err => console.error(err));
+}).catch(err => console.error(err));
 
 /**
  * Register all the services.

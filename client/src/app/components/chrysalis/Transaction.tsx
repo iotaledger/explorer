@@ -30,9 +30,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                             {this.props.messageId}
                         </Link>
                     </td>
-                    <td>{this.props.date
-                        ? (this.props.date)
-                        : <Spinner />}
+                    <td>{this.props.date ?? <Spinner />}
                     </td>
                     <td>{this.props.inputs}</td>
                     <td>{this.props.outputs}</td>
@@ -69,9 +67,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                     </div>
                     <div className="field">
                         <div className="label">Date</div>
-                        <div className="value">{this.props.date
-                            ? (this.props.date)
-                            : <Spinner />}
+                        <div className="value">{this.props.date ?? <Spinner />}
                         </div>
                     </div>
                     <div className="field">

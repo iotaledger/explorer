@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-useless-fragment */
 import { UnitsHelper } from "@iota/iota.js";
 import { Converter } from "@iota/util.js";
 import React, { ReactNode } from "react";
@@ -193,6 +194,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const {
+            itemCount, selectedFeedItem, filter, isActive,
+            itemsPerSecond, confirmedItemsPerSecond, confirmedItemsPerSecondPercent
+        } = this.state;
         if (this._darkMode !== this._settingsService.get().darkMode) {
             this._darkMode = this._settingsService.get().darkMode;
             this.styleConnections();
@@ -209,7 +214,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             <input
                                 className="input form-input-long"
                                 type="text"
-                                value={this.state.filter}
+                                value={filter}
                                 onChange={e => this.setState(
                                     {
                                         filter: this._networkConfig?.protocolVersion === OG
@@ -232,97 +237,115 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 {this._networkConfig?.protocolVersion === OG ? "Transactions" : "Messages"}
                             </div>
                             <div className="card--value">
-                                {this.state.itemCount}
+                                {itemCount}
                             </div>
                             <div className="card--label">
                                 {this._networkConfig?.protocolVersion === CHRYSALIS ? "MPS / CMPS" : "TPS / CTPS"}
                             </div>
                             <div className="card--value">
-                                {this.state.itemsPerSecond} / {this.state.confirmedItemsPerSecond}
+                                {itemsPerSecond} / {confirmedItemsPerSecond}
                             </div>
                             <div className="card--label">
                                 {this._networkConfig?.protocolVersion === CHRYSALIS
                                     ? "Referenced Rate" : "Confirmation Rate"}
                             </div>
                             <div className="card--value">
-                                {this.state.confirmedItemsPerSecondPercent}
+                                {confirmedItemsPerSecondPercent}
                             </div>
                         </div>
-                        {this.state.selectedFeedItem && (
-                            <React.Fragment>
+                        {selectedFeedItem && (
+                            <>
                                 <div className="card--header">
                                     <h2>Selected</h2>
                                 </div>
                                 <div className="card--content">
-                                    <div className="card--label">
-                                        {this._networkConfig?.protocolVersion === OG ? "Transaction" : "Message"}
-                                    </div>
-                                    <div className="card--value overflow-ellipsis">
-                                        <a
-                                            className="button"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            href={
-                                                `${window.location.origin}${RouteBuilder.buildItem(
-                                                    this._networkConfig, this.state.selectedFeedItem.id)}`
-                                            }
-                                        >
-                                            {this.state.selectedFeedItem.id}
-                                        </a>
-                                    </div>
-                                    {this._networkConfig?.protocolVersion === OG && (
-                                        <React.Fragment>
-                                            {this.state.selectedFeedItem?.properties?.Address && (
-                                                <React.Fragment>
-                                                    <div className="card--label">
-                                                        Address
-                                                    </div>
-                                                    <div className="card--value overflow-ellipsis">
-                                                        <a
-                                                            className="button"
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            href={
-                                                                `${window.location.origin
-                                                                }/${this.props.match.params.network
-                                                                }/address/${this
-                                                                    .state.selectedFeedItem?.properties.Address}`
-                                                            }
-                                                        >
-                                                            {this.state.selectedFeedItem?.properties.Address as string}
-                                                        </a>
-                                                    </div>
-                                                </React.Fragment>
-                                            )}
-                                            {this.state.selectedFeedItem?.properties?.Bundle && (
-                                                <React.Fragment>
-                                                    <div className="card--label">
-                                                        Bundle
-                                                    </div>
-                                                    <div className="card--value overflow-ellipsis">
-                                                        <a
-                                                            className="button"
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            href={
-                                                                `${window.location.origin
-                                                                }/${this.props.match.params.network
-                                                                }/bundle/${this
-                                                                    .state.selectedFeedItem?.properties.Bundle}`
-                                                            }
-                                                        >
-                                                            {this.state.selectedFeedItem?.properties.Bundle as string}
-                                                        </a>
-                                                    </div>
-                                                </React.Fragment>
-                                            )}
-                                        </React.Fragment>
-                                    )}
-                                    {this.state.selectedFeedItem?.properties?.Tag &&
-                                        this.state.selectedFeedItem.metaData?.milestone === undefined && (
-                                            <React.Fragment>
+                                    <>
+                                        <div className="card--label">
+                                            {this._networkConfig?.protocolVersion === OG ? "Transaction" : "Message"}
+                                        </div>
+                                        <div className="card--value overflow-ellipsis">
+                                            <a
+                                                className="button"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                href={
+                                                    `${window.location.origin}${RouteBuilder.buildItem(
+                                                        this._networkConfig, selectedFeedItem.id)}`
+                                                }
+                                            >
+                                                {selectedFeedItem.id}
+                                            </a>
+                                        </div>
+                                        {this._networkConfig?.protocolVersion === OG &&
+                                                selectedFeedItem?.properties?.Address && (
+                                                    <>
+                                                        <div className="card--label">
+                                                            Address
+                                                        </div>
+                                                        <div className="card--value overflow-ellipsis">
+                                                            <a
+                                                                className="button"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                href={
+                                                                    `${window.location.origin
+                                                        }/${this.props.match.params.network
+                                                        }/address/${selectedFeedItem?.properties
+                                                        .Address as string}`
+                                                                }
+                                                            >
+                                                                {selectedFeedItem?.properties.Address as string}
+                                                            </a>
+                                                        </div>
+                                                    </>
+                                                )}
+                                        {this._networkConfig?.protocolVersion === OG &&
+                                                selectedFeedItem?.properties?.Bundle && (
+                                                    <>
+                                                        <div className="card--label">
+                                                            Bundle
+                                                        </div>
+                                                        <div className="card--value overflow-ellipsis">
+                                                            <a
+                                                                className="button"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                href={
+                                                                    `${window.location.origin
+                                                        }/${this.props.match.params.network
+                                                        }/bundle/${selectedFeedItem?.properties
+                                                        .Bundle as string}`
+                                                                }
+                                                            >
+                                                                {selectedFeedItem?.properties.Bundle as string}
+                                                            </a>
+                                                        </div>
+                                                    </>
+                                                )}
+                                        {selectedFeedItem?.properties?.Tag &&
+                                                selectedFeedItem.metaData?.milestone === undefined && (
+                                                    <>
+                                                        <div className="card--label">
+                                                            Tag
+                                                        </div>
+                                                        <div className="card--value overflow-ellipsis">
+                                                            <a
+                                                                className="button"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                href={`${window.location.origin}/
+                                                                ${this.props.match.params.network
+                                                                }/tag/${selectedFeedItem?.properties.Tag as string}`}
+                                                            >
+                                                                {selectedFeedItem?.properties.Tag as string}
+                                                            </a>
+                                                        </div>
+                                                    </>
+                                                )}
+                                        {selectedFeedItem?.properties?.Index && (
+                                            <>
                                                 <div className="card--label">
-                                                    Tag
+                                                    Index UTF8
                                                 </div>
                                                 <div className="card--value overflow-ellipsis">
                                                     <a
@@ -331,75 +354,56 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                         rel="noopener noreferrer"
                                                         href={
                                                             `${window.location.origin}/${this.props.match.params.network
-                                                            }/tag/${this.state.selectedFeedItem?.properties.Tag}`
+                                                        }/indexed/${selectedFeedItem?.properties.Index as string}`
                                                         }
                                                     >
-                                                        {this.state.selectedFeedItem?.properties.Tag as string}
+                                                        {Converter.hexToUtf8(
+                                                            selectedFeedItem?.properties.Index as string
+                                                        )}
                                                     </a>
                                                 </div>
-                                            </React.Fragment>
-                                        )}
-                                    {this.state.selectedFeedItem?.properties?.Index && (
-                                        <React.Fragment>
-                                            <div className="card--label">
-                                                Index UTF8
-                                            </div>
-                                            <div className="card--value overflow-ellipsis">
-                                                <a
-                                                    className="button"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    href={
-                                                        `${window.location.origin}/${this.props.match.params.network
-                                                        }/indexed/${this.state.selectedFeedItem?.properties.Index}`
-                                                    }
-                                                >
-                                                    {Converter.hexToUtf8(
-                                                        this.state.selectedFeedItem?.properties.Index as string
-                                                    )}
-                                                </a>
-                                            </div>
-                                            <div className="card--label">
-                                                Index Hex
-                                            </div>
-                                            <div className="card--value overflow-ellipsis">
-                                                <a
-                                                    className="button"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    href={
-                                                        `${window.location.origin}/${this.props.match.params.network
-                                                        }/indexed/${this.state.selectedFeedItem?.properties.Index}`
-                                                    }
-                                                >
-                                                    {this.state.selectedFeedItem?.properties.Index as string}
-                                                </a>
-                                            </div>
-                                        </React.Fragment>
-                                    )}
-                                    {this.state.selectedFeedItem.metaData?.milestone !== undefined && (
-                                        <React.Fragment>
-                                            <div className="card--label">
-                                                Milestone
-                                            </div>
-                                            <div className="card--value">
-                                                {this.state.selectedFeedItem.metaData.milestone}
-                                            </div>
-                                        </React.Fragment>
-                                    )}
-                                    {this.state.selectedFeedItem?.value !== undefined &&
-                                        this.state.selectedFeedItem.metaData?.milestone === undefined && (
-                                            <React.Fragment>
                                                 <div className="card--label">
-                                                    Value
+                                                    Index Hex
+                                                </div>
+                                                <div className="card--value overflow-ellipsis">
+                                                    <a
+                                                        className="button"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        href={
+                                                            `${window.location.origin}/${this.props.match.params.network
+                                                        }/indexed/${selectedFeedItem?.properties.Index as string}`
+                                                        }
+                                                    >
+                                                        {selectedFeedItem?.properties.Index as string}
+                                                    </a>
+                                                </div>
+                                            </>
+                                        )}
+                                        {selectedFeedItem.metaData?.milestone !== undefined && (
+                                            <>
+                                                <div className="card--label">
+                                                    Milestone
                                                 </div>
                                                 <div className="card--value">
-                                                    {UnitsHelper.formatBest(this.state.selectedFeedItem?.value)}
+                                                    {selectedFeedItem.metaData.milestone}
                                                 </div>
-                                            </React.Fragment>
+                                            </>
                                         )}
+                                        {selectedFeedItem?.value !== undefined &&
+                                                selectedFeedItem.metaData?.milestone === undefined && (
+                                                    <>
+                                                        <div className="card--label">
+                                                            Value
+                                                        </div>
+                                                        <div className="card--value">
+                                                            {UnitsHelper.formatBest(selectedFeedItem?.value)}
+                                                        </div>
+                                                    </>
+                                                )}
+                                    </>
                                 </div>
-                            </React.Fragment>
+                            </>
                         )}
                     </div>
                     <div className="graph-border">
@@ -419,7 +423,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     type="button"
                                     onClick={() => this.toggleActivity()}
                                 >
-                                    {this.state.isActive
+                                    {isActive
                                         ? <span className="material-icons">pause</span>
                                         : <span className="material-icons">play_arrow</span>}
                                 </button>
@@ -437,7 +441,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 Pending
                             </div>
                             {this._networkConfig?.protocolVersion === CHRYSALIS && (
-                                <React.Fragment>
+                                <>
                                     <div
                                         className="visualizer--key visualizer--key__value referenced"
                                     >
@@ -453,10 +457,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     >
                                         Conflicting
                                     </div>
-                                </React.Fragment>
+                                </>
                             )}
                             {this._networkConfig?.protocolVersion === OG && (
-                                <React.Fragment>
+                                <>
                                     <div
                                         className="visualizer--key visualizer--key__value confirmed-value"
                                     >
@@ -467,7 +471,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     >
                                         Zero Confirmed
                                     </div>
-                                </React.Fragment>
+                                </>
                             )}
                             <div className="visualizer--key visualizer--key__value milestone">
                                 Milestone
@@ -593,7 +597,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 }
             });
 
-            events.mouseLeave(node => {
+            events.mouseLeave(_node => {
                 if (!this.state.selectedFeedItem) {
                     this.styleConnections();
                 }

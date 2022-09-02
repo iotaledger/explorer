@@ -59,7 +59,7 @@ const AssociatedOutput: React.FC<AssociatedOutputProps> = ({ network, associated
 
     const outputTableRow = (
         <tr>
-            <td className="card">
+            <td className="card overflow-unset">
                 <Output
                     key={outputId}
                     outputId={outputId}

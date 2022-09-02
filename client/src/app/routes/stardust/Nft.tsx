@@ -31,6 +31,11 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
     public static contextType = NetworkContext;
 
     /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
+    /**
      * API Client for tangle requests.
      */
     private readonly _tangleCacheService: StardustTangleCacheService;
@@ -54,7 +59,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        const bech32Hrp = this.context.bech32Hrp;
+        const bech32Hrp: string = this.context.bech32Hrp;
         const network = this.props.match.params.network;
         const nftAddress = this.props.match.params.nftAddress;
         const nftAddressDetails = Bech32AddressHelper.buildAddress(bech32Hrp, nftAddress);

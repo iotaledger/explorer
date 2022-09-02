@@ -3,7 +3,6 @@
 .tooltip {
     position: relative;
     display: flex;
-    align-items: center;
 
     .wrap {
         visibility: hidden;
@@ -24,6 +23,7 @@
         text-align: center;
         white-space: break-spaces;
         font-family: $inter;
+        word-break: keep-all;
 
         .arrow {
             background: var(--modal-color);

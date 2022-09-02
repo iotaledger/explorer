@@ -14,5 +14,6 @@ const protocolVersions = [
  */
 export type ProtocolVersion = (typeof protocolVersions)[number];
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 export const isValidProtocol = (p: any): p is ProtocolVersion => protocolVersions.includes(p);
 

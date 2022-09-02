@@ -29,17 +29,17 @@ export class NameHelper {
     public static getOutputTypeName(type: number): string {
         switch (type) {
             case BASIC_OUTPUT_TYPE:
-                return "Basic Output";
+                return "Basic";
             case ALIAS_OUTPUT_TYPE:
-                return "Alias Output";
+                return "Alias";
             case FOUNDRY_OUTPUT_TYPE:
-                return "Foundry Output";
+                return "Foundry";
             case NFT_OUTPUT_TYPE:
-                return "NFT Output";
+                return "NFT";
             case TREASURY_OUTPUT_TYPE:
-                return "Treasury Output";
+                return "Treasury";
             default:
-                return "Unknown Output";
+                return "Unknown";
         }
     }
 

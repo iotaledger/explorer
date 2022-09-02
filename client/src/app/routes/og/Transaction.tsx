@@ -710,7 +710,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
 
                                 const spanMessage = TrytesHelper.decodeMessage(combinedMessages);
 
-                                if ((spanMessage.messageType === "ASCII" ||
+                                if ((spanMessage.messageType === "ascii" ||
                                     spanMessage.messageType === "JSON") &&
                                     spanMessage.message !== this.state.message) {
                                     message = spanMessage.message;
