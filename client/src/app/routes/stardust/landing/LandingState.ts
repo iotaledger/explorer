@@ -1,7 +1,5 @@
-import { Magnitudes } from "@iota/iota.js-stardust";
 import { INetwork } from "../../../../models/config/INetwork";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
-import { getFilterFieldDefaults, FilterField } from "../../../../models/services/filterField";
 import { CurrencyState } from "../../../components/CurrencyState";
 import { FeedsState } from "../../../components/FeedsState";
 
@@ -32,59 +30,19 @@ export interface LandingState extends CurrencyState, FeedsState {
     priceCurrency: string;
 
     /**
-     * Lower limit filter of the transactions value.
+     * The items from feed unfiltered.
      */
-    minValue: string;
-
-    /**
-     * The unit type.
-     */
-    minMagnitude: Magnitudes;
-
-    /**
-     * Upper limit filter of the transactions value.
-     */
-    maxValue: string;
-
-    /**
-     * The unit type.
-     */
-    maxMagnitude: Magnitudes;
-
-    /**
-     * Filter specific value types.
-     */
-    filterFields: FilterField[];
+    items: IFeedItem[];
 
     /**
      * The items of the feed that are filtered in.
      */
     currentItems: IFeedItem[];
-
-    /**
-     * Is the blocks feed paused.
-     */
-    isFeedPaused: boolean;
-
-    /**
-     * Is the filter of blocks opened.
-     */
-    isFilterExpanded: boolean;
-
-    /**
-     * Blocks snapshot when feed is paused.
-     */
-    frozenBlocks: IFeedItem[];
 }
 
 export const getDefaultLandingState = (networkConfig: INetwork): LandingState => (
     {
         networkConfig,
-        minValue: "",
-        minMagnitude: "",
-        maxValue: "",
-        maxMagnitude: "",
-        filterFields: getFilterFieldDefaults(networkConfig.protocolVersion),
         itemsPerSecond: "--",
         confirmedItemsPerSecond: "--",
         confirmedItemsPerSecondPercent: "--",
@@ -93,13 +51,11 @@ export const getDefaultLandingState = (networkConfig: INetwork): LandingState =>
         marketCapCurrency: "--",
         priceEUR: 0,
         priceCurrency: "--",
+        items: [],
         currentItems: [],
-        frozenBlocks: [],
         milestones: [],
         currency: "USD",
-        currencies: [],
-        isFeedPaused: false,
-        isFilterExpanded: false
+        currencies: []
     }
 );
 

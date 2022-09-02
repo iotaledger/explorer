@@ -1,4 +1,3 @@
-import { Magnitudes, UnitsHelper } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
@@ -10,17 +9,15 @@ import { INetwork } from "../../../../models/config/INetwork";
 import { CUSTOM } from "../../../../models/config/networkType";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
-import { getFilterFieldDefaults } from "../../../../models/services/filterField";
-import { IFilterSettings } from "../../../../models/services/stardust/IFilterSettings";
 import { NetworkService } from "../../../../services/networkService";
 import FeedInfo from "../../../components/FeedInfo";
 import Feeds from "../../../components/stardust/Feeds";
 import NetworkContext from "../../../context/NetworkContext";
-import "./Landing.scss";
 import { LandingRouteProps } from "../../LandingRouteProps";
 import InfoSection from "../InfoSection";
+import FeedFilters from "./FeedFilters";
 import { getDefaultLandingState, LandingState } from "./LandingState";
-import { getFilterAppliers } from "./LandingUtils";
+import "./Landing.scss";
 
 /**
  * Component which will show the landing page.
@@ -55,38 +52,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     }
 
     /**
-     * The component mounted.
-     */
-    public async componentDidMount(): Promise<void> {
-        await super.componentDidMount();
-        const { tokenInfo: { decimals } } = this.context;
-        const unitMagnitude = UnitsHelper.calculateBest(Math.pow(10, decimals)) ?? "";
-
-        const settings = this._settingsService.get();
-
-        let filterSettings: IFilterSettings | undefined;
-        if (this._networkConfig && settings.filters) {
-            filterSettings = settings.filters[this._networkConfig.network];
-        }
-
-        this.setState({
-            minValue: filterSettings?.valueMinimum ?? "0",
-            minMagnitude: filterSettings?.valueMinimumMagnitude ?? "",
-            maxValue: filterSettings?.valueMaximum ?? "1000",
-            maxMagnitude: filterSettings?.valueMaximumMagnitude ?? unitMagnitude,
-            filterFields: filterSettings?.valuesFilter ??
-                getFilterFieldDefaults(this._networkConfig?.protocolVersion ?? "stardust")
-        });
-    }
-
-    /**
      * Render the component.
      * @returns The node to render.
      */
     public render(): ReactNode {
         const {
-            networkConfig, marketCapCurrency, priceCurrency,
-            filterFields, currentItems, isFeedPaused, isFilterExpanded,
+            networkConfig, marketCapCurrency, priceCurrency, items, currentItems,
             itemsPerSecond, confirmedItemsPerSecondPercent, latestMilestoneIndex,
             networkAnalytics
         } = this.state;
@@ -150,93 +121,14 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 <div className="feed section">
                                     <div className="section--header row space-between padding-l-8">
                                         <h2>Latest blocks</h2>
-                                        <div className="feed--actions">
-                                            <button
-                                                className="button--unstyled"
-                                                type="button"
-                                                onClick={() => {
-                                                    this.setState({
-                                                        isFeedPaused: !isFeedPaused,
-                                                        frozenBlocks: currentItems
-                                                    });
-                                                }}
-                                            >
-                                                {isFeedPaused
-                                                    ? <span className="material-icons">play_arrow</span>
-                                                    : <span className="material-icons">pause</span>}
-                                            </button>
-                                            <div className="filters-button-wrapper">
-                                                <button
-                                                    type="button"
-                                                    className="button--unstyled toggle-filters-button"
-                                                    onClick={() => {
-                                                        this.setState({ isFilterExpanded: !isFilterExpanded });
-                                                    }}
-                                                >
-                                                    <span className="material-icons">tune</span>
-                                                </button>
-                                                <div className="filters-button-wrapper__counter">
-                                                    {filterFields.filter(field => field.isEnabled).length}
-                                                </div>
-                                            </div>
-                                            {isFilterExpanded && (
-                                                <div className="filter-wrapper">
-                                                    <div className="filter">
-                                                        <div className="filter-header row space-between middle">
-                                                            <button
-                                                                className="button--unstyled"
-                                                                type="button"
-                                                                onClick={() => this.resetFilters()}
-                                                            >
-                                                                Reset
-                                                            </button>
-                                                            <span>Payload Filter</span>
-                                                            <button
-                                                                className="done-button"
-                                                                type="button"
-                                                                onClick={() => this.setState({
-                                                                    isFilterExpanded: false
-                                                                })}
-                                                            >
-                                                                Done
-                                                            </button>
-                                                        </div>
-
-                                                        <div className="filter-content">
-                                                            {filterFields.map(field => (
-                                                                <React.Fragment key={field.label}>
-                                                                    <label >
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={field.isEnabled}
-                                                                            onChange={
-                                                                                () => this.toggleFilter(field.label)
-                                                                            }
-                                                                        />
-                                                                        {field.label}
-                                                                    </label>
-                                                                    {networkConfig.protocolVersion ===
-                                                                            STARDUST &&
-                                                                            field.label === "Transaction" &&
-                                                                            field.isEnabled && (
-                                                                            <div className="row">
-                                                                                {this.transactionDropdown("minimum")}
-                                                                                {this.transactionDropdown("maximum")}
-                                                                            </div>
-                                                                    )}
-                                                                </React.Fragment>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                    <div
-                                                        className="filter--bg"
-                                                        onClick={() => {
-                                                            this.setState({ isFilterExpanded: !isFilterExpanded });
-                                                        }}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
+                                        <FeedFilters
+                                            networkConfig={networkConfig}
+                                            settingsService={this._settingsService}
+                                            items={items}
+                                            setFilteredItems={filteredItems => {
+                                                this.setState({ currentItems: filteredItems });
+                                            }}
+                                        />
                                     </div>
                                     <FeedInfo
                                         milestoneIndex={latestMilestoneIndex}
@@ -339,154 +231,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      */
     protected itemsUpdated(newItems: IFeedItem[]): void {
         super.itemsUpdated(newItems);
-        this.applyFilters();
-    }
-
-    /**
-     * Filter the items and update the feed.
-     */
-    private applyFilters(): void {
-        if (this._isMounted && this._feedClient) {
-            const minLimit = UnitsHelper.convertUnits(
-                Number.parseFloat(this.state.minValue),
-                this.state.minMagnitude,
-                ""
-            );
-            const maxLimit = UnitsHelper.convertUnits(
-                Number.parseFloat(this.state.maxValue),
-                this.state.maxMagnitude,
-                ""
-            );
-            const filterAppliers = getFilterAppliers(minLimit, maxLimit).filter(applier => (
-                this.state.filterFields.some(field => applier.payloadType === field.label && field.isEnabled))
-            );
-            const itemsToFilter = this.state.isFeedPaused ? this.state.frozenBlocks : this._feedClient.getItems();
-
-            const currentItems = itemsToFilter.filter(
-                item => filterAppliers.some(applier => applier.apply(item))
-            ).slice(0, 10);
-
-            this.setState({ currentItems });
+        if (this._feedClient) {
+            this.setState({
+                items: this._feedClient.getItems()
+            });
         }
-    }
-
-    /**
-     * Update the minimum filter.
-     * @param min The min value from the form.
-     */
-    private updateMinimum(min: string): void {
-        const val = Number.parseFloat(min);
-
-        if (!Number.isNaN(val)) {
-            this.setState({ minValue: val.toString() }, async () => this.updateFilters());
-        } else {
-            this.setState({ minValue: "" });
-        }
-    }
-
-    /**
-     * Update the maximum filter.
-     * @param max The max value from the form.
-     */
-    private updateMaximum(max: string): void {
-        const val = Number.parseFloat(max);
-
-        if (!Number.isNaN(val)) {
-            this.setState({ maxValue: val.toString() }, async () => this.updateFilters());
-        } else {
-            this.setState({ maxValue: "" });
-        }
-    }
-
-    /**
-     * Update the transaction feeds.
-     */
-    private async updateFilters(): Promise<void> {
-        if (this._isMounted && this._networkConfig) {
-            const settings = this._settingsService.get();
-
-            settings.filters = settings.filters ?? {};
-            settings.filters[this._networkConfig?.network] = {
-                valuesFilter: this.state.filterFields,
-                valueMinimum: this.state.minValue,
-                valueMinimumMagnitude: this.state.minMagnitude,
-                valueMaximum: this.state.maxValue,
-                valueMaximumMagnitude: this.state.maxMagnitude
-            };
-
-            this._settingsService.save();
-            this.applyFilters();
-        }
-    }
-
-    /**
-     * Enable or disable the payload type to show in feed.
-     * @param payloadType The payload type to toggle.
-     */
-    private toggleFilter(payloadType: string): void {
-        const filterFields = this.state.filterFields.map(field => {
-            if (field.label === payloadType) {
-                field.isEnabled = !field.isEnabled;
-            }
-            return field;
-        });
-        this.setState({ filterFields }, async () => this.updateFilters());
-    }
-
-    /**
-     * Reset filters to default values
-     */
-    private resetFilters(): void {
-        const { tokenInfo: { decimals } } = this.context;
-        const unitMagnitude = UnitsHelper.calculateBest(Math.pow(10, decimals)) ?? "";
-
-        this.setState({
-            minValue: "0",
-            minMagnitude: "",
-            maxValue: "10000",
-            maxMagnitude: unitMagnitude,
-            filterFields: this.state.filterFields.map(field => ({ ...field, isEnabled: true }))
-        }, async () => this.updateFilters());
-    }
-
-    private transactionDropdown(type: "minimum" | "maximum"): ReactNode {
-        const { tokenInfo: { unit, subunit, decimals } } = this.context;
-        const unitMagnitude = UnitsHelper.calculateBest(Math.pow(10, decimals)) ?? "";
-
-        return (
-            <div className="col">
-                <span className="label margin-b-2">
-                    {type === "minimum" ? "Min value" : "Max value"}
-                </span>
-                <span className="filter--value">
-                    <input
-                        type="text"
-                        className="input-plus"
-                        value={type === "minimum" ? this.state.minValue : this.state.maxValue}
-                        onChange={e => (type === "minimum" ?
-                                        this.updateMinimum(e.target.value) :
-                                        this.updateMaximum(e.target.value))}
-                    />
-                    <div className="select-wrapper">
-                        <select
-                            className="select-plus"
-                            value={type === "minimum" ?
-                                this.state.minMagnitude :
-                                this.state.maxMagnitude}
-                            onChange={e => (type === "minimum" ?
-                                            this.setState({ minMagnitude: e.target.value as Magnitudes },
-                                                async () => this.updateFilters()) :
-                                this.setState({ maxMagnitude: e.target.value as Magnitudes },
-                                    async () => this.updateFilters()))}
-                        >
-                            {subunit && (<option value="">{subunit}</option>)}
-                            <option value={unitMagnitude}>{unit}</option>
-                        </select>
-                        <span className="material-icons">arrow_drop_down</span>
-                    </div>
-                </span>
-            </div>
-        );
     }
 }
 
