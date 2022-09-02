@@ -8,7 +8,7 @@ import { getFilterFieldDefaults } from "../../../../models/services/filterField"
 import { IFilterSettings } from "../../../../models/services/stardust/IFilterSettings";
 import { SettingsService } from "../../../../services/settingsService";
 import NetworkContext from "../../../context/NetworkContext";
-import { getFilterAppliers } from "./LandingUtils";
+import { getFilterAppliers } from "./FeedFilterUtils";
 import "./FeedFilters.scss";
 
 interface FeedFiltersProps {
