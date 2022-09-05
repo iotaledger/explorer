@@ -12,7 +12,7 @@ import { getFilterFieldDefaults } from "../../../models/services/filterField";
 import { IFilterSettings } from "../../../models/services/IFilterSettings";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/chrysalis/Feeds";
-import FeedInfo from "../../components/FeedInfo";
+import FeedMilestoneInfo from "../../components/FeedMilestoneInfo";
 import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
 import { LandingState } from "./LandingState";
@@ -257,7 +257,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         </div>
                                     </div>
                                     {isLatestMilestoneFeedInfoEnabled && (
-                                        <FeedInfo
+                                        <FeedMilestoneInfo
                                             milestoneIndex={this.state.latestMilestoneIndex}
                                             frequencyTarget={this._networkConfig?.milestoneInterval}
                                         />

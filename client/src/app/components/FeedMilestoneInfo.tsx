@@ -1,13 +1,13 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import "./FeedInfo.scss";
+import "./FeedMilestoneInfo.scss";
 
-interface FeedInfoProps {
+interface FeedMilestoneInfoProps {
     milestoneIndex?: number;
     frequencyTarget?: number;
 }
 
-const FeedInfo: React.FC<FeedInfoProps> = ({ milestoneIndex, frequencyTarget }) => {
+const FeedMilestoneInfo: React.FC<FeedMilestoneInfoProps> = ({ milestoneIndex, frequencyTarget }) => {
     const [from, setFrom] = useState<moment.Moment | undefined>();
     const [seconds, setSeconds] = useState<number | undefined>();
 
@@ -45,9 +45,9 @@ const FeedInfo: React.FC<FeedInfoProps> = ({ milestoneIndex, frequencyTarget }) 
     );
 };
 
-FeedInfo.defaultProps = {
+FeedMilestoneInfo.defaultProps = {
     frequencyTarget: undefined,
     milestoneIndex: undefined
 };
 
-export default FeedInfo;
+export default FeedMilestoneInfo;

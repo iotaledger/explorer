@@ -12,7 +12,7 @@ import { STARDUST } from "../../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../../../models/feed/IFeedItemMetadata";
 import { NetworkService } from "../../../../services/networkService";
-import FeedInfo from "../../../components/FeedInfo";
+import FeedMilestoneInfo from "../../../components/FeedMilestoneInfo";
 import Feeds from "../../../components/stardust/Feeds";
 import Tooltip from "../../../components/Tooltip";
 import NetworkContext from "../../../context/NetworkContext";
@@ -196,7 +196,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     }}
                                                 />
                                             </div>
-                                            <FeedInfo
+                                            <FeedMilestoneInfo
                                                 milestoneIndex={latestMilestoneIndex}
                                                 frequencyTarget={networkConfig.milestoneInterval}
                                             />
