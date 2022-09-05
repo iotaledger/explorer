@@ -16,7 +16,7 @@ import Bech32Address from "../../components/stardust/Bech32Address";
 import Feature from "../../components/stardust/Feature";
 import NetworkContext from "../../context/NetworkContext";
 import { NftRouteProps } from "../NftRouteProps";
-import mainMessage from "./../../../assets/modals/nft/main-header.json";
+import mainMessage from "./../../../assets/modals/stardust/nft/main-header.json";
 import Modal from "./../../components/Modal";
 import "./Nft.scss";
 import { NftState } from "./NftState";

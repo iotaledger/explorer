@@ -2,7 +2,7 @@
 import { TRANSACTION_PAYLOAD_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import transactionPayloadMessage from "../../../assets/modals/transaction/transaction-payload.json";
+import transactionPayloadMessage from "../../../assets/modals/stardust/transaction/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";

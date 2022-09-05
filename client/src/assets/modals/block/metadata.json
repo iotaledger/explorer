@@ -1,4 +1,0 @@
-{
-    "title": "Metadata",
-    "description": "<p>The Metadata Feature makes it possible to store any data in outputs. Smart contract requests make use of it to encode the actual request call data that is only interpreted on L2.</p><p>Of course, there is a limit on how much data one can store in an output, as outputs are part of transactions that have a limited size. Anyway, bigger data can always be sliced up into chunks to be stored in outputs.</p"
-}

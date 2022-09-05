@@ -12,7 +12,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
 import DataToggle from "../DataToggle";
 import ReceiptPayload from "../stardust/ReceiptPayload";
-import milestoneMessage from "./../../../assets/modals/block/milestone-payload.json";
+import milestoneMessage from "./../../../assets/modals/stardust/block/milestone-payload.json";
 import "./MilestonePayload.scss";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";

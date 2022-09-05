@@ -1,7 +1,7 @@
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import mainMessage from "../../../assets/modals/output/main-header.json";
+import mainMessage from "../../../assets/modals/stardust/output/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";

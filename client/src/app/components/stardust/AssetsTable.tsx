@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import ITokenDetails from "../../routes/stardust/ITokenDetails";
 import Modal from "../Modal";
 import Pagination from "../Pagination";
-import assetsMessage from "./../../../assets/modals/address/assets-in-wallet.json";
+import assetsMessage from "./../../../assets/modals/stardust/address/assets-in-wallet.json";
 import Asset from "./Asset";
 import "./AssetsTable.scss";
 

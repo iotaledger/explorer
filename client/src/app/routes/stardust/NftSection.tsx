@@ -10,7 +10,7 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import Modal from "../../components/Modal";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
-import nftsMessage from "./../../../assets/modals/address/nfts-in-wallet.json";
+import nftsMessage from "./../../../assets/modals/stardust/address/nfts-in-wallet.json";
 import INftDetails from "./INftDetails";
 
 interface NftSectionProps {

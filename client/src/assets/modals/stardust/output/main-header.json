@@ -1,0 +1,11 @@
+{
+    "title": "Output",
+    "description": "<p>Basic outputs hold native tokens and define who has access to them and under which conditions.</p>",
+    "links": [
+      {
+        "label": "Read more",
+        "href": "https://github.com/lzpap/tips/blob/master/tips/TIP-0018/tip-0018.md#basic-output",
+        "isExternal": true
+      }
+    ]
+}

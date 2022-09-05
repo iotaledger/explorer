@@ -9,7 +9,7 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Pagination from "../../components/Pagination";
 import Modal from "../Modal";
-import associatedOuputsMessage from "./../../../assets/modals/address/associated-outputs.json";
+import associatedOuputsMessage from "./../../../assets/modals/stardust/address/associated-outputs.json";
 import AssociatedOutput from "./AssociatedOutput";
 import "./AssociatedOutputsTable.scss";
 

@@ -2,7 +2,7 @@
 /* eslint-disable jsdoc/require-returns */
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import transactionHistoryMessage from "../../../../assets/modals/address/transaction-history.json";
+import transactionHistoryMessage from "../../../../assets/modals/stardust/address/transaction-history.json";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { ITransactionHistoryRequest } from "../../../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryItem, ITransactionHistoryResponse } from "../../../../models/api/stardust/ITransactionHistoryResponse";

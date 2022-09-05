@@ -17,7 +17,7 @@ import Bech32Address from "../../components/stardust/Bech32Address";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
-import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
+import mainHeaderMessage from "./../../../assets/modals/stardust/address/main-header.json";
 import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
 import { AddressPageState } from "./AddressPageState";
