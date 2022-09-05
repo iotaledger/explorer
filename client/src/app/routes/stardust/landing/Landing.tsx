@@ -1,22 +1,26 @@
 import classNames from "classnames";
+import moment from "moment";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { DateHelper } from "../../../../helpers/dateHelper";
 import { isShimmerNetwork } from "../../../../helpers/networkHelper";
 import { RouteBuilder } from "../../../../helpers/routeBuilder";
 import { INetwork } from "../../../../models/config/INetwork";
 import { CUSTOM } from "../../../../models/config/networkType";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
+import { IFeedItemMetadata } from "../../../../models/feed/IFeedItemMetadata";
 import { NetworkService } from "../../../../services/networkService";
 import FeedInfo from "../../../components/FeedInfo";
 import Feeds from "../../../components/stardust/Feeds";
+import Tooltip from "../../../components/Tooltip";
 import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
 import AnalyticStats from "./AnalyticStats";
 import FeedFilters from "./FeedFilters";
 import InfoBox from "./InfoBox";
-import { getDefaultLandingState, LandingState } from "./LandingState";
+import { FeedTabs, getDefaultLandingState, LandingState } from "./LandingState";
 import "./Landing.scss";
 
 /**
@@ -57,9 +61,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      */
     public render(): ReactNode {
         const {
-            networkConfig, marketCapCurrency, priceCurrency, items, currentItems,
-            itemsPerSecond, confirmedItemsPerSecondPercent, latestMilestoneIndex,
-            networkAnalytics
+            networkConfig, currentTab, marketCapCurrency, priceCurrency, blocks, filteredBlocks, milestones,
+            itemsPerSecond, confirmedItemsPerSecondPercent, latestMilestoneIndex, networkAnalytics
         } = this.state;
 
         const { network } = this.props.match.params;
@@ -92,49 +95,141 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         <div className="feeds-section">
                             <div className="row wrap feeds">
                                 <div className="feed section">
-                                    <div className="section--header row space-between padding-l-8">
-                                        <h2>Latest blocks</h2>
-                                        <FeedFilters
-                                            networkConfig={networkConfig}
-                                            settingsService={this._settingsService}
-                                            items={items}
-                                            setFilteredItems={filteredItems => {
-                                                this.setState({ currentItems: filteredItems });
-                                            }}
-                                        />
-                                    </div>
-                                    <FeedInfo
-                                        milestoneIndex={latestMilestoneIndex}
-                                        frequencyTarget={networkConfig.milestoneInterval}
-                                    />
-                                    <div className="feed-items">
-                                        <div className="row feed-item--header">
-                                            <span className="label">Block id</span>
-                                            <span className="label">Payload Type</span>
-                                        </div>
-                                        {currentItems.length === 0 && (
-                                            <p>There are no items with the current filter.</p>
-                                        )}
-                                        {currentItems.map(item => (
-                                            <div className="feed-item" key={item.id}>
-                                                <div className="feed-item__content">
-                                                    <span className="feed-item--label">Block id</span>
-                                                    <Link
-                                                        className="feed-item--hash"
-                                                        to={RouteBuilder.buildItem(networkConfig, item.id)}
-                                                    >
-                                                        {item.id}
-                                                    </Link>
-                                                </div>
-                                                <div className="feed-item__content">
-                                                    <span className="feed-item--label">Payload Type</span>
-                                                    <span className="feed-item--value payload-type">
-                                                        {item.payloadType}
-                                                    </span>
-                                                </div>
-                                            </div>
+                                    <div className="tabs-wrapper">
+                                        {Object.entries(FeedTabs).map(([_, label]) => (
+                                            <button
+                                                key={label}
+                                                type="button"
+                                                className={classNames("tab", { active: currentTab === label })}
+                                                onClick={() => this.setState({ currentTab: label })}
+                                            >
+                                                {label}
+                                            </button>
                                         ))}
                                     </div>
+                                    {currentTab === FeedTabs.MILESTONES && (
+                                        <>
+                                            <div className="section--header row space-between padding-l-8">
+                                                <h2>Latest milestones</h2>
+                                            </div>
+                                            <div className="feed-items">
+                                                <div className="row feed-item--header ms-feed">
+                                                    <span className="label ms-index">Index</span>
+                                                    <span className="label ms-id">Milestone Id</span>
+                                                    <span className="label ms-blocks">Blocks</span>
+                                                    <span className="label ms-txs">Txs</span>
+                                                    <span className="label ms-timestamp">Timestamp</span>
+                                                </div>
+                                                {milestones.map(ms => {
+                                                    const index = ms.properties?.index as number;
+                                                    const milestoneId = ms.properties?.milestoneId as string;
+                                                    const milestoneIdShort =
+                                                        `${milestoneId.slice(0, 6)}....${milestoneId.slice(-6)}`;
+                                                    const timestamp = ms.properties?.timestamp as number * 1000;
+                                                    const includedBlocks = 5;
+                                                    const txs = 2;
+                                                    const ago = moment(timestamp).fromNow();
+                                                    const tooltipContent = DateHelper.formatShort(timestamp);
+
+                                                    return (
+                                                        <div className="feed-item ms-feed" key={ms.id}>
+                                                            <div className="feed-item__content">
+                                                                <span className="feed-item--label">Index</span>
+                                                                <span className="feed-item--value ms-index">
+                                                                    <Link
+                                                                        className="feed-item--hash ms-id"
+                                                                        to={`${network}/search/${index}`}
+                                                                    >
+                                                                        {index}
+                                                                    </Link>
+                                                                </span>
+                                                            </div>
+                                                            <div className="feed-item__content">
+                                                                <span className="feed-item--label">Milestone id</span>
+                                                                <Link
+                                                                    className="feed-item--hash ms-id"
+                                                                    to={RouteBuilder.buildItem(
+                                                                        networkConfig, milestoneId
+                                                                    )}
+                                                                >
+                                                                    {milestoneIdShort}
+                                                                </Link>
+                                                            </div>
+                                                            <div className="feed-item__content">
+                                                                <span className="feed-item--label">Blocks</span>
+                                                                <span className="feed-item--value ms-blocks">
+                                                                    {includedBlocks}
+                                                                </span>
+                                                            </div>
+                                                            <div className="feed-item__content">
+                                                                <span className="feed-item--label">Txs</span>
+                                                                <span className="feed-item--value ms-txs">
+                                                                    {txs}
+                                                                </span>
+                                                            </div>
+                                                            <div className="feed-item__content">
+                                                                <span className="feed-item--label">Timestamp</span>
+                                                                <span className="feed-item--value ms-timestamp">
+                                                                    <Tooltip
+                                                                        tooltipContent={tooltipContent}
+                                                                    >
+                                                                        {ago}
+                                                                    </Tooltip>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </>
+                                    )}
+                                    {currentTab === FeedTabs.BLOCKS && (
+                                        <>
+                                            <div className="section--header row space-between padding-l-8">
+                                                <h2>Latest blocks</h2>
+                                                <FeedFilters
+                                                    networkConfig={networkConfig}
+                                                    settingsService={this._settingsService}
+                                                    items={blocks}
+                                                    setFilteredItems={filteredItems => {
+                                                        this.setState({ filteredBlocks: filteredItems });
+                                                    }}
+                                                />
+                                            </div>
+                                            <FeedInfo
+                                                milestoneIndex={latestMilestoneIndex}
+                                                frequencyTarget={networkConfig.milestoneInterval}
+                                            />
+                                            <div className="feed-items">
+                                                <div className="row feed-item--header">
+                                                    <span className="label">Block id</span>
+                                                    <span className="label">Payload Type</span>
+                                                </div>
+                                                {filteredBlocks.length === 0 && (
+                                                    <p>There are no items with the current filter.</p>
+                                                )}
+                                                {filteredBlocks.map(item => (
+                                                    <div className="feed-item" key={item.id}>
+                                                        <div className="feed-item__content">
+                                                            <span className="feed-item--label">Block id</span>
+                                                            <Link
+                                                                className="feed-item--hash"
+                                                                to={RouteBuilder.buildItem(networkConfig, item.id)}
+                                                            >
+                                                                {item.id}
+                                                            </Link>
+                                                        </div>
+                                                        <div className="feed-item__content">
+                                                            <span className="feed-item--label">Payload Type</span>
+                                                            <span className="feed-item--value payload-type">
+                                                                {item.payloadType}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div className="card margin-t-m">
@@ -163,7 +258,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 </div>
                             )}
                         </div>
-
                     </div>
                 </div>
             </div >
@@ -205,10 +299,22 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     protected itemsUpdated(newItems: IFeedItem[]): void {
         super.itemsUpdated(newItems);
         if (this._feedClient) {
+            const blocks = this._feedClient.getItems();
+            const milestones = this._feedClient.getItems().filter(item => item.payloadType === "MS").slice(0, 15);
+
             this.setState({
-                items: this._feedClient.getItems()
+                blocks,
+                milestones
             });
         }
+    }
+
+    /**
+     * The confirmed items have been updated.
+     * @param metaData The updated confirmed items.
+     */
+    protected metadataUpdated(metaData: { [id: string]: IFeedItemMetadata }): void {
+        super.metadataUpdated(metaData);
     }
 }
 

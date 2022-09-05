@@ -117,6 +117,31 @@
                     font-family: $metropolis;
                 }
 
+                .tabs-wrapper {
+                    display: flex;
+                    padding-left: 4px;
+
+                    .tab {
+                        background: $gray-4;
+                        border: 1px solid var(--body-background);
+                        border-bottom: none;
+                        border-radius: 6px 6px 0 0;
+
+                        &.active {
+                            background: $mint-green-6;
+                        }
+
+                        &:focus {
+                            box-shadow: none;
+                        }
+                    }
+                }
+
+                .section--header {
+                    border-top: 1px solid var(--input-border-color);
+                    padding-top: 28px;
+                }
+
                 .feeds {
                     @include desktop-down {
                         flex-direction: column;
@@ -137,8 +162,6 @@
                             padding-top: 0;
                             padding-left: 0;
                         }
-
-
 
                         .feed-items {
                             min-height: 440px;
@@ -164,6 +187,26 @@
 
                                     @include tablet-down {
                                         display: none;
+                                    }
+
+                                    &.ms-index, &.ms-id, &.ms-blocks, &.ms-txs, &.ms-timestamp {
+                                        text-align: center;
+                                    }
+
+                                    &.ms-index {
+                                        min-width: 50px;
+                                    }
+
+                                    &.ms-id {
+                                        min-width: 136px;
+                                    }
+
+                                    &.ms-blocks, &.ms-txs {
+                                        min-width: 60px;
+                                    }
+
+                                    &.ms-timestamp {
+                                        min-width: 120px;
                                     }
                                 }
                             }
@@ -231,6 +274,22 @@
                                             text-transform: uppercase;
                                         }
                                     }
+
+                                    &.ms-index {
+                                        min-width: 52px;
+                                        text-align: center;
+                                    }
+
+                                    &.ms-blocks, &.ms-txs {
+                                        text-align: center;
+                                        min-width: 60px;
+                                    }
+
+                                    &.ms-timestamp {
+                                        min-width: 120px;
+                                        display: flex;
+                                        justify-content: center;
+                                    }
                                 }
 
                                 .feed-item--hash {
@@ -244,6 +303,11 @@
 
                                     &:hover {
                                         text-decoration: underline;
+                                    }
+
+                                    &.ms-id {
+                                        min-width: 136px;
+                                        text-align: center;
                                     }
                                 }
                             }

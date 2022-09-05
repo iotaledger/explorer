@@ -1,5 +1,5 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
-import { BASIC_OUTPUT_TYPE, deserializeBlock, MILESTONE_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
+import { BASIC_OUTPUT_TYPE, deserializeBlock, milestoneIdFromMilestonePayload, MILESTONE_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
@@ -161,6 +161,7 @@ export class StardustFeedClient extends FeedClient {
                 payloadType = "MS";
                 properties.index = block.payload.index;
                 properties.timestamp = block.payload.timestamp;
+                properties.milestoneId = milestoneIdFromMilestonePayload(block.payload);
             } else if (block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
                 payloadType = "Data";
                 properties.Index = block.payload.tag;

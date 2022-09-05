@@ -1,13 +1,23 @@
 import { INetwork } from "../../../../models/config/INetwork";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
 import { CurrencyState } from "../../../components/CurrencyState";
-import { FeedsState } from "../../../components/FeedsState";
+import { FeedsState } from "../../../components/stardust/FeedsState";
+
+export enum FeedTabs {
+    MILESTONES = "Milestones",
+    BLOCKS = "Blocks"
+}
 
 export interface LandingState extends CurrencyState, FeedsState {
     /**
      * The name of the network.
      */
     networkConfig: INetwork;
+
+    /**
+     * The active feed tab.
+     */
+    currentTab: FeedTabs;
 
     /**
      * The market cap in eur.
@@ -30,19 +40,25 @@ export interface LandingState extends CurrencyState, FeedsState {
     priceCurrency: string;
 
     /**
-     * The items from feed unfiltered.
+     * The blocks from feed unfiltered.
      */
-    items: IFeedItem[];
+    blocks: IFeedItem[];
 
     /**
-     * The items of the feed that are filtered in.
+     * The blocks of the feed that are filtered in.
      */
-    currentItems: IFeedItem[];
+    filteredBlocks: IFeedItem[];
+
+    /**
+     * The milestones from the feed.
+     */
+    milestones: IFeedItem[];
 }
 
 export const getDefaultLandingState = (networkConfig: INetwork): LandingState => (
     {
         networkConfig,
+        currentTab: FeedTabs.MILESTONES,
         itemsPerSecond: "--",
         confirmedItemsPerSecond: "--",
         confirmedItemsPerSecondPercent: "--",
@@ -51,8 +67,8 @@ export const getDefaultLandingState = (networkConfig: INetwork): LandingState =>
         marketCapCurrency: "--",
         priceEUR: 0,
         priceCurrency: "--",
-        items: [],
-        currentItems: [],
+        blocks: [],
+        filteredBlocks: [],
         milestones: [],
         currency: "USD",
         currencies: []
