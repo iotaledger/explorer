@@ -1,9 +1,8 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { isShimmerNetwork } from "../../../../helpers/networkHelper";
-import { RouteBuilder } from "../../../../helpers/routeBuilder";
 import { INetwork } from "../../../../models/config/INetwork";
 import { CUSTOM } from "../../../../models/config/networkType";
 import { STARDUST } from "../../../../models/config/protocolVersion";
@@ -14,7 +13,7 @@ import Feeds from "../../../components/stardust/Feeds";
 import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
 import AnalyticStats from "./AnalyticStats";
-import FeedFilters from "./FeedFilters";
+import BlockFeed from "./BlockFeed";
 import InfoBox from "./InfoBox";
 import { FeedTabs, getDefaultLandingState, LandingState } from "./LandingState";
 import MilestoneFeed from "./MilestoneFeed";
@@ -58,7 +57,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      */
     public render(): ReactNode {
         const {
-            networkConfig, currentTab, marketCapCurrency, priceCurrency, blocks, filteredBlocks, milestones,
+            networkConfig, currentTab, marketCapCurrency, priceCurrency, blocks, milestones,
             itemsPerSecond, confirmedItemsPerSecondPercent, latestMilestoneIndex, networkAnalytics
         } = this.state;
 
@@ -112,47 +111,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                         />
                                     )}
                                     {currentTab === FeedTabs.BLOCKS && (
-                                        <>
-                                            <div className="section--header row space-between padding-l-8">
-                                                <h2 />
-                                                <FeedFilters
-                                                    networkConfig={networkConfig}
-                                                    settingsService={this._settingsService}
-                                                    items={blocks}
-                                                    setFilteredItems={filteredItems => {
-                                                        this.setState({ filteredBlocks: filteredItems });
-                                                    }}
-                                                />
-                                            </div>
-                                            <div className="feed-items">
-                                                <div className="row feed-item--header">
-                                                    <span className="label">Block id</span>
-                                                    <span className="label">Payload Type</span>
-                                                </div>
-                                                {filteredBlocks.length === 0 && (
-                                                    <p>There are no items with the current filter.</p>
-                                                )}
-                                                {filteredBlocks.map(item => (
-                                                    <div className="feed-item" key={item.id}>
-                                                        <div className="feed-item__content">
-                                                            <span className="feed-item--label">Block id</span>
-                                                            <Link
-                                                                className="feed-item--hash"
-                                                                to={RouteBuilder.buildItem(networkConfig, item.id)}
-                                                            >
-                                                                {item.id}
-                                                            </Link>
-                                                        </div>
-                                                        <div className="feed-item__content">
-                                                            <span className="feed-item--label">Payload Type</span>
-                                                            <span className="feed-item--value payload-type">
-                                                                {item.payloadType}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </>
+                                        <BlockFeed
+                                            networkConfig={networkConfig}
+                                            blocks={blocks}
+                                            settingsService={this._settingsService}
+                                        />
                                     )}
                                 </div>
                             </div>

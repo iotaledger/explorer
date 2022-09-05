@@ -18,12 +18,17 @@ interface MilestoneFeedProps {
 const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones, latestMilestoneIndex }) => {
     const network = networkConfig.network;
     const secondsSinceLast = useMilestoneInterval(latestMilestoneIndex);
-    const secondsSinceLastView = secondsSinceLast ? ` (last: ${secondsSinceLast.toFixed(2)} s)` : "";
+    const secondsSinceLastView = secondsSinceLast ?
+        <span>
+            <span>(last: </span>
+            <span className="seconds">{secondsSinceLast.toFixed(2)}</span>
+            <span>s)</span>
+        </span> : "";
 
     return (
         <>
-            <div className="section--header row space-between padding-l-8">
-                <h2>Latest milestones{secondsSinceLastView}</h2>
+            <div className="section--header milestone-feed-header row padding-l-8">
+                <h2>Latest milestones</h2>{secondsSinceLastView}
             </div>
             <div className="feed-items">
                 <div className="row feed-item--header ms-feed">
@@ -33,6 +38,9 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                     <span className="label ms-txs">Txs</span>
                     <span className="label ms-timestamp">Timestamp</span>
                 </div>
+                {milestones.length === 0 && (
+                    <p>There are no milestones in the feed.</p>
+                )}
                 {milestones.map(milestone => {
                     const index = milestone.properties?.index as number;
                     const milestoneId = milestone.properties?.milestoneId as string;
@@ -56,7 +64,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                     </Link>
                                 </span>
                             </div>
-                            <div className="feed-item__content">
+                            <div className="feed-item__content desktop-only">
                                 <span className="feed-item--label">Milestone id</span>
                                 <Link
                                     className="feed-item--hash ms-id"
@@ -65,13 +73,13 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                     {milestoneIdShort}
                                 </Link>
                             </div>
-                            <div className="feed-item__content">
+                            <div className="feed-item__content desktop-only">
                                 <span className="feed-item--label">Blocks</span>
                                 <span className="feed-item--value ms-blocks">
                                     {includedBlocks}
                                 </span>
                             </div>
-                            <div className="feed-item__content">
+                            <div className="feed-item__content desktop-only">
                                 <span className="feed-item--label">Txs</span>
                                 <span className="feed-item--value ms-txs">
                                     {txs}
@@ -79,12 +87,15 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                             </div>
                             <div className="feed-item__content">
                                 <span className="feed-item--label">Timestamp</span>
-                                <span className="feed-item--value ms-timestamp">
+                                <span className="feed-item--value ms-timestamp desktop-only">
                                     <Tooltip
                                         tooltipContent={tooltipContent}
                                     >
                                         {ago}
                                     </Tooltip>
+                                </span>
+                                <span className="feed-item--value ms-timestamp mobile">
+                                    {tooltipContent} ({ago})
                                 </span>
                             </div>
                         </div>

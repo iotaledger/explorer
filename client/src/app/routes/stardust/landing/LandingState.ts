@@ -45,11 +45,6 @@ export interface LandingState extends CurrencyState, FeedsState {
     blocks: IFeedItem[];
 
     /**
-     * The blocks of the feed that are filtered in.
-     */
-    filteredBlocks: IFeedItem[];
-
-    /**
      * The milestones from the feed.
      */
     milestones: IFeedItem[];
@@ -68,7 +63,6 @@ export const getDefaultLandingState = (networkConfig: INetwork): LandingState =>
         priceEUR: 0,
         priceCurrency: "--",
         blocks: [],
-        filteredBlocks: [],
         milestones: [],
         currency: "USD",
         currencies: []

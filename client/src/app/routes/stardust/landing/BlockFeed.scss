@@ -4,26 +4,10 @@
 @import "../../../../scss/variables";
 @import "../../../../scss/themes";
 
-.feed .section--header.milestone-feed-header {
+.feed .section--header {
     border-top: 1px solid var(--input-border-color);
     padding-top: 28px;
     margin-bottom: 16px;
-
-    span {
-        @include font-size(20px, 24px);
-
-        &:first-child {
-            margin-left: 4px;
-        }
-
-        font-family: $inter;
-        color: var(--body-color);
-
-        &.seconds {
-            display: inline-block;
-            width: 44px!important;
-        }
-    }
 }
 
 .feed-items {
@@ -51,26 +35,6 @@
             @include tablet-down {
                 display: none;
             }
-
-            &.ms-index, &.ms-id, &.ms-blocks, &.ms-txs, &.ms-timestamp {
-                text-align: center;
-            }
-
-            &.ms-index {
-                min-width: 50px;
-            }
-
-            &.ms-id {
-                min-width: 136px;
-            }
-
-            &.ms-blocks, &.ms-txs {
-                min-width: 60px;
-            }
-
-            &.ms-timestamp {
-                min-width: 120px;
-            }
         }
     }
 
@@ -97,14 +61,10 @@
             display: flex;
 
             @include tablet-down {
-                &:first-child {
-                    margin-bottom: 0;
-                }
-            }
+                flex-direction: column;
 
-            &.desktop-only {
-                @include tablet-down {
-                    display: none;
+                &:first-child {
+                    margin-bottom: 8px;
                 }
             }
         }
@@ -142,50 +102,6 @@
                 }
             }
 
-            &.ms-index {
-                min-width: 52px;
-                text-align: center;
-            }
-
-            &.ms-blocks, &.ms-txs {
-                text-align: center;
-                min-width: 60px;
-            }
-
-            &.ms-timestamp {
-                min-width: 120px;
-                display: flex;
-                justify-content: center;
-
-                .tooltip .children {
-                    font-weight: inherit;
-                }
-
-                &.desktop-only {
-                    @include tablet-down {
-                        display: none;
-                    }
-                }
-
-                &.mobile {
-                    display: none;
-                    font-weight: 400;
-
-                    @include tablet-down {
-                        @include font-size(14px, 20px);
-                        color: var(--link-color);
-                        font-family: $ibm-plex-mono;
-                        display: inline-block;
-                        word-break: break-word;
-                    }
-                }
-            }
-
-            @include tablet-down {
-                &.ms-index, &.ms-id, &.ms-blocks, &.ms-txs, &.ms-timestamp {
-                    text-align: inherit;
-                }
-            }
         }
 
         .feed-item--hash {
@@ -199,11 +115,6 @@
 
             &:hover {
                 text-decoration: underline;
-            }
-
-            &.ms-id {
-                min-width: 136px;
-                text-align: center;
             }
         }
     }
