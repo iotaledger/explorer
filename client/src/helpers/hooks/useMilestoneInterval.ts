@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export const useMilestoneInterval = (milestoneIndex: number | undefined) => {
     const [from, setFrom] = useState<moment.Moment | undefined>();
@@ -22,4 +22,5 @@ export const useMilestoneInterval = (milestoneIndex: number | undefined) => {
     }, [from]);
 
     return seconds;
-}
+};
+

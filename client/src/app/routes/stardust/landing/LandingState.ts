@@ -4,8 +4,8 @@ import { CurrencyState } from "../../../components/CurrencyState";
 import { FeedsState } from "../../../components/stardust/FeedsState";
 
 export enum FeedTabs {
-    MILESTONES = "Milestones",
-    BLOCKS = "Blocks"
+    MILESTONES = "Activity",
+    BLOCKS = "Feed"
 }
 
 export interface LandingState extends CurrencyState, FeedsState {
