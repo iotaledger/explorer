@@ -1,5 +1,5 @@
-import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useMilestoneInterval } from "../../helpers/hooks/useMilestoneInterval";
 import "./FeedMilestoneInfo.scss";
 
 interface FeedMilestoneInfoProps {
@@ -8,24 +8,7 @@ interface FeedMilestoneInfoProps {
 }
 
 const FeedMilestoneInfo: React.FC<FeedMilestoneInfoProps> = ({ milestoneIndex, frequencyTarget }) => {
-    const [from, setFrom] = useState<moment.Moment | undefined>();
-    const [seconds, setSeconds] = useState<number | undefined>();
-
-    useEffect(() => {
-        setFrom(moment());
-    }, [milestoneIndex]);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const to = moment();
-            const updatedSeconds = to.diff(from, "seconds", true);
-            setSeconds(updatedSeconds);
-        }, 80);
-
-        return () => {
-            clearInterval(interval);
-        };
-    }, [from]);
+    const secondsSinceLast = useMilestoneInterval(milestoneIndex);
 
     return (
         <div className="feed--metrics padding-l-8">
@@ -33,11 +16,11 @@ const FeedMilestoneInfo: React.FC<FeedMilestoneInfoProps> = ({ milestoneIndex, f
                 <h3>Latest Milestone:</h3>
                 <span className="metrics-value margin-l-t">{milestoneIndex}</span>
             </div>
-            {seconds !== undefined && (
+            {secondsSinceLast !== undefined && (
                 <div className="seconds">
                     <h3>Last{frequencyTarget ? " / Target" : ""}:</h3>
                     <span className="metrics-value margin-l-t">
-                        {seconds.toFixed(2)} s{frequencyTarget ? ` / ${frequencyTarget} s` : ""}
+                        {secondsSinceLast.toFixed(2)} s{frequencyTarget ? ` / ${frequencyTarget} s` : ""}
                     </span>
                 </div>
             )}
