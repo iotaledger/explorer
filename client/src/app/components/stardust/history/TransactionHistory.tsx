@@ -4,6 +4,7 @@ import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import transactionHistoryMessage from "../../../../assets/modals/address/transaction-history.json";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { PromiseResolver, ResolverStatus } from "../../../../helpers/promiseResolver";
 import { ITransactionHistoryRequest } from "../../../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryItem, ITransactionHistoryResponse } from "../../../../models/api/stardust/ITransactionHistoryResponse";
 import { STARDUST } from "../../../../models/config/protocolVersion";
@@ -13,6 +14,7 @@ import Spinner from "../../Spinner";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
 import "./TransactionHistory.scss";
+import { PromiseResolverProps } from "../PromiseResolverProps";
 
 interface TransactionHistoryProps {
     network: string;
@@ -29,7 +31,9 @@ const SORT: string = "newest";
 /**
  * Component which will display transaction history.
  */
-const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, address }) => {
+const TransactionHistory: React.FC<TransactionHistoryProps & PromiseResolverProps> = (
+    { network, address, onAsyncStatus }
+) => {
     const mounted = useRef(false);
     const [history, setHistory] = useState<ITransactionHistoryItem[]>([]);
     const [outputDetailsMap, setOutputDetailsMap] = useState<IOutputDetailsMap>({});
@@ -81,22 +85,9 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
             const promises: Promise<void>[] = [];
             const detailsPage: IOutputDetailsMap = {};
 
-            const fetchDetails = async () => {
-                for (const item of history) {
-                    const promise = tangleService().outputDetails(network, item.outputId)
-                        .then(detailsResponse => {
-                            if (detailsResponse) {
-                                detailsPage[item.outputId] = detailsResponse;
-                            }
-                        })
-                        .catch(e => console.log(e));
-
-                    promises.push(promise);
-                }
-
-                await Promise.all(promises);
-
-                if (mounted.current) {
+            const asyncResolver = new PromiseResolver((status: ResolverStatus) => {
+                onAsyncStatus(status);
+                if (status === ResolverStatus.DONE && mounted.current) {
                     setOutputDetailsMap(detailsPage);
                     setIsLoading(false);
                     const updatedHistoryView = [...history].sort((a, b) => {
@@ -110,6 +101,23 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
 
                     setHistoryView(updatedHistoryView);
                 }
+            });
+
+            const fetchDetails = async () => {
+                for (const item of history) {
+                    const promise = tangleService().outputDetails(network, item.outputId)
+                        .then(detailsResponse => {
+                            if (detailsResponse) {
+                                detailsPage[item.outputId] = detailsResponse;
+                            }
+                        })
+                        .catch(e => console.log(e));
+
+                    promises.push(promise);
+                }
+
+                const allPromises = Promise.all(promises);
+                asyncResolver.enqueue(async () => allPromises);
             };
 
             /* eslint-disable @typescript-eslint/no-floating-promises */

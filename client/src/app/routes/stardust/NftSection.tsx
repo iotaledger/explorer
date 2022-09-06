@@ -10,16 +10,12 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
+import { PromiseResolverProps } from "../../components/stardust/PromiseResolverProps";
 import INftDetails from "./INftDetails";
 
 interface NftSectionProps {
     network: string;
     bech32Address?: string;
-}
-
-// extract this and use where needed
-interface PromiseResolverProps {
-    onAsyncStatus: (status: ResolverStatus) => void;
 }
 
 const PAGE_SIZE = 10;

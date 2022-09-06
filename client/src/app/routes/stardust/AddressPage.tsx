@@ -3,7 +3,7 @@ import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ResolverStatus } from "../../../helpers/promiseResolver";
+import { PromiseResolver, ResolverStatus } from "../../../helpers/promiseResolver";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import IAddressDetailsWithBalance from "../../../models/api/stardust/IAddressDetailsWithBalance";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -23,6 +23,7 @@ import Modal from "./../../components/Modal";
 import "./AddressPage.scss";
 import { AddressPageState } from "./AddressPageState";
 import NftSection from "./NftSection";
+import { PromiseResolverState } from "./PromiseResolverState";
 
 interface IAddressPageLocationProps {
     /**
@@ -33,16 +34,6 @@ interface IAddressPageLocationProps {
      * address unspent output ids
      */
     addressOutputIds: string[];
-}
-
-// extract this and use where needed
-interface PromiseResolverState {
-    /**
-     * The statuses for async calls.
-     */
-    asyncStatuses: {
-        [jobName: string]: ResolverStatus;
-    };
 }
 
 type State = AddressPageState & PromiseResolverState;
@@ -151,7 +142,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
         // Are async calls still in flight ?
         const isLoading = Object.values(asyncStatuses).some(status => status !== ResolverStatus.DONE);
-        console.log("loading...", isLoading, asyncStatuses);
 
         return (
             <div className="addr">
@@ -216,22 +206,55 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         network={networkId}
                                         bech32Address={addressBech32}
                                         onAsyncStatus={status => {
-                                            this.setState({
-                                                asyncStatuses: {
-                                                    ...asyncStatuses,
-                                                    "nfts": status
+                                            this.setState((previousState) => {
+                                                return {
+                                                    ...previousState,
+                                                    asyncStatuses: {
+                                                        ...previousState.asyncStatuses,
+                                                        "nfts": status
+                                                    }
                                                 }
-                                            });
+                                            })
                                         }}
                                     />
                                     {addressBech32 && (
-                                        <TransactionHistory network={networkId} address={addressBech32} />
+                                        <TransactionHistory
+                                            network={networkId}
+                                            address={addressBech32}
+                                            onAsyncStatus={status => {
+                                                this.setState((previousState) => {
+                                                    return {
+                                                        ...previousState,
+                                                        asyncStatuses: {
+                                                            ...previousState.asyncStatuses,
+                                                            "transactionHistory": status
+                                                        }
+                                                    }
+                                                })
+                                            }}
+                                        />
                                     )}
                                     {bech32AddressDetails && (
                                         <AssociatedOutputsTable
                                             network={networkId}
                                             addressDetails={bech32AddressDetails}
+                                            onAsyncStatus={status => {
+                                                this.setState((previousState) => {
+                                                    return {
+                                                        ...previousState,
+                                                        asyncStatuses: {
+                                                            ...previousState.asyncStatuses,
+                                                            "associatedOutputs": status
+                                                        }
+                                                    }
+                                                })
+                                            }}
                                         />
+                                    )}
+                                    {isLoading && (
+                                        <div className="inner row middle center loader">
+                                            <Spinner />
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -253,14 +276,28 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         const networkId = this.props.match.params.network;
         const outputResponse: IOutputResponse[] = [];
 
-        for (const outputId of addressOutputIds) {
-            const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
-            if (outputDetails) {
-                outputResponse.push(outputDetails);
+        const asyncResolver = new PromiseResolver((status: ResolverStatus) => {
+            this.setState((previousState) => {
+                return {
+                    ...previousState,
+                    asyncStatuses: {
+                        ...previousState.asyncStatuses,
+                        "assets": status
+                    }
+                }
+            })
+            if (status === ResolverStatus.DONE && this._isMounted) {
+                this.setState({ outputResponse });
             }
+        })
+        for (const outputId of addressOutputIds) {
+            const outputDetailsPromise = this._tangleCacheService.outputDetails(networkId, outputId).then(outputDetails => {
+                if (outputDetails) {
+                    outputResponse.push(outputDetails);
+                }
+            });
+            asyncResolver.enqueue(async () => outputDetailsPromise);
         }
-
-        this.setState({ outputResponse });
     }
 }
 

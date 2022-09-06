@@ -3,6 +3,7 @@
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { PromiseResolver, ResolverStatus } from "../../../helpers/promiseResolver";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -10,6 +11,7 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import Pagination from "../../components/Pagination";
 import AssociatedOutput from "./AssociatedOutput";
 import "./AssociatedOutputsTable.scss";
+import { PromiseResolverProps } from "./PromiseResolverProps";
 
 interface AssociatedOutputsTableProps {
     /**
@@ -27,7 +29,9 @@ const PAGE_SIZE = 10;
 /**
  * Component to render the Associated Outputs section.
  */
-const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network, addressDetails }) => {
+const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & PromiseResolverProps> = (
+    { network, addressDetails, onAsyncStatus }
+) => {
     const mounted = useRef(false);
     const [associatedOutputs, setAssociatedOutputs] = useState<IAssociatedOutput[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
@@ -60,10 +64,18 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
     // Then fetch associated output details
     useEffect(() => {
         if (associatedOutputs.length > 0 && associatedOutputsLoaded) {
+            const updatedAssociatedOutputs: IAssociatedOutput[] = [...associatedOutputs];
             const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
+            const asyncResolver = new PromiseResolver((status: ResolverStatus) => {
+                onAsyncStatus(status);
+                if (status === ResolverStatus.DONE && mounted.current) {
+                    setAssociatedOutputs(updatedAssociatedOutputs);
+                    setOutputDetailsLoaded(true);
+                }
+            });
+
             const loadOutputDetails = async () => {
-                const updatedAssociatedOutputs: IAssociatedOutput[] = [...associatedOutputs];
                 const promises: Promise<void>[] = [];
 
                 for (const [idx, associatedOutput] of updatedAssociatedOutputs.entries()) {
@@ -84,18 +96,15 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = ({ network
                     promises.push(outputDetailsPromise);
                 }
 
-                Promise.all(promises).then(() => {
+                const allPromises = Promise.all(promises).then(() => {
                     updatedAssociatedOutputs.sort((a, b) => {
                         const timestampBookedA = a.outputDetails?.metadata.milestoneTimestampBooked;
                         const timestampBookedB = b.outputDetails?.metadata.milestoneTimestampBooked;
                         return moment(timestampBookedA).isAfter(moment(timestampBookedB)) ? -1 : 1;
                     });
-
-                    if (mounted.current) {
-                        setAssociatedOutputs(updatedAssociatedOutputs);
-                        setOutputDetailsLoaded(true);
-                    }
                 }).catch(e => console.log(e));
+
+                asyncResolver.enqueue(async () => allPromises);
             };
 
             loadOutputDetails();

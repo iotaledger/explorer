@@ -6,6 +6,7 @@ import { optional } from "@ruffy/ts-optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { ResolverStatus } from "../../../helpers/promiseResolver";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -18,11 +19,14 @@ import NetworkContext from "../../context/NetworkContext";
 import { NftRouteProps } from "../NftRouteProps";
 import "./Nft.scss";
 import { NftState } from "./NftState";
+import { PromiseResolverState } from "./PromiseResolverState";
+
+type State = NftState & PromiseResolverState;
 
 /**
  * Component which will show the nft address page for stardust.
  */
-class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
+class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, State> {
     /**
      * The component context type.
      */
@@ -48,7 +52,8 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
 
         this.state = {
             bech32AddressDetails: undefined,
-            output: undefined
+            output: undefined,
+            asyncStatuses: {}
         };
     }
 
@@ -94,6 +99,9 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
     public render(): ReactNode {
         const { bech32AddressDetails, output } = this.state;
         const networkId = this.props.match.params.network;
+
+        // Are async calls still in flight ?
+        const isLoading = Object.values(this.state.asyncStatuses).some(status => status !== ResolverStatus.DONE);
 
         return (
             <div className="nft">
@@ -153,6 +161,17 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                                     <AssociatedOutputsTable
                                         network={networkId}
                                         addressDetails={bech32AddressDetails}
+                                        onAsyncStatus={status => {
+                                            this.setState((previousState) => {
+                                                return {
+                                                    ...previousState,
+                                                    asyncStatuses: {
+                                                        ...previousState.asyncStatuses,
+                                                        "associatedOutputs": status
+                                                    }
+                                                }
+                                            })
+                                        }}
                                     />
                                 )}
                             </div>
