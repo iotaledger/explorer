@@ -35,4 +35,9 @@ export interface OutputProps {
      * The network to lookup.
      */
     network: string;
+
+    /**
+     * Is block conflicting.
+     */
+    isConflictingBlock?: boolean;
 }

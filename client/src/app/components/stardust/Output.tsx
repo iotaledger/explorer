@@ -57,7 +57,8 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId } = this.props;
+        const { outputId, output, amount, showCopyAmount,
+            network, isPreExpanded, displayFullOutputId, isConflictingBlock } = this.props;
         const { isExpanded, isFormattedBalance } = this.state;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
@@ -103,10 +104,15 @@ class Output extends Component<OutputProps, OutputState> {
                     </button>
                     <div className="output-id--link">
                         (
-                        <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
-                            <span>{outputIdTransactionPart}</span>
-                            <span className="highlight">{outputIdIndexPart}</span>
-                        </Link>
+                        {isConflictingBlock ?
+                            <div className="margin-r-t">
+                                <span className="highlight">{outputIdTransactionPart}</span>
+                                <span className="highlight">{outputIdIndexPart}</span>
+                            </div> :
+                            <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
+                                <span>{outputIdTransactionPart}</span>
+                                <span className="highlight">{outputIdIndexPart}</span>
+                            </Link>}
                         )
                         <CopyButton copy={String(outputId)} />
                     </div>
@@ -140,9 +146,11 @@ class Output extends Component<OutputProps, OutputState> {
                                 Alias address:
                             </div>
                             <div className="card--value row middle">
-                                <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
-                                    {aliasOrNftBech32}
-                                </Link>
+                                {isConflictingBlock ?
+                                    <span className="margin-r-t">{aliasOrNftBech32}</span> :
+                                    <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
+                                        {aliasOrNftBech32}
+                                    </Link>}
                                 <CopyButton copy={aliasOrNftBech32} />
                             </div>
                             <div className="card--label">
@@ -179,9 +187,11 @@ class Output extends Component<OutputProps, OutputState> {
                                 Nft address:
                             </div>
                             <div className="card--value row middle">
-                                <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
-                                    {aliasOrNftBech32}
-                                </Link>
+                                {isConflictingBlock ?
+                                    <span className="margin-r-t">{aliasOrNftBech32}</span> :
+                                    <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
+                                        {aliasOrNftBech32}
+                                    </Link>}
                                 <CopyButton copy={aliasOrNftBech32} />
                             </div>
                         </React.Fragment>
@@ -193,12 +203,14 @@ class Output extends Component<OutputProps, OutputState> {
                                 Foundry id:
                             </div>
                             <div className="card--value row middle">
-                                <Link
-                                    to={`/${network}/search/${foundryId}`}
-                                    className="margin-r-t"
-                                >
-                                    {foundryId}
-                                </Link>
+                                {isConflictingBlock ?
+                                    <span className="margin-r-t">{foundryId}</span> :
+                                    <Link
+                                        to={`/${network}/search/${foundryId}`}
+                                        className="margin-r-t"
+                                    >
+                                        {foundryId}
+                                    </Link>}
                                 <CopyButton copy={foundryId} />
                             </div>
                             <div className="card--label">

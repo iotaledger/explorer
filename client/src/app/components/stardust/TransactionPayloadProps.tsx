@@ -32,5 +32,10 @@ export interface TransactionPayloadProps {
      * The header title of this section.
      */
     header: string;
+
+    /**
+     * Is block conflicting.
+     */
+    isConflictingBlock?: boolean;
 }
 
