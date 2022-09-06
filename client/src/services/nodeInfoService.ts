@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken, IRent } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { INodeInfoResponse } from "../models/api/stardust/INodeInfoResponse";
 import { STARDUST } from "../models/config/protocolVersion";
@@ -14,13 +14,17 @@ export interface IReducedNodeInfo {
      */
     baseToken: INodeInfoBaseToken;
     /**
-     * The protocol version.
+     * The protocol version running on the node.
      */
     protocolVersion: number;
     /**
-     * The version of node.
+     * The bech32 human readable part used in the network.
      */
     bech32Hrp: string;
+    /**
+     * The rent structure of the network.
+     */
+    rentStructure: IRent;
 }
 
 /**
@@ -52,10 +56,10 @@ export class NodeInfoService {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
             const network = networkDetails.network;
             const response: INodeInfoResponse = await apiClient.nodeInfo({ network });
-            const { baseToken, protocolVersion, bech32Hrp } = response;
+            const { baseToken, protocolVersion, bech32Hrp, rentStructure } = response;
 
-            if (baseToken && protocolVersion && bech32Hrp) {
-                this._cache[network] = { baseToken, protocolVersion, bech32Hrp };
+            if (baseToken && protocolVersion && bech32Hrp && rentStructure) {
+                this._cache[network] = { baseToken, protocolVersion, bech32Hrp, rentStructure };
             }
         }
     }
