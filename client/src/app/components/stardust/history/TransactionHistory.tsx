@@ -1,20 +1,21 @@
-/* eslint-disable jsdoc/require-param */
-/* eslint-disable jsdoc/require-returns */
+/* eslint-disable no-void */
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import transactionHistoryMessage from "../../../../assets/modals/address/transaction-history.json";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { PromiseResolver, ResolverStatus } from "../../../../helpers/promiseResolver";
 import { ITransactionHistoryRequest } from "../../../../models/api/stardust/ITransactionHistoryRequest";
-import { ITransactionHistoryItem, ITransactionHistoryResponse } from "../../../../models/api/stardust/ITransactionHistoryResponse";
+import {
+    ITransactionHistoryItem, ITransactionHistoryResponse
+} from "../../../../models/api/stardust/ITransactionHistoryResponse";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
 import Modal from "../../../components/Modal";
 import Spinner from "../../Spinner";
+import { PromiseResolverProps } from "../PromiseResolverProps";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
 import "./TransactionHistory.scss";
-import { PromiseResolverProps } from "../PromiseResolverProps";
 
 interface TransactionHistoryProps {
     network: string;
@@ -28,9 +29,6 @@ interface IOutputDetailsMap {
 const PAGE_SIZE: number = 10;
 const SORT: string = "newest";
 
-/**
- * Component which will display transaction history.
- */
 const TransactionHistory: React.FC<TransactionHistoryProps & PromiseResolverProps> = (
     { network, address, onAsyncStatus }
 ) => {
@@ -117,11 +115,10 @@ const TransactionHistory: React.FC<TransactionHistoryProps & PromiseResolverProp
                 }
 
                 const allPromises = Promise.all(promises);
-                asyncResolver.enqueue(async () => allPromises);
+                void asyncResolver.enqueue(async () => allPromises);
             };
 
-            /* eslint-disable @typescript-eslint/no-floating-promises */
-            fetchDetails();
+            void fetchDetails();
         }
     }, [history]);
 

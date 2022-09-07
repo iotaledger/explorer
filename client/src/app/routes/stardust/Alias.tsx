@@ -6,7 +6,6 @@ import { optional } from "@ruffy/ts-optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ResolverStatus } from "../../../helpers/promiseResolver";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -22,16 +21,13 @@ import NetworkContext from "../../context/NetworkContext";
 import { AliasRouteProps } from "../AliasRouteProps";
 import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
 import Modal from "./../../components/Modal";
-import "./AddressPage.scss";
 import { AliasState } from "./AliasState";
-import { PromiseResolverState } from "./PromiseResolverState";
-
-type State = AliasState & PromiseResolverState;
+import "./AddressPage.scss";
 
 /**
  * Component which will show the alias page for stardust.
  */
-class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, State> {
+class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasState> {
     /**
      * The component context type.
      */
@@ -62,8 +58,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, State> 
         this.state = {
             areFoundriesLoading: true,
             foundries: [],
-            foundriesPageNumber: 1,
-            asyncStatuses: {}
+            foundriesPageNumber: 1
         };
     }
 
@@ -122,9 +117,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, State> 
         } = this.state;
         const networkId = this.props.match.params.network;
         const hasFoundries = foundries && foundries.length > 0;
-
-        // Are async calls still in flight ?
-        const isLoading = Object.values(this.state.asyncStatuses).some(status => status !== ResolverStatus.DONE);
 
         return (
             <div className="addr">
@@ -247,17 +239,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, State> 
                                     <AssociatedOutputsTable
                                         network={networkId}
                                         addressDetails={bech32AddressDetails}
-                                        onAsyncStatus={status => {
-                                            this.setState((previousState) => {
-                                                return {
-                                                    ...previousState,
-                                                    asyncStatuses: {
-                                                        ...previousState.asyncStatuses,
-                                                        "associatedOutputs": status
-                                                    }
-                                                }
-                                            })
-                                        }}
+                                        onAsyncStatus={() => {}}
                                     />
                                 )}
                             </div>

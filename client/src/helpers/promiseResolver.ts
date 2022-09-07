@@ -24,7 +24,7 @@ export enum ResolverStatus {
 }
 
 /**
- * A promise queue class. Allows to enqueue promises a check if all the works is done.
+ * A promise queue class. Allows to enqueue promises a check if all the work is done.
  */
 export class PromiseResolver {
     /**
@@ -87,7 +87,7 @@ export class PromiseResolver {
 
     /**
      * Used recursively to check on promises and set the working flag.
-     * @returns Is the dequeuing is done.
+     * @returns Is the dequeuing done.
      */
     private dequeue(): boolean {
         if (this.working) {
