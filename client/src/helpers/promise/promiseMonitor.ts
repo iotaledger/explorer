@@ -40,13 +40,13 @@ class PromiseMonitor {
     /**
      * Callback for when the promise status changes.
      */
-    private readonly onStatusChangeCallback: (result: PromiseStatus) => void;
+    private readonly onStatusChangeCallback: (status: PromiseStatus) => void;
 
     /**
      * The constructor.
      * @param onStatusChangeCallback Callback to execute when the promise status changes.
      */
-    constructor(onStatusChangeCallback: (result: PromiseStatus) => void) {
+    constructor(onStatusChangeCallback: (status: PromiseStatus) => void) {
         this.onStatusChangeCallback = onStatusChangeCallback;
     }
 
@@ -56,7 +56,6 @@ class PromiseMonitor {
      * @returns The wrapped Promise.
      */
     public async enqueue<T>(promise: () => Promise<T>): Promise<T> {
-        this.onStatusChangeCallback(PromiseStatus.WORKING);
         const wp: Promise<T> = new Promise((resolve, reject) => {
             this.queue.push({
                 promise,
@@ -86,6 +85,7 @@ class PromiseMonitor {
 
         try {
             this.working = true;
+            this.onStatusChangeCallback(PromiseStatus.WORKING);
             item.promise().then(value => {
                 item.resolve(value);
             })
