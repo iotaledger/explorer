@@ -18,17 +18,17 @@ interface QueuedPromise<T = any> {
     reject: (reason?: any) => void;
 }
 
-export enum ResolverStatus {
-    WORKING,
-    DONE
+export enum PromiseStatus {
+    WORKING = "working",
+    DONE = "done"
 }
 
 /**
- * A promise queue class. Allows to enqueue promises a check if all the work is done.
+ * A promise-queue monitor class. Allows to enqueue promises a check if all the work is done.
  */
-export class PromiseResolver {
+class PromiseMonitor {
     /**
-     * Is the resolver working flag.
+     * Is the monitor working.
      */
     public working: boolean = false;
 
@@ -38,30 +38,25 @@ export class PromiseResolver {
     private readonly queue: QueuedPromise[] = [];
 
     /**
-     * Array of internal promises that can be awaited with all().
+     * Callback for when the promise status changes.
      */
-    private readonly internalPromises: Promise<any>[] = [];
-
-    /**
-     * Callback for when the resolver status changes.
-     */
-    private readonly statusCallback: (result: ResolverStatus) => void;
+    private readonly onStatusChangeCallback: (result: PromiseStatus) => void;
 
     /**
      * The constructor.
-     * @param statusCallback Will be called with resolver status updates.
+     * @param onStatusChangeCallback Callback to execute when the promise status changes.
      */
-    constructor(statusCallback: (result: ResolverStatus) => void) {
-        this.statusCallback = statusCallback;
+    constructor(onStatusChangeCallback: (result: PromiseStatus) => void) {
+        this.onStatusChangeCallback = onStatusChangeCallback;
     }
 
     /**
-     * Used to enqueue a promise in the PromiseResolver.
+     * Used to enqueue a promise in the PromiseMonitor.
      * @param promise The internal promise to enqueue.
      * @returns The wrapped Promise.
      */
     public async enqueue<T>(promise: () => Promise<T>): Promise<T> {
-        this.statusCallback(ResolverStatus.WORKING);
+        this.onStatusChangeCallback(PromiseStatus.WORKING);
         const wp: Promise<T> = new Promise((resolve, reject) => {
             this.queue.push({
                 promise,
@@ -71,22 +66,11 @@ export class PromiseResolver {
             this.dequeue();
         });
 
-        this.internalPromises.push(wp);
-
         return wp;
     }
 
     /**
-     * Used to get a Promise.all of all QueuedPromises.
-     * Should be called only after all euqueues are done.
-     * @returns A promise with all.
-     */
-    public async all() {
-        return Promise.all(this.internalPromises);
-    }
-
-    /**
-     * Used recursively to check on promises and set the working flag.
+     * Check on queued promises and set the working flag.
      * @returns Is the dequeuing done.
      */
     private dequeue(): boolean {
@@ -96,7 +80,7 @@ export class PromiseResolver {
 
         const item = this.queue.shift();
         if (!item) {
-            this.statusCallback(ResolverStatus.DONE);
+            this.onStatusChangeCallback(PromiseStatus.DONE);
             return false;
         }
 
@@ -121,4 +105,6 @@ export class PromiseResolver {
         return true;
     }
 }
+
+export default PromiseMonitor;
 

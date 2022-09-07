@@ -5,12 +5,12 @@ import { Converter, HexHelper } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import React, { useEffect, useRef, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { PromiseResolver, ResolverStatus } from "../../../helpers/promiseResolver";
+import { AsyncProps } from "../../../helpers/promise/AsyncProps";
+import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
-import { PromiseResolverProps } from "../../components/stardust/PromiseResolverProps";
 import INftDetails from "./INftDetails";
 
 interface NftSectionProps {
@@ -20,8 +20,8 @@ interface NftSectionProps {
 
 const PAGE_SIZE = 10;
 
-const NftSection: React.FC<NftSectionProps & PromiseResolverProps> = (
-    { network, bech32Address, onAsyncStatus }
+const NftSection: React.FC<NftSectionProps & AsyncProps> = (
+    { network, bech32Address, onAsyncStatusChange }
 ) => {
     const mounted = useRef(false);
     const [nfts, setNfts] = useState<INftDetails[]>([]);
@@ -42,9 +42,9 @@ const NftSection: React.FC<NftSectionProps & PromiseResolverProps> = (
                 return;
             }
 
-            const asyncResolver = new PromiseResolver((status: ResolverStatus) => {
-                onAsyncStatus(status);
-                if (status === ResolverStatus.DONE && mounted.current) {
+            const promiseMonitor = new PromiseMonitor((status: PromiseStatus) => {
+                onAsyncStatusChange(status);
+                if (status === PromiseStatus.DONE && mounted.current) {
                     setNfts(theNfts);
                 }
             });
@@ -71,12 +71,12 @@ const NftSection: React.FC<NftSectionProps & PromiseResolverProps> = (
                             }
                         });
 
-                        asyncResolver.enqueue(async () => outputPromise);
+                        promiseMonitor.enqueue(async () => outputPromise);
                     }
                 }
             });
 
-            asyncResolver.enqueue(async () => nftOutputsPromise);
+            promiseMonitor.enqueue(async () => nftOutputsPromise);
         };
 
         fetchNfts();

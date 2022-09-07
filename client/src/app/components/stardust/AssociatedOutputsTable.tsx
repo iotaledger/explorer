@@ -1,9 +1,8 @@
-/* eslint-disable jsdoc/require-param */
-/* eslint-disable jsdoc/require-returns */
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { PromiseResolver, ResolverStatus } from "../../../helpers/promiseResolver";
+import { AsyncProps } from "../../../helpers/promise/AsyncProps";
+import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { IAssociatedOutput } from "../../../models/api/stardust/IAssociatedOutputsResponse";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -11,7 +10,6 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import Pagination from "../../components/Pagination";
 import AssociatedOutput from "./AssociatedOutput";
 import "./AssociatedOutputsTable.scss";
-import { PromiseResolverProps } from "./PromiseResolverProps";
 
 interface AssociatedOutputsTableProps {
     /**
@@ -26,11 +24,8 @@ interface AssociatedOutputsTableProps {
 
 const PAGE_SIZE = 10;
 
-/**
- * Component to render the Associated Outputs section.
- */
-const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & PromiseResolverProps> = (
-    { network, addressDetails, onAsyncStatus }
+const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps> = (
+    { network, addressDetails, onAsyncStatusChange }
 ) => {
     const mounted = useRef(false);
     const [associatedOutputs, setAssociatedOutputs] = useState<IAssociatedOutput[]>([]);
@@ -67,9 +62,9 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & PromiseReso
             const updatedAssociatedOutputs: IAssociatedOutput[] = [...associatedOutputs];
             const tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
-            const asyncResolver = new PromiseResolver((status: ResolverStatus) => {
-                onAsyncStatus(status);
-                if (status === ResolverStatus.DONE && mounted.current) {
+            const promiseMonitor = new PromiseMonitor((status: PromiseStatus) => {
+                onAsyncStatusChange(status);
+                if (status === PromiseStatus.DONE && mounted.current) {
                     setAssociatedOutputs(updatedAssociatedOutputs);
                     setOutputDetailsLoaded(true);
                 }
@@ -104,7 +99,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & PromiseReso
                     });
                 }).catch(e => console.log(e));
 
-                asyncResolver.enqueue(async () => allPromises);
+                promiseMonitor.enqueue(async () => allPromises);
             };
 
             loadOutputDetails();

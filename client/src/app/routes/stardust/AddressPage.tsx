@@ -4,7 +4,8 @@ import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { PromiseResolver, ResolverStatus } from "../../../helpers/promiseResolver";
+import { AsyncState } from "../../../helpers/promise/AsyncState";
+import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -23,7 +24,6 @@ import mainHeaderMessage from "./../../../assets/modals/address/main-header.json
 import Modal from "./../../components/Modal";
 import { AddressPageState } from "./AddressPageState";
 import NftSection from "./NftSection";
-import { PromiseResolverState } from "./PromiseResolverState";
 import "./AddressPage.scss";
 
 interface IAddressPageLocationProps {
@@ -33,7 +33,7 @@ interface IAddressPageLocationProps {
     addressDetails: IBech32AddressDetails;
 }
 
-type State = AddressPageState & PromiseResolverState;
+type State = AddressPageState & AsyncState;
 
 /**
  * Component which will show the address page for stardust.
@@ -64,7 +64,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
         this.state = {
-            asyncStatuses: {}
+            jobToStatus: new Map<string, PromiseStatus>()
         };
     }
 
@@ -109,13 +109,13 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, balance, sigLockedBalance, outputResponse, asyncStatuses } = this.state;
+        const { bech32AddressDetails, balance, sigLockedBalance, outputResponse, jobToStatus } = this.state;
 
         const networkId = this.props.match.params.network;
         const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
 
-        const isLoading = Object.values(asyncStatuses).some(status => status !== ResolverStatus.DONE);
-        console.log("async statuses", asyncStatuses);
+        const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
+        console.log("async statuses", jobToStatus);
 
         return (
             <div className="addr">
@@ -179,14 +179,11 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                     <NftSection
                                         network={networkId}
                                         bech32Address={addressBech32}
-                                        onAsyncStatus={status => {
-                                            this.setState(previousState => (
+                                        onAsyncStatusChange={status => {
+                                            this.setState(prevState => (
                                                 {
-                                                    ...previousState,
-                                                    asyncStatuses: {
-                                                        ...previousState.asyncStatuses,
-                                                        "nfts": status
-                                                    }
+                                                    ...prevState,
+                                                    jobToStatus: prevState.jobToStatus.set("nfts", status)
                                                 }
                                             ));
                                         }}
@@ -195,14 +192,11 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         <TransactionHistory
                                             network={networkId}
                                             address={addressBech32}
-                                            onAsyncStatus={status => {
-                                                this.setState(previousState => (
+                                            onAsyncStatusChange={status => {
+                                                this.setState(prevState => (
                                                     {
-                                                        ...previousState,
-                                                        asyncStatuses: {
-                                                            ...previousState.asyncStatuses,
-                                                            "transactionHistory": status
-                                                        }
+                                                        ...prevState,
+                                                        jobToStatus: prevState.jobToStatus.set("history", status)
                                                     }
                                                 ));
                                             }}
@@ -212,14 +206,11 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         <AssociatedOutputsTable
                                             network={networkId}
                                             addressDetails={bech32AddressDetails}
-                                            onAsyncStatus={status => {
-                                                this.setState(previousState => (
+                                            onAsyncStatusChange={status => {
+                                                this.setState(prevState => (
                                                     {
-                                                        ...previousState,
-                                                        asyncStatuses: {
-                                                            ...previousState.asyncStatuses,
-                                                            "associatedOutputs": status
-                                                        }
+                                                        ...prevState,
+                                                        jobToStatus: prevState.jobToStatus.set("assoc", status)
                                                     }
                                                 ));
                                             }}
@@ -286,17 +277,14 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
         const outputResponse: IOutputResponse[] = [];
 
-        const asyncResolver = new PromiseResolver((status: ResolverStatus) => {
-            this.setState(previousState => (
+        const promiseMonitor = new PromiseMonitor((status: PromiseStatus) => {
+            this.setState(prevState => (
                 {
-                    ...previousState,
-                    asyncStatuses: {
-                        ...previousState.asyncStatuses,
-                        "assets": status
-                    }
+                    ...prevState,
+                    jobToStatus: prevState.jobToStatus.set("outputIds", status)
                 }
             ));
-            if (status === ResolverStatus.DONE && this._isMounted) {
+            if (status === PromiseStatus.DONE && this._isMounted) {
                 this.setState({ outputResponse });
             }
         });
@@ -310,7 +298,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                 }
             });
 
-            void asyncResolver.enqueue(async () => outputDetailsPromise);
+            void promiseMonitor.enqueue(async () => outputDetailsPromise);
         }
     }
 }
