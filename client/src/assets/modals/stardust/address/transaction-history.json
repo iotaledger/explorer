@@ -1,6 +1,6 @@
 {
     "title": "Transaction History",
-    "description": "<p>The history of all transactions for this address. Transactions are the cornerstone of value-based transfers in the IOTA network.</p>",
+    "description": "<p>The history of all transactions for this address. It displays all blocks that consume or create outputs targeting this address.</p>",
     "links": [
         {
           "label": "Read more",

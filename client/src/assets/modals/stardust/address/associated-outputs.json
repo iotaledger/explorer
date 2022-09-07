@@ -1,4 +1,4 @@
 {
     "title": "Associated Outputs",
-    "description": "<p>The list of all outputs with the tokens that were sent from this address <a href='https://wiki.iota.org/introduction/develop/explanations/what_is_stardust/output_features#sender'>Sender Feature</a>, or to this address <a href='https://wiki.iota.org/introduction/develop/explanations/ledger/simple_transfers#transfer-of-funds'>Address Unlock Output</a>.</p>"
+    "description": "<p>All outputs that have unlock conditions or features which refer to this address.</p>"
 }
