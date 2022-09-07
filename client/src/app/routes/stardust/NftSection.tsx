@@ -50,7 +50,7 @@ const NftSection: React.FC<NftSectionProps & AsyncProps> = (
             });
 
             const nftOutputsPromise = tangleCacheService.nfts({ network, address: bech32Address }).then(nftOutputs => {
-                if (nftOutputs?.outputs && nftOutputs?.outputs?.items.length > 0) {
+                if (nftOutputs?.outputs) {
                     for (const outputId of nftOutputs.outputs.items) {
                         const outputPromise = tangleCacheService.outputDetails(network, outputId).then(output => {
                             if (output && !output.metadata.isSpent && output.output.type === NFT_OUTPUT_TYPE) {

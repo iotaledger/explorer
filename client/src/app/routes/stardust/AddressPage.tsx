@@ -113,9 +113,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
         const networkId = this.props.match.params.network;
         const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
-
         const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
-        console.log("async statuses", jobToStatus);
 
         return (
             <div className="addr">
@@ -179,41 +177,20 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                     <NftSection
                                         network={networkId}
                                         bech32Address={addressBech32}
-                                        onAsyncStatusChange={status => {
-                                            this.setState(prevState => (
-                                                {
-                                                    ...prevState,
-                                                    jobToStatus: prevState.jobToStatus.set("nfts", status)
-                                                }
-                                            ));
-                                        }}
+                                        onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("nfts")}
                                     />
                                     {addressBech32 && (
                                         <TransactionHistory
                                             network={networkId}
                                             address={addressBech32}
-                                            onAsyncStatusChange={status => {
-                                                this.setState(prevState => (
-                                                    {
-                                                        ...prevState,
-                                                        jobToStatus: prevState.jobToStatus.set("history", status)
-                                                    }
-                                                ));
-                                            }}
+                                            onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("history")}
                                         />
                                     )}
                                     {bech32AddressDetails && (
                                         <AssociatedOutputsTable
                                             network={networkId}
                                             addressDetails={bech32AddressDetails}
-                                            onAsyncStatusChange={status => {
-                                                this.setState(prevState => (
-                                                    {
-                                                        ...prevState,
-                                                        jobToStatus: prevState.jobToStatus.set("assoc", status)
-                                                    }
-                                                ));
-                                            }}
+                                            onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("assoc")}
                                         />
                                     )}
                                 </div>
@@ -267,39 +244,42 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             return;
         }
 
-        const basicOutputIdsResponse = await this._tangleCacheService.addressBasicOutputs(networkId, addressBech32);
-
-        if (!basicOutputIdsResponse || !basicOutputIdsResponse.outputIds) {
-            return;
-        }
-
-        const addressOutputIds = basicOutputIdsResponse.outputIds;
-
-        const outputResponse: IOutputResponse[] = [];
-
-        const promiseMonitor = new PromiseMonitor((status: PromiseStatus) => {
-            this.setState(prevState => (
-                {
-                    ...prevState,
-                    jobToStatus: prevState.jobToStatus.set("outputIds", status)
-                }
-            ));
-            if (status === PromiseStatus.DONE && this._isMounted) {
-                this.setState({ outputResponse });
-            }
+        const outputIdsMonitor = new PromiseMonitor((status: PromiseStatus) => {
+            this.buildOnAsyncStatusJobHandler("outputIds")(status);
         });
 
-        for (const outputId of addressOutputIds) {
-            const outputDetailsPromise = this._tangleCacheService.outputDetails(
-                networkId, outputId
-            ).then(outputDetails => {
-                if (outputDetails) {
-                    outputResponse.push(outputDetails);
-                }
-            });
+        void outputIdsMonitor.enqueue(
+            async () => this._tangleCacheService.addressBasicOutputs(networkId, addressBech32).then(idsResponse => {
+                if (idsResponse?.outputIds) {
+                    const outputResponse: IOutputResponse[] = [];
+                    const addressOutputIds = idsResponse.outputIds;
 
-            void promiseMonitor.enqueue(async () => outputDetailsPromise);
-        }
+                    const outputDetailsMonitor = new PromiseMonitor((status: PromiseStatus) => {
+                        this.buildOnAsyncStatusJobHandler("outputDetails")(status);
+                        if (status === PromiseStatus.DONE && this._isMounted) {
+                            this.setState({ outputResponse });
+                        }
+                    });
+
+                    for (const outputId of addressOutputIds) {
+                        void outputDetailsMonitor.enqueue(
+                            async () => this._tangleCacheService.outputDetails(networkId, outputId).then(
+                                outputDetails => {
+                                    if (outputDetails) {
+                                        outputResponse.push(outputDetails);
+                                    }
+                                })
+                        );
+                    }
+                }
+            })
+        );
+    }
+
+    private buildOnAsyncStatusJobHandler(jobName: string): (status: PromiseStatus) => void {
+        return (status: PromiseStatus) => {
+            this.setState(prevState => ({ ...prevState, jobToStatus: prevState.jobToStatus.set(jobName, status) }));
+        };
     }
 }
 
