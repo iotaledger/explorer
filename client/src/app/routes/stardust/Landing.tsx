@@ -16,10 +16,10 @@ import { NetworkService } from "../../../services/networkService";
 import FeedInfo from "../../components/FeedInfo";
 import Feeds from "../../components/stardust/Feeds";
 import NetworkContext from "../../context/NetworkContext";
+import { LandingRouteProps } from "../LandingRouteProps";
 import latestBlock from "./../../../assets/modals/stardust/block/latest-block.json";
 import Modal from "./../../components/Modal";
 import "./Landing.scss";
-import { LandingRouteProps } from "../LandingRouteProps";
 import InfoSection from "./InfoSection";
 import { LandingState } from "./LandingState";
 

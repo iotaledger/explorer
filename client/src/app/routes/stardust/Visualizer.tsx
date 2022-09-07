@@ -13,11 +13,11 @@ import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { INodeData } from "../../../models/graph/INodeData";
 import Feeds from "../../components/stardust/Feeds";
 import NetworkContext from "../../context/NetworkContext";
+import { VisualizerRouteProps } from "../VisualizerRouteProps";
+import { VisualizerState } from "../VisualizerState";
 import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
 import Modal from "./../../components/Modal";
 import "./Visualizer.scss";
-import { VisualizerRouteProps } from "../VisualizerRouteProps";
-import { VisualizerState } from "../VisualizerState";
 
 /**
  * Component which will show the visualizer page.
