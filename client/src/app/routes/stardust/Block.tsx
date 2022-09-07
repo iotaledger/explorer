@@ -106,7 +106,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
         const blockId = this.props.match.params.blockId;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
         const isMarketed = isMarketedNetwork(network);
-        const isConflictingBlock = this.state.metadata?.ledgerInclusionState === "conflicting";
+        const isLinksDisabled = this.state.metadata?.ledgerInclusionState === "conflicting";
 
         return (
             <div className="block">
@@ -143,7 +143,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     status={this.state.blockTangleStatus}
                                     milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
                                         this.state.metadata?.milestoneIndex}
-                                    hasConflicts={isConflictingBlock}
+                                    hasConflicts={isLinksDisabled}
                                     conflictReason={this.state.conflictReason}
                                     onClick={this.state.metadata?.referencedByMilestoneIndex
                                         ? (blockId: string) => this.props.history.push(`/${network}/search/${blockId}`)
@@ -168,7 +168,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                         Transaction Id
                                     </div>
                                     <div className="value value__secondary row middle link">
-                                        {isConflictingBlock ?
+                                        {isLinksDisabled ?
                                             <span className="margin-r-t">
                                                 {this.state.transactionId}
                                             </span> :
@@ -252,7 +252,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                     outputs={this.state.outputs}
                                                     transferTotal={this.state.transferTotal}
                                                     header="Transaction Payload"
-                                                    isConflictingBlock={isConflictingBlock}
+                                                    isLinksDisabled={isLinksDisabled}
                                                 />
                                             </div>
                                             {
@@ -353,7 +353,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                             style={{ marginTop: "8px" }}
                                                             className="value code link"
                                                         >
-                                                            {isConflictingBlock ?
+                                                            {isLinksDisabled ?
                                                                 <span className="margin-r-t">
                                                                     {parent}
                                                                 </span> :

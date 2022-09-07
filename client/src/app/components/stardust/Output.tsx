@@ -58,7 +58,7 @@ class Output extends Component<OutputProps, OutputState> {
      */
     public render(): ReactNode {
         const { outputId, output, amount, showCopyAmount,
-            network, isPreExpanded, displayFullOutputId, isConflictingBlock } = this.props;
+            network, isPreExpanded, displayFullOutputId, isLinksDisabled } = this.props;
         const { isExpanded, isFormattedBalance } = this.state;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
@@ -104,7 +104,7 @@ class Output extends Component<OutputProps, OutputState> {
                     </button>
                     <div className="output-id--link">
                         (
-                        {isConflictingBlock ?
+                        {isLinksDisabled ?
                             <div className="margin-r-t">
                                 <span className="highlight">{outputIdTransactionPart}</span>
                                 <span className="highlight">{outputIdIndexPart}</span>
@@ -146,7 +146,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 Alias address:
                             </div>
                             <div className="card--value row middle">
-                                {isConflictingBlock ?
+                                {isLinksDisabled ?
                                     <span className="margin-r-t">{aliasOrNftBech32}</span> :
                                     <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
                                         {aliasOrNftBech32}
@@ -187,7 +187,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 Nft address:
                             </div>
                             <div className="card--value row middle">
-                                {isConflictingBlock ?
+                                {isLinksDisabled ?
                                     <span className="margin-r-t">{aliasOrNftBech32}</span> :
                                     <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
                                         {aliasOrNftBech32}
@@ -203,7 +203,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 Foundry id:
                             </div>
                             <div className="card--value row middle">
-                                {isConflictingBlock ?
+                                {isLinksDisabled ?
                                     <span className="margin-r-t">{foundryId}</span> :
                                     <Link
                                         to={`/${network}/search/${foundryId}`}
