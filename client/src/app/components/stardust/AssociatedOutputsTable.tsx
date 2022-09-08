@@ -23,11 +23,13 @@ interface AssociatedOutputsTableProps {
 }
 
 const PAGE_SIZE = 10;
+const OUTPUT_IDS_LIMIT = 100;
 
 const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps> = (
     { network, addressDetails, onAsyncStatusChange }
 ) => {
     const mounted = useRef(false);
+    const [isExcessiveOutputsSize, setIsExcessiveOutputsSize] = useState(false);
     const [associatedOutputs, setAssociatedOutputs] = useState<IAssociatedOutput[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [currentPage, setCurrentPage] = useState<IAssociatedOutput[]>([]);
@@ -46,8 +48,12 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
             const associatedOutputsResponse = await tangleCacheService.associatedOutputs(network, addressDetails);
 
             if (associatedOutputsResponse?.outputs && mounted.current) {
-                setAssociatedOutputs(associatedOutputsResponse.outputs);
-                setAssociatedOutputsLoaded(true);
+                if (associatedOutputsResponse.outputs.length <= OUTPUT_IDS_LIMIT) {
+                    setAssociatedOutputs(associatedOutputsResponse.outputs);
+                    setAssociatedOutputsLoaded(true);
+                } else {
+                    setIsExcessiveOutputsSize(true);
+                }
             }
         };
 
@@ -118,6 +124,19 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
             }
         }
     }, [associatedOutputs, pageNumber, outputDetailsLoaded]);
+
+    if (isExcessiveOutputsSize) {
+        return (
+            <div className="section">
+                <div className="section--header"><h2>Associated Outputs</h2></div>
+                <div className="section--data">
+                    <h4 className="value danger row middle center card padding-t-s padding-b-s">
+                        Too much data
+                    </h4>
+                </div>
+            </div>
+        );
+    }
 
     return (
         outputDetailsLoaded ?
