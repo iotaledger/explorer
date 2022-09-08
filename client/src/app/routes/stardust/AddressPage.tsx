@@ -76,7 +76,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         const { bech32Hrp } = this.context;
 
         if (!this.props.location.state) {
-            console.log("building location");
             this.props.location.state = {
                 addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, this.props.match.params.address)
             };
@@ -116,7 +115,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
 
         return (
-            <div className="addr">
+            <div className="address-page">
                 <div className="wrapper">
                     {bech32AddressDetails && (
                         <div className="inner">
@@ -127,6 +126,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                     </h1>
                                     <Modal icon="info" data={mainHeaderMessage} />
                                 </div>
+                                {isLoading && <Spinner />}
                             </div>
                             <div className="top">
                                 <div className="sections">
@@ -198,11 +198,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                         </div>
                     )}
                 </div>
-                {isLoading && (
-                    <div className="inner row middle center loader">
-                        <Spinner />
-                    </div>
-                )}
             </div>
         );
     }
