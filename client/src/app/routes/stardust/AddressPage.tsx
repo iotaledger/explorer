@@ -4,7 +4,8 @@ import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { PromiseResolver, ResolverStatus } from "../../../helpers/promiseResolver";
+import { AsyncState } from "../../../helpers/promise/AsyncState";
+import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -23,7 +24,6 @@ import mainHeaderMessage from "./../../../assets/modals/address/main-header.json
 import Modal from "./../../components/Modal";
 import { AddressPageState } from "./AddressPageState";
 import NftSection from "./NftSection";
-import { PromiseResolverState } from "./PromiseResolverState";
 import "./AddressPage.scss";
 
 interface IAddressPageLocationProps {
@@ -33,7 +33,7 @@ interface IAddressPageLocationProps {
     addressDetails: IBech32AddressDetails;
 }
 
-type State = AddressPageState & PromiseResolverState;
+type State = AddressPageState & AsyncState;
 
 /**
  * Component which will show the address page for stardust.
@@ -64,7 +64,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
         this.state = {
-            asyncStatuses: {}
+            jobToStatus: new Map<string, PromiseStatus>()
         };
     }
 
@@ -76,7 +76,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         const { bech32Hrp } = this.context;
 
         if (!this.props.location.state) {
-            console.log("building location");
             this.props.location.state = {
                 addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, this.props.match.params.address)
             };
@@ -109,16 +108,14 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, balance, sigLockedBalance, outputResponse, asyncStatuses } = this.state;
+        const { bech32AddressDetails, balance, sigLockedBalance, outputResponse, jobToStatus } = this.state;
 
         const networkId = this.props.match.params.network;
         const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
-
-        const isLoading = Object.values(asyncStatuses).some(status => status !== ResolverStatus.DONE);
-        console.log("async statuses", asyncStatuses);
+        const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
 
         return (
-            <div className="addr">
+            <div className="address-page">
                 <div className="wrapper">
                     {bech32AddressDetails && (
                         <div className="inner">
@@ -129,6 +126,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                     </h1>
                                     <Modal icon="info" data={mainHeaderMessage} />
                                 </div>
+                                {isLoading && <Spinner />}
                             </div>
                             <div className="top">
                                 <div className="sections">
@@ -179,50 +177,20 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                     <NftSection
                                         network={networkId}
                                         bech32Address={addressBech32}
-                                        onAsyncStatus={status => {
-                                            this.setState(previousState => (
-                                                {
-                                                    ...previousState,
-                                                    asyncStatuses: {
-                                                        ...previousState.asyncStatuses,
-                                                        "nfts": status
-                                                    }
-                                                }
-                                            ));
-                                        }}
+                                        onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("nfts")}
                                     />
                                     {addressBech32 && (
                                         <TransactionHistory
                                             network={networkId}
                                             address={addressBech32}
-                                            onAsyncStatus={status => {
-                                                this.setState(previousState => (
-                                                    {
-                                                        ...previousState,
-                                                        asyncStatuses: {
-                                                            ...previousState.asyncStatuses,
-                                                            "transactionHistory": status
-                                                        }
-                                                    }
-                                                ));
-                                            }}
+                                            onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("history")}
                                         />
                                     )}
                                     {bech32AddressDetails && (
                                         <AssociatedOutputsTable
                                             network={networkId}
                                             addressDetails={bech32AddressDetails}
-                                            onAsyncStatus={status => {
-                                                this.setState(previousState => (
-                                                    {
-                                                        ...previousState,
-                                                        asyncStatuses: {
-                                                            ...previousState.asyncStatuses,
-                                                            "associatedOutputs": status
-                                                        }
-                                                    }
-                                                ));
-                                            }}
+                                            onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("assoc")}
                                         />
                                     )}
                                 </div>
@@ -230,11 +198,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                         </div>
                     )}
                 </div>
-                {isLoading && (
-                    <div className="inner row middle center loader">
-                        <Spinner />
-                    </div>
-                )}
             </div>
         );
     }
@@ -276,42 +239,42 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             return;
         }
 
-        const basicOutputIdsResponse = await this._tangleCacheService.addressBasicOutputs(networkId, addressBech32);
-
-        if (!basicOutputIdsResponse || !basicOutputIdsResponse.outputIds) {
-            return;
-        }
-
-        const addressOutputIds = basicOutputIdsResponse.outputIds;
-
-        const outputResponse: IOutputResponse[] = [];
-
-        const asyncResolver = new PromiseResolver((status: ResolverStatus) => {
-            this.setState(previousState => (
-                {
-                    ...previousState,
-                    asyncStatuses: {
-                        ...previousState.asyncStatuses,
-                        "assets": status
-                    }
-                }
-            ));
-            if (status === ResolverStatus.DONE && this._isMounted) {
-                this.setState({ outputResponse });
-            }
+        const outputIdsMonitor = new PromiseMonitor((status: PromiseStatus) => {
+            this.buildOnAsyncStatusJobHandler("outputIds")(status);
         });
 
-        for (const outputId of addressOutputIds) {
-            const outputDetailsPromise = this._tangleCacheService.outputDetails(
-                networkId, outputId
-            ).then(outputDetails => {
-                if (outputDetails) {
-                    outputResponse.push(outputDetails);
-                }
-            });
+        void outputIdsMonitor.enqueue(
+            async () => this._tangleCacheService.addressBasicOutputs(networkId, addressBech32).then(idsResponse => {
+                if (idsResponse?.outputIds) {
+                    const outputResponse: IOutputResponse[] = [];
+                    const addressOutputIds = idsResponse.outputIds;
 
-            void asyncResolver.enqueue(async () => outputDetailsPromise);
-        }
+                    const outputDetailsMonitor = new PromiseMonitor((status: PromiseStatus) => {
+                        this.buildOnAsyncStatusJobHandler("outputDetails")(status);
+                        if (status === PromiseStatus.DONE && this._isMounted) {
+                            this.setState({ outputResponse });
+                        }
+                    });
+
+                    for (const outputId of addressOutputIds) {
+                        void outputDetailsMonitor.enqueue(
+                            async () => this._tangleCacheService.outputDetails(networkId, outputId).then(
+                                outputDetails => {
+                                    if (outputDetails) {
+                                        outputResponse.push(outputDetails);
+                                    }
+                                })
+                        );
+                    }
+                }
+            })
+        );
+    }
+
+    private buildOnAsyncStatusJobHandler(jobName: string): (status: PromiseStatus) => void {
+        return (status: PromiseStatus) => {
+            this.setState(prevState => ({ ...prevState, jobToStatus: prevState.jobToStatus.set(jobName, status) }));
+        };
     }
 }
 

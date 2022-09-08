@@ -239,7 +239,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                     <AssociatedOutputsTable
                                         network={networkId}
                                         addressDetails={bech32AddressDetails}
-                                        onAsyncStatus={() => {}}
+                                        onAsyncStatusChange={() => {}}
                                     />
                                 )}
                             </div>

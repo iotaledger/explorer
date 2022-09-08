@@ -3,7 +3,8 @@ import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import transactionHistoryMessage from "../../../../assets/modals/address/transaction-history.json";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { PromiseResolver, ResolverStatus } from "../../../../helpers/promiseResolver";
+import { AsyncProps } from "../../../../helpers/promise/AsyncProps";
+import PromiseMonitor, { PromiseStatus } from "../../../../helpers/promise/promiseMonitor";
 import { ITransactionHistoryRequest } from "../../../../models/api/stardust/ITransactionHistoryRequest";
 import {
     ITransactionHistoryItem, ITransactionHistoryResponse
@@ -12,7 +13,6 @@ import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
 import Modal from "../../../components/Modal";
 import Spinner from "../../Spinner";
-import { PromiseResolverProps } from "../PromiseResolverProps";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
 import "./TransactionHistory.scss";
@@ -29,8 +29,8 @@ interface IOutputDetailsMap {
 const PAGE_SIZE: number = 10;
 const SORT: string = "newest";
 
-const TransactionHistory: React.FC<TransactionHistoryProps & PromiseResolverProps> = (
-    { network, address, onAsyncStatus }
+const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
+    { network, address, onAsyncStatusChange }
 ) => {
     const mounted = useRef(false);
     const [history, setHistory] = useState<ITransactionHistoryItem[]>([]);
@@ -83,9 +83,9 @@ const TransactionHistory: React.FC<TransactionHistoryProps & PromiseResolverProp
             const promises: Promise<void>[] = [];
             const detailsPage: IOutputDetailsMap = {};
 
-            const asyncResolver = new PromiseResolver((status: ResolverStatus) => {
-                onAsyncStatus(status);
-                if (status === ResolverStatus.DONE && mounted.current) {
+            const promiseMonitor = new PromiseMonitor((status: PromiseStatus) => {
+                onAsyncStatusChange(status);
+                if (status === PromiseStatus.DONE && mounted.current) {
                     setOutputDetailsMap(detailsPage);
                     setIsLoading(false);
                     const updatedHistoryView = [...history].sort((a, b) => {
@@ -115,7 +115,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps & PromiseResolverProp
                 }
 
                 const allPromises = Promise.all(promises);
-                void asyncResolver.enqueue(async () => allPromises);
+                void promiseMonitor.enqueue(async () => allPromises);
             };
 
             void fetchDetails();
