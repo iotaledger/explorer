@@ -23,8 +23,8 @@ import TaggedDataPayload from "../../components/stardust/TaggedDataPayload";
 import TransactionPayload from "../../components/stardust/TransactionPayload";
 import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
-import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
-import metadataMessage from "./../../../assets/modals/block/metadata.json";
+import mainHeaderMessage from "./../../../assets/modals/stardust/block/main-header.json";
+import metadataMessage from "./../../../assets/modals/stardust/block/metadata.json";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
 import "./Block.scss";
@@ -290,8 +290,8 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     <div className="row middle">
                                         <h2>
                                             Metadata
-                                            <Modal icon="info" data={metadataMessage} />
                                         </h2>
+                                        <Modal icon="info" data={metadataMessage} />
                                     </div>
                                 </div>
                                 <div className="section--data">

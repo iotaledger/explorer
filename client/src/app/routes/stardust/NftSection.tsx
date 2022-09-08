@@ -7,8 +7,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
+import Modal from "../../components/Modal";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
+import nftsMessage from "./../../../assets/modals/stardust/address/nfts-in-wallet.json";
 import INftDetails from "./INftDetails";
 
 interface NftSectionProps {
@@ -90,6 +92,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address }) => {
                         <h2>
                             NFTs in Wallet ({nfts?.length})
                         </h2>
+                        <Modal icon="info" data={nftsMessage} />
                     </div>
                 </div>
                 <div className="row wrap">

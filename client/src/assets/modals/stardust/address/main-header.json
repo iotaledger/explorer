@@ -4,7 +4,7 @@
     "links": [
       {
         "label": "Read more",
-        "href": "https://wiki.iota.org/build/fundamentals/cryptography#addresses",
+        "href": "https://wiki.iota.org/iota.rs/explanations/address_key_space",
         "isExternal": true
       }
     ]

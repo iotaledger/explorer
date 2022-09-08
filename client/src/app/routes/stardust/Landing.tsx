@@ -16,8 +16,10 @@ import { NetworkService } from "../../../services/networkService";
 import FeedInfo from "../../components/FeedInfo";
 import Feeds from "../../components/stardust/Feeds";
 import NetworkContext from "../../context/NetworkContext";
-import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
+import latestBlock from "./../../../assets/modals/stardust/block/latest-block.json";
+import Modal from "./../../components/Modal";
+import "./Landing.scss";
 import InfoSection from "./InfoSection";
 import { LandingState } from "./LandingState";
 
@@ -170,7 +172,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             <div className="row wrap feeds">
                                 <div className="feed section">
                                     <div className="section--header row space-between padding-l-8">
-                                        <h2>Latest blocks</h2>
+                                        <div className="row middle">
+                                            <h2>Latest blocks</h2>
+                                            <Modal icon="info" data={latestBlock} />
+                                        </div>
                                         <div className="feed--actions">
                                             <button
                                                 className="button--unstyled"

@@ -1,0 +1,11 @@
+{
+    "title": "Transaction",
+    "description": "<p>Transaction payloads consume existing outputs and create new ones with new owners, effectively moving the tokens around the network.</p>",
+    "links": [
+      {
+        "label": "Read more",
+        "href": "https://wiki.iota.org/introduction/develop/explanations/ledger/simple_transfers",
+        "isExternal": true
+      }
+    ]
+}

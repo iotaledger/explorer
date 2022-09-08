@@ -3,12 +3,15 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as Logo } from "../../../assets/logo-header.svg";
+import mainMessage from "../../../assets/modals/chrysalis/search/main-header.json";
+import mainStardustMessage from "../../../assets/modals/stardust/search/main-header.json";
 import { ReactComponent as ShimmerLogo } from "../../../assets/shimmer-logo-header.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { isMarketedNetwork, isShimmerNetwork } from "../../../helpers/networkHelper";
 import { SettingsService } from "../../../services/settingsService";
 import FiatSelector from "../FiatSelector";
 import "./Header.scss";
+import Modal from "../Modal";
 import NetworkSwitcher from "../NetworkSwitcher";
 import { HeaderProps } from "./HeaderProps";
 import { HeaderState } from "./HeaderState";
@@ -35,7 +38,8 @@ class Header extends Component<HeaderProps, HeaderState> {
             isNetworkSwitcherExpanded: false,
             isUtilitiesExpanded: false,
             isMenuExpanded: false,
-            darkMode: this._settingsService.get().darkMode ?? false
+            darkMode: this._settingsService.get().darkMode ?? false,
+            show: false
         };
     }
 
@@ -58,7 +62,7 @@ class Header extends Component<HeaderProps, HeaderState> {
         const isMarketed = isMarketedNetwork(currentNetwork?.network);
 
         return (
-            <header className={classNames({ "shimmer-header-bg": isShimmer })}>
+            <header className={classNames({ "shimmer-header-bg": isShimmer }, { "full-height": this.state.show })}>
                 <nav className="inner">
                     <div className="inner--main">
                         <div className="inner-wrapper">
@@ -152,6 +156,11 @@ class Header extends Component<HeaderProps, HeaderState> {
                             {/* ---------- */}
 
                             {search}
+                            <Modal
+                                icon="info"
+                                data={isShimmer ? mainStardustMessage : mainMessage}
+                                showModal={show => this.setState({ show })}
+                            />
 
                             {/* ----- Only visible in desktop ----- */}
                             {isMarketed && (
