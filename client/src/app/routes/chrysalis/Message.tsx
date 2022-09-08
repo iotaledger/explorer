@@ -22,9 +22,9 @@ import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import Switcher from "../../components/Switcher";
 import { MessageProps } from "../chrysalis/MessageProps";
-import mainHeaderMessage from "./../../../assets/modals/message/main-header.json";
-import metadataMessage from "./../../../assets/modals/message/metadata.json";
-import treeMessage from "./../../../assets/modals/message/tree.json";
+import mainHeaderMessage from "./../../../assets/modals/chrysalis/message/main-header.json";
+import metadataMessage from "./../../../assets/modals/chrysalis/message/metadata.json";
+import treeMessage from "./../../../assets/modals/chrysalis/message/tree.json";
 import "./Message.scss";
 import { MessageState } from "./MessageState";
 /**

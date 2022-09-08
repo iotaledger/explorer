@@ -22,4 +22,9 @@ export interface HeaderState {
      * Darkmode theme
      */
     darkMode: boolean;
+
+    /**
+     * Show info modal on full page.
+     */
+     show: boolean;
 }
