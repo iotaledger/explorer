@@ -1,6 +1,6 @@
 import { IBlock, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
 import { IResponse } from "../IResponse";
-import IAddressDetailsWithBalance from "./IAddressDetailsWithBalance";
+import { IBech32AddressDetails } from "./IBech32AddressDetails";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 
 export interface ISearchResponse extends IResponse {
@@ -15,14 +15,9 @@ export interface ISearchResponse extends IResponse {
     transactionBlock?: IBlock;
 
     /**
-     * Address details when address was found.
+     * Address details.
      */
-    addressDetails?: IAddressDetailsWithBalance;
-
-    /**
-     * Output ids when address was found.
-     */
-    addressOutputIds?: string[];
+    addressDetails?: IBech32AddressDetails;
 
     /**
      * Output if it was found (block will also be populated).
