@@ -52,7 +52,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { network, inputs, unlocks, outputs, transferTotal, header } = this.props;
+        const { network, inputs, unlocks, outputs, transferTotal, header, isLinksDisabled } = this.props;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
         const isMarketed = isMarketedNetwork(network);
 
@@ -109,6 +109,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 amount={output.amount}
                                 network={network}
                                 showCopyAmount={true}
+                                isLinksDisabled={isLinksDisabled}
                             />
                         ))}
                     </div>
