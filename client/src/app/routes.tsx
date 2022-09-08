@@ -42,6 +42,7 @@ import OutputListProps from "./routes/stardust/OutputListProps";
 import OutputPage from "./routes/stardust/OutputPage";
 import OutputPageProps from "./routes/stardust/OutputPageProps";
 import StardustSearch from "./routes/stardust/Search";
+import Statistic from "./routes/stardust/Statistic";
 import TransactionPage from "./routes/stardust/TransactionPage";
 import { TransactionPageProps } from "./routes/stardust/TransactionPageProps";
 import StardustVisualizer from "./routes/stardust/Visualizer";
@@ -92,6 +93,10 @@ const buildAppRoutes = (
         );
         commonRoutes.push(
             <Route path="/:network/currency-converter" component={CurrencyConverter} key={keys.next().value} />
+        );
+    } else {
+        commonRoutes.push(
+            <Route path="/:network/statistics" component={Statistic} key={keys.next().value} />
         );
     }
 

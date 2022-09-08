@@ -36,6 +36,8 @@ export const buildUtilities = (
         if (isMarketed) {
             utilities.push({ label: "Markets", url: `/${currentNetwork}/markets/` });
             utilities.push({ label: "Currency Converter", url: `/${currentNetwork}/currency-converter/` });
+        } else {
+            utilities.push({ label: "Statistics", url: `/${currentNetwork}/statistics/` });
         }
         if (identityResolverEnabled) {
             utilities.push({ label: "Decentralized Identifier", url: `/${currentNetwork}/identity-resolver/` });
