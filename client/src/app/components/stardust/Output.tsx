@@ -1,17 +1,16 @@
-import { Blake2b } from "@iota/crypto.js-stardust";
 import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
     NFT_ADDRESS_TYPE, IImmutableAliasUnlockCondition, IAliasAddress, INodeInfoBaseToken,
     UnlockConditionTypes, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE,
     TIMELOCK_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
-import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
-import bigInt from "big-integer";
+import { HexHelper, WriteStream } from "@iota/util.js-stardust";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
+import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import CopyButton from "../CopyButton";
@@ -306,11 +305,11 @@ class Output extends Component<OutputProps, OutputState> {
         let addressType: number = 0;
 
         if (output.type === ALIAS_OUTPUT_TYPE) {
-            const aliasId = this.buildHashForAliasOrNft(output.aliasId, outputId);
+            const aliasId = TransactionsHelper.buildIdHashForAliasOrNft(output.aliasId, outputId);
             address = aliasId;
             addressType = ALIAS_ADDRESS_TYPE;
         } else if (output.type === NFT_OUTPUT_TYPE) {
-            const nftId = this.buildHashForAliasOrNft(output.nftId, outputId);
+            const nftId = TransactionsHelper.buildIdHashForAliasOrNft(output.nftId, outputId);
             address = nftId;
             addressType = NFT_ADDRESS_TYPE;
         }
@@ -320,20 +319,6 @@ class Output extends Component<OutputProps, OutputState> {
             address,
             addressType
         ).bech32;
-    }
-
-    /**
-     * Compute BLAKE2b-256 hash for alias or nft which has Id 0.
-     * @param aliasOrNftId Alias or Nft id.
-     * @param outputId Output id.
-     * @returns The BLAKE2b-256 hash for Alias or Nft Id.
-     */
-    private buildHashForAliasOrNft(aliasOrNftId: string, outputId: string): string {
-        return !HexHelper.toBigInt256(aliasOrNftId).eq(bigInt.zero) ?
-        aliasOrNftId :
-        HexHelper.addPrefix(
-            Converter.bytesToHex(Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId))))
-        );
     }
 
     /**

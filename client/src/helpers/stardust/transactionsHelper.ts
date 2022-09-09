@@ -12,7 +12,8 @@ import {
     IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition,
     TransactionHelper, IReferenceUnlock, Ed25519Address
 } from "@iota/iota.js-stardust";
-import { Converter, WriteStream } from "@iota/util.js-stardust";
+import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
+import bigInt from "big-integer";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
@@ -156,6 +157,20 @@ export class TransactionsHelper {
         return Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
     }
 
+    /**
+     * Compute BLAKE2b-256 hash for alias or nft which has Id 0.
+     * @param aliasOrNftId Alias or Nft id.
+     * @param outputId Output id.
+     * @returns The BLAKE2b-256 hash for Alias or Nft Id.
+     */
+    public static buildIdHashForAliasOrNft(aliasOrNftId: string, outputId: string): string {
+        return !HexHelper.toBigInt256(aliasOrNftId).eq(bigInt.zero) ?
+        aliasOrNftId :
+        HexHelper.addPrefix(
+            Converter.bytesToHex(Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId))))
+        );
+    }
+
     private static bechAddressFromAddressUnlockCondition(
         unlockConditions: UnlockConditionTypes[],
         _bechHrp: string,
@@ -192,5 +207,4 @@ export class TransactionsHelper {
         return address;
     }
 }
-
 

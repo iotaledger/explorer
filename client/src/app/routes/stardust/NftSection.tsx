@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-import { Blake2b } from "@iota/crypto.js-stardust";
 import { NFT_OUTPUT_TYPE } from "@iota/iota.js-stardust";
-import { Converter, HexHelper } from "@iota/util.js-stardust";
-import bigInt from "big-integer";
 import React, { useEffect, useRef, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { AsyncProps } from "../../../helpers/promise/AsyncProps";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
+import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Modal from "../../components/Modal";
@@ -57,19 +55,12 @@ const NftSection: React.FC<NftSectionProps & AsyncProps> = (
                         const outputPromise = tangleCacheService.outputDetails(network, outputId).then(output => {
                             if (output && !output.metadata.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
                                 const nftOutput = output.output;
-                                const nftId = !HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero)
-                                    ? nftOutput.nftId
-                                    // NFT has Id 0 because it hasn't move,
-                                    // but we can compute it as a hash of the outputId
-                                        : HexHelper.addPrefix(Converter.bytesToHex(
-                                            Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId)))
-                                        ));
-
-                                        theNfts.push({
-                                            id: nftId,
-                                            image:
-                                                "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png"
-                                        });
+                                const nftId = TransactionsHelper.buildIdHashForAliasOrNft(nftOutput.nftId, outputId);
+                                theNfts.push({
+                                    id: nftId,
+                                    image:
+                                        "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png"
+                                });
                             }
                         });
 
