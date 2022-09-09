@@ -23,8 +23,8 @@ import foundriesMessage from "./../../../assets/modals/stardust/alias/foundries.
 import mainMessage from "./../../../assets/modals/stardust/alias/main-header.json";
 import stateMessage from "./../../../assets/modals/stardust/alias/state.json";
 import Modal from "./../../components/Modal";
-import "./AddressPage.scss";
 import { AliasState } from "./AliasState";
+import "./AddressPage.scss";
 
 /**
  * Component which will show the alias page for stardust.
@@ -242,6 +242,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                     <AssociatedOutputsTable
                                         network={networkId}
                                         addressDetails={bech32AddressDetails}
+                                        onAsyncStatusChange={() => {}}
                                     />
                                 )}
                             </div>

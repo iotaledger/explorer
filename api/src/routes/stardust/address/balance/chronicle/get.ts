@@ -1,14 +1,14 @@
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IAddressBalanceRequest } from "../../../models/api/stardust/IAddressBalanceRequest";
-import { IAddressBalanceResponse } from "../../../models/api/stardust/IAddressBalanceResponse";
-import { IConfiguration } from "../../../models/configuration/IConfiguration";
-import { STARDUST } from "../../../models/db/protocolVersion";
-import { NetworkService } from "../../../services/networkService";
-import { ChronicleService } from "../../../services/stardust/chronicleService";
-import { ValidationHelper } from "../../../utils/validationHelper";
+import { ServiceFactory } from "../../../../../factories/serviceFactory";
+import { IAddressBalanceRequest } from "../../../../../models/api/stardust/IAddressBalanceRequest";
+import { IAddressBalanceResponse } from "../../../../../models/api/stardust/IAddressBalanceResponse";
+import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
+import { STARDUST } from "../../../../../models/db/protocolVersion";
+import { NetworkService } from "../../../../../services/networkService";
+import { ChronicleService } from "../../../../../services/stardust/chronicleService";
+import { ValidationHelper } from "../../../../../utils/validationHelper";
 
 /**
- * Fetch the transaction history from chronicle stardust.
+ * Fetch the address balance from chronicle stardust.
  * @param config The configuration.
  * @param request The request.
  * @returns The response.

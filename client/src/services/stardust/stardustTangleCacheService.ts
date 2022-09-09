@@ -8,6 +8,8 @@ import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryReque
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
 import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
+import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
+import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
@@ -80,12 +82,23 @@ export class StardustTangleCacheService extends TangleCacheService {
     }
 
     /**
+     * Fetch the balance of an address from iotajs.
+     * @param request The address balance request.
+     * @returns The details response.
+     */
+    public async addressBalance(request: IAddressBalanceRequest): Promise<IAddressDetailsWithBalance | undefined> {
+        return this._api.addressBalance(request);
+    }
+
+    /**
      * Fetch the balance of an address from chronicle.
      * @param request The address balance request.
      * @returns The details response.
      */
-    public async addressBalance(request: IAddressBalanceRequest): Promise<IAddressBalanceResponse | undefined> {
-        return this._api.addressBalance(request);
+    public async addressBalanceFromChronicle(
+        request: IAddressBalanceRequest
+    ): Promise<IAddressBalanceResponse | undefined> {
+        return this._api.addressBalanceChronicle(request);
     }
 
     /**
@@ -110,8 +123,7 @@ export class StardustTangleCacheService extends TangleCacheService {
                 response.aliasId ||
                 response.foundryId ||
                 response.nftId ||
-                response.did ||
-                response.addressOutputIds) {
+                response.did) {
                 this._stardustSearchCache[networkId][fullQuery] = {
                     data: response,
                     cached: Date.now()
@@ -192,6 +204,24 @@ export class StardustTangleCacheService extends TangleCacheService {
         }
 
         return this._stardustSearchCache[networkId][outputId]?.data?.output;
+    }
+
+    /**
+     * Get the unspend output ids for an address.
+     * @param networkId The network in context.
+     * @param address The address in bech32 format.
+     * @returns The output ids.
+     */
+    public async addressBasicOutputs(
+        networkId: string,
+        address: string
+    ): Promise<IAddressBasicOutputsResponse | undefined> {
+        const response = await this._api.addressBasicOutputs({
+            network: networkId,
+            address
+        });
+
+        return response;
     }
 
     /**

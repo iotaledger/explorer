@@ -1,11 +1,14 @@
-/* eslint-disable jsdoc/require-param */
-/* eslint-disable jsdoc/require-returns */
+/* eslint-disable no-void */
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import transactionHistoryMessage from "../../../../assets/modals/stardust/address/transaction-history.json";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { AsyncProps } from "../../../../helpers/promise/AsyncProps";
+import PromiseMonitor, { PromiseStatus } from "../../../../helpers/promise/promiseMonitor";
 import { ITransactionHistoryRequest } from "../../../../models/api/stardust/ITransactionHistoryRequest";
-import { ITransactionHistoryItem, ITransactionHistoryResponse } from "../../../../models/api/stardust/ITransactionHistoryResponse";
+import {
+    ITransactionHistoryItem, ITransactionHistoryResponse
+} from "../../../../models/api/stardust/ITransactionHistoryResponse";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
 import Modal from "../../../components/Modal";
@@ -26,10 +29,9 @@ interface IOutputDetailsMap {
 const PAGE_SIZE: number = 10;
 const SORT: string = "newest";
 
-/**
- * Component which will display transaction history.
- */
-const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, address }) => {
+const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
+    { network, address, onAsyncStatusChange }
+) => {
     const mounted = useRef(false);
     const [history, setHistory] = useState<ITransactionHistoryItem[]>([]);
     const [outputDetailsMap, setOutputDetailsMap] = useState<IOutputDetailsMap>({});
@@ -81,22 +83,9 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
             const promises: Promise<void>[] = [];
             const detailsPage: IOutputDetailsMap = {};
 
-            const fetchDetails = async () => {
-                for (const item of history) {
-                    const promise = tangleService().outputDetails(network, item.outputId)
-                        .then(detailsResponse => {
-                            if (detailsResponse) {
-                                detailsPage[item.outputId] = detailsResponse;
-                            }
-                        })
-                        .catch(e => console.log(e));
-
-                    promises.push(promise);
-                }
-
-                await Promise.all(promises);
-
-                if (mounted.current) {
+            const promiseMonitor = new PromiseMonitor((status: PromiseStatus) => {
+                onAsyncStatusChange(status);
+                if (status === PromiseStatus.DONE && mounted.current) {
                     setOutputDetailsMap(detailsPage);
                     setIsLoading(false);
                     const updatedHistoryView = [...history].sort((a, b) => {
@@ -110,10 +99,26 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
 
                     setHistoryView(updatedHistoryView);
                 }
+            });
+
+            const fetchDetails = async () => {
+                for (const item of history) {
+                    const promise = tangleService().outputDetails(network, item.outputId)
+                        .then(detailsResponse => {
+                            if (detailsResponse) {
+                                detailsPage[item.outputId] = detailsResponse;
+                            }
+                        })
+                        .catch(e => console.log(e));
+
+                    promises.push(promise);
+                }
+
+                const allPromises = Promise.all(promises);
+                void promiseMonitor.enqueue(async () => allPromises);
             };
 
-            /* eslint-disable @typescript-eslint/no-floating-promises */
-            fetchDetails();
+            void fetchDetails();
         }
     }, [history]);
 
