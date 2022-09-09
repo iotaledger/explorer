@@ -50,7 +50,7 @@ export class StardustTangleHelper {
                     ...addressBalanceDetails,
                     hex: searchQuery.address.hex,
                     bech32: searchQuery.address.bech32,
-                    type: searchQuery.address.addressType
+                    type: searchQuery.address.type
                 };
 
                 return addressDetails;
