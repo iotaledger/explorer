@@ -47,7 +47,6 @@
     "devDependencies": {
         "@babel/plugin-transform-typescript": "^7.18.12",
         "@craco/craco": "^7.0.0-alpha.7",
-        "@faker-js/faker": "^7.5.0",
         "@ruffy/ts-optional": "^1.1.1",
         "@svgr/webpack": "^6.3.1",
         "@types/bluebird": "^3.5.36",
