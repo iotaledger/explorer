@@ -28,7 +28,11 @@ export const getPages = (currentNetwork: string, networks: INetwork[]) => (
 );
 
 export const buildUtilities = (
-    currentNetwork: string, networks: INetwork[], isMarketed: boolean, identityResolverEnabled: boolean
+    currentNetwork: string,
+    networks: INetwork[],
+    isMarketed: boolean,
+    identityResolverEnabled: boolean,
+    isStardust: boolean
 ) => {
     const utilities = [];
     if (networks.length > 0) {
@@ -36,11 +40,12 @@ export const buildUtilities = (
         if (isMarketed) {
             utilities.push({ label: "Markets", url: `/${currentNetwork}/markets/` });
             utilities.push({ label: "Currency Converter", url: `/${currentNetwork}/currency-converter/` });
-        } else {
-            utilities.push({ label: "Statistics", url: `/${currentNetwork}/statistics/` });
         }
         if (identityResolverEnabled) {
             utilities.push({ label: "Decentralized Identifier", url: `/${currentNetwork}/identity-resolver/` });
+        }
+        if (isStardust) {
+            utilities.push({ label: "Statistics", url: `/${currentNetwork}/statistics/` });
         }
     }
 

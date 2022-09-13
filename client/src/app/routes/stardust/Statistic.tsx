@@ -1,4 +1,4 @@
-import { faker } from "@faker-js/faker";
+/* eslint-disable prefer-template */
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -11,9 +11,10 @@ import {
     Legend
 } from "chart.js";
 import "chartjs-plugin-zoom";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { RouteComponentProps } from "react-router";
+import { response } from "../../../helpers/stardust/mockDailyTransactions";
 import "./Statistic.scss";
 
 ChartJS.register(
@@ -27,40 +28,71 @@ ChartJS.register(
     Legend
 );
 
-export const options = {
-    responsive: true,
-    plugins: {
+const Statistic: React.FC<RouteComponentProps<undefined>> = () => {
+    const [labels, setLabels] = useState<string[]>();
+    const [transactions, setTransactions] = useState<number[]>();
+
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    const options = {
+        responsive: true,
+        scales: {
+            x: {
+                ticks: {
+                    autoSkip: true,
+                    maxTicksLimit: 3
+                    // this function can also be used to display selective labels.
+                    // callback: function(tickValue: string | number, index: number) {
+                    //     return index % 60 === 0 && labels ? labels[Number(tickValue)] : '';
+                    // }
+                }
+            }
+        },
+        pan: {
+            enabled: true,
+            mode: "y"
+          },
+          zoom: {
+            enabled: true,
+            mode: "x"
+        },
+        plugins: {
             legend: {
-            position: "top" as const
+                position: "top" as const
+            }
         }
-    },
-    zoom: {
-        enabled: true,
-        mode: "x",
-    },
-    pan: {
-        enabled: true,
-        mode: "x",
-    }
-};
+    };
 
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
+    const data = {
+        labels,
+        datasets: [
+            {
+                fill: true,
+                label: "Daily Transactions",
+                data: transactions,
+                borderColor: "rgb(53, 162, 235)",
+                backgroundColor: "rgba(53, 162, 235, 0.5)"
+            }
+        ]
+    };
 
-export const data = {
-    labels,
-    datasets: [
-        {
-            fill: true,
-            label: "Daily Transactions",
-            data: labels.map(() => faker.datatype.number({ min: 0, max: 1000000 })),
-            borderColor: "rgb(53, 162, 235)",
-            backgroundColor: "rgba(53, 162, 235, 0.5)"
+    useEffect(() => {
+        const allLabels = [];
+        const allTransactions = [];
+        for (let i = 0; i < response.length; i++) {
+            const transaction = response[i];
+            const date = new Date(transaction.updatedDate.replace(" ", "T") + "Z");
+            allLabels.push(monthNames[date.getMonth()]);
+            allTransactions.push(transaction.transactions);
         }
-    ]
-};
+        setLabels(allLabels);
+        setTransactions(allTransactions);
+    }, []);
 
-const Statistic: React.FC<RouteComponentProps<undefined>> = () =>
-    (
+    return (
         <div className="foundry">
             <div className="wrapper">
                 <div className="inner">
@@ -78,6 +110,7 @@ const Statistic: React.FC<RouteComponentProps<undefined>> = () =>
             </div>
         </div>
     );
+};
 
 export default Statistic;
 
