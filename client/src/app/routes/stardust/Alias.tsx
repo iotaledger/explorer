@@ -7,6 +7,8 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
+import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -114,9 +116,10 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
      */
     public render(): ReactNode {
         const {
-            bech32AddressDetails, areFoundriesLoading, foundries,
-            foundriesPageNumber, output, stateMetadataHex
+            bech32AddressDetails, storageRentBalance, areFoundriesLoading,
+            foundries, foundriesPageNumber, output, stateMetadataHex
         } = this.state;
+        const { tokenInfo } = this.context;
         const networkId = this.props.match.params.network;
         const hasFoundries = foundries && foundries.length > 0;
 
@@ -138,7 +141,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                             <h2>General</h2>
                                         </div>
                                     </div>
-                                    <div className="row space-between general-content">
+                                    <div className="row space-between">
                                         <div className="section--data">
                                             <Bech32Address
                                                 addressDetails={bech32AddressDetails}
@@ -146,6 +149,18 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                             />
                                         </div>
                                     </div>
+                                    {storageRentBalance && (
+                                        <div className="section--data margin-t-m">
+                                            <div className="label">
+                                                Storage rent
+                                            </div>
+                                            <div className="value featured">
+                                                <span>
+                                                    {formatAmount(storageRentBalance, tokenInfo, true)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="section">
                                     <div className="section--header">
@@ -201,7 +216,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                { this.currentFoundriesPage?.map((foundry, k) => (
+                                                {this.currentFoundriesPage?.map((foundry, k) => (
                                                     <React.Fragment key={`${foundry?.foundryId}${k}`}>
                                                         <ControlledFoundry
                                                             key={k}
@@ -242,7 +257,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                     <AssociatedOutputsTable
                                         network={networkId}
                                         addressDetails={bech32AddressDetails}
-                                        onAsyncStatusChange={() => {}}
+                                        onAsyncStatusChange={() => { }}
                                     />
                                 )}
                             </div>
@@ -259,8 +274,10 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
             return;
         }
 
+        const { rentStructure } = this.context;
         const networkId = this.props.match.params.network;
         const foundries: { foundryId: string }[] = [];
+        let storageRentBalance: number | undefined;
 
         const foundryOutputs = await this._tangleCacheService.foundriesByAliasAddress({
             network: networkId,
@@ -278,6 +295,12 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
 
                     const foundryId = this.buildFoundyId(aliasId, serialNumber, tokenSchemeType);
 
+                    // accumulate storage rent
+                    storageRentBalance = TransactionsHelper.computeStorageRentBalance(
+                        [outputDetails.output],
+                        rentStructure
+                    ) + (storageRentBalance ?? 0);
+
                     foundries.push({ foundryId });
                 }
             }
@@ -285,6 +308,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
 
         this.setState({
             foundries,
+            storageRentBalance,
             areFoundriesLoading: false
         });
     }

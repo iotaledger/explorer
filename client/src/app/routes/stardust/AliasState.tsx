@@ -9,6 +9,11 @@ export interface AliasState {
     bech32AddressDetails?: IBech32AddressDetails;
 
     /**
+     * The storage rent balance.
+     */
+    storageRentBalance?: number;
+
+    /**
      * Are the controlled Foundries loading.
      */
     areFoundriesLoading: boolean;

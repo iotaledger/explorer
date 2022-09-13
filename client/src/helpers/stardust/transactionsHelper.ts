@@ -10,7 +10,9 @@ import {
     GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, ALIAS_OUTPUT_TYPE,
     NFT_OUTPUT_TYPE, serializeTransactionPayload, FOUNDRY_OUTPUT_TYPE,
     IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition,
-    TransactionHelper, IReferenceUnlock, Ed25519Address
+    TransactionHelper, IReferenceUnlock, Ed25519Address, OutputTypes,
+    STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
+    IRent
 } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
@@ -169,6 +171,26 @@ export class TransactionsHelper {
         HexHelper.addPrefix(
             Converter.bytesToHex(Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId))))
         );
+    }
+
+    public static computeStorageRentBalance(outputs: OutputTypes[], rentStructure: IRent): number {
+        const outputsWithoutSdruc = outputs.filter(output => {
+            if (output.type === TREASURY_OUTPUT_TYPE) {
+                return false;
+            }
+            const hasStorageDepositUnlockCondition = output.unlockConditions.some(
+                uc => uc.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE
+            );
+
+            return !hasStorageDepositUnlockCondition;
+        });
+
+        const rentBalance = outputsWithoutSdruc.reduce(
+            (acc, output) => acc + TransactionHelper.getStorageDeposit(output, rentStructure),
+            0
+        );
+
+        return rentBalance;
     }
 
     private static bechAddressFromAddressUnlockCondition(
