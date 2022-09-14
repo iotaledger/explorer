@@ -94,10 +94,6 @@ const buildAppRoutes = (
         commonRoutes.push(
             <Route path="/:network/currency-converter" component={CurrencyConverter} key={keys.next().value} />
         );
-    } else {
-        commonRoutes.push(
-            <Route path="/:network/statistics" component={Statistic} key={keys.next().value} />
-        );
     }
 
     const ogAndChrysalisRoutes = [
@@ -235,6 +231,10 @@ const buildAppRoutes = (
             component={(props: RouteComponentProps<NftRouteProps>) => (
                 withNetworkContext(<Nft {...props} />)
             )}
+        />,
+        <Route path="/:network/statistics"
+            component={Statistic} 
+            key={keys.next().value} 
         />
     ];
 
