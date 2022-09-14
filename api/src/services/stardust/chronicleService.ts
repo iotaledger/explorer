@@ -140,7 +140,7 @@ export class ChronicleService {
         let response: R | undefined;
 
         if (!this._jwt) {
-            throw new NetworkConfigurationError("Chronicle JWT not configured...");
+            throw new NetworkConfigurationError(`Chronicle JWT not configured for ${this._endpoint}...`);
         }
 
         try {
