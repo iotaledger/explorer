@@ -23,17 +23,22 @@ const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguratio
     { history, match: { params: { network, action } }, config: { identityResolverEnabled } }
 ) => {
     const [networks, setNetworks] = useState<INetwork[]>([]);
+    const [networksLoaded, setNetworksLoaded] = useState(false);
 
     useEffect(() => {
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networkConfigs = networkService.networks();
+
         setNetworks(networkConfigs);
+        setNetworksLoaded(true);
     }, []);
 
-    if (!network) {
-        network = networks.length > 0 ? networks[0].network : MAINNET;
-        history.replace(`/${network}`);
-    }
+    useEffect(() => {
+        if (networksLoaded && !network) {
+            network = networks.length > 0 ? networks[0].network : MAINNET;
+            history.replace(`/${network}`);
+        }
+    }, [networksLoaded]);
 
     const networkConfig = networks.find(n => n.network === network);
 
