@@ -1,3 +1,4 @@
+import { NetworkConfigurationError } from "../../errors/networkConfigurationError";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
@@ -21,8 +22,14 @@ export class ChronicleService {
      */
     private readonly _endpoint: string;
 
+    /**
+     * The permanode JWT.
+     */
+    private readonly _jwt?: string;
+
     constructor(config: INetwork) {
         this._endpoint = config.permaNodeEndpoint;
+        this._jwt = config.permaNodeJwt;
     }
 
     /**
@@ -132,11 +139,17 @@ export class ChronicleService {
     private async fetchHelperTryGet<R>(path: string, params: Record<string, unknown>): Promise<R> {
         let response: R | undefined;
 
+        if (!this._jwt) {
+            throw new NetworkConfigurationError("Chronicle JWT not configured...");
+        }
+
         try {
-            response = await FetchHelper.json<never, R>(
+            response = await FetchHelper.json<unknown, R>(
                 this._endpoint,
                 `${path}${FetchHelper.urlParams(params)}`,
-                "get"
+                "get",
+                null,
+                { "Authorization": `Bearer ${this._jwt}` }
             );
         } catch (err) {
             console.log("Failed fetching analytics stats on", path, "with params", params, "reason", err);
