@@ -1,0 +1,11 @@
+{
+    "title": "State Transition",
+    "description": "<p>During the state transaction, the state controller of the alias output increases the state counter and changes the state metadata. There can be only one valid state at a time — the one that is defined in the alias output that wasn't yet consumed.</p>",
+    "links": [
+      {
+        "label": "Read more",
+        "href": "https://wiki.iota.org/introduction/develop/explanations/ledger/alias#state-transition",
+        "isExternal": true
+      }
+    ]
+}

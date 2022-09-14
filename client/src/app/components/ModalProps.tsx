@@ -15,4 +15,9 @@ export interface ModalProps {
             isExternal?: boolean;
         }[];
     };
+
+    /**
+     * Show and hide state of modal.
+     */
+    showModal?: (a: boolean) => void;
 }

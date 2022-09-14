@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
-import mainHeaderMessage from "../../../assets/modals/block/main-header.json";
+import mainHeaderMessage from "../../../assets/modals/stardust/block/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { INftActivityHistory } from "../../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { STARDUST } from "../../../models/config/protocolVersion";

@@ -7,6 +7,9 @@ import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryReque
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
 import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
+import { IAddressBasicOutputsRequest } from "../../models/api/stardust/IAddressBasicOutputsRequest";
+import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
+import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociatedOutputsRequest } from "../../models/api/stardust/IAssociatedOutputsRequest";
@@ -56,9 +59,33 @@ export class StardustApiClient extends ApiClient {
      * @param request The Address Balance request.
      * @returns The Address balance reponse
      */
-    public async addressBalance(request: IAddressBalanceRequest): Promise<IAddressBalanceResponse> {
-        return this.callApi<unknown, IAddressBalanceResponse>(
+    public async addressBalance(request: IAddressBalanceRequest): Promise<IAddressDetailsWithBalance> {
+        return this.callApi<unknown, IAddressDetailsWithBalance>(
             `stardust/balance/${request.network}/${request.address}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the balance of and address from chronicle.
+     * @param request The Address Balance request.
+     * @returns The Address balance reponse
+     */
+    public async addressBalanceChronicle(request: IAddressBalanceRequest): Promise<IAddressBalanceResponse> {
+        return this.callApi<unknown, IAddressBalanceResponse>(
+            `stardust/balance/chronicle/${request.network}/${request.address}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the basic unspent output ids of an address.
+     * @param request The Address Basic outputs request.
+     * @returns The Address outputs response
+     */
+    public async addressBasicOutputs(request: IAddressBasicOutputsRequest): Promise<IAddressBasicOutputsResponse> {
+        return this.callApi<unknown, IAddressBasicOutputsResponse>(
+            `stardust/address/basic-outputs/${request.network}/${request.address}`,
             "get"
         );
     }

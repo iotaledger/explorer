@@ -13,9 +13,11 @@ import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { INodeData } from "../../../models/graph/INodeData";
 import Feeds from "../../components/stardust/Feeds";
 import NetworkContext from "../../context/NetworkContext";
-import "./Visualizer.scss";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerState } from "../VisualizerState";
+import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
+import Modal from "./../../components/Modal";
+import "./Visualizer.scss";
 
 /**
  * Component which will show the visualizer page.
@@ -213,7 +215,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         return (
             <div className="visualizer-stardust">
                 <div className="row middle">
-                    <h1 className="margin-r-t margin-b-t">Visualizer</h1>
+                    <div className="row middle heading margin-r-t margin-b-t">
+                        <h1>Visualizer</h1>
+                        <Modal icon="info" data={mainHeader} />
+                    </div>
                     <div className="card search-filter fill">
                         <div className="card--content row middle">
                             <div className="card--label margin-r-s">Search</div>

@@ -1,6 +1,6 @@
 import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
-import transactionPayloadMessage from "../../../assets/modals/message/transaction-payload.json";
+import transactionPayloadMessage from "../../../assets/modals/stardust/block/transaction-payload.json";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
@@ -52,7 +52,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { network, inputs, unlocks, outputs, transferTotal, header } = this.props;
+        const { network, inputs, unlocks, outputs, transferTotal, header, isLinksDisabled } = this.props;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
         const isMarketed = isMarketedNetwork(network);
 
@@ -109,6 +109,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 amount={output.amount}
                                 network={network}
                                 showCopyAmount={true}
+                                isLinksDisabled={isLinksDisabled}
                             />
                         ))}
                     </div>
