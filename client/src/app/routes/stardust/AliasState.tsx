@@ -37,5 +37,10 @@ export interface AliasState {
      * Hex form of state metadata.
      */
     stateMetadataHex?: string;
+
+    /**
+     * Format storage rent balance in full.
+     */
+    isFormatBalance: boolean;
 }
 

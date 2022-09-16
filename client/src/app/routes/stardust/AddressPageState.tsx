@@ -27,5 +27,10 @@ export interface AddressPageState {
      * The outputs for the address.
      */
     outputResponse?: IOutputResponse[];
+
+    /**
+     * Format storage rent balance in full.
+     */
+    isFormatBalance: boolean;
 }
 

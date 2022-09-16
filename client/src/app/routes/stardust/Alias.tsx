@@ -12,6 +12,7 @@ import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
+import CopyButton from "../../components/CopyButton";
 import DataToggle from "../../components/DataToggle";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
@@ -62,7 +63,8 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         this.state = {
             areFoundriesLoading: true,
             foundries: [],
-            foundriesPageNumber: 1
+            foundriesPageNumber: 1,
+            isFormatBalance: false
         };
     }
 
@@ -117,7 +119,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
     public render(): ReactNode {
         const {
             bech32AddressDetails, storageRentBalance, areFoundriesLoading,
-            foundries, foundriesPageNumber, output, stateMetadataHex
+            foundries, foundriesPageNumber, output, stateMetadataHex, isFormatBalance
         } = this.state;
         const { tokenInfo } = this.context;
         const networkId = this.props.match.params.network;
@@ -154,10 +156,14 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                             <div className="label">
                                                 Storage rent
                                             </div>
-                                            <div className="value featured">
-                                                <span>
-                                                    {formatAmount(storageRentBalance, tokenInfo, true)}
+                                            <div className="row middle value featured">
+                                                <span
+                                                    onClick={() => this.setState({ isFormatBalance: !isFormatBalance })}
+                                                    className="pointer margin-r-5"
+                                                >
+                                                    {formatAmount(storageRentBalance, tokenInfo, isFormatBalance)}
                                                 </span>
+                                                <CopyButton copy={String(storageRentBalance)} />
                                             </div>
                                         </div>
                                     )}
