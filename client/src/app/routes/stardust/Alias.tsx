@@ -64,7 +64,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
             areFoundriesLoading: true,
             foundries: [],
             foundriesPageNumber: 1,
-            isFormatBalance: false
+            isFormatStorageRentFull: true
         };
     }
 
@@ -119,7 +119,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
     public render(): ReactNode {
         const {
             bech32AddressDetails, storageRentBalance, areFoundriesLoading,
-            foundries, foundriesPageNumber, output, stateMetadataHex, isFormatBalance
+            foundries, foundriesPageNumber, output, stateMetadataHex, isFormatStorageRentFull
         } = this.state;
         const { tokenInfo } = this.context;
         const networkId = this.props.match.params.network;
@@ -158,10 +158,10 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                             </div>
                                             <div className="row middle value featured">
                                                 <span
-                                                    onClick={() => this.setState({ isFormatBalance: !isFormatBalance })}
+                                                    onClick={() => this.setState({ isFormatStorageRentFull: !isFormatStorageRentFull })}
                                                     className="pointer margin-r-5"
                                                 >
-                                                    {formatAmount(storageRentBalance, tokenInfo, isFormatBalance)}
+                                                    {formatAmount(storageRentBalance, tokenInfo, isFormatStorageRentFull)}
                                                 </span>
                                                 <CopyButton copy={String(storageRentBalance)} />
                                             </div>

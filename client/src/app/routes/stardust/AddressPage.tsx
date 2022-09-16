@@ -68,7 +68,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
         this.state = {
             jobToStatus: new Map<string, PromiseStatus>(),
-            isFormatBalance: false
+            isFormatStorageRentFull: true
         };
     }
 
@@ -114,7 +114,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
     public render(): ReactNode {
         const {
             bech32AddressDetails, balance, sigLockedBalance,
-            outputResponse, jobToStatus, storageRentBalance, isFormatBalance
+            outputResponse, jobToStatus, storageRentBalance, isFormatStorageRentFull
         } = this.state;
         const { tokenInfo } = this.context;
 
@@ -175,11 +175,17 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                 <div className="row middle value featured">
                                                     <span
                                                         onClick={() => {
-                                                            this.setState({ isFormatBalance: !isFormatBalance });
+                                                            this.setState({
+                                                                isFormatStorageRentFull: !isFormatStorageRentFull
+                                                            });
                                                         }}
                                                         className="pointer margin-r-5"
                                                     >
-                                                        {formatAmount(storageRentBalance, tokenInfo, isFormatBalance)}
+                                                        {formatAmount(
+                                                            storageRentBalance,
+                                                            tokenInfo,
+                                                            isFormatStorageRentFull
+                                                        )}
                                                     </span>
                                                     <CopyButton copy={String(storageRentBalance)} />
                                                 </div>

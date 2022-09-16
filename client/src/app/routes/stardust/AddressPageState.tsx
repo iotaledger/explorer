@@ -31,6 +31,6 @@ export interface AddressPageState {
     /**
      * Format storage rent balance in full.
      */
-    isFormatBalance: boolean;
+    isFormatStorageRentFull: boolean;
 }
 

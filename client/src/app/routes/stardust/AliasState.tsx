@@ -41,6 +41,6 @@ export interface AliasState {
     /**
      * Format storage rent balance in full.
      */
-    isFormatBalance: boolean;
+    isFormatStorageRentFull: boolean;
 }
 
