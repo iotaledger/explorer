@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken, IRent } from "@iota/iota.js-stardust";
 import { IResponse } from "../IResponse";
 
 /**
@@ -6,7 +6,7 @@ import { IResponse } from "../IResponse";
  */
 export interface INodeInfoResponse extends IResponse {
     /**
-     * The node base token.
+     * The base token info of the node.
      */
     baseToken?: INodeInfoBaseToken;
 
@@ -19,5 +19,10 @@ export interface INodeInfoResponse extends IResponse {
      * The bech32 human readable part used in the network.
      */
     bech32Hrp?: string;
+
+    /**
+     * The rent structure of the network.
+     */
+    rentStructure?: IRent;
 }
 

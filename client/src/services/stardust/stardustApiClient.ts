@@ -79,13 +79,13 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
-     * Get the basic unspent output ids of an address.
+     * Get the unspent output ids of an address.
      * @param request The Address Basic outputs request.
      * @returns The Address outputs response
      */
-    public async addressBasicOutputs(request: IAddressBasicOutputsRequest): Promise<IAddressBasicOutputsResponse> {
+    public async addressOutputs(request: IAddressBasicOutputsRequest): Promise<IAddressBasicOutputsResponse> {
         return this.callApi<unknown, IAddressBasicOutputsResponse>(
-            `stardust/address/basic-outputs/${request.network}/${request.address}`,
+            `stardust/address/outputs/${request.network}/${request.address}`,
             "get"
         );
     }

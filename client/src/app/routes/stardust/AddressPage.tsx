@@ -7,11 +7,14 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { AsyncState } from "../../../helpers/promise/AsyncState";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
+import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import QR from "../../components/chrysalis/QR";
+import CopyButton from "../../components/CopyButton";
 import Spinner from "../../components/Spinner";
 import AddressBalance from "../../components/stardust/AddressBalance";
 import AssetsTable from "../../components/stardust/AssetsTable";
@@ -64,7 +67,8 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
         this.state = {
-            jobToStatus: new Map<string, PromiseStatus>()
+            jobToStatus: new Map<string, PromiseStatus>(),
+            isFormatStorageRentFull: true
         };
     }
 
@@ -98,7 +102,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                 bech32AddressDetails: addressDetails
             }, async () => {
                 void this.getAddressBalance();
-                void this.getAddressBasicOutputs();
+                void this.getAddressOutputs();
             });
         }
     }
@@ -108,7 +112,11 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, balance, sigLockedBalance, outputResponse, jobToStatus } = this.state;
+        const {
+            bech32AddressDetails, balance, sigLockedBalance,
+            outputResponse, jobToStatus, storageRentBalance, isFormatStorageRentFull
+        } = this.state;
+        const { tokenInfo } = this.context;
 
         const networkId = this.props.match.params.network;
         const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
@@ -153,13 +161,36 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                 )}
                                             </div>
                                             <div className="section--data">
-                                                {bech32AddressDetails?.bech32 &&
-                                                    (
-                                                        //  eslint-disable-next-line react/jsx-pascal-case
-                                                        <QR data={bech32AddressDetails.bech32} />
+                                                {bech32AddressDetails?.bech32 && (
+                                                    //  eslint-disable-next-line react/jsx-pascal-case
+                                                    <QR data={bech32AddressDetails.bech32} />
                                                 )}
                                             </div>
                                         </div>
+                                        {storageRentBalance && (
+                                            <div className="section--data margin-t-m">
+                                                <div className="label">
+                                                    Storage rent
+                                                </div>
+                                                <div className="row middle value featured">
+                                                    <span
+                                                        onClick={() => {
+                                                            this.setState({
+                                                                isFormatStorageRentFull: !isFormatStorageRentFull
+                                                            });
+                                                        }}
+                                                        className="pointer margin-r-5"
+                                                    >
+                                                        {formatAmount(
+                                                            storageRentBalance,
+                                                            tokenInfo,
+                                                            isFormatStorageRentFull
+                                                        )}
+                                                    </span>
+                                                    <CopyButton copy={String(storageRentBalance)} />
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                     {outputResponse && outputResponse.length === 0 && (
                                         <div className="section">
@@ -177,7 +208,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                     <NftSection
                                         network={networkId}
                                         bech32Address={addressBech32}
-                                        onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("nfts")}
+                                        outputs={outputResponse}
                                     />
                                     {addressBech32 && (
                                         <TransactionHistory
@@ -232,8 +263,12 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         });
     }
 
-    private async getAddressBasicOutputs() {
+    /**
+     * Fetch the address relevant outputs (basic, alias and nft)
+     */
+    private async getAddressOutputs(): Promise<void> {
         const networkId = this.props.match.params.network;
+        const { rentStructure } = this.context;
         const addressBech32 = this.state.bech32AddressDetails?.bech32;
         if (!addressBech32) {
             return;
@@ -244,15 +279,20 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         });
 
         void outputIdsMonitor.enqueue(
-            async () => this._tangleCacheService.addressBasicOutputs(networkId, addressBech32).then(idsResponse => {
+            async () => this._tangleCacheService.addressOutputs(networkId, addressBech32).then(idsResponse => {
                 if (idsResponse?.outputIds) {
                     const outputResponse: IOutputResponse[] = [];
                     const addressOutputIds = idsResponse.outputIds;
+                    let storageRentBalance: number | undefined;
 
                     const outputDetailsMonitor = new PromiseMonitor((status: PromiseStatus) => {
                         this.buildOnAsyncStatusJobHandler("outputDetails")(status);
                         if (status === PromiseStatus.DONE && this._isMounted) {
-                            this.setState({ outputResponse });
+                            storageRentBalance = TransactionsHelper.computeStorageRentBalance(
+                                outputResponse.map(or => or.output),
+                                rentStructure
+                            );
+                            this.setState({ outputResponse, storageRentBalance });
                         }
                     });
 
