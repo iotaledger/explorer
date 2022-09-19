@@ -30,12 +30,12 @@ jobs:
             fs.writeFileSync('./discord-bot/src/data/config.prod.json', process.env.CONFIG_JSON)
             fs.writeFileSync('./discord-bot/dispatch.yaml', process.env.DISPATCH_YAML)
             fs.writeFileSync('./discord-bot/app.yaml', process.env.APP_YAML)      
-      - name: Use Node.js 14.x
+      - name: Use Node.js 16.16
         uses: actions/setup-node@v1
         with:
-          node-version: "14"
-      - name: npm 7
-        run: npm install -g npm@7
+          node-version: "16.16"
+      - name: npm 8.18
+        run: npm install -g npm@8.18
       - name: Deploy
         run: |
           cd discord-bot
