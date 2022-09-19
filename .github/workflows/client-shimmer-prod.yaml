@@ -42,12 +42,12 @@ jobs:
           script: |
             const fs = require('fs')
             fs.writeFileSync('./client/public/env.js', `window.env = { API_ENDPOINT: "${process.env.CONFIG_API_URL}" };`)
-      - name: Use Node.js 14.x
+      - name: Use Node.js 16.16
         uses: actions/setup-node@v1
         with:
-          node-version: "14"
-      - name: npm 7
-        run: npm install -g npm@7
+          node-version: "16.16"
+      - name: npm 8.18
+        run: npm install -g npm@8.18
       - name: vercel 27
         run: npm install -g vercel@27.4.0
       - name: Client Deploy
