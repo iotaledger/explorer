@@ -18,12 +18,13 @@ interface MilestoneFeedProps {
 const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones, latestMilestoneIndex }) => {
     const network = networkConfig.network;
     const secondsSinceLast = useMilestoneInterval(latestMilestoneIndex);
-    const secondsSinceLastView = secondsSinceLast ?
+    const secondsSinceLastView = secondsSinceLast ? (
         <span>
             <span>(last: </span>
             <span className="seconds">{secondsSinceLast.toFixed(2)}</span>
             <span>s)</span>
-        </span> : "";
+        </span>
+    ) : "";
 
     return (
         <>

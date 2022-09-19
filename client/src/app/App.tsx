@@ -5,6 +5,7 @@ import { ServiceFactory } from "../factories/serviceFactory";
 import { isMarketedNetwork, isShimmerNetwork } from "../helpers/networkHelper";
 import { IConfiguration } from "../models/config/IConfiguration";
 import { INetwork } from "../models/config/INetwork";
+import { MAINNET } from "../models/config/networkType";
 import { OG, STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { NodeInfoService } from "../services/nodeInfoService";
@@ -17,7 +18,6 @@ import Header from "./components/header/Header";
 import SearchInput from "./components/SearchInput";
 import buildAppRoutes from "./routes";
 import "./App.scss";
-import { MAINNET } from "../models/config/networkType";
 
 const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguration }> = (
     { history, match: { params: { network, action } }, config: { identityResolverEnabled } }
