@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken, IRent } from "@iota/iota.js-stardust";
 import { createContext } from "react";
 
 /**
@@ -14,13 +14,17 @@ interface INetworkContextProps {
      */
     tokenInfo: INodeInfoBaseToken;
     /**
-     * The protocol version.
+     * The protocol version running on the node.
      */
     protocolVersion: number;
     /**
-     * The version of node.
+     * The bech32 human readable part used in the network.
      */
     bech32Hrp: string;
+    /**
+     * The rent structure of the network.
+     */
+    rentStructure: IRent;
 }
 
 const defaultState = {
@@ -34,7 +38,12 @@ const defaultState = {
       useMetricPrefix: true
   },
   bech32Hrp: "",
-  protocolVersion: -1
+  protocolVersion: -1,
+  rentStructure: {
+      vByteCost: -1,
+      vByteFactorData: -1,
+      vByteFactorKey: -1
+  }
 };
 
 const networkContext = createContext<INetworkContextProps>(defaultState);

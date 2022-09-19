@@ -19,8 +19,18 @@ export interface AddressPageState {
     sigLockedBalance?: number;
 
     /**
+     * The storage rent balance.
+     */
+    storageRentBalance?: number;
+
+    /**
      * The outputs for the address.
      */
     outputResponse?: IOutputResponse[];
+
+    /**
+     * Format storage rent balance in full.
+     */
+    isFormatStorageRentFull: boolean;
 }
 

@@ -27,6 +27,6 @@ export async function get(
         return {};
     }
 
-    return StardustTangleHelper.basicOutputIdsByAddress(networkConfig, request.address);
+    return StardustTangleHelper.outputIdsByAddress(networkConfig, request.address);
 }
 

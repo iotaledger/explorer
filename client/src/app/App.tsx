@@ -8,7 +8,6 @@ import { INetwork } from "../models/config/INetwork";
 import { OG, STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { NodeInfoService } from "../services/nodeInfoService";
-import "./App.scss";
 import { AppRouteProps } from "./AppRouteProps";
 import { buildUtilities, copyrightInner, getFooterItems, getPages, networkContextWrapper } from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
@@ -17,27 +16,31 @@ import ShimmerFooter from "./components/footer/ShimmerFooter";
 import Header from "./components/header/Header";
 import SearchInput from "./components/SearchInput";
 import buildAppRoutes from "./routes";
+import "./App.scss";
+import { MAINNET } from "../models/config/networkType";
 
 const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguration }> = (
     { history, match: { params: { network, action } }, config: { identityResolverEnabled } }
 ) => {
     const [networks, setNetworks] = useState<INetwork[]>([]);
-    const [currentNetworkConfig, setCurrentNetworkConfig] = useState<INetwork | undefined>();
+    const [networksLoaded, setNetworksLoaded] = useState(false);
 
     useEffect(() => {
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networkConfigs = networkService.networks();
+
         setNetworks(networkConfigs);
+        setNetworksLoaded(true);
     }, []);
 
     useEffect(() => {
-        const networkConfig = networks.find(n => n.network === network);
-        if (networkConfig) {
-            setCurrentNetworkConfig(networkConfig);
-        } else if (networks.length > 0) {
-            history.replace(`/${networks[0].network}`);
+        if (networksLoaded && !network) {
+            network = networks.length > 0 ? networks[0].network : MAINNET;
+            history.replace(`/${network}`);
         }
-    }, [networks, network]);
+    }, [networksLoaded]);
+
+    const networkConfig = networks.find(n => n.network === network);
 
     window.scrollTo({
         left: 0,
@@ -45,12 +48,12 @@ const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguratio
         behavior: "smooth"
     });
 
-    const currentNetwork = currentNetworkConfig?.network;
-    const isShimmer = isShimmerNetwork(currentNetwork);
-    const isMarketed = isMarketedNetwork(currentNetwork);
-    const isStardust = currentNetworkConfig?.protocolVersion === STARDUST;
+    const currentNetwork = networkConfig?.network;
+    const isShimmer = isShimmerNetwork(networkConfig?.network);
+    const isMarketed = isMarketedNetwork(networkConfig?.network);
+    const isStardust = networkConfig?.protocolVersion === STARDUST;
     const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
-    const nodeInfo = currentNetwork ? nodeService.get(currentNetwork) : null;
+    const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;
     const withNetworkContext = networkContextWrapper(currentNetwork, nodeInfo);
 
     if (isShimmer) {
@@ -61,22 +64,22 @@ const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguratio
     const routes = buildAppRoutes(
         isStardust,
         isMarketed,
-        currentNetworkConfig?.protocolVersion ?? "",
+        networkConfig?.protocolVersion ?? "",
         withNetworkContext
     );
 
     return (
         <div className={classNames("app", { "shimmer": isShimmer })}>
             <Header
-                rootPath={`/${currentNetworkConfig?.isEnabled ? currentNetwork : ""}`}
-                currentNetwork={currentNetworkConfig}
+                rootPath={`/${networkConfig?.isEnabled ? currentNetwork : ""}`}
+                currentNetwork={networkConfig}
                 networks={networks}
                 action={action}
                 history={history}
                 search={
                     <SearchInput
                         onSearch={query => history.push(`/${currentNetwork}/search/${query}`)}
-                        protocolVersion={currentNetworkConfig?.protocolVersion ?? OG}
+                        protocolVersion={networkConfig?.protocolVersion ?? OG}
                     />
                 }
                 pages={getPages(network ?? "", networks)}
@@ -85,14 +88,14 @@ const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguratio
             <div className="content">
                 {networks.length > 0 ?
                     <React.Fragment>
-                        {!currentNetworkConfig && (
+                        {!networkConfig && (
                             <div className="maintenance">
                                 <div className="maintenance-inner">
                                     The network provided does not exist, please check the url.
                                 </div>
                             </div>
                         )}
-                        {currentNetworkConfig && routes}
+                        {networkConfig && routes}
                         <div className={classNames("copyright", { "shimmer-copyright": isShimmer })}>
                             <div className="copyright-inner">{copyrightInner}</div>
                         </div>

@@ -212,11 +212,11 @@ export class StardustTangleCacheService extends TangleCacheService {
      * @param address The address in bech32 format.
      * @returns The output ids.
      */
-    public async addressBasicOutputs(
+    public async addressOutputs(
         networkId: string,
         address: string
     ): Promise<IAddressBasicOutputsResponse | undefined> {
-        const response = await this._api.addressBasicOutputs({
+        const response = await this._api.addressOutputs({
             network: networkId,
             address
         });
