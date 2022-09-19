@@ -1,11 +1,15 @@
 import moment from "moment";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { DateHelper } from "../../../../helpers/dateHelper";
 import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInterval";
 import { RouteBuilder } from "../../../../helpers/routeBuilder";
+import { IMilestoneAnalyticStats } from "../../../../models/api/stats/IMilestoneAnalyticStats";
 import { INetwork } from "../../../../models/config/INetwork";
+import { STARDUST } from "../../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
+import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
 import Tooltip from "../../../components/Tooltip";
 import "./MilestoneFeed.scss";
 
@@ -16,6 +20,8 @@ interface MilestoneFeedProps {
 }
 
 const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones, latestMilestoneIndex }) => {
+    const [milestoneIdToStats, setMilestoneIdToStats] = useState<Map<string, IMilestoneAnalyticStats>>(new Map());
+
     const network = networkConfig.network;
     const secondsSinceLast = useMilestoneInterval(latestMilestoneIndex);
     const secondsSinceLastView = secondsSinceLast ? (
@@ -25,6 +31,32 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
             <span>s)</span>
         </span>
     ) : "";
+
+    useEffect(() => {
+        const stardustTangleCacheService = ServiceFactory.get<StardustTangleCacheService>(
+            `tangle-cache-${STARDUST}`
+        );
+
+        const refreshMilestoneStats = async () => {
+            for (const milestone of milestones) {
+                const milestoneId = milestone.properties?.milestoneId as string;
+
+                if (!milestoneIdToStats.has(milestoneId)) {
+                    const milestoneStats = await stardustTangleCacheService.milestoneStats(
+                        networkConfig.network, milestoneId
+                    );
+
+                    if (milestoneStats) {
+                        milestoneIdToStats.set(milestoneId, milestoneStats);
+                        setMilestoneIdToStats(milestoneIdToStats);
+                    }
+                }
+            }
+        };
+
+        // eslint-disable-next-line no-void
+        void refreshMilestoneStats();
+    }, [milestones]);
 
     return (
         <>
@@ -47,8 +79,8 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                     const milestoneId = milestone.properties?.milestoneId as string;
                     const milestoneIdShort = `${milestoneId.slice(0, 6)}....${milestoneId.slice(-6)}`;
                     const timestamp = milestone.properties?.timestamp as number * 1000;
-                    const includedBlocks = 5;
-                    const txs = 2;
+                    const includedBlocks = milestoneIdToStats.get(milestoneId)?.blocksCount ?? "";
+                    const txs = milestoneIdToStats.get(milestoneId)?.perPayloadType?.txPayloadCount ?? "";
                     const ago = moment(timestamp).fromNow();
                     const tooltipContent = DateHelper.formatShort(timestamp);
 

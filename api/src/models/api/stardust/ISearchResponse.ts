@@ -1,7 +1,7 @@
 import { IBlock, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
 import { IResponse } from "../IResponse";
 import { IBech32AddressDetails } from "./IBech32AddressDetails";
-import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
+import { IMilestoneDetailsResponse } from "./milestone/IMilestoneDetailsResponse";
 
 export interface ISearchResponse extends IResponse {
     /**

@@ -17,6 +17,7 @@ import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociate
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
+import { IMilestoneStatsRequest } from "../../models/api/stardust/IMilestoneStatsRequest";
 import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
 import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
@@ -34,6 +35,7 @@ import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRe
 import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IAnalyticStatsRequest } from "../../models/api/stats/IAnalyticStatsRequest";
+import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -158,6 +160,18 @@ export class StardustApiClient extends ApiClient {
     public async milestoneDetails(request: IMilestoneDetailsRequest): Promise<IMilestoneDetailsResponse> {
         return this.callApi<unknown, IMilestoneDetailsResponse>(
             `stardust/milestone/${request.network}/${request.milestoneIndex}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the milestone analytics stats by milestone id.
+     * @param request The milestone analytic stats get request.
+     * @returns The milestone stats response.
+     */
+    public async milestoneStats(request: IMilestoneStatsRequest): Promise<IMilestoneAnalyticStats> {
+        return this.callApi<unknown, IMilestoneAnalyticStats>(
+            `stardust/milestone/stats/${request.networkId}/${request.milestoneId}`,
             "get"
         );
     }

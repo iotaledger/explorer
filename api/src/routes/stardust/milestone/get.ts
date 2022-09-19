@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IMilestoneDetailsRequest } from "../../../models/api/stardust/IMilestoneDetailsRequest";
-import { IMilestoneDetailsResponse } from "../../../models/api/stardust/IMilestoneDetailsResponse";
+import { IMilestoneDetailsRequest } from "../../../models/api/stardust/milestone/IMilestoneDetailsRequest";
+import { IMilestoneDetailsResponse } from "../../../models/api/stardust/milestone/IMilestoneDetailsResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";

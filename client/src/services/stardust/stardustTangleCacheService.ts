@@ -23,6 +23,7 @@ import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsReq
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
 import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
 import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
+import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { TangleCacheService } from "../tangleCacheService";
 import { StardustApiClient } from "./stardustApiClient";
@@ -252,7 +253,7 @@ export class StardustTangleCacheService extends TangleCacheService {
     /**
      * Get the milestone details.
      * @param networkId The network to search
-     * @param milestoneIndex The output to get the details for.
+     * @param milestoneIndex The milestone to get the details for.
      * @returns The details response.
      */
     public async milestoneDetails(
@@ -274,6 +275,35 @@ export class StardustTangleCacheService extends TangleCacheService {
         }
 
         return this._stardustSearchCache[networkId][index]?.data?.milestone;
+    }
+
+    /**
+     * Get the milestone analytics stats by milestone id.
+     * @param networkId The network to search
+     * @param milestoneId The milestone to get the details for.
+     * @returns The details response.
+     */
+    public async milestoneStats(networkId: string, milestoneId: string): Promise<IMilestoneAnalyticStats | undefined> {
+        const key = `milestoneStats-${milestoneId}`;
+        const cacheEntry = this._stardustSearchCache[networkId][key]?.data?.milestoneStats;
+
+        if (!cacheEntry) {
+            const response: IMilestoneAnalyticStats = await this._api.milestoneStats({
+                networkId,
+                milestoneId
+            });
+
+            if (!response.error) {
+                this._stardustSearchCache[networkId][key] = {
+                    data: {
+                        milestoneStats: response
+                    },
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._stardustSearchCache[networkId][key]?.data?.milestoneStats;
     }
 
     /**
