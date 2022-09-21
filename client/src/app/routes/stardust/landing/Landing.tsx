@@ -65,7 +65,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         super.componentDidUpdate(prevProps, prevState);
 
         if (this.props.match.params.network !== prevProps.match.params.network && this._networkConfig) {
-            this.setState({ networkConfig: this._networkConfig })
+            this.setState({ networkConfig: this._networkConfig });
         }
     }
 
