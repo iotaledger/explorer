@@ -13,6 +13,8 @@ import { StardustTangleCacheService } from "../../../../services/stardust/stardu
 import Tooltip from "../../../components/Tooltip";
 import "./MilestoneFeed.scss";
 
+const FEED_ITEMS_MAX = 10;
+
 interface MilestoneFeedProps {
     networkConfig: INetwork;
     milestones: IFeedItem[];
@@ -58,6 +60,17 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
         void refreshMilestoneStats();
     }, [milestones]);
 
+    const milestonesWithStats: IFeedItem[] = [];
+    for (const milestone of milestones) {
+        const milestoneId = milestone.properties?.milestoneId as string;
+        if (milestoneIdToStats.has(milestoneId)) {
+            milestonesWithStats.push(milestone);
+        }
+        if (milestonesWithStats.length === FEED_ITEMS_MAX) {
+            break;
+        }
+    }
+
     return (
         <>
             <div className="section--header milestone-feed-header row padding-l-8">
@@ -71,10 +84,10 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                     <span className="label ms-txs">Txs</span>
                     <span className="label ms-timestamp">Timestamp</span>
                 </div>
-                {milestones.length === 0 && (
+                {milestonesWithStats.length === 0 && (
                     <p>There are no milestones in the feed.</p>
                 )}
-                {milestones.map(milestone => {
+                {milestonesWithStats.map(milestone => {
                     const index = milestone.properties?.index as number;
                     const milestoneId = milestone.properties?.milestoneId as string;
                     const milestoneIdShort = `${milestoneId.slice(0, 6)}....${milestoneId.slice(-6)}`;

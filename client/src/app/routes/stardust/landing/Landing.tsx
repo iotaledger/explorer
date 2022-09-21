@@ -19,7 +19,7 @@ import { FeedTabs, getDefaultLandingState, LandingState } from "./LandingState";
 import MilestoneFeed from "./MilestoneFeed";
 import "./Landing.scss";
 
-const MAX_MILESTONE_ITEMS = 10;
+const MAX_MILESTONE_ITEMS = 15;
 
 /**
  * Component which will show the landing page.
