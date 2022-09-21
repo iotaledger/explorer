@@ -41,7 +41,6 @@ export async function get(
     if (analyticsStore) {
         const cachedStats = analyticsStore.milestoneAnalytics[request.milestoneId];
         if (cachedStats) {
-            console.log("Returning cached stats for", request.milestoneId);
             return cachedStats;
         }
     }
@@ -51,7 +50,6 @@ export async function get(
     );
 
     const fetchedStats = await chronicleService.milestoneAnalytics(request.milestoneId);
-    console.log("Fetched new stats for", request.milestoneId);
     // Add new milestone stats to store
     analyticsStore.milestoneAnalytics[request.milestoneId] = fetchedStats;
     // Keep the milestone analytics object at MILESTONE_CACHE_MAX
@@ -62,7 +60,6 @@ export async function get(
 
     // eslint-disable-next-line no-void
     void analyticsStorage.set(analyticsStore);
-    console.log("Store len", Object.keys(analyticsStore.milestoneAnalytics).length);
 
     return fetchedStats;
 }
