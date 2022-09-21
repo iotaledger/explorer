@@ -54,6 +54,22 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     }
 
     /**
+     * The component was updated.
+     * @param prevProps The previous properties.
+     * @param prevState The previous state.
+     */
+    public componentDidUpdate(
+        prevProps: RouteComponentProps<LandingRouteProps>,
+        prevState: LandingState
+    ): void {
+        super.componentDidUpdate(prevProps, prevState);
+
+        if (this.props.match.params.network !== prevProps.match.params.network && this._networkConfig) {
+            this.setState({ networkConfig: this._networkConfig })
+        }
+    }
+
+    /**
      * Render the component.
      * @returns The node to render.
      */
