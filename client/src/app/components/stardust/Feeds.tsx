@@ -87,6 +87,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
         if (this.props.match.params.network !== prevProps.match.params.network) {
             this.closeItems();
+            this.setState({ latestMilestoneIndex: undefined });
 
             this.initNetworkServices();
         }

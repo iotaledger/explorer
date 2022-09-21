@@ -10,7 +10,7 @@
     margin-bottom: 16px;
 
     span {
-        @include font-size(20px, 24px);
+        @include font-size(18px, 24px);
 
         &:first-child {
             margin-left: 4px;
@@ -21,7 +21,7 @@
 
         &.seconds {
             display: inline-block;
-            width: 44px!important;
+            min-width: 44px!important;
         }
     }
 }
