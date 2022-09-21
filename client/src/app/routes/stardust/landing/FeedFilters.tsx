@@ -19,6 +19,7 @@ interface FeedFiltersProps {
 }
 
 const DEFAULT_MAX_VALUE = "10000";
+const MAX_FEED_ITEMS = 10;
 
 const FeedFilters: React.FC<FeedFiltersProps> = (
     { networkConfig, settingsService, items, setFilteredItems }
@@ -151,7 +152,7 @@ const FeedFilters: React.FC<FeedFiltersProps> = (
 
             const filteredItems = itemsToFilter.filter(
                 item => filterAppliers.some(applier => applier.apply(item))
-            ).slice(0, 10);
+            ).slice(0, MAX_FEED_ITEMS);
 
             setFrozenItems(filteredItems);
             setFilteredItems(filteredItems);

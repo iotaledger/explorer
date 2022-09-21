@@ -19,6 +19,8 @@ import { FeedTabs, getDefaultLandingState, LandingState } from "./LandingState";
 import MilestoneFeed from "./MilestoneFeed";
 import "./Landing.scss";
 
+const MAX_MILESTONE_ITEMS = 10;
+
 /**
  * Component which will show the landing page.
  */
@@ -187,7 +189,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         super.itemsUpdated(newItems);
         if (this._feedClient) {
             const blocks = this._feedClient.getItems();
-            const milestones = this._feedClient.getItems().filter(item => item.payloadType === "MS").slice(0, 15);
+            const milestones = this._feedClient.getItems()
+                .filter(item => item.payloadType === "MS").slice(0, MAX_MILESTONE_ITEMS);
 
             this.setState({
                 blocks,
