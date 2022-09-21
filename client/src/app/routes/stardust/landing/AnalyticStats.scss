@@ -1,0 +1,82 @@
+@import "../../../../scss/fonts";
+@import "../../../../scss/mixins";
+@import "../../../../scss/media-queries";
+@import "../../../../scss/themes";
+
+.extended-info-boxes {
+    flex-direction: column;
+    display: grid;
+    grid-template-columns: auto auto;
+    padding: 12px;
+    background: var(--header-box-bg);
+    backdrop-filter: blur(5px);
+    margin: 0 calc(-1 * #{$inner-padding});
+    border-radius: 0;
+
+    @include desktop-down {
+        grid-template-columns: auto;
+    }
+    @include tablet-down {
+        backdrop-filter: none;
+        padding-top: 0;
+    }
+
+    .info-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 24px;
+
+        @include tablet-down {
+            padding: 12px;
+        }
+
+        .info-box--title {
+            @include font-size(12px, 18px);
+
+            color: $gray-5;
+            font-family: $inter;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-align: center;
+            text-decoration: none;
+            white-space: nowrap;
+
+            @include tablet-down {
+                text-align: center;
+            }
+
+            @include phone-down {
+                font-size: 10px;
+            }
+        }
+
+        .info-box--value {
+            @include font-size(24px);
+
+            margin-top: 18px;
+            color: var(--body-color);
+            font-family: $inter;
+            font-weight: 600;
+            text-decoration: none;
+            text-transform: uppercase;
+            white-space: break-spaces;
+
+            @include tablet-down {
+                text-align: center;
+            }
+
+            @include phone-down {
+                font-size: 14px;
+            }
+
+            .upload-rate {
+                color: $gray-5;
+            }
+        }
+    }
+}
+

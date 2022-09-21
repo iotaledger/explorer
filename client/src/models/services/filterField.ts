@@ -1,27 +1,27 @@
 import { OG, ProtocolVersion, STARDUST } from "../config/protocolVersion";
 
-export interface ValueFilter {
+export interface FilterField {
     label: "Zero only" | "Non-zero only" | "Transaction" | "Milestone" | "Indexed" | "Data" | "No payload";
     isEnabled: boolean;
 }
 
 /**
- * Returns the default values for the Value Filter
+ * Returns the default values for the filter fields
  * @param protocolVersion The Protocol Version string.
- * @returns The filter ValueFilter(s) array
+ * @returns filterFields The FilterField array
  */
-export function getDefaultValueFilter(protocolVersion: ProtocolVersion): ValueFilter[] {
-    let valueFilter: ValueFilter[];
+export function getFilterFieldDefaults(protocolVersion: ProtocolVersion): FilterField[] {
+    let filterFields: FilterField[];
 
     switch (protocolVersion) {
         case OG:
-            valueFilter = [
+            filterFields = [
                 { label: "Zero only", isEnabled: true },
                 { label: "Non-zero only", isEnabled: true }
             ];
             break;
         case STARDUST:
-            valueFilter = [
+            filterFields = [
                 { label: "Transaction", isEnabled: true },
                 { label: "Milestone", isEnabled: true },
                 { label: "Data", isEnabled: true },
@@ -30,7 +30,7 @@ export function getDefaultValueFilter(protocolVersion: ProtocolVersion): ValueFi
             break;
         // COORDICIDE or CHRYSALIS
         default:
-            valueFilter = [
+            filterFields = [
                 { label: "Transaction", isEnabled: true },
                 { label: "Milestone", isEnabled: true },
                 { label: "Indexed", isEnabled: true },
@@ -39,6 +39,6 @@ export function getDefaultValueFilter(protocolVersion: ProtocolVersion): ValueFi
             break;
     }
 
-    return valueFilter;
+    return filterFields;
 }
 

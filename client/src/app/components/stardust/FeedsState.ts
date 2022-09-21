@@ -1,5 +1,5 @@
-import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
-import { CurrencyState } from "./CurrencyState";
+import { IAnalyticStats } from "../../../models/api/stats/IAnalyticStats";
+import { CurrencyState } from "../CurrencyState";
 
 export interface FeedsState extends CurrencyState {
     /**
@@ -26,20 +26,6 @@ export interface FeedsState extends CurrencyState {
      * The items per second.
      */
     itemsPerSecondHistory: number[];
-
-    /**
-     * Latest milestones.
-     */
-    milestones: {
-        /**
-         * The id.
-         */
-        id: string;
-        /**
-         * The milestone index.
-         */
-        milestoneIndex: number;
-    }[];
 
     /**
      * The chonicle analytic stats.

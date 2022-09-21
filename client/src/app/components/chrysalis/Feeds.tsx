@@ -11,7 +11,7 @@ import { MilestonesClient } from "../../../services/milestonesClient";
 import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import Currency from "../Currency";
-import { FeedsState } from "../FeedsState";
+import { FeedsState } from "./FeedsState";
 
 /**
  * Component which will be the base for feeds components.

@@ -21,6 +21,7 @@ export async function get(
     ValidationHelper.oneOf(request.network, networks, "network");
 
     const statsService = ServiceFactory.get<IAnalyticsStatsService >(`stats-${request.network}`);
+    const networkHasAnalytics = typeof statsService.getAnalytics === "function";
 
-    return statsService.getAnalytics();
+    return networkHasAnalytics ? statsService.getAnalytics() : {};
 }

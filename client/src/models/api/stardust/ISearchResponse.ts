@@ -1,6 +1,7 @@
 import { IBlock, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 import { IResponse } from "../IResponse";
+import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
 import { IAssociatedOutputsResponse } from "./IAssociatedOutputsResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
@@ -91,6 +92,11 @@ export interface ISearchResponse extends IResponse {
      * Milestone if it was found.
      */
     milestone?: IMilestoneDetailsResponse;
+
+    /**
+     * Milestone chornicle stats.
+     */
+    milestoneStats?: IMilestoneAnalyticStats;
 
     /**
      * DiD identifier.

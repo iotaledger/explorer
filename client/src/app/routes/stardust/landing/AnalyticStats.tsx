@@ -1,14 +1,15 @@
 import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React from "react";
-import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
-import { IAnalyticStats } from "../../../models/api/stats/IAnalyticStats";
+import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
+import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
+import "./AnalyticStats.scss";
 
-interface InfoSectionProps {
+interface AnalyticStatsProps {
     analytics: IAnalyticStats | undefined;
     tokenInfo: INodeInfoBaseToken;
 }
 
-const InfoSection: React.FC<InfoSectionProps> = ({ analytics, tokenInfo }) => {
+const AnalyticStats: React.FC<AnalyticStatsProps> = ({ analytics, tokenInfo }) => {
     const nativeTokensCount = analytics?.nativeTokens?.count;
     const nftsCount = analytics?.nfts?.count;
     const totalAddresses = analytics?.totalAddresses?.totalActiveAddresses;
@@ -66,5 +67,5 @@ const InfoSection: React.FC<InfoSectionProps> = ({ analytics, tokenInfo }) => {
     );
 };
 
-export default InfoSection;
+export default AnalyticStats;
 

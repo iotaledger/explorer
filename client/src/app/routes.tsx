@@ -1,9 +1,8 @@
 /* eslint-disable react/jsx-first-prop-new-line */
 import React from "react";
-import { Route, RouteComponentProps } from "react-router-dom";
+import { Route, RouteComponentProps, Switch } from "react-router-dom";
 import { CHRYSALIS } from "../models/config/protocolVersion";
 import { AddressRouteProps } from "./routes/AddressRouteProps";
-import { AliasRouteProps } from "./routes/AliasRouteProps";
 import ChrysalisAddress from "./routes/chrysalis/Addr";
 import Indexed from "./routes/chrysalis/Indexed";
 import { IndexedRouteProps } from "./routes/chrysalis/IndexedRouteProps";
@@ -17,7 +16,6 @@ import IdentityResolver from "./routes/IdentityResolver";
 import { IdentityResolverProps } from "./routes/IdentityResolverProps";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
 import Markets from "./routes/Markets";
-import { NftRouteProps } from "./routes/NftRouteProps";
 import Address from "./routes/og/Address";
 import { AddressRouteProps as OgAddressRouteProps } from "./routes/og/AddressRouteProps";
 import Bundle from "./routes/og/Bundle";
@@ -30,20 +28,14 @@ import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddressPage from "./routes/stardust/AddressPage";
 import Alias from "./routes/stardust/Alias";
 import StardustBlock from "./routes/stardust/Block";
-import { BlockProps } from "./routes/stardust/BlockProps";
 import Foundry from "./routes/stardust/Foundry";
-import { FoundryProps } from "./routes/stardust/FoundryProps";
-import StardustLanding from "./routes/stardust/Landing";
+import StardustLanding from "./routes/stardust/landing/Landing";
 import Nft from "./routes/stardust/Nft";
 import NftRegistryDetails from "./routes/stardust/NftRegistryDetails";
-import { NftRegistryDetailsProps } from "./routes/stardust/NftRegistryDetailsProps";
 import OutputList from "./routes/stardust/OutputList";
-import OutputListProps from "./routes/stardust/OutputListProps";
 import OutputPage from "./routes/stardust/OutputPage";
-import OutputPageProps from "./routes/stardust/OutputPageProps";
 import StardustSearch from "./routes/stardust/Search";
 import TransactionPage from "./routes/stardust/TransactionPage";
-import { TransactionPageProps } from "./routes/stardust/TransactionPageProps";
 import StardustVisualizer from "./routes/stardust/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
@@ -161,88 +153,64 @@ const buildAppRoutes = (
     const stardustRoutes = [
         <Route exact path="/:network"
             key={keys.next().value}
-            component={(props: RouteComponentProps<LandingRouteProps>) => (
-                withNetworkContext(<StardustLanding {...props} />)
-            )}
+            component={StardustLanding}
         />,
         <Route path="/:network/visualizer/"
             key={keys.next().value}
-            component={(props: RouteComponentProps<VisualizerRouteProps>) => (
-                withNetworkContext(<StardustVisualizer {...props} />)
-            )}
+            component={StardustVisualizer}
         />,
         <Route path="/:network/search/:query?"
             key={keys.next().value}
-            component={(props: RouteComponentProps<SearchRouteProps>) => (
-                withNetworkContext(<StardustSearch {...props} />)
-            )}
+            component={StardustSearch}
         />,
         <Route path="/:network/addr/:address"
             key={keys.next().value}
-            component={(props: RouteComponentProps<AddressRouteProps>) => (
-                withNetworkContext(<StardustAddressPage {...props} />)
-            )}
+            component={StardustAddressPage}
         />,
         <Route path="/:network/block/:blockId"
             key={keys.next().value}
-            component={(props: RouteComponentProps<BlockProps>) => (
-                withNetworkContext(<StardustBlock {...props} />)
-            )}
+            component={StardustBlock}
         />,
         <Route path="/:network/transaction/:transactionId"
             key={keys.next().value}
-            component={(props: RouteComponentProps<TransactionPageProps>) => (
-                withNetworkContext(<TransactionPage {...props} />)
-            )}
+            component={TransactionPage}
         />,
         <Route path="/:network/output/:outputId"
             key={keys.next().value}
-            component={(props: RouteComponentProps<OutputPageProps>) => (
-                withNetworkContext(<OutputPage {...props} />)
-            )}
+            component={OutputPage}
         />,
         <Route path="/:network/outputs"
             key={keys.next().value}
-            component={(props: RouteComponentProps<OutputListProps>) => (
-                withNetworkContext(<OutputList {...props} />)
-            )}
+            component={OutputList}
         />,
         <Route path="/:network/foundry/:foundryId"
             key={keys.next().value}
-            component={(props: RouteComponentProps<FoundryProps>) => (
-                withNetworkContext(<Foundry {...props} />)
-            )}
+            component={Foundry}
         />,
         <Route path="/:network/nft-registry/:nftId"
             key={keys.next().value}
-            component={(props: RouteComponentProps<NftRegistryDetailsProps>) => (
-                <NftRegistryDetails {...props} />
-            )}
+            component={NftRegistryDetails}
         />,
         <Route path="/:network/alias/:aliasAddress"
             key={keys.next().value}
-            component={(props: RouteComponentProps<AliasRouteProps>) => (
-                withNetworkContext(<Alias {...props} />)
-            )}
+            component={Alias}
         />,
         <Route path="/:network/nft/:nftAddress"
             key={keys.next().value}
-            component={(props: RouteComponentProps<NftRouteProps>) => (
-                withNetworkContext(<Nft {...props} />)
-            )}
+            component={Nft}
         />
     ];
 
-    const routes: JSX.Element[] = [];
-    routes.push(...commonRoutes);
-
-    if (isStardust) {
-        routes.push(...stardustRoutes);
-    } else {
-        routes.push(...ogAndChrysalisRoutes);
-    }
-
-    return routes;
+    return (
+        <Switch>
+            {commonRoutes}
+            {
+                isStardust ?
+                    withNetworkContext(stardustRoutes) :
+                    ogAndChrysalisRoutes
+            }
+        </Switch>
+    );
 };
 
 export default buildAppRoutes;
