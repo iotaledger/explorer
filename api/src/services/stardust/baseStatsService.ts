@@ -2,17 +2,19 @@ import moment from "moment";
 import cron from "node-cron";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
+import { IShimmerClaimStats } from "../../models/api/stats/IShimmerClaimStats";
 import { IAnalyticsStore } from "../../models/db/IAnalyticsStore";
 import { INetwork } from "../../models/db/INetwork";
 import { IStatistics } from "../../models/services/IStatistics";
 import { IStatsService } from "../../models/services/IStatsService";
 import { IStorageService } from "../../models/services/IStorageService";
 import { IAnalyticsStatsService } from "../../models/services/stardust/IAnalyticsStatsService";
+import { IShimmerStatsService } from "../../models/services/stardust/IShimmerStatsService";
 
 /**
  * Class to handle stats service.
  */
-export abstract class BaseStatsService implements IStatsService, IAnalyticsStatsService {
+export abstract class BaseStatsService implements IStatsService, IAnalyticsStatsService, IShimmerStatsService {
     /**
      * The network configuration.
      */
@@ -27,11 +29,6 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
      * Interval in hours of analytics stats refresh.
      */
     protected readonly ANALYTICS_REFERSH_FREQ_HOURS = 3;
-
-    /**
-     * The analytic stats.
-     */
-    protected _analyticsStats?: number;
 
     /**
      * The analytics storage.
@@ -83,6 +80,15 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
     }
 
     /**
+     * Fetch the current Shimmer stats.
+     * @returns The current shimmer claiming stats.
+     */
+    public async getShimmerStats(): Promise<IShimmerClaimStats> {
+        const analyticsStore = await this._analyticsStorage.get(this._networkConfiguration.network);
+        return { count: analyticsStore.shimmerClaimingStats };
+    }
+
+    /**
      * Get the stats history.
      * @returns The historical statistics for the network.
      */
@@ -113,7 +119,8 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
             network,
             dailyMilestones: {},
             analytics: {},
-            milestoneAnalytics: {}
+            milestoneAnalytics: {},
+            shimmerClaimingStats: ""
         });
 
         const initialized = await this._analyticsStorage.get(network);

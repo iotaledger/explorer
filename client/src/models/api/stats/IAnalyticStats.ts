@@ -1,6 +1,7 @@
 /** Chronicle analytics [stardust] */
 
 import { IResponse } from "../IResponse";
+import { IShimmerClaimStats } from "./IShimmerClaimingStatsResponse";
 
 /**
  * The count stat.
@@ -39,6 +40,6 @@ export interface IAnalyticStats extends IResponse {
     totalAddresses?: IAddressesStats;
     dailyAddresses?: IAddressesStats;
     lockedStorageDeposit?: ICountAndValueStats;
-    dailyTransactions?: ICountStat;
+    totalShimmerTokensClaimed?: IShimmerClaimStats;
 }
 

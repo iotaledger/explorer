@@ -73,8 +73,12 @@ export const routes: IRoute[] = [
         folder: "stardust/alias/foundries", func: "get"
     },
     { path: "/stardust/foundry/:network/:foundryId", method: "get", folder: "stardust/foundry", func: "get" },
+    { path: "/stardust/analytics/:network", method: "get", folder: "stardust/analytics", func: "get", sign: true },
+    {
+        path: "/stardust/analytics/shimmer/:network", method: "get",
+        folder: "stardust/analytics/shimmer", func: "get", sign: true
+    },
     { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
-    { path: "/analytics/:network", method: "get", folder: "analytics", func: "get", sign: true },
     { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
     { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true },
     { path: "/did/:network/:did/document", method: "get", folder: "identity/resolution", func: "get" },

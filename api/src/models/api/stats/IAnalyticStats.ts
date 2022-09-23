@@ -37,6 +37,5 @@ export interface IAnalyticStats {
     totalAddresses?: IAddressesStats;
     dailyAddresses?: IAddressesStats;
     lockedStorageDeposit?: ICountAndValueStats;
-    dailyTransactions?: ICountStat;
 }
 

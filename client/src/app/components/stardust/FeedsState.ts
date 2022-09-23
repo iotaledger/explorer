@@ -1,4 +1,5 @@
 import { IAnalyticStats } from "../../../models/api/stats/IAnalyticStats";
+import { IShimmerClaimStats } from "../../../models/api/stats/IShimmerClaimingStatsResponse";
 import { CurrencyState } from "../CurrencyState";
 
 export interface FeedsState extends CurrencyState {
@@ -31,4 +32,9 @@ export interface FeedsState extends CurrencyState {
      * The chonicle analytic stats.
      */
     networkAnalytics?: IAnalyticStats;
+
+    /**
+     * The shimmer token claiming stat for the network.
+     */
+    shimmerClaimingStats?: IShimmerClaimStats;
 }

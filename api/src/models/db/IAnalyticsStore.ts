@@ -24,5 +24,10 @@ export interface IAnalyticsStore {
     milestoneAnalytics: {
         [milestoneId: string]: IMilestoneAnalyticStats;
     };
+
+    /**
+     * The shimmer claiming stats.
+     */
+    shimmerClaimingStats: string;
 }
 

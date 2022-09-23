@@ -46,6 +46,11 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     protected _feedProbeTimerId?: NodeJS.Timer;
 
     /**
+     * Shimmer token claiming stats timer id.
+     */
+    protected _shimmerClaimingTimerId?: NodeJS.Timer;
+
+    /**
      * The last update items call in epoch time.
      */
     protected _lastUpdateItems?: number;
@@ -88,6 +93,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         if (this.props.match.params.network !== prevProps.match.params.network) {
             this.closeItems();
             this.setState({ latestMilestoneIndex: undefined });
+            this.setState({ shimmerClaimingStats: undefined });
 
             this.initNetworkServices();
         }
@@ -105,7 +111,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Update formatted currencies.
      */
-    protected updateCurrency(): void {}
+    protected updateCurrency(): void { }
 
     /**
      * The items have been updated.
@@ -134,7 +140,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * The confirmed items have been updated.
      * @param metaData The updated confirmed items.
      */
-    protected metadataUpdated(metaData: { [id: string]: IFeedItemMetadata }): void {}
+    protected metadataUpdated(metaData: { [id: string]: IFeedItemMetadata }): void { }
 
     /**
      * Build the feeds for transactions.
@@ -168,6 +174,11 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         if (this._updateTpstimerId) {
             clearInterval(this._updateTpstimerId);
             this._updateTpstimerId = undefined;
+        }
+
+        if (this._shimmerClaimingTimerId) {
+            clearInterval(this._shimmerClaimingTimerId);
+            this._shimmerClaimingTimerId = undefined;
         }
 
         this._lastUpdateItems = undefined;
@@ -214,12 +225,28 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                     itemsPerSecondHistory: (ips.itemsPerSecondHistory ?? []).map(v => v + 100)
                 });
             })
-            .catch(err => {
-                console.error(err);
-            })
-            .finally(() => {
-                this._updateTpstimerId = setTimeout(async () => this.updateTps(), 4000);
-            });
+                .catch(err => {
+                    console.error(err);
+                })
+                .finally(() => {
+                    this._updateTpstimerId = setTimeout(async () => this.updateTps(), 4000);
+                });
+        }
+    }
+
+    /**
+     * Refresh shimmer token claim stats.
+     */
+    private async refreshShimmerClaimingStatistics(): Promise<void> {
+        if (this._networkConfig?.network) {
+            const shimmerClaimingStatsResponse = await this._apiClient?.shimmerClaimingAnalytics(
+                { network: this._networkConfig.network }
+            );
+
+            if (!shimmerClaimingStatsResponse?.code) {
+                const shimmerClaimingStats = shimmerClaimingStatsResponse?.totalShimmerTokensClaimed;
+                this.setState({ shimmerClaimingStats });
+            }
         }
     }
 
@@ -258,7 +285,18 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         // eslint-disable-next-line no-void
         void this.fetchAnalytics();
 
+        this.setupShimmerClaimingStatsInterval();
         this.setupFeedLivenessProbe();
+    }
+
+    /**
+     * Sets up a check at interval to catch the case when feed stops streaming.
+     */
+    private setupShimmerClaimingStatsInterval(): void {
+        this._shimmerClaimingTimerId = setInterval(() => {
+            // eslint-disable-next-line no-void
+            void this.refreshShimmerClaimingStatistics();
+        }, 3000);
     }
 
     /**
