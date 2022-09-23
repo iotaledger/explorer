@@ -25,10 +25,7 @@ export class StardustStatsService extends BaseStatsService {
         const network = this._networkConfiguration.network;
         const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${network}`);
 
-        let analyticsStore = await this._analyticsStorage.get(network);
-        if (!analyticsStore) {
-            analyticsStore = await this.initAnalyticsStore(network);
-        }
+        const analyticsStore = await this._analyticsStorage.get(network);
 
         try {
             const latestMsFromStatistics: number = this._statistics[this._statistics.length - 1].latestMilestoneIndex;
@@ -95,11 +92,7 @@ export class StardustStatsService extends BaseStatsService {
         const claimingStats = await chronicleService.shimmerClaimingStatistics();
 
         if (claimingStats?.count) {
-            let analyticsStore = await this._analyticsStorage.get(network);
-
-            if (!analyticsStore) {
-                analyticsStore = await this.initAnalyticsStore(network);
-            }
+            const analyticsStore = await this._analyticsStorage.get(network);
 
             analyticsStore.shimmerClaimingStats = claimingStats.count;
             await this._analyticsStorage.set(analyticsStore);

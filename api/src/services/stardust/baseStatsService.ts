@@ -57,9 +57,12 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
             }
         ];
 
-        setInterval(async () => this.updateStatistics(), 2000);
-        this.setupDailyMilestonesJob();
-        this.setupAnalytics();
+        // eslint-disable-next-line no-void
+        void this.initAnalyticsStoreIfNeeded(networkConfiguration.network).then(() => {
+            setInterval(async () => this.updateStatistics(), 2000);
+            this.setupDailyMilestonesJob();
+            this.setupAnalytics();
+        });
     }
 
     /**
@@ -114,14 +117,19 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
      * @param network The network in context.
      * @returns The initialized analytics store.
      */
-    protected async initAnalyticsStore(network: string): Promise<IAnalyticsStore> {
-        await this._analyticsStorage.set({
-            network,
-            dailyMilestones: {},
-            analytics: {},
-            milestoneAnalytics: {},
-            shimmerClaimingStats: ""
-        });
+    protected async initAnalyticsStoreIfNeeded(network: string): Promise<IAnalyticsStore> {
+        const analyticsStore = await this._analyticsStorage.get(network);
+
+        if (!analyticsStore) {
+            console.log("Initializing analytics store for", network);
+            await this._analyticsStorage.set({
+                network,
+                dailyMilestones: {},
+                analytics: {},
+                milestoneAnalytics: {},
+                shimmerClaimingStats: ""
+            });
+        }
 
         const initialized = await this._analyticsStorage.get(network);
         return initialized;
@@ -150,11 +158,7 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
 
         // collect history milestones
         cron.schedule(cronExpr, async () => {
-            let currentAnalyticsStore = await this._analyticsStorage.get(network);
-
-            if (!currentAnalyticsStore) {
-                currentAnalyticsStore = await this.initAnalyticsStore(network);
-            }
+            const currentAnalyticsStore = await this._analyticsStorage.get(network);
 
             if (currentAnalyticsStore.dailyMilestones?.last) {
                 currentAnalyticsStore.dailyMilestones.first = currentAnalyticsStore.dailyMilestones.last;
