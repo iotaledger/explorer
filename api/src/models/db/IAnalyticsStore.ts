@@ -24,6 +24,5 @@ export interface IAnalyticsStore {
     milestoneAnalytics: {
         [milestoneId: string]: IMilestoneAnalyticStats;
     };
-
 }
 

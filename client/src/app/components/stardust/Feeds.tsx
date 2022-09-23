@@ -48,7 +48,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Shimmer token claiming stats timer id.
      */
-    protected _shimmerClaimingTimerId?: NodeJS.Timer;
+    protected _shimmerClaimedTimerId?: NodeJS.Timer;
 
     /**
      * The last update items call in epoch time.
@@ -176,9 +176,9 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             this._updateTpstimerId = undefined;
         }
 
-        if (this._shimmerClaimingTimerId) {
-            clearInterval(this._shimmerClaimingTimerId);
-            this._shimmerClaimingTimerId = undefined;
+        if (this._shimmerClaimedTimerId) {
+            clearInterval(this._shimmerClaimedTimerId);
+            this._shimmerClaimedTimerId = undefined;
         }
 
         this._lastUpdateItems = undefined;
@@ -237,7 +237,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Refresh shimmer token claim stats.
      */
-    private async refreshShimmerClaimingStatistics(): Promise<void> {
+    private async refreshShimmerClaimedCount(): Promise<void> {
         if (this._networkConfig?.network) {
             const shimmerClaimingStatsResponse = await this._apiClient?.shimmerClaimingAnalytics(
                 { network: this._networkConfig.network }
@@ -285,17 +285,17 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         // eslint-disable-next-line no-void
         void this.fetchAnalytics();
 
-        this.setupShimmerClaimingStatsInterval();
+        this.setupShimmerClaimedCountRefresh();
         this.setupFeedLivenessProbe();
     }
 
     /**
-     * Sets up a check at interval to catch the case when feed stops streaming.
+     * Set up the shimmer claimed count stat refresh.
      */
-    private setupShimmerClaimingStatsInterval(): void {
-        this._shimmerClaimingTimerId = setInterval(() => {
+    private setupShimmerClaimedCountRefresh(): void {
+        this._shimmerClaimedTimerId = setInterval(() => {
             // eslint-disable-next-line no-void
-            void this.refreshShimmerClaimingStatistics();
+            void this.refreshShimmerClaimedCount();
         }, 3000);
     }
 
