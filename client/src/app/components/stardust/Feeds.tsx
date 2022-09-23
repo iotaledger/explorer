@@ -93,7 +93,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         if (this.props.match.params.network !== prevProps.match.params.network) {
             this.closeItems();
             this.setState({ latestMilestoneIndex: undefined });
-            this.setState({ shimmerClaimingStats: undefined });
+            this.setState({ shimmerClaimed: undefined });
 
             this.initNetworkServices();
         }
@@ -244,8 +244,8 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             );
 
             if (!shimmerClaimingStatsResponse?.code) {
-                const shimmerClaimingStats = shimmerClaimingStatsResponse?.totalShimmerTokensClaimed;
-                this.setState({ shimmerClaimingStats });
+                const shimmerClaimed = shimmerClaimingStatsResponse?.shimmerClaimed;
+                this.setState({ shimmerClaimed });
             }
         }
     }

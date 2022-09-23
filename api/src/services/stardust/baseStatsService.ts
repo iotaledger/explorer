@@ -2,7 +2,7 @@ import moment from "moment";
 import cron from "node-cron";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
-import { IShimmerClaimStats } from "../../models/api/stats/IShimmerClaimStats";
+import { IShimmerClaimed } from "../../models/api/stats/IShimmerClaimed";
 import { IAnalyticsStore } from "../../models/db/IAnalyticsStore";
 import { INetwork } from "../../models/db/INetwork";
 import { IStatistics } from "../../models/services/IStatistics";
@@ -34,6 +34,11 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
      * The analytics storage.
      */
     protected readonly _analyticsStorage: IStorageService<IAnalyticsStore>;
+
+    /**
+     * The shimmer claimed stats.
+     */
+    protected _shimmerClaimed: IShimmerClaimed;
 
     /**
      * Timer handle of analytics refresh job.
@@ -86,9 +91,8 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
      * Fetch the current Shimmer stats.
      * @returns The current shimmer claiming stats.
      */
-    public async getShimmerStats(): Promise<IShimmerClaimStats> {
-        const analyticsStore = await this._analyticsStorage.get(this._networkConfiguration.network);
-        return { count: analyticsStore.shimmerClaimingStats };
+    public getShimmerClaimed(): IShimmerClaimed {
+        return this._shimmerClaimed;
     }
 
     /**
@@ -126,8 +130,7 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
                 network,
                 dailyMilestones: {},
                 analytics: {},
-                milestoneAnalytics: {},
-                shimmerClaimingStats: ""
+                milestoneAnalytics: {}
             });
         }
 

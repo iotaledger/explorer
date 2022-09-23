@@ -4,7 +4,7 @@ import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransacti
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { IAnalyticStats, ICountAndValueStats, IAddressesStats } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
-import { IShimmerClaimStats } from "../../models/api/stats/IShimmerClaimStats";
+import { IShimmerClaimed } from "../../models/api/stats/IShimmerClaimed";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../../utils/fetchHelper";
 
@@ -154,10 +154,9 @@ export class ChronicleService {
      * Get the shimmer claiming statistics.
      * @returns The claiming statistics.
      */
-    public async shimmerClaimingStatistics(): Promise<IShimmerClaimStats> {
-        const claimingStats = await this.fetchHelperTryGet<IShimmerClaimStats>(
-            CHRONICLE_ENDPOINTS.shimmerClaiming,
-            { }
+    public async fetchShimmerClaimedCount(): Promise<IShimmerClaimed> {
+        const claimingStats = await this.fetchHelperTryGet<IShimmerClaimed>(
+            CHRONICLE_ENDPOINTS.shimmerClaiming, {}
         );
         return claimingStats;
     }

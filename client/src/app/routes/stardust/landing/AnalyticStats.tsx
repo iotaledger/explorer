@@ -1,20 +1,20 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken, UnitsHelper } from "@iota/iota.js-stardust";
 import React from "react";
 import { BigDecimal } from "../../../../helpers/bigDecimal";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
-import { IShimmerClaimStats } from "../../../../models/api/stats/IShimmerClaimingStatsResponse";
+import { IShimmerClaimed } from "../../../../models/api/stats/IShimmerClaimed";
 import "./AnalyticStats.scss";
 
 interface AnalyticStatsProps {
     analytics: IAnalyticStats | undefined;
-    shimmerClaimingStats: IShimmerClaimStats | undefined;
     circulatingSupply: number | undefined;
+    shimmerClaimed: IShimmerClaimed | undefined;
     tokenInfo: INodeInfoBaseToken;
 }
 
 const AnalyticStats: React.FC<AnalyticStatsProps> = (
-    { analytics, shimmerClaimingStats, circulatingSupply, tokenInfo }
+    { analytics, shimmerClaimed, circulatingSupply, tokenInfo }
 ) => {
     const nativeTokensCount = analytics?.nativeTokens?.count;
     const nftsCount = analytics?.nfts?.count;
@@ -22,14 +22,23 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
     const dailyAddresses = analytics?.dailyAddresses?.totalActiveAddresses;
     const lockedStorageDepositValue = analytics?.lockedStorageDeposit?.totalValue;
 
-    let shimmerClaimed: BigDecimal | undefined;
+    let claimedCout: BigDecimal | undefined;
     let shimmerClaimedPercent: BigDecimal | undefined;
-    if (shimmerClaimingStats && circulatingSupply) {
-        shimmerClaimed = new BigDecimal(shimmerClaimingStats.count);
-        shimmerClaimedPercent = shimmerClaimed.multiply("100").divide(String(circulatingSupply));
-    } else if (analytics?.totalShimmerTokensClaimed?.count && circulatingSupply) {
-        shimmerClaimed = new BigDecimal(analytics.totalShimmerTokensClaimed.count);
-        shimmerClaimedPercent = shimmerClaimed.multiply("100").divide(String(circulatingSupply));
+    if (shimmerClaimed && circulatingSupply) {
+        claimedCout = new BigDecimal(shimmerClaimed.count);
+        BigDecimal.DECIMALS = 12;
+        // claimedCout = new BigDecimal("123123");
+        shimmerClaimedPercent = claimedCout.multiply("100").divide(String(circulatingSupply));
+    } else if (analytics?.shimmerClaimed?.count && circulatingSupply) {
+        claimedCout = new BigDecimal(analytics.shimmerClaimed.count);
+        shimmerClaimedPercent = claimedCout.multiply("100").divide(String(circulatingSupply));
+    }
+
+    let formattedClaimed: string | undefined;
+    if (claimedCout) {
+        const amount = formatAmount(Number(claimedCout), tokenInfo, true);
+        const [amountNoUnit, unit] = amount.split(" ");
+        formattedClaimed = UnitsHelper.formatBest(Number(amountNoUnit)) + unit;
     }
 
     return (
@@ -48,15 +57,11 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
                             <span className="info-box--value">{dailyAddresses}</span>
                         </div>
                     )}
-                    {shimmerClaimed && (
+                    {formattedClaimed && (
                         <div className="info-box">
                             <span className="info-box--title">Shimmer claimed</span>
                             <span className="info-box--value">
-                                {formatAmount(
-                                    Number(shimmerClaimed.toString()),
-                                    tokenInfo,
-                                    false
-                                )}
+                                {formattedClaimed}
                             </span>
                         </div>
                     )}

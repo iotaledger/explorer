@@ -1,4 +1,4 @@
-import { IShimmerClaimStats } from "../../api/stats/IShimmerClaimStats";
+import { IShimmerClaimed } from "../../api/stats/IShimmerClaimed";
 
 /**
  * Interface for shimmer stats service.
@@ -7,6 +7,6 @@ export interface IShimmerStatsService {
     /**
      * Gets the stats.
      */
-    getShimmerStats(): Promise<IShimmerClaimStats>;
+    getShimmerClaimed(): IShimmerClaimed;
 }
 

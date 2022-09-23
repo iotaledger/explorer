@@ -3,7 +3,7 @@ import { IResponse } from "../IResponse";
 /**
  * Compiled statistics about claimed tokens.
  */
-export interface IShimmerClaimStats extends IResponse {
+export interface IShimmerClaimed extends IResponse {
     /**
      * The total number of claimed tokens.
      */

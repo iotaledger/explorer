@@ -77,7 +77,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const {
             networkConfig, currentTab, marketCapCurrency, priceCurrency,
             blocks, milestones, itemsPerSecond, confirmedItemsPerSecondPercent,
-            latestMilestoneIndex, networkAnalytics, shimmerClaimingStats
+            latestMilestoneIndex, networkAnalytics, shimmerClaimed
         } = this.state;
 
         const { network } = this.props.match.params;
@@ -105,7 +105,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                     </div>
                     <AnalyticStats
                         analytics={networkAnalytics}
-                        shimmerClaimingStats={shimmerClaimingStats}
+                        shimmerClaimed={shimmerClaimed}
                         circulatingSupply={networkConfig.circulatingSupply}
                         tokenInfo={tokenInfo}
                     />

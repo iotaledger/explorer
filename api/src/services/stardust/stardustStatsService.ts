@@ -14,7 +14,7 @@ export class StardustStatsService extends BaseStatsService {
      */
     protected async updateStatistics(): Promise<void> {
         void this.refreshGeneralStatistics();
-        void this.refreshShimmerClaimingStatistics();
+        void this.refreshShimmerClaimedCount();
     }
 
     /**
@@ -85,16 +85,14 @@ export class StardustStatsService extends BaseStatsService {
         }
     }
 
-    private async refreshShimmerClaimingStatistics(): Promise<void> {
+    private async refreshShimmerClaimedCount(): Promise<void> {
         const network = this._networkConfiguration.network;
         const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${network}`);
 
-        const claimingStats = await chronicleService.shimmerClaimingStatistics();
-        const analyticsStore = await this._analyticsStorage.get(network);
+        const claimingStats = await chronicleService.fetchShimmerClaimedCount();
 
-        if (claimingStats?.count && analyticsStore) {
-            analyticsStore.shimmerClaimingStats = claimingStats.count;
-            await this._analyticsStorage.set(analyticsStore);
+        if (claimingStats?.count) {
+            this._shimmerClaimed = claimingStats;
         }
     }
 }

@@ -1,5 +1,5 @@
 import { IAnalyticStats } from "../../../models/api/stats/IAnalyticStats";
-import { IShimmerClaimStats } from "../../../models/api/stats/IShimmerClaimingStatsResponse";
+import { IShimmerClaimed } from "../../../models/api/stats/IShimmerClaimed";
 import { CurrencyState } from "../CurrencyState";
 
 export interface FeedsState extends CurrencyState {
@@ -34,7 +34,7 @@ export interface FeedsState extends CurrencyState {
     networkAnalytics?: IAnalyticStats;
 
     /**
-     * The shimmer token claiming stat for the network.
+     * The shimmer token claimed stat for the network.
      */
-    shimmerClaimingStats?: IShimmerClaimStats;
+    shimmerClaimed?: IShimmerClaimed;
 }

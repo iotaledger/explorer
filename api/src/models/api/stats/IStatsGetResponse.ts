@@ -1,9 +1,8 @@
 import { IStatistics } from "../../services/IStatistics";
-import { IShimmerClaimingStatsResponse } from "../../services/stardust/IShimmerClaimingStatsResponse";
 import { IResponse } from "../IResponse";
 import { ISignedResponse } from "../ISignedResponse";
 
-export interface IStatsGetResponse extends IStatistics, IShimmerClaimingStatsResponse, IResponse, ISignedResponse {
+export interface IStatsGetResponse extends IStatistics, IResponse, ISignedResponse {
     /**
      * The health of the network 0=bad, 1=degraded, 2=good
      */

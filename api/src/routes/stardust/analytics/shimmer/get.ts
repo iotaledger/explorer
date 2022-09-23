@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IAnalyticStatsRequest } from "../../../../models/api/stats/IAnalyticStatsRequest";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
-import { IShimmerClaimingStatsResponse } from "../../../../models/services/stardust/IShimmerClaimingStatsResponse";
+import { IShimmerClaimedResponse } from "../../../../models/services/stardust/IShimmerClaimedResponse";
 import { NetworkService } from "../../../../services/networkService";
 import { StardustStatsService } from "../../../../services/stardust/stardustStatsService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
@@ -15,16 +15,13 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
 export async function get(
     config: IConfiguration,
     request: IAnalyticStatsRequest
-): Promise<IShimmerClaimingStatsResponse> {
+): Promise<IShimmerClaimedResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
 
     const stardustStatsService = ServiceFactory.get<StardustStatsService>(`stats-${request.network}`);
+    const shimmerClaimed = stardustStatsService.getShimmerClaimed();
 
-    const currentShimmerClaimStats = await stardustStatsService.getShimmerStats();
-
-    return {
-        totalShimmerTokensClaimed: currentShimmerClaimStats
-    };
+    return { shimmerClaimed };
 }

@@ -36,7 +36,7 @@ import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftR
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IAnalyticStatsRequest } from "../../models/api/stats/IAnalyticStatsRequest";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
-import { IShimmerClaimingStatsResponse } from "../../models/api/stats/IShimmerClaimingStatsResponse";
+import { IShimmerClaimedResponse } from "../../models/api/stats/IShimmerClaimed";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -282,8 +282,8 @@ export class StardustApiClient extends ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async shimmerClaimingAnalytics(request: IAnalyticStatsRequest): Promise<IShimmerClaimingStatsResponse> {
-        return this.callApi<unknown, IShimmerClaimingStatsResponse>(
+    public async shimmerClaimingAnalytics(request: IAnalyticStatsRequest): Promise<IShimmerClaimedResponse> {
+        return this.callApi<unknown, IShimmerClaimedResponse>(
             `stardust/analytics/shimmer/${request.network}`, "get"
         );
     }
