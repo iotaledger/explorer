@@ -8,11 +8,13 @@ import { HexHelper } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
+import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
+import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
-import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
+import { IMilestoneDetailsResponse } from "../../models/api/stardust/milestone/IMilestoneDetailsResponse";
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
 import { INetwork } from "../../models/db/INetwork";
@@ -23,6 +25,39 @@ import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
  * Helper functions for use with tangle.
  */
 export class StardustTangleHelper {
+    /**
+     * Get the address details from iotajs.
+     * @param network The network in context.
+     * @param addressBech32 The address to get the details for in bech32 format.
+     * @returns The address details.
+     */
+    public static async addressDetails(
+        network: INetwork, addressBech32: string
+    ): Promise<IAddressDetailsWithBalance | undefined> {
+        const { bechHrp, provider, user, password } = network;
+        const node = new SingleNodeClient(provider, { userName: user, password });
+        const searchQuery: SearchQuery = new SearchQueryBuilder(addressBech32, bechHrp).build();
+
+        if (!searchQuery.address) {
+            return undefined;
+        }
+
+        try {
+            const addressBalanceDetails = await addressBalance(node, searchQuery.address.bech32);
+
+            if (addressBalanceDetails) {
+                const addressDetails = {
+                    ...addressBalanceDetails,
+                    hex: searchQuery.address.hex,
+                    bech32: searchQuery.address.bech32,
+                    type: searchQuery.address.type
+                };
+
+                return addressDetails;
+            }
+        } catch {}
+    }
+
     /**
      * Get the block details.
      * @param network The network to find the items on.
@@ -142,6 +177,63 @@ export class StardustTangleHelper {
                 milestone: milestonePayload
             };
         }
+    }
+
+    /**
+     * Get the relevant upspent output ids for an address.
+     * @param network The network to find the items on.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The output ids.
+     */
+    public static async outputIdsByAddress(
+        network: INetwork, addressBech32: string
+    ): Promise<IAddressBasicOutputsResponse | undefined> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+
+        do {
+            const outputIdsResponse = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+                { addressBech32, cursor },
+                "basicOutputs",
+                network,
+                true
+            );
+
+            outputIds = outputIds.concat(outputIdsResponse.items);
+            cursor = outputIdsResponse.cursor;
+        } while (cursor);
+
+        cursor = undefined;
+
+        do {
+            const nftOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+                { addressBech32, cursor },
+                "nfts",
+                network,
+                true
+            );
+
+            outputIds = outputIds.concat(nftOutputs.items);
+            cursor = nftOutputs.cursor;
+        } while (cursor);
+
+        cursor = undefined;
+
+        do {
+            const aliasOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+                { governorBech32: addressBech32, cursor },
+                "aliases",
+                network,
+                true
+            );
+
+            outputIds = outputIds.concat(aliasOutputs.items);
+            cursor = aliasOutputs.cursor;
+        } while (cursor);
+
+        return {
+            outputIds
+        };
     }
 
     /**
@@ -427,41 +519,9 @@ export class StardustTangleHelper {
         }
 
         if (searchQuery.address?.bech32) {
-            const { provider, user, password } = network;
-            const node = new SingleNodeClient(provider, { userName: user, password });
-
-            try {
-                const addressBalanceDetails = await addressBalance(node, searchQuery.address.bech32);
-
-                if (addressBalanceDetails) {
-                    const addressDetails = {
-                        ...addressBalanceDetails,
-                        hex: searchQuery.address.hex,
-                        bech32: searchQuery.address.bech32,
-                        type: searchQuery.address.addressType
-                    };
-
-                    let cursor: string | undefined;
-                    let addressOutputIds: string[] = [];
-                    do {
-                        const outputIdsResponse =
-                            await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
-                                { addressBech32: searchQuery.address.bech32, cursor },
-                                "basicOutputs",
-                                network,
-                                true
-                        );
-
-                        addressOutputIds = addressOutputIds.concat(outputIdsResponse.items);
-                        cursor = outputIdsResponse.cursor;
-                    } while (cursor);
-
-                    return {
-                        addressDetails,
-                        addressOutputIds
-                    };
-                }
-            } catch {}
+            return {
+                addressDetails: searchQuery.address
+            };
         }
 
         return {};

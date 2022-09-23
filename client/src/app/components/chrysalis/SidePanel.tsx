@@ -7,8 +7,8 @@ import { IFeedItem } from "../../../models/feed/IFeedItem";
 import LineChart from "../LineChart";
 import "./SidePanel.scss";
 import { SidePanelRouteProps } from "../SidePanelRouteProps";
-import { SidePanelState } from "../SidePanelState";
 import Feeds from "./Feeds";
+import { SidePanelState } from "./SidePanelState";
 
 /**
  * Component which will show the side panel component for chrysalis.

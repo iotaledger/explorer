@@ -3,14 +3,13 @@
 @import "../../../scss/media-queries";
 @import "../../../scss/variables";
 
-.addr {
+.address-page {
   display: flex;
   flex-direction: column;
 
   .addr--header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
 
     .addr--header__switch {
       display: flex;
@@ -148,10 +147,6 @@
       .card + .card {
         margin-top: 23px;
       }
-    }
-
-    .loader {
-      height: 40vh;
     }
   }
 

@@ -1,11 +1,11 @@
 import { Magnitudes } from "@iota/iota.js-stardust";
-import { ValueFilter } from "../valueFilter";
+import { FilterField } from "../filterField";
 
 export interface IFilterSettings {
     /**
      * Value filter for feeds.
      */
-    valuesFilter?: ValueFilter[];
+    valuesFilter?: FilterField[];
 
     /**
      * Value limit feeds.

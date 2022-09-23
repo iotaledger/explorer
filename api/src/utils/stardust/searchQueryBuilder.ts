@@ -5,7 +5,7 @@ interface MaybeAddress {
     /**
      * The bech32 of the address.
      */
-    bech32?: string;
+    bech32: string;
     /**
      * The full hex of the address.
      */
@@ -15,9 +15,13 @@ interface MaybeAddress {
      */
     hexNoPrefix?: string;
     /**
-     * The type of the address.
+     * The raw address type.
      */
-    addressType: number;
+    type: number;
+    /**
+     * The type label.
+     */
+    typeLabel: string;
 }
 
 
@@ -214,12 +218,29 @@ export class SearchQueryBuilder {
             bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, Converter.hexToBytes(hex), hrp);
         }
 
+
         return {
            bech32,
            hex,
            hexNoPrefix,
-           addressType
+           type: addressType,
+           typeLabel: this.typeLabel(addressType)
         };
+    }
+
+    /**
+     * Convert the address type number to a label.
+     * @param addressType The address type to get the label for.
+     * @returns The label.
+     */
+    private typeLabel(addressType?: number): string | undefined {
+        if (addressType === ED25519_ADDRESS_TYPE) {
+            return "Ed25519";
+        } else if (addressType === ALIAS_ADDRESS_TYPE) {
+            return "Alias";
+        } else if (addressType === NFT_ADDRESS_TYPE) {
+            return "NFT";
+        }
     }
 }
 

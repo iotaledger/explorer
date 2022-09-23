@@ -235,8 +235,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.addressDetails?.hex) {
                                     route = "addr";
                                     redirectState = {
-                                        addressDetails: response.addressDetails,
-                                        addressOutputIds: response.addressOutputIds
+                                        addressDetails: response.addressDetails
                                     };
                                 } else if (response.output) {
                                     route = "output";

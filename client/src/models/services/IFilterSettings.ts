@@ -1,11 +1,11 @@
 import { Units } from "@iota/iota.js";
-import { ValueFilter } from "./valueFilter";
 
+import { FilterField } from "./filterField";
 export interface IFilterSettings {
     /**
      * Value filter for feeds.
      */
-    valuesFilter?: ValueFilter[];
+    valuesFilter?: FilterField[];
 
     /**
      * Value limit feeds.

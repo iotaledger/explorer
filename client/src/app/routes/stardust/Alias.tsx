@@ -7,9 +7,12 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
+import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
+import CopyButton from "../../components/CopyButton";
 import DataToggle from "../../components/DataToggle";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
@@ -19,10 +22,12 @@ import Bech32Address from "../../components/stardust/Bech32Address";
 import ControlledFoundry from "../../components/stardust/ControlledFoundry";
 import NetworkContext from "../../context/NetworkContext";
 import { AliasRouteProps } from "../AliasRouteProps";
-import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
+import foundriesMessage from "./../../../assets/modals/stardust/alias/foundries.json";
+import mainMessage from "./../../../assets/modals/stardust/alias/main-header.json";
+import stateMessage from "./../../../assets/modals/stardust/alias/state.json";
 import Modal from "./../../components/Modal";
-import "./AddressPage.scss";
 import { AliasState } from "./AliasState";
+import "./AddressPage.scss";
 
 /**
  * Component which will show the alias page for stardust.
@@ -58,7 +63,8 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         this.state = {
             areFoundriesLoading: true,
             foundries: [],
-            foundriesPageNumber: 1
+            foundriesPageNumber: 1,
+            isFormatStorageRentFull: true
         };
     }
 
@@ -112,9 +118,10 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
      */
     public render(): ReactNode {
         const {
-            bech32AddressDetails, areFoundriesLoading, foundries,
-            foundriesPageNumber, output, stateMetadataHex
+            bech32AddressDetails, storageRentBalance, areFoundriesLoading,
+            foundries, foundriesPageNumber, output, stateMetadataHex, isFormatStorageRentFull
         } = this.state;
+        const { tokenInfo } = this.context;
         const networkId = this.props.match.params.network;
         const hasFoundries = foundries && foundries.length > 0;
 
@@ -125,7 +132,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                         <div className="addr--header">
                             <div className="row middle">
                                 <h1>Alias</h1>
-                                <Modal icon="info" data={mainHeaderMessage} />
+                                <Modal icon="info" data={mainMessage} />
                             </div>
                         </div>
                         <div className="top">
@@ -136,7 +143,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                             <h2>General</h2>
                                         </div>
                                     </div>
-                                    <div className="row space-between general-content">
+                                    <div className="row space-between">
                                         <div className="section--data">
                                             <Bech32Address
                                                 addressDetails={bech32AddressDetails}
@@ -144,11 +151,28 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                             />
                                         </div>
                                     </div>
+                                    {storageRentBalance && (
+                                        <div className="section--data margin-t-m">
+                                            <div className="label">
+                                                Storage rent
+                                            </div>
+                                            <div className="row middle value featured">
+                                                <span
+                                                    onClick={() => this.setState({ isFormatStorageRentFull: !isFormatStorageRentFull })}
+                                                    className="pointer margin-r-5"
+                                                >
+                                                    {formatAmount(storageRentBalance, tokenInfo, isFormatStorageRentFull)}
+                                                </span>
+                                                <CopyButton copy={String(storageRentBalance)} />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="section">
                                     <div className="section--header">
                                         <div className="row middle">
                                             <h2>State</h2>
+                                            <Modal icon="info" data={stateMessage} />
                                         </div>
                                     </div>
                                     <div className="section--data">
@@ -188,7 +212,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                                 <h2>
                                                     Controlled foundries ({foundries?.length})
                                                 </h2>
-                                                <Modal icon="info" data={mainHeaderMessage} />
+                                                <Modal icon="info" data={foundriesMessage} />
                                             </div>
                                         </div>
                                         <table className="controlled-foundry--table">
@@ -198,7 +222,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                { this.currentFoundriesPage?.map((foundry, k) => (
+                                                {this.currentFoundriesPage?.map((foundry, k) => (
                                                     <React.Fragment key={`${foundry?.foundryId}${k}`}>
                                                         <ControlledFoundry
                                                             key={k}
@@ -239,6 +263,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                     <AssociatedOutputsTable
                                         network={networkId}
                                         addressDetails={bech32AddressDetails}
+                                        onAsyncStatusChange={() => { }}
                                     />
                                 )}
                             </div>
@@ -255,8 +280,10 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
             return;
         }
 
+        const { rentStructure } = this.context;
         const networkId = this.props.match.params.network;
         const foundries: { foundryId: string }[] = [];
+        let storageRentBalance: number | undefined;
 
         const foundryOutputs = await this._tangleCacheService.foundriesByAliasAddress({
             network: networkId,
@@ -274,6 +301,12 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
 
                     const foundryId = this.buildFoundyId(aliasId, serialNumber, tokenSchemeType);
 
+                    // accumulate storage rent
+                    storageRentBalance = TransactionsHelper.computeStorageRentBalance(
+                        [outputDetails.output],
+                        rentStructure
+                    ) + (storageRentBalance ?? 0);
+
                     foundries.push({ foundryId });
                 }
             }
@@ -281,6 +314,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
 
         this.setState({
             foundries,
+            storageRentBalance,
             areFoundriesLoading: false
         });
     }

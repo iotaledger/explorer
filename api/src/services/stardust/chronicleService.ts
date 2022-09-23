@@ -1,7 +1,9 @@
+import { NetworkConfigurationError } from "../../errors/networkConfigurationError";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { IAnalyticStats, ICountAndValueStats, ICountStat, IAddressesStats } from "../../models/api/stats/IAnalyticStats";
+import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../../utils/fetchHelper";
 
@@ -12,7 +14,8 @@ const CHRONICLE_ENDPOINTS = {
     nftStats: "/api/analytics/v2/ledger/nfts",
     addresses: "/api/analytics/v2/activity/addresses",
     lockedStorageDeposit: "/api/analytics/v2/ledger/native-tokens",
-    transactions: "/api/analytics/v2/activity/blocks/transaction"
+    transactions: "/api/analytics/v2/activity/blocks/transaction",
+    milestones: "/api/analytics/v2/activity/milestones/"
 };
 
 export class ChronicleService {
@@ -21,8 +24,14 @@ export class ChronicleService {
      */
     private readonly _endpoint: string;
 
+    /**
+     * The permanode JWT.
+     */
+    private readonly _jwt?: string;
+
     constructor(config: INetwork) {
         this._endpoint = config.permaNodeEndpoint;
+        this._jwt = config.permaNodeJwt;
     }
 
     /**
@@ -38,6 +47,24 @@ export class ChronicleService {
                 this._endpoint,
                 `${CHRONICLE_ENDPOINTS.balance}${address}`,
                 "get"
+            );
+        } catch (error) {
+            return { error };
+        }
+    }
+
+    /**
+     * Get the current milestone stats by milestoneId
+     * @param milestoneId The milestone id.
+     * @returns The milestone stats.
+     */
+    public async milestoneAnalytics(
+        milestoneId: string
+    ): Promise<IMilestoneAnalyticStats | undefined> {
+        try {
+            return await this.fetchHelperTryGet<IMilestoneAnalyticStats>(
+                `${CHRONICLE_ENDPOINTS.milestones}${milestoneId}`,
+                {}
             );
         } catch (error) {
             return { error };
@@ -132,11 +159,17 @@ export class ChronicleService {
     private async fetchHelperTryGet<R>(path: string, params: Record<string, unknown>): Promise<R> {
         let response: R | undefined;
 
+        if (!this._jwt) {
+            throw new NetworkConfigurationError(`Chronicle JWT not configured for ${this._endpoint}...`);
+        }
+
         try {
-            response = await FetchHelper.json<never, R>(
+            response = await FetchHelper.json<unknown, R>(
                 this._endpoint,
                 `${path}${FetchHelper.urlParams(params)}`,
-                "get"
+                "get",
+                null,
+                { "Authorization": `Bearer ${this._jwt}` }
             );
         } catch (err) {
             console.log("Failed fetching analytics stats on", path, "with params", params, "reason", err);

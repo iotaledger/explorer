@@ -1,0 +1,193 @@
+@import "../../../../scss/fonts";
+@import "../../../../scss/mixins";
+@import "../../../../scss/media-queries";
+@import "../../../../scss/variables";
+
+.feed--filters {
+    display: flex;
+    position: relative;
+
+    span {
+        color: #677695;
+    }
+
+    .filters-button-wrapper {
+        position: relative;
+
+        .filters-button-wrapper__counter {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 12px;
+            border-radius: 8px;
+            background: var(--mint-green-bg);
+            color: $white;
+            font-family: $inter;
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+        }
+    }
+    .filter-wrapper {
+        .filter--bg {
+            position: fixed;
+            z-index: 700;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(9, 19, 38, 0.4);
+        }
+
+        .filter {
+            position: absolute;
+            z-index: 900;
+            top: 48px;
+            right: 0.7px;
+            min-width: 350px;
+            margin-right: 1px;
+            padding: 8px;
+            border: 0.5px solid rgba(255, 255, 255, 0);
+            border-radius: 6px;
+            background: var(--body-background);
+            box-shadow: 0 0 6px 0 rgba(123, 148, 186, 75%);
+
+            @include tablet-down {
+                position: fixed;
+                top: unset;
+                bottom: 0;
+                left: 0;
+                width: 100vw;
+            }
+
+            .row {
+                margin-bottom: 12px;
+            }
+
+            span {
+                color: var(--expanded-color);
+            }
+
+            .filter-header {
+                margin-bottom: 8px;
+                padding: 8px 10px;
+                border-bottom: 1px solid var(--input-border-color);
+                color: $gray-7;
+                font-family: $inter;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+
+                @include font-size(14px, 21px);
+
+                button {
+                    @include font-size(14px, 21px);
+
+                    padding: 6px 20px;
+                    border: 1px solid var(--input-border-color);
+                    color: var(--header-color);
+                    font-family: $inter;
+                    font-weight: 400;
+
+                    &.done-button {
+                        border: none;
+                        background: var(--mint-green-bg);
+                        color: $white;
+                    }
+                }
+            }
+
+            .filter-content {
+                input {
+                    &[type="checkbox"] {
+                        @include font-size(24px);
+
+                        width: 24px;
+                        height: 24px;
+                        padding: 0;
+                        font-weight: bold;
+                        vertical-align: middle;
+                        appearance: none;
+
+                        &:checked {
+                            border-color: #57d087;
+                            background-color: #57d087;
+                            color: $white;
+
+                            &::after {
+                                content: "✓";
+                                position: absolute;
+                                top: 45%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+
+                                @include font-size(16px);
+                            }
+                        }
+                    }
+                }
+
+                .label {
+                    margin-left: 8px;
+                    color: $gray-6;
+                    font-family: $inter;
+                    font-weight: 500;
+                    letter-spacing: 0.5px;
+
+                    @include font-size(12px, 18px);
+                }
+            }
+
+            .filter--value {
+                display: flex;
+                margin: 0 8px;
+                color: var(--expanded-color);
+                font-family: $inter;
+
+                @include font-size(14px, 21px);
+
+                .input-plus {
+                    width: 94px;
+                    padding: 8px;
+                    border: 0;
+                    border-right: 0;
+                    border-radius: 6px 0 0 6px;
+                    background-color: var(--light-bg);
+                    box-shadow: 0 0 0 0;
+                    color: var(--expanded-color);
+                }
+
+                .select-plus {
+                    min-width: 20px;
+                    padding: 0 39px 0 11px;
+                    border: 0;
+                    border-left: 0;
+                    border-radius: 0 6px 6px 0;
+                    background-color: var(--light-bg);
+                    color: var(--expanded-color);
+
+                    &:focus {
+                        border-color: var(--light-bg);
+                    }
+                }
+            }
+
+            label {
+                display: block;
+                padding: 12px 10px;
+                color: var(--expanded-color);
+                font-family: $inter;
+                letter-spacing: 0.5px;
+
+                @include font-size(14px, 21px);
+
+                input {
+                    position: relative;
+                    width: 20px;
+                    height: 20px;
+                    margin-right: 18px;
+                }
+            }
+        }
+    }
+}
+

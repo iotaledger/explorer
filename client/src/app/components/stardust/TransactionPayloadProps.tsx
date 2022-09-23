@@ -32,5 +32,10 @@ export interface TransactionPayloadProps {
      * The header title of this section.
      */
     header: string;
+
+    /**
+     * Disable links if block is conflicting.
+     */
+     isLinksDisabled?: boolean;
 }
 

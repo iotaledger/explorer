@@ -12,7 +12,8 @@ export const networkContextWrapper = (
             name: currentNetwork,
             tokenInfo: nodeInfo.baseToken,
             bech32Hrp: nodeInfo.bech32Hrp,
-            protocolVersion: nodeInfo.protocolVersion
+            protocolVersion: nodeInfo.protocolVersion,
+            rentStructure: nodeInfo.rentStructure
             }}
         >
             {wrappedComponent}

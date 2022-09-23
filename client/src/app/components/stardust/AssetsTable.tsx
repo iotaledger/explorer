@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import ITokenDetails from "../../routes/stardust/ITokenDetails";
 import Modal from "../Modal";
 import Pagination from "../Pagination";
-import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
+import assetsMessage from "./../../../assets/modals/stardust/address/assets-in-wallet.json";
 import Asset from "./Asset";
 import "./AssetsTable.scss";
 
@@ -57,7 +57,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
                         <h2>
                             Assets in Wallet ({tokens?.length})
                         </h2>
-                        <Modal icon="info" data={mainHeaderMessage} />
+                        <Modal icon="info" data={assetsMessage} />
                     </div>
                 </div>
                 <table className="asset-table">

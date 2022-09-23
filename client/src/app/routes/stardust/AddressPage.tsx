@@ -1,14 +1,20 @@
+/* eslint-disable no-void */
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { AsyncState } from "../../../helpers/promise/AsyncState";
+import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
-import IAddressDetailsWithBalance from "../../../models/api/stardust/IAddressDetailsWithBalance";
+import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
+import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import QR from "../../components/chrysalis/QR";
+import CopyButton from "../../components/CopyButton";
 import Spinner from "../../components/Spinner";
 import AddressBalance from "../../components/stardust/AddressBalance";
 import AssetsTable from "../../components/stardust/AssetsTable";
@@ -17,27 +23,25 @@ import Bech32Address from "../../components/stardust/Bech32Address";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
-import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
+import mainHeaderMessage from "./../../../assets/modals/stardust/address/main-header.json";
 import Modal from "./../../components/Modal";
-import "./AddressPage.scss";
 import { AddressPageState } from "./AddressPageState";
 import NftSection from "./NftSection";
+import "./AddressPage.scss";
 
 interface IAddressPageLocationProps {
     /**
      * address details from location props
      */
-    addressDetails: IAddressDetailsWithBalance;
-    /**
-     * address unspent output ids
-     */
-    addressOutputIds: string[];
+    addressDetails: IBech32AddressDetails;
 }
+
+type State = AddressPageState & AsyncState;
 
 /**
  * Component which will show the address page for stardust.
  */
-class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddressPageState> {
+class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>, State> {
     /**
      * The component context type.
      */
@@ -62,7 +66,10 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
 
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
 
-        this.state = {};
+        this.state = {
+            jobToStatus: new Map<string, PromiseStatus>(),
+            isFormatStorageRentFull: true
+        };
     }
 
     /**
@@ -70,16 +77,11 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        const { bech32Hrp, name: network } = this.context;
+        const { bech32Hrp } = this.context;
 
         if (!this.props.location.state) {
-            const result = await this._tangleCacheService.search(
-                this.props.match.params.network, this.props.match.params.address
-            );
-
             this.props.location.state = {
-                addressDetails: result?.addressDetails,
-                addressOutputIds: result?.addressOutputIds
+                addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, this.props.match.params.address)
             };
         }
 
@@ -97,31 +99,12 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             });
 
             this.setState({
-                bech32AddressDetails: Bech32AddressHelper.buildAddress(
-                    bech32Hrp,
-                    addressDetails?.hex,
-                    addressDetails?.type ?? 0
-                ),
-                balance: Number(addressDetails?.balance)
+                bech32AddressDetails: addressDetails
             }, async () => {
-                await this.getOutputs();
+                void this.getAddressBalance();
+                void this.getAddressOutputs();
             });
         }
-
-        // Try get balance from chronicle
-        optional(addressDetails.bech32).foreach(async addressBech32 => {
-            const response = await this._tangleCacheService.addressBalance({
-                network,
-                address: addressBech32
-            });
-
-            if (response?.totalBalance !== undefined) {
-                this.setState({
-                    balance: response.totalBalance,
-                    sigLockedBalance: response.sigLockedBalance
-                });
-            }
-        });
     }
 
     /**
@@ -129,15 +112,20 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, balance, sigLockedBalance, outputResponse } = this.state;
+        const {
+            bech32AddressDetails, balance, sigLockedBalance,
+            outputResponse, jobToStatus, storageRentBalance, isFormatStorageRentFull
+        } = this.state;
+        const { tokenInfo } = this.context;
 
         const networkId = this.props.match.params.network;
         const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
+        const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
 
         return (
-            <div className="addr">
+            <div className="address-page">
                 <div className="wrapper">
-                    {bech32AddressDetails ?
+                    {bech32AddressDetails && (
                         <div className="inner">
                             <div className="addr--header">
                                 <div className="row middle">
@@ -146,6 +134,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                     </h1>
                                     <Modal icon="info" data={mainHeaderMessage} />
                                 </div>
+                                {isLoading && <Spinner />}
                             </div>
                             <div className="top">
                                 <div className="sections">
@@ -172,13 +161,36 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                 )}
                                             </div>
                                             <div className="section--data">
-                                                {bech32AddressDetails?.bech32 &&
-                                                    (
-                                                        //  eslint-disable-next-line react/jsx-pascal-case
-                                                        <QR data={bech32AddressDetails.bech32} />
-                                                    )}
+                                                {bech32AddressDetails?.bech32 && (
+                                                    //  eslint-disable-next-line react/jsx-pascal-case
+                                                    <QR data={bech32AddressDetails.bech32} />
+                                                )}
                                             </div>
                                         </div>
+                                        {storageRentBalance && (
+                                            <div className="section--data margin-t-m">
+                                                <div className="label">
+                                                    Storage rent
+                                                </div>
+                                                <div className="row middle value featured">
+                                                    <span
+                                                        onClick={() => {
+                                                            this.setState({
+                                                                isFormatStorageRentFull: !isFormatStorageRentFull
+                                                            });
+                                                        }}
+                                                        className="pointer margin-r-5"
+                                                    >
+                                                        {formatAmount(
+                                                            storageRentBalance,
+                                                            tokenInfo,
+                                                            isFormatStorageRentFull
+                                                        )}
+                                                    </span>
+                                                    <CopyButton copy={String(storageRentBalance)} />
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                     {outputResponse && outputResponse.length === 0 && (
                                         <div className="section">
@@ -196,44 +208,113 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                     <NftSection
                                         network={networkId}
                                         bech32Address={addressBech32}
+                                        outputs={outputResponse}
                                     />
                                     {addressBech32 && (
-                                        <TransactionHistory network={networkId} address={addressBech32} />
+                                        <TransactionHistory
+                                            network={networkId}
+                                            address={addressBech32}
+                                            onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("history")}
+                                        />
                                     )}
                                     {bech32AddressDetails && (
                                         <AssociatedOutputsTable
                                             network={networkId}
                                             addressDetails={bech32AddressDetails}
+                                            onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("assoc")}
                                         />
                                     )}
                                 </div>
                             </div>
-                        </div > :
-                        <div className="inner row middle center loader">
-                            <Spinner />
-                        </div>}
-                </div >
-            </div >
+                        </div>
+                    )}
+                </div>
+            </div>
         );
     }
 
-    private async getOutputs() {
-        const { addressOutputIds } = this.props.location.state as IAddressPageLocationProps;
-        if (!addressOutputIds || addressOutputIds.length === 0) {
+    private async getAddressBalance() {
+        const { name: network } = this.context;
+        const { bech32AddressDetails } = this.state;
+
+        optional(bech32AddressDetails?.bech32).foreach(async address => {
+            const response = await this._tangleCacheService.addressBalanceFromChronicle({
+                network,
+                address
+            });
+
+            if (response?.totalBalance !== undefined) {
+                this.setState({
+                    balance: response.totalBalance,
+                    sigLockedBalance: response.sigLockedBalance
+                });
+            } else {
+                // Fallback balance from iotajs (node)
+                const addressDetailsWithBalance = await this._tangleCacheService.addressBalance(
+                    { network, address }
+                );
+
+                if (addressDetailsWithBalance) {
+                    this.setState({
+                        balance: Number(addressDetailsWithBalance.balance)
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * Fetch the address relevant outputs (basic, alias and nft)
+     */
+    private async getAddressOutputs(): Promise<void> {
+        const networkId = this.props.match.params.network;
+        const { rentStructure } = this.context;
+        const addressBech32 = this.state.bech32AddressDetails?.bech32;
+        if (!addressBech32) {
             return;
         }
 
-        const networkId = this.props.match.params.network;
-        const outputResponse: IOutputResponse[] = [];
+        const outputIdsMonitor = new PromiseMonitor((status: PromiseStatus) => {
+            this.buildOnAsyncStatusJobHandler("outputIds")(status);
+        });
 
-        for (const outputId of addressOutputIds) {
-            const outputDetails = await this._tangleCacheService.outputDetails(networkId, outputId);
-            if (outputDetails) {
-                outputResponse.push(outputDetails);
-            }
-        }
+        void outputIdsMonitor.enqueue(
+            async () => this._tangleCacheService.addressOutputs(networkId, addressBech32).then(idsResponse => {
+                if (idsResponse?.outputIds) {
+                    const outputResponse: IOutputResponse[] = [];
+                    const addressOutputIds = idsResponse.outputIds;
+                    let storageRentBalance: number | undefined;
 
-        this.setState({ outputResponse });
+                    const outputDetailsMonitor = new PromiseMonitor((status: PromiseStatus) => {
+                        this.buildOnAsyncStatusJobHandler("outputDetails")(status);
+                        if (status === PromiseStatus.DONE && this._isMounted) {
+                            storageRentBalance = TransactionsHelper.computeStorageRentBalance(
+                                outputResponse.map(or => or.output),
+                                rentStructure
+                            );
+                            this.setState({ outputResponse, storageRentBalance });
+                        }
+                    });
+
+                    for (const outputId of addressOutputIds) {
+                        void outputDetailsMonitor.enqueue(
+                            async () => this._tangleCacheService.outputDetails(networkId, outputId).then(
+                                outputDetails => {
+                                    if (outputDetails) {
+                                        outputResponse.push(outputDetails);
+                                    }
+                                })
+                        );
+                    }
+                }
+            })
+        );
+    }
+
+    private buildOnAsyncStatusJobHandler(jobName: string): (status: PromiseStatus) => void {
+        return (status: PromiseStatus) => {
+            this.setState(prevState => ({ ...prevState, jobToStatus: prevState.jobToStatus.set(jobName, status) }));
+        };
     }
 }
 

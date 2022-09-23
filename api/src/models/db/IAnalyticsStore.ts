@@ -1,4 +1,5 @@
 import { IAnalyticStats } from "../api/stats/IAnalyticStats";
+import { IMilestoneAnalyticStats } from "../api/stats/IMilestoneAnalyticStats";
 import { DailyMilestones } from "./IDailyMilestones";
 
 export interface IAnalyticsStore {
@@ -16,5 +17,12 @@ export interface IAnalyticsStore {
      * The current analitics data.
      */
     analytics: IAnalyticStats;
+
+    /**
+     * The current milestone analytics data.
+     */
+    milestoneAnalytics: {
+        [milestoneId: string]: IMilestoneAnalyticStats;
+    };
 }
 

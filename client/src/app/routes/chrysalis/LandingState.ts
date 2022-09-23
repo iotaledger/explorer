@@ -1,9 +1,9 @@
 import { Units } from "@iota/iota.js";
 import { INetwork } from "../../../models/config/INetwork";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
-import { ValueFilter } from "../../../models/services/valueFilter";
+import { FilterField } from "../../../models/services/filterField";
+import { FeedsState } from "../../components/chrysalis/FeedsState";
 import { CurrencyState } from "../../components/CurrencyState";
-import { FeedsState } from "../../components/FeedsState";
 
 export interface LandingState extends CurrencyState, FeedsState {
     /**
@@ -54,7 +54,7 @@ export interface LandingState extends CurrencyState, FeedsState {
     /**
      * Filter specific value types.
      */
-    valuesFilter: ValueFilter[];
+    valuesFilter: FilterField[];
 
     /**
      * Format the iota in full.

@@ -7,6 +7,9 @@ import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryReque
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
 import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
+import { IAddressBasicOutputsRequest } from "../../models/api/stardust/IAddressBasicOutputsRequest";
+import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
+import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociatedOutputsRequest } from "../../models/api/stardust/IAssociatedOutputsRequest";
@@ -14,6 +17,7 @@ import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociate
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
+import { IMilestoneStatsRequest } from "../../models/api/stardust/IMilestoneStatsRequest";
 import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
 import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
@@ -31,6 +35,7 @@ import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRe
 import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IAnalyticStatsRequest } from "../../models/api/stats/IAnalyticStatsRequest";
+import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -56,9 +61,33 @@ export class StardustApiClient extends ApiClient {
      * @param request The Address Balance request.
      * @returns The Address balance reponse
      */
-    public async addressBalance(request: IAddressBalanceRequest): Promise<IAddressBalanceResponse> {
-        return this.callApi<unknown, IAddressBalanceResponse>(
+    public async addressBalance(request: IAddressBalanceRequest): Promise<IAddressDetailsWithBalance> {
+        return this.callApi<unknown, IAddressDetailsWithBalance>(
             `stardust/balance/${request.network}/${request.address}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the balance of and address from chronicle.
+     * @param request The Address Balance request.
+     * @returns The Address balance reponse
+     */
+    public async addressBalanceChronicle(request: IAddressBalanceRequest): Promise<IAddressBalanceResponse> {
+        return this.callApi<unknown, IAddressBalanceResponse>(
+            `stardust/balance/chronicle/${request.network}/${request.address}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the unspent output ids of an address.
+     * @param request The Address Basic outputs request.
+     * @returns The Address outputs response
+     */
+    public async addressOutputs(request: IAddressBasicOutputsRequest): Promise<IAddressBasicOutputsResponse> {
+        return this.callApi<unknown, IAddressBasicOutputsResponse>(
+            `stardust/address/outputs/${request.network}/${request.address}`,
             "get"
         );
     }
@@ -131,6 +160,18 @@ export class StardustApiClient extends ApiClient {
     public async milestoneDetails(request: IMilestoneDetailsRequest): Promise<IMilestoneDetailsResponse> {
         return this.callApi<unknown, IMilestoneDetailsResponse>(
             `stardust/milestone/${request.network}/${request.milestoneIndex}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the milestone analytics stats by milestone id.
+     * @param request The milestone analytic stats get request.
+     * @returns The milestone stats response.
+     */
+    public async milestoneStats(request: IMilestoneStatsRequest): Promise<IMilestoneAnalyticStats> {
+        return this.callApi<unknown, IMilestoneAnalyticStats>(
+            `stardust/milestone/stats/${request.networkId}/${request.milestoneId}`,
             "get"
         );
     }

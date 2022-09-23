@@ -35,4 +35,9 @@ export interface OutputProps {
      * The network to lookup.
      */
     network: string;
+
+    /**
+     * Disable links if block is conflicting.
+     */
+     isLinksDisabled?: boolean;
 }

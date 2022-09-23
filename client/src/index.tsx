@@ -44,7 +44,6 @@ initialiseServices().then(() => {
                 component={(props: RouteComponentProps<AppRouteProps>) => (
                     <App {...props} config={config} />)}
             />
-
         </BrowserRouter>
     );
 }).catch(err => console.error(err));

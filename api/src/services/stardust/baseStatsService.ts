@@ -112,7 +112,8 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
         await this._analyticsStorage.set({
             network,
             dailyMilestones: {},
-            analytics: {}
+            analytics: {},
+            milestoneAnalytics: {}
         });
 
         const initialized = await this._analyticsStorage.get(network);

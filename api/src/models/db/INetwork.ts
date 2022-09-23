@@ -66,6 +66,11 @@ export interface INetwork {
     permaNodeEndpointPassword?: string;
 
     /**
+     * The permanode endpoint JWT.
+     */
+    permaNodeJwt?: string;
+
+    /**
      * The feed to communicate with.
      */
     feedEndpoint?: string;

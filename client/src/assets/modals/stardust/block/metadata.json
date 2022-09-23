@@ -1,0 +1,11 @@
+{
+    "title": "Metadata",
+    "description": "<p>Nodes can store additional information about blocks: if a node considers a block valid, the time when it received a block, and which timestamp should be attached to it. This information is not part of the Tangle and is not synchronized between the nodes: the block metadata reflects each node's local perception and differs between the nodes.</p>",
+    "links": [
+        {
+          "label": "Read more",
+          "href": "https://wiki.iota.org/IOTA-2.0-Research-Specifications/2.2MessageLayout#226-metadata",
+          "isExternal": true
+        }
+    ]
+}

@@ -23,8 +23,8 @@ import TaggedDataPayload from "../../components/stardust/TaggedDataPayload";
 import TransactionPayload from "../../components/stardust/TransactionPayload";
 import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
-import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
-import metadataMessage from "./../../../assets/modals/block/metadata.json";
+import mainHeaderMessage from "./../../../assets/modals/stardust/block/main-header.json";
+import metadataMessage from "./../../../assets/modals/stardust/block/metadata.json";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
 import "./Block.scss";
@@ -106,6 +106,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
         const blockId = this.props.match.params.blockId;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
         const isMarketed = isMarketedNetwork(network);
+        const isLinksDisabled = this.state.metadata?.ledgerInclusionState === "conflicting";
 
         return (
             <div className="block">
@@ -142,7 +143,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     status={this.state.blockTangleStatus}
                                     milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
                                         this.state.metadata?.milestoneIndex}
-                                    hasConflicts={this.state.metadata?.ledgerInclusionState === "conflicting"}
+                                    hasConflicts={isLinksDisabled}
                                     conflictReason={this.state.conflictReason}
                                     onClick={this.state.metadata?.referencedByMilestoneIndex
                                         ? (blockId: string) => this.props.history.push(`/${network}/search/${blockId}`)
@@ -167,12 +168,16 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                         Transaction Id
                                     </div>
                                     <div className="value value__secondary row middle link">
-                                        <Link
-                                            to={`/${network}/transaction/${this.state.transactionId}`}
-                                            className="margin-r-t"
-                                        >
-                                            {this.state.transactionId}
-                                        </Link>
+                                        {isLinksDisabled ?
+                                            <span className="margin-r-t">
+                                                {this.state.transactionId}
+                                            </span> :
+                                            <Link
+                                                to={`/${network}/transaction/${this.state.transactionId}`}
+                                                className="margin-r-t"
+                                            >
+                                                {this.state.transactionId}
+                                            </Link>}
                                         <CopyButton copy={this.state.transactionId} />
                                     </div>
                                 </div>
@@ -247,6 +252,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                     outputs={this.state.outputs}
                                                     transferTotal={this.state.transferTotal}
                                                     header="Transaction Payload"
+                                                    isLinksDisabled={isLinksDisabled}
                                                 />
                                             </div>
                                             {
@@ -290,8 +296,8 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     <div className="row middle">
                                         <h2>
                                             Metadata
-                                            <Modal icon="info" data={metadataMessage} />
                                         </h2>
+                                        <Modal icon="info" data={metadataMessage} />
                                     </div>
                                 </div>
                                 <div className="section--data">
@@ -347,12 +353,16 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                             style={{ marginTop: "8px" }}
                                                             className="value code link"
                                                         >
-                                                            <Link
-                                                                to={`/${network}/block/${parent}`}
-                                                                className="margin-r-t"
-                                                            >
-                                                                {parent}
-                                                            </Link>
+                                                            {isLinksDisabled ?
+                                                                <span className="margin-r-t">
+                                                                    {parent}
+                                                                </span> :
+                                                                <Link
+                                                                    to={`/${network}/block/${parent}`}
+                                                                    className="margin-r-t"
+                                                                >
+                                                                    {parent}
+                                                                </Link>}
                                                         </div>
                                                     ))}
                                                 </div>

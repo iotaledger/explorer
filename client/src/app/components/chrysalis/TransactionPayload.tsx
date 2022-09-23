@@ -8,7 +8,7 @@ import CopyButton from "../CopyButton";
 import FiatValue from "../FiatValue";
 import Modal from "../Modal";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import transactionPayloadMessage from "./../../../assets/modals/message/transaction-payload.json";
+import transactionPayloadMessage from "./../../../assets/modals/chrysalis/message/transaction-payload.json";
 import Bech32Address from "./Bech32Address";
 import "./TransactionPayload.scss";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";

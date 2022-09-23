@@ -1,4 +1,0 @@
-{
-    "title": "Metadata",
-    "description": "<p>In addition to a message itself, a node may store additional data that describes its local perception of a message which is not part of the Tangle ('Message metadata'). Where such metadata is defined, the metadata element names and types defined in the table in the Metadata section of the <a href='https://wiki.iota.org/IOTA-2.0-Research-Specifications/2.2MessageLayout#226-metadata' target='_blank'>Coordicide Specs</a> or <a href='https://wiki.iota.org/iota.rs/specs#messagemetadata' target='_blank'>IOTA Client Library</a>.</p>"
-}

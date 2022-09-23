@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { RouteComponentProps, Switch } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { isMarketedNetwork, isShimmerNetwork } from "../helpers/networkHelper";
 import { IConfiguration } from "../models/config/IConfiguration";
@@ -9,7 +9,6 @@ import { MAINNET } from "../models/config/networkType";
 import { OG, STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { NodeInfoService } from "../services/nodeInfoService";
-import "./App.scss";
 import { AppRouteProps } from "./AppRouteProps";
 import { buildUtilities, copyrightInner, getFooterItems, getPages, networkContextWrapper } from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
@@ -18,22 +17,28 @@ import ShimmerFooter from "./components/footer/ShimmerFooter";
 import Header from "./components/header/Header";
 import SearchInput from "./components/SearchInput";
 import buildAppRoutes from "./routes";
+import "./App.scss";
 
 const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguration }> = (
     { history, match: { params: { network, action } }, config: { identityResolverEnabled } }
 ) => {
     const [networks, setNetworks] = useState<INetwork[]>([]);
+    const [networksLoaded, setNetworksLoaded] = useState(false);
 
     useEffect(() => {
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networkConfigs = networkService.networks();
+
         setNetworks(networkConfigs);
+        setNetworksLoaded(true);
     }, []);
 
-    if (!network) {
-        network = networks.length > 0 ? networks[0].network : MAINNET;
-        history.replace(`/${network}`);
-    }
+    useEffect(() => {
+        if (networksLoaded && !network) {
+            network = networks.length > 0 ? networks[0].network : MAINNET;
+            history.replace(`/${network}`);
+        }
+    }, [networksLoaded]);
 
     const networkConfig = networks.find(n => n.network === network);
 
@@ -90,11 +95,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguratio
                                 </div>
                             </div>
                         )}
-                        {networkConfig && (
-                            <Switch>
-                                {routes}
-                            </Switch>
-                        )}
+                        {networkConfig && routes}
                         <div className={classNames("copyright", { "shimmer-copyright": isShimmer })}>
                             <div className="copyright-inner">{copyrightInner}</div>
                         </div>
