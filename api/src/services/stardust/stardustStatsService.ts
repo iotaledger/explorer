@@ -90,10 +90,9 @@ export class StardustStatsService extends BaseStatsService {
         const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${network}`);
 
         const claimingStats = await chronicleService.shimmerClaimingStatistics();
+        const analyticsStore = await this._analyticsStorage.get(network);
 
-        if (claimingStats?.count) {
-            const analyticsStore = await this._analyticsStorage.get(network);
-
+        if (claimingStats?.count && analyticsStore) {
             analyticsStore.shimmerClaimingStats = claimingStats.count;
             await this._analyticsStorage.set(analyticsStore);
         }
