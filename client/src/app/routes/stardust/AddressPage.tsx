@@ -167,7 +167,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                 )}
                                             </div>
                                         </div>
-                                        {storageRentBalance && (
+                                        {storageRentBalance ?
                                             <div className="section--data margin-t-m">
                                                 <div className="label">
                                                     Storage rent
@@ -189,8 +189,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                                     </span>
                                                     <CopyButton copy={String(storageRentBalance)} />
                                                 </div>
-                                            </div>
-                                        )}
+                                            </div> : ""}
                                     </div>
                                     {outputResponse && outputResponse.length === 0 && (
                                         <div className="section">
