@@ -1,46 +1,74 @@
-export class BigDecimal {
-    public static DECIMALS = 6; // number of decimals on all instances
+export default class BigDecimal {
+    /*
+     * Number of decimals to use throughout.
+     * Also propagates to "other" values used in operations.
+     */
+    private readonly decimals: number;
 
-    public static ROUNDED = false; // numbers are truncated (false) or rounded (true)
+    /**
+     * Should the decimals be rounded or truncated.
+     */
+    private readonly rounded: boolean;
 
-    private readonly num: bigint;
+    /**
+     * The n BigInt.
+     */
+    private readonly n: bigint;
 
-    constructor(value: string) {
-        const [ints, decis] = value.split(".").concat("");
-        this.num = BigInt(ints + decis.padEnd(BigDecimal.DECIMALS, "0").slice(0, BigDecimal.DECIMALS)) +
-            BigInt(BigDecimal.ROUNDED && decis[BigDecimal.DECIMALS] >= "5");
+    constructor(value: string, decimals = 2, rounded = false) {
+        const [whole, fraction] = value.split(".").concat("");
+        this.decimals = decimals;
+        this.rounded = rounded;
+        this.n = BigInt(
+            whole + fraction.padEnd(this.decimals, "0").slice(0, this.decimals)
+        ) + BigInt(this.rounded && fraction[this.decimals] >= "5");
     }
 
-    public static fromBigInt(bigint: bigint): BigDecimal {
-        return Object.assign(Object.create(BigDecimal.prototype), { num: bigint }) as BigDecimal;
+    public static fromBigInt(bigint: bigint, decimals = 0, rounded = false): BigDecimal {
+        return Object.assign(
+            Object.create(BigDecimal.prototype),
+            { n: bigint, decimals, rounded }
+        ) as BigDecimal;
     }
 
-    public static divRound(dividend: bigint, divisor: bigint): BigDecimal {
-        return BigDecimal.fromBigInt((dividend / divisor) + (BigDecimal.ROUNDED ? dividend * 2n / divisor % 2n : 0n));
+    public divRound(dividend: bigint, divisor: bigint): BigDecimal {
+        return BigDecimal.fromBigInt(
+            (dividend / divisor) + (this.rounded ? dividend * 2n / divisor % 2n : 0n),
+            this.decimals,
+            this.rounded
+        );
     }
 
-    public add(num: string): BigDecimal {
-        return BigDecimal.fromBigInt(this.num + new BigDecimal(num).num);
+    public add(other: string): BigDecimal {
+        return BigDecimal.fromBigInt(
+            this.n + new BigDecimal(other, this.decimals, this.rounded).n,
+            this.decimals,
+            this.rounded
+        );
     }
 
-    public subtract(num: string): BigDecimal {
-        return BigDecimal.fromBigInt(this.num - new BigDecimal(num).num);
+    public subtract(other: string): BigDecimal {
+        return BigDecimal.fromBigInt(
+            this.n - new BigDecimal(other, this.decimals, this.rounded).n,
+            this.decimals,
+            this.rounded
+        );
     }
 
-    public multiply(num: string): BigDecimal {
-        const shift = BigInt(`1${"0".repeat(BigDecimal.DECIMALS)}`);
-        return BigDecimal.divRound(this.num * new BigDecimal(num).num, shift);
+    public multiply(other: string): BigDecimal {
+        const shift = BigInt(`1${"0".repeat(this.decimals)}`);
+        return this.divRound(this.n * new BigDecimal(other, this.decimals, this.rounded).n, shift);
     }
 
-    public divide(num: string): BigDecimal {
-        const shift = BigInt(`1${"0".repeat(BigDecimal.DECIMALS)}`);
-        return BigDecimal.divRound(this.num * shift, new BigDecimal(num).num);
+    public divide(other: string): BigDecimal {
+        const shift = BigInt(`1${"0".repeat(this.decimals)}`);
+        return this.divRound(this.n * shift, new BigDecimal(other, this.decimals, this.rounded).n);
     }
 
     public toString(): string {
-        const s = this.num.toString().padStart(BigDecimal.DECIMALS + 1, "0");
-        const whole = s.slice(0, -BigDecimal.DECIMALS);
-        const frac = s.slice(-BigDecimal.DECIMALS);
+        const s = this.n.toString().padStart(this.decimals + 1, "0");
+        const whole = this.decimals === 0 ? s : s.slice(0, -this.decimals);
+        const frac = this.decimals === 0 ? "" : s.slice(-this.decimals);
         const hasFrac = Number(frac) !== 0;
         return whole + (hasFrac ? "." : "") + frac.replace(/\.?0+$/, "");
     }

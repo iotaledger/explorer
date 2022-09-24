@@ -1,6 +1,6 @@
 import { INodeInfoBaseToken, UnitsHelper } from "@iota/iota.js-stardust";
 import React from "react";
-import { BigDecimal } from "../../../../helpers/bigDecimal";
+import BigDecimal from "../../../../helpers/bigDecimal";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
 import { IShimmerClaimed } from "../../../../models/api/stats/IShimmerClaimed";
@@ -26,8 +26,6 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
     let shimmerClaimedPercent: BigDecimal | undefined;
     if (shimmerClaimed && circulatingSupply) {
         claimedCout = new BigDecimal(shimmerClaimed.count);
-        BigDecimal.DECIMALS = 12;
-        // claimedCout = new BigDecimal("123123");
         shimmerClaimedPercent = claimedCout.multiply("100").divide(String(circulatingSupply));
     } else if (analytics?.shimmerClaimed?.count && circulatingSupply) {
         claimedCout = new BigDecimal(analytics.shimmerClaimed.count);
