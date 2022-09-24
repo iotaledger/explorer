@@ -1,10 +1,10 @@
-import { INodeInfoBaseToken, UnitsHelper } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React from "react";
-import BigDecimal from "../../../../helpers/bigDecimal";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
 import { IShimmerClaimed } from "../../../../models/api/stats/IShimmerClaimed";
 import "./AnalyticStats.scss";
+import { buildShimmerClaimedStats } from "./ShimmerClaimedUtils";
 
 interface AnalyticStatsProps {
     analytics: IAnalyticStats | undefined;
@@ -22,21 +22,19 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
     const dailyAddresses = analytics?.dailyAddresses?.totalActiveAddresses;
     const lockedStorageDepositValue = analytics?.lockedStorageDeposit?.totalValue;
 
-    let claimedCout: BigDecimal | undefined;
-    let shimmerClaimedPercent: BigDecimal | undefined;
-    if (shimmerClaimed && circulatingSupply) {
-        claimedCout = new BigDecimal(shimmerClaimed.count);
-        shimmerClaimedPercent = claimedCout.multiply("100").divide(String(circulatingSupply));
+    let claimedAndPercentLabels: [string, string] | undefined;
+    if (shimmerClaimed?.count && circulatingSupply) {
+        claimedAndPercentLabels = buildShimmerClaimedStats(
+            shimmerClaimed.count,
+            String(circulatingSupply),
+            tokenInfo
+        );
     } else if (analytics?.shimmerClaimed?.count && circulatingSupply) {
-        claimedCout = new BigDecimal(analytics.shimmerClaimed.count);
-        shimmerClaimedPercent = claimedCout.multiply("100").divide(String(circulatingSupply));
-    }
-
-    let formattedClaimed: string | undefined;
-    if (claimedCout) {
-        const amount = formatAmount(Number(claimedCout), tokenInfo, true);
-        const [amountNoUnit, unit] = amount.split(" ");
-        formattedClaimed = UnitsHelper.formatBest(Number(amountNoUnit)) + unit;
+        claimedAndPercentLabels = buildShimmerClaimedStats(
+            analytics.shimmerClaimed.count,
+            String(circulatingSupply),
+            tokenInfo
+        );
     }
 
     return (
@@ -55,18 +53,18 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
                             <span className="info-box--value">{dailyAddresses}</span>
                         </div>
                     )}
-                    {formattedClaimed && (
+                    {claimedAndPercentLabels && (
                         <div className="info-box">
                             <span className="info-box--title">Shimmer claimed</span>
                             <span className="info-box--value">
-                                {formattedClaimed}
+                                {claimedAndPercentLabels[0]}
                             </span>
                         </div>
                     )}
-                    {shimmerClaimedPercent && (
+                    {claimedAndPercentLabels && (
                         <div className="info-box">
                             <span className="info-box--title">Shimmer claimed %</span>
-                            <span className="info-box--value">{shimmerClaimedPercent.toString()}%</span>
+                            <span className="info-box--value">{claimedAndPercentLabels[1]}</span>
                         </div>
                     )}
                 </div>
