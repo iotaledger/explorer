@@ -3,8 +3,8 @@ import React from "react";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
 import { IShimmerClaimed } from "../../../../models/api/stats/IShimmerClaimed";
-import "./AnalyticStats.scss";
 import { buildShimmerClaimedStats } from "./ShimmerClaimedUtils";
+import "./AnalyticStats.scss";
 
 interface AnalyticStatsProps {
     analytics: IAnalyticStats | undefined;

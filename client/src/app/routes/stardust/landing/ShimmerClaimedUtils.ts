@@ -1,6 +1,6 @@
 import { INodeInfoBaseToken, UnitsHelper } from "@iota/iota.js-stardust";
 import BigDecimal from "../../../../helpers/bigDecimal";
-import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
+import { formatAmount, toFixedNoRound } from "../../../../helpers/stardust/valueFormatHelper";
 
 export const buildShimmerClaimedStats = (
     claimed: string,
@@ -14,8 +14,11 @@ export const buildShimmerClaimedStats = (
     const formatMagnitude = bigInt > Math.pow(10, tokenInfo.decimals + 3);
 
     if (formatMagnitude) {
-        const smrNoDecimals = claimed.slice(0, -tokenInfo.decimals);
-        claimedFinal = UnitsHelper.formatBest(Number(smrNoDecimals), 2).concat(tokenInfo.unit);
+        const smrWholePart = Number(claimed.slice(0, -tokenInfo.decimals));
+        const magnitude = UnitsHelper.calculateBest(smrWholePart);
+        const smrBestMagnitude = UnitsHelper.convertUnits(smrWholePart, "", magnitude);
+        const smrFormatted = toFixedNoRound(smrBestMagnitude, 2);
+        claimedFinal = `${smrFormatted}${magnitude.toLowerCase()} ${tokenInfo.unit}`;
     } else {
         const formatFull = bigInt < Math.pow(10, tokenInfo.decimals);
         claimedFinal = formatAmount(Number(claimedFinal), tokenInfo, formatFull);
