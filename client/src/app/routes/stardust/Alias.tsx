@@ -154,7 +154,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                     {storageRentBalance && (
                                         <div className="section--data margin-t-m">
                                             <div className="label">
-                                                Storage rent
+                                                Storage deposit
                                             </div>
                                             <div className="row middle value featured">
                                                 <span
