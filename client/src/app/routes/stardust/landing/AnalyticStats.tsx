@@ -55,16 +55,16 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
                     )}
                     {claimedAndPercentLabels && (
                         <div className="info-box">
-                            <span className="info-box--title">Shimmer claimed</span>
-                            <span className="info-box--value">
-                                {claimedAndPercentLabels[0]}
-                            </span>
+                            <span className="info-box--title">Rewards claimed</span>
+                            <span className="info-box--value">{claimedAndPercentLabels[1]}</span>
                         </div>
                     )}
                     {claimedAndPercentLabels && (
                         <div className="info-box">
-                            <span className="info-box--title">Shimmer claimed %</span>
-                            <span className="info-box--value">{claimedAndPercentLabels[1]}</span>
+                            <span className="info-box--title">Total Shimmer claimed</span>
+                            <span className="info-box--value">
+                                {claimedAndPercentLabels[0]}
+                            </span>
                         </div>
                     )}
                 </div>
