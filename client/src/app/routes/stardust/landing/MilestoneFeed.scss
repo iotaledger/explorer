@@ -5,7 +5,6 @@
 @import "../../../../scss/themes";
 
 .feed .section--header.milestone-feed-header {
-    border-top: 1px solid var(--input-border-color);
     padding-top: 28px;
     margin-bottom: 16px;
 
@@ -53,11 +52,11 @@
             }
 
             &.ms-index, &.ms-id, &.ms-blocks, &.ms-txs, &.ms-timestamp {
-                text-align: center;
+                text-align: left;
             }
 
             &.ms-index {
-                min-width: 50px;
+                min-width: 58px;
             }
 
             &.ms-id {
@@ -144,18 +143,18 @@
 
             &.ms-index {
                 min-width: 52px;
-                text-align: center;
+                text-align: left;
             }
 
             &.ms-blocks, &.ms-txs {
-                text-align: center;
+                text-align: left;
                 min-width: 60px;
             }
 
             &.ms-timestamp {
                 min-width: 120px;
                 display: flex;
-                justify-content: center;
+                justify-content: left;
 
                 .tooltip .children {
                     font-weight: inherit;
@@ -179,11 +178,14 @@
                         word-break: break-word;
                     }
                 }
+                @include tablet-down {
+                    padding-left: 8px;
+                }
             }
 
             @include tablet-down {
                 &.ms-index, &.ms-id, &.ms-blocks, &.ms-txs, &.ms-timestamp {
-                    text-align: inherit;
+                    text-align: left;
                 }
             }
         }
@@ -203,7 +205,11 @@
 
             &.ms-id {
                 min-width: 136px;
-                text-align: center;
+                text-align: left;
+
+                @include tablet-down {
+                    padding-left: 8px;
+                }
             }
         }
     }
