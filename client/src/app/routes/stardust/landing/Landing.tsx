@@ -7,15 +7,13 @@ import { INetwork } from "../../../../models/config/INetwork";
 import { CUSTOM } from "../../../../models/config/networkType";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
-import { IFeedItemMetadata } from "../../../../models/feed/IFeedItemMetadata";
 import { NetworkService } from "../../../../services/networkService";
 import Feeds from "../../../components/stardust/Feeds";
 import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
 import AnalyticStats from "./AnalyticStats";
-import BlockFeed from "./BlockFeed";
 import InfoBox from "./InfoBox";
-import { FeedTabs, getDefaultLandingState, LandingState } from "./LandingState";
+import { getDefaultLandingState, LandingState } from "./LandingState";
 import MilestoneFeed from "./MilestoneFeed";
 import "./Landing.scss";
 
@@ -75,8 +73,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      */
     public render(): ReactNode {
         const {
-            networkConfig, currentTab, marketCapCurrency, priceCurrency,
-            blocks, milestones, itemsPerSecond, confirmedItemsPerSecondPercent,
+            networkConfig, marketCapCurrency, priceCurrency,
+            milestones, itemsPerSecond, confirmedItemsPerSecondPercent,
             latestMilestoneIndex, networkAnalytics, shimmerClaimed
         } = this.state;
 
@@ -115,32 +113,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         <div className="feeds-section">
                             <div className="row wrap feeds">
                                 <div className="feed section">
-                                    <div className="tabs-wrapper">
-                                        {Object.entries(FeedTabs).map(([_, label]) => (
-                                            <button
-                                                key={label}
-                                                type="button"
-                                                className={classNames("tab", { active: currentTab === label })}
-                                                onClick={() => this.setState({ currentTab: label })}
-                                            >
-                                                {label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    {currentTab === FeedTabs.MILESTONES && (
-                                        <MilestoneFeed
-                                            networkConfig={networkConfig}
-                                            milestones={milestones}
-                                            latestMilestoneIndex={latestMilestoneIndex}
-                                        />
-                                    )}
-                                    {currentTab === FeedTabs.BLOCKS && (
-                                        <BlockFeed
-                                            networkConfig={networkConfig}
-                                            blocks={blocks}
-                                            settingsService={this._settingsService}
-                                        />
-                                    )}
+                                    <MilestoneFeed
+                                        networkConfig={networkConfig}
+                                        milestones={milestones}
+                                        latestMilestoneIndex={latestMilestoneIndex}
+                                    />
                                 </div>
                             </div>
                             <div className="card margin-t-m">
@@ -210,23 +187,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     protected itemsUpdated(newItems: IFeedItem[]): void {
         super.itemsUpdated(newItems);
         if (this._feedClient) {
-            const blocks = this._feedClient.getItems();
             const milestones = this._feedClient.getItems()
                 .filter(item => item.payloadType === "MS").slice(0, MAX_MILESTONE_ITEMS);
 
             this.setState({
-                blocks,
                 milestones
             });
         }
-    }
-
-    /**
-     * The confirmed items have been updated.
-     * @param metaData The updated confirmed items.
-     */
-    protected metadataUpdated(metaData: { [id: string]: IFeedItemMetadata }): void {
-        super.metadataUpdated(metaData);
     }
 }
 

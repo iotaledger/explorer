@@ -29,7 +29,11 @@ export const getPages = (currentNetwork: string, networks: INetwork[]) => (
 );
 
 export const buildUtilities = (
-    currentNetwork: string, networks: INetwork[], isMarketed: boolean, identityResolverEnabled: boolean
+    currentNetwork: string,
+    networks: INetwork[],
+    isMarketed: boolean,
+    identityResolverEnabled: boolean,
+    isStardust: boolean
 ) => {
     const utilities = [];
     if (networks.length > 0) {
