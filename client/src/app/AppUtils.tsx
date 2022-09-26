@@ -45,9 +45,6 @@ export const buildUtilities = (
         if (identityResolverEnabled) {
             utilities.push({ label: "Decentralized Identifier", url: `/${currentNetwork}/identity-resolver/` });
         }
-        if (isStardust) {
-            utilities.push({ label: "Statistics", url: `/${currentNetwork}/statistics/` });
-        }
     }
 
     return utilities;
