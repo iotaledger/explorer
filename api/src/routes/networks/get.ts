@@ -32,7 +32,8 @@ export async function get(config: IConfiguration): Promise<INetworkGetResponse> 
             bechHrp: n.bechHrp,
             didExample: n.didExample,
             faucet: n.faucet,
-            milestoneInterval: n.milestoneInterval
+            milestoneInterval: n.milestoneInterval,
+            circulatingSupply: n.circulatingSupply
         }))
     };
 }

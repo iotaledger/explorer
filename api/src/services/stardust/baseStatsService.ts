@@ -2,17 +2,19 @@ import moment from "moment";
 import cron from "node-cron";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
+import { IShimmerClaimed } from "../../models/api/stats/IShimmerClaimed";
 import { IAnalyticsStore } from "../../models/db/IAnalyticsStore";
 import { INetwork } from "../../models/db/INetwork";
 import { IStatistics } from "../../models/services/IStatistics";
 import { IStatsService } from "../../models/services/IStatsService";
 import { IStorageService } from "../../models/services/IStorageService";
 import { IAnalyticsStatsService } from "../../models/services/stardust/IAnalyticsStatsService";
+import { IShimmerStatsService } from "../../models/services/stardust/IShimmerStatsService";
 
 /**
  * Class to handle stats service.
  */
-export abstract class BaseStatsService implements IStatsService, IAnalyticsStatsService {
+export abstract class BaseStatsService implements IStatsService, IAnalyticsStatsService, IShimmerStatsService {
     /**
      * The network configuration.
      */
@@ -29,14 +31,14 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
     protected readonly ANALYTICS_REFERSH_FREQ_HOURS = 3;
 
     /**
-     * The analytic stats.
-     */
-    protected _analyticsStats?: number;
-
-    /**
      * The analytics storage.
      */
     protected readonly _analyticsStorage: IStorageService<IAnalyticsStore>;
+
+    /**
+     * The shimmer claimed stats.
+     */
+    protected _shimmerClaimed: IShimmerClaimed;
 
     /**
      * Timer handle of analytics refresh job.
@@ -60,9 +62,12 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
             }
         ];
 
-        setInterval(async () => this.updateStatistics(), 2000);
-        this.setupDailyMilestonesJob();
-        this.setupAnalytics();
+        // eslint-disable-next-line no-void
+        void this.initAnalyticsStoreIfNeeded(networkConfiguration.network).then(() => {
+            setInterval(async () => this.updateStatistics(), 2000);
+            this.setupDailyMilestonesJob();
+            this.setupAnalytics();
+        });
     }
 
     /**
@@ -80,6 +85,14 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
     public async getAnalytics(): Promise<IAnalyticStats> {
         const analyticsStore = await this._analyticsStorage.get(this._networkConfiguration.network);
         return analyticsStore.analytics;
+    }
+
+    /**
+     * Fetch the current Shimmer stats.
+     * @returns The current shimmer claiming stats.
+     */
+    public getShimmerClaimed(): IShimmerClaimed {
+        return this._shimmerClaimed;
     }
 
     /**
@@ -108,13 +121,18 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
      * @param network The network in context.
      * @returns The initialized analytics store.
      */
-    protected async initAnalyticsStore(network: string): Promise<IAnalyticsStore> {
-        await this._analyticsStorage.set({
-            network,
-            dailyMilestones: {},
-            analytics: {},
-            milestoneAnalytics: {}
-        });
+    protected async initAnalyticsStoreIfNeeded(network: string): Promise<IAnalyticsStore> {
+        const analyticsStore = await this._analyticsStorage.get(network);
+
+        if (!analyticsStore) {
+            console.log("Initializing analytics store for", network);
+            await this._analyticsStorage.set({
+                network,
+                dailyMilestones: {},
+                analytics: {},
+                milestoneAnalytics: {}
+            });
+        }
 
         const initialized = await this._analyticsStorage.get(network);
         return initialized;
@@ -143,11 +161,7 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
 
         // collect history milestones
         cron.schedule(cronExpr, async () => {
-            let currentAnalyticsStore = await this._analyticsStorage.get(network);
-
-            if (!currentAnalyticsStore) {
-                currentAnalyticsStore = await this.initAnalyticsStore(network);
-            }
+            const currentAnalyticsStore = await this._analyticsStorage.get(network);
 
             if (currentAnalyticsStore.dailyMilestones?.last) {
                 currentAnalyticsStore.dailyMilestones.first = currentAnalyticsStore.dailyMilestones.last;

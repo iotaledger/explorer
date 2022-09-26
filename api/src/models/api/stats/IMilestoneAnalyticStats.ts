@@ -13,7 +13,6 @@ interface IMilestoneStatsPerPayloadType {
      * The number of milestone payloads referenced by the requested milestone.
      */
     milestonePayloadCount: number;
-
     /**
      * The number of tagged data payloads referenced by the requested milestone.
      */

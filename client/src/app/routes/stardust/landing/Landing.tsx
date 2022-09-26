@@ -73,8 +73,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      */
     public render(): ReactNode {
         const {
-            networkConfig, marketCapCurrency, priceCurrency, milestones,
-            itemsPerSecond, confirmedItemsPerSecondPercent, latestMilestoneIndex, networkAnalytics
+            networkConfig, marketCapCurrency, priceCurrency,
+            milestones, itemsPerSecond, confirmedItemsPerSecondPercent,
+            latestMilestoneIndex, networkAnalytics, shimmerClaimed
         } = this.state;
 
         const { network } = this.props.match.params;
@@ -100,7 +101,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             />
                         </div>
                     </div>
-                    <AnalyticStats analytics={networkAnalytics} tokenInfo={tokenInfo} />
+                    <AnalyticStats
+                        analytics={networkAnalytics}
+                        shimmerClaimed={shimmerClaimed}
+                        circulatingSupply={networkConfig.circulatingSupply}
+                        tokenInfo={tokenInfo}
+                    />
                 </div>
                 <div className={classNames("wrapper feeds-wrapper", { "shimmer": isShimmer })}>
                     <div className="inner">

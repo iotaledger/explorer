@@ -116,6 +116,11 @@ export interface INetwork {
     faucet?: string;
 
     /**
+     * Native token circulating supply.
+     */
+    circulatingSupply?: number;
+
+    /**
      * Targeted interval in seconds between milestones.
      */
     milestoneInterval?: number;

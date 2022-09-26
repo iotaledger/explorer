@@ -1,3 +1,4 @@
+/* eslint-disable no-void */
 import { SingleNodeClient } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { BaseStatsService } from "./baseStatsService";
@@ -12,26 +13,8 @@ export class StardustStatsService extends BaseStatsService {
      * Gather more statistics.
      */
     protected async updateStatistics(): Promise<void> {
-        try {
-            const client = new SingleNodeClient(this._networkConfiguration.provider);
-            const info = await client.info();
-
-            if (info) {
-                this._statistics.push({
-                    itemsPerSecond: info.metrics.blocksPerSecond,
-                    confirmedItemsPerSecond: info.metrics.referencedBlocksPerSecond,
-                    confirmationRate: info.metrics.referencedRate,
-                    latestMilestoneIndex: info.status.latestMilestone.index,
-                    latestMilestoneIndexTime: info.status.latestMilestone.timestamp * 1000
-                });
-
-                if (this._statistics.length > 30) {
-                    this._statistics = this._statistics.slice(-30);
-                }
-            }
-        } catch (err) {
-            console.error(err);
-        }
+        void this.refreshGeneralStatistics();
+        void this.refreshShimmerClaimedCount();
     }
 
     /**
@@ -42,10 +25,7 @@ export class StardustStatsService extends BaseStatsService {
         const network = this._networkConfiguration.network;
         const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${network}`);
 
-        let analyticsStore = await this._analyticsStorage.get(network);
-        if (!analyticsStore) {
-            analyticsStore = await this.initAnalyticsStore(network);
-        }
+        const analyticsStore = await this._analyticsStorage.get(network);
 
         try {
             const latestMsFromStatistics: number = this._statistics[this._statistics.length - 1].latestMilestoneIndex;
@@ -79,6 +59,40 @@ export class StardustStatsService extends BaseStatsService {
             }
         } catch (e) {
             console.log(e);
+        }
+    }
+
+    private async refreshGeneralStatistics(): Promise<void> {
+        try {
+            const client = new SingleNodeClient(this._networkConfiguration.provider);
+            const info = await client.info();
+
+            if (info) {
+                this._statistics.push({
+                    itemsPerSecond: info.metrics.blocksPerSecond,
+                    confirmedItemsPerSecond: info.metrics.referencedBlocksPerSecond,
+                    confirmationRate: info.metrics.referencedRate,
+                    latestMilestoneIndex: info.status.latestMilestone.index,
+                    latestMilestoneIndexTime: info.status.latestMilestone.timestamp * 1000
+                });
+
+                if (this._statistics.length > 30) {
+                    this._statistics = this._statistics.slice(-30);
+                }
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    private async refreshShimmerClaimedCount(): Promise<void> {
+        const network = this._networkConfiguration.network;
+        const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${network}`);
+
+        const claimingStats = await chronicleService.fetchShimmerClaimedCount();
+
+        if (claimingStats?.count) {
+            this._shimmerClaimed = claimingStats;
         }
     }
 }

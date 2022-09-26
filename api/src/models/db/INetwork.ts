@@ -131,6 +131,11 @@ export interface INetwork {
     milestoneInterval?: number;
 
     /**
+     * Native token circulating supply.
+     */
+    circulatingSupply?: number;
+
+    /**
      * Is API calls fallback disabled.
      * If both permanode and node are configured, and this is true, API calls will only try calling permanode
      * without falling back on node on failure.

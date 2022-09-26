@@ -17,7 +17,9 @@ export function formatAmount(
     if (formatFull) {
         return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
     }
+
     const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
+    // useMetricPrefix is broken cause it passes a float value to formatBest
     const amount = tokenInfo.useMetricPrefix
         ? UnitsHelper.formatBest(baseTokenValue)
         : `${toFixedNoRound(baseTokenValue, decimalPlaces)} `;
@@ -31,7 +33,8 @@ export function formatAmount(
  * @param precision The decimal places to show.
  * @returns The formatted amount.
  */
-function toFixedNoRound(value: number, precision: number = 2) {
+export function toFixedNoRound(value: number, precision: number = 2) {
     const factor = Math.pow(10, precision);
     return Math.floor(value * factor) / factor;
 }
+

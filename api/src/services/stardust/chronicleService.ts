@@ -2,8 +2,9 @@ import { NetworkConfigurationError } from "../../errors/networkConfigurationErro
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
-import { IAnalyticStats, ICountAndValueStats, ICountStat, IAddressesStats } from "../../models/api/stats/IAnalyticStats";
+import { IAnalyticStats, ICountAndValueStats, IAddressesStats } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
+import { IShimmerClaimed } from "../../models/api/stats/IShimmerClaimed";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../../utils/fetchHelper";
 
@@ -14,8 +15,8 @@ const CHRONICLE_ENDPOINTS = {
     nftStats: "/api/analytics/v2/ledger/nfts",
     addresses: "/api/analytics/v2/activity/addresses",
     lockedStorageDeposit: "/api/analytics/v2/ledger/native-tokens",
-    transactions: "/api/analytics/v2/activity/blocks/transaction",
-    milestones: "/api/analytics/v2/activity/milestones/"
+    milestones: "/api/analytics/v2/activity/milestones/",
+    shimmerClaiming: "/api/analytics/v2/activity/claimed-tokens"
 };
 
 export class ChronicleService {
@@ -84,7 +85,6 @@ export class ChronicleService {
         lastMilestoneOfYesterday: number
     ): Promise<IAnalyticStats> | undefined {
         let dailyAddresses: IAddressesStats;
-        let dailyTransactions: ICountStat;
 
         const nativeTokens = await this.fetchHelperTryGet<ICountAndValueStats>(
             CHRONICLE_ENDPOINTS.nativeTokensStats,
@@ -111,11 +111,6 @@ export class ChronicleService {
                 CHRONICLE_ENDPOINTS.addresses,
                 { startIndex: firstMilestoneOfYesterday, endIndex: lastMilestoneOfYesterday }
             );
-
-            dailyTransactions = await this.fetchHelperTryGet<ICountStat>(
-                CHRONICLE_ENDPOINTS.transactions,
-                { startIndex: firstMilestoneOfYesterday, endIndex: lastMilestoneOfYesterday }
-            );
         }
 
         return {
@@ -123,8 +118,7 @@ export class ChronicleService {
             nfts,
             totalAddresses,
             dailyAddresses,
-            lockedStorageDeposit,
-            dailyTransactions
+            lockedStorageDeposit
         };
     }
 
@@ -154,6 +148,17 @@ export class ChronicleService {
         } catch (error) {
             return { error };
         }
+    }
+
+    /**
+     * Get the shimmer claiming statistics.
+     * @returns The claiming statistics.
+     */
+    public async fetchShimmerClaimedCount(): Promise<IShimmerClaimed> {
+        const claimingStats = await this.fetchHelperTryGet<IShimmerClaimed>(
+            CHRONICLE_ENDPOINTS.shimmerClaiming, {}
+        );
+        return claimingStats;
     }
 
     private async fetchHelperTryGet<R>(path: string, params: Record<string, unknown>): Promise<R> {
