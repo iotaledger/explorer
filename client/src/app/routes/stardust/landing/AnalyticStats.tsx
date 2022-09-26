@@ -19,7 +19,6 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
     const nativeTokensCount = analytics?.nativeTokens?.count;
     const nftsCount = analytics?.nfts?.count;
     const totalAddresses = analytics?.totalAddresses?.totalActiveAddresses;
-    const dailyAddresses = analytics?.dailyAddresses?.totalActiveAddresses;
     const lockedStorageDepositValue = analytics?.lockedStorageDeposit?.totalValue;
 
     let claimedAndPercentLabels: [string, string] | undefined;
@@ -45,12 +44,6 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
                         <div className="info-box">
                             <span className="info-box--title">Total Addresses</span>
                             <span className="info-box--value">{totalAddresses}</span>
-                        </div>
-                    )}
-                    {dailyAddresses && (
-                        <div className="info-box">
-                            <span className="info-box--title">Daily Addresses</span>
-                            <span className="info-box--value">{dailyAddresses}</span>
                         </div>
                     )}
                     {claimedAndPercentLabels && (
