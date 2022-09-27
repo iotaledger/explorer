@@ -21,53 +21,73 @@ describe("build shimmer stats", () => {
         expect(percent).toBe("5%");
 
         [claimed, percent] = buildShimmerClaimedStats("1450896407249092", "1450896407249092", TOKEN_INFO);
-        expect(claimed).toBe("1.45g SMR");
+        expect(claimed).toBe("1,450,896,407 SMR");
         expect(percent).toBe("100%");
     });
 
     it("should display <0.01% on small fractions", () => {
-        let [claimed, percent] = buildShimmerClaimedStats("1", "1000", TOKEN_INFO);
+        let [claimed, percent] = buildShimmerClaimedStats("1", "10009", TOKEN_INFO);
         expect(claimed).toBe("1 glow");
-        expect(percent).toBe("0.1%");
+        expect(percent).toBe("<0.01%");
 
-        [claimed, percent] = buildShimmerClaimedStats("1", "10009", TOKEN_INFO);
-        expect(claimed).toBe("1 glow");
+        [claimed, percent] = buildShimmerClaimedStats("5123123", "1450896407249092", TOKEN_INFO);
+        expect(claimed).toBe("5.12 SMR");
         expect(percent).toBe("<0.01%");
 
         [claimed, percent] = buildShimmerClaimedStats("1", "10000", TOKEN_INFO);
         expect(claimed).toBe("1 glow");
         expect(percent).toBe("0.01%");
+    });
 
-        [claimed, percent] = buildShimmerClaimedStats("5123123", "1450896407249092", TOKEN_INFO);
-        expect(claimed).toBe("5.12 SMR");
+    it("should display in glow for values <1000 glow", () => {
+        let [claimed, percent] = buildShimmerClaimedStats("999", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("999 glow");
+        expect(percent).toBe("<0.01%");
+
+        [claimed, percent] = buildShimmerClaimedStats("1000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("0.001 SMR");
         expect(percent).toBe("<0.01%");
     });
 
-    it("should display in glow for values less then one SMR", () => {
-        let [claimed, percent] = buildShimmerClaimedStats("999999", "1450896407", TOKEN_INFO);
-        expect(claimed).toBe("999999 glow");
+    it("should show to three decimals for values 1000 glow < x < 1 SMR", () => {
+        let [claimed, percent] = buildShimmerClaimedStats("9999", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("0.009 SMR");
+        expect(percent).toBe("<0.01%");
+
+        [claimed, percent] = buildShimmerClaimedStats("999999", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("0.999 SMR");
         expect(percent).toBe("0.06%");
 
-        [claimed, percent] = buildShimmerClaimedStats("1000000", "1450896407", TOKEN_INFO);
-        expect(claimed).toBe("1 SMR");
+        [claimed, percent] = buildShimmerClaimedStats("990000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("0.99 SMR");
         expect(percent).toBe("0.06%");
     });
 
-    it("should format SMR to magnitudes", () => {
-        let [claimed, percent] = buildShimmerClaimedStats("999999999", "1450896407", TOKEN_INFO);
-        expect(claimed).toBe("999.99 SMR");
-        expect(percent).toBe("68.92%");
+    it("should show to two decimals for values 1 SMR < x < 100 SMR", () => {
+        let [claimed, percent] = buildShimmerClaimedStats("9999999", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("9.99 SMR");
+        expect(percent).toBe("0.68%");
 
-        [claimed, percent] = buildShimmerClaimedStats("1234198475", "1450896407", TOKEN_INFO);
-        expect(claimed).toBe("1.23k SMR");
+        [claimed, percent] = buildShimmerClaimedStats("99899999", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("99.89 SMR");
+        expect(percent).toBe("6.88%");
+
+        [claimed, percent] = buildShimmerClaimedStats("199899999", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("199 SMR");
+        expect(percent).toBe("13.77%");
+    });
+
+    it("should not display magnitudes, but SMR formatted with commas", () => {
+        let [claimed, percent] = buildShimmerClaimedStats("1234198475", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("1,234 SMR");
         expect(percent).toBe("85.06%");
 
         [claimed, percent] = buildShimmerClaimedStats("1234198475000", "10000000000000", TOKEN_INFO);
-        expect(claimed).toBe("1.23m SMR");
+        expect(claimed).toBe("1,234,198 SMR");
         expect(percent).toBe("12.34%");
 
         [claimed, percent] = buildShimmerClaimedStats("1234198475000000", "2000000000000000", TOKEN_INFO);
-        expect(claimed).toBe("1.23g SMR");
+        expect(claimed).toBe("1,234,198,475 SMR");
         expect(percent).toBe("61.7%");
 
         [claimed, percent] = buildShimmerClaimedStats(
@@ -75,7 +95,7 @@ describe("build shimmer stats", () => {
             "2000000000000000000",
             TOKEN_INFO
         );
-        expect(claimed).toBe("1.23t SMR");
+        expect(claimed).toBe("1,234,198,475,000 SMR");
         expect(percent).toBe("61.7%");
 
         [claimed, percent] = buildShimmerClaimedStats(
@@ -83,7 +103,7 @@ describe("build shimmer stats", () => {
             "2000000000000000000000",
             TOKEN_INFO
         );
-        expect(claimed).toBe("1.27p SMR");
+        expect(claimed).toBe("1,276,198,475,000,000 SMR");
         expect(percent).toBe("63.8%");
 
         [claimed, percent] = buildShimmerClaimedStats(
@@ -91,7 +111,65 @@ describe("build shimmer stats", () => {
             "2000000000000000000000000",
             TOKEN_INFO
         );
-        expect(claimed).toBe("1234.19p SMR");
+        expect(claimed).toBe("1,234,198,475,000,000,000 SMR");
         expect(percent).toBe("61.7%");
+    });
+
+    it("should display shimmer launch", () => {
+        let [claimed, percent] = buildShimmerClaimedStats("1", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("1 glow");
+        expect(percent).toBe("<0.01%");
+
+        [claimed, percent] = buildShimmerClaimedStats("10", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("10 glow");
+        expect(percent).toBe("<0.01%");
+
+        [claimed, percent] = buildShimmerClaimedStats("100", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("100 glow");
+        expect(percent).toBe("<0.01%");
+
+        [claimed, percent] = buildShimmerClaimedStats("1000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("0.001 SMR");
+        expect(percent).toBe("<0.01%");
+
+        [claimed, percent] = buildShimmerClaimedStats("13000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("0.013 SMR");
+        expect(percent).toBe("<0.01%");
+
+        [claimed, percent] = buildShimmerClaimedStats("100000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("0.1 SMR");
+        expect(percent).toBe("<0.01%");
+
+        [claimed, percent] = buildShimmerClaimedStats("123000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("0.123 SMR");
+        expect(percent).toBe("<0.01%");
+
+        [claimed, percent] = buildShimmerClaimedStats("1000000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("1 SMR");
+        expect(percent).toBe("0.06%");
+
+        [claimed, percent] = buildShimmerClaimedStats("1230000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("1.23 SMR");
+        expect(percent).toBe("0.08%");
+
+        [claimed, percent] = buildShimmerClaimedStats("10000000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("10 SMR");
+        expect(percent).toBe("0.68%");
+
+        [claimed, percent] = buildShimmerClaimedStats("12346000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("12.34 SMR");
+        expect(percent).toBe("0.85%");
+
+        [claimed, percent] = buildShimmerClaimedStats("100999000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("100 SMR");
+        expect(percent).toBe("6.96%");
+
+        [claimed, percent] = buildShimmerClaimedStats("1234000000", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("1,234 SMR");
+        expect(percent).toBe("85.05%");
+
+        [claimed, percent] = buildShimmerClaimedStats("1450896407", "1450896407", TOKEN_INFO);
+        expect(claimed).toBe("1,450 SMR");
+        expect(percent).toBe("100%");
     });
 });
