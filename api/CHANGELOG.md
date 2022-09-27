@@ -2,7 +2,9 @@
 
 ## v3.0.0
 
-* Explorer stardust update
+* Version targeted for the Shimmer network
+* Implemented full Stardust protocol according to the Tangle Improvement Proposals
+* Explorer now also supports networks running the stardust protocol
 
 ## v2.0.0
 
