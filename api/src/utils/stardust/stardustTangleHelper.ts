@@ -2,9 +2,9 @@
 import {
     addressBalance, IOutputResponse, SingleNodeClient,
     IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload,
-    IBlockMetadata, IMilestonePayload, IBlock, IOutputsResponse
+    IBlockMetadata, IMilestonePayload, IOutputsResponse, deserializeBlock
 } from "@iota/iota.js-stardust";
-import { HexHelper } from "@iota/util.js-stardust";
+import { HexHelper, ReadStream } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
@@ -55,7 +55,7 @@ export class StardustTangleHelper {
 
                 return addressDetails;
             }
-        } catch {}
+        } catch { }
     }
 
     /**
@@ -90,16 +90,21 @@ export class StardustTangleHelper {
         transactionId: string
     ): Promise<ITransactionDetailsResponse> {
         transactionId = HexHelper.addPrefix(transactionId);
-        const block = await this.tryFetchPermanodeThenNode<string, IBlock>(
+        const blockRaw = await this.tryFetchPermanodeThenNode<string, Uint8Array>(
             transactionId,
-            "transactionIncludedBlock",
+            "transactionIncludedBlockRaw",
             network
         );
 
-        if (block) {
-            return {
-                block
-            };
+        try {
+            const block = deserializeBlock(new ReadStream(blockRaw));
+            if (block) {
+                return {
+                    block
+                };
+            }
+        } catch (e) {
+            console.log("Block deserialization failed.", e);
         }
     }
 
@@ -287,7 +292,7 @@ export class StardustTangleHelper {
                     foundryOutputsResponse: response
                 };
             }
-        } catch {}
+        } catch { }
     }
 
     /**
@@ -341,7 +346,7 @@ export class StardustTangleHelper {
                     outputs: nftOutputs
                 };
             }
-        } catch {}
+        } catch { }
     }
 
     /**
@@ -371,7 +376,7 @@ export class StardustTangleHelper {
                     };
                 }
             }
-        } catch {}
+        } catch { }
     }
 
     /**
@@ -411,30 +416,40 @@ export class StardustTangleHelper {
         }
 
         if (searchQuery.blockId) {
-            const block = await this.tryFetchPermanodeThenNode<string, IBlock>(
+            const blockRaw = await this.tryFetchPermanodeThenNode<string, Uint8Array>(
                 searchQuery.blockId,
-                "block",
+                "blockRaw",
                 network
             );
 
-            if (block && Object.keys(block).length > 0) {
-                return {
-                    block
-                };
+            try {
+                const block = deserializeBlock(new ReadStream(blockRaw));
+                if (block && Object.keys(block).length > 0) {
+                    return {
+                        block
+                    };
+                }
+            } catch (e) {
+                console.log("Block deserialization failed.", e);
             }
         }
 
         if (searchQuery.transactionId) {
-            const block = await this.tryFetchPermanodeThenNode<string, IBlock>(
+            const blockRaw = await this.tryFetchPermanodeThenNode<string, Uint8Array>(
                 searchQuery.transactionId,
-                "transactionIncludedBlock",
+                "transactionIncludedBlockRaw",
                 network
             );
 
-            if (block && Object.keys(block).length > 0) {
-                return {
-                    transactionBlock: block
-                };
+            try {
+                const block = deserializeBlock(new ReadStream(blockRaw));
+                if (block && Object.keys(block).length > 0) {
+                    return {
+                        transactionBlock: block
+                    };
+                }
+            } catch (e) {
+                console.log("Block deserialization failed.", e);
             }
         }
 
@@ -464,7 +479,7 @@ export class StardustTangleHelper {
                         aliasId: searchQuery.aliasId
                     };
                 }
-            } catch {}
+            } catch { }
         }
 
         if (searchQuery.nftId) {
@@ -481,7 +496,7 @@ export class StardustTangleHelper {
                         nftId: searchQuery.nftId
                     };
                 }
-            } catch {}
+            } catch { }
         }
 
         if (searchQuery.foundryId) {
@@ -498,7 +513,7 @@ export class StardustTangleHelper {
                         foundryId: searchQuery.foundryId
                     };
                 }
-            } catch {}
+            } catch { }
         }
 
         if (searchQuery.tag) {
@@ -515,7 +530,7 @@ export class StardustTangleHelper {
                         taggedOutputs
                     };
                 }
-            } catch {}
+            } catch { }
         }
 
         if (searchQuery.address?.bech32) {
@@ -553,19 +568,19 @@ export class StardustTangleHelper {
                 new SingleNodeClient(
                     permaNodeEndpoint,
                     { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
-            ) :
+                ) :
                 new IndexerPluginClient(
                     new SingleNodeClient(
                         permaNodeEndpoint,
                         { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
                     )
-            );
+                );
 
             try {
                 // try fetch from permanode (chronicle)
                 const result: Promise<R> = permanode[methodName](args);
                 return await result;
-            } catch {}
+            } catch { }
         }
 
         if (!permaNodeEndpoint || isFallbackEnabled) {
@@ -573,13 +588,13 @@ export class StardustTangleHelper {
                 new SingleNodeClient(provider, { userName: user, password }) :
                 new IndexerPluginClient(
                     new SingleNodeClient(provider, { userName: user, password })
-            );
+                );
 
             try {
                 // try fetch from node
                 const result: Promise<R> = node[methodName](args);
                 return await result;
-            } catch {}
+            } catch { }
         }
 
         return null;
