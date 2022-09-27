@@ -26,24 +26,20 @@ describe("build shimmer stats", () => {
     });
 
     it("should display <0.01% on small fractions", () => {
-        let [claimed, percent] = buildShimmerClaimedStats("1", "1000", TOKEN_INFO);
+        let [claimed, percent] = buildShimmerClaimedStats("1", "10009", TOKEN_INFO);
         expect(claimed).toBe("1 glow");
-        expect(percent).toBe("0.1%");
+        expect(percent).toBe("<0.01%");
 
-        [claimed, percent] = buildShimmerClaimedStats("1", "10009", TOKEN_INFO);
-        expect(claimed).toBe("1 glow");
+        [claimed, percent] = buildShimmerClaimedStats("5123123", "1450896407249092", TOKEN_INFO);
+        expect(claimed).toBe("5.12 SMR");
         expect(percent).toBe("<0.01%");
 
         [claimed, percent] = buildShimmerClaimedStats("1", "10000", TOKEN_INFO);
         expect(claimed).toBe("1 glow");
         expect(percent).toBe("0.01%");
-
-        [claimed, percent] = buildShimmerClaimedStats("5123123", "1450896407249092", TOKEN_INFO);
-        expect(claimed).toBe("5.12 SMR");
-        expect(percent).toBe("<0.01%");
     });
 
-    it("should display in glow for values less then 1000 glow", () => {
+    it("should display in glow for values <1000 glow", () => {
         let [claimed, percent] = buildShimmerClaimedStats("999", "1450896407", TOKEN_INFO);
         expect(claimed).toBe("999 glow");
         expect(percent).toBe("<0.01%");
@@ -53,7 +49,7 @@ describe("build shimmer stats", () => {
         expect(percent).toBe("<0.01%");
     });
 
-    it("should show to three decimals for values over 1000 glow and under 1 SMR", () => {
+    it("should show to three decimals for values 1000 glow < x < 1 SMR", () => {
         let [claimed, percent] = buildShimmerClaimedStats("9999", "1450896407", TOKEN_INFO);
         expect(claimed).toBe("0.009 SMR");
         expect(percent).toBe("<0.01%");
@@ -67,7 +63,7 @@ describe("build shimmer stats", () => {
         expect(percent).toBe("0.06%");
     });
 
-    it("should show to two decimals for values over 1 SMR and under 100 SMR", () => {
+    it("should show to two decimals for values 1 SMR < x < 100 SMR", () => {
         let [claimed, percent] = buildShimmerClaimedStats("9999999", "1450896407", TOKEN_INFO);
         expect(claimed).toBe("9.99 SMR");
         expect(percent).toBe("0.68%");
@@ -119,7 +115,7 @@ describe("build shimmer stats", () => {
         expect(percent).toBe("61.7%");
     });
 
-    it("shold display shimmer launch", () => {
+    it("should display shimmer launch", () => {
         let [claimed, percent] = buildShimmerClaimedStats("1", "1450896407", TOKEN_INFO);
         expect(claimed).toBe("1 glow");
         expect(percent).toBe("<0.01%");
