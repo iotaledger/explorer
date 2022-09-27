@@ -1,6 +1,8 @@
-import { INodeInfoBaseToken, UnitsHelper } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import BigDecimal from "../../../../helpers/bigDecimal";
-import { formatAmount, toFixedNoRound } from "../../../../helpers/stardust/valueFormatHelper";
+import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
+
+const COMMAS_REGEX = /\B(?=(\d{3})+(?!\d))/g;
 
 export const buildShimmerClaimedStats = (
     claimed: string,
@@ -11,18 +13,12 @@ export const buildShimmerClaimedStats = (
     const claimedBd = BigDecimal.fromBigInt(bigInt);
     let claimedFinal = claimedBd.toString();
 
-    const formatMagnitude = bigInt > Math.pow(10, tokenInfo.decimals + 3);
-
-    if (formatMagnitude) {
-        const smrWholePart = Number(claimed.slice(0, -tokenInfo.decimals));
-        const magnitude = UnitsHelper.calculateBest(smrWholePart);
-        const smrBestMagnitude = UnitsHelper.convertUnits(smrWholePart, "", magnitude);
-        const smrFormatted = toFixedNoRound(smrBestMagnitude, 2);
-        claimedFinal = `${smrFormatted}${magnitude.toLowerCase()} ${tokenInfo.unit}`;
-    } else {
-        const formatFull = bigInt < Math.pow(10, tokenInfo.decimals);
-        claimedFinal = formatAmount(Number(claimedFinal), tokenInfo, formatFull);
-    }
+    const formatFull = bigInt < Math.pow(10, tokenInfo.decimals - 3);
+    const decimals = bigInt < Math.pow(10, tokenInfo.decimals) ?
+        3 :
+        (bigInt < Math.pow(10, tokenInfo.decimals + 2) ? 2 : 0);
+    claimedFinal = formatAmount(Number(claimedFinal), tokenInfo, formatFull, decimals);
+    claimedFinal = claimedFinal.replace(COMMAS_REGEX, ",");
 
     const claimedPercentBd = new BigDecimal("100", 2).multiply(
         claimedBd.toString()
