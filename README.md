@@ -5,13 +5,13 @@
     <a href="https://iota.stackexchange.com/" style="text-decoration:none;"><img src="https://img.shields.io/badge/StackExchange-9cf.svg?logo=stackexchange" alt="StackExchange"></a>
     <a href="https://github.com/iotaledger/explorer/blob/main/LICENSE" style="text-decoration:none;"><img src="https://img.shields.io/github/license/iotaledger/explorer.svg" alt="Apache 2.0 license"></a>
 </p>
-      
+
 <p align="center">
   <a href="#about">About</a> ◈
   <a href="#prerequisites">Prerequisites</a> ◈
   <a href="#getting-started">Getting started</a> ◈
   <a href="#supporting-the-project">Supporting the project</a> ◈
-  <a href="#joining-the-discussion">Joining the discussion</a> 
+  <a href="#joining-the-discussion">Joining the discussion</a>
 </p>
 
 ---
@@ -34,7 +34,7 @@ Please report any issues in our [issue tracker](https://github.com/iotaledger/ex
 
 ## Prerequisites
 
-To deploy your own version of the Tangle Explorer website, you need to have at least [version 14 of Node.js](https://nodejs.org/en/download/) installed on your device.
+To deploy your own version of the Tangle Explorer website, you need to have at least [version 14 of Node.js](https://nodejs.org/en/download/) and at most v16.16 installed on your device.
 
 To check if you have Node.js installed, run the following command:
 
