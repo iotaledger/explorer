@@ -7,17 +7,17 @@ import { ALPHANET, CUSTOM, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER
  */
 export const getNetworkOrder = (networkType: NetworkType) => {
     switch (networkType) {
-        case LEGACY_MAINNET:
-            return 0;
         case MAINNET:
-            return 1;
-        case DEVNET:
-            return 2;
+            return 0;
         case SHIMMER:
-            return 3;
+            return 1;
         case TESTNET:
-            return 4;
+            return 2;
         case ALPHANET:
+            return 3;
+        case LEGACY_MAINNET:
+            return 4;
+        case DEVNET:
             return 5;
         default:
             return 6;
