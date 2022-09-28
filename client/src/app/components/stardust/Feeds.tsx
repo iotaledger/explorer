@@ -243,7 +243,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                 { network: this._networkConfig.network }
             );
 
-            if (!shimmerClaimingStatsResponse?.code) {
+            if (!shimmerClaimingStatsResponse?.code && shimmerClaimingStatsResponse?.shimmerClaimed) {
                 const shimmerClaimed = shimmerClaimingStatsResponse?.shimmerClaimed;
                 this.setState({ shimmerClaimed });
             }
