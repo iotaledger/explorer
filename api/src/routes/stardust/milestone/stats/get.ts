@@ -2,11 +2,10 @@ import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IMilestoneStatsRequest } from "../../../../models/api/stardust/milestone/IMilestoneStatsRequest";
 import { IMilestoneAnalyticStats } from "../../../../models/api/stats/IMilestoneAnalyticStats";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
-import { IAnalyticsStore } from "../../../../models/db/IAnalyticsStore";
 import { STARDUST } from "../../../../models/db/protocolVersion";
-import { IStorageService } from "../../../../models/services/IStorageService";
 import { NetworkService } from "../../../../services/networkService";
 import { ChronicleService } from "../../../../services/stardust/chronicleService";
+import { StardustStatsService } from "../../../../services/stardust/stardustStatsService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 const MILESTONE_CACHE_MAX = 20;
@@ -32,35 +31,30 @@ export async function get(
         return {};
     }
 
-    const analyticsStorage = ServiceFactory.get<IStorageService<IAnalyticsStore>>("analytics-storage");
-    const analyticsStore = await analyticsStorage.get(request.network);
-    if (!analyticsStore.milestoneAnalytics) {
-        analyticsStore.milestoneAnalytics = {};
-    }
+    const statsService = ServiceFactory.get<StardustStatsService>(`stats-${request.network}`);
+    const currentMilesoneStats = statsService?.getMilestoneStats();
 
-    if (analyticsStore?.milestoneAnalytics) {
-        const cachedStats = analyticsStore.milestoneAnalytics[request.milestoneId];
-        if (cachedStats) {
-            return cachedStats;
+    let stats: IMilestoneAnalyticStats | PromiseLike<IMilestoneAnalyticStats>;
+
+    if (currentMilesoneStats[request.milestoneId]?.blocksCount) {
+        stats = currentMilesoneStats[request.milestoneId];
+    } else {
+        const chronicleService = ServiceFactory.get<ChronicleService>(
+            `chronicle-${networkConfig.network}`
+        );
+
+        const fetchedStats = await chronicleService.milestoneAnalytics(request.milestoneId);
+        currentMilesoneStats[request.milestoneId] = fetchedStats;
+
+        // remove last
+        const milestoneIds = Object.keys(currentMilesoneStats);
+        if (Object.keys(currentMilesoneStats).length > MILESTONE_CACHE_MAX) {
+            delete currentMilesoneStats[milestoneIds[0]];
         }
+
+        stats = fetchedStats;
     }
 
-    const chronicleService = ServiceFactory.get<ChronicleService>(
-        `chronicle-${networkConfig.network}`
-    );
-
-    const fetchedStats = await chronicleService.milestoneAnalytics(request.milestoneId);
-    // Add new milestone stats to store
-    analyticsStore.milestoneAnalytics[request.milestoneId] = fetchedStats;
-    // Keep the milestone analytics object at MILESTONE_CACHE_MAX
-    const milestoneIds = Object.keys(analyticsStore.milestoneAnalytics);
-    if (Object.keys(analyticsStore.milestoneAnalytics).length > MILESTONE_CACHE_MAX) {
-        delete analyticsStore.milestoneAnalytics[milestoneIds[0]];
-    }
-
-    // eslint-disable-next-line no-void
-    void analyticsStorage.set(analyticsStore);
-
-    return fetchedStats;
+    return stats;
 }
 
