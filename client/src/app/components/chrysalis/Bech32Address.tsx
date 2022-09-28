@@ -1,24 +1,12 @@
 /* eslint-disable max-len */
 import React, { Component, ReactNode } from "react";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import MessageButton from "../MessageButton";
-import { Bech32AddressProps } from "./Bech32AddressProps";
+import { Bech32AddressProps } from "../Bech32AddressProps";
+import CopyButton from "../CopyButton";
 
 /**
  * Component which will display an Bech32Address.
  */
 class Bech32Address extends Component<Bech32AddressProps> {
-    /**
-     * Create a new instance of Bech32Address.
-     * @param props The props.
-     */
-    constructor(props: Bech32AddressProps) {
-        super(props);
-
-        this.state = {
-        };
-    }
-
     /**
      * Render the component.
      * @returns The node to render.
@@ -50,13 +38,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                             {!this.props.history && (
                                 <span className="margin-r-t">{this.props.addressDetails.bech32}</span>
                             )}
-                            {this.props.showCopyButton && (
-                                <MessageButton
-                                    onClick={() => ClipboardHelper.copy(this.props.addressDetails?.bech32)}
-                                    buttonType="copy"
-                                    labelPosition={this.props.labelPosition ?? "right"}
-                                />
-                            )}
+                            {this.props.showCopyButton && <CopyButton copy={this.props.addressDetails?.bech32} />}
                         </div>
                     </div>
                 )}
@@ -80,11 +62,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                             {!this.props.history && (
                                 <span className="margin-r-t">{this.props.addressDetails?.hex}</span>
                             )}
-                            <MessageButton
-                                onClick={() => ClipboardHelper.copy(this.props.addressDetails?.hex)}
-                                buttonType="copy"
-                                labelPosition={this.props.labelPosition ?? "right"}
-                            />
+                            <CopyButton copy={this.props.addressDetails?.hex} />
                         </div>
                     </div>
                 )}

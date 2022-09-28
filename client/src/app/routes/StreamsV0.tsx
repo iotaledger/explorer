@@ -2,12 +2,12 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { TrytesHelper } from "../../helpers/trytesHelper";
-import { TangleCacheService } from "../../services/tangleCacheService";
+import { CHRYSALIS } from "../../models/config/protocolVersion";
+import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
+import CopyButton from "../components/CopyButton";
 import JsonViewer from "../components/JsonViewer";
-import MessageButton from "../components/MessageButton";
 import Spinner from "../components/Spinner";
 import "./StreamsV0.scss";
 import { StreamsV0RouteProps } from "./StreamsV0RouteProps";
@@ -20,7 +20,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * Update timer.
@@ -44,7 +44,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
     constructor(props: RouteComponentProps<StreamsV0RouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
         this._timeout = 100;
 
         this.state = {
@@ -250,12 +250,12 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                             `Message ${item.messageType}`
                                                         )}
                                                     </span>
-                                                    <MessageButton
-                                                        onClick={() => ClipboardHelper.copy(
-                                                            item.showRawMessageTrytes
-                                                                ? item.rawMessageTrytes
-                                                                : item.message)}
-                                                        buttonType="copy"
+                                                    <CopyButton
+                                                        copy={
+                                                            item.showRawMessageTrytes ?
+                                                            item.rawMessageTrytes :
+                                                            item.message
+                                                        }
                                                     />
                                                 </div>
                                                 <div

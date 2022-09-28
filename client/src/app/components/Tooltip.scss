@@ -1,0 +1,45 @@
+@import '../../scss/fonts.scss';
+
+.tooltip {
+    position: relative;
+    display: flex;
+
+    .wrap {
+        visibility: hidden;
+        position: absolute;
+        top: 100%;
+        margin-top: 10px;
+        margin-left: 20px;
+        padding: 12px;
+        border-radius: 0.25rem;
+        background: var(--modal-color);
+        white-space: nowrap;
+        color: var(--body-background);
+        z-index: 1;
+        opacity: 0;
+        transition: all 250ms;
+        right: 0;
+        width: 300px;
+        text-align: center;
+        white-space: break-spaces;
+        font-family: $inter;
+        word-break: keep-all;
+
+        .arrow {
+            background: var(--modal-color);
+            width: 12px;
+            height: 12px;
+            position: absolute;
+            top: -6px;
+            right: 12px;
+            transform: rotate(45deg);
+        }
+    }
+
+    .children {
+        white-space: nowrap;
+        font-weight: 600;
+        color: var(--link-color);
+        cursor: pointer;
+    }
+}

@@ -1,10 +1,9 @@
 import * as identityLegacy from "@iota/identity-wasm-0.4/node";
 import * as identity from "@iota/identity-wasm/node";
-
-
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IIdentityDiffHistoryBody } from "../../../models/api/IIdentityDiffHistoryBody";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { IdentityHelper } from "../../../utils/identityHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
@@ -28,7 +27,7 @@ export async function get(
     ValidationHelper.oneOf(request.network, networks, "network");
 
     const networkConfig = networkService.get(request.network);
-    if (networkConfig.protocolVersion !== "chrysalis") {
+    if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {
             error: `Network is not supported. IOTA Identity only supports
             chrysalis phase 2 networks, such as the IOTA main network.`
@@ -119,14 +118,14 @@ async function resolveLegacyDiff(
 
         const diffChainData = [];
 
-        const chainData = receipt.chainData();
+        const chainData: identityLegacy.DocumentDiff[] = receipt.chainData();
 
         for (let i = 0; i < chainData.length; i++) {
             document.merge(chainData[i]);
 
             const integrationMessage = {
                 message: receiptObj.chainData[i],
-                document: IdentityHelper.convertLegacyDocument(document.toJSON()),
+                document: IdentityHelper.convertLegacyDocument(document.toJSON() as Record<string, unknown>),
                 messageId: chainData[i].messageId
             };
             diffChainData.push(integrationMessage);

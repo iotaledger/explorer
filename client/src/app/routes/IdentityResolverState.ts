@@ -1,7 +1,7 @@
 import { IMessageMetadata } from "@iota/iota.js";
 import { IIdentityDidHistoryResponse } from "../../models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveResponse } from "../../models/api/IIdentityResolveResponse";
-import { MessageTangleStatus } from "../../models/messageTangleStatus";
+import { TangleStatus } from "../../models/tangleStatus";
 
 export interface IdentityResolverState {
     /**
@@ -41,7 +41,7 @@ export interface IdentityResolverState {
     /**
      * The state of the message on the tangle.
      */
-    messageTangleStatus: MessageTangleStatus;
+    messageTangleStatus: TangleStatus;
 
     /**
      * an Example for a DID address

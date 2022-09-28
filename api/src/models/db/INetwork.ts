@@ -1,3 +1,4 @@
+import { NetworkType } from "./networkType";
 import { ProtocolVersion } from "./protocolVersion";
 
 /**
@@ -7,7 +8,7 @@ export interface INetwork {
     /**
      * The network.
      */
-    network: string;
+    network: NetworkType;
 
     /**
      * The protocol version.
@@ -65,6 +66,11 @@ export interface INetwork {
     permaNodeEndpointPassword?: string;
 
     /**
+     * The permanode endpoint JWT.
+     */
+    permaNodeJwt?: string;
+
+    /**
      * The feed to communicate with.
      */
     feedEndpoint?: string;
@@ -110,11 +116,6 @@ export interface INetwork {
     showMarket?: boolean;
 
     /**
-     * The ordering for the networks.
-     */
-    order: number;
-
-    /**
      * An example for an Identity DID address.
      */
     didExample?: string;
@@ -123,4 +124,21 @@ export interface INetwork {
      * Url for faucet.
      */
     faucet?: string;
+
+    /**
+     * Targeted interval in seconds between milestones.
+     */
+    milestoneInterval?: number;
+
+    /**
+     * Native token circulating supply.
+     */
+    circulatingSupply?: number;
+
+    /**
+     * Is API calls fallback disabled.
+     * If both permanode and node are configured, and this is true, API calls will only try calling permanode
+     * without falling back on node on failure.
+     */
+    disableApiFallback?: boolean;
 }

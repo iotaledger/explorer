@@ -6,6 +6,7 @@ application-data
 .DS_Store
 
 /api/dist
+/api/.env
 /client/build
 
 config.dev.json
@@ -13,3 +14,4 @@ config.local.json
 config.local.feed.json
 config.staging.json
 config.prod.json
+env.js

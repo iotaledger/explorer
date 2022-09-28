@@ -1,4 +1,5 @@
-@use "sass:math";
+@use 'sass:math';
+
 $rem-base-font: 16px !default;
 
 @mixin font-size($font-size, $line-height: 0) {

@@ -2,11 +2,10 @@ import { UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import Spinner from "../../components/Spinner";
-import MessageTangleState from "../MessageTangleState";
 import "./Transaction.scss";
-import { TransactionProps } from "./TransactionProps";
-import { TransactionState } from "./TransactionState";
-
+import { TransactionProps } from "../TransactionProps";
+import { TransactionState } from "../TransactionState";
+import MessageTangleState from "./MessageTangleState";
 
 /**
  * Component which will display a transaction.
@@ -31,9 +30,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                             {this.props.messageId}
                         </Link>
                     </td>
-                    <td>{this.props.date
-                        ? (this.props.date)
-                        : <Spinner />}
+                    <td>{this.props.date ?? <Spinner />}
                     </td>
                     <td>{this.props.inputs}</td>
                     <td>{this.props.outputs}</td>
@@ -70,9 +67,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                     </div>
                     <div className="field">
                         <div className="label">Date</div>
-                        <div className="value">{this.props.date
-                            ? (this.props.date)
-                            : <Spinner />}
+                        <div className="value">{this.props.date ?? <Spinner />}
                         </div>
                     </div>
                     <div className="field">

@@ -2,10 +2,11 @@
 import React, { ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
-import { TangleCacheService } from "../../../services/tangleCacheService";
+import { CHRYSALIS } from "../../../models/config/protocolVersion";
+import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
-import milestoneMessage from "./../../../assets/modals/message/milestone-payload.json";
+import milestoneMessage from "./../../../assets/modals/chrysalis/message/milestone-payload.json";
 import "./MilestonePayload.scss";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
@@ -17,7 +18,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * Create a new instance of MilestonePayload.
@@ -26,7 +27,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
     constructor(props: MilestonePayloadProps) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
 
 
         this.state = {

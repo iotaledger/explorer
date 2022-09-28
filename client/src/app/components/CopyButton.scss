@@ -1,0 +1,35 @@
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/variables";
+@import "../../scss/media-queries";
+
+.copy-button {
+  .copy-button-btn {
+    border: 0;
+    outline: none;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+
+    span {
+      color: $gray-10!important;
+      font-size: 16px!important;
+    }
+
+    &:hover {
+      text-decoration: none!important;
+      span {
+        color: $main-green-highlight!important;
+      }
+    }
+  }
+
+  .copy-button--message {
+    line-height: 0!important;
+
+    span {
+        color: $main-green!important;
+        font-size: 16px!important;
+    }
+  }
+}

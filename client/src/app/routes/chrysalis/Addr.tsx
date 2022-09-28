@@ -5,41 +5,44 @@ import moment from "moment";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { TransactionsHelper } from "../../../helpers/transactionsHelper";
-import { HistoricInput, HistoricOutput, ITransaction, ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { Bech32AddressHelper } from "../../../helpers/chrysalis/bech32AddressHelper";
+import { TransactionsHelper } from "../../../helpers/chrysalis/transactionsHelper";
+import {
+    HistoricInput, HistoricOutput,
+    ITransaction, ITransactionsDetailsResponse
+} from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { CHRYSALIS } from "../../../models/config/protocolVersion";
+import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
-import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Bech32Address from "../../components/chrysalis/Bech32Address";
 import QR from "../../components/chrysalis/QR";
+import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
-import MessageButton from "../../components/MessageButton";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
-import mainHeaderMessage from "./../../../assets/modals/address/main-header.json";
-import transactionHistoryMessage from "./../../../assets/modals/address/transaction-history.json";
+import { AddressRouteProps } from "../AddressRouteProps";
+import mainHeaderMessage from "./../../../assets/modals/chrysalis/address/main-header.json";
+import transactionHistoryMessage from "./../../../assets/modals/chrysalis/address/transaction-history.json";
 import Transaction from "./../../components/chrysalis/Transaction";
 import Modal from "./../../components/Modal";
 import "./Addr.scss";
-import { AddrRouteProps } from "./AddrRouteProps";
 import { AddrState } from "./AddrState";
 
 /**
- * Component which will show the address page.
+ * Component which will show the address page for chrysalis and older.
  */
-class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState> {
+class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrState> {
     /**
      * Maximum page size for permanode request.
      */
-     private static readonly MAX_PAGE_SIZE: number = 500;
+    private static readonly MAX_PAGE_SIZE: number = 500;
 
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * The hrp of bech addresses.
@@ -50,17 +53,17 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
      * Create a new instance of Addr.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<AddrRouteProps>) {
+    constructor(props: RouteComponentProps<AddressRouteProps>) {
         super(props);
-
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
 
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networkConfig = this.props.match.params.network
             ? networkService.get(this.props.match.params.network)
             : undefined;
 
-        this._bechHrp = networkConfig?.bechHrp ?? "iot";
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
+
+        this._bechHrp = networkConfig?.bechHrp ?? "iota";
 
         this.state = {
             ...Bech32AddressHelper.buildAddress(
@@ -77,6 +80,30 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             currentPageTransactions: [],
             isFormattedBalance: false
         };
+    }
+
+    private get currentPageTransactions() {
+        const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
+        const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
+        const transactionsPage = this.txsHistory
+        .slice(firstPageIndex, lastPageIndex)
+        /* eslint-disable-next-line unicorn/no-array-reduce */
+        .reduce((acc: ITransaction[], curr: ITransaction) => {
+            acc.push(curr);
+            if (curr.relatedSpentTransaction) {
+                acc.push(curr.relatedSpentTransaction);
+            }
+            return acc;
+        }, []);
+
+        const sortedTransactions: ITransaction[] = transactionsPage.sort((a, b) => (
+             moment(a.date).isAfter(moment(b.date)) ? -1 : 1
+        ));
+        return sortedTransactions;
+    }
+
+    private get txsHistory() {
+        return this.state.transactionHistory?.transactionHistory?.transactions ?? [];
     }
 
     /**
@@ -110,6 +137,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
         }
     }
+
 
     /**
      * Render the component.
@@ -202,10 +230,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                     <span>(</span>
                                                                     <FiatValue value={this.state.balance} />
                                                                     <span>)</span>
-                                                                    <MessageButton
-                                                                        onClick={() => ClipboardHelper.copy(String(this.state.balance))}
-                                                                        buttonType="copy"
-                                                                    />
+                                                                    <CopyButton copy={String(this.state.balance)} />
                                                                 </div>
                                                             ) : 0}
                                                         </div>
@@ -221,7 +246,6 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                 )}
                                         </div>
                                     </div>
-
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
                                     <div className="section">
@@ -283,7 +307,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                                                 date={transaction?.date}
                                                                 amount={transaction?.amount}
                                                                 tableFormat={true}
-                                                                hasConflicts={!transaction.ledgerInclusionState || transaction.ledgerInclusionState === "conflicting"}
+                                                                hasConflicts={!transaction.ledgerInclusionState ||
+                                                                transaction.ledgerInclusionState === "conflicting"}
                                                             />
                                                         </React.Fragment>
                                                     ))}
@@ -327,34 +352,10 @@ class Addr extends AsyncComponent<RouteComponentProps<AddrRouteProps>, AddrState
                                     </div>)}
                             </div>
                         </div>
-                    </div >
-                </div >
-            </div >
+                    </div>
+                </div>
+            </div>
         );
-    }
-
-    private get currentPageTransactions() {
-        const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
-        const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
-        const transactionsPage = this.txsHistory
-        .slice(firstPageIndex, lastPageIndex)
-        /* eslint-disable-next-line unicorn/no-array-reduce */
-        .reduce((acc: ITransaction[], curr: ITransaction) => {
-            acc.push(curr);
-            if (curr.relatedSpentTransaction) {
-                acc.push(curr.relatedSpentTransaction);
-            }
-            return acc;
-        }, []);
-
-        const sortedTransactions: ITransaction[] = transactionsPage.sort((a, b) => (
-             moment(a.date).isAfter(moment(b.date)) ? -1 : 1
-        ));
-        return sortedTransactions;
-    }
-
-    private get txsHistory() {
-        return this.state.transactionHistory?.transactionHistory?.transactions ?? [];
     }
 
     private async getTransactionHistory() {

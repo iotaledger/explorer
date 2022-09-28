@@ -1,0 +1,158 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+@import "../../../scss/card";
+
+.nft {
+  display: flex;
+  flex-direction: column;
+
+  .nft--header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+
+    .inner {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      max-width: $desktop-width;
+      margin: 40px 20px;
+
+      .section-nft-detail {
+        display: flex;
+        flex-direction: row;
+
+        .nft-image {
+          width: 398px;
+          height: 390px;
+
+          @include desktop-down {
+            width: 300px;
+            height: 290px;
+          }
+        }
+
+        .nft-info {
+          display: flex;
+          flex-direction: column;
+          margin-left: 40px;
+          width: 100%;
+
+          .balance {
+            margin-left: 16px;
+          }
+          
+          .nft-list {
+
+            .list--dropdown {
+              display: flex;
+              cursor: pointer;
+      
+              .label {
+                @include font-size(14px, 21px);
+      
+                color: var(--navbar-color);
+                font-weight: 600;
+                letter-spacing: 0.01em;
+              }
+      
+              .icon {
+                svg {
+                  transition: transform 0.2s ease;
+      
+                  path {
+                    stroke: var(--navbar-color);
+                  }
+                }
+              }
+      
+              &.opened {
+                .icon {
+                  svg {
+                    transform: rotate(90deg);
+      
+                    path {
+                      stroke: var(--active-item-color);
+                    }
+                  }
+                }
+              }
+            }
+
+            .item {
+              display: flex;
+              flex-direction: row;
+              margin-top: 20px;
+              font-weight: 600;
+              cursor: pointer;
+            }
+
+            .general-items {
+              margin-top: 15px;
+              width: 100%;
+
+              .list {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                margin-top: 12px;
+
+                .name {
+                  color: '#9AADCE'
+                }
+
+                .value {
+                  color: '#25395F'
+                }
+              }
+
+            }
+          }
+          @include desktop-down {
+            margin-left: 0px;
+            margin-top: 20px;
+          }
+        }
+
+        @include desktop-down {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+
+      @include desktop-down {
+        max-width: 100%;
+        padding-right: 20px;
+        padding-left: 20px;
+
+        > .row {
+          flex-direction: column;
+        }
+      }
+    }
+
+    .no-data {
+        height: 40vh;
+    }
+  }
+
+  .activity--section {
+    @include tablet-down {
+      .section--header {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .transactions-filter {
+          margin-top: 24px;
+        }
+      }
+    }
+  }
+}

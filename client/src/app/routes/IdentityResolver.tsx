@@ -4,20 +4,20 @@ import React, { Fragment, ReactNode } from "react";
 import { HiDownload } from "react-icons/hi";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { ClipboardHelper } from "../../helpers/clipboardHelper";
 import { DownloadHelper } from "../../helpers/downloadHelper";
-import { MessageTangleStatus } from "../../models/messageTangleStatus";
+import { CHRYSALIS } from "../../models/config/protocolVersion";
+import { TangleStatus } from "../../models/tangleStatus";
+import { ChrysalisTangleCacheService } from "../../services/chrysalis/chrysalisTangleCacheService";
 import { IdentityDiffStorageService } from "../../services/identityDiffStorageService";
 import { IdentityService } from "../../services/identityService";
 import { NetworkService } from "../../services/networkService";
-import { TangleCacheService } from "../../services/tangleCacheService";
 import AsyncComponent from "../components/AsyncComponent";
+import MessageTangleState from "../components/chrysalis/MessageTangleState";
+import CopyButton from "../components/CopyButton";
 import IdentityHistory from "../components/identity/IdentityHistory";
 import IdentityMessageIdOverview from "../components/identity/IdentityMsgIdOverview";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
 import JsonViewer from "../components/JsonViewer";
-import MessageButton from "../components/MessageButton";
-import MessageTangleState from "../components/MessageTangleState";
 import Modal from "../components/Modal";
 import Spinner from "../components/Spinner";
 import contentMessage from "./../../assets/modals/identity-resolver/content.json";
@@ -39,7 +39,7 @@ class IdentityResolver extends AsyncComponent<
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * placeholder when messageId is not available.
@@ -49,7 +49,7 @@ class IdentityResolver extends AsyncComponent<
     constructor(props: RouteComponentProps<IdentityResolverProps> & { isSupported: boolean }) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
 
         this.state = {
             isIdentityResolved: false,
@@ -240,10 +240,7 @@ class IdentityResolver extends AsyncComponent<
                                                     <div className="label">DID</div>
                                                     <div className="row middle value code highlight margin-b-s">
                                                         <div className="margin-r-t">{this.state.did}</div>
-                                                        <MessageButton
-                                                            onClick={() => ClipboardHelper.copy(this.state.did)}
-                                                            buttonType="copy"
-                                                        />
+                                                        <CopyButton copy={this.state.did} />
                                                     </div>
                                                     {this.state.resolvedIdentity &&
                                                         !this.state.error &&
@@ -255,13 +252,8 @@ class IdentityResolver extends AsyncComponent<
                                                                     <div className="margin-r-t">
                                                                         {this.state.resolvedIdentity?.messageId}
                                                                     </div>
-                                                                    <MessageButton
-                                                                        onClick={() =>
-                                                                            ClipboardHelper.copy(
-                                                                                this.state.resolvedIdentity
-                                                                                    ?.messageId
-                                                                            )}
-                                                                        buttonType="copy"
+                                                                    <CopyButton
+                                                                        copy={this.state.resolvedIdentity?.messageId}
                                                                     />
                                                                 </div>
                                                             </Fragment>
@@ -382,8 +374,8 @@ class IdentityResolver extends AsyncComponent<
      * @param metadata The metadata to calculate the status from.
      * @returns The message status.
      */
-    private calculateStatus(metadata?: IMessageMetadata): MessageTangleStatus {
-        let messageTangleStatus: MessageTangleStatus = "unknown";
+    private calculateStatus(metadata?: IMessageMetadata): TangleStatus {
+        let messageTangleStatus: TangleStatus = "unknown";
 
         if (metadata) {
             if (metadata.milestoneIndex) {

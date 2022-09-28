@@ -4,8 +4,10 @@ import compression from "compression";
 import express, { Application } from "express";
 import { Server } from "http";
 import { Server as SocketIOServer } from "socket.io";
+import { NetworkConfigurationError } from "./errors/networkConfigurationError";
 import { initServices } from "./initServices";
 import { IFeedSubscribeRequest } from "./models/api/IFeedSubscribeRequest";
+import { IFeedUnsubscribeRequest } from "./models/api/IFeedUnsubscribeRequest";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { routes } from "./routes";
 import { subscribe } from "./routes/feed/subscribe";
@@ -97,7 +99,7 @@ socketServer.on("connection", socket => {
         socket.emit("subscribe", response);
     });
 
-    socket.on("unsubscribe", data => {
+    socket.on("unsubscribe", (data: IFeedUnsubscribeRequest) => {
         console.log("Socket::Unsubscribe", socket.id);
         const response = unsubscribe(config, socket, data);
         if (sockets[socket.id]) {
@@ -127,6 +129,10 @@ server.listen(port, async () => {
         await initServices(config);
         console.log("Services Initialized");
     } catch (err) {
+        if (err instanceof NetworkConfigurationError) {
+            throw err;
+        }
+
         console.error(err);
     }
 });

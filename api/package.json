@@ -1,7 +1,7 @@
 {
     "name": "explorer-api",
     "description": "API for Tangle Explorer",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "author": "Martyn Janes <martyn.janes@iota.org>",
     "repository": {
         "type": "git",
@@ -21,24 +21,31 @@
         "start": "node ./dist/index"
     },
     "engines": {
-        "node": ">=14"
+        "node": ">=14 <=16.16"
     },
     "dependencies": {
         "@iota/core": "^1.0.0-beta.30",
         "@iota/crypto.js": "^1.8.6",
+        "@iota/crypto.js-stardust": "npm:@iota/crypto.js@^2.0.0-rc.1",
         "@iota/identity-wasm": "^0.5.0-dev.6",
         "@iota/identity-wasm-0.4": "npm:@iota/identity-wasm@^0.4.3",
         "@iota/iota.js": "^1.8.6",
+        "@iota/iota.js-stardust": "npm:@iota/iota.js@^2.0.0-rc.1",
         "@iota/mqtt.js": "^1.8.6",
-        "@iota/transaction-converter": "^1.0.0-beta.30",
+        "@iota/mqtt.js-stardust": "npm:@iota/mqtt.js@^2.0.0-rc.1",
         "@iota/util.js": "^1.8.6",
+        "@iota/util.js-stardust": "npm:@iota/util.js@^2.0.0-rc.1",
         "@iota/validators": "^1.0.0-beta.30",
+        "@types/moment": "^2.13.0",
+        "@types/node-cron": "^3.0.2",
         "abort-controller": "^3.0.0",
-        "aws-sdk": "^2.1005.0",
+        "aws-sdk": "^2.1205.0",
+        "big-integer": "^1.6.51",
         "compression": "^1.7.4",
-        "cors": "^2.8.5",
-        "express": "^4.17.1",
-        "mqtt": "^4.2.8",
+        "dotenv": "^16.0.1",
+        "express": "^4.18.1",
+        "moment": "^2.29.4",
+        "node-cron": "^3.0.2",
         "node-fetch": "^2.6.7",
         "socket.io": "^4.5.0",
         "uuid": "^8.3.2",
@@ -49,17 +56,16 @@
         "@types/express": "^4.17.13",
         "@types/node": "^16.10.3",
         "@types/uuid": "^8.3.1",
-        "@typescript-eslint/eslint-plugin": "^4.31.1",
-        "@typescript-eslint/parser": "^4.31.1",
+        "@typescript-eslint/eslint-plugin": "^5.36.0",
+        "@typescript-eslint/parser": "^5.36.0",
         "copyfiles": "^2.4.1",
-        "cross-env": "^7.0.3",
-        "eslint": "^7.32.0",
-        "eslint-plugin-import": "^2.24.2",
-        "eslint-plugin-jsdoc": "^36.1.1",
-        "eslint-plugin-unicorn": "^36.0.0",
+        "eslint": "^8.23.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-jsdoc": "^39.3.6",
+        "eslint-plugin-unicorn": "^43.0.2",
         "nodemon": "^2.0.13",
         "npm-run-all": "^4.1.5",
         "rimraf": "^3.0.2",
-        "typescript": "^4.4.3"
+        "typescript": "^4.8.2"
     }
 }

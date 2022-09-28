@@ -20,5 +20,5 @@ export interface IndexationPayloadProps {
     /**
      * Display advanced mode.
      */
-     advancedMode: boolean;
+    advancedMode: boolean;
 }

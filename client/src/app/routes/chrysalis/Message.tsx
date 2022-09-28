@@ -2,39 +2,39 @@ import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MIL
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
-import { MessageTangleStatus } from "../../../models/messageTangleStatus";
+import { TransactionsHelper } from "../../../helpers/chrysalis/transactionsHelper";
+import { CHRYSALIS } from "../../../models/config/protocolVersion";
+import { TangleStatus } from "../../../models/tangleStatus";
+import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
-import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
+import InclusionState from "../../components/chrysalis/InclusionState";
 import IndexationPayload from "../../components/chrysalis/IndexationPayload";
+import MessageTangleState from "../../components/chrysalis/MessageTangleState";
+import MessageTree from "../../components/chrysalis/MessageTree";
 import MilestonePayload from "../../components/chrysalis/MilestonePayload";
 import ReceiptPayload from "../../components/chrysalis/ReceiptPayload";
 import TransactionPayload from "../../components/chrysalis/TransactionPayload";
+import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
-import InclusionState from "../../components/InclusionState";
-import MessageButton from "../../components/MessageButton";
-import MessageTangleState from "../../components/MessageTangleState";
-import MessageTree from "../../components/MessageTree";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import Switcher from "../../components/Switcher";
-import mainHeaderMessage from "./../../../assets/modals/message/main-header.json";
-import metadataMessage from "./../../../assets/modals/message/metadata.json";
-import treeMessage from "./../../../assets/modals/message/tree.json";
-import { TransactionsHelper } from "./../../../helpers/transactionsHelper";
+import { MessageProps } from "../chrysalis/MessageProps";
+import mainHeaderMessage from "./../../../assets/modals/chrysalis/message/main-header.json";
+import metadataMessage from "./../../../assets/modals/chrysalis/message/metadata.json";
+import treeMessage from "./../../../assets/modals/chrysalis/message/tree.json";
 import "./Message.scss";
-import { MessageRouteProps } from "./MessageRouteProps";
 import { MessageState } from "./MessageState";
 /**
  * Component which will show the message page.
  */
-class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, MessageState> {
+class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageState> {
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * Settings service.
@@ -55,10 +55,12 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
      * Create a new instance of Message.
      * @param props The props.
      */
-    constructor(props: RouteComponentProps<MessageRouteProps>) {
+    constructor(props: RouteComponentProps<MessageProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
+            `tangle-cache-${CHRYSALIS}`
+        );
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
 
@@ -151,12 +153,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     <span className="margin-r-t">
                                         {this.state.actualMessageId}
                                     </span>
-                                    <MessageButton
-                                        onClick={() => ClipboardHelper.copy(
-                                            this.state.actualMessageId
-                                        )}
-                                        buttonType="copy"
-                                    />
+                                    <CopyButton copy={this.state.actualMessageId} />
                                 </div>
                             </div>
 
@@ -167,12 +164,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
                                     </div>
                                     <div className="value value__secondary row middle">
                                         <span className="margin-r-t">{this.state.paramMessageId}</span>
-                                        <MessageButton
-                                            onClick={() => ClipboardHelper.copy(
-                                                this.state.paramMessageId
-                                            )}
-                                            buttonType="copy"
-                                        />
+                                        <CopyButton copy={this.state.paramMessageId} />
                                     </div>
                                 </div>
                             )}
@@ -390,8 +382,8 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
      * @param metadata The metadata to calculate the status from.
      * @returns The message status.
      */
-    private calculateStatus(metadata?: IMessageMetadata): MessageTangleStatus {
-        let messageTangleStatus: MessageTangleStatus = "unknown";
+    private calculateStatus(metadata?: IMessageMetadata): TangleStatus {
+        let messageTangleStatus: TangleStatus = "unknown";
 
         if (metadata) {
             if (metadata.milestoneIndex) {
@@ -472,3 +464,4 @@ class Message extends AsyncComponent<RouteComponentProps<MessageRouteProps>, Mes
 }
 
 export default Message;
+

@@ -3,9 +3,9 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { TextHelper } from "../../../helpers/textHelper";
+import { CHRYSALIS } from "../../../models/config/protocolVersion";
+import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { SettingsService } from "../../../services/settingsService";
-import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import DataToggle from "../../components/DataToggle";
 import Spinner from "../../components/Spinner";
@@ -20,7 +20,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * Settings service.
@@ -34,7 +34,9 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
     constructor(props: RouteComponentProps<IndexedRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
+            `tangle-cache-${CHRYSALIS}`
+        );
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         this.state = {
@@ -51,7 +53,8 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
         super.componentDidMount();
 
         const result = await this._tangleCacheService.search(
-            this.props.match.params.network, this.props.match.params.index);
+            this.props.match.params.network, this.props.match.params.index
+        );
 
         if (result?.indexMessageIds && result?.indexMessageType) {
             window.scrollTo({
@@ -60,25 +63,13 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                 behavior: "smooth"
             });
 
-            let hexIndex;
-            let utf8Index;
-            if (result.indexMessageType === "hex") {
-                hexIndex = this.props.match.params.index;
-                utf8Index = TextHelper.isUTF8(Converter.hexToBytes(this.props.match.params.index))
-                    ? Converter.hexToUtf8(this.props.match.params.index)
-                    : undefined;
-            } else {
-                hexIndex = Converter.utf8ToHex(this.props.match.params.index);
-                utf8Index = this.props.match.params.index;
-            }
-
-            const matchHexIndex = hexIndex.match(/.{1,2}/g);
-            const formattedHexIndex = matchHexIndex ? matchHexIndex.join(" ") : hexIndex;
+            const hexIndex = result.indexMessageType === "hex" ?
+                this.props.match.params.index :
+                Converter.utf8ToHex(this.props.match.params.index);
 
             this.setState({
                 messageIds: result.indexMessageIds,
-                utf8Index,
-                hexIndex: formattedHexIndex,
+                hexIndex,
                 indexLengthBytes: hexIndex.length / 2,
                 cursor: result.cursor,
                 status: "",
@@ -94,30 +85,13 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const TOGGLE_INDEX_OPTIONS = this.state.utf8Index ? [
-            {
-                label: "Text", content: this.state.utf8Index
-            },
-            {
-                label: "HEX",
-                content: this.state.hexIndex
-            }
-        ]
-            : [
-                {
-                    label: "HEX",
-                    content: this.state.hexIndex
-                }
-            ];
         return (
             <div className="indexed">
                 <div className="wrapper">
                     <div className="inner">
                         <div className="row middle space-between">
                             <div className="row middle">
-                                <h1>
-                                    Indexed
-                                </h1>
+                                <h1>Indexed</h1>
                             </div>
                         </div>
                         <div className="section">
@@ -129,7 +103,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                 {this.state.statusBusy && (<Spinner compact />)}
 
                             </div>
-                            {TOGGLE_INDEX_OPTIONS.some(option => option.content !== undefined) && (
+                            {this.state.hexIndex && (
                                 <div className="section--data">
                                     <div className="label row middle">
                                         <span className="margin-r-t">
@@ -137,7 +111,8 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                                         </span>
                                     </div>
                                     <DataToggle
-                                        options={TOGGLE_INDEX_OPTIONS}
+                                        sourceData={this.state.hexIndex}
+                                        withSpacedHex={true}
                                     />
                                 </div>)}
                         </div>

@@ -1,8 +1,9 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IIdentityDidHistoryResponse } from "../models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
+import { CHRYSALIS } from "../models/config/protocolVersion";
 import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
-import { ApiClient } from "./apiClient";
+import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 
 export class IdentityService {
     /**
@@ -12,7 +13,7 @@ export class IdentityService {
      * @returns Promise
      */
     public async resolveIdentity(did: string, network: string): Promise<IIdentityDidResolveResponse> {
-        const apiClient = ServiceFactory.get<ApiClient>("api-client");
+        const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
 
         const response = await apiClient.didDocument({ network, did });
 
@@ -27,7 +28,7 @@ export class IdentityService {
      * @returns Promise
      */
     public async resolveHistory(did: string, network: string, version: string): Promise<IIdentityDidHistoryResponse> {
-        const apiClient = ServiceFactory.get<ApiClient>("api-client");
+        const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
 
         const response = await apiClient.didHistory({ network, did, version });
 
@@ -48,7 +49,7 @@ export class IdentityService {
         version: string,
         payload: unknown
     ): Promise<IIdentityDiffHistoryResponse> {
-        const apiClient = ServiceFactory.get<ApiClient>("api-client");
+        const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
 
         const response = await apiClient.diffHistory({ network, integrationMsgId, version }, payload);
 

@@ -1,4 +1,4 @@
-import { ProtocolVersion } from "../../models/db/protocolVersion";
+import { ProtocolVersion } from "../../models/config/protocolVersion";
 
 export interface SearchState {
     /**
@@ -30,4 +30,9 @@ export interface SearchState {
      * Redirect to another page.
      */
     redirect: string;
+
+    /**
+     * State to pass to redirected page.
+     */
+    redirectState?: Record<string, unknown>;
 }

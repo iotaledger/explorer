@@ -2,15 +2,15 @@ import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
+import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
+import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { ConfirmationState } from "../../../models/confirmationState";
-import { ICachedTransaction } from "../../../models/ICachedTransaction";
-import { TangleCacheService } from "../../../services/tangleCacheService";
+import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import Confirmation from "../../components/Confirmation";
+import CopyButton from "../../components/CopyButton";
 import Currency from "../../components/Currency";
-import MessageButton from "../../components/MessageButton";
 import Spinner from "../../components/Spinner";
 import "./Bundle.scss";
 import { BundleRouteProps } from "./BundleRouteProps";
@@ -23,7 +23,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * Create a new instance of Bundle.
@@ -32,7 +32,9 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
     constructor(props: RouteComponentProps<BundleRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
+            `tangle-cache-${CHRYSALIS}`
+        );
 
         let bundle;
         if (this.props.match.params.hash.length === 81 &&
@@ -214,11 +216,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                         </div>
                                         <div className="card--value row middle">
                                             <span className="margin-r-t">{this.state.bundle}</span>
-                                            <MessageButton
-                                                onClick={() => ClipboardHelper.copy(
-                                                    this.state.bundle)}
-                                                buttonType="copy"
-                                            />
+                                            <CopyButton copy={this.state.bundle} />
                                         </div>
                                     </div>
                                 </div>

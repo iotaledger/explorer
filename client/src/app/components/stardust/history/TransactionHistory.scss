@@ -1,0 +1,167 @@
+@import "../../../../scss/fonts";
+@import "../../../../scss/mixins";
+@import "../../../../scss/media-queries";
+@import "../../../../scss/variables";
+@import "../../../../scss/themes";
+
+.transaction-history--section {
+
+    .transaction-history--table {
+        width: 100%;
+        border-spacing: 0 0;
+
+        @include tablet-down {
+            display: none;
+        }
+
+        tr {
+            @include font-size(14px);
+
+            border: 1px solid;
+            border-radius: 4px;
+            color: $gray-7;
+            font-family: $inter;
+            letter-spacing: 0.5px;
+
+            &.dark {
+                background: var(--transaction-history-dark-row);
+            }
+
+            th {
+                @include font-size(12px);
+
+                text-align: center!important;
+                color: $gray-6;
+                font-weight: 600;
+                text-align: left;
+                text-transform: uppercase;
+            }
+
+            td {
+                padding: 16px 0;
+                text-align: center;
+
+                &.transaction-id, &.output-id {
+                    @include font-size(14px);
+                    color: var(--link-color);
+                    font-family: $ibm-plex-mono;
+                    font-weight: normal;
+                    letter-spacing: 0.02em;
+                    line-height: 20px;
+                    word-break: break-all;
+                }
+
+                &.output-id .highlight {
+                    font-weight: 500;
+                    color: $gray-6;
+                    margin-left: 2px;
+                }
+
+                &.date {
+                    @include font-size(14px);
+                    font-family: $ibm-plex-mono;
+                }
+
+                &.amount {
+                    color: $mint-green-7;
+                    @include font-size(16px, 21px);
+                    font-weight: 700;
+
+                    &.negative {
+                        color: var(--expanded-color);
+                    }
+                }
+            }
+        }
+    }
+
+    .transaction-history--cards {
+        display: none;
+
+        @include tablet-down {
+            display: block;
+
+            .card {
+                padding: 12px;
+                margin-bottom: 16px;
+
+                .field {
+                    margin-bottom: 8px;
+
+                    .label {
+                        color: $gray-6;
+                        font-family: $inter;
+                        letter-spacing: 0.5px;
+
+                        @include font-size(14px, 21px);
+                    }
+
+                    .value {
+                        @include font-size(14px, 21px);
+
+                        color: var(--body-color);
+                        font-family: $metropolis;
+                        font-weight: 700;
+
+                        &.message-id {
+                            overflow: hidden;
+                            color: var(--link-color);
+                            font-family: $ibm-plex-mono;
+                            font-weight: 500;
+                            text-decoration: none;
+                            text-overflow: ellipsis;
+                            word-break: break-word;
+                        }
+
+                        .messages-tangle-state {
+                            display: inline-block;
+
+                            .message-tangle-state {
+                                margin-left: 0;
+                            }
+                        }
+                    }
+
+                    .amount {
+                        font-family: $inter;
+                        font-size: 0.875rem;
+                        font-weight: 700;
+                        letter-spacing: 0.5px;
+
+                        &.positive {
+                            color: $mint-green-7;
+                        }
+
+                        &.negative {
+                            color: var(--expanded-color);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .load-more--button {
+        margin: 24px 0 8px 0;
+        align-self: center;
+        font-family: $metropolis;
+        width: fit-content;
+        padding: 4px 8px;
+        cursor: pointer;
+
+        &:hover {
+            button {
+                color: $main-green-highlight;
+            }
+        }
+
+        button {
+            padding: 6px;
+            color: var(--header-icon-color);
+        }
+    }
+
+    .pagination {
+        margin-top: 8px;
+    }
+}

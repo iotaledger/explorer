@@ -1,4 +1,5 @@
 import { IIdentityMessageWrapper } from "./../identity/IIdentityMessageWrapper";
+
 export interface IIdentityDiffHistoryResponse {
     chainData: IIdentityMessageWrapper[];
     spam: string[];
@@ -10,7 +11,3 @@ export interface DiffMessage {
     updated: string;
 }
 
-export interface DiffDocument {
-    created: string;
-    updated: string;
-}

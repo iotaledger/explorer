@@ -12,5 +12,5 @@ export interface ITransactionsDetailsRequest {
     /**
      * The query parameters.
      */
-     query?: { [key: string]: unknown };
+    query?: { [key: string]: unknown };
 }

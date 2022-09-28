@@ -5,6 +5,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IIdentityDidHistoryRequest } from "../../../models/api/IIdentityDidHistoryRequest";
 import { IIdentityDidHistoryResponse } from "../../../models/api/IIdentityDidHistoryResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { IdentityHelper } from "../../../utils/identityHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
@@ -22,7 +23,7 @@ export async function get(config: IConfiguration, request: IIdentityDidHistoryRe
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== "chrysalis") {
+    if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {
             error: `Network is not supported. IOTA Identity only supports 
             chrysalis phase 2 networks, such as the IOTA main network.`
@@ -109,7 +110,7 @@ async function resolveLegacyHistory(
 
         for (const element of receipt.integrationChainData()) {
             const integrationMessage = {
-                document: IdentityHelper.convertLegacyDocument(element.toJSON()),
+                document: IdentityHelper.convertLegacyDocument(element.toJSON() as Record<string, unknown>),
                 messageId: element.messageId
             };
             integrationChainData.push(integrationMessage);

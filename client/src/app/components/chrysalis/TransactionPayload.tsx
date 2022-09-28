@@ -3,13 +3,12 @@ import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import AsyncComponent from "../AsyncComponent";
+import CopyButton from "../CopyButton";
 import FiatValue from "../FiatValue";
-import MessageButton from "../MessageButton";
 import Modal from "../Modal";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import transactionPayloadMessage from "./../../../assets/modals/message/transaction-payload.json";
+import transactionPayloadMessage from "./../../../assets/modals/chrysalis/message/transaction-payload.json";
 import Bech32Address from "./Bech32Address";
 import "./TransactionPayload.scss";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
@@ -174,11 +173,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             >
                                                 {this.state.isFormattedBalance ? output.amount : UnitsHelper.formatBest(output.amount)}
                                             </span>
-                                            <MessageButton
-                                                onClick={() => ClipboardHelper.copy(String(output.amount))}
-                                                buttonType="copy"
-                                                labelPosition="bottom"
-                                            />
+                                            <CopyButton copy={String(output.amount)} />
                                         </div>
                                     </div>
 

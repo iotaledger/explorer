@@ -1,6 +1,6 @@
 import { IMessage, IMessageMetadata, IUTXOInput } from "@iota/iota.js";
-import { IBech32AddressDetails } from "../../../models/IBech32AddressDetails";
-import { MessageTangleStatus } from "../../../models/messageTangleStatus";
+import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
+import { TangleStatus } from "../../../models/tangleStatus";
 
 export interface MessageState {
     /**
@@ -46,7 +46,7 @@ export interface MessageState {
     /**
      * The state of the message on the tangle.
      */
-    messageTangleStatus: MessageTangleStatus;
+    messageTangleStatus: TangleStatus;
 
     /**
      * Display advanced mode.

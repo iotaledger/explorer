@@ -5,6 +5,8 @@
 @import "../../scss/themes";
 
 .network--switcher {
+  width: 180px;
+
   @include tablet-down {
     &::before {
       content: "";
@@ -18,8 +20,8 @@
   }
 
   .network--switcher__header {
+    justify-content: center;
     font-family: $metropolis;
-    cursor: pointer;
 
     &.opened {
       .icon {
@@ -30,6 +32,8 @@
     }
 
     .network--switcher__dropdown {
+      text-align: center;
+
       .label {
         @include font-size(16px, 18px);
 
@@ -47,13 +51,13 @@
         text-transform: uppercase;
       }
 
-      @include tablet-down {
+      @include desktop-down {
         width: 100%;
       }
     }
 
     .icon {
-      margin-left: 40px;
+      margin-left: 12px;
 
       span {
         transition: transform 0.2s ease;
@@ -62,57 +66,62 @@
     }
   }
 
-  .protocols {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto;
-    max-width: 1400px;
+}
+
+.network--expanded {
+  position: fixed;
+  z-index: 2;
+  top: $navbar-height-desktop;
+  right: 0;
+  width: 520px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  border-radius: 12px;
+  background: var(--body-background);
+  box-shadow: var(--box-shadow-down);
+
+  @include desktop-down {
+    width: 468px;
+    top: $navbar-height-mobile * 2;
+  }
+
+  @include phone-down {
+      width: 100vw;
+      border-radius: unset;
+  }
+
+  &.opened {
+    max-height: 1000px;
+
+    @include desktop-down {
+      top: $navbar-height-mobile * 2;
+    }
+  }
+
+  .networks {
+    display: flex;
+    flex-direction: column;
     margin: auto;
-    padding: 40px;
+    padding: 32px 12px;
 
     @media (max-width: 1200px) {
       display: block;
-      padding: 24px;
 
-      div.protocol {
-        width: 100%;
-        padding: 24px 0;
+      div.network {
+          width: 100%;
       }
     }
 
-    .protocol {
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr;
-      padding: 0 24px;
-
-      .protocol-header {
-          min-height: 68px;
-
-          .protocol--title {
-              color: var(--expanded-color);
-              font-family: $metropolis;
-              font-weight: 700;
-              letter-spacing: 0.15em;
-              text-transform: uppercase;
-
-              @include font-size(14px, 21px);
-          }
-
-          .protocol--description {
-              color: var(--expanded-color);
-              font-family: $inter;
-              letter-spacing: 0.5px;
-
-              @include font-size(14px, 21px);
-          }
-      }
+    .network {
+      display: flex;
+      flex-direction: row;
+      padding: 0 10px;
 
       .network--cards {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr 1fr;
-        padding-top: 44px;
+        display: flex;
+        flex-direction: column;
+        width: 100vw;
 
         .network--card {
           min-height: 86px;
@@ -161,7 +170,7 @@
               @include font-size(16px, 24px);
             }
 
-            .description {
+            .protocol {
               color: var(--expanded-color);
               font-family: $inter;
               font-weight: 500;

@@ -1,7 +1,8 @@
 module.exports = {
     "env": {
         "browser": true,
-        "node": true
+        "node": true,
+        "es2022": true
     },
     "extends": [
         "eslint:all",
@@ -19,6 +20,7 @@ module.exports = {
         "project": "tsconfig.json",
         "tsconfigRootDir": __dirname,
         "sourceType": "module",
+        "ecmaVersion": "latest",
         "ecmaFeatures": {
             "jsx": true,
         }
@@ -115,6 +117,7 @@ module.exports = {
                 "selector": "variable",
                 "format": [
                     "camelCase",
+                    "PascalCase",
                     "UPPER_CASE"
                 ]
             }
@@ -599,7 +602,7 @@ module.exports = {
             "error"
         ],
         "newline-per-chained-call": [
-            "error"
+            "error", { "ignoreChainWithDepth": 3 }
         ],
         "no-alert": [
             "error"
@@ -886,8 +889,9 @@ module.exports = {
         "no-setter-return": [
             "off"
         ],
-        "no-shadow": [
-            "error"
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": [
+            "error", { "ignoreTypeValueShadow": true }
         ],
         "no-shadow-restricted-names": [
             "error"
@@ -1024,7 +1028,7 @@ module.exports = {
             "error"
         ],
         "operator-linebreak": [
-            "error"
+            "error", "after", { "overrides": { "?": "ignore", ":": "ignore" } }
         ],
         "padded-blocks": [
             "error",
@@ -1109,7 +1113,8 @@ module.exports = {
             2
         ],
         "react/function-component-definition": [
-            2
+            2,
+            { "namedComponents": ["function-declaration", "arrow-function"] }
         ],
         "react/jsx-boolean-value": [
             "off"
@@ -1147,10 +1152,7 @@ module.exports = {
         "react/jsx-first-prop-new-line": [
             2
         ],
-        "react/jsx-fragments": [
-            "error",
-            "element"
-        ],
+        "react/jsx-fragments": [ "off" ],
         "react/jsx-handler-names": [
             2
         ],
@@ -1612,6 +1614,6 @@ module.exports = {
         ],
         "jsdoc/newline-after-description": "off",
         "jsdoc/require-param-type": "off",
-        "jsdoc/require-returns-type": "off"        
+        "jsdoc/require-returns-type": "off"
     }
 };

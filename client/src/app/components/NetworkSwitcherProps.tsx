@@ -1,4 +1,4 @@
-import { INetwork } from "./../../models/db/INetwork";
+import { INetwork } from "../../models/config/INetwork";
 
 /**
  * The props for the Header component.
@@ -13,13 +13,9 @@ export interface NetworkSwitcherProps {
      */
     eyebrow?: string;
     /**
-     * The networks grouped by protocol.
+     * The networks grouped by network type.
      */
-    protocols: {
-        label: string;
-        description: string;
-        networks?: INetwork[];
-    }[];
+    networks: INetwork[];
     /**
      * Is the switcher opened.
      */

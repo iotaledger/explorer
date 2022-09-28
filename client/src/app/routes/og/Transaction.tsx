@@ -7,18 +7,18 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ClipboardHelper } from "../../../helpers/clipboardHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
-import { ICachedTransaction } from "../../../models/ICachedTransaction";
+import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
+import { CHRYSALIS } from "../../../models/config/protocolVersion";
+import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
-import { TangleCacheService } from "../../../services/tangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
+import SidePanel from "../../components/chrysalis/SidePanel";
 import Confirmation from "../../components/Confirmation";
+import CopyButton from "../../components/CopyButton";
 import CurrencyButton from "../../components/CurrencyButton";
 import JsonViewer from "../../components/JsonViewer";
-import MessageButton from "../../components/MessageButton";
-import SidePanel from "../../components/SidePanel";
 import Spinner from "../../components/Spinner";
 import ValueButton from "../../components/ValueButton";
 import "./Transaction.scss";
@@ -32,7 +32,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: TangleCacheService;
+    private readonly _tangleCacheService: ChrysalisTangleCacheService;
 
     /**
      * Timer to check to state update.
@@ -46,7 +46,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     constructor(props: RouteComponentProps<TransactionRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<TangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
+            `tangle-cache-${CHRYSALIS}`
+        );
 
         let hash;
         if (this.props.match.params.hash.length === 81 &&
@@ -162,10 +164,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                         </div>
                                         <div className="card--value row middle">
                                             <span className="margin-r-t">{this.state.hash}</span>
-                                            <MessageButton
-                                                onClick={() => ClipboardHelper.copy(this.state.hash)}
-                                                buttonType="copy"
-                                            />
+                                            <CopyButton copy={this.state.hash} />
                                         </div>
                                         {this.state.details && (
                                             <React.Fragment>
@@ -208,12 +207,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             {this.state.checksum}
                                                         </span>
                                                     </Link>
-                                                    <MessageButton
-                                                        onClick={() => ClipboardHelper.copy(
-                                                            `${this.state.address}${this.state.checksum}`
-                                                        )}
-                                                        buttonType="copy"
-                                                    />
+                                                    <CopyButton copy={`${this.state.address}${this.state.checksum}`} />
                                                 </div>
                                                 {this.state.details.confirmationState === "pending" &&
                                                     this.state.isBundleValid === "valid" && (
@@ -262,11 +256,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                         >
                                                                             {this.state.actionResultHash}
                                                                         </Link>
-                                                                        <MessageButton
-                                                                            onClick={() => ClipboardHelper.copy(
-                                                                                this.state.actionResultHash
-                                                                            )}
-                                                                            buttonType="copy"
+                                                                        <CopyButton
+                                                                            copy={this.state.actionResultHash}
                                                                         />
                                                                     </div>
                                                                 </React.Fragment>
@@ -329,11 +320,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     >
                                                         {this.state.details?.tx.bundle}
                                                     </Link>
-                                                    <MessageButton
-                                                        onClick={() => ClipboardHelper.copy(
-                                                            this.state.details?.tx.bundle)}
-                                                        buttonType="copy"
-                                                    />
+                                                    <CopyButton copy={this.state.details?.tx.bundle} />
                                                 </div>
 
                                                 <div className="card--label">
@@ -396,11 +383,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             >
                                                                 {this.state.details.tx.tag}
                                                             </Link>
-                                                            <MessageButton
-                                                                onClick={() => ClipboardHelper.copy(
-                                                                    this.state.details?.tx.tag)}
-                                                                buttonType="copy"
-                                                            />
+                                                            <CopyButton copy={this.state.details?.tx.tag} />
                                                         </div>
                                                     </div>
                                                     <div className="col fill">
@@ -417,11 +400,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             >
                                                                 {this.state.details.tx.obsoleteTag}
                                                             </Link>
-                                                            <MessageButton
-                                                                onClick={() => ClipboardHelper.copy(
-                                                                    this.state.details?.tx.obsoleteTag)}
-                                                                buttonType="copy"
-                                                            />
+                                                            <CopyButton copy={this.state.details?.tx.obsoleteTag} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -464,12 +443,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                     `Message ${this.state.messageType}`
                                                                 )}
                                                             </span>
-                                                            <MessageButton
-                                                                onClick={() => ClipboardHelper.copy(
-                                                                    this.state.showRawMessageTrytes
-                                                                        ? this.state.rawMessageTrytes
-                                                                        : this.state.message)}
-                                                                buttonType="copy"
+                                                            <CopyButton copy={this.state.showRawMessageTrytes ?
+                                                                this.state.rawMessageTrytes :
+                                                                this.state.message}
                                                             />
                                                         </div>
                                                         <div
@@ -598,10 +574,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                 Trytes
                                                             </span>
                                                             {this.state.details && (
-                                                                <MessageButton
-                                                                    onClick={() => ClipboardHelper.copy(this.state.raw)}
-                                                                    buttonType="copy"
-                                                                />
+                                                                <CopyButton copy={this.state.raw} />
                                                             )}
                                                         </div>
                                                         <div
@@ -737,7 +710,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
 
                                 const spanMessage = TrytesHelper.decodeMessage(combinedMessages);
 
-                                if ((spanMessage.messageType === "ASCII" ||
+                                if ((spanMessage.messageType === "ascii" ||
                                     spanMessage.messageType === "JSON") &&
                                     spanMessage.message !== this.state.message) {
                                     message = spanMessage.message;

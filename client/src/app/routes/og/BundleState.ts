@@ -1,5 +1,5 @@
+import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
 import { ConfirmationState } from "../../../models/confirmationState";
-import { ICachedTransaction } from "../../../models/ICachedTransaction";
 import { CurrencyState } from "../../components/CurrencyState";
 
 export interface BundleState extends CurrencyState {

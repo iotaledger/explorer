@@ -1,5 +1,5 @@
-import { IFeedItem } from "../../models/IFeedItem";
-import { FeedsState } from "../components/FeedsState";
+import { IFeedItem } from "../../models/feed/IFeedItem";
+import { FeedsState } from "../components/chrysalis/FeedsState";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface VisualizerState extends FeedsState {
@@ -22,4 +22,9 @@ export interface VisualizerState extends FeedsState {
      * Is Visualizer active flag.
      */
     isActive: boolean;
+
+    /**
+     * Format amounts in full.
+     */
+    isFormatAmountsFull?: boolean;
 }

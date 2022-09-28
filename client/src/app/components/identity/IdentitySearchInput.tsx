@@ -45,10 +45,10 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
                     placeholder={this.props.compact ? "Search DID" : ""}
                     onChange={e =>
                         this.setState({
-                            did: e.target.value,
-                            isValid: this.isValid(e.target.value),
-                            networkMismatch: this.didContainsWrongNetwork(e.target.value, this.props.network)
-                        })}
+                        did: e.target.value,
+                        isValid: this.isValid(e.target.value),
+                        networkMismatch: this.didContainsWrongNetwork(e.target.value, this.props.network)
+                    })}
                     onKeyPress={e => {
                         if (e.key === "Enter") {
                             this.doSearch();

@@ -1,13 +1,14 @@
 
 import { ICurrencySettings } from "./ICurrencySettings";
 import { IFilterSettings } from "./IFilterSettings";
+import { IFilterSettings as IStardustFilterSettings } from "./stardust/IFilterSettings";
 
 export interface ISettings extends ICurrencySettings {
     /**
      * Filter settings for each network.
      */
     filters?: {
-        [network: string]: IFilterSettings;
+        [network: string]: IFilterSettings | IStardustFilterSettings;
     };
 
     /**

@@ -2,11 +2,11 @@
 import { UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { Bech32AddressHelper } from "../../../helpers/bech32AddressHelper";
+import { Bech32AddressHelper } from "../../../helpers/chrysalis/bech32AddressHelper";
 import { NetworkService } from "../../../services/networkService";
+import { ReceiptPayloadState } from "../ReceiptPayloadState";
 import Bech32Address from "./Bech32Address";
 import { ReceiptPayloadProps } from "./ReceiptPayloadProps";
-import { ReceiptPayloadState } from "./ReceiptPayloadState";
 
 /**
  * Component which will display a receipt payload.

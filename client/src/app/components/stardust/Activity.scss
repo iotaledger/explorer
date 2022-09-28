@@ -1,0 +1,102 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+@import "../../../scss/themes";
+
+.activity-table {
+    width: 100%;
+    border-spacing: 12px 28px;
+    border-collapse: separate;
+
+    @include tablet-down {
+        display: none;
+    }
+
+    tr {
+        @include font-size(14px);
+
+        color: $gray-7;
+        font-family: $inter;
+        letter-spacing: 0.5px;
+
+        th {
+            @include font-size(12px);
+
+            color: $gray-6;
+            font-weight: 600;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        td {
+            &.transaction-id {
+                color: var(--link-color);
+                @include font-size(14px);
+
+                font-family: $ibm-plex-mono;
+                font-weight: normal;
+                letter-spacing: 0.02em;
+                line-height: 20px;
+            }
+
+            .date {
+                color: #485776
+            }
+
+            .price {
+                color: #36A1AC;
+                font-weight: 600;
+            }
+
+            .status {
+                background: rgba(0, 224, 202, 0.2);
+                padding: 5px 10px 5px 10px;
+                border-radius: 6px;
+                color: #36A1AC;
+            }
+        }
+    }
+}
+
+.activity-cards {
+    display: none;
+
+    @include tablet-down {
+        display: block;
+
+        .activity-card {
+            margin-bottom: 48px;
+            .field {
+                margin-bottom: 8px;
+
+                .label {
+                    color: $gray-6;
+                    font-family: $inter;
+                    letter-spacing: 0.5px;
+
+                    @include font-size(14px, 21px);
+                }
+
+                .value {
+                    @include font-size(14px, 21px);
+
+                    color: var(--body-color);
+                    font-family: $metropolis;
+                    font-weight: 700;
+
+                    &.transaction-id {
+                        overflow: hidden;
+                        color: var(--link-color);
+                        font-family: $ibm-plex-mono;
+                        font-weight: 500;
+                        text-decoration: none;
+                        text-overflow: ellipsis;
+                        word-break: break-word;
+                    }
+
+                }
+            }
+        }
+    }
+}
