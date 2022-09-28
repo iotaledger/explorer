@@ -6,6 +6,6 @@ export interface IAnalyticsStatsService {
     /**
      * Gets the stats.
      */
-    getAnalytics(): Promise<IAnalyticStats>;
+    getAnalytics(): IAnalyticStats;
 }
 

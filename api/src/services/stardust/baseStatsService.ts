@@ -28,12 +28,17 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
     /**
      * Interval in hours of analytics stats refresh.
      */
-    protected readonly ANALYTICS_REFERSH_FREQ_HOURS = 3;
+    protected readonly ANALYTICS_REFERSH_FREQ_HOURS = 1;
 
     /**
      * The analytics storage.
      */
     protected readonly _analyticsStorage: IStorageService<IAnalyticsStore>;
+
+    /**
+     * The shimmer claimed stats.
+     */
+    protected _analyticStats: IAnalyticStats;
 
     /**
      * The shimmer claimed stats.
@@ -82,9 +87,8 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
      * Get the current analytic stats.
      * @returns The current analytic stats.
      */
-    public async getAnalytics(): Promise<IAnalyticStats> {
-        const analyticsStore = await this._analyticsStorage.get(this._networkConfiguration.network);
-        return analyticsStore.analytics;
+    public getAnalytics(): IAnalyticStats {
+        return this._analyticStats;
     }
 
     /**

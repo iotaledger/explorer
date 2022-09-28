@@ -155,7 +155,7 @@ export class ChronicleService {
      * @returns The claiming statistics.
      */
     public async fetchShimmerClaimedCount(): Promise<IShimmerClaimed> {
-        const claimingStats = await this.fetchHelperTryGet<IShimmerClaimed>(
+        const claimingStats = this.fetchHelperTryGet<IShimmerClaimed>(
             CHRONICLE_ENDPOINTS.shimmerClaiming, {}
         );
         return claimingStats;
