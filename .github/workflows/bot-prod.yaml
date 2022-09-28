@@ -6,6 +6,14 @@ on:
     paths:
       - "discord-bot/**"
       - ".github/workflows/bot-prod.yaml"
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'
 
 concurrency: 
   group: bot-${{ github.ref }}
