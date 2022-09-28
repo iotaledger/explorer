@@ -33,7 +33,7 @@ export const isShimmerNetwork = (networkType: NetworkType | string | undefined) 
 };
 
 export const isMarketedNetwork = (networkType: NetworkType | string | undefined) => {
-    if (networkType === ALPHANET || networkType === TESTNET || networkType === CUSTOM) {
+    if (networkType === ALPHANET || networkType === TESTNET || networkType === SHIMMER || networkType === CUSTOM) {
         return false;
     }
 
