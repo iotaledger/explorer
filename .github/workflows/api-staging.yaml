@@ -2,7 +2,7 @@ name: API Build and Deploy Staging
 
 on:
   push:
-    branches: [ dev ]
+    branches: [dev]
     paths:
       - "api/**"
       - ".github/workflows/api-staging.yaml"
