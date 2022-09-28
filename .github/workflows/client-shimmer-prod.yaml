@@ -1,12 +1,6 @@
 name: Shimmer Client Build and Deploy Production
 
 on:
-#  push:
-#    branches: [ stardust ]
-#    paths:
-#      - "api/**"
-#      - ".github/workflows/api-staging.yaml"
-  # only manual dispatch
   workflow_dispatch:
     inputs:
       logLevel:
