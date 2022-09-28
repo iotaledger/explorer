@@ -104,7 +104,7 @@ export class StardustTangleHelper {
                 };
             }
         } catch (e) {
-            console.log("Block deserialization failed.", e);
+            console.log(`Block deserialization failed for block with transaction id ${transactionId}.`, e);
         }
     }
 
@@ -430,7 +430,7 @@ export class StardustTangleHelper {
                     };
                 }
             } catch (e) {
-                console.log("Block deserialization failed.", e);
+                console.log(`Block deserialization failed for block with block id ${searchQuery.blockId}.`, e);
             }
         }
 
@@ -449,7 +449,10 @@ export class StardustTangleHelper {
                     };
                 }
             } catch (e) {
-                console.log("Block deserialization failed.", e);
+                console.log(
+                    `Block deserialization failed for block with transaction id ${searchQuery.transactionId}.`,
+                    e
+                );
             }
         }
 
