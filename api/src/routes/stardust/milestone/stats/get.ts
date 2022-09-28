@@ -38,7 +38,7 @@ export async function get(
         analyticsStore.milestoneAnalytics = {};
     }
 
-    if (analyticsStore) {
+    if (analyticsStore && analyticsStore.milestoneAnalytics) {
         const cachedStats = analyticsStore.milestoneAnalytics[request.milestoneId];
         if (cachedStats) {
             return cachedStats;
