@@ -3,7 +3,7 @@ import React from "react";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
 import { IShimmerClaimed } from "../../../../models/api/stats/IShimmerClaimed";
-import { buildShimmerClaimedStats } from "./ShimmerClaimedUtils";
+import { buildShimmerClaimedStats, COMMAS_REGEX } from "./ShimmerClaimedUtils";
 import "./AnalyticStats.scss";
 
 interface AnalyticStatsProps {
@@ -78,7 +78,10 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
                         <div className="info-box">
                             <span className="info-box--title">Locked storage deposit</span>
                             <span className="info-box--value">
-                                {formatAmount(Number(lockedStorageDepositValue), tokenInfo)}
+                                {formatAmount(
+                                    Number(lockedStorageDepositValue),
+                                    tokenInfo
+                                ).replace(COMMAS_REGEX, ",")}
                             </span>
                         </div>
                     )}
