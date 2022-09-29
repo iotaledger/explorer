@@ -19,7 +19,7 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
     const nativeTokensCount = analytics?.nativeTokens?.count;
     const nftsCount = analytics?.nfts?.count;
     const totalAddresses = analytics?.totalAddresses?.totalActiveAddresses;
-    const lockedStorageDepositValue = analytics?.lockedStorageDeposit?.totalValue;
+    const lockedStorageDepositValue = analytics?.lockedStorageDeposit?.totalByteCost;
 
     let claimedAndPercentLabels: [string, string] | undefined;
     if (shimmerClaimed?.count && circulatingSupply) {
@@ -78,7 +78,7 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
                         <div className="info-box">
                             <span className="info-box--title">Locked storage deposit</span>
                             <span className="info-box--value">
-                                {formatAmount(lockedStorageDepositValue, tokenInfo)}
+                                {formatAmount(Number(lockedStorageDepositValue), tokenInfo)}
                             </span>
                         </div>
                     )}
