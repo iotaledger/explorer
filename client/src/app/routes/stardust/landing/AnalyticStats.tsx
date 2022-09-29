@@ -42,7 +42,7 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
                 <div className="row space-between">
                     {totalAddresses && (
                         <div className="info-box">
-                            <span className="info-box--title">Total Addresses</span>
+                            <span className="info-box--title">Total active Addresses</span>
                             <span className="info-box--value">{totalAddresses}</span>
                         </div>
                     )}
