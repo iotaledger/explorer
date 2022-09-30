@@ -72,7 +72,7 @@ export class NameHelper {
         if (type === ADDRESS_UNLOCK_CONDITION_TYPE) {
             return "Address Unlock Condition";
         } else if (type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) {
-            return "Storage Desposit Return Unlock Condition";
+            return "Storage Deposit Return Unlock Condition";
         } else if (type === TIMELOCK_UNLOCK_CONDITION_TYPE) {
             return "Timelock Unlock Condition";
         } else if (type === EXPIRATION_UNLOCK_CONDITION_TYPE) {
