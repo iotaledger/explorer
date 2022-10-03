@@ -341,8 +341,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                     </div>
                                                 </div>
                                             )}
-                                            {this.state.metadata?.parents &&
-                                                this.state.block?.payload?.type !== MILESTONE_PAYLOAD_TYPE && (
+                                            {this.state.metadata?.parents && (
                                                 <div className="section--data">
                                                     <div className="label">
                                                         Parents

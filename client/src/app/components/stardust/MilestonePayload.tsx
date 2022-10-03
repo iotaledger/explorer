@@ -59,7 +59,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
      */
     public render(): ReactNode {
         const { index, timestamp, previousMilestoneId,
-            parents, inclusionMerkleRoot, appliedMerkleRoot,
+            inclusionMerkleRoot, appliedMerkleRoot,
             metadata, options, signatures }: IMilestonePayload = this.props.payload;
 
         let receiptMilestoneOption: IReceiptMilestoneOption | null = null;
@@ -145,18 +145,6 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                         {previousMilestoneId}
                     </div>
                 </div>
-                {parents?.length > 0 && (
-                    <div className="section--data">
-                        <div className="label">
-                            Parent block Ids
-                        </div>
-                        {parents.map((id, idx) => (
-                            <div key={idx} className="value code">
-                                {id}
-                            </div>
-                        ))}
-                    </div>
-                )}
                 {this.props.advancedMode && (
                     <React.Fragment>
                         <div className="section--data">
