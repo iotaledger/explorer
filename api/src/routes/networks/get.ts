@@ -33,7 +33,8 @@ export async function get(config: IConfiguration): Promise<INetworkGetResponse> 
             didExample: n.didExample,
             faucet: n.faucet,
             milestoneInterval: n.milestoneInterval,
-            circulatingSupply: n.circulatingSupply
+            circulatingSupply: n.circulatingSupply,
+            identityResolverEnabled: n.identityResolverEnabled
         }))
     };
 }
