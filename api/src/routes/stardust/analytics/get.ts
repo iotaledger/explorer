@@ -24,7 +24,7 @@ export async function get(
     ValidationHelper.oneOf(request.network, networks, "network");
 
     const statsService = ServiceFactory.get<StardustStatsService>(`stats-${request.network}`);
-    const analytics = await statsService.getAnalytics();
+    const analytics = statsService.getAnalytics();
     const shimmerClaimed = statsService.getShimmerClaimed();
 
     const response = {

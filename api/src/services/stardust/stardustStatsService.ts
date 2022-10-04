@@ -51,6 +51,7 @@ export class StardustStatsService extends BaseStatsService {
 
                 analyticsStore.analytics = analytics;
                 await this._analyticsStorage.set(analyticsStore);
+                this._analyticStats = analytics;
             } else {
                 console.log("Retrying Analytics refresh in 10s...");
                 setTimeout(() => {
@@ -89,10 +90,12 @@ export class StardustStatsService extends BaseStatsService {
         const network = this._networkConfiguration.network;
         const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${network}`);
 
-        const claimingStats = await chronicleService.fetchShimmerClaimedCount();
+        if (chronicleService) {
+            const claimingStats = await chronicleService.fetchShimmerClaimedCount();
 
-        if (claimingStats?.count) {
-            this._shimmerClaimed = claimingStats;
+            if (claimingStats?.count) {
+                this._shimmerClaimed = claimingStats;
+            }
         }
     }
 }

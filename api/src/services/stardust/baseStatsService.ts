@@ -2,6 +2,7 @@ import moment from "moment";
 import cron from "node-cron";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
+import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IShimmerClaimed } from "../../models/api/stats/IShimmerClaimed";
 import { IAnalyticsStore } from "../../models/db/IAnalyticsStore";
 import { INetwork } from "../../models/db/INetwork";
@@ -28,7 +29,7 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
     /**
      * Interval in hours of analytics stats refresh.
      */
-    protected readonly ANALYTICS_REFERSH_FREQ_HOURS = 3;
+    protected readonly ANALYTICS_REFERSH_FREQ_HOURS = 1;
 
     /**
      * The analytics storage.
@@ -36,9 +37,21 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
     protected readonly _analyticsStorage: IStorageService<IAnalyticsStore>;
 
     /**
+     * The shimmer analytic stats cache.
+     */
+    protected _analyticStats: IAnalyticStats;
+
+    /**
      * The shimmer claimed stats.
      */
     protected _shimmerClaimed: IShimmerClaimed;
+
+    /**
+     * The shimmer milestones stats cache.
+     */
+    protected _milestoneStatsCache: {
+        [milestoneId: string]: IMilestoneAnalyticStats;
+    };
 
     /**
      * Timer handle of analytics refresh job.
@@ -61,6 +74,7 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
                 latestMilestoneIndexTime: 0
             }
         ];
+        this._milestoneStatsCache = {};
 
         // eslint-disable-next-line no-void
         void this.initAnalyticsStoreIfNeeded(networkConfiguration.network).then(() => {
@@ -82,9 +96,8 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
      * Get the current analytic stats.
      * @returns The current analytic stats.
      */
-    public async getAnalytics(): Promise<IAnalyticStats> {
-        const analyticsStore = await this._analyticsStorage.get(this._networkConfiguration.network);
-        return analyticsStore.analytics;
+    public getAnalytics(): IAnalyticStats {
+        return this._analyticStats;
     }
 
     /**
@@ -93,6 +106,14 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
      */
     public getShimmerClaimed(): IShimmerClaimed {
         return this._shimmerClaimed;
+    }
+
+    /**
+     * Fetch the current Shimmer milestone stats.
+     * @returns The current shimmer milestone stats.
+     */
+    public getMilestoneStats(): { [milestoneId: string]: IMilestoneAnalyticStats } {
+        return this._milestoneStatsCache;
     }
 
     /**
@@ -129,8 +150,7 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
             await this._analyticsStorage.set({
                 network,
                 dailyMilestones: {},
-                analytics: {},
-                milestoneAnalytics: {}
+                analytics: {}
             });
         }
 

@@ -18,6 +18,23 @@ interface IValueStat {
 }
 
 /**
+ * The storage deposit stat.
+ */
+export interface ILockedStorageDeposit {
+    outputCount: string;
+    storageDepositReturnCount: string;
+    storageDepositReturnTotalValue: string;
+    totalKeyBytes: string;
+    totalDataBytes: string;
+    totalByteCost: string;
+    ledgerIndex: number;
+    rentStructure: {
+        vByteCost: number;
+        vByteFactorKey: number;
+        vByteFactorData: number;
+    };
+}
+/**
  * Count and value analytic stats used for native tokens & nfts.
  */
 type ICountAndValueStats = ICountStat & IValueStat;
@@ -39,7 +56,7 @@ export interface IAnalyticStats extends IResponse {
     nfts?: ICountAndValueStats;
     totalAddresses?: IAddressesStats;
     dailyAddresses?: IAddressesStats;
-    lockedStorageDeposit?: ICountAndValueStats;
+    lockedStorageDeposit?: ILockedStorageDeposit;
     shimmerClaimed?: IShimmerClaimed;
 }
 

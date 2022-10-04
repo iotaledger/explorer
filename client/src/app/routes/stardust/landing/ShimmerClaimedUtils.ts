@@ -2,7 +2,7 @@ import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import BigDecimal from "../../../../helpers/bigDecimal";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 
-const COMMAS_REGEX = /\B(?=(\d{3})+(?!\d))/g;
+export const COMMAS_REGEX = /\B(?=(\d{3})+(?!\d))/g;
 
 export const buildShimmerClaimedStats = (
     claimed: string,

@@ -2,7 +2,9 @@ import { NetworkConfigurationError } from "../../errors/networkConfigurationErro
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
-import { IAnalyticStats, ICountAndValueStats, IAddressesStats } from "../../models/api/stats/IAnalyticStats";
+import {
+    IAnalyticStats, ICountAndValueStats, IAddressesStats, ILockedStorageDeposit
+} from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IShimmerClaimed } from "../../models/api/stats/IShimmerClaimed";
 import { INetwork } from "../../models/db/INetwork";
@@ -14,7 +16,7 @@ const CHRONICLE_ENDPOINTS = {
     nativeTokensStats: "/api/analytics/v2/ledger/native-tokens",
     nftStats: "/api/analytics/v2/ledger/nfts",
     addresses: "/api/analytics/v2/activity/addresses",
-    lockedStorageDeposit: "/api/analytics/v2/ledger/native-tokens",
+    lockedStorageDeposit: "/api/analytics/v2/ledger/storage-deposit",
     milestones: "/api/analytics/v2/activity/milestones/",
     shimmerClaiming: "/api/analytics/v2/activity/claimed-tokens"
 };
@@ -101,7 +103,7 @@ export class ChronicleService {
             { endIndex: currentMilestoneIndex }
         );
 
-        const lockedStorageDeposit = await this.fetchHelperTryGet<ICountAndValueStats>(
+        const lockedStorageDeposit = await this.fetchHelperTryGet<ILockedStorageDeposit>(
             CHRONICLE_ENDPOINTS.lockedStorageDeposit,
             { ledgerIndex: currentMilestoneIndex }
         );
@@ -155,7 +157,7 @@ export class ChronicleService {
      * @returns The claiming statistics.
      */
     public async fetchShimmerClaimedCount(): Promise<IShimmerClaimed> {
-        const claimingStats = await this.fetchHelperTryGet<IShimmerClaimed>(
+        const claimingStats = this.fetchHelperTryGet<IShimmerClaimed>(
             CHRONICLE_ENDPOINTS.shimmerClaiming, {}
         );
         return claimingStats;
