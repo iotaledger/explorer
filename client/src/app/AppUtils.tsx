@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react";
 import { INetwork } from "../models/config/INetwork";
-import { ALPHANET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
 import { IReducedNodeInfo } from "../services/nodeInfoService";
 import NetworkContext from "./context/NetworkContext";
 
@@ -15,7 +14,7 @@ export const networkContextWrapper = (
             bech32Hrp: nodeInfo.bech32Hrp,
             protocolVersion: nodeInfo.protocolVersion,
             rentStructure: nodeInfo.rentStructure
-        }}
+            }}
         >
             {wrappedComponent}
         </NetworkContext.Provider>
@@ -33,7 +32,8 @@ export const buildUtilities = (
     currentNetwork: string,
     networks: INetwork[],
     isMarketed: boolean,
-    identityResolverEnabled: boolean
+    identityResolverEnabled: boolean,
+    isStardust: boolean
 ) => {
     const utilities = [];
     if (networks.length > 0) {
@@ -60,11 +60,11 @@ export const buildUtilities = (
 export const getFooterItems = (currentNetwork: string, networks: INetwork[], identityResolverEnabled: boolean) => {
     if (networks.length > 0) {
         const footerArray = networks.filter(network => network.isEnabled)
-            .map(n => ({ label: n.label, url: n.network.toString() }))
-            .concat({ label: "Streams v0", url: `${currentNetwork}/streams/0/` })
-            .concat({ label: "Visualizer", url: `${currentNetwork}/visualizer/` })
-            .concat({ label: "Markets", url: `${currentNetwork}/markets/` })
-            .concat({ label: "Currency Converter", url: `${currentNetwork}/currency-converter/` });
+        .map(n => ({ label: n.label, url: n.network.toString() }))
+        .concat({ label: "Streams v0", url: `${currentNetwork}/streams/0/` })
+        .concat({ label: "Visualizer", url: `${currentNetwork}/visualizer/` })
+        .concat({ label: "Markets", url: `${currentNetwork}/markets/` })
+        .concat({ label: "Currency Converter", url: `${currentNetwork}/currency-converter/` });
 
         if (identityResolverEnabled) {
             footerArray.push({ label: "Identity Resolver", url: `${currentNetwork}/identity-resolver/` });
@@ -87,27 +87,4 @@ export const copyrightInner = (
         </span>
     </React.Fragment>
 );
-
-export const buildMetaLabel = (network: NetworkType | undefined): string => {
-    let metaLabel = "Tangle Explorer";
-    switch (network) {
-        case MAINNET:
-        case LEGACY_MAINNET:
-        case DEVNET:
-            metaLabel = "IOTA Tangle Explorer";
-            break;
-        case SHIMMER:
-            metaLabel = "Shimmer Explorer";
-            break;
-        case TESTNET:
-            metaLabel = "Testnet Explorer";
-            break;
-        case ALPHANET:
-            metaLabel = "Alphanet Explorer";
-            break;
-        default:
-            break;
-    }
-    return metaLabel;
-};
 
