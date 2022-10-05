@@ -11,7 +11,10 @@ import { OG, STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { NodeInfoService } from "../services/nodeInfoService";
 import { AppRouteProps } from "./AppRouteProps";
-import { buildMetaLabel, buildUtilities, copyrightInner, getFooterItems, getPages, networkContextWrapper } from "./AppUtils";
+import {
+    buildMetaLabel, buildUtilities, copyrightInner, getFooterItems,
+    getPages, getFaviconHelmet, networkContextWrapper
+} from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
 import ShimmerFooter from "./components/footer/ShimmerFooter";
@@ -70,6 +73,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguratio
     );
 
     const metaLabel = buildMetaLabel(currentNetwork);
+    const faviconHelmet = getFaviconHelmet(isShimmer);
 
     return (
         <div className={classNames("app", { "shimmer": isShimmer })}>
@@ -79,6 +83,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguratio
                 <meta name="description" content={metaLabel} />
                 <title>{metaLabel}</title>
             </Helmet>
+            {faviconHelmet}
             <Header
                 rootPath={`/${networkConfig?.isEnabled ? currentNetwork : ""}`}
                 currentNetwork={networkConfig}

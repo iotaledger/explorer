@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { Helmet } from "react-helmet";
 import { INetwork } from "../models/config/INetwork";
 import { ALPHANET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
 import { IReducedNodeInfo } from "../services/nodeInfoService";
@@ -109,5 +110,38 @@ export const buildMetaLabel = (network: NetworkType | undefined): string => {
             break;
     }
     return metaLabel;
+};
+
+export const getFaviconHelmet = (isShimmer: boolean) => {
+    const publicUrl = process.env.PUBLIC_URL;
+    const folder = isShimmer ? "shimmer" : "iota";
+
+    return (
+        <Helmet>
+            <link
+                rel="shortcut icon" href={`${publicUrl}/favicon/${folder}/favicon.ico`} data-react-helmet="true"
+            />
+            <link
+                rel="manifest" href={`${publicUrl}/favicon/${folder}/site.webmanifest`} data-react-helmet="true"
+            />
+            <link
+                rel="apple-touch-icon"
+                sizes="180x180"
+                href={`${publicUrl}/favicon/${folder}/favicon-180x180.png`} data-react-helmet="true"
+            />
+            <link
+                rel="icon"
+                type="image/png"
+                sizes="32x32"
+                href={`${publicUrl}/favicon/${folder}/favicon-32x32.png`} data-react-helmet="true"
+            />
+            <link
+                rel="icon"
+                type="image/png"
+                sizes="16x16"
+                href={`${publicUrl}/favicon/${folder}/favicon-16x16.png`} data-react-helmet="true"
+            />
+        </Helmet>
+    );
 };
 
