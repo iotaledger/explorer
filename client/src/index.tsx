@@ -5,7 +5,6 @@ import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
 import App from "./app/App";
 import { AppRouteProps } from "./app/AppRouteProps";
 import { ServiceFactory } from "./factories/serviceFactory";
-import "./index.scss";
 import { IConfiguration } from "./models/config/IConfiguration";
 import { CHRYSALIS, STARDUST } from "./models/config/protocolVersion";
 import { ChrysalisApiClient } from "./services/chrysalis/chrysalisApiClient";
@@ -21,6 +20,9 @@ import { SettingsService } from "./services/settingsService";
 import { StardustApiClient } from "./services/stardust/stardustApiClient";
 import { StardustFeedClient } from "./services/stardust/stardustFeedClient";
 import { StardustTangleCacheService } from "./services/stardust/stardustTangleCacheService";
+import "@fontsource/ibm-plex-mono";
+import "@fontsource/material-icons";
+import "./index.scss";
 
 // Build config
 const identityResolverEnabled = process.env.REACT_APP_IDENTITY_RESOLVER_ENABLED === "true";
