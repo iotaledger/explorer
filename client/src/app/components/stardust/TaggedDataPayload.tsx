@@ -36,7 +36,6 @@ class TaggedDataPayload extends Component<TaggedDataPayloadProps, TaggedDataPayl
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { network, payload } = this.props;
         const { hexIndex, hexData } = this.state;
 
         return (
