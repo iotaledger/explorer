@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable max-len */
 import {
     MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, INodeInfoBaseToken
 } from "@iota/iota.js-stardust";
@@ -356,12 +357,14 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                                 <span className="margin-r-t">
                                                                     {parent}
                                                                 </span> :
-                                                                <Link
-                                                                    to={`/${network}/block/${parent}`}
-                                                                    className="margin-r-t"
+                                                                <div
+                                                                    className="pointer"
+                                                                    onClick={() => this.props.history.replace(
+                                                                        `/${this.props.match.params.network}/search/${parent}`
+                                                                    )}
                                                                 >
                                                                     {parent}
-                                                                </Link>}
+                                                                </div>}
                                                         </div>
                                                     ))}
                                                 </div>
