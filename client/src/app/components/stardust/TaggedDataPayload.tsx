@@ -55,7 +55,6 @@ class TaggedDataPayload extends Component<TaggedDataPayloadProps, TaggedDataPayl
                     </div>
                     <DataToggle
                         sourceData={hexIndex}
-                        link={`/${network}/indexed/${payload.tag}`}
                         withSpacedHex={true}
                     />
 
