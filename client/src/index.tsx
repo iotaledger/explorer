@@ -21,6 +21,8 @@ import { SettingsService } from "./services/settingsService";
 import { StardustApiClient } from "./services/stardust/stardustApiClient";
 import { StardustFeedClient } from "./services/stardust/stardustFeedClient";
 import { StardustTangleCacheService } from "./services/stardust/stardustTangleCacheService";
+import "@fontsource/ibm-plex-mono";
+import "@fontsource/material-icons";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
