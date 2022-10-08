@@ -20,13 +20,16 @@ const app = express();
  * Needed only so that link unfurling from other apps gets the right data.
  * On deploy to Vercel, it will be run as a serverless function as
  * node.js code in {projetRoot}/api folder is picked up automagically by convention.
- *
+ * 
  * Check ./vercel.json for additional configuration:
  *  - rewrites makes vercel forward requests to this serverless function
  *  - outputDirectory makes vercel serve static files from the build folder
  *
  * Because of outputDirectory config, we don't need to serve static files here with middleware
  * like app.use(express.static('public'))
+ * 
+ * If you want to test this locally, enable the serving of static files by add the following line:
+ * app.use(express.static(path.resolve(__dirname, "..", "build"), { index: false }));
  */
 app.get("/*", (req, res) => {
     res.setHeader('Content-Type', 'text/html');
