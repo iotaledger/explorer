@@ -14,11 +14,23 @@ const PORT = process.env.PORT ?? 3000;
 const indexPath = path.resolve(__dirname, "..", "build", "index.html");
 const app = express();
 
-app.use(express.static(
-    path.resolve(__dirname, "..", "build"), { index: false }
-));
-
+/*
+ * Express.js server with only purpose to intercept requests for index.html and inject
+ * the right metadata & favicon dynamically depending on the network requested in the URL.
+ * Needed only so that link unfurling from other apps gets the right data.
+ * On deploy to Vercel, it will be run as a serverless function as
+ * node.js code in {projetRoot}/api folder is picked up automagically by convention.
+ *
+ * Check ./vercel.json for additional configuration:
+ *  - rewrites makes vercel forward requests to this serverless function
+ *  - outputDirectory makes vercel serve static files from the build folder
+ *
+ * Because of outputDirectory config, we don't need to serve static files here with middleware
+ * like app.use(express.static('public'))
+ */
 app.get("/*", (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
     fs.readFile(indexPath, "utf8", (err, indexHtml) => {
         if (err) {
             console.error("Error during file reading", err);
@@ -117,3 +129,4 @@ const getNetworkLabel = (url) => {
     return networkLabel;
 };
 
+module.exports = app;
