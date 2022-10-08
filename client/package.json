@@ -14,8 +14,7 @@
         "sass-lint": "stylelint ./src/**/*.scss",
         "build-internal": "craco build",
         "build": "run-s lint sass-lint build-internal",
-        "test": "craco test",
-        "vercel-build": "npm run build"
+        "test": "craco test"
     },
     "dependencies": {
         "@fontsource/ibm-plex-mono": "^4.5.12",
