@@ -1,11 +1,12 @@
 /* eslint-disable unicorn/prefer-top-level-await */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
 import App from "./app/App";
 import { AppRouteProps } from "./app/AppRouteProps";
 import { ServiceFactory } from "./factories/serviceFactory";
-import { IConfiguration } from "./models/config/IConfiguration";
+import "./index.scss";
 import { CHRYSALIS, STARDUST } from "./models/config/protocolVersion";
 import { ChrysalisApiClient } from "./services/chrysalis/chrysalisApiClient";
 import { ChrysalisFeedClient } from "./services/chrysalis/chrysalisFeedClient";
@@ -22,17 +23,9 @@ import { StardustFeedClient } from "./services/stardust/stardustFeedClient";
 import { StardustTangleCacheService } from "./services/stardust/stardustTangleCacheService";
 import "@fontsource/ibm-plex-mono";
 import "@fontsource/material-icons";
-import "./index.scss";
 
-// Build config
-const identityResolverEnabled = process.env.REACT_APP_IDENTITY_RESOLVER_ENABLED === "true";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
-
-const config: IConfiguration = {
-    apiEndpoint,
-    identityResolverEnabled
-};
 
 initialiseServices().then(() => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -44,7 +37,7 @@ initialiseServices().then(() => {
                 exact={true}
                 path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
                 component={(props: RouteComponentProps<AppRouteProps>) => (
-                    <App {...props} config={config} />)}
+                    <App {...props} />)}
             />
         </BrowserRouter>
     );
@@ -54,8 +47,8 @@ initialiseServices().then(() => {
  * Register all the services.
  */
 async function initialiseServices(): Promise<void> {
-    ServiceFactory.register(`api-client-${CHRYSALIS}`, () => new ChrysalisApiClient(config.apiEndpoint));
-    ServiceFactory.register(`api-client-${STARDUST}`, () => new StardustApiClient(config.apiEndpoint));
+    ServiceFactory.register(`api-client-${CHRYSALIS}`, () => new ChrysalisApiClient(apiEndpoint));
+    ServiceFactory.register(`api-client-${STARDUST}`, () => new StardustApiClient(apiEndpoint));
     ServiceFactory.register("settings", () => new SettingsService());
     ServiceFactory.register("local-storage", () => new LocalStorageService());
 
@@ -69,7 +62,7 @@ async function initialiseServices(): Promise<void> {
     await nodeInfoService.buildCache();
     ServiceFactory.register("node-info", () => nodeInfoService);
 
-    ServiceFactory.register("currency", () => new CurrencyService(config.apiEndpoint));
+    ServiceFactory.register("currency", () => new CurrencyService(apiEndpoint));
     ServiceFactory.register(`tangle-cache-${CHRYSALIS}`, () => new ChrysalisTangleCacheService());
     ServiceFactory.register(`tangle-cache-${STARDUST}`, () => new StardustTangleCacheService());
 
@@ -80,12 +73,12 @@ async function initialiseServices(): Promise<void> {
             if (netConfig.protocolVersion === STARDUST) {
                 ServiceFactory.register(
                     `feed-${netConfig.network}`,
-                    serviceName => new StardustFeedClient(config.apiEndpoint, serviceName.slice(5))
+                    serviceName => new StardustFeedClient(apiEndpoint, serviceName.slice(5))
                 );
             } else {
                 ServiceFactory.register(
                     `feed-${netConfig.network}`,
-                    serviceName => new ChrysalisFeedClient(config.apiEndpoint, serviceName.slice(5))
+                    serviceName => new ChrysalisFeedClient(apiEndpoint, serviceName.slice(5))
                 );
             }
 
