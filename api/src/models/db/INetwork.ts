@@ -141,4 +141,9 @@ export interface INetwork {
      * without falling back on node on failure.
      */
     disableApiFallback?: boolean;
+
+    /**
+     * If Identity Resolver tool should be supported.
+     */
+    identityResolverEnabled?: boolean;
 }

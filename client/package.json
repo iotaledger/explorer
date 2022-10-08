@@ -17,6 +17,8 @@
         "test": "craco test"
     },
     "dependencies": {
+        "@fontsource/ibm-plex-mono": "^4.5.12",
+        "@fontsource/material-icons": "^4.5.4",
         "@iota/crypto.js": "^1.8.6",
         "@iota/crypto.js-stardust": "npm:@iota/crypto.js@^2.0.0-rc.1",
         "@iota/iota.js": "^1.8.6",

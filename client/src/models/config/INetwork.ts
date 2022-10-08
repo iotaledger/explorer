@@ -124,4 +124,9 @@ export interface INetwork {
      * Targeted interval in seconds between milestones.
      */
     milestoneInterval?: number;
+
+    /**
+     * If Identity Resolver tool should be supported.
+     */
+    identityResolverEnabled?: boolean;
 }

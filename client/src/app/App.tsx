@@ -4,7 +4,6 @@ import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { isMarketedNetwork, isShimmerNetwork } from "../helpers/networkHelper";
-import { IConfiguration } from "../models/config/IConfiguration";
 import { INetwork } from "../models/config/INetwork";
 import { MAINNET } from "../models/config/networkType";
 import { OG, STARDUST } from "../models/config/protocolVersion";
@@ -23,8 +22,8 @@ import SearchInput from "./components/SearchInput";
 import buildAppRoutes from "./routes";
 import "./App.scss";
 
-const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguration }> = (
-    { history, match: { params: { network, action } }, config: { identityResolverEnabled } }
+const App: React.FC<RouteComponentProps<AppRouteProps>> = (
+    { history, match: { params: { network, action } } }
 ) => {
     const [networks, setNetworks] = useState<INetwork[]>([]);
     const [networksLoaded, setNetworksLoaded] = useState(false);
@@ -45,6 +44,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps> & { config: IConfiguratio
     }, [networksLoaded]);
 
     const networkConfig = networks.find(n => n.network === network);
+    const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? false;
 
     window.scrollTo({
         left: 0,
