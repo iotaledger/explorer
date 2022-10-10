@@ -80,7 +80,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
             <Helmet>
                 <meta name="apple-mobile-web-app-title" content={metaLabel} />
                 <meta name="application-name" content={metaLabel} />
-                <meta name="description" content={metaLabel} />
+                <meta name="description" content={`${metaLabel} for viewing transactions and data on the Tangle.`} />
                 <title>{metaLabel}</title>
             </Helmet>
             {faviconHelmet}
