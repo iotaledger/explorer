@@ -341,8 +341,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                     </div>
                                                 </div>
                                             )}
-                                            {this.state.metadata?.parents &&
-                                                this.state.block?.payload?.type !== MILESTONE_PAYLOAD_TYPE && (
+                                            {this.state.metadata?.parents && (
                                                 <div className="section--data">
                                                     <div className="label">
                                                         Parents
@@ -357,12 +356,14 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                                 <span className="margin-r-t">
                                                                     {parent}
                                                                 </span> :
-                                                                <Link
-                                                                    to={`/${network}/block/${parent}`}
-                                                                    className="margin-r-t"
+                                                                <div
+                                                                    className="pointer"
+                                                                    onClick={() => this.props.history.replace(
+                                                                        `/${network}/search/${parent}`
+                                                                    )}
                                                                 >
                                                                     {parent}
-                                                                </Link>}
+                                                                </div>}
                                                         </div>
                                                     ))}
                                                 </div>
