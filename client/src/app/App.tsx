@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { isMarketedNetwork, isShimmerNetwork } from "../helpers/networkHelper";
@@ -9,7 +10,10 @@ import { OG, STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { NodeInfoService } from "../services/nodeInfoService";
 import { AppRouteProps } from "./AppRouteProps";
-import { buildUtilities, copyrightInner, getFooterItems, getPages, networkContextWrapper } from "./AppUtils";
+import {
+    buildMetaLabel, buildUtilities, copyrightInner, getFooterItems,
+    getPages, getFaviconHelmet, networkContextWrapper
+} from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
 import ShimmerFooter from "./components/footer/ShimmerFooter";
@@ -68,8 +72,18 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
         withNetworkContext
     );
 
+    const metaLabel = buildMetaLabel(currentNetwork);
+    const faviconHelmet = getFaviconHelmet(isShimmer);
+
     return (
         <div className={classNames("app", { "shimmer": isShimmer })}>
+            <Helmet>
+                <meta name="apple-mobile-web-app-title" content={metaLabel} />
+                <meta name="application-name" content={metaLabel} />
+                <meta name="description" content={`${metaLabel} for viewing transactions and data on the Tangle.`} />
+                <title>{metaLabel}</title>
+            </Helmet>
+            {faviconHelmet}
             <Header
                 rootPath={`/${networkConfig?.isEnabled ? currentNetwork : ""}`}
                 currentNetwork={networkConfig}
@@ -83,7 +97,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                     />
                 }
                 pages={getPages(network ?? "", networks)}
-                utilities={buildUtilities(network ?? "", networks, isMarketed, identityResolverEnabled, isStardust)}
+                utilities={buildUtilities(network ?? "", networks, isMarketed, identityResolverEnabled)}
             />
             <div className="content">
                 {networks.length > 0 ?
