@@ -85,10 +85,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             };
         }
 
-        if (!(this.props.location.state as IAddressPageLocationProps)?.addressDetails) {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
-        }
-
         const { addressDetails } = this.props.location.state as IAddressPageLocationProps;
 
         if (addressDetails?.hex) {
