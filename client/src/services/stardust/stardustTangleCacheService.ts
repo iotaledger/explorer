@@ -136,6 +136,33 @@ export class StardustTangleCacheService extends TangleCacheService {
     }
 
     /**
+     * Get a block.
+     * @param networkId The network to search
+     * @param blockId The block if to get.
+     * @returns The block response.
+     */
+    public async block(
+        networkId: string,
+        blockId: string
+    ): Promise<{ block?: IBlock; error?: string }> {
+        const cacheKey = `block-${blockId}`;
+        if (!this._stardustSearchCache[networkId][cacheKey]?.data?.block) {
+            const response = await this._api.block({ network: networkId, blockId });
+
+            if (!response.error) {
+                this._stardustSearchCache[networkId][cacheKey] = {
+                    data: { block: response.block },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
+        }
+
+        return { block: this._stardustSearchCache[networkId][cacheKey]?.data?.block };
+    }
+
+    /**
      * Get the block metadata.
      * @param networkId The network to search
      * @param blockId The block if to get the metadata for.
@@ -143,20 +170,13 @@ export class StardustTangleCacheService extends TangleCacheService {
      */
     public async blockDetails(
         networkId: string,
-        blockId: string): Promise<{
-            metadata?: IBlockMetadata;
-            error?: string;
-        }> {
+        blockId: string
+    ): Promise<{ metadata?: IBlockMetadata; error?: string }> {
         const response = await this._api.blockDetails({ network: networkId, blockId });
 
-        if (response) {
-            return {
-                metadata: response.metadata,
-                error: response.error
-            };
-        }
-
-        return {};
+        return !response.error ?
+            { metadata: response.metadata } :
+            { error: response.error };
     }
 
     /**

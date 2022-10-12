@@ -12,6 +12,7 @@ import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddress
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
+import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/milestone/IMilestoneDetailsResponse";
@@ -59,6 +60,37 @@ export class StardustTangleHelper {
     }
 
     /**
+     * Get a block.
+     * @param network The network to find the items on.
+     * @param blockId The block id to get the details.
+     * @returns The block response.
+     */
+    public static async block(network: INetwork, blockId: string): Promise<IBlockResponse> {
+        blockId = HexHelper.addPrefix(blockId);
+        const blockRaw = await this.tryFetchPermanodeThenNode<string, Uint8Array>(
+            blockId,
+            "blockRaw",
+            network
+        );
+
+        if (!blockRaw) {
+            return { error: `Couldn't find block with id ${blockId}` };
+        }
+
+        try {
+            const block = deserializeBlock(new ReadStream(blockRaw));
+            if (block && Object.keys(block).length > 0) {
+                return {
+                    block
+                };
+            }
+        } catch (e) {
+            console.log(`Block deserialization failed for block with block id ${blockId}.`, e);
+            return { error: "Block deserialization failed." };
+        }
+    }
+
+    /**
      * Get the block details.
      * @param network The network to find the items on.
      * @param blockId The block id to get the details.
@@ -95,6 +127,10 @@ export class StardustTangleHelper {
             "transactionIncludedBlockRaw",
             network
         );
+
+        if (!blockRaw) {
+            return { error: `Couldn't find block from transaction id ${transactionId}` };
+        }
 
         try {
             const block = deserializeBlock(new ReadStream(blockRaw));
@@ -416,22 +452,7 @@ export class StardustTangleHelper {
         }
 
         if (searchQuery.blockId) {
-            const blockRaw = await this.tryFetchPermanodeThenNode<string, Uint8Array>(
-                searchQuery.blockId,
-                "blockRaw",
-                network
-            );
-
-            try {
-                const block = deserializeBlock(new ReadStream(blockRaw));
-                if (block && Object.keys(block).length > 0) {
-                    return {
-                        block
-                    };
-                }
-            } catch (e) {
-                console.log(`Block deserialization failed for block with block id ${searchQuery.blockId}.`, e);
-            }
+            return StardustTangleHelper.block(network, searchQuery.blockId);
         }
 
         if (searchQuery.transactionId) {
@@ -441,18 +462,20 @@ export class StardustTangleHelper {
                 network
             );
 
-            try {
-                const block = deserializeBlock(new ReadStream(blockRaw));
-                if (block && Object.keys(block).length > 0) {
-                    return {
-                        transactionBlock: block
-                    };
+            if (blockRaw) {
+                try {
+                    const block = deserializeBlock(new ReadStream(blockRaw));
+                    if (block && Object.keys(block).length > 0) {
+                        return {
+                            transactionBlock: block
+                        };
+                    }
+                } catch (e) {
+                    console.log(
+                        `Block deserialization failed for block with transaction id ${searchQuery.transactionId}.`,
+                        e
+                    );
                 }
-            } catch (e) {
-                console.log(
-                    `Block deserialization failed for block with transaction id ${searchQuery.transactionId}.`,
-                    e
-                );
             }
         }
 

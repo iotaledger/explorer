@@ -15,6 +15,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Modal from "../../components/Modal";
+import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import InclusionState from "../../components/stardust/InclusionState";
@@ -27,8 +28,8 @@ import mainHeaderMessage from "./../../../assets/modals/stardust/block/main-head
 import metadataMessage from "./../../../assets/modals/stardust/block/metadata.json";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
-import "./Block.scss";
 import { BlockState } from "./BlockState";
+import "./Block.scss";
 
 /**
  * Component which will show the block page for stardust.
@@ -104,9 +105,22 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
     public render(): ReactNode {
         const network = this.props.match.params.network;
         const blockId = this.props.match.params.blockId;
+        const {
+            transactionId, block, blockError, metadata, metadataError, conflictReason, blockTangleStatus,
+            advancedMode, inputs, unlocks, outputs, transferTotal, isFormattedBalance
+        } = this.state;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
         const isMarketed = isMarketedNetwork(network);
-        const isLinksDisabled = this.state.metadata?.ledgerInclusionState === "conflicting";
+        const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
+
+        if (blockError) {
+            return (
+                <NotFound
+                    searchTarget="block"
+                    query={this.props.match.params.blockId}
+                />
+            );
+        }
 
         return (
             <div className="block">
@@ -121,17 +135,15 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                             </div>
                             <Switcher
                                 label="Advanced View"
-                                checked={this.state.advancedMode}
-                                onToggle={e => this.setState(
-                                    {
-                                        advancedMode: e.target.checked
-                                    },
-                                    () => this._settingsService.saveSingle(
-                                        "advancedMode",
-                                        this.state.advancedMode))}
+                                checked={advancedMode}
+                                onToggle={
+                                    e => this.setState(
+                                        { advancedMode: e.target.checked },
+                                        () => this._settingsService.saveSingle("advancedMode", advancedMode)
+                                    )
+                                }
                             />
                         </div>
-
                         <div className="section">
                             <div className="section--header row row--tablet-responsive middle space-between">
                                 <div className="row middle">
@@ -140,12 +152,12 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
 
                                 <BlockTangleState
                                     network={network}
-                                    status={this.state.blockTangleStatus}
-                                    milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
-                                        this.state.metadata?.milestoneIndex}
+                                    status={blockTangleStatus}
+                                    milestoneIndex={metadata?.referencedByMilestoneIndex ??
+                                        metadata?.milestoneIndex}
                                     hasConflicts={isLinksDisabled}
-                                    conflictReason={this.state.conflictReason}
-                                    onClick={this.state.metadata?.referencedByMilestoneIndex
+                                    conflictReason={conflictReason}
+                                    onClick={metadata?.referencedByMilestoneIndex
                                         ? (blockId: string) => this.props.history.push(`/${network}/search/${blockId}`)
                                         : undefined}
                                 />
@@ -162,7 +174,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                 </div>
                             </div>
 
-                            {this.state.transactionId && (
+                            {transactionId && (
                                 <div className="section--data">
                                     <div className="label">
                                         Transaction Id
@@ -170,15 +182,15 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     <div className="value value__secondary row middle link">
                                         {isLinksDisabled ?
                                             <span className="margin-r-t">
-                                                {this.state.transactionId}
+                                                {transactionId}
                                             </span> :
                                             <Link
-                                                to={`/${network}/transaction/${this.state.transactionId}`}
+                                                to={`/${network}/transaction/${transactionId}`}
                                                 className="margin-r-t"
                                             >
-                                                {this.state.transactionId}
+                                                {transactionId}
                                             </Link>}
-                                        <CopyButton copy={this.state.transactionId} />
+                                        <CopyButton copy={transactionId} />
                                     </div>
                                 </div>
                             )}
@@ -187,28 +199,28 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     Payload Type
                                 </div>
                                 <div className="value row middle">
-                                    {this.state.block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                                    {block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
                                         ("Transaction")}
-                                    {this.state.block?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
+                                    {block?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
                                         ("Milestone")}
-                                    {this.state.block?.payload?.type === TAGGED_DATA_PAYLOAD_TYPE &&
+                                    {block?.payload?.type === TAGGED_DATA_PAYLOAD_TYPE &&
                                         ("Data")}
-                                    {this.state.block?.payload?.type === undefined &&
+                                    {block?.payload?.type === undefined &&
                                         ("No Payload")}
                                 </div>
                             </div>
-                            {this.state.advancedMode && (
+                            {advancedMode && (
                                 <div className="section--data">
                                     <div className="label">
                                         Nonce
                                     </div>
                                     <div className="value row middle">
-                                        <span className="margin-r-t">{this.state.block?.nonce}</span>
+                                        <span className="margin-r-t">{block?.nonce}</span>
                                     </div>
                                 </div>
                             )}
-                            {this.state.block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-                                this.state.transferTotal !== undefined && (
+                            {block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                                transferTotal !== undefined && (
                                     <div className="section--data">
                                         <div className="label">
                                             Value
@@ -216,81 +228,76 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                         <div className="value row middle">
                                             <span
                                                 onClick={() => this.setState({
-                                                    isFormattedBalance: !this.state.isFormattedBalance
+                                                    isFormattedBalance: !isFormattedBalance
                                                 })}
                                                 className="pointer margin-r-5"
                                             >
                                                 {formatAmount(
-                                                    this.state.transferTotal,
+                                                    transferTotal,
                                                     tokenInfo,
-                                                    !this.state.isFormattedBalance
+                                                    !isFormattedBalance
                                                 )}
                                             </span>
                                             {isMarketed && (
-                                                (<FiatValue value={this.state.transferTotal} />)
+                                                (<FiatValue value={transferTotal} />)
                                             )}
                                         </div>
                                     </div>
                                 )}
                         </div>
 
-
-                        {this.state.block?.payload && (
+                        {block?.payload && (
                             <React.Fragment>
-                                {this.state.block.payload.type === TRANSACTION_PAYLOAD_TYPE &&
-                                    this.state.inputs &&
-                                    this.state.unlocks &&
-                                    this.state.outputs &&
-                                    this.state.transferTotal !== undefined &&
-                                    (
+                                {block.payload.type === TRANSACTION_PAYLOAD_TYPE &&
+                                    inputs && unlocks && outputs && transferTotal !== undefined && (
                                         <React.Fragment>
                                             <div className="section">
                                                 <TransactionPayload
                                                     network={network}
-                                                    inputs={this.state.inputs}
-                                                    unlocks={this.state.unlocks}
-                                                    outputs={this.state.outputs}
-                                                    transferTotal={this.state.transferTotal}
+                                                    inputs={inputs}
+                                                    unlocks={unlocks}
+                                                    outputs={outputs}
+                                                    transferTotal={transferTotal}
                                                     header="Transaction Payload"
                                                     isLinksDisabled={isLinksDisabled}
                                                 />
                                             </div>
                                             {
-                                                this.state.block.payload.essence.payload &&
-                                                    <div className="section">
-                                                        <TaggedDataPayload
-                                                            network={network}
-                                                            history={this.props.history}
-                                                            payload={this.state.block.payload.essence.payload}
-                                                            advancedMode={this.state.advancedMode}
-                                                        />
-                                                    </div>
+                                                block.payload.essence.payload &&
+                                                <div className="section">
+                                                    <TaggedDataPayload
+                                                        network={network}
+                                                        history={this.props.history}
+                                                        payload={block.payload.essence.payload}
+                                                        advancedMode={advancedMode}
+                                                    />
+                                                </div>
                                             }
                                         </React.Fragment>
                                     )}
-                                {this.state.block.payload.type === MILESTONE_PAYLOAD_TYPE && (
+                                {block.payload.type === MILESTONE_PAYLOAD_TYPE && (
                                     <div className="section">
                                         <MilestonePayload
                                             network={network}
                                             history={this.props.history}
-                                            payload={this.state.block.payload}
-                                            advancedMode={this.state.advancedMode}
+                                            payload={block.payload}
+                                            advancedMode={advancedMode}
                                         />
                                     </div>
                                 )}
-                                {this.state.block.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (
+                                {block.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (
                                     <div className="section">
                                         <TaggedDataPayload
                                             network={network}
                                             history={this.props.history}
-                                            payload={this.state.block.payload}
-                                            advancedMode={this.state.advancedMode}
+                                            payload={block.payload}
+                                            advancedMode={advancedMode}
                                         />
                                     </div>
                                 )}
                             </React.Fragment>
                         )}
-                        {this.state.advancedMode && (
+                        {advancedMode && (
                             <div className="section metadata-section">
                                 <div className="section--header section--header__space-between">
                                     <div className="row middle">
@@ -301,15 +308,13 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                     </div>
                                 </div>
                                 <div className="section--data">
-                                    {!this.state.metadata && !this.state.metadataError && (
-                                        <Spinner />
-                                    )}
-                                    {this.state.metadataError && (
+                                    {!metadata && !metadataError && (<Spinner />)}
+                                    {metadataError && (
                                         <p className="danger">
-                                            Failed to retrieve metadata. {this.state.metadataError}
+                                            Failed to retrieve metadata. {metadataError}
                                         </p>
                                     )}
-                                    {this.state.metadata && !this.state.metadataError && (
+                                    {metadata && !metadataError && (
                                         <React.Fragment>
                                             <div className="section--data">
                                                 <div className="label">
@@ -317,7 +322,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                 </div>
                                                 <div className="value row middle">
                                                     <span className="margin-r-t">
-                                                        {this.state.metadata?.isSolid ? "Yes" : "No"}
+                                                        {metadata?.isSolid ? "Yes" : "No"}
                                                     </span>
                                                 </div>
                                             </div>
@@ -327,26 +332,26 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                                 </div>
                                                 <div className="value row middle">
                                                     <InclusionState
-                                                        state={this.state.metadata?.ledgerInclusionState}
+                                                        state={metadata?.ledgerInclusionState}
                                                     />
                                                 </div>
                                             </div>
-                                            {this.state.conflictReason && (
+                                            {conflictReason && (
                                                 <div className="section--data">
                                                     <div className="label">
                                                         Conflict Reason
                                                     </div>
                                                     <div className="value">
-                                                        {this.state.conflictReason}
+                                                        {conflictReason}
                                                     </div>
                                                 </div>
                                             )}
-                                            {this.state.metadata?.parents && (
+                                            {metadata?.parents && (
                                                 <div className="section--data">
                                                     <div className="label">
                                                         Parents
                                                     </div>
-                                                    {this.state.metadata.parents.map((parent, idx) => (
+                                                    {metadata.parents.map((parent, idx) => (
                                                         <div
                                                             key={idx}
                                                             style={{ marginTop: "8px" }}
@@ -406,22 +411,23 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
      * @param blockId The index to load.
      */
     private async loadBlock(blockId: string): Promise<void> {
-        const result = await this._tangleCacheService.search(
+        const response = await this._tangleCacheService.block(
             this.props.match.params.network, blockId
         );
 
-        if (result?.block) {
-            const { inputs, unlocks, outputs, unlockAddresses, transferTotal } =
+        if (response.block) {
+            const block = response.block;
+            const { inputs, unlocks, outputs, transferTotal } =
                 await TransactionsHelper.getInputsAndOutputs(
-                    result?.block,
+                    block,
                     this.props.match.params.network,
                     this.context.bech32Hrp,
                     this._tangleCacheService
-            );
+                );
 
-            if (result?.block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+            if (block.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
                 const transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(
-                    result?.block.payload
+                    block.payload
                 );
                 this.setState({ transactionId });
             }
@@ -430,18 +436,21 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                 inputs,
                 unlocks,
                 outputs,
-                unlockAddresses,
                 transferTotal
             });
 
-            this.setState({
-                block: result.block
-            }, async () => {
-                await this.updateBlockDetails();
-            });
+            this.setState(
+                { block },
+                async () => {
+                    await this.updateBlockDetails();
+                }
+            );
         } else {
-            this.props.history.replace(`/${this.props.match.params.network
-                }/search/${blockId}`);
+            this.setState(
+                {
+                    blockError: response.error ?? "Couldn't load block"
+                }
+            );
         }
     }
 }

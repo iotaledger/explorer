@@ -16,6 +16,8 @@ import { IAssociatedOutputsRequest } from "../../models/api/stardust/IAssociated
 import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
+import { IBlockRequest } from "../../models/api/stardust/IBlockRequest";
+import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { IMilestoneStatsRequest } from "../../models/api/stardust/IMilestoneStatsRequest";
 import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
@@ -106,13 +108,24 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
+     * Get a block.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async block(request: IBlockRequest): Promise<IBlockResponse> {
+        return this.callApi<unknown, IBlockResponse>(
+            `stardust/block/${request.network}/${request.blockId}`, "get"
+        );
+    }
+
+    /**
      * Get the block details.
      * @param request The request to send.
      * @returns The response from the request.
      */
     public async blockDetails(request: IBlockDetailsRequest): Promise<IBlockDetailsResponse> {
         return this.callApi<unknown, IBlockDetailsResponse>(
-            `stardust/block/${request.network}/${request.blockId}`, "get"
+            `stardust/block/metadata/${request.network}/${request.blockId}`, "get"
         );
     }
 

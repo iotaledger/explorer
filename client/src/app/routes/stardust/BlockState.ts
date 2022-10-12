@@ -1,5 +1,4 @@
 import { IBlock, IBlockMetadata, ISignatureUnlock, IUTXOInput } from "@iota/iota.js-stardust";
-import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
 import { TangleStatus } from "../../../models/tangleStatus";
@@ -14,6 +13,11 @@ export interface BlockState {
      * Block.
      */
     block?: IBlock;
+
+    /**
+     * The block fetching failed.
+     */
+    blockError?: string;
 
     /**
      * Metadata.
@@ -59,11 +63,6 @@ export interface BlockState {
      * The total of the transfer excluding remainders.
      */
     transferTotal?: number;
-
-    /**
-     * The unlock addresses for the transactions.
-     */
-    unlockAddresses?: IBech32AddressDetails[];
 
     /**
      * Format the amount in full.
