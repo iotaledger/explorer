@@ -121,7 +121,7 @@ export class SearchQueryBuilder {
 
         const did = this.queryLower.startsWith("did:iota:") ? this.query : undefined;
         const milestoneIndex = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
-        const address = this.buildAddress();
+        let address = this.buildAddress();
 
         // if the hex without prefix has 64 characters it might be an AliasId, NftId or MilestoneId
         if (address?.hexNoPrefix && address.hexNoPrefix.length === 64) {
@@ -162,6 +162,11 @@ export class SearchQueryBuilder {
         // if the hex is 70 characters, try and look for an output
         if (address?.hex && address.hex.length === 70) {
             output = address.hex;
+        }
+
+        // return address only if is built from valid bech32 query
+        if (!Bech32Helper.matches(this.queryLower, this.networkBechHrp)) {
+            address = undefined;
         }
 
         const tag = Converter.utf8ToHex(this.query, true);
