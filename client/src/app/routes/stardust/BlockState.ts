@@ -3,47 +3,19 @@ import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
 import { TangleStatus } from "../../../models/tangleStatus";
 
-export interface BlockState {
-    /**
-     * The transaction id.
-     */
-    transactionId?: string;
-
+export interface BlockData {
     /**
      * Block.
      */
     block?: IBlock;
-
     /**
      * The block fetching failed.
      */
     blockError?: string;
-
     /**
-     * Metadata.
+     * The transaction id.
      */
-    metadata?: IBlockMetadata;
-
-    /**
-     * The metadata failed.
-     */
-    metadataError?: string;
-
-    /**
-     * Reason for the conflict.
-     */
-    conflictReason?: string;
-
-    /**
-     * The state of the block on the tangle.
-     */
-    blockTangleStatus: TangleStatus;
-
-    /**
-     * Display advanced mode.
-     */
-    advancedMode: boolean;
-
+    transactionId?: string;
     /**
      * The inputs of the transaction
      */
@@ -58,14 +30,29 @@ export interface BlockState {
      * The outputs.
      */
     outputs?: IOutput[];
-
     /**
      * The total of the transfer excluding remainders.
      */
     transferTotal?: number;
+}
+
+export interface BlockMetadata {
+    /**
+     * Metadata.
+     */
+    metadata?: IBlockMetadata;
 
     /**
-     * Format the amount in full.
+     * The metadata failed.
      */
-    isFormattedBalance: boolean;
+    metadataError?: string;
+    /**
+     * Reason for the conflict.
+     */
+    conflictReason?: string;
+
+    /**
+     * The state of the block on the tangle.
+     */
+    blockTangleStatus: TangleStatus;
 }
