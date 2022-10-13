@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import {
-    MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, INodeInfoBaseToken
+    MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE,
+    INodeInfoBaseToken, milestoneIdFromMilestonePayload
 } from "@iota/iota.js-stardust";
+import { HexHelper } from "@iota/util.js-stardust";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -109,7 +111,7 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, State> {
      */
     public render(): ReactNode {
         const network = this.props.match.params.network;
-        const blockId = this.props.match.params.blockId;
+        const blockId = HexHelper.addPrefix(this.props.match.params.blockId);
         const {
             transactionId, block, blockError, metadata, metadataError, conflictReason, blockTangleStatus,
             advancedMode, inputs, unlocks, outputs, transferTotal, isFormattedBalance, jobToStatus
@@ -118,6 +120,8 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, State> {
         const isMarketed = isMarketedNetwork(network);
         const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
         const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
+        const milestoneId = block?.payload?.type === MILESTONE_PAYLOAD_TYPE ?
+            milestoneIdFromMilestonePayload(block.payload) : undefined;
 
         if (blockError) {
             return (
@@ -170,6 +174,19 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, State> {
                         <CopyButton copy={blockId} />
                     </div>
                 </div>
+                {milestoneId && (
+                    <div className="section--data">
+                        <div className="label">
+                            Milestone ID
+                        </div>
+                        <div className="value code row middle">
+                            <span className="margin-r-t">
+                                {milestoneId}
+                            </span>
+                            <CopyButton copy={milestoneId} />
+                        </div>
+                    </div>
+                )}
                 {transactionId && (
                     <div className="section--data">
                         <div className="label">
