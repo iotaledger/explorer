@@ -188,19 +188,22 @@ export class StardustTangleCacheService extends TangleCacheService {
      public async transactionIncludedBlockDetails(
         networkId: string,
         transactionId: string
-        ): Promise<IBlock | undefined> {
-        if (!this._stardustSearchCache[networkId][transactionId]?.data?.transactionBlock) {
+        ): Promise<{ block?: IBlock; error?: string }> {
+        const cacheKey = `blockByTxId-${transactionId}`;
+        if (!this._stardustSearchCache[networkId][cacheKey]?.data?.transactionBlock) {
             const response = await this._api.transactionIncludedBlockDetails({ network: networkId, transactionId });
 
-            if (response.block) {
-                this._stardustSearchCache[networkId][transactionId] = {
+            if (!response.error) {
+                this._stardustSearchCache[networkId][cacheKey] = {
                     data: { transactionBlock: response.block },
                     cached: Date.now()
                 };
+            } else {
+                return { error: response.error };
             }
         }
 
-        return this._stardustSearchCache[networkId][transactionId]?.data?.transactionBlock;
+        return { block: this._stardustSearchCache[networkId][cacheKey]?.data?.transactionBlock };
     }
 
     /**

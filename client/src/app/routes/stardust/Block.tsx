@@ -68,9 +68,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
 
 
     useEffect(() => {
-        // eslint-disable-next-line no-void
         setBlockData({});
         setBlockMetadata({ blockTangleStatus: "pending" });
+        // eslint-disable-next-line no-void
         void loadBlock(blockId);
     }, [blockId]);
 

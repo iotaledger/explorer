@@ -4,26 +4,31 @@ import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import transactionPayloadMessage from "../../../assets/modals/stardust/transaction/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { AsyncState } from "../../../helpers/promise/AsyncState";
+import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
+import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import InclusionState from "../../components/stardust/InclusionState";
 import TransactionPayload from "../../components/stardust/TransactionPayload";
 import NetworkContext from "../../context/NetworkContext";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
-import "./TransactionPage.scss";
 import { TransactionPageProps } from "./TransactionPageProps";
 import { TransactionPageState } from "./TransactionPageState";
+import "./TransactionPage.scss";
+
+type State = TransactionPageState & AsyncState;
 
 /**
  * Component which will show the Transaction page for stardust.
  */
-class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPageProps>, TransactionPageState> {
+class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPageProps>, State> {
     /**
      * The component context type.
      */
@@ -56,7 +61,8 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
         );
 
         this.state = {
-            blockTangleStatus: "pending"
+            blockTangleStatus: "pending",
+            jobToStatus: new Map<string, PromiseStatus>()
         };
     }
 
@@ -65,37 +71,8 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-
-        const block = await this._tangleCacheService.transactionIncludedBlockDetails(
-            this.props.match.params.network, this.props.match.params.transactionId
-        );
-
-        if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-            const { inputs, unlocks, outputs, transferTotal } =
-            await TransactionsHelper.getInputsAndOutputs(
-                block,
-                this.props.match.params.network,
-                this.context.bech32Hrp,
-                this._tangleCacheService
-            );
-
-            const includedBlockId = TransactionHelper.calculateBlockId(block);
-
-            this.setState({
-                inputs,
-                unlocks,
-                outputs,
-                transferTotal,
-                block,
-                tangleNetworkId: block.payload.essence.networkId,
-                inputsCommitment: block.payload.essence.inputsCommitment,
-                includedBlockId
-            });
-
-            await this.updateInclusionState(this.props.match.params.network, includedBlockId);
-        } else {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.transactionId}`);
-        }
+        // eslint-disable-next-line no-void
+        void this.loadBlockFromTxId();
     }
 
     /**
@@ -114,13 +91,200 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const network = this.props.match.params.network;
-        const transactionId = this.props.match.params.transactionId;
+        const { network, transactionId } = this.props.match.params;
         const {
-            inputs, unlocks, outputs, transferTotal, block,
+            inputs, unlocks, outputs, transferTotal, block, blockError,
             tangleNetworkId, inputsCommitment, includedBlockId,
-            blockTangleStatus, metadata, metadataError, conflictReason
+            blockTangleStatus, metadata, metadataError, conflictReason, jobToStatus
         } = this.state;
+        const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
+
+        if (blockError) {
+            return (
+                <div className="transaction-page">
+                    <div className="wrapper">
+                        <div className="inner">
+                            <div className="transaction-page--header">
+                                <div className="row middle">
+                                    <h1>
+                                        Transaction
+                                    </h1>
+                                    <Modal icon="info" data={transactionPayloadMessage} />
+                                    {isLoading && <Spinner />}
+                                </div>
+                                <NotFound
+                                    searchTarget="transaction"
+                                    query={transactionId}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const transactionContent = !block ? null : (
+            <React.Fragment>
+                <div className="section--header row row--tablet-responsive middle space-between">
+                    <div className="row middle">
+                        <h2>General</h2>
+                    </div>
+                </div>
+                <div className="section--data">
+                    <div className="label">
+                        Transaction ID
+                    </div>
+                    <div className="value code row middle">
+                        <span className="margin-r-t">
+                            {transactionId}
+                        </span>
+                        <CopyButton copy={transactionId} />
+                    </div>
+                </div>
+                {includedBlockId && (
+                    <div className="section--data">
+                        <div className="label">
+                            Included in block
+                        </div>
+                        <div className="value code row middle">
+                            <span className="margin-r-t link">
+                                <Link
+                                    to={`/${network}/block/${includedBlockId}`}
+                                    className="margin-r-t"
+                                >
+                                    {includedBlockId}
+                                </Link>
+                            </span>
+                            <CopyButton copy={includedBlockId} />
+                        </div>
+                    </div>
+                )}
+                {tangleNetworkId && (
+                    <div className="section--data">
+                        <div className="label">
+                            Network ID
+                        </div>
+                        <div className="value code row middle">
+                            <span className="margin-r-t">
+                                {tangleNetworkId}
+                            </span>
+                        </div>
+                    </div>
+                )}
+                {inputsCommitment && (
+                    <div className="section--data">
+                        <div className="label">
+                            Input commitment
+                        </div>
+                        <div className="value code row middle">
+                            <span className="margin-r-t">
+                                {inputsCommitment}
+                            </span>
+                        </div>
+                    </div>
+                )}
+                {block?.nonce && (
+                    <div className="section--data">
+                        <div className="label">
+                            Nonce
+                        </div>
+                        <div className="value row middle">
+                            <span className="margin-r-t">{block?.nonce}</span>
+                        </div>
+                    </div>
+                )}
+                {inputs &&
+                    unlocks &&
+                    outputs &&
+                    transferTotal !== undefined &&
+                    (
+                        <div className="section">
+                            <TransactionPayload
+                                network={network}
+                                inputs={inputs}
+                                unlocks={unlocks}
+                                outputs={outputs}
+                                transferTotal={transferTotal}
+                                header="Content"
+                            />
+                        </div>
+                    )}
+                <div className="section metadata-section">
+                    <div className="section--header section--header__space-between">
+                        <div className="row middle">
+                            <h2>
+                                Block Metadata
+                            </h2>
+                        </div>
+                    </div>
+                    <div className="section--data">
+                        {!metadata && !metadataError && (
+                            <Spinner />
+                        )}
+                        {metadataError && (
+                            <p className="danger">
+                                Failed to retrieve metadata. {metadataError}
+                            </p>
+                        )}
+                        {metadata && !metadataError && (
+                            <React.Fragment>
+                                <div className="section--data">
+                                    <div className="label">
+                                        Is Solid
+                                    </div>
+                                    <div className="value row middle">
+                                        <span className="margin-r-t">
+                                            {metadata?.isSolid ? "Yes" : "No"}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="section--data">
+                                    <div className="label">
+                                        Ledger Inclusion
+                                    </div>
+                                    <div className="value row middle">
+                                        <InclusionState
+                                            state={metadata?.ledgerInclusionState}
+                                        />
+                                    </div>
+                                </div>
+                                {conflictReason && (
+                                    <div className="section--data">
+                                        <div className="label">
+                                            Conflict Reason
+                                        </div>
+                                        <div className="value">
+                                            {conflictReason}
+                                        </div>
+                                    </div>
+                                )}
+                                {metadata?.parents && (
+                                    <div className="section--data">
+                                        <div className="label">
+                                            Parents
+                                        </div>
+                                        {metadata.parents.map((parent, idx) => (
+                                            <div
+                                                key={idx}
+                                                style={{ marginTop: "8px" }}
+                                                className="value code link"
+                                            >
+                                                <Link
+                                                    to={`/${network}/block/${parent}`}
+                                                    className="margin-r-t"
+                                                >
+                                                    {parent}
+                                                </Link>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        )}
+                    </div>
+                </div>
+            </React.Fragment>
+        );
 
         return (
             <div className="transaction-page">
@@ -133,6 +297,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                         Transaction
                                     </h1>
                                     <Modal icon="info" data={transactionPayloadMessage} />
+                                    {isLoading && <Spinner />}
                                 </div>
                                 <BlockTangleState
                                     network={network}
@@ -140,174 +305,64 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                     milestoneIndex={metadata?.referencedByMilestoneIndex ?? metadata?.milestoneIndex}
                                     hasConflicts={metadata?.ledgerInclusionState === "conflicting"}
                                     onClick={metadata?.referencedByMilestoneIndex
-                                        ? (blockId: string) => this.props.history.push(`/${network}/search/${blockId}`)
+                                        ? (blockId: string) => this.props.history.push(`/${network}/block/${blockId}`)
                                         : undefined}
                                 />
                             </div>
                         </div>
-                        <div className="section">
-                            <div className="section--header row row--tablet-responsive middle space-between">
-                                <div className="row middle">
-                                    <h2>General</h2>
-                                </div>
-                            </div>
-                            <div className="section--data">
-                                <div className="label">
-                                    Transaction ID
-                                </div>
-                                <div className="value code row middle">
-                                    <span className="margin-r-t">
-                                        {transactionId}
-                                    </span>
-                                    <CopyButton copy={transactionId} />
-                                </div>
-                            </div>
-                            {includedBlockId && (
-                                <div className="section--data">
-                                    <div className="label">
-                                        Included in block
-                                    </div>
-                                    <div className="value code row middle">
-                                        <span className="margin-r-t link">
-                                            <Link
-                                                to={`/${network}/block/${includedBlockId}`}
-                                                className="margin-r-t"
-                                            >
-                                                {includedBlockId}
-                                            </Link>
-                                        </span>
-                                        <CopyButton copy={includedBlockId} />
-                                    </div>
-                                </div>
-                            )}
-                            {tangleNetworkId && (
-                                <div className="section--data">
-                                    <div className="label">
-                                        Network ID
-                                    </div>
-                                    <div className="value code row middle">
-                                        <span className="margin-r-t">
-                                            {tangleNetworkId}
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-                            {inputsCommitment && (
-                                <div className="section--data">
-                                    <div className="label">
-                                        Input commitment
-                                    </div>
-                                    <div className="value code row middle">
-                                        <span className="margin-r-t">
-                                            {inputsCommitment}
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-                            {block?.nonce && (
-                                <div className="section--data">
-                                    <div className="label">
-                                        Nonce
-                                    </div>
-                                    <div className="value row middle">
-                                        <span className="margin-r-t">{block?.nonce}</span>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                        {inputs &&
-                            unlocks &&
-                            outputs &&
-                            transferTotal !== undefined &&
-                            (
-                                <div className="section">
-                                    <TransactionPayload
-                                        network={network}
-                                        inputs={inputs}
-                                        unlocks={unlocks}
-                                        outputs={outputs}
-                                        transferTotal={transferTotal}
-                                        header="Content"
-                                    />
-                                </div>
-                        )}
-                        <div className="section metadata-section">
-                            <div className="section--header section--header__space-between">
-                                <div className="row middle">
-                                    <h2>
-                                        Block Metadata
-                                    </h2>
-                                </div>
-                            </div>
-                            <div className="section--data">
-                                {!metadata && !metadataError && (
-                                    <Spinner />
-                                )}
-                                {metadataError && (
-                                    <p className="danger">
-                                        Failed to retrieve metadata. {metadataError}
-                                    </p>
-                                )}
-                                {metadata && !metadataError && (
-                                    <React.Fragment>
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Is Solid
-                                            </div>
-                                            <div className="value row middle">
-                                                <span className="margin-r-t">
-                                                    {metadata?.isSolid ? "Yes" : "No"}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Ledger Inclusion
-                                            </div>
-                                            <div className="value row middle">
-                                                <InclusionState
-                                                    state={metadata?.ledgerInclusionState}
-                                                />
-                                            </div>
-                                        </div>
-                                        {conflictReason && (
-                                            <div className="section--data">
-                                                <div className="label">
-                                                    Conflict Reason
-                                                </div>
-                                                <div className="value">
-                                                    {conflictReason}
-                                                </div>
-                                            </div>
-                                        )}
-                                        {metadata?.parents && (
-                                            <div className="section--data">
-                                                <div className="label">
-                                                    Parents
-                                                </div>
-                                                {metadata.parents.map((parent, idx) => (
-                                                    <div
-                                                        key={idx}
-                                                        style={{ marginTop: "8px" }}
-                                                        className="value code link"
-                                                    >
-                                                        <Link
-                                                            to={`/${network}/block/${parent}`}
-                                                            className="margin-r-t"
-                                                        >
-                                                            {parent}
-                                                        </Link>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </React.Fragment>
-                                )}
-                            </div>
-                        </div>
+                        <div className="section">{transactionContent}</div>
                     </div>
                 </div>
             </div >
+        );
+    }
+
+    /**
+     * Load the block with the given id.
+     */
+    private async loadBlockFromTxId(): Promise<void> {
+        const { network, transactionId } = this.props.match.params;
+        const blockLoadMonitor = new PromiseMonitor(status => {
+            this.setState(prevState => ({
+                ...prevState,
+                jobToStatus: this.state.jobToStatus.set("loadBlock", status)
+            }));
+        });
+
+        // eslint-disable-next-line no-void
+        void blockLoadMonitor.enqueue(
+            async () => this._tangleCacheService.transactionIncludedBlockDetails(
+                network, transactionId
+            ).then(
+                async response => {
+                    if (response.block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                        const { inputs, unlocks, outputs, transferTotal } =
+                            await TransactionsHelper.getInputsAndOutputs(
+                                response.block,
+                                network,
+                                this.context.bech32Hrp,
+                                this._tangleCacheService
+                            );
+
+                        const includedBlockId = TransactionHelper.calculateBlockId(response.block);
+
+                        this.setState({
+                            inputs,
+                            unlocks,
+                            outputs,
+                            transferTotal,
+                            block: response.block,
+                            tangleNetworkId: response.block.payload.essence.networkId,
+                            inputsCommitment: response.block.payload.essence.inputsCommitment,
+                            includedBlockId
+                        });
+
+                        await this.updateInclusionState(network, includedBlockId);
+                    } else {
+                        this.setState({ blockError: response.error ?? "Couldn't load transaction block" });
+                    }
+                }
+            )
         );
     }
 
@@ -317,20 +372,32 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
      * @param blockId The block id to search
      */
     private async updateInclusionState(network: string, blockId: string): Promise<void> {
-        const details = await this._tangleCacheService.blockDetails(network, blockId);
-
-        this.setState({
-            metadata: details?.metadata,
-            metadataError: details?.error,
-            conflictReason: calculateConflictReason(details?.metadata),
-            blockTangleStatus: calculateStatus(details?.metadata)
+        const blockDetailsLoadMonitor = new PromiseMonitor(status => {
+            this.setState(prevState => ({
+                ...prevState,
+                jobToStatus: this.state.jobToStatus.set("loadBlockDetails", status)
+            }));
         });
 
-        if (!details?.metadata?.referencedByMilestoneIndex) {
-            this._timerId = setTimeout(async () => {
-                await this.updateInclusionState(network, blockId);
-            }, 10000);
-        }
+        // eslint-disable-next-line no-void
+        void blockDetailsLoadMonitor.enqueue(
+            async () => this._tangleCacheService.blockDetails(network, blockId).then(
+                details => {
+                    this.setState({
+                        metadata: details?.metadata,
+                        metadataError: details?.error,
+                        conflictReason: calculateConflictReason(details?.metadata),
+                        blockTangleStatus: calculateStatus(details?.metadata)
+                    });
+
+                    if (!details?.metadata?.referencedByMilestoneIndex) {
+                        this._timerId = setTimeout(async () => {
+                            await this.updateInclusionState(network, blockId);
+                        }, 10000);
+                    }
+                }
+            )
+        );
     }
 }
 
