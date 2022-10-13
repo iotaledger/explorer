@@ -139,7 +139,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                         </li>
                                         <li>
                                             <span>Addresses</span>
-                                            <span>64 Hex characters or Bech32 Format</span>
+                                            <span>Bech32 Format</span>
                                         </li>
                                         <li>
                                             <span>Nft/Alias Addresses</span>
