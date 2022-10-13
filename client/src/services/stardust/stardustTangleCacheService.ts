@@ -5,7 +5,6 @@ import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
-import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
 import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
@@ -396,22 +395,25 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async foundryDetails(
         request: IFoundryRequest,
         skipCache: boolean = false
-    ): Promise<IFoundryResponse | undefined> {
-        const cacheEntry = this._stardustSearchCache[request.network][`${request.foundryId}--fdetails`];
+    ): Promise<{ foundryDetails?: IOutputResponse; error?: string }> {
+        const cacheKey = `${request.foundryId}--fdetails`;
+        const cacheEntry = this._stardustSearchCache[request.network][cacheKey];
 
         if (!cacheEntry?.data?.foundryDetails || skipCache) {
             const response = await this._api.foundryDetails(request);
 
-            this._stardustSearchCache[request.network][`${request.foundryId}--fdetails`] = {
-                data: { foundryDetails: response.foundryDetails },
-                cached: Date.now()
-            };
+            if (!response.error) {
+                this._stardustSearchCache[request.network][cacheKey] = {
+                    data: { foundryDetails: response.foundryDetails },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
         }
 
         return {
-            foundryDetails: this._stardustSearchCache[request.network][`${request.foundryId}--fdetails`]
-                ?.data
-                    ?.foundryDetails
+            foundryDetails: this._stardustSearchCache[request.network][cacheKey]?.data?.foundryDetails
         };
     }
 

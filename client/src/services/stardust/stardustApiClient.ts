@@ -275,7 +275,7 @@ export class StardustApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async foundryDetails(request: IFoundryRequest): Promise<IFoundryResponse> {
-        return this.callApi<unknown, IAliasResponse>(
+        return this.callApi<unknown, IFoundryResponse>(
             `stardust/foundry/${request.network}/${request.foundryId}`,
             "get"
         );
