@@ -452,7 +452,10 @@ export class StardustTangleHelper {
         }
 
         if (searchQuery.blockId) {
-            return StardustTangleHelper.block(network, searchQuery.blockId);
+            const response = await StardustTangleHelper.block(network, searchQuery.blockId);
+            if (response && !response.error) {
+                return response;
+            }
         }
 
         if (searchQuery.transactionId) {
