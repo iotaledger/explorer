@@ -1,16 +1,14 @@
 /* eslint-disable camelcase */
-import { IBlock, IBlockMetadata, IOutputResponse } from "@iota/iota.js-stardust";
+import { IBlock, IBlockMetadata, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
-import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
 import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
-import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -365,24 +363,25 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async aliasDetails(
         request: IAliasRequest,
         skipCache: boolean = false
-    ): Promise<IAliasResponse | undefined> {
-        if (!request.aliasId) {
-            return;
-        }
-
-        const cacheEntry = this._stardustSearchCache[request.network][`${request.aliasId}--details`];
+    ): Promise<{ aliasDetails?: IOutputResponse; error?: string }> {
+        const cacheKey = `${request.aliasId}--details`;
+        const cacheEntry = this._stardustSearchCache[request.network][cacheKey];
 
         if (!cacheEntry?.data?.aliasDetails || skipCache) {
             const response = await this._api.aliasDetails(request);
 
-            this._stardustSearchCache[request.network][`${request.aliasId}--details`] = {
-                data: { aliasDetails: response.aliasDetails },
-                cached: Date.now()
-            };
+            if (!response.error) {
+                this._stardustSearchCache[request.network][cacheKey] = {
+                    data: { aliasDetails: response.aliasDetails },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
         }
 
         return {
-            aliasDetails: this._stardustSearchCache[request.network][`${request.aliasId}--details`]?.data?.aliasDetails
+            aliasDetails: this._stardustSearchCache[request.network][cacheKey]?.data?.aliasDetails
         };
     }
 
@@ -426,21 +425,25 @@ export class StardustTangleCacheService extends TangleCacheService {
      public async foundriesByAliasAddress(
         request: IFoundriesRequest,
         skipCache: boolean = false
-    ): Promise<IFoundriesResponse | undefined> {
-        const cacheEntry = this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`];
+    ): Promise<{ foundryOutputsResponse?: IOutputsResponse; error?: string }> {
+        const cacheKey = `${request.aliasAddress}--foundries`;
+        const cacheEntry = this._stardustSearchCache[request.network][cacheKey];
 
         if (!cacheEntry?.data?.foundryOutputs || skipCache) {
-            const foundryOutputs = await this._api.aliasFoundries(request);
+            const response = await this._api.aliasFoundries(request);
 
-            this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`] = {
-                data: { foundryOutputs: foundryOutputs.foundryOutputsResponse },
-                cached: Date.now()
-            };
+            if (!response.error) {
+                this._stardustSearchCache[request.network][cacheKey] = {
+                    data: { foundryOutputs: response.foundryOutputsResponse },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
         }
 
         return {
-            foundryOutputsResponse:
-                this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`]?.data?.foundryOutputs
+            foundryOutputsResponse: this._stardustSearchCache[request.network][cacheKey]?.data?.foundryOutputs
         };
     }
 

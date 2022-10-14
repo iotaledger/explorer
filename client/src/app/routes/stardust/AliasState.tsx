@@ -31,7 +31,12 @@ export interface AliasState {
     /**
      * The Alias output.
      */
-    output?: IAliasOutput;
+    aliasOutput?: IAliasOutput;
+
+    /**
+     * The Alias output.
+     */
+    aliasError?: string;
 
     /**
      * Hex form of state metadata.
