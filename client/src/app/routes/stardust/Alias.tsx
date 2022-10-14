@@ -97,7 +97,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
 
         const maybeAliasId = optional(aliasAddressDetails.hex);
         if (maybeAliasId.isEmpty()) {
-            this.setState({ aliasError: "bad hex" });
+            this.setState({ aliasError: "Bad Alias Id" });
         }
 
         maybeAliasId.foreach(async aliasId => {
