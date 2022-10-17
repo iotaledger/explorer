@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
-import { ALIAS_ADDRESS_TYPE, FOUNDRY_OUTPUT_TYPE, IAliasOutput } from "@iota/iota.js-stardust";
-import { HexHelper, WriteStream } from "@iota/util.js-stardust";
+import { FOUNDRY_OUTPUT_TYPE, IAliasOutput, TransactionHelper } from "@iota/iota.js-stardust";
+import { HexHelper } from "@iota/util.js-stardust";
 import { optional } from "@ruffy/ts-optional";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -355,7 +355,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                     if (outputDetails?.output.type === FOUNDRY_OUTPUT_TYPE) {
                                         const serialNumber = outputDetails.output.serialNumber;
                                         const tokenSchemeType = outputDetails.output.tokenScheme.type;
-                                        const foundryId = this.buildFoundyId(aliasId, serialNumber, tokenSchemeType);
+                                        const foundryId = TransactionHelper.constructTokenId(aliasId, serialNumber, tokenSchemeType);
 
                                         // accumulate storage rent
                                         storageRentBalance = TransactionsHelper.computeStorageRentBalance(
@@ -378,29 +378,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                 });
             })
         );
-    }
-
-    /**
-     * Build a FoundryId from aliasAddres, serialNumber and tokenSchemeType
-     * @param aliasId The id of the Alias that controls the Foundry.
-     * @param serialNumber The serial number of the Foundry.
-     * @param tokenSchemeType The token scheme type of the Foundry.
-     * @returns The FoundryId string.
-     */
-    private buildFoundyId(aliasId: string, serialNumber: number, tokenSchemeType: number) {
-        const typeWS = new WriteStream();
-        typeWS.writeUInt8("alias address type", ALIAS_ADDRESS_TYPE);
-        const aliasAddress = HexHelper.addPrefix(
-            `${typeWS.finalHex()}${HexHelper.stripPrefix(aliasId)}`
-        );
-        const serialNumberWS = new WriteStream();
-        serialNumberWS.writeUInt32("serialNumber", serialNumber);
-        const serialNumberHex = serialNumberWS.finalHex();
-        const tokenSchemeTypeWS = new WriteStream();
-        tokenSchemeTypeWS.writeUInt8("tokenSchemeType", tokenSchemeType);
-        const tokenSchemeTypeHex = tokenSchemeTypeWS.finalHex();
-
-        return `${aliasAddress}${serialNumberHex}${tokenSchemeTypeHex}`;
     }
 }
 
