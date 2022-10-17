@@ -34,7 +34,7 @@ export interface AliasState {
     aliasOutput?: IAliasOutput;
 
     /**
-     * The Alias output.
+     * Error fetching alias output.
      */
     aliasError?: string;
 

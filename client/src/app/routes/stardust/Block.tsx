@@ -36,7 +36,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     { history, match: { params: { network, blockId } } }
 ) => {
     const isMounted = useRef(false);
-    const { tokenInfo, bech32Hrp } = useContext(NetworkContext);
+    const { tokenInfo, bech32Hrp, protocolVersion } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -340,8 +340,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             <MilestonePayload
                                 network={network}
                                 history={history}
-                                payload={block.payload}
+                                milestonePayload={block.payload}
                                 advancedMode={advancedMode}
+                                protocolVersion={protocolVersion}
                             />
                         </div>
                     )}

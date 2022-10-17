@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { IBlock, IBlockMetadata, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
+import { IBlock, IBlockMetadata, IMilestonePayload, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
@@ -10,7 +10,6 @@ import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddress
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
-import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
@@ -277,22 +276,28 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async milestoneDetails(
         networkId: string,
         milestoneIndex: number
-    ): Promise<IMilestoneDetailsResponse | undefined> {
+    ): Promise<{ blockId?: string; milestoneId?: string; milestone?: IMilestonePayload; error?: string }> {
         const index = milestoneIndex.toString();
         if (!this._stardustSearchCache[networkId][index]?.data?.milestone) {
             const response = await this._api.milestoneDetails({ network: networkId, milestoneIndex });
 
-            if (response?.milestone) {
+            if (!response.error) {
                 this._stardustSearchCache[networkId][index] = {
                     data: {
                         milestone: response
                     },
                     cached: Date.now()
                 };
+            } else {
+                return { error: response.error };
             }
         }
 
-        return this._stardustSearchCache[networkId][index]?.data?.milestone;
+        return {
+            blockId: this._stardustSearchCache[networkId][index]?.data?.milestone?.blockId,
+            milestoneId: this._stardustSearchCache[networkId][index]?.data?.milestone?.milestoneId,
+            milestone: this._stardustSearchCache[networkId][index]?.data?.milestone?.milestone
+        };
     }
 
     /**
