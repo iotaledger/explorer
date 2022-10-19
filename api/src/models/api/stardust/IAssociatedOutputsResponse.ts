@@ -19,43 +19,20 @@ export enum AssociationType {
     NFT_ID
 }
 
-export interface IAssociatedOutput {
+export interface IAssociation {
     /**
-     * The associations for the output
+     * The association for the output ids.
      */
-    associations: AssociationType[];
+    association: AssociationType;
     /**
-     * The associated output.
+     * The output ids for the association.
      */
-    outputId: string;
+    outputIds: string[];
 }
 
-export interface IAssociatedOutputsResponse extends IResponse {
+export interface IAssociationsResponse extends IResponse {
     /**
-     * The associated outputs.
+     * The associations to output ids.
      */
-    outputs?: IAssociatedOutput[];
+    associations?: IAssociation[];
 }
-
-/**
- * Helper map to sort associations by importance to render on client.
- * Greater has more priority.
- */
-export const ASSOCIATION_TYPE_TO_PRIORITY = {
-    [AssociationType.BASIC_ADDRESS]: 1,
-    [AssociationType.BASIC_SENDER]: 4,
-    [AssociationType.BASIC_EXPIRATION_RETURN]: 3,
-    [AssociationType.BASIC_STORAGE_RETURN]: 2,
-    [AssociationType.ALIAS_ID]: 1,
-    [AssociationType.ALIAS_STATE_CONTROLLER]: 2,
-    [AssociationType.ALIAS_GOVERNOR]: 3,
-    [AssociationType.ALIAS_ISSUER]: 4,
-    [AssociationType.ALIAS_SENDER]: 5,
-    [AssociationType.FOUNDRY_ALIAS]: 1,
-    [AssociationType.NFT_ID]: 4,
-    [AssociationType.NFT_ADDRESS]: 1,
-    [AssociationType.NFT_STORAGE_RETURN]: 2,
-    [AssociationType.NFT_EXPIRATION_RETURN]: 3,
-    [AssociationType.NFT_SENDER]: 5
-};
-

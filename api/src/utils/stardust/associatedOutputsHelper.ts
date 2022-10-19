@@ -9,7 +9,7 @@ import { INetwork } from "../../models/db/INetwork";
  * Helper class to fetch associated outputs of an address on stardust.
  */
 export class AssociatedOutputsHelper {
-    public readonly outputIdToAssociations: Map<string, AssociationType[]> = new Map();
+    public readonly associationToOutputIds: Map<AssociationType, string[]> = new Map();
 
     private readonly network: INetwork;
 
@@ -187,7 +187,7 @@ export class AssociatedOutputsHelper {
         args: T,
         association: AssociationType
     ): Promise<void> {
-        const outputIdToAssociations = this.outputIdToAssociations;
+        const associationToOutputIds = this.associationToOutputIds;
         let cursor: string;
 
         do {
@@ -197,15 +197,13 @@ export class AssociatedOutputsHelper {
                     await fetch({ ...args, cursor });
 
                 if (outputs.items.length > 0) {
-                    for (const outputId of outputs.items) {
-                        const associations = outputIdToAssociations.get(outputId);
+                    const outputIds = associationToOutputIds.get(association);
 
-                        if (associations) {
-                            associations.push(association);
-                            outputIdToAssociations.set(outputId, associations);
-                        } else {
-                            outputIdToAssociations.set(outputId, [association]);
-                        }
+                    if (!outputIds) {
+                        associationToOutputIds.set(association, outputs.items);
+                    } else {
+                        const mergedOutputIds = outputIds.concat(outputs.items);
+                        associationToOutputIds.set(association, mergedOutputIds);
                     }
                 }
 
