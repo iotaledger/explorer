@@ -1,5 +1,5 @@
 // Remove when supported by SingleNodeClient
-import { SingleNodeClient } from "@iota/iota.js";
+import { SingleNodeClient } from "@iota/iota.js-chrysalis";
 import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "./../models/api/chrysalis/ITransactionsDetailsResponse";
 import { FetchHelper } from "./fetchHelper";
