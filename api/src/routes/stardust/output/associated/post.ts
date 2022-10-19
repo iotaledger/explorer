@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { IAssociatedOutputsRequest } from "../../../../models/api/stardust/IAssociatedOutputsRequest";
-import { IAssociatedOutputsRequestBody } from "../../../../models/api/stardust/IAssociatedOutputsRequestBody";
-import { IAssociation, IAssociationsResponse } from "../../../../models/api/stardust/IAssociatedOutputsResponse";
+import { IAssociationsRequest } from "../../../../models/api/stardust/IAssociationsRequest";
+import { IAssociationsRequestBody } from "../../../../models/api/stardust/IAssociationsRequestBody";
+import { IAssociation, IAssociationsResponse } from "../../../../models/api/stardust/IAssociationsResponse";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -17,8 +17,8 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  */
 export async function post(
     config: IConfiguration,
-    request: IAssociatedOutputsRequest,
-    body: IAssociatedOutputsRequestBody
+    request: IAssociationsRequest,
+    body: IAssociationsRequestBody
 ): Promise<IAssociationsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();

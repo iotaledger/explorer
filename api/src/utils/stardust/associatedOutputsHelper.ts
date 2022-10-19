@@ -1,7 +1,7 @@
 import {
     SingleNodeClient, IndexerPluginClient, IOutputsResponse, NFT_ADDRESS_TYPE, ALIAS_ADDRESS_TYPE
 } from "@iota/iota.js-stardust";
-import { AssociationType } from "../../models/api/stardust/IAssociatedOutputsResponse";
+import { AssociationType } from "../../models/api/stardust/IAssociationsResponse";
 import { IBech32AddressDetails } from "../../models/api/stardust/IBech32AddressDetails";
 import { INetwork } from "../../models/db/INetwork";
 
