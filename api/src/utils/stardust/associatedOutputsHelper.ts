@@ -13,6 +13,7 @@ export class AssociatedOutputsHelper {
 
     private readonly network: INetwork;
 
+
     private readonly addressDetails: IBech32AddressDetails;
 
     constructor(network: INetwork, addressDetails: IBech32AddressDetails) {
@@ -161,6 +162,15 @@ export class AssociatedOutputsHelper {
                 async query => indexerPlugin.nfts(query),
                 { expirationReturnAddressBech32: address },
                 AssociationType.NFT_EXPIRATION_RETURN
+            )
+        );
+
+        promises.push(
+            // Alias output -> issuer address
+            this.tryFetchAssociatedOutputs<Record<string, unknown>>(
+                async query => indexerPlugin.nfts(query),
+                { issuerBech32: address },
+                AssociationType.NFT_ISSUER
             )
         );
 
