@@ -1,5 +1,8 @@
-import React from "react";
+import classNames from "classnames";
+import React, { useState } from "react";
 import { AssociationType } from "../../../models/api/stardust/IAssociationsResponse";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import "./AssociationSection.scss";
 
 interface IAssociatedSectionProps {
     association: AssociationType;
@@ -21,14 +24,27 @@ const ASSOCIATION_TYPE_TO_LABEL = {
     [AssociationType.NFT_ADDRESS]: "Address Unlock Condition",
     [AssociationType.NFT_STORAGE_RETURN]: "Storage Deposit Return Unlock Condition",
     [AssociationType.NFT_EXPIRATION_RETURN]: "Expiration Return Unlock Condtition",
+    [AssociationType.NFT_ISSUER]: "Issuer Feature",
     [AssociationType.NFT_SENDER]: "Sender Feature"
 };
 
 const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, outputs }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
     const count = outputs?.length;
 
     return (
-        <div>{AssociationType[association]} count: {count}</div>
+        count ?
+            <div
+                className="section"
+                onClick={() => setIsExpanded(!isExpanded)}
+            >
+                <div className="row">
+                    <div className={classNames("margin-r-t", "dropdown", { opened: isExpanded })}>
+                        <DropdownIcon />
+                    </div>
+                    <h3>{ASSOCIATION_TYPE_TO_LABEL[association]} ({count})</h3>
+                </div>
+            </div> : null
     );
 };
 
