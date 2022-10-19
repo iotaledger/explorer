@@ -12,8 +12,8 @@ import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddress
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
-import { IAssociatedOutputsRequest } from "../../models/api/stardust/IAssociatedOutputsRequest";
-import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
+import { IAssociationsRequest } from "../../models/api/stardust/IAssociationsRequest";
+import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
@@ -145,8 +145,8 @@ export class StardustApiClient extends ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async associatedOutputs(request: IAssociatedOutputsRequest) {
-        return this.callApi<unknown, IAssociatedOutputsResponse>(
+    public async associatedOutputs(request: IAssociationsRequest) {
+        return this.callApi<unknown, IAssociationsResponse>(
             `stardust/output/associated/${request.network}/${request.addressDetails.bech32}`,
             "post",
             { addressDetails: request.addressDetails }

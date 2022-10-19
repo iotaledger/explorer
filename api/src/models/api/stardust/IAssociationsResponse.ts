@@ -24,7 +24,7 @@ export interface IAssociation {
     /**
      * The association for the output ids.
      */
-    association: AssociationType;
+    type: AssociationType;
     /**
      * The output ids for the association.
      */

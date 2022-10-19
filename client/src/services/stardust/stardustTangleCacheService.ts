@@ -12,7 +12,7 @@ import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddress
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
-import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
+import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
@@ -234,12 +234,12 @@ export class StardustTangleCacheService extends TangleCacheService {
      public async associatedOutputs(
          network: string,
          addressDetails: IBech32AddressDetails
-        ): Promise<IAssociatedOutputsResponse | undefined> {
+        ): Promise<IAssociationsResponse | undefined> {
         const address = addressDetails.bech32;
         if (!this._stardustSearchCache[network][`${address}-associated-outputs`]?.data?.addressAssociatedOutputs) {
             const response = await this._api.associatedOutputs({ network, addressDetails });
 
-            if (response.outputs) {
+            if (response.associations) {
                 this._stardustSearchCache[network][`${address}-associated-outputs`] = {
                     data: { addressAssociatedOutputs: response },
                     cached: Date.now()

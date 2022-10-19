@@ -36,8 +36,8 @@ export async function post(
     const result = helper.associationToOutputIds;
 
     const associations: IAssociation[] = [];
-    for (const [association, outputIds] of result.entries()) {
-        associations.push({ association, outputIds });
+    for (const [type, outputIds] of result.entries()) {
+        associations.push({ type, outputIds });
     }
 
     return {
