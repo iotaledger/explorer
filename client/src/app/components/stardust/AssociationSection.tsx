@@ -2,6 +2,7 @@
 import classNames from "classnames";
 import moment from "moment";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
@@ -135,9 +136,11 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                         return (
                                             <tr key={idx}>
                                                 <td className="card">
-                                                    {outputId}
+                                                    <Link to={`/${network}/output/${outputId}`} className="margin-r-t highlight">
+                                                        <span className="highlight">{outputId}</span>
+                                                    </Link>
                                                 </td>
-                                                <td className="date-created">{dateCreated} {ago}</td>
+                                                <td className="date-created">{dateCreated} ({ago})</td>
                                                 <td className="amount">
                                                     <span
                                                         onClick={() => setIsFormatBalance(!isFormatBalance)}
@@ -166,7 +169,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                             </div>
                                             <div className="field">
                                                 <div className="label">DATE CREATED</div>
-                                                <div className="value">{dateCreated} {ago}</div>
+                                                <div className="value">{dateCreated} ({ago})</div>
                                             </div>
                                             <div className="field">
                                                 <div className="label">AMOUNT</div>

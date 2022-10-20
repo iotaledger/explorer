@@ -42,7 +42,29 @@
                 color: var(--body-color);
                 padding: 12px 4px;
                 &:first-child {
-                    padding-left: 2px;
+                    padding-left: 0px;
+                }
+
+                &.card .highlight {
+                    color: var(--link-color);
+                    font-family: $ibm-plex-mono;
+                    text-align: left;
+                }
+
+                &.date-created {
+                    @include font-size(14px);
+                    font-family: $ibm-plex-mono;
+                    color: #485776;
+                    text-align: left;
+                    padding-left: 0px;
+                }
+
+                &.amount {
+                    color: $mint-green-7;
+                    @include font-size(16px, 21px);
+                    font-weight: 700;
+                    text-align: left;
+                    padding-left: 0px;
                 }
 
                 .card--content__output {
@@ -107,5 +129,9 @@
         h3 {
             color: #000;
         }
+    }
+
+    .association-section--pagination {
+        margin-top: 12px;
     }
 }
