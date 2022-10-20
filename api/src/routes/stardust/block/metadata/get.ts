@@ -9,12 +9,12 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
  * Fetch the block details from the network.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function get(
-    config: IConfiguration,
+    _: IConfiguration,
     request: IBlockRequest
 ): Promise<IBlockDetailsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
