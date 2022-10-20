@@ -114,17 +114,19 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                 className="section association-section"
             >
                 <div
-                    className="row association-section--header"
+                    className="row association-section--header middle"
                     onClick={() => setIsExpanded(!isExpanded)}
                 >
                     <div className={classNames("margin-r-t", "dropdown", { opened: isExpanded })}>
                         <DropdownIcon />
                     </div>
                     <h3>{ASSOCIATION_TYPE_TO_LABEL[association]} ({count})</h3>
+                    {isExpanded && isLoading && (
+                        <div className="margin-l-t">
+                            <Spinner />
+                        </div>
+                    )}
                 </div>
-                {isExpanded && isLoading && (
-                    <Spinner />
-                )}
                 {!isExpanded || isLoading ? null : (
                     <React.Fragment>
                         <table className="association-section--table">
@@ -142,7 +144,10 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                         return (
                                             <tr key={idx}>
                                                 <td className="card">
-                                                    <Link to={`/${network}/output/${outputId}`} className="margin-r-t highlight">
+                                                    <Link
+                                                        to={`/${network}/output/${outputId}`}
+                                                        className="margin-r-t highlight"
+                                                    >
                                                         <span className="highlight">{outputId}</span>
                                                     </Link>
                                                 </td>
