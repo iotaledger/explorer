@@ -65,7 +65,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
         super(props);
         this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
         this.state = {
-            areFoundriesLoading: true,
             foundries: [],
             foundriesPageNumber: 1,
             isFormatStorageRentFull: true,
@@ -138,13 +137,14 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
      */
     public render(): ReactNode {
         const {
-            bech32AddressDetails, storageRentBalance, areFoundriesLoading, foundries,
-            foundriesPageNumber, aliasOutput, aliasError, stateMetadataHex, isFormatStorageRentFull, jobToStatus
+            bech32AddressDetails, storageRentBalance, foundries, foundriesPageNumber,
+            aliasOutput, aliasError, stateMetadataHex, isFormatStorageRentFull, jobToStatus
         } = this.state;
         const { tokenInfo } = this.context;
         const { network, aliasAddress } = this.props.match.params;
         const hasFoundries = foundries && foundries.length > 0;
         const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
+        const areFoundriesLoading = jobToStatus.get("aliasFoundriesDetails") !== PromiseStatus.DONE;
 
         if (aliasError) {
             return (
@@ -324,7 +324,6 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
 
     private async getControlledFoundries(bech32AddressDetails: IBech32AddressDetails): Promise<void> {
         if (!bech32AddressDetails?.bech32 || !bech32AddressDetails.hex) {
-            this.setState({ areFoundriesLoading: false });
             return;
         }
 
@@ -355,7 +354,11 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                                     if (outputDetails?.output.type === FOUNDRY_OUTPUT_TYPE) {
                                         const serialNumber = outputDetails.output.serialNumber;
                                         const tokenSchemeType = outputDetails.output.tokenScheme.type;
-                                        const foundryId = TransactionHelper.constructTokenId(aliasId, serialNumber, tokenSchemeType);
+                                        const foundryId = TransactionHelper.constructTokenId(
+                                            aliasId,
+                                            serialNumber,
+                                            tokenSchemeType
+                                        );
 
                                         // accumulate storage rent
                                         storageRentBalance = TransactionsHelper.computeStorageRentBalance(
@@ -373,8 +376,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
 
                 this.setState({
                     foundries,
-                    storageRentBalance,
-                    areFoundriesLoading: false
+                    storageRentBalance
                 });
             })
         );

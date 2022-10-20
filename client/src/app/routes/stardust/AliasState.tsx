@@ -14,11 +14,6 @@ export interface AliasState {
     storageRentBalance?: number;
 
     /**
-     * Are the controlled Foundries loading.
-     */
-    areFoundriesLoading: boolean;
-
-    /**
      * List of foundries controlled by the alias.
      */
     foundries?: { foundryId: string }[];
