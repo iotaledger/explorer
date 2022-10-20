@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
+import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { AssociationType } from "../../../models/api/stardust/IAssociationsResponse";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -28,20 +29,23 @@ interface IOutputDetails {
     amount: string;
 }
 
+const JOB_KEY = "loadAssocOutputDetails";
 const PAGE_SIZE = 10;
 
 const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, outputIds }) => {
     const mounted = useRef(false);
     const { tokenInfo, name: network } = useContext(NetworkContext);
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isFormatBalance, setIsFormatBalance] = useState(false);
-    const [outputDetails, setOutputDetails] = useState<IOutputDetails[]>([]);
-    const [page, setPage] = useState<IOutputDetails[]>([]);
-    const [pageNumber, setPageNumber] = useState<number>(1);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isFormatBalance, setIsFormatBalance] = useState(false);
+    const [jobToStatus, setJobToStatus] = useState(
+        new Map<string, PromiseStatus>().set(JOB_KEY, PromiseStatus.PENDING)
+    );
+    const [outputDetails, setOutputDetails] = useState<IOutputDetails[]>([]);
+    const [page, setPage] = useState<IOutputDetails[]>([]);
+    const [pageNumber, setPageNumber] = useState<number>(1);
 
     useEffect(() => {
         mounted.current = true;
@@ -52,30 +56,13 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
 
     useEffect(() => {
         const loadedOutputDetails: IOutputDetails[] = [];
-        const promises: Promise<void>[] = [];
         const outputIdsToDetails: Map<string, IOutputDetails> = new Map();
 
-        if (outputIds && isExpanded && mounted.current) {
-            setIsLoading(true);
-            for (const outputId of outputIds) {
-                const outputDetailsPromise = new Promise<void>((resolve, reject) => {
-                    tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
-                        if (outputDetails) {
-                            const timestampBooked = outputDetails.metadata.milestoneTimestampBooked * 1000;
-                            const dateCreated = DateHelper.formatShort(Number(timestampBooked));
-                            const ago = moment(timestampBooked).fromNow();
-                            const amount = outputDetails.output.amount;
-                            outputIdsToDetails.set(outputId, { outputId, dateCreated, ago, amount });
-                        }
-                        resolve();
-                    }).catch(e => reject(e));
-                });
-
-                promises.push(outputDetailsPromise);
-            }
-
-            Promise.all(promises).then(() => {
-                for (const outputId of outputIds) {
+        const loadOutputDetailsMonitor = new PromiseMonitor(status => {
+            setJobToStatus(jobToStatus.set(JOB_KEY, status));
+            // This actually happends after all promises are DONE
+            if (status === PromiseStatus.DONE) {
+                for (const outputId of outputIds ?? []) {
                     const details = outputIdsToDetails.get(outputId);
                     if (details) {
                         const { dateCreated, ago, amount } = details;
@@ -83,9 +70,27 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                     }
                 }
 
-                setOutputDetails(loadedOutputDetails.reverse());
-                setIsLoading(false);
-            }).catch(e => console.log(e));
+                if (mounted.current) {
+                    setOutputDetails(loadedOutputDetails.reverse());
+                }
+            }
+        });
+
+        if (outputIds && isExpanded) {
+            for (const outputId of outputIds) {
+                // eslint-disable-next-line no-void
+                void loadOutputDetailsMonitor.enqueue(
+                    async () => tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
+                        if (outputDetails) {
+                            const timestampBooked = outputDetails.metadata.milestoneTimestampBooked * 1000;
+                            const dateCreated = DateHelper.formatShort(Number(timestampBooked));
+                            const ago = moment(timestampBooked).fromNow();
+                            const amount = outputDetails.output.amount;
+                            outputIdsToDetails.set(outputId, { outputId, dateCreated, ago, amount });
+                        }
+                    })
+                );
+            }
         }
     }, [outputIds, isExpanded]);
 
@@ -101,6 +106,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
     }, [outputDetails, pageNumber]);
 
     const count = outputIds?.length;
+    const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
 
     return (
         count ?
