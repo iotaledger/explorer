@@ -220,6 +220,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         <AssociatedOutputs
                                             network={networkId}
                                             addressDetails={bech32AddressDetails}
+                                            onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("assoc")}
                                         />
                                     )}
                                 </div>
