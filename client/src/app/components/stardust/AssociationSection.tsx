@@ -12,11 +12,12 @@ import NetworkContext from "../../context/NetworkContext";
 import Pagination from "../Pagination";
 import Spinner from "../Spinner";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import { ASSOCIATION_TYPE_TO_LABEL } from "./AssociatedOutputsUtils";
 import "./AssociationSection.scss";
 
 interface IAssociatedSectionProps {
     association: AssociationType;
-    outputs: string[] | undefined;
+    outputIds: string[] | undefined;
 }
 
 interface IOutputDetails {
@@ -26,33 +27,14 @@ interface IOutputDetails {
     amount: string;
 }
 
-const ASSOCIATION_TYPE_TO_LABEL = {
-    [AssociationType.BASIC_ADDRESS]: "Address Unlock Condition",
-    [AssociationType.BASIC_SENDER]: "Sender Feature",
-    [AssociationType.BASIC_EXPIRATION_RETURN]: "Expiration Return Unlock Condtition",
-    [AssociationType.BASIC_STORAGE_RETURN]: "Storage Deposit Return Unlock Condition",
-    [AssociationType.ALIAS_ID]: "Alias Id",
-    [AssociationType.ALIAS_STATE_CONTROLLER]: "State Controller Address Unlock Condition",
-    [AssociationType.ALIAS_GOVERNOR]: "Governor Address Unlock Condition",
-    [AssociationType.ALIAS_ISSUER]: "Issuer Feature",
-    [AssociationType.ALIAS_SENDER]: "Sender Feature",
-    [AssociationType.FOUNDRY_ALIAS]: "Immutable Alias Address Unlock Condition",
-    [AssociationType.NFT_ID]: "Nft Id",
-    [AssociationType.NFT_ADDRESS]: "Address Unlock Condition",
-    [AssociationType.NFT_STORAGE_RETURN]: "Storage Deposit Return Unlock Condition",
-    [AssociationType.NFT_EXPIRATION_RETURN]: "Expiration Return Unlock Condtition",
-    [AssociationType.NFT_ISSUER]: "Issuer Feature",
-    [AssociationType.NFT_SENDER]: "Sender Feature"
-};
-
 const PAGE_SIZE = 10;
 
-const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, outputs }) => {
+const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, outputIds }) => {
     const mounted = useRef(false);
     const { tokenInfo, name: network } = useContext(NetworkContext);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [formatBalance, setFormatBalance] = useState(false);
+    const [isFormatBalance, setIsFormatBalance] = useState(false);
     const [outputDetails, setOutputDetails] = useState<IOutputDetails[]>([]);
     const [page, setPage] = useState<IOutputDetails[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
@@ -68,19 +50,19 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
     }, []);
 
     useEffect(() => {
-        const outputDetailsTemp: IOutputDetails[] = [];
+        const loadedOutputDetails: IOutputDetails[] = [];
         const promises: Promise<void>[] = [];
         const outputIdsToDetails: Map<string, IOutputDetails> = new Map();
 
-        if (outputs && isExpanded && mounted.current) {
+        if (outputIds && isExpanded && mounted.current) {
             setIsLoading(true);
-            for (const outputId of outputs) {
+            for (const outputId of outputIds) {
                 const outputDetailsPromise = new Promise<void>((resolve, reject) => {
                     tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
                         if (outputDetails) {
-                            const timeStamp = outputDetails.metadata.milestoneTimestampBooked * 1000;
-                            const dateCreated = DateHelper.formatShort(Number(timeStamp));
-                            const ago = moment(timeStamp).fromNow();
+                            const timestampBooked = outputDetails.metadata.milestoneTimestampBooked * 1000;
+                            const dateCreated = DateHelper.formatShort(Number(timestampBooked));
+                            const ago = moment(timestampBooked).fromNow();
                             const amount = outputDetails.output.amount;
                             outputIdsToDetails.set(outputId, { outputId, dateCreated, ago, amount });
                         }
@@ -92,30 +74,32 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
             }
 
             Promise.all(promises).then(() => {
-                for (const outputId of outputs) {
+                for (const outputId of outputIds) {
                     const details = outputIdsToDetails.get(outputId);
                     if (details) {
                         const { dateCreated, ago, amount } = details;
-                        outputDetailsTemp.push({ outputId, dateCreated, ago, amount });
+                        loadedOutputDetails.push({ outputId, dateCreated, ago, amount });
                     }
                 }
-                setOutputDetails(outputDetailsTemp.reverse());
+
+                setOutputDetails(loadedOutputDetails.reverse());
                 setIsLoading(false);
             }).catch(e => console.log(e));
         }
-    }, [outputs, isExpanded]);
+    }, [outputIds, isExpanded]);
 
     // on page change handler
     useEffect(() => {
         if (outputDetails && mounted.current) {
             const from = (pageNumber - 1) * PAGE_SIZE;
             const to = from + PAGE_SIZE;
+
             const slicedDetails = outputDetails.slice(from, to);
             setPage(slicedDetails);
         }
     }, [outputDetails, pageNumber]);
 
-    const count = outputs?.length;
+    const count = outputIds?.length;
 
     return (
         count ?
@@ -146,8 +130,8 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                             </thead>
                             <tbody>
                                 {
-                                    page.map((output, idx) => {
-                                        const { outputId, dateCreated, ago, amount } = output;
+                                    page.map((details, idx) => {
+                                        const { outputId, dateCreated, ago, amount } = details;
                                         return (
                                             <tr key={idx}>
                                                 <td className="card">
@@ -156,10 +140,10 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                                 <td className="date-created">{dateCreated} {ago}</td>
                                                 <td className="amount">
                                                     <span
-                                                        onClick={() => setFormatBalance(!formatBalance)}
+                                                        onClick={() => setIsFormatBalance(!isFormatBalance)}
                                                         className="pointer margin-r-5"
                                                     >
-                                                        {formatAmount(Number(amount), tokenInfo, formatBalance)}
+                                                        {formatAmount(Number(amount), tokenInfo, isFormatBalance)}
                                                     </span>
                                                 </td>
                                             </tr>
@@ -171,8 +155,9 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
 
                         <div className="association-section--cards">
                             {
-                                page.map((output, idx) => {
-                                    const { outputId, dateCreated, ago, amount } = output;
+                                page.map((details, idx) => {
+                                    const { outputId, dateCreated, ago, amount } = details;
+
                                     return (
                                         <div key={idx} className="card">
                                             <div className="field">
@@ -187,10 +172,10 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                                 <div className="label">AMOUNT</div>
                                                 <div className="value">
                                                     <span
-                                                        onClick={() => setFormatBalance(!formatBalance)}
+                                                        onClick={() => setIsFormatBalance(!isFormatBalance)}
                                                         className="pointer margin-r-5"
                                                     >
-                                                        {formatAmount(Number(amount), tokenInfo, formatBalance)}
+                                                        {formatAmount(Number(amount), tokenInfo, isFormatBalance)}
                                                     </span>
                                                 </div>
                                             </div>

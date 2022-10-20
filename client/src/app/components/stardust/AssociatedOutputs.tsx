@@ -7,8 +7,9 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Modal from "../Modal";
 import associatedOuputsMessage from "./../../../assets/modals/stardust/address/associated-outputs.json";
-import "./AssociatedOutputs.scss";
+import { AssociatedOutputTab, outputTypeToAssociations } from "./AssociatedOutputsUtils";
 import AssociationSection from "./AssociationSection";
+import "./AssociatedOutputs.scss";
 
 interface AssociatedOutputsTableProps {
     /**
@@ -21,43 +22,7 @@ interface AssociatedOutputsTableProps {
     addressDetails: IBech32AddressDetails;
 }
 
-type AssociatedOutputTab = "Basic" | "NFT" | "Alias" | "Foundry";
-
-const tabs: AssociatedOutputTab[] = ["Basic", "NFT", "Alias", "Foundry"];
-
-const outputTypeToAssociations: Map<AssociatedOutputTab, AssociationType[]> = new Map([
-    [
-        "Basic",
-        [
-            AssociationType.BASIC_ADDRESS,
-            AssociationType.BASIC_SENDER,
-            AssociationType.BASIC_EXPIRATION_RETURN,
-            AssociationType.BASIC_STORAGE_RETURN
-        ]
-    ],
-    [
-        "Alias",
-        [
-            AssociationType.ALIAS_STATE_CONTROLLER,
-            AssociationType.ALIAS_GOVERNOR,
-            AssociationType.ALIAS_ISSUER,
-            AssociationType.ALIAS_SENDER,
-            AssociationType.ALIAS_ID
-        ]
-    ],
-    ["Foundry", [AssociationType.FOUNDRY_ALIAS]],
-    [
-        "NFT",
-        [
-            AssociationType.NFT_ADDRESS,
-            AssociationType.NFT_STORAGE_RETURN,
-            AssociationType.NFT_EXPIRATION_RETURN,
-            AssociationType.NFT_ISSUER,
-            AssociationType.NFT_SENDER,
-            AssociationType.NFT_ID
-        ]
-    ]
-]);
+export const TABS: AssociatedOutputTab[] = ["Basic", "NFT", "Alias", "Foundry"];
 
 const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = (
     { network, addressDetails }
@@ -98,7 +63,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = (
                     <Modal icon="info" data={associatedOuputsMessage} />
                 </div>
                 <div className="tabs-wrapper">
-                    {tabs.map((tab, idx) => (
+                    {TABS.map((tab, idx) => (
                         <button
                             type="button"
                             key={idx}
@@ -118,7 +83,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps> = (
                     <AssociationSection
                         key={idx}
                         association={associationType}
-                        outputs={targetAssociation?.outputIds}
+                        outputIds={targetAssociation?.outputIds}
                     />
                 );
             })}
