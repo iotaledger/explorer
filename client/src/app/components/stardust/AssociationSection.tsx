@@ -58,61 +58,61 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-   );
+    );
 
-   useEffect(() => {
-       mounted.current = true;
-       return () => {
-           mounted.current = false;
-       };
-   }, []);
+    useEffect(() => {
+        mounted.current = true;
+        return () => {
+            mounted.current = false;
+        };
+    }, []);
 
-   useEffect(() => {
-       const outputDetailsTemp: IOutputDetails[] = [];
-       const promises: Promise<void>[] = [];
-       const outputIdsToDetails: Map<string, IOutputDetails> = new Map();
+    useEffect(() => {
+        const outputDetailsTemp: IOutputDetails[] = [];
+        const promises: Promise<void>[] = [];
+        const outputIdsToDetails: Map<string, IOutputDetails> = new Map();
 
-       if (outputs && isExpanded && mounted.current) {
-        setIsLoading(true);
-        for (const outputId of outputs) {
-            const outputDetailsPromise = new Promise<void>((resolve, reject) => {
-                tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
-                    if (outputDetails) {
-                        const timeStamp = outputDetails.metadata.milestoneTimestampBooked * 1000;
-                        const dateCreated = DateHelper.formatShort(Number(timeStamp));
-                        const ago = moment(timeStamp).fromNow();
-                        const amount = outputDetails.output.amount;
-                        outputIdsToDetails.set(outputId, { outputId, dateCreated, ago, amount });
-                    }
-                    resolve();
-                }).catch(e => reject(e));
-            });
-
-            promises.push(outputDetailsPromise);
-        }
-
-        Promise.all(promises).then(() => {
+        if (outputs && isExpanded && mounted.current) {
+            setIsLoading(true);
             for (const outputId of outputs) {
-                const details = outputIdsToDetails.get(outputId);
-                if (details) {
-                    const { dateCreated, ago, amount } = details;
-                    outputDetailsTemp.push({ outputId, dateCreated, ago, amount });
-                }
-            }
-            setOutputDetails(outputDetailsTemp.reverse());
-            setIsLoading(false);
-        }).catch(e => console.log(e));
-       }
-   }, [outputs, isExpanded]);
+                const outputDetailsPromise = new Promise<void>((resolve, reject) => {
+                    tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
+                        if (outputDetails) {
+                            const timeStamp = outputDetails.metadata.milestoneTimestampBooked * 1000;
+                            const dateCreated = DateHelper.formatShort(Number(timeStamp));
+                            const ago = moment(timeStamp).fromNow();
+                            const amount = outputDetails.output.amount;
+                            outputIdsToDetails.set(outputId, { outputId, dateCreated, ago, amount });
+                        }
+                        resolve();
+                    }).catch(e => reject(e));
+                });
 
-   // on page change handler
-   useEffect(() => {
-       if (outputDetails && mounted.current) {
-           const from = (pageNumber - 1) * PAGE_SIZE;
-           const to = from + PAGE_SIZE;
-           const slicedDetails = outputDetails.slice(from, to);
-           setPage(slicedDetails);
-       }
+                promises.push(outputDetailsPromise);
+            }
+
+            Promise.all(promises).then(() => {
+                for (const outputId of outputs) {
+                    const details = outputIdsToDetails.get(outputId);
+                    if (details) {
+                        const { dateCreated, ago, amount } = details;
+                        outputDetailsTemp.push({ outputId, dateCreated, ago, amount });
+                    }
+                }
+                setOutputDetails(outputDetailsTemp.reverse());
+                setIsLoading(false);
+            }).catch(e => console.log(e));
+        }
+    }, [outputs, isExpanded]);
+
+    // on page change handler
+    useEffect(() => {
+        if (outputDetails && mounted.current) {
+            const from = (pageNumber - 1) * PAGE_SIZE;
+            const to = from + PAGE_SIZE;
+            const slicedDetails = outputDetails.slice(from, to);
+            setPage(slicedDetails);
+        }
     }, [outputDetails, pageNumber]);
 
     const count = outputs?.length;
