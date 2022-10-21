@@ -350,10 +350,11 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                         // eslint-disable-next-line no-void
                         void foundriesLoadMonitor.enqueue(
                             async () => this._tangleCacheService.outputDetails(networkId, foundryOutputId).then(
-                                outputDetails => {
-                                    if (outputDetails?.output.type === FOUNDRY_OUTPUT_TYPE) {
-                                        const serialNumber = outputDetails.output.serialNumber;
-                                        const tokenSchemeType = outputDetails.output.tokenScheme.type;
+                                response => {
+                                    if (!response.error && response.output?.type === FOUNDRY_OUTPUT_TYPE) {
+                                        const output = response.output;
+                                        const serialNumber = output.serialNumber;
+                                        const tokenSchemeType = output.tokenScheme.type;
                                         const foundryId = TransactionHelper.constructTokenId(
                                             aliasId,
                                             serialNumber,
@@ -362,7 +363,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
 
                                         // accumulate storage rent
                                         storageRentBalance = TransactionsHelper.computeStorageRentBalance(
-                                            [outputDetails.output],
+                                            [output],
                                             rentStructure
                                         ) + (storageRentBalance ?? 0);
 

@@ -54,12 +54,18 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
 
             for (const outputId of outputIds) {
                 const outputResponse = await stardustTangleCacheService.outputDetails(network, outputId);
-                if (outputResponse) {
-                    const response = {
-                        outputDetails: outputResponse,
+                if (!outputResponse.error && outputResponse.output && outputResponse.metadata) {
+                    const fetchedOutputDetails = {
+                        output: outputResponse.output,
+                        metadata: outputResponse.metadata
+                    };
+
+                    const item: OutputListItem = {
+                        outputDetails: fetchedOutputDetails,
                         outputId
                     };
-                    outputs.push(response);
+
+                    outputs.push(item);
                 }
             }
             setOutputDetails(outputs);

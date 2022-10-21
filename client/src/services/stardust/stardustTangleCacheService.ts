@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { IBlock, IBlockMetadata, IMilestonePayload, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
+import { IBlock, IBlockMetadata, IMilestonePayload, IOutputMetadataResponse, IOutputResponse, IOutputsResponse, OutputTypes } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
@@ -209,19 +209,24 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async outputDetails(
         networkId: string,
         outputId: string
-    ): Promise<IOutputResponse | undefined> {
+    ): Promise<{ output?: OutputTypes; metadata?: IOutputMetadataResponse; error?: string }> {
         if (!this._stardustSearchCache[networkId][outputId]?.data?.output) {
             const response = await this._api.outputDetails({ network: networkId, outputId });
 
-            if (response?.output) {
+            if (!response.error) {
                 this._stardustSearchCache[networkId][outputId] = {
                     data: { output: response.output },
                     cached: Date.now()
                 };
+            } else {
+                return { error: response.error };
             }
         }
 
-        return this._stardustSearchCache[networkId][outputId]?.data?.output;
+        return {
+            output: this._stardustSearchCache[networkId][outputId]?.data?.output?.output,
+            metadata: this._stardustSearchCache[networkId][outputId]?.data?.output?.metadata
+        };
     }
 
     /**

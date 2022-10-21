@@ -13,6 +13,7 @@ import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetail
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
+import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/milestone/IMilestoneDetailsResponse";
@@ -150,16 +151,16 @@ export class StardustTangleHelper {
      * @param outputId The output id to get the details.
      * @returns The item details.
      */
-    public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputResponse | undefined> {
+    public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputDetailsResponse> {
         const outputResponse = await this.tryFetchPermanodeThenNode<string, IOutputResponse>(
             outputId,
             "output",
             network
         );
 
-        if (outputResponse) {
-            return outputResponse;
-        }
+        return outputResponse ?
+            { output: outputResponse } :
+            { error: "Output not found" };
     }
 
     /**
@@ -295,13 +296,11 @@ export class StardustTangleHelper {
         );
 
         if (aliasOutput.items.length > 0) {
-            const aliasDetails = await this.outputDetails(network, aliasOutput.items[0]);
+            const outputResponse = await this.outputDetails(network, aliasOutput.items[0]);
 
-            if (aliasDetails) {
-                return {
-                    aliasDetails
-                };
-            }
+            return !outputResponse.error ?
+                { aliasDetails: outputResponse.output } :
+                { error: outputResponse.error };
         }
     }
 
@@ -328,6 +327,8 @@ export class StardustTangleHelper {
                     foundryOutputsResponse: response
                 };
             }
+
+            return { error: "Foundry output not found" };
         } catch { }
     }
 
@@ -349,13 +350,11 @@ export class StardustTangleHelper {
         );
 
         if (foundryOutput.items.length > 0) {
-            const foundryDetails = await this.outputDetails(network, foundryOutput.items[0]);
+            const outputResponse = await this.outputDetails(network, foundryOutput.items[0]);
 
-            if (foundryDetails) {
-                return {
-                    foundryDetails
-                };
-            }
+            return !outputResponse.error ?
+                { foundryDetails: outputResponse.output } :
+                { error: outputResponse.error };
         }
     }
 
@@ -403,15 +402,15 @@ export class StardustTangleHelper {
                 true
             );
 
-            if (nftOutputs.items.length > 0) {
-                const nftDetails = await this.outputDetails(network, nftOutputs.items[0]);
+            if (nftOutputs?.items.length > 0) {
+                const outputResponse = await this.outputDetails(network, nftOutputs.items[0]);
 
-                if (nftDetails) {
-                    return {
-                        nftDetails
-                    };
-                }
+                return !outputResponse.error ?
+                    { nftDetails: outputResponse.output } :
+                    { error: outputResponse.error };
             }
+
+            return { error: "Nft output not found" };
         } catch { }
     }
 

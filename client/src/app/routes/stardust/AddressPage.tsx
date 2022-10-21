@@ -294,8 +294,13 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                     for (const outputId of addressOutputIds) {
                         void outputDetailsMonitor.enqueue(
                             async () => this._tangleCacheService.outputDetails(networkId, outputId).then(
-                                outputDetails => {
-                                    if (outputDetails) {
+                                response => {
+                                    if (!response.error && response.output && response.metadata) {
+                                        const outputDetails = {
+                                            output: response.output,
+                                            metadata: response.metadata
+                                        };
+
                                         outputResponse.push(outputDetails);
                                     }
                                 })
