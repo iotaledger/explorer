@@ -30,7 +30,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
         this.state = {
             showInputDetails: -1,
             showOutputDetails: -1,
-            isFormattedBalance: false
+            isInputBalanceFormatted: [],
+            isOutputBalanceFormatted: []
         };
     }
 
@@ -95,9 +96,19 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             showCopyButton={false}
                                             labelPosition="bottom"
                                         />
-                                        <div className="card--value amount-size">
-                                            {UnitsHelper.formatBest(input.amount)}
-                                        </div>
+                                    </div>
+                                    <div className="card--value pointer amount-size row end">
+                                        <span
+                                            className="margin-r-t"
+                                            onClick={() => this.setState({
+                                                isInputBalanceFormatted: this.state.isInputBalanceFormatted.indexOf(idx) === -1
+                                                        ? [...this.state.isInputBalanceFormatted, idx]
+                                                        : this.state.isInputBalanceFormatted.filter((id) => id !== idx)
+                                            })}
+                                        >
+                                            {this.state.isInputBalanceFormatted.indexOf(idx) > -1 ? input.amount : UnitsHelper.formatBest(input.amount)}
+                                        </span>
+                                        <CopyButton copy={String(input.amount)} />
                                     </div>
 
                                     {this.state.showInputDetails === idx && (
@@ -168,10 +179,12 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             <span
                                                 className="margin-r-t"
                                                 onClick={() => this.setState({
-                                                    isFormattedBalance: !this.state.isFormattedBalance
+                                                    isOutputBalanceFormatted: this.state.isOutputBalanceFormatted.indexOf(idx) === -1
+                                                        ? [...this.state.isOutputBalanceFormatted, idx]
+                                                        : this.state.isOutputBalanceFormatted.filter((id) => id !== idx)
                                                 })}
                                             >
-                                                {this.state.isFormattedBalance ? output.amount : UnitsHelper.formatBest(output.amount)}
+                                                {this.state.isOutputBalanceFormatted.indexOf(idx) > -1 ? output.amount : UnitsHelper.formatBest(output.amount)}
                                             </span>
                                             <CopyButton copy={String(output.amount)} />
                                         </div>
