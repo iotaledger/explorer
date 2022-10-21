@@ -114,7 +114,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                 className="section association-section"
             >
                 <div
-                    className="row association-section--header middle"
+                    className="row association-section--header middle pointer"
                     onClick={() => setIsExpanded(!isExpanded)}
                 >
                     <div className={classNames("margin-r-t", "dropdown", { opened: isExpanded })}>
@@ -171,20 +171,26 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                             {
                                 page.map((details, idx) => {
                                     const { outputId, dateCreated, ago, amount } = details;
+                                    const outputIdShort = `${outputId.slice(0, 11)}....${outputId.slice(-11)}`;
 
                                     return (
                                         <div key={idx} className="card">
                                             <div className="field">
-                                                <div className="label">OUTPUT ID</div>
-                                                <div className="value">{outputId}</div>
+                                                <div className="label">Output Id</div>
+                                                <Link
+                                                    to={`/${network}/output/${outputId}`}
+                                                    className="margin-r-t value"
+                                                >
+                                                    <span className="highlight">{outputIdShort}</span>
+                                                </Link>
                                             </div>
                                             <div className="field">
-                                                <div className="label">DATE CREATED</div>
-                                                <div className="value">{dateCreated} ({ago})</div>
+                                                <div className="label">Date Created</div>
+                                                <div className="value date-created">{dateCreated} ({ago})</div>
                                             </div>
                                             <div className="field">
-                                                <div className="label">AMOUNT</div>
-                                                <div className="value">
+                                                <div className="label">Amount</div>
+                                                <div className="value amount">
                                                     <span
                                                         onClick={() => setIsFormatBalance(!isFormatBalance)}
                                                         className="pointer margin-r-5"
