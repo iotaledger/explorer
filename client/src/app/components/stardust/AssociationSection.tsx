@@ -39,7 +39,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFormatBalance, setIsFormatBalance] = useState(false);
     const [jobToStatus, setJobToStatus] = useState(PromiseStatus.PENDING);
-    const [loadMoreCounter, setLoadMoreCounter] = useState(0);
+    const [loadMoreCounter, setLoadMoreCounter] = useState<number | undefined>();
     const [outputDetails, setOutputDetails] = useState<IOutputDetails[]>([]);
 
     useEffect(() => {
@@ -53,7 +53,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
         const loadedOutputDetails: IOutputDetails[] = [];
         const outputIdsToDetails: Map<string, IOutputDetails> = new Map();
 
-        if (outputIds && isExpanded) {
+        if (outputIds && loadMoreCounter !== undefined) {
             const from = loadMoreCounter * PAGE_SIZE;
             const to = from + PAGE_SIZE;
             const sliceToLoad = outputIds.slice(from, to);
@@ -93,7 +93,22 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                 );
             }
         }
-    }, [outputIds, isExpanded, loadMoreCounter]);
+    }, [outputIds, loadMoreCounter]);
+
+    const onExpandSection = () => {
+        setIsExpanded(!isExpanded);
+        if (loadMoreCounter === undefined) {
+            setLoadMoreCounter(0);
+        }
+    };
+
+    const onLoadMore = () => {
+        setLoadMoreCounter(
+            loadMoreCounter === undefined ?
+                0 :
+                loadMoreCounter + 1
+        );
+    };
 
     const count = outputIds?.length;
     const isLoading = jobToStatus !== PromiseStatus.DONE;
@@ -103,7 +118,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
             <div className="section association-section">
                 <div
                     className="row association-section--header middle pointer"
-                    onClick={() => setIsExpanded(!isExpanded)}
+                    onClick={onExpandSection}
                 >
                     <div className={classNames("margin-r-t", "dropdown", { opened: isExpanded })}>
                         <DropdownIcon />
@@ -190,11 +205,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                         </div>
                         {outputDetails.length < count && (
                             <div className="card load-more--button">
-                                <button
-                                    onClick={() => setLoadMoreCounter(loadMoreCounter + 1)}
-                                    type="button"
-                                    disabled={isLoading}
-                                >
+                                <button onClick={onLoadMore} type="button" disabled={isLoading} >
                                     Load more...
                                 </button>
                             </div>

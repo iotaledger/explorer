@@ -10,13 +10,13 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
  * Find the associated outputs for the address.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
  * @param body The request body
  * @returns The response.
  */
 export async function post(
-    config: IConfiguration,
+    _: IConfiguration,
     request: IAssociationsRequest,
     body: IAssociationsRequestBody
 ): Promise<IAssociationsResponse> {
@@ -37,7 +37,7 @@ export async function post(
 
     const associations: IAssociation[] = [];
     for (const [type, outputIds] of result.entries()) {
-        associations.push({ type, outputIds });
+        associations.push({ type, outputIds: outputIds.reverse() });
     }
 
     return {
