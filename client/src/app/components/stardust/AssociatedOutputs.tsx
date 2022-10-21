@@ -12,6 +12,7 @@ import associatedOuputsMessage from "./../../../assets/modals/stardust/address/a
 import { AssociatedOutputTab, outputTypeToAssociations } from "./AssociatedOutputsUtils";
 import AssociationSection from "./AssociationSection";
 import "./AssociatedOutputs.scss";
+import { ED25519_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 
 interface AssociatedOutputsTableProps {
     /**
@@ -55,6 +56,11 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
                 }
             })
         );
+
+        if (addressDetails.type === ED25519_ADDRESS_TYPE) {
+            const index = TABS.indexOf("Foundry");
+            TABS.splice(index, 1);
+        }
 
         return unmount;
     }, [network, addressDetails]);
