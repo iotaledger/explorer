@@ -11,5 +11,11 @@ export interface NftState {
     /**
      * The nft output.
      */
-    output?: INftOutput;
+    nftOutput?: INftOutput;
+
+    /**
+     * Error fetching nft output.
+     */
+    nftError?: string;
+
 }

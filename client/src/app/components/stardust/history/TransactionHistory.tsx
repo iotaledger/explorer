@@ -104,9 +104,14 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
             const fetchDetails = async () => {
                 for (const item of history) {
                     const promise = tangleService().outputDetails(network, item.outputId)
-                        .then(detailsResponse => {
-                            if (detailsResponse) {
-                                detailsPage[item.outputId] = detailsResponse;
+                        .then(response => {
+                            if (!response.error && response.output && response.metadata) {
+                                const outputDetails = {
+                                    output: response.output,
+                                    metadata: response.metadata
+                                };
+
+                                detailsPage[item.outputId] = outputDetails;
                             }
                         })
                         .catch(e => console.log(e));

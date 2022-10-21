@@ -28,7 +28,5 @@ export async function get(
         return {};
     }
 
-    return {
-        output: await StardustTangleHelper.outputDetails(networkConfig, request.outputId)
-    };
+    return StardustTangleHelper.outputDetails(networkConfig, request.outputId);
 }

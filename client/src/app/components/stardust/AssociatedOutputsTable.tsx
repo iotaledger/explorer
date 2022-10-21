@@ -85,11 +85,17 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
                     const outputId = associatedOutput.outputId;
 
                     const outputDetailsPromise = new Promise<void>((resolve, reject) => {
-                        tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
-                            if (!outputDetails?.output) {
+                        tangleCacheService.outputDetails(network, outputId).then(response => {
+                            if (response.error || !response.output || !response.metadata) {
                                 // eslint-disable-next-line prefer-promise-reject-errors
-                                reject("Couldn't load all associated output details");
+                                reject("Couldn't load associated output details");
+                                return;
                             }
+
+                            const outputDetails = {
+                                output: response.output,
+                                metadata: response.metadata
+                            };
 
                             updatedAssociatedOutputs[idx] = { ...associatedOutput, outputDetails };
                             resolve();

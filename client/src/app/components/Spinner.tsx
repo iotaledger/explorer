@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
-import "./Spinner.scss";
 import { SpinnerProps } from "./SpinnerProps";
+import "./Spinner.scss";
 
 /**
  * Component which will display a spinner.

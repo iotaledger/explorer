@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IBlockDetailsRequest } from "../../../models/api/stardust/IBlockDetailsRequest";
-import { IBlockDetailsResponse } from "../../../models/api/stardust/IBlockDetailsResponse";
+import { IBlockRequest } from "../../../models/api/stardust/IBlockRequest";
+import { IBlockResponse } from "../../../models/api/stardust/IBlockResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
@@ -8,15 +8,15 @@ import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelp
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
- * Find the object from the network.
- * @param config The configuration.
+ * Fetch the block from the network.
+ * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function get(
-    config: IConfiguration,
-    request: IBlockDetailsRequest
-): Promise<IBlockDetailsResponse> {
+    _: IConfiguration,
+    request: IBlockRequest
+): Promise<IBlockResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -28,5 +28,5 @@ export async function get(
         return {};
     }
 
-    return StardustTangleHelper.blockDetails(networkConfig, request.blockId);
+    return StardustTangleHelper.block(networkConfig, request.blockId);
 }

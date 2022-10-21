@@ -1,45 +1,21 @@
 import { IBlock, IBlockMetadata, ISignatureUnlock, IUTXOInput } from "@iota/iota.js-stardust";
-import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
 import { TangleStatus } from "../../../models/tangleStatus";
 
-export interface BlockState {
-    /**
-     * The transaction id.
-     */
-    transactionId?: string;
-
+export interface BlockData {
     /**
      * Block.
      */
     block?: IBlock;
-
     /**
-     * Metadata.
+     * The block fetching failed.
      */
-    metadata?: IBlockMetadata;
-
+    blockError?: string;
     /**
-     * The metadata failed.
+     * The transaction id.
      */
-    metadataError?: string;
-
-    /**
-     * Reason for the conflict.
-     */
-    conflictReason?: string;
-
-    /**
-     * The state of the block on the tangle.
-     */
-    blockTangleStatus: TangleStatus;
-
-    /**
-     * Display advanced mode.
-     */
-    advancedMode: boolean;
-
+    transactionId?: string;
     /**
      * The inputs of the transaction
      */
@@ -54,19 +30,29 @@ export interface BlockState {
      * The outputs.
      */
     outputs?: IOutput[];
-
     /**
      * The total of the transfer excluding remainders.
      */
     transferTotal?: number;
+}
+
+export interface BlockMetadata {
+    /**
+     * Metadata.
+     */
+    metadata?: IBlockMetadata;
 
     /**
-     * The unlock addresses for the transactions.
+     * The metadata failed.
      */
-    unlockAddresses?: IBech32AddressDetails[];
+    metadataError?: string;
+    /**
+     * Reason for the conflict.
+     */
+    conflictReason?: string;
 
     /**
-     * Format the amount in full.
+     * The state of the block on the tangle.
      */
-    isFormattedBalance: boolean;
+    blockTangleStatus: TangleStatus;
 }

@@ -8,7 +8,7 @@ const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, tableF
         <tr>
             <td className="highlight">
                 <Link
-                    to={`/${network}/search/${foundryId}`}
+                    to={`/${network}/foundry/${foundryId}`}
                     className="margin-r-t"
                 >
                     {foundryId}
@@ -21,7 +21,7 @@ const ControlledFoundry: React.FC<ControlledFoundryProps> = ({ foundryId, tableF
                 <div className="label">Foundry Id</div>
                 <div className="value message-id">
                     <Link
-                        to={`/${network}/search/${foundryId}`}
+                        to={`/${network}/foundry/${foundryId}`}
                         className="margin-r-t"
                     >
                         {foundryId}

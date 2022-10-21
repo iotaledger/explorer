@@ -1,26 +1,20 @@
 /* eslint-disable camelcase */
-import { IBlock, IBlockMetadata, IOutputResponse } from "@iota/iota.js-stardust";
+import { IBlock, IBlockMetadata, IMilestonePayload, IOutputMetadataResponse, IOutputResponse, IOutputsResponse, OutputTypes } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
-import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
-import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
 import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
-import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociatedOutputsResponse } from "../../models/api/stardust/IAssociatedOutputsResponse";
-import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsRequest";
-import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
-import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
 import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
 import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
@@ -136,6 +130,33 @@ export class StardustTangleCacheService extends TangleCacheService {
     }
 
     /**
+     * Get a block.
+     * @param networkId The network to search
+     * @param blockId The block if to get.
+     * @returns The block response.
+     */
+    public async block(
+        networkId: string,
+        blockId: string
+    ): Promise<{ block?: IBlock; error?: string }> {
+        const cacheKey = `block-${blockId}`;
+        if (!this._stardustSearchCache[networkId][cacheKey]?.data?.block) {
+            const response = await this._api.block({ network: networkId, blockId });
+
+            if (!response.error) {
+                this._stardustSearchCache[networkId][cacheKey] = {
+                    data: { block: response.block },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
+        }
+
+        return { block: this._stardustSearchCache[networkId][cacheKey]?.data?.block };
+    }
+
+    /**
      * Get the block metadata.
      * @param networkId The network to search
      * @param blockId The block if to get the metadata for.
@@ -143,20 +164,13 @@ export class StardustTangleCacheService extends TangleCacheService {
      */
     public async blockDetails(
         networkId: string,
-        blockId: string): Promise<{
-            metadata?: IBlockMetadata;
-            error?: string;
-        }> {
+        blockId: string
+    ): Promise<{ metadata?: IBlockMetadata; error?: string }> {
         const response = await this._api.blockDetails({ network: networkId, blockId });
 
-        if (response) {
-            return {
-                metadata: response.metadata,
-                error: response.error
-            };
-        }
-
-        return {};
+        return !response.error ?
+            { metadata: response.metadata } :
+            { error: response.error };
     }
 
     /**
@@ -168,19 +182,22 @@ export class StardustTangleCacheService extends TangleCacheService {
      public async transactionIncludedBlockDetails(
         networkId: string,
         transactionId: string
-        ): Promise<IBlock | undefined> {
-        if (!this._stardustSearchCache[networkId][transactionId]?.data?.transactionBlock) {
+        ): Promise<{ block?: IBlock; error?: string }> {
+        const cacheKey = `blockByTxId-${transactionId}`;
+        if (!this._stardustSearchCache[networkId][cacheKey]?.data?.transactionBlock) {
             const response = await this._api.transactionIncludedBlockDetails({ network: networkId, transactionId });
 
-            if (response.block) {
-                this._stardustSearchCache[networkId][transactionId] = {
+            if (!response.error) {
+                this._stardustSearchCache[networkId][cacheKey] = {
                     data: { transactionBlock: response.block },
                     cached: Date.now()
                 };
+            } else {
+                return { error: response.error };
             }
         }
 
-        return this._stardustSearchCache[networkId][transactionId]?.data?.transactionBlock;
+        return { block: this._stardustSearchCache[networkId][cacheKey]?.data?.transactionBlock };
     }
 
     /**
@@ -192,19 +209,24 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async outputDetails(
         networkId: string,
         outputId: string
-    ): Promise<IOutputResponse | undefined> {
+    ): Promise<{ output?: OutputTypes; metadata?: IOutputMetadataResponse; error?: string }> {
         if (!this._stardustSearchCache[networkId][outputId]?.data?.output) {
             const response = await this._api.outputDetails({ network: networkId, outputId });
 
-            if (response?.output) {
+            if (!response.error) {
                 this._stardustSearchCache[networkId][outputId] = {
                     data: { output: response.output },
                     cached: Date.now()
                 };
+            } else {
+                return { error: response.error };
             }
         }
 
-        return this._stardustSearchCache[networkId][outputId]?.data?.output;
+        return {
+            output: this._stardustSearchCache[networkId][outputId]?.data?.output?.output,
+            metadata: this._stardustSearchCache[networkId][outputId]?.data?.output?.metadata
+        };
     }
 
     /**
@@ -259,22 +281,28 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async milestoneDetails(
         networkId: string,
         milestoneIndex: number
-    ): Promise<IMilestoneDetailsResponse | undefined> {
+    ): Promise<{ blockId?: string; milestoneId?: string; milestone?: IMilestonePayload; error?: string }> {
         const index = milestoneIndex.toString();
         if (!this._stardustSearchCache[networkId][index]?.data?.milestone) {
             const response = await this._api.milestoneDetails({ network: networkId, milestoneIndex });
 
-            if (response?.milestone) {
+            if (!response.error) {
                 this._stardustSearchCache[networkId][index] = {
                     data: {
                         milestone: response
                     },
                     cached: Date.now()
                 };
+            } else {
+                return { error: response.error };
             }
         }
 
-        return this._stardustSearchCache[networkId][index]?.data?.milestone;
+        return {
+            blockId: this._stardustSearchCache[networkId][index]?.data?.milestone?.blockId,
+            milestoneId: this._stardustSearchCache[networkId][index]?.data?.milestone?.milestoneId,
+            milestone: this._stardustSearchCache[networkId][index]?.data?.milestone?.milestone
+        };
     }
 
     /**
@@ -343,24 +371,25 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async aliasDetails(
         request: IAliasRequest,
         skipCache: boolean = false
-    ): Promise<IAliasResponse | undefined> {
-        if (!request.aliasId) {
-            return;
-        }
-
-        const cacheEntry = this._stardustSearchCache[request.network][`${request.aliasId}--details`];
+    ): Promise<{ aliasDetails?: IOutputResponse; error?: string }> {
+        const cacheKey = `${request.aliasId}--details`;
+        const cacheEntry = this._stardustSearchCache[request.network][cacheKey];
 
         if (!cacheEntry?.data?.aliasDetails || skipCache) {
             const response = await this._api.aliasDetails(request);
 
-            this._stardustSearchCache[request.network][`${request.aliasId}--details`] = {
-                data: { aliasDetails: response.aliasDetails },
-                cached: Date.now()
-            };
+            if (!response.error) {
+                this._stardustSearchCache[request.network][cacheKey] = {
+                    data: { aliasDetails: response.aliasDetails },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
         }
 
         return {
-            aliasDetails: this._stardustSearchCache[request.network][`${request.aliasId}--details`]?.data?.aliasDetails
+            aliasDetails: this._stardustSearchCache[request.network][cacheKey]?.data?.aliasDetails
         };
     }
 
@@ -373,22 +402,25 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async foundryDetails(
         request: IFoundryRequest,
         skipCache: boolean = false
-    ): Promise<IFoundryResponse | undefined> {
-        const cacheEntry = this._stardustSearchCache[request.network][`${request.foundryId}--fdetails`];
+    ): Promise<{ foundryDetails?: IOutputResponse; error?: string }> {
+        const cacheKey = `${request.foundryId}--fdetails`;
+        const cacheEntry = this._stardustSearchCache[request.network][cacheKey];
 
         if (!cacheEntry?.data?.foundryDetails || skipCache) {
             const response = await this._api.foundryDetails(request);
 
-            this._stardustSearchCache[request.network][`${request.foundryId}--fdetails`] = {
-                data: { foundryDetails: response.foundryDetails },
-                cached: Date.now()
-            };
+            if (!response.error) {
+                this._stardustSearchCache[request.network][cacheKey] = {
+                    data: { foundryDetails: response.foundryDetails },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
         }
 
         return {
-            foundryDetails: this._stardustSearchCache[request.network][`${request.foundryId}--fdetails`]
-                ?.data
-                    ?.foundryDetails
+            foundryDetails: this._stardustSearchCache[request.network][cacheKey]?.data?.foundryDetails
         };
     }
 
@@ -401,21 +433,25 @@ export class StardustTangleCacheService extends TangleCacheService {
      public async foundriesByAliasAddress(
         request: IFoundriesRequest,
         skipCache: boolean = false
-    ): Promise<IFoundriesResponse | undefined> {
-        const cacheEntry = this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`];
+    ): Promise<{ foundryOutputsResponse?: IOutputsResponse; error?: string }> {
+        const cacheKey = `${request.aliasAddress}--foundries`;
+        const cacheEntry = this._stardustSearchCache[request.network][cacheKey];
 
         if (!cacheEntry?.data?.foundryOutputs || skipCache) {
-            const foundryOutputs = await this._api.aliasFoundries(request);
+            const response = await this._api.aliasFoundries(request);
 
-            this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`] = {
-                data: { foundryOutputs: foundryOutputs.foundryOutputsResponse },
-                cached: Date.now()
-            };
+            if (!response.error) {
+                this._stardustSearchCache[request.network][cacheKey] = {
+                    data: { foundryOutputs: response.foundryOutputsResponse },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
         }
 
         return {
-            foundryOutputsResponse:
-                this._stardustSearchCache[request.network][`${request.aliasAddress}--foundries`]?.data?.foundryOutputs
+            foundryOutputsResponse: this._stardustSearchCache[request.network][cacheKey]?.data?.foundryOutputs
         };
     }
 
@@ -428,20 +464,25 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async nfts(
         request: INftOutputsRequest,
         skipCache: boolean = false
-    ): Promise<INftOutputsResponse | undefined> {
-        const cacheEntry = this._stardustSearchCache[request.network][`${request.address}--nft-outputs`];
+    ): Promise<{ outputs?: IOutputsResponse; error?: string }> {
+        const cacheKey = `${request.address}--nft-outputs`;
+        const cacheEntry = this._stardustSearchCache[request.network][cacheKey];
 
         if (!cacheEntry?.data?.nftOutputs || skipCache) {
-            const nftOutputs = await this._api.nftOutputs(request);
+            const response = await this._api.nftOutputs(request);
 
-            this._stardustSearchCache[request.network][`${request.address}--nft-outputs`] = {
-                data: { nftOutputs: nftOutputs.outputs },
-                cached: Date.now()
-            };
+            if (!response.error) {
+                this._stardustSearchCache[request.network][cacheKey] = {
+                    data: { nftOutputs: response.outputs },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
         }
 
         return {
-            outputs: this._stardustSearchCache[request.network][`${request.address}--nft-outputs`]?.data?.nftOutputs
+            outputs: this._stardustSearchCache[request.network][cacheKey]?.data?.nftOutputs
         };
     }
 
@@ -454,19 +495,25 @@ export class StardustTangleCacheService extends TangleCacheService {
      public async nftDetails(
         request: INftDetailsRequest,
         skipCache: boolean = false
-    ): Promise<INftDetailsResponse | undefined> {
-        const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-address-details`];
+    ): Promise<{ nftDetails?: IOutputResponse; error?: string }> {
+        const cacheKey = `${request.nftId}--nft-address-details`;
+        const cacheEntry = this._stardustSearchCache[request.network][cacheKey];
 
         if (!cacheEntry?.data?.nftDetails || skipCache) {
             const response = await this._api.nftDetails(request);
-            this._stardustSearchCache[request.network][`${request.nftId}--nft-address-details`] = {
-                data: { nftDetails: response.nftDetails },
-                cached: Date.now()
-            };
+
+            if (!response.error) {
+                this._stardustSearchCache[request.network][cacheKey] = {
+                    data: { nftDetails: response.nftDetails },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
         }
 
         return {
-            nftDetails: this._stardustSearchCache[request.network][`${request.nftId}--nft-address-details`]
+            nftDetails: this._stardustSearchCache[request.network][cacheKey]
                 ?.data?.nftDetails
         };
     }
