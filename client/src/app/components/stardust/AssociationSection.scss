@@ -5,7 +5,7 @@
 @import "../../../scss/themes";
 
 .section.association-section {
-    padding: 20px 0px;
+    padding: 20px 8px;
 
     .association-section--header {
         height: 40px;
@@ -154,5 +154,25 @@
 
     .association-section--pagination {
         margin-top: 12px;
+    }
+
+    .load-more--button {
+        margin: 24px 0 8px 0;
+        align-self: center;
+        font-family: $metropolis;
+        width: fit-content;
+        padding: 4px 8px;
+        cursor: pointer;
+
+        &:hover {
+            button {
+                color: $main-green-highlight;
+            }
+        }
+
+        button {
+            padding: 6px;
+            color: var(--header-icon-color);
+        }
     }
 }

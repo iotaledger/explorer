@@ -11,6 +11,7 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import AssetsTable from "../../components/stardust/AssetsTable";
+import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputs";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import Feature from "../../components/stardust/Feature";
 import NetworkContext from "../../context/NetworkContext";
@@ -151,15 +152,13 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState> {
                                 {output && (
                                     <AssetsTable networkId={networkId} outputs={[output]} />
                                 )}
-                                {
-                                //     bech32AddressDetails?.bech32 && (
-                                //     <AssociatedOutputsTable
-                                //         network={networkId}
-                                //         addressDetails={bech32AddressDetails}
-                                //         onAsyncStatusChange={() => {}}
-                                //     />
-                                // )
-                                }
+                                {bech32AddressDetails?.bech32 && (
+                                    <AssociatedOutputsTable
+                                        network={networkId}
+                                        addressDetails={bech32AddressDetails}
+                                        onAsyncStatusChange={() => { }}
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
