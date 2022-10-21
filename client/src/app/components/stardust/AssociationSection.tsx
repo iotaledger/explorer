@@ -190,16 +190,16 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                 );
                             })}
                         </div>
-
-                        <div className="card load-more--button">
-                            <button
-                                onClick={() => setLoadMoreCounter(loadMoreCounter + 1)}
-                                type="button"
-                                disabled={isLoading}
-                            >
-                                Load more...
-                            </button>
-                        </div>
+                        {outputDetails.length < count && (
+                            <div className="card load-more--button">
+                                <button
+                                    onClick={() => setLoadMoreCounter(loadMoreCounter + 1)}
+                                    type="button"
+                                    disabled={isLoading}
+                                >
+                                    Load more...
+                                </button>
+                            </div>)}
                     </React.Fragment>
                 )}
             </div> : null
