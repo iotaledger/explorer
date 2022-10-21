@@ -21,7 +21,7 @@ import NotFound from "../../components/NotFound";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import AssetsTable from "../../components/stardust/AssetsTable";
-import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputs";
+import AssociatedOutputs from "../../components/stardust/AssociatedOutputs";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import ControlledFoundry from "../../components/stardust/ControlledFoundry";
 import NetworkContext from "../../context/NetworkContext";
@@ -292,7 +292,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                     <AssetsTable networkId={network} outputs={[aliasOutput]} />
                 )}
                 {bech32AddressDetails?.bech32 && (
-                    <AssociatedOutputsTable
+                    <AssociatedOutputs
                         network={network}
                         addressDetails={bech32AddressDetails}
                         onAsyncStatusChange={() => { }}
