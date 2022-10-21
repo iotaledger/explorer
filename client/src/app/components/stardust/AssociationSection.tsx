@@ -11,7 +11,6 @@ import { AssociationType } from "../../../models/api/stardust/IAssociationsRespo
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import NetworkContext from "../../context/NetworkContext";
-import Pagination from "../Pagination";
 import Spinner from "../Spinner";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import { ASSOCIATION_TYPE_TO_LABEL } from "./AssociatedOutputsUtils";
@@ -29,7 +28,6 @@ interface IOutputDetails {
     amount: string;
 }
 
-const JOB_KEY = "loadAssocOutputDetails";
 const PAGE_SIZE = 10;
 
 const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, outputIds }) => {
@@ -40,12 +38,9 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
     );
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFormatBalance, setIsFormatBalance] = useState(false);
-    const [jobToStatus, setJobToStatus] = useState(
-        new Map<string, PromiseStatus>().set(JOB_KEY, PromiseStatus.PENDING)
-    );
+    const [jobToStatus, setJobToStatus] = useState(PromiseStatus.PENDING);
+    const [loadMoreCounter, setLoadMoreCounter] = useState(0);
     const [outputDetails, setOutputDetails] = useState<IOutputDetails[]>([]);
-    const [page, setPage] = useState<IOutputDetails[]>([]);
-    const [pageNumber, setPageNumber] = useState<number>(1);
 
     useEffect(() => {
         mounted.current = true;
@@ -58,26 +53,30 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
         const loadedOutputDetails: IOutputDetails[] = [];
         const outputIdsToDetails: Map<string, IOutputDetails> = new Map();
 
-        const loadOutputDetailsMonitor = new PromiseMonitor(status => {
-            setJobToStatus(jobToStatus.set(JOB_KEY, status));
-            // This actually happends after all promises are DONE
-            if (status === PromiseStatus.DONE) {
-                for (const outputId of outputIds ?? []) {
-                    const details = outputIdsToDetails.get(outputId);
-                    if (details) {
-                        const { dateCreated, ago, amount } = details;
-                        loadedOutputDetails.push({ outputId, dateCreated, ago, amount });
+        if (outputIds && isExpanded) {
+            const from = loadMoreCounter * PAGE_SIZE;
+            const to = from + PAGE_SIZE;
+            const sliceToLoad = outputIds.slice(from, to);
+
+            const loadOutputDetailsMonitor = new PromiseMonitor(status => {
+                setJobToStatus(status);
+                // This actually happends after all promises are DONE
+                if (status === PromiseStatus.DONE) {
+                    for (const outputId of sliceToLoad) {
+                        const details = outputIdsToDetails.get(outputId);
+                        if (details) {
+                            const { dateCreated, ago, amount } = details;
+                            loadedOutputDetails.push({ outputId, dateCreated, ago, amount });
+                        }
+                    }
+
+                    if (mounted.current) {
+                        setOutputDetails(outputDetails.concat(loadedOutputDetails));
                     }
                 }
+            });
 
-                if (mounted.current) {
-                    setOutputDetails(loadedOutputDetails.reverse());
-                }
-            }
-        });
-
-        if (outputIds && isExpanded) {
-            for (const outputId of outputIds) {
+            for (const outputId of sliceToLoad) {
                 // eslint-disable-next-line no-void
                 void loadOutputDetailsMonitor.enqueue(
                     async () => tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
@@ -92,21 +91,10 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                 );
             }
         }
-    }, [outputIds, isExpanded]);
-
-    // on page change handler
-    useEffect(() => {
-        if (outputDetails && mounted.current) {
-            const from = (pageNumber - 1) * PAGE_SIZE;
-            const to = from + PAGE_SIZE;
-
-            const slicedDetails = outputDetails.slice(from, to);
-            setPage(slicedDetails);
-        }
-    }, [outputDetails, pageNumber]);
+    }, [outputIds, isExpanded, loadMoreCounter]);
 
     const count = outputIds?.length;
-    const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
+    const isLoading = jobToStatus !== PromiseStatus.DONE;
 
     return (
         count ?
@@ -127,7 +115,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                         </div>
                     )}
                 </div>
-                {!isExpanded || isLoading ? null : (
+                {!isExpanded || outputDetails.length === 0 ? null : (
                     <React.Fragment>
                         <table className="association-section--table">
                             <thead>
@@ -138,81 +126,78 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                 </tr>
                             </thead>
                             <tbody>
-                                {
-                                    page.map((details, idx) => {
-                                        const { outputId, dateCreated, ago, amount } = details;
-                                        return (
-                                            <tr key={idx}>
-                                                <td className="card">
-                                                    <Link
-                                                        to={`/${network}/output/${outputId}`}
-                                                        className="margin-r-t highlight"
-                                                    >
-                                                        <span className="highlight">{outputId}</span>
-                                                    </Link>
-                                                </td>
-                                                <td className="date-created">{dateCreated} ({ago})</td>
-                                                <td className="amount">
-                                                    <span
-                                                        onClick={() => setIsFormatBalance(!isFormatBalance)}
-                                                        className="pointer margin-r-5"
-                                                    >
-                                                        {formatAmount(Number(amount), tokenInfo, isFormatBalance)}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                }
+                                {outputDetails.map((details, idx) => {
+                                    const { outputId, dateCreated, ago, amount } = details;
+                                    return (
+                                        <tr key={idx}>
+                                            <td className="card">
+                                                <Link
+                                                    to={`/${network}/output/${outputId}`}
+                                                    className="margin-r-t highlight"
+                                                >
+                                                    <span className="highlight">{outputId}</span>
+                                                </Link>
+                                            </td>
+                                            <td className="date-created">{dateCreated} ({ago})</td>
+                                            <td className="amount">
+                                                <span
+                                                    onClick={() => setIsFormatBalance(!isFormatBalance)}
+                                                    className="pointer margin-r-5"
+                                                >
+                                                    {formatAmount(Number(amount), tokenInfo, isFormatBalance)}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
 
                         <div className="association-section--cards">
-                            {
-                                page.map((details, idx) => {
-                                    const { outputId, dateCreated, ago, amount } = details;
-                                    const outputIdShort = `${outputId.slice(0, 11)}....${outputId.slice(-11)}`;
+                            {outputDetails.map((details, idx) => {
+                                const { outputId, dateCreated, ago, amount } = details;
+                                const outputIdShort = `${outputId.slice(0, 11)}....${outputId.slice(-11)}`;
 
-                                    return (
-                                        <div key={idx} className="card">
-                                            <div className="field">
-                                                <div className="label">Output Id</div>
-                                                <Link
-                                                    to={`/${network}/output/${outputId}`}
-                                                    className="margin-r-t value"
+                                return (
+                                    <div key={idx} className="card">
+                                        <div className="field">
+                                            <div className="label">Output Id</div>
+                                            <Link
+                                                to={`/${network}/output/${outputId}`}
+                                                className="margin-r-t value"
+                                            >
+                                                <span className="highlight">{outputIdShort}</span>
+                                            </Link>
+                                        </div>
+                                        <div className="field">
+                                            <div className="label">Date Created</div>
+                                            <div className="value date-created">{dateCreated} ({ago})</div>
+                                        </div>
+                                        <div className="field">
+                                            <div className="label">Amount</div>
+                                            <div className="value amount">
+                                                <span
+                                                    onClick={() => setIsFormatBalance(!isFormatBalance)}
+                                                    className="pointer margin-r-5"
                                                 >
-                                                    <span className="highlight">{outputIdShort}</span>
-                                                </Link>
-                                            </div>
-                                            <div className="field">
-                                                <div className="label">Date Created</div>
-                                                <div className="value date-created">{dateCreated} ({ago})</div>
-                                            </div>
-                                            <div className="field">
-                                                <div className="label">Amount</div>
-                                                <div className="value amount">
-                                                    <span
-                                                        onClick={() => setIsFormatBalance(!isFormatBalance)}
-                                                        className="pointer margin-r-5"
-                                                    >
-                                                        {formatAmount(Number(amount), tokenInfo, isFormatBalance)}
-                                                    </span>
-                                                </div>
+                                                    {formatAmount(Number(amount), tokenInfo, isFormatBalance)}
+                                                </span>
                                             </div>
                                         </div>
-                                    );
-                                })
-                            }
+                                    </div>
+                                );
+                            })}
                         </div>
 
-                        <Pagination
-                            classNames="association-section--pagination"
-                            currentPage={pageNumber}
-                            totalCount={outputDetails.length}
-                            pageSize={PAGE_SIZE}
-                            siblingsCount={1}
-                            onPageChange={number => setPageNumber(number)}
-                        />
+                        <div className="card load-more--button">
+                            <button
+                                onClick={() => setLoadMoreCounter(loadMoreCounter + 1)}
+                                type="button"
+                                disabled={isLoading}
+                            >
+                                Load more...
+                            </button>
+                        </div>
                     </React.Fragment>
                 )}
             </div> : null
