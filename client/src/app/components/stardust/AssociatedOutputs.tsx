@@ -12,7 +12,6 @@ import associatedOuputsMessage from "./../../../assets/modals/stardust/address/a
 import { AssociatedOutputTab, outputTypeToAssociations } from "./AssociatedOutputsUtils";
 import AssociationSection from "./AssociationSection";
 import "./AssociatedOutputs.scss";
-import { ED25519_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 
 interface AssociatedOutputsTableProps {
     /**
@@ -25,8 +24,6 @@ interface AssociatedOutputsTableProps {
     addressDetails: IBech32AddressDetails;
 }
 
-export const TABS: AssociatedOutputTab[] = ["Basic", "NFT", "Alias", "Foundry"];
-
 const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps> = (
     { network, addressDetails, onAsyncStatusChange }
 ) => {
@@ -36,6 +33,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
     );
     const [currentTab, setCurrentTab] = useState<AssociatedOutputTab>("Basic");
     const [associations, setAssociations] = useState<IAssociation[]>([]);
+    const [tabsToRender, setTabsToRender] = useState<AssociatedOutputTab[]>([]);
 
     const unmount = () => {
         mounted.current = false;
@@ -57,13 +55,27 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
             })
         );
 
-        if (addressDetails.type === ED25519_ADDRESS_TYPE) {
-            const index = TABS.indexOf("Foundry");
-            TABS.splice(index, 1);
-        }
-
         return unmount;
     }, [network, addressDetails]);
+
+    useEffect(() => {
+        if (associations.length > 0) {
+            const tabs: AssociatedOutputTab[] = [];
+            if (associations.some(association => AssociationType[association.type].startsWith("BASIC"))) {
+                tabs.push("Basic");
+            }
+            if (associations.some(association => AssociationType[association.type].startsWith("NFT"))) {
+                tabs.push("NFT");
+            }
+            if (associations.some(association => AssociationType[association.type].startsWith("ALIAS"))) {
+                tabs.push("Alias");
+            }
+            if (associations.some(association => AssociationType[association.type].startsWith("FOUNDRY"))) {
+                tabs.push("Foundry");
+            }
+            setTabsToRender(tabs);
+        }
+    }, [associations]);
 
     const associationTypesToRender: AssociationType[] | undefined = outputTypeToAssociations.get(currentTab);
 
@@ -76,7 +88,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
                         <Modal icon="info" data={associatedOuputsMessage} />
                     </div>
                     <div className="tabs-wrapper">
-                        {TABS.map((tab, idx) => (
+                        {tabsToRender.map((tab, idx) => (
                             <button
                                 type="button"
                                 key={idx}
