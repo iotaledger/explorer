@@ -100,9 +100,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
 
     return (
         count ?
-            <div
-                className="section association-section"
-            >
+            <div className="section association-section">
                 <div
                     className="row association-section--header middle pointer"
                     onClick={() => setIsExpanded(!isExpanded)}
@@ -199,7 +197,8 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                 >
                                     Load more...
                                 </button>
-                            </div>)}
+                            </div>
+                        )}
                     </React.Fragment>
                 )}
             </div> : null

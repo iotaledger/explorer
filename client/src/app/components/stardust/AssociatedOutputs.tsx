@@ -106,7 +106,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
                     );
                     return (
                         <AssociationSection
-                            key={idx}
+                            key={`${currentTab}-${idx}`}
                             association={associationType}
                             outputIds={targetAssociation?.outputIds.reverse()}
                         />
