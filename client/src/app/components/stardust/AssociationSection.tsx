@@ -80,12 +80,14 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                 // eslint-disable-next-line no-void
                 void loadOutputDetailsMonitor.enqueue(
                     async () => tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
-                        if (outputDetails) {
+                        if (outputDetails.output && outputDetails.metadata) {
                             const timestampBooked = outputDetails.metadata.milestoneTimestampBooked * 1000;
                             const dateCreated = DateHelper.formatShort(Number(timestampBooked));
                             const ago = moment(timestampBooked).fromNow();
                             const amount = outputDetails.output.amount;
                             outputIdsToDetails.set(outputId, { outputId, dateCreated, ago, amount });
+                        } else if (outputDetails.error) {
+                            console.log(`Error while loading associated output details for ${outputId}`);
                         }
                     })
                 );

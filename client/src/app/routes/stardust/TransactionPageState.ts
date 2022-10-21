@@ -20,6 +20,11 @@ export interface TransactionPageState {
     block?: IBlock;
 
     /**
+     * The block fetching failed.
+     */
+    blockError?: string;
+
+    /**
      * The unlock addresses for the transactions.
      */
     inputs?: (IUTXOInput & IInput)[];

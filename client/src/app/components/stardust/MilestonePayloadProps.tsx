@@ -10,12 +10,17 @@ export interface MilestonePayloadProps {
     /**
      * The milestone payload.
      */
-    payload: IMilestonePayload;
+    milestonePayload: IMilestonePayload;
 
     /**
      * History for navigation.
      */
     history: H.History;
+
+    /**
+     * The network protocol version.
+     */
+    protocolVersion: number;
 
     /**
      * Display advanced mode.

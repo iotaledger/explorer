@@ -12,6 +12,8 @@ import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddress
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
+import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
+import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/milestone/IMilestoneDetailsResponse";
@@ -59,6 +61,37 @@ export class StardustTangleHelper {
     }
 
     /**
+     * Get a block.
+     * @param network The network to find the items on.
+     * @param blockId The block id to get the details.
+     * @returns The block response.
+     */
+    public static async block(network: INetwork, blockId: string): Promise<IBlockResponse> {
+        blockId = HexHelper.addPrefix(blockId);
+        const blockRaw = await this.tryFetchPermanodeThenNode<string, Uint8Array>(
+            blockId,
+            "blockRaw",
+            network
+        );
+
+        if (!blockRaw) {
+            return { error: `Couldn't find block with id ${blockId}` };
+        }
+
+        try {
+            const block = deserializeBlock(new ReadStream(blockRaw));
+            if (block && Object.keys(block).length > 0) {
+                return {
+                    block
+                };
+            }
+        } catch (e) {
+            console.log(`Block deserialization failed for block with block id ${blockId}.`, e);
+            return { error: "Block deserialization failed." };
+        }
+    }
+
+    /**
      * Get the block details.
      * @param network The network to find the items on.
      * @param blockId The block id to get the details.
@@ -96,6 +129,10 @@ export class StardustTangleHelper {
             network
         );
 
+        if (!blockRaw) {
+            return { error: `Couldn't find block from transaction id ${transactionId}` };
+        }
+
         try {
             const block = deserializeBlock(new ReadStream(blockRaw));
             if (block) {
@@ -114,16 +151,16 @@ export class StardustTangleHelper {
      * @param outputId The output id to get the details.
      * @returns The item details.
      */
-    public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputResponse | undefined> {
+    public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputDetailsResponse> {
         const outputResponse = await this.tryFetchPermanodeThenNode<string, IOutputResponse>(
             outputId,
             "output",
             network
         );
 
-        if (outputResponse) {
-            return outputResponse;
-        }
+        return outputResponse ?
+            { output: outputResponse } :
+            { error: "Output not found" };
     }
 
     /**
@@ -259,13 +296,11 @@ export class StardustTangleHelper {
         );
 
         if (aliasOutput.items.length > 0) {
-            const aliasDetails = await this.outputDetails(network, aliasOutput.items[0]);
+            const outputResponse = await this.outputDetails(network, aliasOutput.items[0]);
 
-            if (aliasDetails) {
-                return {
-                    aliasDetails
-                };
-            }
+            return !outputResponse.error ?
+                { aliasDetails: outputResponse.output } :
+                { error: outputResponse.error };
         }
     }
 
@@ -292,6 +327,8 @@ export class StardustTangleHelper {
                     foundryOutputsResponse: response
                 };
             }
+
+            return { error: "Foundry output not found" };
         } catch { }
     }
 
@@ -313,13 +350,11 @@ export class StardustTangleHelper {
         );
 
         if (foundryOutput.items.length > 0) {
-            const foundryDetails = await this.outputDetails(network, foundryOutput.items[0]);
+            const outputResponse = await this.outputDetails(network, foundryOutput.items[0]);
 
-            if (foundryDetails) {
-                return {
-                    foundryDetails
-                };
-            }
+            return !outputResponse.error ?
+                { foundryDetails: outputResponse.output } :
+                { error: outputResponse.error };
         }
     }
 
@@ -367,15 +402,15 @@ export class StardustTangleHelper {
                 true
             );
 
-            if (nftOutputs.items.length > 0) {
-                const nftDetails = await this.outputDetails(network, nftOutputs.items[0]);
+            if (nftOutputs?.items.length > 0) {
+                const outputResponse = await this.outputDetails(network, nftOutputs.items[0]);
 
-                if (nftDetails) {
-                    return {
-                        nftDetails
-                    };
-                }
+                return !outputResponse.error ?
+                    { nftDetails: outputResponse.output } :
+                    { error: outputResponse.error };
             }
+
+            return { error: "Nft output not found" };
         } catch { }
     }
 
@@ -416,21 +451,9 @@ export class StardustTangleHelper {
         }
 
         if (searchQuery.blockId) {
-            const blockRaw = await this.tryFetchPermanodeThenNode<string, Uint8Array>(
-                searchQuery.blockId,
-                "blockRaw",
-                network
-            );
-
-            try {
-                const block = deserializeBlock(new ReadStream(blockRaw));
-                if (block && Object.keys(block).length > 0) {
-                    return {
-                        block
-                    };
-                }
-            } catch (e) {
-                console.log(`Block deserialization failed for block with block id ${searchQuery.blockId}.`, e);
+            const response = await StardustTangleHelper.block(network, searchQuery.blockId);
+            if (response && !response.error) {
+                return response;
             }
         }
 
@@ -441,18 +464,20 @@ export class StardustTangleHelper {
                 network
             );
 
-            try {
-                const block = deserializeBlock(new ReadStream(blockRaw));
-                if (block && Object.keys(block).length > 0) {
-                    return {
-                        transactionBlock: block
-                    };
+            if (blockRaw) {
+                try {
+                    const block = deserializeBlock(new ReadStream(blockRaw));
+                    if (block && Object.keys(block).length > 0) {
+                        return {
+                            transactionBlock: block
+                        };
+                    }
+                } catch (e) {
+                    console.log(
+                        `Block deserialization failed for block with transaction id ${searchQuery.transactionId}.`,
+                        e
+                    );
                 }
-            } catch (e) {
-                console.log(
-                    `Block deserialization failed for block with transaction id ${searchQuery.transactionId}.`,
-                    e
-                );
             }
         }
 

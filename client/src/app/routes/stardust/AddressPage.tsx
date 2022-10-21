@@ -85,10 +85,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             };
         }
 
-        if (!(this.props.location.state as IAddressPageLocationProps)?.addressDetails) {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
-        }
-
         const { addressDetails } = this.props.location.state as IAddressPageLocationProps;
 
         if (addressDetails?.hex) {
@@ -298,8 +294,13 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                     for (const outputId of addressOutputIds) {
                         void outputDetailsMonitor.enqueue(
                             async () => this._tangleCacheService.outputDetails(networkId, outputId).then(
-                                outputDetails => {
-                                    if (outputDetails) {
+                                response => {
+                                    if (!response.error && response.output && response.metadata) {
+                                        const outputDetails = {
+                                            output: response.output,
+                                            metadata: response.metadata
+                                        };
+
                                         outputResponse.push(outputDetails);
                                     }
                                 })

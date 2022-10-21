@@ -1,4 +1,4 @@
-export interface IBlockDetailsRequest {
+export interface IBlockRequest {
     /**
      * The network to search on.
      */
@@ -9,3 +9,4 @@ export interface IBlockDetailsRequest {
      */
     blockId: string;
 }
+
