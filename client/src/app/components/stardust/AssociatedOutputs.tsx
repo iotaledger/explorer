@@ -81,7 +81,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
 
     return (
         associations.length === 0 ? null : (
-            <div className="section">
+            <div className="section associated-outputs">
                 <div className="section--header">
                     <div className="row middle">
                         <h2>Associated Outputs</h2>
