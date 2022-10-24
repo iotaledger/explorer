@@ -9,7 +9,7 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Modal from "../Modal";
 import associatedOuputsMessage from "./../../../assets/modals/stardust/address/associated-outputs.json";
-import { AssociatedOutputTab, outputTypeToAssociations } from "./AssociatedOutputsUtils";
+import { AssociatedOutputTab, buildAssociatedOutputsTabs, outputTypeToAssociations } from "./AssociatedOutputsUtils";
 import AssociationSection from "./AssociationSection";
 import "./AssociatedOutputs.scss";
 
@@ -59,21 +59,10 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
     }, [network, addressDetails]);
 
     useEffect(() => {
-        if (associations.length > 0) {
-            const tabs: AssociatedOutputTab[] = [];
-            if (associations.some(association => AssociationType[association.type].startsWith("BASIC"))) {
-                tabs.push("Basic");
-            }
-            if (associations.some(association => AssociationType[association.type].startsWith("NFT"))) {
-                tabs.push("NFT");
-            }
-            if (associations.some(association => AssociationType[association.type].startsWith("ALIAS"))) {
-                tabs.push("Alias");
-            }
-            if (associations.some(association => AssociationType[association.type].startsWith("FOUNDRY"))) {
-                tabs.push("Foundry");
-            }
-            setTabsToRender(tabs);
+        const tabs = buildAssociatedOutputsTabs(associations);
+        setTabsToRender(tabs);
+        if (tabs.length > 0) {
+            setCurrentTab(tabs[0]);
         }
     }, [associations]);
 

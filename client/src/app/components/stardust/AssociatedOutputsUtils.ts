@@ -1,4 +1,4 @@
-import { AssociationType } from "../../../models/api/stardust/IAssociationsResponse";
+import { AssociationType, IAssociation } from "../../../models/api/stardust/IAssociationsResponse";
 
 export type AssociatedOutputTab = "Basic" | "NFT" | "Alias" | "Foundry";
 
@@ -53,5 +53,24 @@ export const ASSOCIATION_TYPE_TO_LABEL = {
     [AssociationType.NFT_EXPIRATION_RETURN]: "Expiration Return Unlock Condtition",
     [AssociationType.NFT_ISSUER]: "Issuer Feature",
     [AssociationType.NFT_SENDER]: "Sender Feature"
+};
+
+export const buildAssociatedOutputsTabs = (associations: IAssociation[]): AssociatedOutputTab[] => {
+    const tabs: AssociatedOutputTab[] = [];
+    if (associations.length > 0) {
+        if (associations.some(association => AssociationType[association.type].startsWith("BASIC"))) {
+            tabs.push("Basic");
+        }
+        if (associations.some(association => AssociationType[association.type].startsWith("NFT"))) {
+            tabs.push("NFT");
+        }
+        if (associations.some(association => AssociationType[association.type].startsWith("ALIAS"))) {
+            tabs.push("Alias");
+        }
+        if (associations.some(association => AssociationType[association.type].startsWith("FOUNDRY"))) {
+            tabs.push("Foundry");
+        }
+    }
+    return tabs;
 };
 
