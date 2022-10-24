@@ -51,7 +51,7 @@
                     padding-left: 0px;
                 }
 
-                &.card .highlight {
+                &.card .output-id {
                     color: var(--link-color);
                     font-family: $ibm-plex-mono;
                     text-align: left;
@@ -112,13 +112,13 @@
                         color: var(--link-color);
                         font-family: $ibm-plex-mono;
                     }
-    
+
                     .date-created {
                         @include font-size(14px);
                         font-family: $ibm-plex-mono;
                         color: #485776;
                     }
-    
+
                     .amount {
                         color: var(--body-color);
                         font-family: $inter;

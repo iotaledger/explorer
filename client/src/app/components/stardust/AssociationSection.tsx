@@ -143,14 +143,16 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                             <tbody>
                                 {outputDetails.map((details, idx) => {
                                     const { outputId, dateCreated, ago, amount } = details;
+                                    const outputIdTransactionShort = `${outputId.slice(0, 15)}....${outputId.slice(-15)}`;
+
                                     return (
                                         <tr key={idx}>
                                             <td className="card">
                                                 <Link
                                                     to={`/${network}/output/${outputId}`}
-                                                    className="margin-r-t highlight"
+                                                    className="margin-r-t output-id"
                                                 >
-                                                    <span className="highlight">{outputId}</span>
+                                                    <span>{outputIdTransactionShort}</span>
                                                 </Link>
                                             </td>
                                             <td className="date-created">{dateCreated} ({ago})</td>
