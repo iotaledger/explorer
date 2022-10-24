@@ -18,7 +18,7 @@ import CopyButton from "../../components/CopyButton";
 import Spinner from "../../components/Spinner";
 import AddressBalance from "../../components/stardust/AddressBalance";
 import AssetsTable from "../../components/stardust/AssetsTable";
-import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
+import AssociatedOutputs from "../../components/stardust/AssociatedOutputs";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
 import NetworkContext from "../../context/NetworkContext";
@@ -213,7 +213,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         />
                                     )}
                                     {bech32AddressDetails && (
-                                        <AssociatedOutputsTable
+                                        <AssociatedOutputs
                                             network={networkId}
                                             addressDetails={bech32AddressDetails}
                                             onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("assoc")}

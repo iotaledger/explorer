@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { IAssociatedOutputsRequest } from "../../../../models/api/stardust/IAssociatedOutputsRequest";
-import { IAssociatedOutputsRequestBody } from "../../../../models/api/stardust/IAssociatedOutputsRequestBody";
-import { ASSOCIATION_TYPE_TO_PRIORITY, IAssociatedOutput, IAssociatedOutputsResponse } from "../../../../models/api/stardust/IAssociatedOutputsResponse";
+import { IAssociationsRequest } from "../../../../models/api/stardust/IAssociationsRequest";
+import { IAssociationsRequestBody } from "../../../../models/api/stardust/IAssociationsRequestBody";
+import { IAssociation, IAssociationsResponse } from "../../../../models/api/stardust/IAssociationsResponse";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -10,16 +10,16 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
  * Find the associated outputs for the address.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
  * @param body The request body
  * @returns The response.
  */
 export async function post(
-    config: IConfiguration,
-    request: IAssociatedOutputsRequest,
-    body: IAssociatedOutputsRequestBody
-): Promise<IAssociatedOutputsResponse> {
+    _: IConfiguration,
+    request: IAssociationsRequest,
+    body: IAssociationsRequestBody
+): Promise<IAssociationsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -33,16 +33,14 @@ export async function post(
 
     const helper = new AssociatedOutputsHelper(networkConfig, body.addressDetails);
     await helper.fetch();
-    const results = helper.outputIdToAssociations;
+    const result = helper.associationToOutputIds;
 
-    const outputs: IAssociatedOutput[] = [];
-    for (const [outputId, associations] of results.entries()) {
-        // Sort associations by priority
-        associations.sort((a, b) => (ASSOCIATION_TYPE_TO_PRIORITY[a] < ASSOCIATION_TYPE_TO_PRIORITY[b] ? -1 : 1));
-        outputs.push({ outputId, associations });
+    const associations: IAssociation[] = [];
+    for (const [type, outputIds] of result.entries()) {
+        associations.push({ type, outputIds: outputIds.reverse() });
     }
 
     return {
-        outputs
+        associations
     };
 }

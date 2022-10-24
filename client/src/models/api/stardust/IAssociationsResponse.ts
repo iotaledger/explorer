@@ -1,4 +1,3 @@
-import { IOutputResponse } from "@iota/iota.js-stardust";
 import { IResponse } from "../IResponse";
 
 export enum AssociationType {
@@ -15,20 +14,26 @@ export enum AssociationType {
     NFT_ADDRESS,
     NFT_STORAGE_RETURN,
     NFT_EXPIRATION_RETURN,
+    NFT_ISSUER,
     NFT_SENDER,
     NFT_ID
 }
 
-export interface IAssociatedOutput {
-    associations: AssociationType[];
-    outputId: string;
-    outputDetails?: IOutputResponse;
+export interface IAssociation {
+    /**
+     * The association for the output ids.
+     */
+    type: AssociationType;
+    /**
+     * The output ids for the association.
+     */
+    outputIds: string[];
 }
 
-export interface IAssociatedOutputsResponse extends IResponse {
+export interface IAssociationsResponse extends IResponse {
     /**
-     * The associated outputs.
+     * The associations to output ids.
      */
-    outputs?: IAssociatedOutput[];
+    associations?: IAssociation[];
 }
 

@@ -2,7 +2,7 @@ import { IBlock, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardus
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 import { IResponse } from "../IResponse";
 import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
-import { IAssociatedOutputsResponse } from "./IAssociatedOutputsResponse";
+import { IAssociationsResponse } from "./IAssociationsResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
 import { INftRegistryDetailsResponse } from "./nft/INftRegistryDetailsResponse";
@@ -41,7 +41,7 @@ export interface ISearchResponse extends IResponse {
     /**
      * Associated outputs of the address.
      */
-    addressAssociatedOutputs?: IAssociatedOutputsResponse;
+    addressAssociatedOutputs?: IAssociationsResponse;
 
     /**
      * Alias id if it was found.

@@ -13,7 +13,7 @@ import AsyncComponent from "../../components/AsyncComponent";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
 import AssetsTable from "../../components/stardust/AssetsTable";
-import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
+import AssociatedOutputs from "../../components/stardust/AssociatedOutputs";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import Feature from "../../components/stardust/Feature";
 import NetworkContext from "../../context/NetworkContext";
@@ -179,7 +179,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState & 
                     <AssetsTable networkId={network} outputs={[nftOutput]} />
                 )}
                 {bech32AddressDetails?.bech32 && (
-                    <AssociatedOutputsTable
+                    <AssociatedOutputs
                         network={network}
                         addressDetails={bech32AddressDetails}
                         onAsyncStatusChange={() => { }}

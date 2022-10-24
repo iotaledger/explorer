@@ -1,4 +1,4 @@
-export interface IAssociatedOutputsRequest {
+export interface IAssociationsRequest {
     /**
      * The network to search on.
      */
