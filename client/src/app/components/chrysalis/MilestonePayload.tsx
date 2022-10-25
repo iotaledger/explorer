@@ -193,11 +193,12 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
 
             this.setState({
                 milestone: result
-            }, async () => this.checkForAdjacentMilestones());
-
-            if (updateUrl) {
-                window.location.href = `/${this.props.network}/message/${this.state.milestone?.messageId}`;
-            }
+            }, async () => {
+                await this.checkForAdjacentMilestones();
+                if (updateUrl) {
+                    window.location.href = `/${this.props.network}/message/${this.state.milestone?.messageId}`;
+                }
+            });
         } else {
             this.props.history.replace(`/${this.props.network
                 }/search/${index}`);
