@@ -11,7 +11,12 @@ export interface TransactionPayloadState {
     showOutputDetails: number;
 
     /**
-     * Toggle balance between raw and formatted amount.
+     * Toggle input balance between raw and formatted amount.
      */
-    isFormattedBalance: boolean;
+    isInputBalanceFormatted: number[];
+
+    /**
+     * Toggle output balance between raw and formatted amount.
+     */
+    isOutputBalanceFormatted: number[];
 }
