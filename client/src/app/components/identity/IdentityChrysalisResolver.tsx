@@ -1,31 +1,30 @@
 import { IMessageMetadata } from "@iota/iota.js";
-import { Fragment, ReactNode } from "react";
+import React, { Fragment, ReactNode } from "react";
+import { HiDownload } from "react-icons/hi";
 import { RouteComponentProps } from "react-router-dom";
+import contentMessage from "../../../assets/modals/identity-resolver/content.json";
+import welcomeMessage from "../../../assets/modals/identity-resolver/welcome.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { DownloadHelper } from "../../../helpers/downloadHelper";
 import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { TangleStatus } from "../../../models/tangleStatus";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
+import { IdentityDiffStorageService } from "../../../services/identityDiffStorageService";
 import { IdentityService } from "../../../services/identityService";
 import AsyncComponent from "../AsyncComponent";
-import "./IdentityChrysalisResolver.scss"
-import { IdentityChrysalisResolverProps } from "./IdentityChrysalisResolverProps";
-import { IdentityChrysalisResolverState } from "./IdentityChrysalisResolverState";
-import React from "react";
-import Modal from "../Modal";
+import "./IdentityChrysalisResolver.scss";
 import MessageTangleState from "../chrysalis/MessageTangleState";
 import CopyButton from "../CopyButton";
-import contentMessage from "../../../assets/modals/identity-resolver/content.json";
-import welcomeMessage from "../../../assets/modals/identity-resolver/welcome.json";
-import IdentityHistory from "./IdentityHistory";
 import JsonViewer from "../JsonViewer";
-import { HiDownload } from "react-icons/hi";
-import { DownloadHelper } from "../../../helpers/downloadHelper";
-import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
+import Modal from "../Modal";
 import Spinner from "../Spinner";
-import { IdentityDiffStorageService } from "../../../services/identityDiffStorageService";
+import { IdentityChrysalisResolverProps } from "./IdentityChrysalisResolverProps";
+import { IdentityChrysalisResolverState } from "./IdentityChrysalisResolverState";
+import IdentityHistory from "./IdentityHistory";
+import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
 
 class IdentityChrysalisResolver extends AsyncComponent<
-    RouteComponentProps<IdentityChrysalisResolverProps> & { isSupported: boolean },
+    RouteComponentProps<IdentityChrysalisResolverProps> & { protocolVersion: string },
     IdentityChrysalisResolverState
 > {
     /**
@@ -43,7 +42,7 @@ class IdentityChrysalisResolver extends AsyncComponent<
      */
     private readonly EMPTY_MESSAGE_ID = "0".repeat(64);
 
-    constructor(props: RouteComponentProps<IdentityChrysalisResolverProps> & { isSupported: boolean }) {
+    constructor(props: RouteComponentProps<IdentityChrysalisResolverProps> & { protocolVersion: string }) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
@@ -61,6 +60,7 @@ class IdentityChrysalisResolver extends AsyncComponent<
             version: undefined
         };
     }
+
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
@@ -109,52 +109,15 @@ class IdentityChrysalisResolver extends AsyncComponent<
         IdentityDiffStorageService.instance.clearAll();
     }
 
-    private async updateMessageDetails(msgId: string): Promise<void> {
-        if (msgId === this.EMPTY_MESSAGE_ID) {
-            return;
-        }
-        const details = await this._tangleCacheService.messageDetails(this.props.match.params.network, msgId);
-
-        this.setState({
-            metadata: details?.metadata,
-            messageTangleStatus: this.calculateStatus(details?.metadata)
-        });
-
-        if (!details?.metadata?.referencedByMilestoneIndex) {
-            this._timerId = setTimeout(async () => {
-                await this.updateMessageDetails(msgId);
-            }, 10000);
-        }
-    }
-    /**
-     * Calculate the status for the message.
-     * @param metadata The metadata to calculate the status from.
-     * @returns The message status.
-     */
-    private calculateStatus(metadata?: IMessageMetadata): TangleStatus {
-        let messageTangleStatus: TangleStatus = "unknown";
-
-        if (metadata) {
-            if (metadata.milestoneIndex) {
-                messageTangleStatus = "milestone";
-            } else if (metadata.referencedByMilestoneIndex) {
-                messageTangleStatus = "referenced";
-            } else {
-                messageTangleStatus = "pending";
-            }
-        }
-
-        return messageTangleStatus;
-    }
 
  /**
- * Render the component.
- * @returns The node to render.
- */
+  * Render the component.
+  * @returns The node to render.
+  */
     public render(): ReactNode {
         return (
             <div>
-                <div className="row space-between wrap  ">
+                <div className="row space-between wrap">
                     <div className="row middle">
                         <h1>
                             Decentralized Identifier
@@ -311,9 +274,47 @@ class IdentityChrysalisResolver extends AsyncComponent<
                         <IdentityHistory version={this.state.version} {...this.props} />}
                 </div>
             </div>
-        )
+        );
     }
 
+    private async updateMessageDetails(msgId: string): Promise<void> {
+        if (msgId === this.EMPTY_MESSAGE_ID) {
+            return;
+        }
+        const details = await this._tangleCacheService.messageDetails(this.props.match.params.network, msgId);
+
+        this.setState({
+            metadata: details?.metadata,
+            messageTangleStatus: this.calculateStatus(details?.metadata)
+        });
+
+        if (!details?.metadata?.referencedByMilestoneIndex) {
+            this._timerId = setTimeout(async () => {
+                await this.updateMessageDetails(msgId);
+            }, 9999);
+        }
+    }
+
+    /**
+     * Calculate the status for the message.
+     * @param metadata The metadata to calculate the status from.
+     * @returns The message status.
+     */
+    private calculateStatus(metadata?: IMessageMetadata): TangleStatus {
+        let messageTangleStatus: TangleStatus = "unknown";
+
+        if (metadata) {
+            if (metadata.milestoneIndex) {
+                messageTangleStatus = "milestone";
+            } else if (metadata.referencedByMilestoneIndex) {
+                messageTangleStatus = "referenced";
+            } else {
+                messageTangleStatus = "pending";
+            }
+        }
+
+        return messageTangleStatus;
+    }
 }
 
 export default IdentityChrysalisResolver;

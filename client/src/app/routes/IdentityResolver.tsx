@@ -2,6 +2,7 @@
 import React, { Fragment, ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { CHRYSALIS, OG, STARDUST } from "../../models/config/protocolVersion";
 import { NetworkService } from "../../services/networkService";
 import AsyncComponent from "../components/AsyncComponent";
 import IdentityChrysalisResolver from "../components/identity/IdentityChrysalisResolver";
@@ -15,15 +16,14 @@ import { IdentityResolverState } from "./IdentityResolverState";
 
 
 class IdentityResolver extends AsyncComponent<
-    RouteComponentProps<IdentityResolverProps> & { isSupported: boolean },
+    RouteComponentProps<IdentityResolverProps> & { protocolVersion: string },
     IdentityResolverState
 > {
-
-    constructor(props: RouteComponentProps<IdentityResolverProps> & { isSupported: boolean }) {
+    constructor(props: RouteComponentProps<IdentityResolverProps> & { protocolVersion: string }) {
         super(props);
 
         this.state = {
-            didExample: undefined,
+            didExample: undefined
         };
     }
 
@@ -46,10 +46,9 @@ class IdentityResolver extends AsyncComponent<
                             <div className="cards">
                                 {!this.props.match.params.did && (
                                     <Fragment>
-                                        {!this.props.isSupported && (
+                                        {this.props.protocolVersion === OG && (
                                             <div className="unsupported-network">
-                                                Network is not supported. IOTA Identity only supports chrysalis phase 2
-                                                networks, such as the IOTA main network.
+                                                This network is not supported!
                                             </div>
                                         )}
 
@@ -65,12 +64,10 @@ class IdentityResolver extends AsyncComponent<
                                                 <p className="tool-description">
                                                     The Identity Resolver is a tool for resolving Decentralized
                                                     Identifiers (DIDs) into their associated DID Document, by retrieving
-                                                    the information from an IOTA Tangle. The tool has debugging
-                                                    capabilities to view the entire history of a DID Document, including
-                                                    invalid DID messages.
+                                                    the information from an IOTA or Shimmer network.
                                                 </p>
                                             </div>
-                                            {this.props.isSupported && (
+                                            {this.props.protocolVersion !== OG && (
                                                 <div className="row middle margin-b-s row--tablet-responsive">
                                                     <IdentitySearchInput
                                                         compact={false}
@@ -82,17 +79,15 @@ class IdentityResolver extends AsyncComponent<
                                                 </div>
                                             )}
 
-                                            {this.state.didExample && (
+                                            {this.state.didExample && this.props.protocolVersion === STARDUST && (
                                                 <button
                                                     className="load-history-button"
                                                     onClick={() => {
                                                         this.props.history.push(
-                                                            // eslint-disable-next-line max-len
                                                             `/${this.props.match.params.network}/identity-resolver/${this.state.didExample}`
                                                         );
                                                     }}
                                                     type="button"
-
                                                 >
                                                     DID Example
                                                 </button>
@@ -102,8 +97,19 @@ class IdentityResolver extends AsyncComponent<
                                 )}
                                 {this.props.match.params.did && (
                                     <div>
-                                        <IdentityChrysalisResolver {...this.props} />
-                                        {/* <IdentityStardustResolver {...this.props} /> */}
+                                        {this.props.protocolVersion === CHRYSALIS && (
+                                            <IdentityChrysalisResolver {...this.props} />
+                                        )}
+                                        {this.props.protocolVersion === STARDUST && (
+                                            <IdentityStardustResolver {...this.props} />
+                                        )}
+                                        {this.props.protocolVersion === OG && (
+                                            <div>
+                                                <div className="unsupported-network">
+                                                    This network is not supported!
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

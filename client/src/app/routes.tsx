@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-first-prop-new-line */
 import React from "react";
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
-import { CHRYSALIS } from "../models/config/protocolVersion";
 import { AddressRouteProps } from "./routes/AddressRouteProps";
 import ChrysalisAddress from "./routes/chrysalis/Addr";
 import Indexed from "./routes/chrysalis/Indexed";
@@ -72,7 +71,7 @@ const buildAppRoutes = (
             key={keys.next().value}
             component={(props: RouteComponentProps<IdentityResolverProps>) => (
                 <IdentityResolver {...props}
-                    isSupported={protocolVersion === CHRYSALIS}
+                    protocolVersion={protocolVersion}
                 />
             )}
         />

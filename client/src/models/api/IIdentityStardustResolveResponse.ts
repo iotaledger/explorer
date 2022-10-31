@@ -4,7 +4,10 @@ export interface IIdentityStardustResolveResponse {
      */
     document?: {
         doc: unknown;
-        meta: unknown;
+        meta: {
+          governorAddress: string;
+          stateControllerAddress: string;
+        };
       };
 
     /**

@@ -1,9 +1,11 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IIdentityDidHistoryResponse } from "../models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
-import { CHRYSALIS } from "../models/config/protocolVersion";
+import { IIdentityStardustResolveResponse } from "../models/api/IIdentityStardustResolveResponse";
+import { CHRYSALIS, STARDUST } from "../models/config/protocolVersion";
 import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
 import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
+import { StardustApiClient } from "./stardust/stardustApiClient";
 
 export class IdentityService {
     /**
@@ -14,9 +16,7 @@ export class IdentityService {
      */
     public async resolveIdentity(did: string, network: string): Promise<IIdentityDidResolveResponse> {
         const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
-
         const response = await apiClient.didDocument({ network, did });
-
         return response;
     }
 
@@ -29,9 +29,7 @@ export class IdentityService {
      */
     public async resolveHistory(did: string, network: string, version: string): Promise<IIdentityDidHistoryResponse> {
         const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
-
         const response = await apiClient.didHistory({ network, did, version });
-
         return response;
     }
 
@@ -50,9 +48,13 @@ export class IdentityService {
         payload: unknown
     ): Promise<IIdentityDiffHistoryResponse> {
         const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
-
         const response = await apiClient.diffHistory({ network, integrationMsgId, version }, payload);
+        return response;
+    }
 
+    public async resolveIdentityStardust(did: string, network: string): Promise<IIdentityStardustResolveResponse> {
+        const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+        const response = await apiClient.didDocument({ did, network });
         return response;
     }
 }
