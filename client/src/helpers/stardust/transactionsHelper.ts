@@ -78,6 +78,7 @@ export class TransactionsHelper {
 
             // Inputs
             for (let i = 0; i < payload.essence.inputs.length; i++) {
+                let outputDetails;
                 let amount;
                 const address = unlockAddresses[i];
                 const input = payload.essence.inputs[i];
@@ -89,8 +90,11 @@ export class TransactionsHelper {
                 );
 
                 const outputResponse = await tangleCacheService.outputDetails(network, outputId);
-
-                if (outputResponse) {
+                if (!outputResponse.error && outputResponse.output && outputResponse.metadata) {
+                    outputDetails = {
+                        output: outputResponse.output,
+                        metadata: outputResponse.metadata
+                    };
                     amount = Number(outputResponse.output.amount);
                 }
 
@@ -99,7 +103,7 @@ export class TransactionsHelper {
                     amount,
                     isGenesis,
                     outputId,
-                    output: outputResponse,
+                    output: outputDetails,
                     address
                 });
             }

@@ -17,3 +17,4 @@ export interface IMilestoneDetailsResponse extends IResponse {
      */
     milestone?: IMilestonePayload;
 }
+

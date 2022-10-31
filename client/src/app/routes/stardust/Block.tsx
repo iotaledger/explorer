@@ -1,20 +1,22 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import {
-    MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, INodeInfoBaseToken
+    MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE,
+    TAGGED_DATA_PAYLOAD_TYPE, milestoneIdFromMilestonePayload
 } from "@iota/iota.js-stardust";
-import React, { ReactNode } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
+import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
 import { SettingsService } from "../../../services/settingsService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import AsyncComponent from "../../components/AsyncComponent";
 import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Modal from "../../components/Modal";
+import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import InclusionState from "../../components/stardust/InclusionState";
@@ -27,87 +29,152 @@ import mainHeaderMessage from "./../../../assets/modals/stardust/block/main-head
 import metadataMessage from "./../../../assets/modals/stardust/block/metadata.json";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
+import { BlockData, BlockMetadata } from "./BlockState";
 import "./Block.scss";
-import { BlockState } from "./BlockState";
 
-/**
- * Component which will show the block page for stardust.
- */
-class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> {
-    /**
-     * The component context type.
-     */
-    public static contextType = NetworkContext;
+const Block: React.FC<RouteComponentProps<BlockProps>> = (
+    { history, match: { params: { network, blockId } } }
+) => {
+    const isMounted = useRef(false);
+    const { tokenInfo, bech32Hrp, protocolVersion } = useContext(NetworkContext);
+    const [tangleCacheService] = useState(
+        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
+    );
+    const [settingsService] = useState(ServiceFactory.get<SettingsService>("settings"));
+    const [advancedMode, setAdvancedMode] = useState<boolean>(false);
+    const [isFormattedBalance, setIsFormattedBalance] = useState(true);
+    const [jobToStatus, setJobToStatus] = useState(new Map<string, PromiseStatus>());
+    const [updateMetadataTimerId, setUpdateMetadataTimerId] = useState<NodeJS.Timer | undefined>();
+    const [blockData, setBlockData] = useState<BlockData>({});
+    const [blockMetadata, setBlockMetadata] = useState<BlockMetadata>({ blockTangleStatus: "pending" });
 
-    /**
-     * The component context.
-     */
-    public declare context: React.ContextType<typeof NetworkContext>;
+    useEffect(() => {
+        isMounted.current = true;
+        setAdvancedMode(settingsService.get().advancedMode ?? false);
 
-    /**
-     * API Client for tangle requests.
-     */
-    private readonly _tangleCacheService: StardustTangleCacheService;
-
-    /**
-     * Settings service.
-     */
-    private readonly _settingsService: SettingsService;
-
-    /**
-     * Timer to check to state update.
-     */
-    private _timerId?: NodeJS.Timer;
-
-    /**
-     * Create a new instance of Block.
-     * @param props The props.
-     */
-    constructor(props: RouteComponentProps<BlockProps>) {
-        super(props);
-
-        this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(
-            `tangle-cache-${STARDUST}`
-        );
-        this._settingsService = ServiceFactory.get<SettingsService>("settings");
-
-        this.state = {
-            blockTangleStatus: "pending",
-            advancedMode: this._settingsService.get().advancedMode ?? false,
-            isFormattedBalance: true
+        return () => {
+            isMounted.current = false;
+            if (updateMetadataTimerId) {
+                clearTimeout(updateMetadataTimerId);
+            }
         };
-    }
+    }, []);
 
-    /**
-     * The component mounted.
-     */
-    public async componentDidMount(): Promise<void> {
-        super.componentDidMount();
-        await this.loadBlock(this.props.match.params.blockId);
-    }
-
-    /**
-     * The component will unmount so update flag.
-     */
-    public componentWillUnmount(): void {
-        super.componentWillUnmount();
-        if (this._timerId) {
-            clearTimeout(this._timerId);
-            this._timerId = undefined;
+    useEffect(() => {
+        if (advancedMode !== settingsService.get().advancedMode) {
+            settingsService.saveSingle("advancedMode", advancedMode);
         }
-    }
+    }, [advancedMode]);
+
+
+    useEffect(() => {
+        setBlockData({});
+        setBlockMetadata({ blockTangleStatus: "pending" });
+        // eslint-disable-next-line no-void
+        void loadBlock(blockId);
+    }, [blockId]);
+
+    useEffect(() => {
+        if (!blockData.blockError) {
+            // eslint-disable-next-line no-void
+            void updateBlockDetails();
+        }
+    }, [blockData]);
 
     /**
-     * Render the component.
-     * @returns The node to render.
+     * Load the block with the given id.
+     * @param blockId The index to load.
      */
-    public render(): ReactNode {
-        const network = this.props.match.params.network;
-        const blockId = this.props.match.params.blockId;
-        const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
-        const isMarketed = isMarketedNetwork(network);
-        const isLinksDisabled = this.state.metadata?.ledgerInclusionState === "conflicting";
+    const loadBlock = async (blockId: string): Promise<void> => {
+        const blockLoadMonitor = new PromiseMonitor(status => {
+            setJobToStatus(jobToStatus.set("loadBlock", status));
+        });
 
+        // eslint-disable-next-line no-void
+        void blockLoadMonitor.enqueue(
+            async () => tangleCacheService.block(network, blockId).then(
+                async response => {
+                    if (response.block) {
+                        let transactionId;
+                        const block = response.block;
+                        const { inputs, unlocks, outputs, transferTotal } =
+                            await TransactionsHelper.getInputsAndOutputs(
+                                block,
+                                network,
+                                bech32Hrp,
+                                tangleCacheService
+                            );
+
+                        if (block.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                            transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(
+                                block.payload
+                            );
+                        }
+
+                        if (isMounted.current) {
+                            setBlockData(
+                                {
+                                    block,
+                                    inputs,
+                                    unlocks,
+                                    outputs,
+                                    transferTotal,
+                                    transactionId
+                                }
+                            );
+                        }
+                    } else if (isMounted.current) {
+                        setBlockData({ blockError: response.error ?? "Couldn't load block" });
+                    }
+                }
+            )
+        );
+    };
+
+    /**
+     * Update the block details.
+     */
+    const updateBlockDetails = async (): Promise<void> => {
+        const blockDetailsLoadMonitor = new PromiseMonitor(status => {
+            setJobToStatus(jobToStatus.set("loadBlockDetails", status));
+        });
+
+        // eslint-disable-next-line no-void
+        void blockDetailsLoadMonitor.enqueue(
+            async () => tangleCacheService.blockDetails(network, blockId).then(
+                details => {
+                    if (isMounted.current) {
+                        setBlockMetadata({
+                            metadata: details?.metadata,
+                            metadataError: details?.error,
+                            conflictReason: calculateConflictReason(details?.metadata),
+                            blockTangleStatus: calculateStatus(details?.metadata)
+                        });
+
+                        // requeue job until block is referenced
+                        if (!details?.metadata?.referencedByMilestoneIndex) {
+                            setUpdateMetadataTimerId(
+                                setTimeout(async () => {
+                                    await updateBlockDetails();
+                                }, 10000)
+                            );
+                        }
+                    }
+                }
+            )
+        );
+    };
+
+    const { block, blockError, transactionId, inputs, unlocks, outputs, transferTotal } = blockData;
+    const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
+
+    const isMarketed = isMarketedNetwork(network);
+    const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
+    const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
+    const milestoneId = block?.payload?.type === MILESTONE_PAYLOAD_TYPE ?
+        milestoneIdFromMilestonePayload(block.payload) : undefined;
+
+    if (blockError) {
         return (
             <div className="block">
                 <div className="wrapper">
@@ -119,332 +186,278 @@ class Block extends AsyncComponent<RouteComponentProps<BlockProps>, BlockState> 
                                 </h1>
                                 <Modal icon="info" data={mainHeaderMessage} />
                             </div>
-                            <Switcher
-                                label="Advanced View"
-                                checked={this.state.advancedMode}
-                                onToggle={e => this.setState(
-                                    {
-                                        advancedMode: e.target.checked
-                                    },
-                                    () => this._settingsService.saveSingle(
-                                        "advancedMode",
-                                        this.state.advancedMode))}
-                            />
                         </div>
+                        <NotFound
+                            searchTarget="block"
+                            query={blockId}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
-                        <div className="section">
-                            <div className="section--header row row--tablet-responsive middle space-between">
-                                <div className="row middle">
-                                    <h2>General</h2>
-                                </div>
-
-                                <BlockTangleState
-                                    network={network}
-                                    status={this.state.blockTangleStatus}
-                                    milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
-                                        this.state.metadata?.milestoneIndex}
-                                    hasConflicts={isLinksDisabled}
-                                    conflictReason={this.state.conflictReason}
-                                    onClick={this.state.metadata?.referencedByMilestoneIndex
-                                        ? (blockId: string) => this.props.history.push(`/${network}/search/${blockId}`)
-                                        : undefined}
-                                />
-                            </div>
-                            <div className="section--data">
-                                <div className="label">
-                                    Block ID
-                                </div>
-                                <div className="value code row middle">
-                                    <span className="margin-r-t">
-                                        {blockId}
-                                    </span>
-                                    <CopyButton copy={blockId} />
-                                </div>
-                            </div>
-
-                            {this.state.transactionId && (
-                                <div className="section--data">
-                                    <div className="label">
-                                        Transaction Id
-                                    </div>
-                                    <div className="value value__secondary row middle link">
-                                        {isLinksDisabled ?
-                                            <span className="margin-r-t">
-                                                {this.state.transactionId}
-                                            </span> :
-                                            <Link
-                                                to={`/${network}/transaction/${this.state.transactionId}`}
-                                                className="margin-r-t"
-                                            >
-                                                {this.state.transactionId}
-                                            </Link>}
-                                        <CopyButton copy={this.state.transactionId} />
-                                    </div>
-                                </div>
-                            )}
-                            <div className="section--data">
-                                <div className="label">
-                                    Payload Type
-                                </div>
-                                <div className="value row middle">
-                                    {this.state.block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-                                        ("Transaction")}
-                                    {this.state.block?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
-                                        ("Milestone")}
-                                    {this.state.block?.payload?.type === TAGGED_DATA_PAYLOAD_TYPE &&
-                                        ("Data")}
-                                    {this.state.block?.payload?.type === undefined &&
-                                        ("No Payload")}
-                                </div>
-                            </div>
-                            {this.state.advancedMode && (
-                                <div className="section--data">
-                                    <div className="label">
-                                        Nonce
-                                    </div>
-                                    <div className="value row middle">
-                                        <span className="margin-r-t">{this.state.block?.nonce}</span>
-                                    </div>
-                                </div>
-                            )}
-                            {this.state.block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-                                this.state.transferTotal !== undefined && (
-                                    <div className="section--data">
-                                        <div className="label">
-                                            Value
-                                        </div>
-                                        <div className="value row middle">
-                                            <span
-                                                onClick={() => this.setState({
-                                                    isFormattedBalance: !this.state.isFormattedBalance
-                                                })}
-                                                className="pointer margin-r-5"
-                                            >
-                                                {formatAmount(
-                                                    this.state.transferTotal,
-                                                    tokenInfo,
-                                                    !this.state.isFormattedBalance
-                                                )}
-                                            </span>
-                                            {isMarketed && (
-                                                (<FiatValue value={this.state.transferTotal} />)
-                                            )}
-                                        </div>
-                                    </div>
+    const blockContent = !block ? null : (
+        <React.Fragment>
+            <div className="section--header row row--tablet-responsive middle space-between">
+                <div className="row middle">
+                    <h2>General</h2>
+                </div>
+                <BlockTangleState
+                    network={network}
+                    status={blockTangleStatus}
+                    milestoneIndex={metadata?.referencedByMilestoneIndex ?? metadata?.milestoneIndex}
+                    hasConflicts={isLinksDisabled}
+                    conflictReason={conflictReason}
+                    onClick={metadata?.referencedByMilestoneIndex
+                        ? (blockId: string) => history.push(`/${network}/block/${blockId}`)
+                        : undefined}
+                />
+            </div>
+            <div className="section--data">
+                <div className="label">
+                    Block ID
+                </div>
+                <div className="value code row middle">
+                    <span className="margin-r-t">
+                        {blockId}
+                    </span>
+                    <CopyButton copy={blockId} />
+                </div>
+            </div>
+            {milestoneId && (
+                <div className="section--data">
+                    <div className="label">
+                        Milestone ID
+                    </div>
+                    <div className="value code row middle">
+                        <span className="margin-r-t">
+                            {milestoneId}
+                        </span>
+                        <CopyButton copy={milestoneId} />
+                    </div>
+                </div>
+            )}
+            {transactionId && (
+                <div className="section--data">
+                    <div className="label">
+                        Transaction Id
+                    </div>
+                    <div className="value value__secondary row middle link">
+                        {isLinksDisabled ?
+                            <span className="margin-r-t">
+                                {transactionId}
+                            </span> :
+                            <Link
+                                to={`/${network}/transaction/${transactionId}`}
+                                className="margin-r-t"
+                            >
+                                {transactionId}
+                            </Link>}
+                        <CopyButton copy={transactionId} />
+                    </div>
+                </div>
+            )}
+            <div className="section--data">
+                <div className="label">
+                    Payload Type
+                </div>
+                <div className="value row middle">
+                    {block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                        ("Transaction")}
+                    {block?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
+                        ("Milestone")}
+                    {block?.payload?.type === TAGGED_DATA_PAYLOAD_TYPE &&
+                        ("Data")}
+                    {block?.payload?.type === undefined &&
+                        ("No Payload")}
+                </div>
+            </div>
+            {advancedMode && (
+                <div className="section--data">
+                    <div className="label">
+                        Nonce
+                    </div>
+                    <div className="value row middle">
+                        <span className="margin-r-t">{block?.nonce}</span>
+                    </div>
+                </div>
+            )}
+            {block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                transferTotal !== undefined && (
+                    <div className="section--data">
+                        <div className="label">
+                            Value
+                        </div>
+                        <div className="value row middle">
+                            <span
+                                onClick={() => setIsFormattedBalance(!isFormattedBalance)}
+                                className="pointer margin-r-5"
+                            >
+                                {formatAmount(
+                                    transferTotal,
+                                    tokenInfo,
+                                    !isFormattedBalance
                                 )}
+                            </span>
+                            {isMarketed && (
+                                (<FiatValue value={transferTotal} />)
+                            )}
                         </div>
-
-
-                        {this.state.block?.payload && (
+                    </div>
+                )}
+            {block?.payload && (
+                <React.Fragment>
+                    {block.payload.type === TRANSACTION_PAYLOAD_TYPE &&
+                        inputs && unlocks && outputs && transferTotal !== undefined && (
                             <React.Fragment>
-                                {this.state.block.payload.type === TRANSACTION_PAYLOAD_TYPE &&
-                                    this.state.inputs &&
-                                    this.state.unlocks &&
-                                    this.state.outputs &&
-                                    this.state.transferTotal !== undefined &&
-                                    (
-                                        <React.Fragment>
-                                            <div className="section">
-                                                <TransactionPayload
-                                                    network={network}
-                                                    inputs={this.state.inputs}
-                                                    unlocks={this.state.unlocks}
-                                                    outputs={this.state.outputs}
-                                                    transferTotal={this.state.transferTotal}
-                                                    header="Transaction Payload"
-                                                    isLinksDisabled={isLinksDisabled}
-                                                />
-                                            </div>
-                                            {
-                                                this.state.block.payload.essence.payload &&
-                                                    <div className="section">
-                                                        <TaggedDataPayload
-                                                            network={network}
-                                                            history={this.props.history}
-                                                            payload={this.state.block.payload.essence.payload}
-                                                            advancedMode={this.state.advancedMode}
-                                                        />
-                                                    </div>
-                                            }
-                                        </React.Fragment>
-                                    )}
-                                {this.state.block.payload.type === MILESTONE_PAYLOAD_TYPE && (
-                                    <div className="section">
-                                        <MilestonePayload
-                                            network={network}
-                                            history={this.props.history}
-                                            payload={this.state.block.payload}
-                                            advancedMode={this.state.advancedMode}
-                                        />
-                                    </div>
-                                )}
-                                {this.state.block.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (
+                                <div className="section">
+                                    <TransactionPayload
+                                        network={network}
+                                        inputs={inputs}
+                                        unlocks={unlocks}
+                                        outputs={outputs}
+                                        transferTotal={transferTotal}
+                                        header="Transaction Payload"
+                                        isLinksDisabled={isLinksDisabled}
+                                    />
+                                </div>
+                                {
+                                    block.payload.essence.payload &&
                                     <div className="section">
                                         <TaggedDataPayload
                                             network={network}
-                                            history={this.props.history}
-                                            payload={this.state.block.payload}
-                                            advancedMode={this.state.advancedMode}
+                                            history={history}
+                                            payload={block.payload.essence.payload}
+                                            advancedMode={advancedMode}
                                         />
+                                    </div>
+                                }
+                            </React.Fragment>
+                        )}
+                    {block.payload.type === MILESTONE_PAYLOAD_TYPE && (
+                        <div className="section">
+                            <MilestonePayload
+                                network={network}
+                                history={history}
+                                milestonePayload={block.payload}
+                                advancedMode={advancedMode}
+                                protocolVersion={protocolVersion}
+                            />
+                        </div>
+                    )}
+                    {block.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (
+                        <div className="section">
+                            <TaggedDataPayload
+                                network={network}
+                                history={history}
+                                payload={block.payload}
+                                advancedMode={advancedMode}
+                            />
+                        </div>
+                    )}
+                </React.Fragment>
+            )}
+            {advancedMode && (
+                <div className="section metadata-section">
+                    <div className="section--header section--header__space-between">
+                        <div className="row middle">
+                            <h2>
+                                Metadata
+                            </h2>
+                            <Modal icon="info" data={metadataMessage} />
+                        </div>
+                    </div>
+                    <div className="section--data">
+                        {!metadata && !metadataError && (<Spinner />)}
+                        {metadataError && (
+                            <p className="danger">Failed to retrieve metadata. {metadataError}</p>
+                        )}
+                        {metadata && !metadataError && (
+                            <React.Fragment>
+                                <div className="section--data">
+                                    <div className="label">Is Solid</div>
+                                    <div className="value row middle">
+                                        <span className="margin-r-t">
+                                            {metadata?.isSolid ? "Yes" : "No"}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="section--data">
+                                    <div className="label">
+                                        Ledger Inclusion
+                                    </div>
+                                    <div className="value row middle">
+                                        <InclusionState state={metadata?.ledgerInclusionState} />
+                                    </div>
+                                </div>
+                                {conflictReason && (
+                                    <div className="section--data">
+                                        <div className="label">Conflict Reason</div>
+                                        <div className="value">{conflictReason}</div>
+                                    </div>
+                                )}
+                                {metadata?.parents && (
+                                    <div className="section--data">
+                                        <div className="label">
+                                            Parents
+                                        </div>
+                                        {metadata.parents.map((parent, idx) => (
+                                            <div
+                                                key={idx}
+                                                style={{ marginTop: "8px" }}
+                                                className="value code link"
+                                            >
+                                                {isLinksDisabled ? (
+                                                    <span className="margin-r-t">
+                                                        {parent}
+                                                    </span>
+                                                ) : (
+                                                    <div
+                                                        className="pointer"
+                                                        onClick={() => history.replace(
+                                                            `/${network}/block/${parent}`
+                                                        )}
+                                                    >
+                                                        {parent}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                             </React.Fragment>
                         )}
-                        {this.state.advancedMode && (
-                            <div className="section metadata-section">
-                                <div className="section--header section--header__space-between">
-                                    <div className="row middle">
-                                        <h2>
-                                            Metadata
-                                        </h2>
-                                        <Modal icon="info" data={metadataMessage} />
-                                    </div>
-                                </div>
-                                <div className="section--data">
-                                    {!this.state.metadata && !this.state.metadataError && (
-                                        <Spinner />
-                                    )}
-                                    {this.state.metadataError && (
-                                        <p className="danger">
-                                            Failed to retrieve metadata. {this.state.metadataError}
-                                        </p>
-                                    )}
-                                    {this.state.metadata && !this.state.metadataError && (
-                                        <React.Fragment>
-                                            <div className="section--data">
-                                                <div className="label">
-                                                    Is Solid
-                                                </div>
-                                                <div className="value row middle">
-                                                    <span className="margin-r-t">
-                                                        {this.state.metadata?.isSolid ? "Yes" : "No"}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="section--data">
-                                                <div className="label">
-                                                    Ledger Inclusion
-                                                </div>
-                                                <div className="value row middle">
-                                                    <InclusionState
-                                                        state={this.state.metadata?.ledgerInclusionState}
-                                                    />
-                                                </div>
-                                            </div>
-                                            {this.state.conflictReason && (
-                                                <div className="section--data">
-                                                    <div className="label">
-                                                        Conflict Reason
-                                                    </div>
-                                                    <div className="value">
-                                                        {this.state.conflictReason}
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {this.state.metadata?.parents && (
-                                                <div className="section--data">
-                                                    <div className="label">
-                                                        Parents
-                                                    </div>
-                                                    {this.state.metadata.parents.map((parent, idx) => (
-                                                        <div
-                                                            key={idx}
-                                                            style={{ marginTop: "8px" }}
-                                                            className="value code link"
-                                                        >
-                                                            {isLinksDisabled ?
-                                                                <span className="margin-r-t">
-                                                                    {parent}
-                                                                </span> :
-                                                                <div
-                                                                    className="pointer"
-                                                                    onClick={() => this.props.history.replace(
-                                                                        `/${network}/search/${parent}`
-                                                                    )}
-                                                                >
-                                                                    {parent}
-                                                                </div>}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </React.Fragment>
-                                    )}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
-            </div >
-        );
-    }
+            )}
+        </React.Fragment>
+    );
 
-    /**
-     * Update the block details.
-     */
-    private async updateBlockDetails(): Promise<void> {
-        const details = await this._tangleCacheService.blockDetails(
-            this.props.match.params.network, this.props.match.params.blockId
-        );
-
-        this.setState({
-            metadata: details?.metadata,
-            metadataError: details?.error,
-            conflictReason: calculateConflictReason(details?.metadata),
-            blockTangleStatus: calculateStatus(details?.metadata)
-        });
-
-        if (!details?.metadata?.referencedByMilestoneIndex) {
-            this._timerId = setTimeout(async () => {
-                await this.updateBlockDetails();
-            }, 10000);
-        }
-    }
-
-    /**
-     * Load the block with the given id.
-     * @param blockId The index to load.
-     */
-    private async loadBlock(blockId: string): Promise<void> {
-        const result = await this._tangleCacheService.search(
-            this.props.match.params.network, blockId
-        );
-
-        if (result?.block) {
-            const { inputs, unlocks, outputs, unlockAddresses, transferTotal } =
-                await TransactionsHelper.getInputsAndOutputs(
-                    result?.block,
-                    this.props.match.params.network,
-                    this.context.bech32Hrp,
-                    this._tangleCacheService
-            );
-
-            if (result?.block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                const transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(
-                    result?.block.payload
-                );
-                this.setState({ transactionId });
-            }
-
-            this.setState({
-                inputs,
-                unlocks,
-                outputs,
-                unlockAddresses,
-                transferTotal
-            });
-
-            this.setState({
-                block: result.block
-            }, async () => {
-                await this.updateBlockDetails();
-            });
-        } else {
-            this.props.history.replace(`/${this.props.match.params.network
-                }/search/${blockId}`);
-        }
-    }
-}
+    return (
+        <div className="block">
+            <div className="wrapper">
+                <div className="inner">
+                    <div className="block--header">
+                        <div className="row middle">
+                            <h1>
+                                Block
+                            </h1>
+                            <Modal icon="info" data={mainHeaderMessage} />
+                            {isLoading && <Spinner />}
+                        </div>
+                        <Switcher
+                            label="Advanced View"
+                            checked={advancedMode}
+                            onToggle={e => setAdvancedMode(e.target.checked)}
+                        />
+                    </div>
+                    <div className="section">{blockContent}</div>
+                </div>
+            </div>
+        </div >
+    );
+};
 
 export default Block;
 

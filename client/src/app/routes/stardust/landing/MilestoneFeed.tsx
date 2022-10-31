@@ -1,10 +1,10 @@
+import { HexHelper } from "@iota/util.js-stardust";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { DateHelper } from "../../../../helpers/dateHelper";
 import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInterval";
-import { RouteBuilder } from "../../../../helpers/routeBuilder";
 import { IMilestoneAnalyticStats } from "../../../../models/api/stats/IMilestoneAnalyticStats";
 import { INetwork } from "../../../../models/config/INetwork";
 import { STARDUST } from "../../../../models/config/protocolVersion";
@@ -88,6 +88,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                     <p>There are no milestones in the feed.</p>
                 )}
                 {milestonesWithStats.map(milestone => {
+                    const blockId = HexHelper.addPrefix(milestone.id);
                     const index = milestone.properties?.index as number;
                     const milestoneId = milestone.properties?.milestoneId as string;
                     const milestoneIdShort = `${milestoneId.slice(0, 6)}....${milestoneId.slice(-6)}`;
@@ -104,7 +105,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                 <span className="feed-item--value ms-index">
                                     <Link
                                         className="feed-item--hash ms-id"
-                                        to={`${network}/search/${index}`}
+                                        to={`/${network}/block/${blockId}`}
                                     >
                                         {index}
                                     </Link>
@@ -114,7 +115,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                 <span className="feed-item--label">Milestone id</span>
                                 <Link
                                     className="feed-item--hash ms-id"
-                                    to={RouteBuilder.buildItem(networkConfig, milestoneId)}
+                                    to={`/${network}/block/${blockId}`}
                                 >
                                     {milestoneIdShort}
                                 </Link>

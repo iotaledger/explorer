@@ -7,6 +7,6 @@ export interface IAliasRequest {
     /**
      * The alias id to get the alias details for.
      */
-    aliasId?: string;
+    aliasId: string;
 }
 

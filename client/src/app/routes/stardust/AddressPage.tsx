@@ -18,7 +18,7 @@ import CopyButton from "../../components/CopyButton";
 import Spinner from "../../components/Spinner";
 import AddressBalance from "../../components/stardust/AddressBalance";
 import AssetsTable from "../../components/stardust/AssetsTable";
-import AssociatedOutputsTable from "../../components/stardust/AssociatedOutputsTable";
+import AssociatedOutputs from "../../components/stardust/AssociatedOutputs";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
 import NetworkContext from "../../context/NetworkContext";
@@ -83,10 +83,6 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
             this.props.location.state = {
                 addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, this.props.match.params.address)
             };
-        }
-
-        if (!(this.props.location.state as IAddressPageLocationProps)?.addressDetails) {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
         }
 
         const { addressDetails } = this.props.location.state as IAddressPageLocationProps;
@@ -217,7 +213,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                         />
                                     )}
                                     {bech32AddressDetails && (
-                                        <AssociatedOutputsTable
+                                        <AssociatedOutputs
                                             network={networkId}
                                             addressDetails={bech32AddressDetails}
                                             onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("assoc")}
@@ -298,8 +294,13 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                     for (const outputId of addressOutputIds) {
                         void outputDetailsMonitor.enqueue(
                             async () => this._tangleCacheService.outputDetails(networkId, outputId).then(
-                                outputDetails => {
-                                    if (outputDetails) {
+                                response => {
+                                    if (!response.error && response.output && response.metadata) {
+                                        const outputDetails = {
+                                            output: response.output,
+                                            metadata: response.metadata
+                                        };
+
                                         outputResponse.push(outputDetails);
                                     }
                                 })

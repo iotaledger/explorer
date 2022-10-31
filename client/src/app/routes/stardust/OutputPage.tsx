@@ -8,6 +8,7 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
+import NotFound from "../../components/NotFound";
 import Output from "../../components/stardust/Output";
 import OutputPageProps from "./OutputPageProps";
 import "./OutputPage.scss";
@@ -15,16 +16,50 @@ import "./OutputPage.scss";
 const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
     { match: { params: { network, outputId } } }
 ) => {
+    const [tangleCacheService] = useState(
+        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
+    );
     const [outputDetails, setOutputDetails] = useState<IOutputResponse | undefined>();
+    const [outputError, setOutputError] = useState<string | undefined>();
 
     useEffect(() => {
-        const stardustTangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
+        tangleCacheService.outputDetails(network, outputId).then(response => {
+            if (!response.error) {
+                if (response.output && response.metadata) {
+                    const fetchedOutputDetails = {
+                        output: response.output,
+                        metadata: response.metadata
+                    };
 
-        stardustTangleCacheService.outputDetails(network, outputId).then(
-            outputDetailsResponse => setOutputDetails(outputDetailsResponse)
-        )
-        .catch(() => {});
+                    setOutputDetails(fetchedOutputDetails);
+                }
+            } else {
+                setOutputError(response.error);
+            }
+        }).catch(() => { });
     }, []);
+
+    if (outputError) {
+        return (
+            <div className="output-page">
+                <div className="wrapper">
+                    <div className="inner">
+                        <div className="output-page--header">
+                            <div className="row middle">
+                                <h1>
+                                    Output
+                                </h1>
+                            </div>
+                        </div>
+                        <NotFound
+                            searchTarget="output"
+                            query={outputId}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     const {
         blockId, transactionId, outputIndex, isSpent, milestoneIndexSpent, milestoneTimestampSpent,

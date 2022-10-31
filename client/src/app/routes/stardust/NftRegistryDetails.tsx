@@ -274,7 +274,7 @@ class NftRegistryDetails extends AsyncComponent<RouteComponentProps<NftRegistryD
                                 </div>
                             </div> :
                             <div className="row middle center inner card no-data">
-                                <h2>No data available</h2>
+                                <h2>🚧 The NFT registry is not available yet 🚧</h2>
                             </div>
                     }
                 </div>

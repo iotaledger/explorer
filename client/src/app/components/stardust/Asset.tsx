@@ -19,7 +19,7 @@ const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, val
             <tr>
                 <td className="highlight">
                     <Link
-                        to={`/${network}/search/${name}`}
+                        to={`/${network}/foundry/${name}`}
                         className="margin-r-t"
                     >
                         {shortName}
@@ -36,7 +36,7 @@ const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, val
                     <div className="label">Asset</div>
                     <div className="value highlight">
                         <Link
-                            to={`/${network}/search/${name}`}
+                            to={`/${network}/foundry/${name}`}
                             className="margin-r-t"
                         >
                             {shortName}

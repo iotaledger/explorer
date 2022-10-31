@@ -4,51 +4,40 @@
 @import "../../../scss/variables";
 @import "../../../scss/themes";
 
-.section {
-    .associated--table {
-      width: 100%;
+.section.associated-outputs {
+    .section--header {
+        justify-content: space-between;
 
-      tbody {
-          margin-top: 12px;
-      }
+        .tabs-wrapper {
+            display: flex;
 
-      @include tablet-down {
-          display: none;
-      }
+            button.tab {
+                background: var(--associated-outputs-tabs-bg);
+                color: $gray-6;
+                border: 1px solid $gray-4;
+                border-radius: 0;
+                border-right: 0;
 
-      tr {
-          @include font-size(14px);
+                &.active {
+                    background: $mint-green-1;
+                }
 
-          color: $gray-7;
-          font-family: $inter;
-          letter-spacing: 0.5px;
+                &:focus {
+                    box-shadow: none;
+                }
 
-          .card .card--content {
-              padding: 0px;
-          }
+                &:first-child {
+                    border-top-left-radius: 8px;
+                    border-bottom-left-radius: 8px;
+                }
+                &:last-child {
+                    border-top-right-radius: 8px;
+                    border-bottom-right-radius: 8px;
+                    border-right: 1px solid $gray-4;
+                }
+            }
 
-          th {
-              @include font-size(12px);
-
-              color: $gray-6;
-              font-weight: 600;
-              text-align: left;
-              text-transform: uppercase;
-          }
-
-          td {
-              border: none;
-              color: var(--body-color);
-              padding: 12px 4px;
-              &:first-child {
-                  padding-left: 2px;
-              }
-
-              .card--content__output {
-                  padding: 0;
-              }
-          }
-      }
+        }
     }
 
     // Mobile
@@ -88,7 +77,7 @@
         }
     }
 
-    .associated--table, .associated--cards {
+    .associated--cards {
         .card {
             .card--content__output {
                 .card-header--wrapper {
@@ -162,9 +151,5 @@
             font-family: $ibm-plex-mono;
             color: var(--link-color);
         }
-    }
-
-    .associated--pagination {
-        margin-top: 34px;
     }
 }

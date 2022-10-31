@@ -19,6 +19,7 @@ interface QueuedPromise<T = any> {
 }
 
 export enum PromiseStatus {
+    PENDING = "pending",
     WORKING = "working",
     DONE = "done"
 }

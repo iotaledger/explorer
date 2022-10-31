@@ -1,9 +1,11 @@
-import { BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
+import {
+    BASIC_OUTPUT_TYPE, ALIAS_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
     NFT_ADDRESS_TYPE, IImmutableAliasUnlockCondition, IAliasAddress, INodeInfoBaseToken,
     UnlockConditionTypes, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE,
-    TIMELOCK_UNLOCK_CONDITION_TYPE } from "@iota/iota.js-stardust";
-import { HexHelper, WriteStream } from "@iota/util.js-stardust";
+    TIMELOCK_UNLOCK_CONDITION_TYPE,
+    TransactionHelper
+} from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
@@ -56,8 +58,9 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { outputId, output, amount, showCopyAmount,
-            network, isPreExpanded, displayFullOutputId, isLinksDisabled } = this.props;
+        const {
+            outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId, isLinksDisabled
+        } = this.props;
         const { isExpanded, isFormattedBalance } = this.state;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
@@ -75,16 +78,13 @@ class Output extends Component<OutputProps, OutputState> {
                 output.unlockConditions.map((unlockCondition, idx) => (
                     <Tooltip key={idx} tooltipContent={this.getSpecialUnlockConditionContent(unlockCondition)}>
                         <span className="material-icons unlock-condiiton-icon">
-                            {unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE &&
-                            "arrow_back"}
-                            {unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE &&
-                            "hourglass_bottom"}
-                            {unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE &&
-                            "schedule"}
+                            {unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE && "arrow_back"}
+                            {unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE && "hourglass_bottom"}
+                            {unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE && "schedule"}
                         </span>
                     </Tooltip>
                 ))
-        );
+            );
 
         const outputHeader = (
             <div
@@ -140,154 +140,124 @@ class Output extends Component<OutputProps, OutputState> {
                 {isExpanded && (
                     <div className="output margin-l-t">
                         {output.type === ALIAS_OUTPUT_TYPE && (
-                        <React.Fragment>
-                            <div className="card--label">
-                                Alias address:
-                            </div>
-                            <div className="card--value row middle">
-                                {isLinksDisabled ?
-                                    <span className="margin-r-t">{aliasOrNftBech32}</span> :
-                                    <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
-                                        {aliasOrNftBech32}
-                                    </Link>}
-                                <CopyButton copy={aliasOrNftBech32} />
-                            </div>
-                            <div className="card--label">
-                                State index:
-                            </div>
-                            <div className="card--value row">
-                                {output.stateIndex}
-                            </div>
-                            {output.stateMetadata && (
-                                <React.Fragment>
-                                    <div className="card--label">
-                                        State metadata:
-                                    </div>
-                                    <div className="card--value row">
-                                        <DataToggle
-                                            sourceData={output.stateMetadata}
-                                            withSpacedHex={true}
-                                        />
-                                    </div>
-                                </React.Fragment>
-                            )}
-                            <div className="card--label">
-                                Foundry counter:
-                            </div>
-                            <div className="card--value row">
-                                {output.foundryCounter}
-                            </div>
-                        </React.Fragment>
+                            <React.Fragment>
+                                <div className="card--label">Alias address:</div>
+                                <div className="card--value row middle">
+                                    {isLinksDisabled ?
+                                        <span className="margin-r-t">{aliasOrNftBech32}</span> :
+                                        <Link to={`/${network}/alias/${aliasOrNftBech32}`} className="margin-r-t">
+                                            {aliasOrNftBech32}
+                                        </Link>}
+                                    <CopyButton copy={aliasOrNftBech32} />
+                                </div>
+                                <div className="card--label">State index:</div>
+                                <div className="card--value row">{output.stateIndex}</div>
+                                {output.stateMetadata && (
+                                    <React.Fragment>
+                                        <div className="card--label">State metadata:</div>
+                                        <div className="card--value row">
+                                            <DataToggle
+                                                sourceData={output.stateMetadata}
+                                                withSpacedHex={true}
+                                            />
+                                        </div>
+                                    </React.Fragment>
+                                )}
+                                <div className="card--label">Foundry counter:</div>
+                                <div className="card--value row">{output.foundryCounter}</div>
+                            </React.Fragment>
                         )}
 
                         {output.type === NFT_OUTPUT_TYPE && (
-                        <React.Fragment>
-                            <div className="card--label">
-                                Nft address:
-                            </div>
-                            <div className="card--value row middle">
-                                {isLinksDisabled ?
-                                    <span className="margin-r-t">{aliasOrNftBech32}</span> :
-                                    <Link to={`/${network}/search/${aliasOrNftBech32}`} className="margin-r-t">
-                                        {aliasOrNftBech32}
-                                    </Link>}
-                                <CopyButton copy={aliasOrNftBech32} />
-                            </div>
-                        </React.Fragment>
+                            <React.Fragment>
+                                <div className="card--label">Nft address:</div>
+                                <div className="card--value row middle">
+                                    {isLinksDisabled ?
+                                        <span className="margin-r-t">{aliasOrNftBech32}</span> :
+                                        <Link to={`/${network}/nft/${aliasOrNftBech32}`} className="margin-r-t">
+                                            {aliasOrNftBech32}
+                                        </Link>}
+                                    <CopyButton copy={aliasOrNftBech32} />
+                                </div>
+                            </React.Fragment>
                         )}
 
                         {output.type === FOUNDRY_OUTPUT_TYPE && (
-                        <React.Fragment>
-                            <div className="card--label">
-                                Foundry id:
-                            </div>
-                            <div className="card--value row middle">
-                                {isLinksDisabled ?
-                                    <span className="margin-r-t">{foundryId}</span> :
-                                    <Link
-                                        to={`/${network}/search/${foundryId}`}
-                                        className="margin-r-t"
-                                    >
-                                        {foundryId}
-                                    </Link>}
-                                <CopyButton copy={foundryId} />
-                            </div>
-                            <div className="card--label">
-                                Serial number:
-                            </div>
-                            <div className="card--value row">
-                                {output.serialNumber}
-                            </div>
-                            <div className="card--label">
-                                Token scheme type:
-                            </div>
-                            <div className="card--value row">
-                                {output.tokenScheme.type}
-                            </div>
-                            {output.tokenScheme.type === SIMPLE_TOKEN_SCHEME_TYPE && (
-                                <React.Fragment>
-                                    <div className="card--label">
-                                        Minted tokens:
-                                    </div>
-                                    <div className="card--value row">
-                                        {Number(output.tokenScheme.mintedTokens)}
-                                    </div>
-                                    <div className="card--label">
-                                        Melted tokens:
-                                    </div>
-                                    <div className="card--value row">
-                                        {Number(output.tokenScheme.meltedTokens)}
-                                    </div>
-                                    <div className="card--label">
-                                        Maximum supply:
-                                    </div>
-                                    <div className="card--value row">
-                                        {Number(output.tokenScheme.maximumSupply)}
-                                    </div>
-                                </React.Fragment>
-                            )}
-                        </React.Fragment>
+                            <React.Fragment>
+                                <div className="card--label">Foundry id:</div>
+                                <div className="card--value row middle">
+                                    {isLinksDisabled ?
+                                        <span className="margin-r-t">{foundryId}</span> :
+                                        <Link
+                                            to={`/${network}/foundry/${foundryId}`}
+                                            className="margin-r-t"
+                                        >
+                                            {foundryId}
+                                        </Link>}
+                                    <CopyButton copy={foundryId} />
+                                </div>
+                                <div className="card--label">Serial number:</div>
+                                <div className="card--value row">{output.serialNumber}</div>
+                                <div className="card--label">Token scheme type:</div>
+                                <div className="card--value row">{output.tokenScheme.type}</div>
+                                {output.tokenScheme.type === SIMPLE_TOKEN_SCHEME_TYPE && (
+                                    <React.Fragment>
+                                        <div className="card--label">Minted tokens:</div>
+                                        <div className="card--value row">
+                                            {Number(output.tokenScheme.mintedTokens)}
+                                        </div>
+                                        <div className="card--label">Melted tokens:</div>
+                                        <div className="card--value row">
+                                            {Number(output.tokenScheme.meltedTokens)}
+                                        </div>
+                                        <div className="card--label">Maximum supply:</div>
+                                        <div className="card--value row">
+                                            {Number(output.tokenScheme.maximumSupply)}
+                                        </div>
+                                    </React.Fragment>
+                                )}
+                            </React.Fragment>
                         )}
 
                         {/* all output types except Treasury have common output conditions */}
                         {output.type !== TREASURY_OUTPUT_TYPE && (
-                        <React.Fragment>
-                            {output.unlockConditions.map((unlockCondition, idx) => (
-                                <UnlockCondition
-                                    key={idx}
-                                    unlockCondition={unlockCondition}
-                                    isPreExpanded={isPreExpanded}
-                                />
-                            ))}
-                            {output.features?.map((feature, idx) => (
-                                <Feature
-                                    key={idx}
-                                    feature={feature}
-                                    isPreExpanded={isPreExpanded}
-                                    isImmutable={false}
-                                />
-                            ))}
-                            {output.type !== BASIC_OUTPUT_TYPE && output.immutableFeatures && (
-                                <React.Fragment>
-                                    {output.immutableFeatures.map((immutableFeature, idx) => (
-                                        <Feature
-                                            key={idx}
-                                            feature={immutableFeature}
-                                            isPreExpanded={isPreExpanded}
-                                            isImmutable={true}
-                                        />
-                                    ))}
-                                </React.Fragment>
-                            )}
-                            {output.nativeTokens?.map((token, idx) => (
-                                <NativeToken
-                                    key={idx}
-                                    tokenId={token.id}
-                                    amount={Number(token.amount)}
-                                    isPreExpanded={isPreExpanded}
-                                />
-                            ))}
-                        </React.Fragment>
+                            <React.Fragment>
+                                {output.unlockConditions.map((unlockCondition, idx) => (
+                                    <UnlockCondition
+                                        key={idx}
+                                        unlockCondition={unlockCondition}
+                                        isPreExpanded={isPreExpanded}
+                                    />
+                                ))}
+                                {output.features?.map((feature, idx) => (
+                                    <Feature
+                                        key={idx}
+                                        feature={feature}
+                                        isPreExpanded={isPreExpanded}
+                                        isImmutable={false}
+                                    />
+                                ))}
+                                {output.type !== BASIC_OUTPUT_TYPE && output.immutableFeatures && (
+                                    <React.Fragment>
+                                        {output.immutableFeatures.map((immutableFeature, idx) => (
+                                            <Feature
+                                                key={idx}
+                                                feature={immutableFeature}
+                                                isPreExpanded={isPreExpanded}
+                                                isImmutable={true}
+                                            />
+                                        ))}
+                                    </React.Fragment>
+                                )}
+                                {output.nativeTokens?.map((token, idx) => (
+                                    <NativeToken
+                                        key={idx}
+                                        tokenId={token.id}
+                                        amount={Number(token.amount)}
+                                        isPreExpanded={isPreExpanded}
+                                    />
+                                ))}
+                            </React.Fragment>
                         )}
                     </div>
                 )}
@@ -325,27 +295,17 @@ class Output extends Component<OutputProps, OutputState> {
      * Build a FoundryId from aliasAddres, serialNumber and tokenSchemeType
      * @returns The FoundryId string.
      */
-     private buildFoundyId() {
-         const { output } = this.props;
-
-         if (output.type === FOUNDRY_OUTPUT_TYPE) {
-             const immutableAliasUnlockCondition =
-                 output.unlockConditions[0] as IImmutableAliasUnlockCondition;
-             const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
-             const typeWS = new WriteStream();
-             typeWS.writeUInt8("alias address type", ALIAS_ADDRESS_TYPE);
-             const aliasAddress = HexHelper.addPrefix(
-                 `${typeWS.finalHex()}${HexHelper.stripPrefix(aliasId)}`
-             );
-             const serialNumberWS = new WriteStream();
-             serialNumberWS.writeUInt32("serialNumber", output.serialNumber);
-             const serialNumberHex = serialNumberWS.finalHex();
-             const tokenSchemeTypeWS = new WriteStream();
-             tokenSchemeTypeWS.writeUInt8("tokenSchemeType", output.tokenScheme.type);
-             const tokenSchemeTypeHex = tokenSchemeTypeWS.finalHex();
-
-             return `${aliasAddress}${serialNumberHex}${tokenSchemeTypeHex}`;
-         }
+    private buildFoundyId(): string | undefined {
+        const output = this.props.output;
+        if (output.type === FOUNDRY_OUTPUT_TYPE) {
+            const immutableAliasUnlockCondition = output.unlockConditions[0] as IImmutableAliasUnlockCondition;
+            const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
+            return TransactionHelper.constructTokenId(
+                aliasId,
+                output.serialNumber,
+                output.tokenScheme.type
+            );
+        }
     }
 
     /**
