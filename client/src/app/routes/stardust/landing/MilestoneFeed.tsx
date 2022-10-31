@@ -27,11 +27,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
     const network = networkConfig.network;
     const secondsSinceLast = useMilestoneInterval(latestMilestoneIndex);
     const secondsSinceLastView = secondsSinceLast ? (
-        <span>
-            <span>(last: </span>
-            <span className="seconds">{secondsSinceLast.toFixed(2)}</span>
-            <span>s)</span>
-        </span>
+        <span className="seconds">{secondsSinceLast.toFixed(2)}s ago</span>
     ) : "";
 
     useEffect(() => {
@@ -43,7 +39,8 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
             for (const milestone of milestones) {
                 const milestoneId = milestone.properties?.milestoneId as string;
 
-                if (!milestoneIdToStats.has(milestoneId)) {
+                const msStat = milestoneIdToStats.get(milestoneId);
+                if (!msStat) {
                     const milestoneStats = await stardustTangleCacheService.milestoneStats(
                         networkConfig.network, milestoneId
                     );
@@ -61,7 +58,12 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
     }, [milestones]);
 
     const milestonesWithStats: IFeedItem[] = [];
+    let highestIndex = 0;
     for (const milestone of milestones) {
+        const msIndex = milestone.properties?.index as number;
+        if (msIndex > highestIndex) {
+            highestIndex = msIndex;
+        }
         const milestoneId = milestone.properties?.milestoneId as string;
         if (milestoneIdToStats.has(milestoneId)) {
             milestonesWithStats.push(milestone);
@@ -74,7 +76,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
     return (
         <>
             <div className="section--header milestone-feed-header row padding-l-8">
-                <h2>Latest milestones</h2>{secondsSinceLastView}
+                <h2>Latest milestones</h2>
             </div>
             <div className="feed-items">
                 <div className="row feed-item--header ms-feed">
@@ -138,11 +140,11 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                     <Tooltip
                                         tooltipContent={tooltipContent}
                                     >
-                                        {ago}
+                                        {index === highestIndex ? secondsSinceLastView : ago}
                                     </Tooltip>
                                 </span>
                                 <span className="feed-item--value ms-timestamp mobile">
-                                    {tooltipContent} ({ago})
+                                    {tooltipContent} ({index === highestIndex ? secondsSinceLastView : ago})
                                 </span>
                             </div>
                         </div>
