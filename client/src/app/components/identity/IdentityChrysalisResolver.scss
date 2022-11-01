@@ -111,36 +111,6 @@
   }
 }
 
-.tool-description {
-  margin: 30px 0;
-  color: $gray !important;
-  font-family: $inter;
-  font-size: 1em !important;
-  line-height: 1.6;
-}
-
-.search-compact {
-  width: 40%;
-  margin: 13px 0 30px 0;
-
-  @include desktop-down {
-    width: 100%;
-  }
-
-  @include phone-down {
-    width: 100%;
-  }
-}
-
-.unsupported-network {
-  margin-bottom: 20px;
-  padding: 20px;
-  border-radius: 6px;
-  background-color: rgba(250, 212, 208, 1);
-  color: $danger;
-  font-family: $metropolis;
-}
-
 .legacy-method {
   margin-bottom: 20px;
   padding: 20px;

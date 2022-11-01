@@ -44,7 +44,7 @@ export async function get(
 }
 
 /**
- * Resolved a UTXO DID into its document.
+ * Resolves a UTXO DID into its document.
  *
  * @param apiEndpoint Node URL.
  * @param did DID to resolve.
