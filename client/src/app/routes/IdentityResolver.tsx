@@ -72,7 +72,9 @@ class IdentityResolver extends AsyncComponent<
                                                     <IdentitySearchInput
                                                         compact={false}
                                                         onSearch={e => {
-                                                            this.props.history.push(e);
+                                                            this.props.history.push(
+                                                                `/${this.props.match.params.network}/identity-resolver/${e}`
+                                                            );
                                                         }}
                                                         network={this.props.match.params.network}
                                                     />

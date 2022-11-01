@@ -18,8 +18,7 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
 
         this.state = {
             did: "",
-            isValid: false,
-            networkMismatch: false
+            isValid: false
         };
     }
 
@@ -46,8 +45,7 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
                     onChange={e =>
                         this.setState({
                         did: e.target.value,
-                        isValid: this.isValid(e.target.value),
-                        networkMismatch: this.didContainsWrongNetwork(e.target.value, this.props.network)
+                        isValid: this.isValid(e.target.value)
                     })}
                     onKeyPress={e => {
                         if (e.key === "Enter") {
@@ -55,7 +53,6 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
                         }
                     }}
                 />
-                {this.state.networkMismatch && <p>Selected Network may not match DID Network</p>}
             </div>
         );
     }
