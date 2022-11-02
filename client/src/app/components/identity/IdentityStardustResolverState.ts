@@ -1,8 +1,22 @@
 import { IIdentityStardustResolveResponse } from "../../../models/api/IIdentityStardustResolveResponse";
 export interface IdentityStardustResolverState {
+    /**
+     * DID to be resolved.
+     */
     did?: string;
+
+    /**
+     * ID of the Alias Output that contains the DID Document.
+     */
     aliasId?: string;
-    error: boolean;
+
+    /**
+     * Error message if resolving fails.
+     */
     errorMessage: string;
+
+    /**
+     * The resolved document if resolution succeeds
+     */
     resolvedIdentity?: IIdentityStardustResolveResponse;
 }

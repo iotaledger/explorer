@@ -14,7 +14,7 @@ import { IdentityStardustResolverProps } from "./IdentityStardustResolverProps";
 import { IdentityStardustResolverState } from "./IdentityStardustResolverState";
 
 class IdentityStardustResolver extends AsyncComponent<
-    RouteComponentProps<IdentityStardustResolverProps> & { protocolVersion: string },
+    RouteComponentProps<IdentityStardustResolverProps>,
     IdentityStardustResolverState
 > {
     /**
@@ -22,19 +22,11 @@ class IdentityStardustResolver extends AsyncComponent<
      */
     private _timerId?: NodeJS.Timer;
 
-    /**
-     * placeholder when messageId is not available.
-     */
-    private readonly EMPTY_MESSAGE_ID = "0".repeat(64);
-
-    constructor(props: RouteComponentProps<IdentityStardustResolverProps> & { protocolVersion: string }) {
+    constructor(props: RouteComponentProps<IdentityStardustResolverProps>) {
         super(props);
-
-
         this.state = {
             did: props.match.params.did,
             aliasId: getAliasId(props.match.params.did ?? ""),
-            error: false,
             errorMessage: ""
         };
     }
@@ -46,21 +38,20 @@ class IdentityStardustResolver extends AsyncComponent<
             return;
         }
 
-        const res = await ServiceFactory.get<IdentityService>("identity").resolveIdentityStardust(
+        const resolvedIdentity = await ServiceFactory.get<IdentityService>("identity").resolveIdentityStardust(
             this.state.did,
             this.props.match.params.network
         );
 
-        if (res.error) {
+        if (resolvedIdentity.error) {
             this.setState({
-                error: true,
-                errorMessage: res.error
+                errorMessage: resolvedIdentity.error
             });
             return;
         }
 
         this.setState({
-            resolvedIdentity: res
+            resolvedIdentity
         });
     }
 
@@ -82,6 +73,9 @@ class IdentityStardustResolver extends AsyncComponent<
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const network = this.props.match.params.network;
+        const governorAddress = this.state.resolvedIdentity?.document?.meta.governorAddress;
+        const stateControllerAddress = this.state.resolvedIdentity?.document?.meta.stateControllerAddress;
         return (
             <div>
                 <div className="row space-between wrap">
@@ -100,18 +94,16 @@ class IdentityStardustResolver extends AsyncComponent<
                             <CopyButton copy={this.props.match.params.did} />
                         </div>
 
-                        {/* ALIAS ID */}
                         {this.state.resolvedIdentity?.document &&
-                            !this.state.error && (
+                            !this.state.errorMessage && (
                                 <Fragment>
-                                    {/* ALIAS ID */}
                                     <div className="margin-b-s">
                                         <div className="label">Alias ID</div>
                                         <div className="value code row middle">
                                             <div className="margin-r-t">
                                                 <a onClick={() => {
                                                     // eslint-disable-next-line max-len
-                                                    window.location.href = `/${this.props.match.params.network}/alias/${this.state.aliasId}`;
+                                                    window.location.href = `/${network}/alias/${this.state.aliasId}`;
                                                 }}
                                                 >
                                                     {this.state.aliasId}
@@ -122,7 +114,6 @@ class IdentityStardustResolver extends AsyncComponent<
                                             />
                                         </div>
                                     </div>
-                                    {/* GOVERNOR ADDRESS */}
                                     <div className="margin-b-s">
                                         <div className="label">Governor</div>
                                         <div className="value code row middle">
@@ -130,10 +121,10 @@ class IdentityStardustResolver extends AsyncComponent<
                                                 <a onClick={() => {
                                                     window.location.href =
                                                         // eslint-disable-next-line max-len
-                                                        `/${this.props.match.params.network}/search/${this.state.resolvedIdentity?.document?.meta.governorAddress}`;
+                                                        `/${network}/search/${governorAddress}`;
                                                 }}
                                                 >
-                                                    {this.state.resolvedIdentity.document.meta.governorAddress}
+                                                    {governorAddress}
                                                 </a>
                                             </div>
                                             <CopyButton
@@ -142,21 +133,20 @@ class IdentityStardustResolver extends AsyncComponent<
                                         </div>
                                     </div>
 
-                                    {/* STATE CONTROLLER ADDRESS */}
                                     <div className="margin-b-s">
                                         <div className="label">State Controller</div>
                                         <div className="value code row middle">
                                             <div className="margin-r-t">
                                                 <a onClick={() => {
                                                     // eslint-disable-next-line max-len
-                                                    window.location.href = `/${this.props.match.params.network}/search/${this.state.resolvedIdentity?.document?.meta.stateControllerAddress}`;
+                                                    window.location.href = `/${network}/search/${stateControllerAddress}`;
                                                 }}
                                                 >
-                                                    {this.state.resolvedIdentity.document.meta.stateControllerAddress}
+                                                    {stateControllerAddress}
                                                 </a>
                                             </div>
                                             <CopyButton
-                                                copy={this.state.resolvedIdentity.document.meta.stateControllerAddress}
+                                                copy={stateControllerAddress}
                                             />
                                         </div>
                                     </div>
@@ -172,24 +162,21 @@ class IdentityStardustResolver extends AsyncComponent<
                     </div>
                     <div className="section--data">
 
-                        {/* SPINNER */}
-                        {!this.state.resolvedIdentity && !this.state.error && (
+                        {!this.state.resolvedIdentity && !this.state.errorMessage && (
                             <React.Fragment>
                                 <h3 className="margin-r-s">Resolving DID ...</h3>
                                 <Spinner />
                             </React.Fragment>
                         )}
 
-                        {/* ERROR CASE */}
-                        {this.state.error && (
+                        {this.state.errorMessage && (
                             <div className="identity-json-container did-error">
                                 <p className="margin-b-t">ಠ_ಠ </p>
                                 <p className="">{this.state.errorMessage}</p>
                             </div>
                         )}
 
-                        {/* DOCUMENT */}
-                        {this.state.resolvedIdentity && !this.state.error && (
+                        {this.state.resolvedIdentity && !this.state.errorMessage && (
                             <div
                                 className="
                                         json-wraper-stardust-identity
@@ -210,7 +197,7 @@ class IdentityStardustResolver extends AsyncComponent<
                     </div>
                 </div>
                 <div className="row margin-b-s row--tablet-responsive">
-                    {this.state.resolvedIdentity && !this.state.error && (
+                    {this.state.resolvedIdentity && !this.state.errorMessage && (
                         <div className="section w100">
                             <div className="section--header">
                                 <h3>

@@ -14,8 +14,14 @@ export interface IdentityChrysalisResolverState {
      */
     resolvedIdentity: IIdentityDidResolveResponse | undefined;
 
+    /**
+     * The resolved History of the DID document.
+     */
     resolvedHistory: IIdentityDidHistoryResponse | undefined;
 
+    /**
+     * Error while resolving history.
+     */
     historyError: boolean;
 
     /**

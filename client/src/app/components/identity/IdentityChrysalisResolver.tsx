@@ -24,7 +24,7 @@ import IdentityHistory from "./IdentityHistory";
 import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
 
 class IdentityChrysalisResolver extends AsyncComponent<
-    RouteComponentProps<IdentityChrysalisResolverProps> & { protocolVersion: string },
+    RouteComponentProps<IdentityChrysalisResolverProps>,
     IdentityChrysalisResolverState
 > {
     /**
@@ -42,7 +42,7 @@ class IdentityChrysalisResolver extends AsyncComponent<
      */
     private readonly EMPTY_MESSAGE_ID = "0".repeat(64);
 
-    constructor(props: RouteComponentProps<IdentityChrysalisResolverProps> & { protocolVersion: string }) {
+    constructor(props: RouteComponentProps<IdentityChrysalisResolverProps>) {
         super(props);
 
         this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
@@ -110,10 +110,10 @@ class IdentityChrysalisResolver extends AsyncComponent<
     }
 
 
- /**
-  * Render the component.
-  * @returns The node to render.
-  */
+    /**
+     * Render the component.
+     * @returns The node to render.
+     */
     public render(): ReactNode {
         return (
             <div>

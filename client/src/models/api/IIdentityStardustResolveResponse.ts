@@ -1,19 +1,16 @@
-export interface IIdentityStardustResolveResponse {
+import { IResponse } from "./IResponse";
+
+export interface IIdentityStardustResolveResponse extends IResponse {
     /**
      * The resolved DID Document.
      */
     document?: {
         doc: unknown;
         meta: {
-          governorAddress: string;
-          stateControllerAddress: string;
+            governorAddress: string;
+            stateControllerAddress: string;
         };
-      };
-
-    /**
-     * Error message if resolution failed.
-     */
-    error?: string;
+    };
 
     /**
      * Governor of Alias Output.
