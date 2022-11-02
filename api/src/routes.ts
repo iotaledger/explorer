@@ -89,7 +89,7 @@ export const routes: IRoute[] = [
     {
         path: "/stardust/did/:network/:did/document",
         method: "get",
-        folder: "identity/resolution-stardust",
+        folder: "stardust/identity/resolution-stardust",
         func: "get"
     },
     { path: "/did/:network/:did/history", method: "get", folder: "identity/history", func: "get" },

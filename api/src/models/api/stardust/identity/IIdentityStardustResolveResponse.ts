@@ -5,7 +5,7 @@ export interface IIdentityStardustResolveResponse {
     document?: {
         doc: unknown;
         meta: unknown;
-      };
+    };
 
     /**
      * Error message if resolution failed.
