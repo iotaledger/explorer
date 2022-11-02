@@ -5,6 +5,9 @@
 @import "../../../../scss/themes";
 
 .transaction-history--section {
+    .section--header {
+        min-height: 40px;
+    }
 
     .transaction-history--table {
         width: 100%;

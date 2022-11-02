@@ -1,6 +1,7 @@
 import { FetchHelper } from "../../helpers/fetchHelper";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
+import { IRawResponse } from "../../models/api/IRawResponse";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
@@ -206,6 +207,25 @@ export class StardustApiClient extends ApiClient {
         return this.callApi<unknown, ITransactionHistoryResponse>(
             `stardust/transactionhistory/${request.network}/${request.address}${FetchHelper.urlParams(params)}`,
             "get"
+        );
+    }
+
+    /**
+     * Download transaction history.
+     * @param network The network in context.
+     * @param address The address to download history for.
+     * @param timespan The timespan to download.
+     * @returns The history.
+     */
+    public async transactionHistoryDownload(
+        network: string,
+        address: string,
+        timespan: string
+    ): Promise<IRawResponse> {
+        return this.callApiRaw(
+            `stardust/transactionhistory/dl/${network}/${address}`,
+            "post",
+            { timespan }
         );
     }
 

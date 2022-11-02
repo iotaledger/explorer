@@ -154,7 +154,8 @@ export async function executeRoute(
             filename = `; filename="${dataResponse.filename}"`;
         }
         res.setHeader(
-            "Content-Disposition", `${dataResponse.inline ? "inline" : "attachment"}${filename}`);
+            "Content-Disposition", `${dataResponse.inline ? "inline" : "attachment"}${filename}`
+        );
 
         if (dataResponse.data) {
             res.setHeader(
