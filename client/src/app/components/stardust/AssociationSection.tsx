@@ -123,7 +123,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                     <div className={classNames("margin-r-t", "dropdown", { opened: isExpanded })}>
                         <DropdownIcon />
                     </div>
-                    <h3>{ASSOCIATION_TYPE_TO_LABEL[association]} ({count})</h3>
+                    <h3 className="association-label">{ASSOCIATION_TYPE_TO_LABEL[association]} ({count})</h3>
                     {isExpanded && isLoading && (
                         <div className="margin-l-t">
                             <Spinner />

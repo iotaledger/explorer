@@ -9,6 +9,10 @@
 
     .association-section--header {
         height: 40px;
+
+        .association-label {
+            color: var(--body-color);
+        }
     }
 
     .association-section--table {
