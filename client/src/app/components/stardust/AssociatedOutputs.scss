@@ -8,6 +8,15 @@
     .section--header {
         justify-content: space-between;
 
+        .associated-heading {
+            font-size: 20px;
+
+            @include phone-down {
+                font-size: 16px;
+            }
+            
+        }
+
         .tabs-wrapper {
             display: flex;
 
@@ -34,6 +43,11 @@
                     border-top-right-radius: 8px;
                     border-bottom-right-radius: 8px;
                     border-right: 1px solid $gray-4;
+                }
+
+                @include phone-down {
+                    font-size: 12px;
+                    padding: 3px 5px;
                 }
             }
 

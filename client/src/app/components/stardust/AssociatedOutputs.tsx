@@ -73,7 +73,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
             <div className="section associated-outputs">
                 <div className="section--header">
                     <div className="row middle">
-                        <h2>Associated Outputs</h2>
+                        <h2 className="associated-heading">Associated Outputs</h2>
                         <Modal icon="info" data={associatedOuputsMessage} />
                     </div>
                     <div className="tabs-wrapper">
