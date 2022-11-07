@@ -39,53 +39,49 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
     return (
         analytics && !analytics.error ? (
             <div className="extended-info-boxes">
-                <div className="row space-between">
-                    {totalAddresses && (
-                        <div className="info-box">
-                            <span className="info-box--title">Total active Addresses</span>
-                            <span className="info-box--value">{totalAddresses}</span>
-                        </div>
-                    )}
-                    {claimedAndPercentLabels && (
-                        <div className="info-box">
-                            <span className="info-box--title">Rewards claimed</span>
-                            <span className="info-box--value">{claimedAndPercentLabels[1]}</span>
-                        </div>
-                    )}
-                    {claimedAndPercentLabels && (
-                        <div className="info-box">
-                            <span className="info-box--title">Total Shimmer claimed</span>
-                            <span className="info-box--value">
-                                {claimedAndPercentLabels[0]}
-                            </span>
-                        </div>
-                    )}
-                </div>
-                <div className="row space-between">
-                    {nftsCount && (
-                        <div className="info-box">
-                            <span className="info-box--title">NFTs minted</span>
-                            <span className="info-box--value">{nftsCount}</span>
-                        </div>
-                    )}
-                    {nativeTokensCount && (
-                        <div className="info-box">
-                            <span className="info-box--title">Tokens created</span>
-                            <span className="info-box--value">{nativeTokensCount}</span>
-                        </div>
-                    )}
-                    {lockedStorageDepositValue && (
-                        <div className="info-box">
-                            <span className="info-box--title">Locked storage deposit</span>
-                            <span className="info-box--value">
-                                {formatAmount(
-                                    Number(lockedStorageDepositValue),
-                                    tokenInfo
-                                ).replace(COMMAS_REGEX, ",")}
-                            </span>
-                        </div>
-                    )}
-                </div>
+                {totalAddresses && (
+                    <div className="info-box">
+                        <span className="info-box--title">Total active Addresses</span>
+                        <span className="info-box--value">{totalAddresses}</span>
+                    </div>
+                )}
+                {claimedAndPercentLabels && (
+                    <div className="info-box">
+                        <span className="info-box--title">Rewards claimed</span>
+                        <span className="info-box--value">{claimedAndPercentLabels[1]}</span>
+                    </div>
+                )}
+                {claimedAndPercentLabels && (
+                    <div className="info-box">
+                        <span className="info-box--title">Total Shimmer claimed</span>
+                        <span className="info-box--value">
+                            {claimedAndPercentLabels[0]}
+                        </span>
+                    </div>
+                )}
+                {nftsCount && (
+                    <div className="info-box">
+                        <span className="info-box--title">NFTs minted</span>
+                        <span className="info-box--value">{nftsCount}</span>
+                    </div>
+                )}
+                {nativeTokensCount && (
+                    <div className="info-box">
+                        <span className="info-box--title">Tokens created</span>
+                        <span className="info-box--value">{nativeTokensCount}</span>
+                    </div>
+                )}
+                {lockedStorageDepositValue && (
+                    <div className="info-box">
+                        <span className="info-box--title">Locked storage deposit</span>
+                        <span className="info-box--value">
+                            {formatAmount(
+                                Number(lockedStorageDepositValue),
+                                tokenInfo
+                            ).replace(COMMAS_REGEX, ",")}
+                        </span>
+                    </div>
+                )}
             </div>
         ) : null
     );
