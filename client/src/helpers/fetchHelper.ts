@@ -1,3 +1,4 @@
+
 /**
  * Fetch from an endpoint.
  */
@@ -34,7 +35,8 @@ export class FetchHelper {
                         controller.abort();
                     }
                 },
-                timeout);
+                timeout
+            );
         }
 
         try {
@@ -45,10 +47,68 @@ export class FetchHelper {
                     headers,
                     body: payload ? JSON.stringify(payload) : undefined,
                     signal: controller ? controller.signal : undefined
-                });
+                }
+            );
 
             const json = await res.json();
             return json as U;
+        } catch (err) {
+            throw err instanceof Error && err.name === "AbortError" ? new Error("Timeout") : err;
+        } finally {
+            if (timerId) {
+                clearTimeout(timerId);
+            }
+        }
+    }
+
+    /**
+     * Fetch a bytearray response.
+     * @param baseUrl The base url for the api.
+     * @param path The path for the endpoint.
+     * @param method The method to send the request with.
+     * @param payload The payload to send.
+     * @param headers The headers to include in the fetch.
+     * @param timeout Timeout for the request.
+     * @returns The response.
+     */
+    public static async raw(
+        baseUrl: string,
+        path: string,
+        method: "get" | "post" | "put" | "delete",
+        payload?: unknown,
+        headers?: { [id: string]: string },
+        timeout?: number
+    ): Promise<Response> {
+        headers = headers ?? {};
+        headers["Content-Type"] = "application/octet-stream";
+
+        let controller: AbortController | undefined;
+        let timerId: NodeJS.Timeout | undefined;
+
+        if (timeout !== undefined) {
+            controller = new AbortController();
+            timerId = setTimeout(
+                () => {
+                    if (controller) {
+                        controller.abort();
+                    }
+                },
+                timeout
+            );
+        }
+
+        try {
+            const response = await fetch(
+                `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`,
+                {
+                    method,
+                    headers,
+                    body: payload ? JSON.stringify(payload) : undefined,
+                    signal: controller ? controller.signal : undefined
+                }
+            );
+
+            return response;
         } catch (err) {
             throw err instanceof Error && err.name === "AbortError" ? new Error("Timeout") : err;
         } finally {

@@ -1,6 +1,7 @@
 import { FetchHelper } from "../helpers/fetchHelper";
 import { IMilestonesGetRequest } from "../models/api/IMilestonesGetRequest";
 import { IMilestonesGetResponse } from "../models/api/IMilestonesGetResponse";
+import { IRawResponse } from "../models/api/IRawResponse";
 import { IResponse } from "../models/api/IResponse";
 
 /**
@@ -55,4 +56,33 @@ export class ApiClient {
 
         return response;
     }
+
+    /**
+     * Perform a request to get the networks.
+     * @param path The path to send the request.
+     * @param method The method for sending the request.
+     * @param request The request to send.
+     * @param timeout The timeout to use.
+     * @returns The response from the request.
+     */
+    protected async callApiRaw(
+        path: string,
+        method: "get" | "post" | "put" | "delete",
+        request?: unknown,
+        timeout?: number
+    ): Promise<IRawResponse> {
+        let result: IRawResponse;
+        try {
+            result = {
+                raw: await FetchHelper.raw(this._endpoint, path, method, request, undefined, timeout)
+            };
+        } catch (err) {
+            result = {
+                error: `There was a problem communicating with the API.\n${err}`
+            };
+        }
+
+        return result;
+    }
 }
+

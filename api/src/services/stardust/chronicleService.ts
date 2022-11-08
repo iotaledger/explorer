@@ -1,5 +1,8 @@
+import moment from "moment";
 import { NetworkConfigurationError } from "../../errors/networkConfigurationError";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
+import { TimespanOption } from "../../models/api/stardust/ITransactionHistoryDownloadBody";
+import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import {
@@ -149,6 +152,75 @@ export class ChronicleService {
             );
         } catch (error) {
             return { error };
+        }
+    }
+
+    /**
+     * Download the transaction history of an address.
+     * @param address The address to download history for.
+     * @param timespan The timespan to use.
+     * @returns The history reponse.
+     */
+    public async transactionHistoryDownload(
+        address: string,
+        timespan: TimespanOption
+    ): Promise<ITransactionHistoryDownloadResponse | undefined> {
+        try {
+            let response: ITransactionHistoryResponse | undefined;
+            let cursor: string | undefined;
+            let isDone = false;
+            const result: ITransactionHistoryDownloadResponse = {
+                address,
+                items: []
+            };
+
+            let target: moment.Moment | undefined;
+            switch (timespan) {
+                case "one":
+                    target = moment().subtract(1, "month");
+                    break;
+                case "six":
+                    target = moment().subtract(6, "month");
+                    break;
+                case "year":
+                    target = moment().subtract(1, "year");
+                    break;
+                default:
+                    break;
+            }
+
+            do {
+                const params = FetchHelper.urlParams({ pageSize: 20, sort: "newest", cursor });
+
+                response = await FetchHelper.json<never, ITransactionHistoryResponse>(
+                    this._endpoint,
+                    `${CHRONICLE_ENDPOINTS.updatedByAddress}${address}${params}`,
+                    "get"
+                );
+
+                cursor = response.cursor;
+
+                for (const item of response.items) {
+                    const itemTimestamp = item.milestoneTimestamp * 1000;
+
+                    if (target && moment(itemTimestamp).isBefore(target)) {
+                        isDone = true;
+                    } else {
+                        result.items.push(item);
+                    }
+                }
+            } while (!isDone && cursor);
+
+            result.items.sort((a, b) => {
+                if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
+                    return !a.isSpent ? -1 : 1;
+                }
+                return 1;
+            });
+
+            return result;
+        } catch (error) {
+            console.log("Problem while building Transaction History download", error);
         }
     }
 

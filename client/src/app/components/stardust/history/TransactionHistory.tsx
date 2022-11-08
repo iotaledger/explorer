@@ -13,6 +13,7 @@ import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
 import Modal from "../../../components/Modal";
 import Spinner from "../../Spinner";
+import DownloadModal from "../DownloadModal";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
 import "./TransactionHistory.scss";
@@ -144,10 +145,9 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
                         Transaction History
                     </h2>
                     <Modal icon="info" data={transactionHistoryMessage} />
-                </div>
-                <div className="margin-t-s middle row">
                     {isLoading && <Spinner />}
                 </div>
+                <DownloadModal network={network} address={address} />
             </div>
             <table className="transaction-history--table">
                 <thead>

@@ -18,7 +18,7 @@ export interface ITransactionHistoryRequest {
     pageSize?: number;
 
     /**
-     * The sort by date to use (asc/desc).
+     * The sort by date to use.
      */
     sort?: string;
 
