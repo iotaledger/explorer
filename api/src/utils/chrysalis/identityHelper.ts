@@ -1,4 +1,4 @@
-import { ILatestDocument } from "../models/api/IIdentityLatestDocument";
+import { ILatestDocument } from "../../models/api/chrysalis/identity/IIdentityLatestDocument";
 
 export class IdentityHelper {
     /**

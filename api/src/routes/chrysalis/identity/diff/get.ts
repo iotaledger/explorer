@@ -1,14 +1,14 @@
 import * as identityLegacy from "@iota/identity-wasm-0.4/node";
 import * as identity from "@iota/identity-wasm/node";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { IIdentityDiffHistoryBody } from "../../../../models/api/IIdentityDiffHistoryBody";
+import { IIdentityDiffHistoryBody } from "../../../../models/api/chrysalis/identity/IIdentityDiffHistoryBody";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { CHRYSALIS } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
-import { IdentityHelper } from "../../../../utils/identityHelper";
+import { IdentityHelper } from "../../../../utils/chrysalis/identityHelper";
 import { ValidationHelper } from "../../../../utils/validationHelper";
-import { IIdentityDiffHistoryRequest } from ".././../../../models/api/IIdentityDiffHistoryRequest";
-import { IIdentityDiffHistoryResponse } from ".././../../../models/api/IIdentityDiffHistoryResponse";
+import { IIdentityDiffHistoryRequest } from ".././../../../models/api/chrysalis/identity/IIdentityDiffHistoryRequest";
+import { IIdentityDiffHistoryResponse } from ".././../../../models/api/chrysalis/identity/IIdentityDiffHistoryResponse";
 
 /**
  * @param config The configuration.
