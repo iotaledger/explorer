@@ -11,7 +11,7 @@ interface DownloadModalProps {
     address: string;
 }
 
-type TimespanOption = "one" | "six" | "year" | "all";
+type TimespanOption = "one" | "six" | "year";
 
 const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
     const [apiClient] = useState(
@@ -102,7 +102,6 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
                                     <option value="one">Last month</option>
                                     <option value="six">Last six months</option>
                                     <option value="year">Last year</option>
-                                    <option value="all">Everything</option>
                                 </select>
                             </div>
                             {!isDownloading ? (

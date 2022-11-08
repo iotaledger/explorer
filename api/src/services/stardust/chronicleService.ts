@@ -182,10 +182,8 @@ export class ChronicleService {
                 case "six":
                     target = moment().subtract(6, "month");
                     break;
-                case "year":
-                    target = moment().subtract(1, "year");
-                    break;
                 default:
+                    target = moment().subtract(1, "year");
                     break;
             }
 

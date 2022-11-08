@@ -1,4 +1,4 @@
-export type TimespanOption = "one" | "six" | "year" | "all";
+export type TimespanOption = "one" | "six" | "year";
 
 export interface ITransactionHistoryDownloadBody {
     timespan: TimespanOption;
