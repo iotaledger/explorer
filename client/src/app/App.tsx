@@ -44,7 +44,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
     }, [networksLoaded]);
 
     const networkConfig = networks.find(n => n.network === network);
-    const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? false;
+    const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? true;
 
     window.scrollTo({
         left: 0,
