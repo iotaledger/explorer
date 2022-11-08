@@ -9,7 +9,7 @@ import { StardustApiClient } from "./stardust/stardustApiClient";
 
 export class IdentityService {
     /**
-     * resolves DID into it's DID document
+     * Resolves DID into it's DID document (Chrysalis).
      * @param  {string} did DID to be resolved
      * @param  {string} network network name
      * @returns Promise
@@ -21,7 +21,7 @@ export class IdentityService {
     }
 
     /**
-     * resolves history of DID
+     * Resolves history of DID (Chrysalis).
      * @param  {string} did DID of which the history to be resolved
      * @param  {string} network network name
      * @param  {string} version version of the DID
@@ -34,7 +34,7 @@ export class IdentityService {
     }
 
     /**
-     * resolves Diff history of and integration message
+     * Resolves Diff history of and integration message (Chrysalis).
      * @param  {string} integrationMsgId MessageId of the parent integration message
      * @param  {string} network network name
      * @param  {string} version DID version
@@ -52,6 +52,12 @@ export class IdentityService {
         return response;
     }
 
+    /**
+     * Resolves DID into it's DID document (Stardust).
+     * @param  {string} did DID to be resolved
+     * @param  {string} network network name
+     * @returns Promise
+     */
     public async resolveIdentityStardust(did: string, network: string): Promise<IIdentityStardustResolveResponse> {
         const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
         const response = await apiClient.didDocument({ did, network });

@@ -32,6 +32,18 @@ export const routes: IRoute[] = [
         path: "/transactionhistory/:network/:address", method: "get",
         folder: "chrysalis/transactionhistory", func: "get"
     },
+    {
+        path: "/chrysalis/did/:network/:did/document", method: "get",
+        folder: "/chrysalis/identity/resolution", func: "get"
+    },
+    {
+        path: "/chrysalis/did/:network/:did/history", method: "get",
+        folder: "/chrysalis/identity/history", func: "get"
+    },
+    {
+        path: "/chrysalis/did/:network/diffHistory/:integrationMsgId", method: "post",
+        folder: "/chrysalis/identity/diff", func: "get", dataBody: true
+    },
     { path: "/stardust/search/:network/:query", method: "get", folder: "stardust", func: "search" },
     {
         path: "/stardust/balance/:network/:address", method: "get",
@@ -85,19 +97,8 @@ export const routes: IRoute[] = [
     { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
     { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
     { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true },
-    { path: "/did/:network/:did/document", method: "get", folder: "identity/resolution", func: "get" },
     {
-        path: "/stardust/did/:network/:did/document",
-        method: "get",
-        folder: "stardust/identity/resolution-stardust",
-        func: "get"
-    },
-    { path: "/did/:network/:did/history", method: "get", folder: "identity/history", func: "get" },
-    {
-        path: "/did/:network/diffHistory/:integrationMsgId",
-        method: "post",
-        folder: "identity/diff",
-        func: "get",
-        dataBody: true
+        path: "/stardust/did/:network/:did/document", method: "get",
+        folder: "stardust/identity/resolution-stardust", func: "get"
     }
 ];

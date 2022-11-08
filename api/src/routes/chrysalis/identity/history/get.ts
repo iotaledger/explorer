@@ -1,14 +1,14 @@
 import * as identityLegacy from "@iota/identity-wasm-0.4/node";
 import * as identity from "@iota/identity-wasm/node";
 
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IIdentityDidHistoryRequest } from "../../../models/api/IIdentityDidHistoryRequest";
-import { IIdentityDidHistoryResponse } from "../../../models/api/IIdentityDidHistoryResponse";
-import { IConfiguration } from "../../../models/configuration/IConfiguration";
-import { CHRYSALIS } from "../../../models/db/protocolVersion";
-import { NetworkService } from "../../../services/networkService";
-import { IdentityHelper } from "../../../utils/identityHelper";
-import { ValidationHelper } from "../../../utils/validationHelper";
+import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { IIdentityDidHistoryRequest } from "../../../../models/api/IIdentityDidHistoryRequest";
+import { IIdentityDidHistoryResponse } from "../../../../models/api/IIdentityDidHistoryResponse";
+import { IConfiguration } from "../../../../models/configuration/IConfiguration";
+import { CHRYSALIS } from "../../../../models/db/protocolVersion";
+import { NetworkService } from "../../../../services/networkService";
+import { IdentityHelper } from "../../../../utils/identityHelper";
+import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
  * @param config The configuration.
