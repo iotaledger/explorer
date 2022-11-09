@@ -190,7 +190,7 @@ export class ChrysalisApiClient extends ApiClient {
      */
     public async didDocument(request: IIdentityDidResolveRequest): Promise<IIdentityDidResolveResponse> {
         return this.callApi<unknown, IIdentityDidResolveResponse>(
-            `did/${request.network}/${request.did}/document`, "get"
+            `chrysalis/did/${request.network}/${request.did}/document`, "get"
             );
     }
 
@@ -201,7 +201,7 @@ export class ChrysalisApiClient extends ApiClient {
      */
     public async didHistory(request: IIdentityDidHistoryRequest): Promise<IIdentityDidHistoryResponse> {
         return this.callApi<unknown, IIdentityDidResolveResponse>(
-            `did/${request.network}/${request.did}/history?version=${request.version}`,
+            `chrysalis/did/${request.network}/${request.did}/history?version=${request.version}`,
             "get"
         );
     }
@@ -217,7 +217,7 @@ export class ChrysalisApiClient extends ApiClient {
         payload: unknown
     ): Promise<IIdentityDiffHistoryResponse> {
         return this.callApi<unknown, IIdentityDiffHistoryResponse>(
-            `did/${request.network}/diffHistory/${request.integrationMsgId}?version=${request.version}`,
+            `chrysalis/did/${request.network}/diffHistory/${request.integrationMsgId}?version=${request.version}`,
             "post",
             payload
         );

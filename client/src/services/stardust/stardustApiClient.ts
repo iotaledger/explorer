@@ -1,4 +1,6 @@
 import { FetchHelper } from "../../helpers/fetchHelper";
+import { IIdentityStardustResolveRequest } from "../../models/api/IIdentityStardustResolveRequest";
+import { IIdentityStardustResolveResponse } from "../../models/api/IIdentityStardustResolveResponse";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
 import { IRawResponse } from "../../models/api/IRawResponse";
@@ -332,5 +334,11 @@ export class StardustApiClient extends ApiClient {
             "get"
         );
     }
-}
 
+    public async didDocument(request: IIdentityStardustResolveRequest): Promise<IIdentityStardustResolveResponse> {
+        return this.callApi<unknown, IIdentityStardustResolveResponse>(
+            `stardust/did/${request.network}/${request.did}/document`,
+            "get"
+        );
+    }
+}

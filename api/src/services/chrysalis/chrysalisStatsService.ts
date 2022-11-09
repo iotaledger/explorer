@@ -1,4 +1,4 @@
-import { SingleNodeClient } from "@iota/iota.js";
+import { SingleNodeClient } from "@iota/iota.js-chrysalis";
 import { BaseStatsService } from "./baseStatsService";
 
 /**
