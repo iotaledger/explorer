@@ -3,6 +3,7 @@ import { TrytesHelper } from "../helpers/trytesHelper";
 import { ICurrencySettings } from "../models/services/ICurrencySettings";
 import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 import { SettingsService } from "./settingsService";
+
 /**
  * Class to handle currency settings.
  */
@@ -238,7 +239,8 @@ export class CurrencyService {
                     fiatCode: settings.fiatCode,
                     marketCap: settings.marketCap,
                     volume24h: settings.volume24h
-                });
+                }
+            );
             hasData = true;
         }
 

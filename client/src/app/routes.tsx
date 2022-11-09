@@ -10,11 +10,9 @@ import ChrysalisMessage from "./routes/chrysalis/Message";
 import { MessageProps } from "./routes/chrysalis/MessageProps";
 import ChrysalisSearch from "./routes/chrysalis/Search";
 import ChrysalisVisualizer from "./routes/chrysalis/Visualizer";
-import CurrencyConverter from "./routes/CurrencyConverter";
 import IdentityResolver from "./routes/IdentityResolver";
 import { IdentityResolverProps } from "./routes/IdentityResolverProps";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
-import Markets from "./routes/Markets";
 import Address from "./routes/og/Address";
 import { AddressRouteProps as OgAddressRouteProps } from "./routes/og/AddressRouteProps";
 import Bundle from "./routes/og/Bundle";
@@ -54,7 +52,6 @@ function *keyGenerator(count: number): IterableIterator<number> {
 
 const buildAppRoutes = (
     isStardust: boolean,
-    isMarketed: boolean,
     protocolVersion: string,
     withNetworkContext: (wrappedComponent: React.ReactNode) => JSX.Element | null
 ) => {
@@ -76,15 +73,6 @@ const buildAppRoutes = (
             )}
         />
     ];
-
-    if (isMarketed) {
-        commonRoutes.push(
-            <Route path="/:network/markets" component={Markets} key={keys.next().value} />
-        );
-        commonRoutes.push(
-            <Route path="/:network/currency-converter" component={CurrencyConverter} key={keys.next().value} />
-        );
-    }
 
     const ogAndChrysalisRoutes = [
         <Route exact path="/:network"

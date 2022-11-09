@@ -100,7 +100,6 @@ export const routes: IRoute[] = [
     },
     { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
     { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
-    { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true },
     {
         path: "/stardust/did/:network/:did/document", method: "get",
         folder: "stardust/identity/resolution-stardust", func: "get"

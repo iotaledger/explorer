@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { isMarketedNetwork, isShimmerNetwork } from "../helpers/networkHelper";
+import { isShimmerNetwork } from "../helpers/networkHelper";
 import { INetwork } from "../models/config/INetwork";
 import { MAINNET } from "../models/config/networkType";
 import { OG, STARDUST } from "../models/config/protocolVersion";
@@ -54,7 +54,6 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
 
     const currentNetwork = networkConfig?.network;
     const isShimmer = isShimmerNetwork(networkConfig?.network);
-    const isMarketed = isMarketedNetwork(networkConfig?.network);
     const isStardust = networkConfig?.protocolVersion === STARDUST;
     const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
     const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;
@@ -67,7 +66,6 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
 
     const routes = buildAppRoutes(
         isStardust,
-        isMarketed,
         networkConfig?.protocolVersion ?? "",
         withNetworkContext
     );
@@ -97,7 +95,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                     />
                 }
                 pages={getPages(network ?? "", networks)}
-                utilities={buildUtilities(network ?? "", networks, isMarketed, identityResolverEnabled)}
+                utilities={buildUtilities(network ?? "", networks, identityResolverEnabled)}
             />
             <div className="content">
                 {networks.length > 0 ?

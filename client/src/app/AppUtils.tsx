@@ -33,16 +33,11 @@ export const getPages = (currentNetwork: string, networks: INetwork[]) => (
 export const buildUtilities = (
     currentNetwork: string,
     networks: INetwork[],
-    isMarketed: boolean,
     identityResolverEnabled: boolean
 ) => {
     const utilities = [];
     if (networks.length > 0) {
         utilities.push({ label: "Streams v0", url: `/${currentNetwork}/streams/0/` });
-        if (isMarketed) {
-            utilities.push({ label: "Markets", url: `/${currentNetwork}/markets/` });
-            utilities.push({ label: "Currency Converter", url: `/${currentNetwork}/currency-converter/` });
-        }
         if (identityResolverEnabled) {
             utilities.push({ label: "Decentralized Identifier", url: `/${currentNetwork}/identity-resolver/` });
         }
