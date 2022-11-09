@@ -8,7 +8,7 @@ on:
       - "client/**"
       - ".github/workflows/build.yaml"
 
-concurrency: 
+concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
@@ -25,6 +25,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
+      - name: npm 7
+        run: npm install -g npm@7
       - name: Build
         run: |
           cd client
