@@ -1,4 +1,4 @@
-name: Build All with Node versions 14, 16
+name: Build All with Node versions 14, 16.16
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ '14', '16' ]
+        node: [ '14', '16.16' ]
     name: Node ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v2
@@ -25,8 +25,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
-      - name: npm 7
-        run: npm install -g npm@7
       - name: Build
         run: |
           cd client
