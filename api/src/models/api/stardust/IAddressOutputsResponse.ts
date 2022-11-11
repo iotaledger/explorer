@@ -1,6 +1,6 @@
 import { IResponse } from "../IResponse";
 
-export interface IAddressBasicOutputsResponse extends IResponse {
+export interface IAddressOutputsResponse extends IResponse {
     outputIds?: string[];
 }
 

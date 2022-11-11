@@ -8,8 +8,8 @@ import { HexHelper, ReadStream } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
-import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
+import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutputsResponse";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
@@ -229,7 +229,7 @@ export class StardustTangleHelper {
      */
     public static async outputIdsByAddress(
         network: INetwork, addressBech32: string
-    ): Promise<IAddressBasicOutputsResponse | undefined> {
+    ): Promise<IAddressOutputsResponse | undefined> {
         let cursor: string | undefined;
         let outputIds: string[] = [];
 

@@ -6,8 +6,8 @@ import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesR
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
 import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
-import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
+import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutputsResponse";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
@@ -238,7 +238,7 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async addressOutputs(
         networkId: string,
         address: string
-    ): Promise<IAddressBasicOutputsResponse | undefined> {
+    ): Promise<IAddressOutputsResponse | undefined> {
         const response = await this._api.addressOutputs({
             network: networkId,
             address
