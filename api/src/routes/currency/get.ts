@@ -28,5 +28,5 @@ export async function get(config: IConfiguration): Promise<ICurrenciesResponse> 
         };
     }
 
-    throw new Error("Currency conversion not configured");
+    throw new Error("Currency not configured");
 }

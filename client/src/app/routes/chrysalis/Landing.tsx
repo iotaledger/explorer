@@ -55,7 +55,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             frozenMessages: [],
             milestones: [],
             currency: "USD",
-            currencies: [],
             formatFull: false,
             isFeedPaused: false,
             isFilterExpanded: false

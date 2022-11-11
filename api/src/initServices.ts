@@ -4,7 +4,6 @@ import { ServiceFactory } from "./factories/serviceFactory";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { IAnalyticsStore } from "./models/db/IAnalyticsStore";
 import { ICurrencyState } from "./models/db/ICurrencyState";
-import { IMarket } from "./models/db/IMarket";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
 import { INetwork } from "./models/db/INetwork";
 import { CHRYSALIS, OG, STARDUST } from "./models/db/protocolVersion";
@@ -97,11 +96,8 @@ export async function initServices(config: IConfiguration) {
     }
 
     const currencyService = new CurrencyService(config);
-    let log = await currencyService.updateCurrencyNames();
-    console.log(log);
-
     const update = async () => {
-        log = await currencyService.update();
+        const log = await currencyService.update();
         console.log(log);
     };
 
@@ -216,13 +212,10 @@ async function registerStorageServices(config: IConfiguration): Promise<void> {
         ServiceFactory.register("currency-storage", () => new LocalStorageService<ICurrencyState>(
             config.rootStorageFolder, "currency", "id"));
 
-        ServiceFactory.register("market-storage", () => new LocalStorageService<IMarket>(
-            config.rootStorageFolder, "market", "currency"));
-
         ServiceFactory.register("analytics-storage", () => new LocalStorageService<IAnalyticsStore>(
             config.rootStorageFolder, "analytics", "network"));
     } else if (config.dynamoDbConnection) {
-        ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<IMarket>(
+        ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<INetwork>(
             config.dynamoDbConnection, "network", "network"));
 
         ServiceFactory.register("milestone-storage", () => new AmazonDynamoDbService<IMilestoneStore>(
@@ -230,9 +223,6 @@ async function registerStorageServices(config: IConfiguration): Promise<void> {
 
         ServiceFactory.register("currency-storage", () => new AmazonDynamoDbService<ICurrencyState>(
             config.dynamoDbConnection, "currency", "id"));
-
-        ServiceFactory.register("market-storage", () => new AmazonDynamoDbService<IMarket>(
-            config.dynamoDbConnection, "market", "currency"));
 
         const analyticsStore = new AmazonDynamoDbService<IAnalyticsStore>(
             config.dynamoDbConnection, "analytics", "network"

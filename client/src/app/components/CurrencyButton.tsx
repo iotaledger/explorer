@@ -18,7 +18,6 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
 
         this.state = {
             currency: "USD",
-            currencies: [],
             valueCurrency: "",
             priceCurrency: ""
         };
@@ -39,6 +38,8 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const supportedFiatCurrencies = this._currencyService.getFiatCurrencies();
+
         return (
             <div className="currency-button">
                 <div className="currency-button--label">
@@ -62,7 +63,7 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
                             value={this.state.currency}
                             onChange={e => this.setCurrency(e.target.value)}
                         >
-                            {this.state.currencies.map(cur => (
+                            {supportedFiatCurrencies.map(cur => (
                                 <option value={cur} key={cur}>{cur}</option>
                             ))}
                         </select>

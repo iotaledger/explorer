@@ -27,8 +27,7 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, SidePane
             itemsPerSecondHistory: [],
             items: [],
             milestones: [],
-            currency: "USD",
-            currencies: []
+            currency: "USD"
         };
     }
 

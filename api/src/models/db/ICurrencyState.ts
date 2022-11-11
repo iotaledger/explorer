@@ -12,7 +12,7 @@ export interface ICurrencyState {
     /**
      * The time of the last fx update.
      */
-    lastFxUpdate: number;
+    lastFixerUpdate: number;
 
     /**
      * The coin market cap currency EUR rate.
@@ -33,9 +33,5 @@ export interface ICurrencyState {
      * Exchange rates based on EUR.
      */
     exchangeRatesEUR: { [id: string]: number };
-
-    /**
-     * Full currency names
-     */
-    currencyNames: { [id: string]: string };
 }
+

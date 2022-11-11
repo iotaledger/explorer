@@ -3,7 +3,7 @@
 /**
  * The count stat.
  */
-export interface ICountStat {
+interface ICountStat {
     count: number;
 }
 

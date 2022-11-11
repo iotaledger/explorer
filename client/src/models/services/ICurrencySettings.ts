@@ -38,14 +38,4 @@ export interface ICurrencySettings {
          */
         rate: number;
     }[];
-
-    /**
-     * The currency id to full name map.
-     */
-    currencyNames?: {
-        /**
-         * Id to name key value pair.
-         */
-        [id: string]: string;
-    };
 }

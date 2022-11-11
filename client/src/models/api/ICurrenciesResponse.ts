@@ -22,7 +22,7 @@ export interface ICurrenciesResponse extends IResponse {
     volume24h?: number;
 
     /**
-     * The currencies and their exchange rates from base rate.
+     * The currencies and their exchange rates from base rate (EUR).
      */
     currencies?: { [id: string]: number };
 }

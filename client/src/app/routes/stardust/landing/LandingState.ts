@@ -47,8 +47,7 @@ export const getDefaultLandingState = (networkConfig: INetwork): LandingState =>
         priceEUR: 0,
         priceCurrency: "--",
         milestones: [],
-        currency: "USD",
-        currencies: []
+        currency: "USD"
     }
 );
 

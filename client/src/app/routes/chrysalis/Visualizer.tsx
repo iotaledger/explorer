@@ -159,7 +159,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             itemsPerSecondHistory: [],
             milestones: [],
             currency: "USD",
-            currencies: [],
             itemCount: 0,
             selectedFeedItem: undefined,
             filter: "",
