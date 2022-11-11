@@ -136,7 +136,7 @@ export class CurrencyService {
 
             if (data?.rates && data?.base) {
                 log += `Rates ${JSON.stringify(data?.rates)}\n`;
-                data.rates[data.base] = 1.0;
+                data.rates[data.base] = 1;
 
                 currentState.exchangeRatesEUR = data.rates;
                 currentState.lastFixerUpdate = Date.now();
