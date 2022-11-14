@@ -88,9 +88,9 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
                         this._currencyData,
                         true,
                         2),
-                priceCurrency: this._currencyData.baseCurrencyRate !== undefined
-                    ? this._currencyService.convertFiatBase(
-                        this._currencyData.baseCurrencyRate,
+                priceCurrency: this._currencyData.coinStats?.iota?.price ?
+                    this._currencyService.convertFiatBase(
+                        this._currencyData.coinStats.iota.price,
                         this._currencyData,
                         true,
                         3,

@@ -79,18 +79,15 @@ export class CurrencyService {
         let hasData = false;
 
         // If we already have some data use that to begin with
-        if (settings.baseCurrencyRate &&
-            settings.baseCurrencyRate > 0 &&
-            settings.currencies &&
-            Object.keys(settings.currencies).length > 0) {
+        if (settings.coinStats &&
+            settings.fiatExchangeRatesEur &&
+            Object.keys(settings.fiatExchangeRatesEur).length > 0) {
             callback(
                 true,
                 {
-                    baseCurrencyRate: settings.baseCurrencyRate,
-                    currencies: settings.currencies,
                     fiatCode: settings.fiatCode,
-                    marketCap: settings.marketCap,
-                    volume24h: settings.volume24h
+                    fiatExchangeRatesEur: settings.fiatExchangeRatesEur,
+                    coinStats: settings.coinStats
                 }
             );
             hasData = true;
@@ -139,12 +136,13 @@ export class CurrencyService {
         includeSymbol: boolean,
         numDigits: number): string {
         let converted = "";
-        if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
-            const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
+        if (currencyData.fiatExchangeRatesEur && currencyData.fiatCode && currencyData.coinStats?.iota?.price) {
+            const iotaStats = currencyData.coinStats.iota;
+            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find(c => c.id === currencyData.fiatCode);
 
             if (selectedFiatToBase) {
                 const miota = valueIota / 1000000;
-                const fiat = miota * (selectedFiatToBase.rate * currencyData.baseCurrencyRate);
+                const fiat = miota * (selectedFiatToBase.rate * iotaStats.price);
 
                 if (includeSymbol) {
                     converted += `${this.getSymbol(currencyData.fiatCode)} `;
@@ -176,8 +174,8 @@ export class CurrencyService {
         includeSuffix?: boolean
     ): string {
         let converted = "";
-        if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
-            const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
+        if (currencyData.fiatExchangeRatesEur && currencyData.fiatCode) {
+            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find(c => c.id === currencyData.fiatCode);
 
             if (selectedFiatToBase) {
                 const fiat = valueInBase * selectedFiatToBase.rate;
@@ -215,11 +213,12 @@ export class CurrencyService {
         valueInCurrent: number,
         currencyData: ICurrencySettings): number {
         let converted = 0;
-        if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
-            const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
+        if (currencyData.fiatExchangeRatesEur && currencyData.fiatCode && currencyData.coinStats?.iota?.price) {
+            const iotaStats = currencyData.coinStats.iota;
+            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find(c => c.id === currencyData.fiatCode);
 
             if (selectedFiatToBase) {
-                converted = valueInCurrent / selectedFiatToBase.rate / currencyData.baseCurrencyRate;
+                converted = valueInCurrent / selectedFiatToBase.rate / iotaStats.price;
             }
         }
         return converted;
@@ -235,11 +234,12 @@ export class CurrencyService {
         miota: number,
         currencyData: ICurrencySettings): number {
         let converted = 0;
-        if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
-            const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
+        if (currencyData.fiatExchangeRatesEur && currencyData.fiatCode && currencyData.coinStats?.iota?.price) {
+            const iotaStats = currencyData.coinStats.iota;
+            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find(c => c.id === currencyData.fiatCode);
 
             if (selectedFiatToBase) {
-                converted = miota * (selectedFiatToBase.rate * currencyData.baseCurrencyRate);
+                converted = miota * (selectedFiatToBase.rate * iotaStats.price);
             }
         }
         return converted;
@@ -364,29 +364,25 @@ export class CurrencyService {
         try {
             const currencyResponse = await this._apiClient.currencies();
             if (!currencyResponse.error) {
-                if (!currencyResponse.baseRate || !currencyResponse.currencies) {
+                if (!currencyResponse.coinStats || !currencyResponse.fiatExchangeRatesEur) {
                     callback(false);
                 } else {
                     const settings = this._settingsService.get();
 
                     settings.lastCurrencyUpdate = Date.now();
-                    settings.baseCurrencyRate = currencyResponse.baseRate || 0;
-                    const cur = currencyResponse.currencies || {};
+                    const cur = currencyResponse.fiatExchangeRatesEur || {};
                     const ids = Object.keys(cur).sort();
-                    settings.currencies = ids.map(i => ({ id: i, rate: cur[i] }));
-                    settings.marketCap = currencyResponse.marketCap;
-                    settings.volume24h = currencyResponse.volume24h;
+                    settings.fiatExchangeRatesEur = ids.map(i => ({ id: i, rate: cur[i] }));
+                    settings.coinStats = currencyResponse.coinStats;
 
                     this._settingsService.save();
 
                     callback(
                         true,
                         {
-                            baseCurrencyRate: settings.baseCurrencyRate,
-                            currencies: settings.currencies,
                             fiatCode: settings.fiatCode,
-                            marketCap: settings.marketCap,
-                            volume24h: settings.volume24h
+                            fiatExchangeRatesEur: settings.fiatExchangeRatesEur,
+                            coinStats: settings.coinStats
                         });
                 }
             } else {
@@ -396,7 +392,9 @@ export class CurrencyService {
             callback(
                 false,
                 undefined,
-                err);
+                err
+            );
         }
     }
 }
+

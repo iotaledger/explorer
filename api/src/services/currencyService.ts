@@ -2,7 +2,7 @@ import { CoinGeckoClient } from "../clients/coinGeckoClient";
 import { FixerClient } from "../clients/fixerClient";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IConfiguration } from "../models/configuration/IConfiguration";
-import { ICurrencyState } from "../models/db/ICurrencyState";
+import { ICoinStats, ICurrencyState } from "../models/db/ICurrencyState";
 import { IStorageService } from "../models/services/IStorageService";
 
 /**
@@ -24,13 +24,15 @@ export class CurrencyService {
      */
     private static readonly INITIAL_STATE: ICurrencyState = {
         id: "default",
-        lastCurrencyUpdate: 0,
         lastFixerUpdate: 0,
-        currentPriceEUR: 0,
-        marketCapEUR: 0,
-        volumeEUR: 0,
-        exchangeRatesEUR: {}
+        fiatExchangeRatesEur: {},
+        coinStats: {}
     };
+
+    /**
+     * Currencies that will trigger a stats update.
+     */
+    private static readonly SUPPORTED_CURRENCIES = ["iota"];
 
     /**
      * Is the service already updating.
@@ -57,7 +59,15 @@ export class CurrencyService {
      * @returns Log of operations.
      */
     public async update(force: boolean = false): Promise<string> {
-        let log = `Currency Updating ${new Date().toUTCString()}\n`;
+        const now = new Date();
+        const nowMs = now.getTime();
+        const date = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+        const year = date.getFullYear().toString();
+        const month = `0${(date.getMonth() + 1).toString()}`.slice(-2);
+        const day = `0${date.getDate().toString()}`.slice(-2);
+        const fullDate = `${year}-${month}-${day}`;
+        let log = `Currencies Updating ${new Date().toUTCString()}\n`;
+
         try {
             if (this._isUpdating) {
                 log += "Already updating\n";
@@ -73,40 +83,38 @@ export class CurrencyService {
 
                 currentState = currentState || CurrencyService.INITIAL_STATE;
 
-                // If now date, default to 2 days ago
-                const lastCurrencyUpdate = currentState.lastCurrencyUpdate
-                    ? new Date(currentState.lastCurrencyUpdate)
-                    : new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
-                const lastFixerUpdate = currentState.lastFixerUpdate
-                    ? new Date(currentState.lastFixerUpdate)
-                    : new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
-                const now = new Date();
-                const nowMs = now.getTime();
-                const date = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-                const year = date.getFullYear().toString();
-                const month = `0${(date.getMonth() + 1).toString()}`.slice(-2);
-                const day = `0${date.getDate().toString()}`.slice(-2);
-                const fullDate = `${year}-${month}-${day}`;
+                const lastFixerUpdate = currentState.lastFixerUpdate ?
+                    new Date(currentState.lastFixerUpdate) :
+                    new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
 
-                // If we have no state, an update over 5 minutes old, the day has changed, or force update
-                if (
-                    !currentState ||
-                    nowMs - lastCurrencyUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 5) ||
-                    (lastCurrencyUpdate.getDate() !== now.getDate()) ||
-                    force
-                ) {
-                    // Update FX rates every 4 hours so we dont hit rate limit
-                    if (nowMs - lastFixerUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 240)) {
-                        log += await this.updateFixerDxyRates(currentState, fullDate);
+                // Update Fixer rates every 4 hours so we dont hit rate limit
+                if (nowMs - lastFixerUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 240)) {
+                    log += await this.updateFixerDxyRates(currentState, fullDate);
+                }
+
+                for (const coin of CurrencyService.SUPPORTED_CURRENCIES) {
+                    const currentStats = currentState.coinStats[coin];
+
+                    // If now date, default to 2 days ago
+                    const lastCurrencyUpdate = currentStats?.lastUpdate ?
+                        new Date(currentStats.lastUpdate) :
+                        new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
+
+                    // If we have no state, an update over 5 minutes old, the day has changed, or force update
+                    if (
+                        !currentStats ||
+                        nowMs - lastCurrencyUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 5) ||
+                        (lastCurrencyUpdate.getDate() !== now.getDate()) ||
+                        force
+                    ) {
+                        log += await this.updateCoinStats(coin, currentState, fullDate);
+
+                        if (currencyStorageService) {
+                            await currencyStorageService.set(currentState);
+                        }
+                    } else {
+                        log += "No update required\n";
                     }
-
-                    log += await this.updateIotaEurData(currentState, fullDate);
-
-                    if (currencyStorageService) {
-                        await currencyStorageService.set(currentState);
-                    }
-                } else {
-                    log += "No update required\n";
                 }
 
                 this._isUpdating = false;
@@ -138,7 +146,7 @@ export class CurrencyService {
                 log += `Rates ${JSON.stringify(data?.rates)}\n`;
                 data.rates[data.base] = 1;
 
-                currentState.exchangeRatesEUR = data.rates;
+                currentState.fiatExchangeRatesEur = data.rates;
                 currentState.lastFixerUpdate = Date.now();
             }
         } else {
@@ -150,35 +158,36 @@ export class CurrencyService {
 
     /**
      * Update the Iota to EUR rates from CoinGecko.
+     * @param coin The coin to fetch stats for.
      * @param currentState Current currency state.
      * @param date The date string for logging.
      */
-    private async updateIotaEurData(
+    private async updateCoinStats(
+        coin: string,
         currentState: ICurrencyState,
         date: string
     ): Promise<string> {
         let log = `Coin Gecko ${date}\n`;
 
         const coinGeckoClient = new CoinGeckoClient();
-        const coinMarkets = await coinGeckoClient.coinMarkets("iota", "eur");
-        let priceEUR: number;
-        let marketCapEUR: number;
-        let volumeEUR: number;
+        const coinMarkets = await coinGeckoClient.coinMarkets(coin, "eur");
 
         if (coinMarkets && coinMarkets.length > 0) {
-            priceEUR = coinMarkets[0].current_price;
-            marketCapEUR = coinMarkets[0].market_cap;
-            volumeEUR = coinMarkets[0].total_volume;
+            const price = coinMarkets[0].current_price;
+            const marketCap = coinMarkets[0].market_cap;
+            const volume24h = coinMarkets[0].total_volume;
+
+            const coinStats: ICoinStats = {
+                price,
+                marketCap,
+                volume24h,
+                lastUpdate: Date.now()
+            };
+
+            currentState.coinStats[coin] = coinStats;
+            log += `Markets ${JSON.stringify(coinMarkets)}\n`;
         }
 
-        if (priceEUR && marketCapEUR && volumeEUR) {
-            currentState.currentPriceEUR = priceEUR;
-            currentState.marketCapEUR = marketCapEUR;
-            currentState.volumeEUR = volumeEUR;
-            currentState.lastCurrencyUpdate = Date.now();
-        }
-
-        log += `Markets ${JSON.stringify(coinMarkets)}\n`;
 
         return log;
     }
