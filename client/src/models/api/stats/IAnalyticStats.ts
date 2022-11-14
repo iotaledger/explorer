@@ -20,7 +20,7 @@ interface IValueStat {
 /**
  * The storage deposit stat.
  */
-export interface ILockedStorageDeposit {
+interface ILockedStorageDeposit {
     outputCount: string;
     storageDepositReturnCount: string;
     storageDepositReturnTotalValue: string;
