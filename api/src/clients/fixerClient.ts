@@ -40,7 +40,8 @@ export class FixerClient {
                 null,
                 { apiKey: this._apiKey }
             );
-        } catch {
+        } catch (e) {
+            console.log("Failed fetching latest from fixerAPI", e);
         }
 
         return response;
