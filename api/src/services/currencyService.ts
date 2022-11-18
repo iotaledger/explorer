@@ -85,7 +85,7 @@ export class CurrencyService {
                     currentState :
                     CurrencyService.INITIAL_STATE;
 
-                const lastFixerUpdate = currentState.lastFixerUpdate ?
+                const lastFixerUpdate = currentState?.lastFixerUpdate > 0 ?
                     new Date(currentState.lastFixerUpdate) :
                     new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
 
