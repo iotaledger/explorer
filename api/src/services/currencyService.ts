@@ -81,7 +81,9 @@ export class CurrencyService {
                     currentState = await currencyStorageService.get("default");
                 }
 
-                currentState = currentState || CurrencyService.INITIAL_STATE;
+                currentState = currentState && currentState.coinStats !== undefined ?
+                    currentState :
+                    CurrencyService.INITIAL_STATE;
 
                 const lastFixerUpdate = currentState.lastFixerUpdate ?
                     new Date(currentState.lastFixerUpdate) :
