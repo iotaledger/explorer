@@ -81,7 +81,7 @@ export class CurrencyService {
                     currentState = await currencyStorageService.get("default");
                 }
 
-                currentState = currentState && currentState.coinStats !== undefined ?
+                currentState = currentState?.coinStats !== undefined ?
                     currentState :
                     CurrencyService.INITIAL_STATE;
 
