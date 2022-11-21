@@ -1,7 +1,8 @@
+import { ICoinStats } from "../api/ICurrenciesResponse";
 
 export interface ICurrencySettings {
     /**
-     * The fiat code for currency conversion.
+     * The code for the currently selected fiat currency.
      */
     fiatCode: string;
 
@@ -11,41 +12,17 @@ export interface ICurrencySettings {
     lastCurrencyUpdate?: number;
 
     /**
-     * The base currency for exchange rates.
+     * The supported currencies exchange rates from EUR base.
      */
-    baseCurrencyRate?: number;
-
-    /**
-     * The market cap.
-     */
-    marketCap?: number;
-
-    /**
-     * The volume in the last 24H.
-     */
-    volume24h?: number;
-
-    /**
-     * The currencies used for conversion.
-     */
-    currencies?: {
-        /**
-         * Id of the currency.
-         */
+    fiatExchangeRatesEur?: {
         id: string;
-        /**
-         * The rate.
-         */
         rate: number;
     }[];
 
     /**
-     * The currency id to full name map.
+     * Market stats of supported coins (in EUR).
      */
-    currencyNames?: {
-        /**
-         * Id to name key value pair.
-         */
-        [id: string]: string;
+    coinStats?: {
+        [coinCode: string]: ICoinStats;
     };
 }

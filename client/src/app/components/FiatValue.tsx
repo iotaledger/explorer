@@ -16,8 +16,7 @@ class FiatValue extends Currency<FiatValueProps, FiatValueState> {
 
         this.state = {
             valueCurrency: "",
-            currency: "USD",
-            currencies: []
+            currency: "USD"
         };
     }
 

@@ -48,7 +48,6 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
             bundle,
             groups: [],
             currency: "USD",
-            currencies: [],
             formatFull: false
         };
     }
@@ -186,6 +185,8 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const supportedFiatCurrencies = this._currencyService.getFiatCurrencies();
+
         return (
             <div className="bundle">
                 <div className="wrapper">
@@ -201,7 +202,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                                 value={this.state.currency}
                                                 onChange={e => this.setCurrency(e.target.value)}
                                             >
-                                                {this.state.currencies.map(cur => (
+                                                {supportedFiatCurrencies.map(cur => (
                                                     <option value={cur} key={cur}>{cur}</option>
                                                 ))}
                                             </select>

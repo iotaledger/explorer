@@ -53,9 +53,7 @@ abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S>
             if (this._currencyData && currency) {
                 this._currencyData.fiatCode = currency;
                 this.setState(
-                    {
-                        currency
-                    },
+                    { currency },
                     () => {
                         this.updateCurrency();
                     });
@@ -96,14 +94,13 @@ abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S>
      * Build the currency information.
      */
     private buildCurrency(): void {
-        this._currencyService.loadCurrencies((isAvailable, currencyData, err) => {
+        this._currencyService.loadCurrencies((isAvailable, currencyData) => {
             if (isAvailable && currencyData && this._isMounted) {
                 this._currencyData = currencyData;
 
                 this.setState(
                     {
-                        currency: this._currencyData.fiatCode,
-                        currencies: (this._currencyData.currencies ?? []).map(c => c.id)
+                        currency: this._currencyData.fiatCode
                     },
                     () => this.updateCurrency());
             }

@@ -10,9 +10,9 @@ import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryReque
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
 import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
-import { IAddressBasicOutputsRequest } from "../../models/api/stardust/IAddressBasicOutputsRequest";
-import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
+import { IAddressOutputsRequest } from "../../models/api/stardust/IAddressOutputsRequest";
+import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutputsResponse";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociationsRequest } from "../../models/api/stardust/IAssociationsRequest";
@@ -91,8 +91,8 @@ export class StardustApiClient extends ApiClient {
      * @param request The Address Basic outputs request.
      * @returns The Address outputs response
      */
-    public async addressOutputs(request: IAddressBasicOutputsRequest): Promise<IAddressBasicOutputsResponse> {
-        return this.callApi<unknown, IAddressBasicOutputsResponse>(
+    public async addressOutputs(request: IAddressOutputsRequest): Promise<IAddressOutputsResponse> {
+        return this.callApi<unknown, IAddressOutputsResponse>(
             `stardust/address/outputs/${request.network}/${request.address}`,
             "get"
         );

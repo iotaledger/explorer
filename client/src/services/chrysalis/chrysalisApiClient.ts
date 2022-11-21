@@ -8,14 +8,11 @@ import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
 import { ITransactionsDetailsRequest } from "../../models/api/chrysalis/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ICurrenciesResponse } from "../../models/api/ICurrenciesResponse";
-import { ICurrencyNamesResponse } from "../../models/api/ICurrencyNamesResponse";
 import { IIdentityDidHistoryRequest } from "../../models/api/IIdentityDidHistoryRequest";
 import { IIdentityDidHistoryResponse } from "../../models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveRequest } from "../../models/api/IIdentityDidResolveRequest";
 import { IIdentityDiffHistoryRequest } from "../../models/api/IIdentityDiffHistoryRequest";
 import { IIdentityDidResolveResponse } from "../../models/api/IIdentityResolveResponse";
-import { IMarketGetRequest } from "../../models/api/IMarketGetRequest";
-import { IMarketGetResponse } from "../../models/api/IMarketGetResponse";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
 import { INetworkGetResponse } from "../../models/api/INetworkGetResponse";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
@@ -50,14 +47,6 @@ export class ChrysalisApiClient extends ApiClient {
      */
     public async currencies(): Promise<ICurrenciesResponse> {
         return this.callApi<unknown, ICurrenciesResponse>("currencies", "get");
-    }
-
-    /**
-     * Perform a request to get currency names.
-     * @returns The response from the request.
-     */
-    public async currencyNames(): Promise<ICurrencyNamesResponse> {
-        return this.callApi<unknown, ICurrencyNamesResponse>("currency/names", "get");
     }
 
     /**
@@ -104,16 +93,6 @@ export class ChrysalisApiClient extends ApiClient {
      */
     public async addressGet(request: IAddressGetRequest): Promise<IAddressGetResponse> {
         return this.callApi<unknown, IAddressGetResponse>(`address/${request.network}/${request.hash}`, "get");
-    }
-
-
-    /**
-     * Perform a request to get the market data information.
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async marketGet(request: IMarketGetRequest): Promise<IMarketGetResponse> {
-        return this.callApi<unknown, IMarketGetResponse>(`market/${request.currency}`, "get");
     }
 
     /**

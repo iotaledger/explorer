@@ -1,29 +1,18 @@
+import { ICoinStats } from "../db/ICurrencyState";
 import { IResponse } from "./IResponse";
 import { ISignedResponse } from "./ISignedResponse";
 
 export interface ICurrenciesResponse extends IResponse, ISignedResponse {
     /**
-     * The time the data was last updated..
+     * The supported currencies exchange rates from EUR base.
      */
-    lastUpdated?: number;
+    fiatExchangeRatesEur?: { [id: string]: number };
 
     /**
-     * The exchange rate for the base currency.
+     * Market stats of supported coins (in EUR).
      */
-    baseRate?: number;
-
-    /**
-     * The market cap.
-     */
-    marketCap?: number;
-
-    /**
-     * The volume in the last 24H.
-     */
-    volume24h?: number;
-
-    /**
-     * The currencies and their exchange rates from base rate.
-     */
-    currencies?: { [id: string]: number };
+    coinStats: {
+        [coinCode: string]: ICoinStats;
+    };
 }
+

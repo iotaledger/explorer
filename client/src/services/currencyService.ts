@@ -3,6 +3,7 @@ import { TrytesHelper } from "../helpers/trytesHelper";
 import { ICurrencySettings } from "../models/services/ICurrencySettings";
 import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 import { SettingsService } from "./settingsService";
+
 /**
  * Class to handle currency settings.
  */
@@ -11,179 +12,26 @@ export class CurrencyService {
      * Currency code to symbol mapping
      */
     private static readonly SYMBOL_MAP: { [id: string]: string } = {
-        AED: "د.إ",
-        AFN: "؋",
-        ALL: "L",
-        AMD: "֏",
-        ANG: "ƒ",
-        AOA: "Kz",
-        ARS: "$",
-        AUD: "$",
-        AWG: "ƒ",
-        AZN: "₼",
-        BAM: "KM",
-        BBD: "$",
-        BDT: "৳",
-        BGN: "лв",
-        BHD: ".د.ب",
-        BIF: "FBu",
-        BMD: "$",
-        BND: "$",
-        BOB: "$b",
-        BRL: "R$",
-        BSD: "$",
-        BTC: "฿",
-        BTN: "Nu.",
-        BWP: "P",
-        BYR: "Br",
-        BYN: "Br",
-        BZD: "BZ$",
-        CAD: "$",
-        CDF: "FC",
-        CHF: "CHF",
-        CLP: "$",
-        CNY: "¥",
-        COP: "$",
-        CRC: "₡",
-        CUC: "$",
-        CUP: "₱",
-        CVE: "$",
-        CZK: "Kč",
-        DJF: "Fdj",
-        DKK: "kr",
-        DOP: "RD$",
-        DZD: "دج",
-        EEK: "kr",
-        EGP: "£",
-        ERN: "Nfk",
-        ETB: "Br",
-        ETH: "Ξ",
         EUR: "€",
-        FJD: "$",
-        FKP: "£",
-        GBP: "£",
-        GEL: "₾",
-        GGP: "£",
-        GHC: "₵",
-        GHS: "GH₵",
-        GIP: "£",
-        GMD: "D",
-        GNF: "FG",
-        GTQ: "Q",
-        GYD: "$",
-        HKD: "$",
-        HNL: "L",
-        HRK: "kn",
-        HTG: "G",
-        HUF: "Ft",
-        IDR: "Rp",
-        ILS: "₪",
-        IMP: "£",
-        INR: "₹",
-        IQD: "ع.د",
-        IRR: "﷼",
-        ISK: "kr",
-        JEP: "£",
-        JMD: "J$",
-        JOD: "JD",
-        JPY: "¥",
-        KES: "KSh",
-        KGS: "лв",
-        KHR: "៛",
-        KMF: "CF",
-        KPW: "₩",
-        KRW: "₩",
-        KWD: "KD",
-        KYD: "$",
-        KZT: "лв",
-        LAK: "₭",
-        LBP: "£",
-        LKR: "₨",
-        LRD: "$",
-        LSL: "M",
-        LTC: "Ł",
-        LTL: "Lt",
-        LVL: "Ls",
-        LYD: "LD",
-        MAD: "MAD",
-        MDL: "lei",
-        MGA: "Ar",
-        MKD: "ден",
-        MMK: "K",
-        MNT: "₮",
-        MOP: "MOP$",
-        MRO: "UM",
-        MRU: "UM",
-        MUR: "₨",
-        MVR: "Rf",
-        MWK: "MK",
-        MXN: "$",
-        MYR: "RM",
-        MZN: "MT",
-        NAD: "$",
-        NGN: "₦",
-        NIO: "C$",
-        NOK: "kr",
-        NPR: "₨",
-        NZD: "$",
-        OMR: "﷼",
-        PAB: "B/.",
-        PEN: "S/.",
-        PGK: "K",
-        PHP: "₱",
-        PKR: "₨",
-        PLN: "zł",
-        PYG: "Gs",
-        QAR: "﷼",
-        RMB: "￥",
-        RON: "lei",
-        RSD: "Дин.",
-        RUB: "₽",
-        RWF: "R₣",
-        SAR: "﷼",
-        SBD: "$",
-        SCR: "₨",
-        SDG: "ج.س.",
-        SEK: "kr",
-        SGD: "$",
-        SHP: "£",
-        SLL: "Le",
-        SOS: "S",
-        SRD: "$",
-        SSP: "£",
-        STD: "Db",
-        STN: "Db",
-        SVC: "$",
-        SYP: "£",
-        SZL: "E",
-        THB: "฿",
-        TJS: "SM",
-        TMT: "T",
-        TND: "د.ت",
-        TOP: "T$",
-        TRL: "₤",
-        TRY: "₺",
-        TTD: "TT$",
-        TVD: "$",
-        TWD: "NT$",
-        TZS: "TSh",
-        UAH: "₴",
-        UGX: "USh",
         USD: "$",
-        UYU: "$U",
-        UZS: "лв",
-        VEF: "Bs",
-        VND: "₫",
-        VUV: "VT",
-        WST: "WS$",
-        XAF: "FCFA",
-        XBT: "Ƀ",
-        XCD: "$",
-        XOF: "CFA",
-        XPF: "₣",
-        YER: "﷼",
-        ZAR: "R",
-        ZWD: "Z$"
+        JPY: "¥",
+        GBP: "£",
+        CAD: "$",
+        SEK: "kr",
+        CHF: "CHF"
+    };
+
+    /**
+     * Supported currencies ordered.
+     */
+    private static readonly FIAT_CURRENCIES: { [id: string]: string } = {
+        EUR: "Euro",
+        USD: "United States Dollar",
+        JPY: "Japanese Yen",
+        GBP: "British Pound Sterling",
+        CAD: "Canadian Dollar",
+        SEK: "Swedish Krona",
+        CHF: "Swiss Franc"
     };
 
     /**
@@ -192,7 +40,7 @@ export class CurrencyService {
     private static readonly MS_PER_MINUTE: number = 60000;
 
     /**
-     * The network to use for transaction requests.
+     * The storage service to load/save the settings.
      */
     private readonly _settingsService: SettingsService;
 
@@ -221,24 +69,27 @@ export class CurrencyService {
      * @param callback Called when currencies are loaded.
      */
     public loadCurrencies(
-        callback: (available: boolean, data?: ICurrencySettings, err?: unknown) => void): void {
+        callback: (
+            available: boolean,
+            data?: ICurrencySettings,
+            err?: unknown
+        ) => void
+    ): void {
         const settings = this._settingsService.get();
         let hasData = false;
 
         // If we already have some data use that to begin with
-        if (settings.baseCurrencyRate &&
-            settings.baseCurrencyRate > 0 &&
-            settings.currencies &&
-            Object.keys(settings.currencies).length > 0) {
+        if (settings.coinStats &&
+            settings.fiatExchangeRatesEur &&
+            Object.keys(settings.fiatExchangeRatesEur).length > 0) {
             callback(
                 true,
                 {
-                    baseCurrencyRate: settings.baseCurrencyRate,
-                    currencies: settings.currencies,
                     fiatCode: settings.fiatCode,
-                    marketCap: settings.marketCap,
-                    volume24h: settings.volume24h
-                });
+                    fiatExchangeRatesEur: settings.fiatExchangeRatesEur,
+                    coinStats: settings.coinStats
+                }
+            );
             hasData = true;
         }
 
@@ -248,26 +99,6 @@ export class CurrencyService {
         const lastUpdate = settings ? (settings.lastCurrencyUpdate ?? 0) : 0;
         if (!hasData || Date.now() - lastUpdate > (5 * CurrencyService.MS_PER_MINUTE)) {
             setTimeout(async () => this.loadData(callback), 0);
-        }
-    }
-
-    /**
-     * Load the currency names data.
-     * @returns currencyNames The currency names map.
-     */
-    public async loadCurrencyNames(): Promise<{ [id: string]: string } | undefined> {
-        const settings = this._settingsService.get();
-
-        if (settings.currencyNames && Object.keys(settings.currencyNames).length > 0) {
-            return settings.currencyNames;
-        }
-
-        try {
-            const data = await this._apiClient.currencyNames();
-            settings.currencyNames = data.currencyNames;
-            return data.currencyNames;
-        } catch {
-            return undefined;
         }
     }
 
@@ -305,12 +136,13 @@ export class CurrencyService {
         includeSymbol: boolean,
         numDigits: number): string {
         let converted = "";
-        if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
-            const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
+        if (currencyData.fiatExchangeRatesEur && currencyData.fiatCode && currencyData.coinStats?.iota?.price) {
+            const iotaStats = currencyData.coinStats.iota;
+            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find(c => c.id === currencyData.fiatCode);
 
             if (selectedFiatToBase) {
                 const miota = valueIota / 1000000;
-                const fiat = miota * (selectedFiatToBase.rate * currencyData.baseCurrencyRate);
+                const fiat = miota * (selectedFiatToBase.rate * iotaStats.price);
 
                 if (includeSymbol) {
                     converted += `${this.getSymbol(currencyData.fiatCode)} `;
@@ -342,8 +174,8 @@ export class CurrencyService {
         includeSuffix?: boolean
     ): string {
         let converted = "";
-        if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
-            const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
+        if (currencyData.fiatExchangeRatesEur && currencyData.fiatCode) {
+            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find(c => c.id === currencyData.fiatCode);
 
             if (selectedFiatToBase) {
                 const fiat = valueInBase * selectedFiatToBase.rate;
@@ -370,89 +202,30 @@ export class CurrencyService {
         return converted;
     }
 
-
-    /**
-     * Convert from current currency to iota.
-     * @param valueInCurrent The value in current currency.
-     * @param currencyData The currency data.
-     * @returns The converted fiat.
-     */
-    public convertFiatToMiota(
-        valueInCurrent: number,
-        currencyData: ICurrencySettings): number {
-        let converted = 0;
-        if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
-            const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
-
-            if (selectedFiatToBase) {
-                converted = valueInCurrent / selectedFiatToBase.rate / currencyData.baseCurrencyRate;
-            }
-        }
-        return converted;
-    }
-
-    /**
-     * Convert the iota to fiat.
-     * @param miota The value in iota.
-     * @param currencyData The currency data.
-     * @returns The converted fiat.
-     */
-    public convertMiotaToFiat(
-        miota: number,
-        currencyData: ICurrencySettings): number {
-        let converted = 0;
-        if (currencyData.currencies && currencyData.fiatCode && currencyData.baseCurrencyRate) {
-            const selectedFiatToBase = currencyData.currencies.find(c => c.id === currencyData.fiatCode);
-
-            if (selectedFiatToBase) {
-                converted = miota * (selectedFiatToBase.rate * currencyData.baseCurrencyRate);
-            }
-        }
-        return converted;
-    }
-
-    /**
-     * Format the amount with currency sumbol.
-     * @param currencyData The currency data.
-     * @param amount The amount to format.
-     * @param numDigits The number of digits to display.
-     * @param extendToFindMax Extend the decimal places until non zero or limit.
-     * @returns The formatted amount.
-     */
-    public formatCurrency(
-        currencyData: ICurrencySettings | undefined,
-        amount: number,
-        numDigits: number,
-        extendToFindMax?: number): string {
-        let formatted = "";
-
-        if (currencyData) {
-            formatted = `${this.getSymbol(currencyData.fiatCode)} `;
-        }
-
-        if (extendToFindMax !== undefined) {
-            const regEx = new RegExp(`^-?\\d*\\.?0*\\d{0,${numDigits}}`);
-            const found = regEx.exec(amount.toFixed(extendToFindMax));
-            if (found) {
-                formatted += found[0];
-            }
-        } else {
-            formatted += amount
-                .toFixed(numDigits)
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        return formatted;
-    }
-
     /**
      * Get the symbol for the currency code.
      * @param currencyCode The currency code to get the symbol for.
      * @returns The symbol.
      */
     public getSymbol(currencyCode: string): string {
-        return CurrencyService.SYMBOL_MAP[currencyCode] || currencyCode;
+        return CurrencyService.SYMBOL_MAP[currencyCode];
+    }
+
+    /**
+     * Get the supported currencies ordered.
+     * @returns The array of supported currencies by code.
+     */
+    public getFiatCurrencies(): string[] {
+        return Object.keys(CurrencyService.FIAT_CURRENCIES);
+    }
+
+    /**
+     * Get the currency name for the currency code.
+     * @param currencyCode The currency code to get the currency name for.
+     * @returns The currency name.
+     */
+    public getCurrencyName(currencyCode: string): string {
+        return CurrencyService.FIAT_CURRENCIES[currencyCode];
     }
 
     /**
@@ -504,33 +277,34 @@ export class CurrencyService {
      * @returns True if the load was succesful.
      */
     private async loadData(
-        callback: (available: boolean, data?: ICurrencySettings, err?: unknown) => void): Promise<void> {
+        callback: (
+            available: boolean,
+            data?: ICurrencySettings,
+            err?: unknown
+        ) => void
+    ): Promise<void> {
         try {
             const currencyResponse = await this._apiClient.currencies();
             if (!currencyResponse.error) {
-                if (!currencyResponse.baseRate || !currencyResponse.currencies) {
+                if (!currencyResponse.coinStats || !currencyResponse.fiatExchangeRatesEur) {
                     callback(false);
                 } else {
                     const settings = this._settingsService.get();
 
                     settings.lastCurrencyUpdate = Date.now();
-                    settings.baseCurrencyRate = currencyResponse.baseRate || 0;
-                    const cur = currencyResponse.currencies || {};
+                    const cur = currencyResponse.fiatExchangeRatesEur || {};
                     const ids = Object.keys(cur).sort();
-                    settings.currencies = ids.map(i => ({ id: i, rate: cur[i] }));
-                    settings.marketCap = currencyResponse.marketCap;
-                    settings.volume24h = currencyResponse.volume24h;
+                    settings.fiatExchangeRatesEur = ids.map(i => ({ id: i, rate: cur[i] }));
+                    settings.coinStats = currencyResponse.coinStats;
 
                     this._settingsService.save();
 
                     callback(
                         true,
                         {
-                            baseCurrencyRate: settings.baseCurrencyRate,
-                            currencies: settings.currencies,
                             fiatCode: settings.fiatCode,
-                            marketCap: settings.marketCap,
-                            volume24h: settings.volume24h
+                            fiatExchangeRatesEur: settings.fiatExchangeRatesEur,
+                            coinStats: settings.coinStats
                         });
                 }
             } else {
@@ -540,7 +314,9 @@ export class CurrencyService {
             callback(
                 false,
                 undefined,
-                err);
+                err
+            );
         }
     }
 }
+

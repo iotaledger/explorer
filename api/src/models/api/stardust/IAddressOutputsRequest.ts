@@ -1,4 +1,4 @@
-export interface IAddressBasicOutputsRequest {
+export interface IAddressOutputsRequest {
     /**
      * The network to search on.
      */

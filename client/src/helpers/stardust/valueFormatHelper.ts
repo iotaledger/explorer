@@ -33,7 +33,7 @@ export function formatAmount(
  * @param precision The decimal places to show.
  * @returns The formatted amount.
  */
-export function toFixedNoRound(value: number, precision: number = 2) {
+function toFixedNoRound(value: number, precision: number = 2) {
     const factor = Math.pow(10, precision);
     return Math.floor(value * factor) / factor;
 }

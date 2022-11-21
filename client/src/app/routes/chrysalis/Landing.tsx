@@ -55,7 +55,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             frozenMessages: [],
             milestones: [],
             currency: "USD",
-            currencies: [],
             formatFull: false,
             isFeedPaused: false,
             isFilterExpanded: false
@@ -360,18 +359,18 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         if (this._currencyData) {
             this.setState({
                 marketCapCurrency:
-                    this._currencyData.marketCap !== undefined
-                        ? this._currencyService.convertFiatBase(
-                            this._currencyData.marketCap,
+                    this._currencyData.coinStats?.iota?.marketCap ?
+                        this._currencyService.convertFiatBase(
+                            this._currencyData.coinStats.iota.marketCap,
                             this._currencyData,
                             true,
                             2,
                             undefined,
                             true)
                         : "--",
-                priceCurrency: this._currencyData.baseCurrencyRate !== undefined
-                    ? this._currencyService.convertFiatBase(
-                        this._currencyData.baseCurrencyRate,
+                priceCurrency: this._currencyData.coinStats?.iota?.price ?
+                    this._currencyService.convertFiatBase(
+                        this._currencyData.coinStats.iota.price,
                         this._currencyData,
                         true,
                         3,
@@ -397,75 +396,75 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         if (this._isMounted && this._feedClient) {
             const minLimit = UnitsHelper.convertUnits(
                 Number.parseFloat(this.state.valueMinimum), this.state.valueMinimumUnits, "i");
-                const maxLimit = UnitsHelper.convertUnits(
-                    Number.parseFloat(this.state.valueMaximum), this.state.valueMaximumUnits, "i");
+            const maxLimit = UnitsHelper.convertUnits(
+                Number.parseFloat(this.state.valueMaximum), this.state.valueMaximumUnits, "i");
 
-                    const filters = [
-                        {
-                            payloadType: "Zero only",
-                            filter: (item: IFeedItem) => item.value === 0
-                        },
-                        {
-                            payloadType: "Non-zero only",
-                            filter: (item: IFeedItem) =>
-                                item.value !== undefined &&
-                                item.value !== 0 &&
-                                Math.abs(item.value) >= minLimit &&
-                                Math.abs(item.value) <= maxLimit
-                        },
-                        {
-                            payloadType: "Transaction",
-                            filter: (item: IFeedItem) =>
-                                item.value !== undefined &&
-                                item.value !== 0 &&
-                                Math.abs(item.value) >= minLimit &&
-                                Math.abs(item.value) <= maxLimit
-                        },
-                        {
-                            payloadType: "Milestone",
-                            filter: (item: IFeedItem) =>
-                                item.payloadType === "MS"
+            const filters = [
+                {
+                    payloadType: "Zero only",
+                    filter: (item: IFeedItem) => item.value === 0
+                },
+                {
+                    payloadType: "Non-zero only",
+                    filter: (item: IFeedItem) =>
+                        item.value !== undefined &&
+                        item.value !== 0 &&
+                        Math.abs(item.value) >= minLimit &&
+                        Math.abs(item.value) <= maxLimit
+                },
+                {
+                    payloadType: "Transaction",
+                    filter: (item: IFeedItem) =>
+                        item.value !== undefined &&
+                        item.value !== 0 &&
+                        Math.abs(item.value) >= minLimit &&
+                        Math.abs(item.value) <= maxLimit
+                },
+                {
+                    payloadType: "Milestone",
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "MS"
 
-                        },
-                        {
-                            payloadType: "Indexed",
-                            filter: (item: IFeedItem) =>
-                                item.payloadType === "Index"
-                        },
-                        {
-                            payloadType: "No payload",
-                            filter: (item: IFeedItem) =>
-                                item.payloadType === "None"
+                },
+                {
+                    payloadType: "Indexed",
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "Index"
+                },
+                {
+                    payloadType: "No payload",
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "None"
 
-                        }
-                    ].filter(f => {
+                }
+            ].filter(f => {
+                let aux = false;
+                for (const payload of this.state.valuesFilter) {
+                    if (f.payloadType === payload.label && payload.isEnabled) {
+                        aux = true;
+                    }
+                }
+                return aux;
+            });
+
+            const filteredMessages = this.state.isFeedPaused
+                ? this.state.frozenMessages
+                : this._feedClient.getItems();
+            this.setState({
+                filteredItems: filteredMessages
+                    .filter(item => {
                         let aux = false;
-                        for (const payload of this.state.valuesFilter) {
-                            if (f.payloadType === payload.label && payload.isEnabled) {
+                        for (const f of filters) {
+                            const filter = f.filter;
+                            if (filter(item)) {
                                 aux = true;
                             }
                         }
                         return aux;
-                    });
-
-                    const filteredMessages = this.state.isFeedPaused
-                        ? this.state.frozenMessages
-                        : this._feedClient.getItems();
-                        this.setState({
-                            filteredItems: filteredMessages
-                            .filter(item => {
-                                let aux = false;
-                                for (const f of filters) {
-                                    const filter = f.filter;
-                                    if (filter(item)) {
-                                        aux = true;
-                                    }
-                                }
-                                return aux;
-                            }
-                                   )
-                                   .slice(0, 10)
-                        });
+                    }
+                    )
+                    .slice(0, 10)
+            });
         }
     }
 

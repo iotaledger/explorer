@@ -4,7 +4,6 @@ import { Link, RouteComponentProps } from "react-router-dom";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { OG } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
-import LineChart from "../LineChart";
 import "./SidePanel.scss";
 import { SidePanelRouteProps } from "../SidePanelRouteProps";
 import Feeds from "./Feeds";
@@ -28,8 +27,7 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, SidePane
             itemsPerSecondHistory: [],
             items: [],
             milestones: [],
-            currency: "USD",
-            currencies: []
+            currency: "USD"
         };
     }
 
@@ -51,9 +49,6 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, SidePane
                         <div className="card--value card--value__large padding-t-s">
                             {this.state.itemsPerSecond} / {this.state.confirmedItemsPerSecond}
                         </div>
-                        <LineChart
-                            values={this.state.itemsPerSecondHistory}
-                        />
                     </div>
                     <div className="card--section feed">
                         <div className="card--label card--label__underline">
