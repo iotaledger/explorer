@@ -3,10 +3,12 @@
 
 .card--content__output {
     padding: 0 30px;
+    margin-bottom: 20px;
 
     .card--value.card-header--wrapper {
         width: 100%;
         display: flex;
+        margin-bottom: 0px;
 
 
         .output-header {
@@ -51,6 +53,10 @@
     .unlock-condiiton-icon {
         color: #FEC900;
         font-size: 18px;
+    }
+
+    .left-border {
+        border-left: 1px solid var(--border-color);
     }
 }
 
