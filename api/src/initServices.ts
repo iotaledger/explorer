@@ -23,6 +23,7 @@ import { OgItemsService } from "./services/og/ogItemsService";
 import { OgStatsService } from "./services/og/ogStatsService";
 import { ZmqService } from "./services/og/zmqService";
 import { ChronicleService } from "./services/stardust/chronicleService";
+import { InfluxDBService } from "./services/stardust/influx/influxDbService";
 import { NodeInfoService } from "./services/stardust/nodeInfoService";
 import { StardustFeedService } from "./services/stardust/stardustFeedService";
 import { StardustItemsService } from "./services/stardust/stardustItemsService";
@@ -195,6 +196,16 @@ function initStardustServices(networkConfig: INetwork): void {
             () => new ChronicleService(networkConfig)
         );
     }
+
+    const influxDBService = new InfluxDBService(networkConfig);
+    influxDBService.buildClient().then(hasClient => {
+        if (hasClient) {
+            ServiceFactory.register(
+                `influxdb-${networkConfig.network}`,
+                () => influxDBService
+            );
+        }
+    }).catch(e => console.log("Failed to build influxDb client for", networkConfig.network, e));
 }
 
 /**

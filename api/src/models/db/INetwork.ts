@@ -71,6 +71,14 @@ export interface INetwork {
     permaNodeJwt?: string;
 
     /**
+     * The analytics influxDB.
+     */
+    analyticsInfluxDbEndpoint?: string;
+    analyticsInfluxDbDatabase?: string;
+    analyticsInfluxDbUsername?: string;
+    analyticsInfluxDbPassword?: string;
+
+    /**
      * The feed to communicate with.
      */
     feedEndpoint?: string;

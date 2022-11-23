@@ -6,6 +6,8 @@ import "./StatisticsPage.scss";
 
 const StatisticsPage: React.FC<null> = () => {
     const seenDays: number[] = [];
+
+    // eslint-disable-next-line unicorn/no-array-reduce
     const data = response.reduce((acc: { time: string; n: number }[], next) => {
         const m = moment(next.time);
         const dOY = m.dayOfYear();
