@@ -11,10 +11,11 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
-        <div className="card--content__output ">
+        <div className="card--content__output">
             <div
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="card--value card-header--wrapper"
+                style={{ height: "32px" }}
             >
                 <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
@@ -25,20 +26,22 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
                     </button>
                 </div>
             </div>
-            {isExpanded && (
-                <div className="card--content">
-                    {
-                        unlocks.map((unlock, idx) => (
-                            <React.Fragment key={idx}>
-                                <div className="card--label"> Public Key</div>
-                                <div className="card--value">{unlock.signature.publicKey}</div>
-                                <div className="card--label"> Signature</div>
-                                <div className="card--value">{unlock.signature.signature}</div>
-                            </React.Fragment>
-                        ))
-                    }
-                </div>
-            )}
+            {
+                isExpanded && (
+                    <div>
+                        {
+                            unlocks.map((unlock, idx) => (
+                                <div className="padding-l-t left-border">
+                                    <div className="card--label"> Public Key</div>
+                                    <div className="card--value">{unlock.signature.publicKey}</div>
+                                    <div className="card--label"> Signature</div>
+                                    <div className="card--value">{unlock.signature.signature}</div>
+                                </div>
+                            ))
+                        }
+                    </div>
+                )
+            }
         </div>
     );
 };
