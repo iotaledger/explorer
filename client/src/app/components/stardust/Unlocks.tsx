@@ -31,7 +31,7 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
                     <div>
                         {
                             unlocks.map((unlock, idx) => (
-                                <div className="padding-l-t left-border">
+                                <div key={idx} className="padding-l-t left-border">
                                     <div className="card--label"> Public Key</div>
                                     <div className="card--value">{unlock.signature.publicKey}</div>
                                     <div className="card--label"> Signature</div>
