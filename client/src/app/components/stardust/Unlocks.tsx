@@ -15,7 +15,6 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
             <div
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="card--value card-header--wrapper"
-                style={{ height: "32px" }}
             >
                 <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
