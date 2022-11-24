@@ -23,6 +23,7 @@ import { IBlockRequest } from "../../models/api/stardust/IBlockRequest";
 import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { IMilestoneStatsRequest } from "../../models/api/stardust/IMilestoneStatsRequest";
+import { IBlocksDailyResponse } from "../../models/api/stardust/influx/IBlocksDailyResponse";
 import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
 import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
@@ -320,6 +321,12 @@ export class StardustApiClient extends ApiClient {
     public async shimmerClaimingAnalytics(request: IAnalyticStatsRequest): Promise<IShimmerClaimedResponse> {
         return this.callApi<unknown, IShimmerClaimedResponse>(
             `stardust/analytics/shimmer/${request.network}`, "get"
+        );
+    }
+
+    public async influxAnalytics(request: { network: string }): Promise<IBlocksDailyResponse > {
+        return this.callApi<unknown, IBlocksDailyResponse>(
+            `stardust/analytics/blocks/daily/${request.network}`, "get"
         );
     }
 

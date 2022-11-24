@@ -32,6 +32,7 @@ import NftRegistryDetails from "./routes/stardust/NftRegistryDetails";
 import OutputList from "./routes/stardust/OutputList";
 import OutputPage from "./routes/stardust/OutputPage";
 import StardustSearch from "./routes/stardust/Search";
+import StatisticsPage from "./routes/stardust/statistics/StatisticsPage";
 import TransactionPage from "./routes/stardust/TransactionPage";
 import StardustVisualizer from "./routes/stardust/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
@@ -185,6 +186,10 @@ const buildAppRoutes = (
         <Route path="/:network/nft/:nftAddress"
             key={keys.next().value}
             component={Nft}
+        />,
+        <Route path="/:network/statistics"
+            key={keys.next().value}
+            component={StatisticsPage}
         />
     ];
 

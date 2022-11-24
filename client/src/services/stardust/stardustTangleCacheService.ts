@@ -1,5 +1,8 @@
 /* eslint-disable camelcase */
-import { IBlock, IBlockMetadata, IMilestonePayload, IOutputMetadataResponse, IOutputResponse, IOutputsResponse, OutputTypes } from "@iota/iota.js-stardust";
+import {
+    IBlock, IBlockMetadata, IMilestonePayload, IOutputMetadataResponse,
+    IOutputResponse, IOutputsResponse, OutputTypes
+} from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
