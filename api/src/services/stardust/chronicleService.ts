@@ -1,7 +1,6 @@
 import moment from "moment";
 import { NetworkConfigurationError } from "../../errors/networkConfigurationError";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
-import { TimespanOption } from "../../models/api/stardust/ITransactionHistoryDownloadBody";
 import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
@@ -158,12 +157,12 @@ export class ChronicleService {
     /**
      * Download the transaction history of an address.
      * @param address The address to download history for.
-     * @param timespan The timespan to use.
+     * @param targetDate The date to use.
      * @returns The history reponse.
      */
     public async transactionHistoryDownload(
         address: string,
-        timespan: TimespanOption
+        targetDate: moment.Moment
     ): Promise<ITransactionHistoryDownloadResponse | undefined> {
         try {
             let response: ITransactionHistoryResponse | undefined;
@@ -173,19 +172,6 @@ export class ChronicleService {
                 address,
                 items: []
             };
-
-            let target: moment.Moment | undefined;
-            switch (timespan) {
-                case "one":
-                    target = moment().subtract(1, "month");
-                    break;
-                case "six":
-                    target = moment().subtract(6, "month");
-                    break;
-                default:
-                    target = moment().subtract(1, "year");
-                    break;
-            }
 
             do {
                 const params = FetchHelper.urlParams({ pageSize: 20, sort: "newest", cursor });
@@ -201,7 +187,7 @@ export class ChronicleService {
                 for (const item of response.items) {
                     const itemTimestamp = item.milestoneTimestamp * 1000;
 
-                    if (target && moment(itemTimestamp).isBefore(target)) {
+                    if (targetDate && moment(itemTimestamp).isBefore(targetDate)) {
                         isDone = true;
                     } else {
                         result.items.push(item);

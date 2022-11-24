@@ -48,6 +48,7 @@
   --shimmer-copyright: #{$white};
   --transaction-history-dark-row: #{$gray-1};
   --associated-outputs-tabs-bg: #{$white};
+  --date-input-theme: light;
 
   body.darkmode {
     --body-background: #091326;
@@ -97,6 +98,7 @@
     --shimmer-copyright: #0f202c;
     --transaction-history-dark-row: #{$gray-9};
     --associated-outputs-tabs-bg: #00121f;
+    --date-input-theme: dark;
   }
 
   body.shimmer.darkmode {

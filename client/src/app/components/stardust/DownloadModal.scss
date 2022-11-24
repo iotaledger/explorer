@@ -82,30 +82,22 @@
     .modal--body {
       margin-top: 24px;
 
-      .select-container {
+      .input-container {
           width: 100%;
-          margin-left: 8px;
 
-          select {
-              background: var(--body-background);
-              color: var(--body-color);
-              cursor: pointer;
-              min-height: 34px;
-              width: 200px;
-              border: 1px solid #ccc;
-              border-radius: 6px;
-              padding: 4px 8px;
-              margin: 24px 0;
+          .date-label {
+            color: var(--body-color);
+            font-family: $inter;
+            font-weight: 500;
+            margin-bottom: 8px;
+            margin-right: 8px;
+          }
 
-              &:focus-visible {
-                  outline: none;
-              }
-
-              option {
-                  color: var(--modal-color);
-                  font-family: $inter;
-                  font-weight: 400;
-              }
+          input {
+            background: var(--body-background);
+            color: var(--body-color);
+            padding: 10px;
+            color-scheme: var(--date-input-theme);
           }
       }
 

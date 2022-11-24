@@ -1,6 +1,5 @@
-export type TimespanOption = "one" | "six" | "year";
+import moment from "moment";
 
 export interface ITransactionHistoryDownloadBody {
-    timespan: TimespanOption;
+    targetDate: moment.Moment;
 }
-

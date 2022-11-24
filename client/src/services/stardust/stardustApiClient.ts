@@ -1,3 +1,4 @@
+import moment from "moment";
 import { FetchHelper } from "../../helpers/fetchHelper";
 import { IIdentityStardustResolveRequest } from "../../models/api/IIdentityStardustResolveRequest";
 import { IIdentityStardustResolveResponse } from "../../models/api/IIdentityStardustResolveResponse";
@@ -216,18 +217,18 @@ export class StardustApiClient extends ApiClient {
      * Download transaction history.
      * @param network The network in context.
      * @param address The address to download history for.
-     * @param timespan The timespan to download.
+     * @param targetDate The date to use.
      * @returns The history.
      */
     public async transactionHistoryDownload(
         network: string,
         address: string,
-        timespan: string
+        targetDate: moment.Moment
     ): Promise<IRawResponse> {
         return this.callApiRaw(
             `stardust/transactionhistory/dl/${network}/${address}`,
             "post",
-            { timespan }
+            { targetDate }
         );
     }
 
@@ -248,7 +249,7 @@ export class StardustApiClient extends ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-     public async nftDetails(request: INftDetailsRequest): Promise<INftDetailsResponse> {
+    public async nftDetails(request: INftDetailsRequest): Promise<INftDetailsResponse> {
         return this.callApi<unknown, INftDetailsResponse>(
             `stardust/nft/${request.network}/${request.nftId}`,
             "get"
@@ -260,7 +261,7 @@ export class StardustApiClient extends ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-     public async nftRegistryDetails(request: INftRegistryDetailsRequest): Promise<INftRegistryDetailsResponse> {
+    public async nftRegistryDetails(request: INftRegistryDetailsRequest): Promise<INftRegistryDetailsResponse> {
         return this.callApi<unknown, INftRegistryDetailsResponse>(
             `stardust/nft/mock/${request.network}/${request.nftId}`,
             "get"
