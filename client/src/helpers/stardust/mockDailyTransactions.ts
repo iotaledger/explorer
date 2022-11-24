@@ -1,4 +1,4 @@
-export const response = [
+export const mockDataResponse = [
     {
         time: "2022-08-31 00:00:00",
         n: 1277

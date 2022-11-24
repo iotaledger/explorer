@@ -199,6 +199,7 @@ function initStardustServices(networkConfig: INetwork): void {
 
     const influxDBService = new InfluxDBService(networkConfig);
     influxDBService.buildClient().then(hasClient => {
+        console.log("Registering client with name:", `influxdb-${networkConfig.network}`, "hasClient", hasClient);
         if (hasClient) {
             ServiceFactory.register(
                 `influxdb-${networkConfig.network}`,
@@ -243,3 +244,4 @@ async function registerStorageServices(config: IConfiguration): Promise<void> {
         ServiceFactory.register("analytics-storage", () => analyticsStore);
     }
 }
+

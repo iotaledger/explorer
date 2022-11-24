@@ -2,14 +2,13 @@ import { max } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
-import moment from "moment";
 import React, { useLayoutEffect, useRef } from "react";
 import "./BarChart.scss";
 
 interface BarChartProps {
     width: number;
     height: number;
-    data: { time: string; n: number }[];
+    data: { time: string; blocks: number }[];
 }
 
 const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
@@ -24,7 +23,7 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
             .range([0, INNER_WIDTH])
             .paddingInner(0.1);
 
-        const dataMaxN = max(data, d => d.n) ?? 1;
+        const dataMaxN = max(data, d => d.blocks) ?? 1;
         const y = scaleLinear().domain([0, dataMaxN])
             .range([INNER_HEIGHT, 0]);
 
@@ -34,7 +33,7 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
             .append("g")
             .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-        const yAxisGrid = axisLeft(y.nice()).tickSize(-INNER_WIDTH).tickPadding(10);
+        const yAxisGrid = axisLeft(y.nice()).tickSize(-INNER_WIDTH).tickPadding(4);
         svg.append("g")
             .attr("class", "axis axis--y")
             .call(yAxisGrid);
@@ -46,11 +45,11 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
             .attr("class", "bar")
             .attr("x", d => x(d.time) ?? 0)
             .attr("width", x.bandwidth())
-            .attr("y", d => y(d.n))
-            .attr("height", d => INNER_HEIGHT - y(d.n))
+            .attr("y", d => y(d.blocks))
+            .attr("height", d => INNER_HEIGHT - y(d.blocks))
             .attr("fill", "#14cabf");
 
-        const xAxis = axisBottom(x).tickPadding(10).tickFormat(time => moment(time).format("DD MMM"));
+        const xAxis = axisBottom(x).tickPadding(10).tickFormat(time => time);
         svg.append("g")
             .attr("class", "axis axis--x")
             .attr("transform", `translate(0, ${INNER_HEIGHT})`)
