@@ -149,199 +149,70 @@ export abstract class InfluxDbClient {
 
     private collectData() {
         console.info("Collecting analytics influx data for", this._network.network);
-        this.fetchDailyBlocksData();
-        this.fetchDailyTransactionsData();
-        this.fetchDailyOutputsData();
-        this.fetchDailyTokensHeldData();
-        this.fetchDailyAddressesWithBalanceData();
-        this.fetchDailyAvgActiveAddressPerMilestoneData();
-        this.fetchDailyTokensTransferredData();
-    }
 
-    private fetchDailyBlocksData() {
-        const queryDesc = "Daily Blocks";
-        const blocksDailyCache: IBlocksDailyInflux[] = this._cache.blocksDaily;
-        const fromNanoDate: INanoDate = this.getFromNanoDate(blocksDailyCache);
-
-        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
-        this.queryInflux<IBlocksDailyInflux>(BLOCK_DAILY_PARAMETERIZED_QUERY, fromNanoDate, this.getToNanoDate())
-            .then(results => {
-                for (const result of results) {
-                    const { milestone, transaction, taggedData, noPayload } = result;
-                    // if any of these is not null we consider it a valid entry
-                    if (milestone || transaction || taggedData || noPayload) {
-                        blocksDailyCache.push(result);
-                    }
-                }
-                console.log(
-                    `${queryDesc} updated till`,
-                    moment(blocksDailyCache[blocksDailyCache.length - 1].time).format("DD-MM-YYYY")
-                );
-            }).catch(e => {
-                console.log(`Influx query ${queryDesc} failed:`, e);
-            });
-    }
-
-    private fetchDailyTransactionsData() {
-        const queryDesc = "Daily Transactions";
-        const transactionsDailyCache: ITransactionsDailyInflux[] = this._cache.transactionsDaily;
-        const fromNanoDate: INanoDate = this.getFromNanoDate(transactionsDailyCache);
-
-        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
-        this.queryInflux<ITransactionsDailyInflux>(
+        this.fetchInfluxCacheEntry<IBlocksDailyInflux>(
+            BLOCK_DAILY_PARAMETERIZED_QUERY,
+            this._cache.blocksDaily,
+            "Blocks Daily"
+        );
+        this.fetchInfluxCacheEntry<ITransactionsDailyInflux>(
             TRANSACTION_DAILY_PARAMETERIZED_QUERY,
-            fromNanoDate,
-            this.getToNanoDate()
-        ).then(results => {
-            for (const result of results) {
-                const { confirmed, conflicting } = result;
-                // if any of these is not null we consider it a valid entry
-                if (confirmed || conflicting) {
-                    transactionsDailyCache.push(result);
-                }
-            }
-            console.log(
-                `${queryDesc} updated till`,
-                moment(transactionsDailyCache[transactionsDailyCache.length - 1].time).format("DD-MM-YYYY")
-            );
-        }).catch(e => {
-            console.log(`Influx query ${queryDesc} failed:`, e);
-        });
-    }
-
-    private fetchDailyOutputsData() {
-        const queryDesc = "Daily Outputs";
-        const outputsDailyCache: IOutputsDailyInflux[] = this._cache.outputsDaily;
-        const fromNanoDate: INanoDate = this.getFromNanoDate(outputsDailyCache);
-
-        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
-        this.queryInflux<IOutputsDailyInflux>(
+            this._cache.transactionsDaily,
+            "Transactions Daily"
+        );
+        this.fetchInfluxCacheEntry<IOutputsDailyInflux>(
             OUTPUTS_DAILY_PARAMETERIZED_QUERY,
-            fromNanoDate,
-            this.getToNanoDate()
-        ).then(results => {
-            for (const result of results) {
-                const { basic, alias, foundry, nft } = result;
-                // if any of these is not null we consider it a valid entry
-                if (basic || alias || foundry || nft) {
-                    outputsDailyCache.push(result);
-                }
-            }
-            console.log(
-                `${queryDesc} updated till`,
-                moment(outputsDailyCache[outputsDailyCache.length - 1].time).format("DD-MM-YYYY")
-            );
-        }).catch(e => {
-            console.log(`Influx query ${queryDesc} failed:`, e);
-        });
-    }
-
-    private fetchDailyTokensHeldData() {
-        const queryDesc = "Tokens Held Per Output Daily";
-        const tokenHeldCache: ITokensHeldPerOutputDailyInflux[] = this._cache.tokensHeldDaily;
-        const fromNanoDate: INanoDate = this.getFromNanoDate(tokenHeldCache);
-
-        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
-        this.queryInflux<ITokensHeldPerOutputDailyInflux>(
+            this._cache.outputsDaily,
+            "Outpus Daily"
+        );
+        this.fetchInfluxCacheEntry<ITokensHeldPerOutputDailyInflux>(
             TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY,
-            fromNanoDate,
-            this.getToNanoDate()
-        ).then(results => {
-            for (const result of results) {
-                const { basic, alias, foundry, nft } = result;
-                // if any of these is not null we consider it a valid entry
-                if (basic || alias || foundry || nft) {
-                    tokenHeldCache.push(result);
-                }
-            }
-            console.log(
-                `${queryDesc} updated till`,
-                moment(tokenHeldCache[tokenHeldCache.length - 1].time).format("DD-MM-YYYY")
-            );
-        }).catch(e => {
-            console.log(`Influx query ${queryDesc} failed:`, e);
-        });
-    }
-
-    private fetchDailyAddressesWithBalanceData() {
-        const queryDesc = "Addresses With Balance Daily";
-        const addressesWithBalanceCache: IAddressesWithBalanceDailyInflux[] = this._cache.addressesWithBalanceDaily;
-        const fromNanoDate: INanoDate = this.getFromNanoDate(addressesWithBalanceCache);
-
-        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
-        this.queryInflux<IAddressesWithBalanceDailyInflux>(
+            this._cache.tokensHeldDaily,
+            "Tokens Held Daily"
+        );
+        this.fetchInfluxCacheEntry<IAddressesWithBalanceDailyInflux>(
             ADDRESSES_WITH_BALANCE_DAILY_PARAMETERIZED_QUERY,
-            fromNanoDate,
-            this.getToNanoDate()
-        ).then(results => {
-            for (const result of results) {
-                const { addressesWithBalance } = result;
-                // if any of these is not null we consider it a valid entry
-                if (addressesWithBalance) {
-                    addressesWithBalanceCache.push(result);
-                }
-            }
-            console.log(
-                `${queryDesc} updated till`,
-                moment(addressesWithBalanceCache[addressesWithBalanceCache.length - 1].time).format("DD-MM-YYYY")
-            );
-        }).catch(e => {
-            console.log(`Influx query ${queryDesc} failed:`, e);
-        });
-    }
-
-    private fetchDailyAvgActiveAddressPerMilestoneData() {
-        const queryDesc = "Avg Addresses Per Milestone Daily";
-        const avgAddressesPerMsCache = this._cache.avgAddressesPerMilestoneDaily;
-        const fromNanoDate: INanoDate = this.getFromNanoDate(avgAddressesPerMsCache);
-
-        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
-        this.queryInflux<IAvgAddressesPerMilestoneDailyInflux>(
+            this._cache.addressesWithBalanceDaily,
+            "Addresses with balance Daily"
+        );
+        this.fetchInfluxCacheEntry<IAvgAddressesPerMilestoneDailyInflux>(
             AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_PARAMETERIZED_QUERY,
-            fromNanoDate,
-            this.getToNanoDate()
-        ).then(results => {
+            this._cache.avgAddressesPerMilestoneDaily,
+            "Avarage addresses with balance Daily"
+        );
+        this.fetchInfluxCacheEntry<ITokensTransferredDailyInflux>(
+            TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY,
+            this._cache.tokensTransferredDaily,
+            "Tokens transferred Daily"
+        );
+    }
+
+    private fetchInfluxCacheEntry<T extends ITimedEntry>(
+        queryTemplate: string,
+        cacheEntryToFetch: T[],
+        description: string = "Daily entry"
+    ) {
+        const fromNanoDate: INanoDate = this.getFromNanoDate(cacheEntryToFetch);
+
+        console.info(`Refreshing ${description} from date`, fromNanoDate.toISOString());
+        this.queryInflux<T>(queryTemplate, fromNanoDate, this.getToNanoDate()).then(results => {
             for (const result of results) {
-                const { addressesReceiving, addressesSending } = result;
-                // if any of these is not null we consider it a valid entry
-                if (addressesReceiving || addressesSending) {
-                    avgAddressesPerMsCache.push(result);
+                if (this.isAnyFieldNotNull<T>(result)) {
+                    cacheEntryToFetch.push(result);
                 }
             }
             console.log(
-                `${queryDesc} updated till`,
-                moment(avgAddressesPerMsCache[avgAddressesPerMsCache.length - 1].time).format("DD-MM-YYYY")
+                `${description} updated till`,
+                moment(cacheEntryToFetch[cacheEntryToFetch.length - 1].time).format("DD-MM-YYYY")
             );
         }).catch(e => {
-            console.log(`Influx query ${queryDesc} failed:`, e);
+            console.log(`Influx query ${description} failed:`, e);
         });
     }
 
-    private fetchDailyTokensTransferredData() {
-        const queryDesc = "Tokens Transferred Daily";
-        const tokensTransferredCache: ITokensTransferredDailyInflux[] = this._cache.tokensTransferredDaily;
-        const fromNanoDate: INanoDate = this.getFromNanoDate(tokensTransferredCache);
-
-        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
-        this.queryInflux<ITokensTransferredDailyInflux>(
-            TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY,
-            fromNanoDate,
-            this.getToNanoDate()
-        ).then(results => {
-            for (const result of results) {
-                const { tokens } = result;
-                // if any of these is not null we consider it a valid entry
-                if (tokens) {
-                    tokensTransferredCache.push(result);
-                }
-            }
-            console.log(
-                `${queryDesc} updated till`,
-                moment(tokensTransferredCache[tokensTransferredCache.length - 1].time).format("DD-MM-YYYY")
-            );
-        }).catch(e => {
-            console.log(`Influx query ${queryDesc} failed:`, e);
-        });
+    private async queryInflux<T>(queryTemplate: string, from: INanoDate, to: INanoDate): Promise<IResults<T>> {
+        const params = { placeholders: { from: from.toNanoISOString(), to: to.toNanoISOString() } };
+        return this._client.query<T>(queryTemplate, params);
     }
 
     private getFromNanoDate(cacheEntry: ITimedEntry[]): INanoDate {
@@ -363,9 +234,8 @@ export abstract class InfluxDbClient {
         return toNanoDate((moment().valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
     }
 
-    private async queryInflux<T>(queryTemplate: string, from: INanoDate, to: INanoDate): Promise<IResults<T>> {
-        const params = { placeholders: { from: from.toNanoISOString(), to: to.toNanoISOString() } };
-        return this._client.query<T>(queryTemplate, params);
+    private isAnyFieldNotNull<T>(data: T): boolean {
+        return Object.getOwnPropertyNames(data).filter(fName => fName !== "time").some(fName => data[fName] !== null);
     }
 }
 
