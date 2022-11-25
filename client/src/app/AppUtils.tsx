@@ -26,7 +26,8 @@ export const networkContextWrapper = (
 export const getPages = (currentNetwork: string, networks: INetwork[]) => (
     networks.length > 0 ? [
         { label: "Explorer", url: `/${currentNetwork}/` },
-        { label: "Visualizer", url: `/${currentNetwork}/visualizer/` }
+        { label: "Visualizer", url: `/${currentNetwork}/visualizer/` },
+        { label: "Statistics", url: `/${currentNetwork}/statistics/` }
     ] : []
 );
 
