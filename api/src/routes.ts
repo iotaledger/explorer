@@ -104,7 +104,7 @@ export const routes: IRoute[] = [
         folder: "stardust/analytics/shimmer", func: "get", sign: true
     },
     {
-        path: "/stardust/analytics/blocks/daily/:network", method: "get",
+        path: "/stardust/analytics/daily/:network", method: "get",
         folder: "stardust/analytics/influx", func: "get"
     },
     {

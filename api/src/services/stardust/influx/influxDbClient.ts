@@ -1,18 +1,34 @@
 import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import { INetwork } from "../../../models/db/INetwork";
-import { BLOCK_DAILY_STATS_PARAMETERIZED_QUERY } from "./influxQueries";
+import { BLOCK_DAILY_PARAMETERIZED_QUERY, TRANSACTION_DAILY_PARAMETERIZED_QUERY } from "./influxQueries";
 
-export interface BlocksInflux {
+export interface ITimedEntry {
     time: INanoDate;
+}
+
+export type IBlocksDailyInflux = {
     transaction: number | null;
     milestone: number | null;
     taggedData: number | null;
     noPayload: number | null;
+} & ITimedEntry;
+
+export type ITransactionsDailyInflux = {
+    confirmed: number | null;
+    conflicting: number | null;
+} & ITimedEntry;
+
+export interface InfluxDbClientCache {
+    blocksDaily: IBlocksDailyInflux[];
+    transactionsDaily: ITransactionsDailyInflux[];
 }
 
 // Tuesday, 27 September 2022 00:00:00
 const DEFAULT_FROM_TIMESTAMP_MS = 1664229600000;
+
+const NANOSECONDS_IN_MILLISECOND = 1000000;
+
 // 10 min
 const COLLECT_DATA_FREQ = 1000 * 60 * 10;
 
@@ -20,7 +36,7 @@ export abstract class InfluxDbClient {
     protected _client: InfluxDB;
 
     // This needs to preserve ordering
-    protected readonly _blocksDaily: BlocksInflux[] = [];
+    protected readonly _cache: InfluxDbClientCache;
 
     private readonly _network: INetwork;
 
@@ -28,6 +44,10 @@ export abstract class InfluxDbClient {
 
     constructor(network: INetwork) {
         this._network = network;
+        this._cache = {
+            blocksDaily: [],
+            transactionsDaily: []
+        };
     }
 
     public async buildClient(): Promise<boolean> {
@@ -86,47 +106,80 @@ export abstract class InfluxDbClient {
 
     private collectData() {
         console.info("Collecting analytics influx data for", this._network.network);
-        this.refreshDailyBlocksData();
+        this.fetchDailyBlocksData();
+        this.fetchDailyTransactionsData();
     }
 
-    private refreshDailyBlocksData() {
+    private fetchDailyBlocksData() {
         const queryDesc = "Daily Blocks";
-        const fromNanoDate: INanoDate = this.getFromNanoDate();
-        const nowNanoDate: INanoDate = toNanoDate((moment().valueOf() * 1000 * 1000).toString());
+        const blocksDailyCache: IBlocksDailyInflux[] = this._cache.blocksDaily;
+        const fromNanoDate: INanoDate = this.getFromNanoDate(blocksDailyCache);
 
         console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
-        this.queryInflux<BlocksInflux>(BLOCK_DAILY_STATS_PARAMETERIZED_QUERY, fromNanoDate, nowNanoDate)
+        this.queryInflux<IBlocksDailyInflux>(BLOCK_DAILY_PARAMETERIZED_QUERY, fromNanoDate, this.getToNanoDate())
             .then(results => {
-                for (const blocksInfo of results) {
-                    const { milestone, transaction, taggedData, noPayload } = blocksInfo;
+                for (const result of results) {
+                    const { milestone, transaction, taggedData, noPayload } = result;
+                    // if any of these is not null we consider it a valid entry
                     if (milestone || transaction || taggedData || noPayload) {
-                        // if any of these is not null we consider it a valid entry
                         // console.log("Adding block with data", moment(blocksInfo.time).format("DD-MM-YYYY"));
-                        this._blocksDaily.push(blocksInfo);
+                        blocksDailyCache.push(result);
                     }
                 }
-
                 console.log(
-                    "Blocks daily updated till",
-                    moment(this._blocksDaily[this._blocksDaily.length - 1].time).format("DD-MM-YYYY")
+                    `${queryDesc} updated till`,
+                    moment(blocksDailyCache[blocksDailyCache.length - 1].time).format("DD-MM-YYYY")
                 );
             }).catch(e => {
                 console.log(`Influx query ${queryDesc} failed:`, e);
             });
     }
 
-    private getFromNanoDate(): INanoDate {
+    private fetchDailyTransactionsData() {
+        const queryDesc = "Daily Transactions";
+        const transactionsDailyCache: ITransactionsDailyInflux[] = this._cache.transactionsDaily;
+        const fromNanoDate: INanoDate = this.getFromNanoDate(transactionsDailyCache);
+
+        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
+        this.queryInflux<ITransactionsDailyInflux>(
+            TRANSACTION_DAILY_PARAMETERIZED_QUERY,
+            fromNanoDate,
+            this.getToNanoDate()
+        ).then(results => {
+            for (const result of results) {
+                const { confirmed, conflicting } = result;
+                // if any of these is not null we consider it a valid entry
+                if (confirmed || conflicting) {
+                    // console.log("Adding block with data", moment(blocksInfo.time).format("DD-MM-YYYY"));
+                    transactionsDailyCache.push(result);
+                }
+            }
+            console.log(
+                `${queryDesc} updated till`,
+                moment(transactionsDailyCache[transactionsDailyCache.length - 1].time).format("DD-MM-YYYY")
+            );
+        }).catch(e => {
+            console.log(`Influx query ${queryDesc} failed:`, e);
+        });
+    }
+
+    private getFromNanoDate(cacheEntry: ITimedEntry[]): INanoDate {
         let fromNanoDate: INanoDate;
-        if (this._blocksDaily.length === 0) {
+        if (cacheEntry.length === 0) {
             // From beginning
-            fromNanoDate = toNanoDate((DEFAULT_FROM_TIMESTAMP_MS * 1000 * 1000).toString());
+            fromNanoDate = toNanoDate((DEFAULT_FROM_TIMESTAMP_MS * NANOSECONDS_IN_MILLISECOND).toString());
         } else {
             // Day after the latest entry date
-            const lastDate = this._blocksDaily[this._blocksDaily.length - 1].time;
-            fromNanoDate = toNanoDate((moment(lastDate).add(1, "day").valueOf() * 1000 * 1000).toString());
+            const lastDate = cacheEntry[cacheEntry.length - 1].time;
+            const lastDatePlusOneDay = moment(lastDate).add(1, "day").valueOf();
+            fromNanoDate = toNanoDate((lastDatePlusOneDay * NANOSECONDS_IN_MILLISECOND).toString());
         }
 
         return fromNanoDate;
+    }
+
+    private getToNanoDate(): INanoDate {
+        return toNanoDate((moment().valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
     }
 
     private async queryInflux<T>(queryTemplate: string, from: INanoDate, to: INanoDate): Promise<IResults<T>> {

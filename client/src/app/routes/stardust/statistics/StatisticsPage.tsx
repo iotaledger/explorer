@@ -17,21 +17,10 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     );
     const [data, setData] = useState<{ time: string; blocks: number }[] | null>(null);
 
-    // const seenDays: number[] = [];
-    // eslint-disable-next-line unicorn/no-array-reduce
-    // const mockData = mockDataResponse.reduce((acc: { time: string; n: number }[], next) => {
-    //     const m = moment(next.time);
-    //     const dOY = m.dayOfYear();
-    //     if (!seenDays.includes(dOY)) {
-    //         acc.push(next);
-    //         seenDays.push(dOY);
-    //     }
-    //     return acc;
-    // }, []);
-
     useEffect(() => {
         apiClient.influxAnalytics({ network }).then(response => {
             if (!response.error) {
+                console.log("Influx response", response);
                 // normalize data
                 const update: { time: string; blocks: number }[] = response.blocksDaily.map(day => {
                     const blocks =
@@ -43,7 +32,6 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                 });
 
                 setData(update.slice(-7));
-                console.log(response.blocksDaily);
             } else {
                 console.log("Fetching statistics failed", response.error);
             }
