@@ -1,18 +1,72 @@
 import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import { INetwork } from "../../../models/db/INetwork";
-import { BLOCK_DAILY_STATS_PARAMETERIZED_QUERY } from "./influxQueries";
+import {
+    ADDRESSES_WITH_BALANCE_DAILY_PARAMETERIZED_QUERY,
+    AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_PARAMETERIZED_QUERY,
+    BLOCK_DAILY_PARAMETERIZED_QUERY, OUTPUTS_DAILY_PARAMETERIZED_QUERY,
+    TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY, TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY,
+    TRANSACTION_DAILY_PARAMETERIZED_QUERY
+} from "./influxQueries";
 
-export interface BlocksInflux {
+export interface ITimedEntry {
     time: INanoDate;
+}
+
+export type IBlocksDailyInflux = {
     transaction: number | null;
     milestone: number | null;
     taggedData: number | null;
     noPayload: number | null;
+} & ITimedEntry;
+
+export type ITransactionsDailyInflux = {
+    confirmed: number | null;
+    conflicting: number | null;
+} & ITimedEntry;
+
+export type IOutputsDailyInflux = {
+    basic: number | null;
+    alias: number | null;
+    foundry: number | null;
+    nft: number | null;
+} & ITimedEntry;
+
+export type ITokensHeldPerOutputDailyInflux = {
+    basic: number | null;
+    alias: number | null;
+    foundry: number | null;
+    nft: number | null;
+} & ITimedEntry;
+
+export type IAddressesWithBalanceDailyInflux = ITimedEntry & {
+    addressesWithBalance: number | null;
+};
+
+export type IAvgAddressesPerMilestoneDailyInflux = ITimedEntry & {
+    addressesReceiving: number | null;
+    addressesSending: number | null;
+};
+
+export type ITokensTransferredDailyInflux = ITimedEntry & {
+    tokens: number | null;
+};
+
+export interface InfluxDbClientCache {
+    blocksDaily: IBlocksDailyInflux[];
+    transactionsDaily: ITransactionsDailyInflux[];
+    outputsDaily: IOutputsDailyInflux[];
+    tokensHeldDaily: ITokensHeldPerOutputDailyInflux[];
+    addressesWithBalanceDaily: IAddressesWithBalanceDailyInflux[];
+    avgAddressesPerMilestoneDaily: IAvgAddressesPerMilestoneDailyInflux[];
+    tokensTransferredDaily: ITokensTransferredDailyInflux[];
 }
 
 // Tuesday, 27 September 2022 00:00:00
 const DEFAULT_FROM_TIMESTAMP_MS = 1664229600000;
+
+const NANOSECONDS_IN_MILLISECOND = 1000000;
+
 // 10 min
 const COLLECT_DATA_FREQ = 1000 * 60 * 10;
 
@@ -20,7 +74,7 @@ export abstract class InfluxDbClient {
     protected _client: InfluxDB;
 
     // This needs to preserve ordering
-    protected readonly _blocksDaily: BlocksInflux[] = [];
+    protected readonly _cache: InfluxDbClientCache;
 
     private readonly _network: INetwork;
 
@@ -28,6 +82,15 @@ export abstract class InfluxDbClient {
 
     constructor(network: INetwork) {
         this._network = network;
+        this._cache = {
+            blocksDaily: [],
+            transactionsDaily: [],
+            outputsDaily: [],
+            tokensHeldDaily: [],
+            addressesWithBalanceDaily: [],
+            avgAddressesPerMilestoneDaily: [],
+            tokensTransferredDaily: []
+        };
     }
 
     public async buildClient(): Promise<boolean> {
@@ -86,52 +149,93 @@ export abstract class InfluxDbClient {
 
     private collectData() {
         console.info("Collecting analytics influx data for", this._network.network);
-        this.refreshDailyBlocksData();
+
+        this.fetchInfluxCacheEntry<IBlocksDailyInflux>(
+            BLOCK_DAILY_PARAMETERIZED_QUERY,
+            this._cache.blocksDaily,
+            "Blocks Daily"
+        );
+        this.fetchInfluxCacheEntry<ITransactionsDailyInflux>(
+            TRANSACTION_DAILY_PARAMETERIZED_QUERY,
+            this._cache.transactionsDaily,
+            "Transactions Daily"
+        );
+        this.fetchInfluxCacheEntry<IOutputsDailyInflux>(
+            OUTPUTS_DAILY_PARAMETERIZED_QUERY,
+            this._cache.outputsDaily,
+            "Outpus Daily"
+        );
+        this.fetchInfluxCacheEntry<ITokensHeldPerOutputDailyInflux>(
+            TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY,
+            this._cache.tokensHeldDaily,
+            "Tokens Held Daily"
+        );
+        this.fetchInfluxCacheEntry<IAddressesWithBalanceDailyInflux>(
+            ADDRESSES_WITH_BALANCE_DAILY_PARAMETERIZED_QUERY,
+            this._cache.addressesWithBalanceDaily,
+            "Addresses with balance Daily"
+        );
+        this.fetchInfluxCacheEntry<IAvgAddressesPerMilestoneDailyInflux>(
+            AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_PARAMETERIZED_QUERY,
+            this._cache.avgAddressesPerMilestoneDaily,
+            "Avarage addresses with balance Daily"
+        );
+        this.fetchInfluxCacheEntry<ITokensTransferredDailyInflux>(
+            TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY,
+            this._cache.tokensTransferredDaily,
+            "Tokens transferred Daily"
+        );
     }
 
-    private refreshDailyBlocksData() {
-        const queryDesc = "Daily Blocks";
-        const fromNanoDate: INanoDate = this.getFromNanoDate();
-        const nowNanoDate: INanoDate = toNanoDate((moment().valueOf() * 1000 * 1000).toString());
+    private fetchInfluxCacheEntry<T extends ITimedEntry>(
+        queryTemplate: string,
+        cacheEntryToFetch: T[],
+        description: string = "Daily entry"
+    ) {
+        const fromNanoDate: INanoDate = this.getFromNanoDate(cacheEntryToFetch);
 
-        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
-        this.queryInflux<BlocksInflux>(BLOCK_DAILY_STATS_PARAMETERIZED_QUERY, fromNanoDate, nowNanoDate)
-            .then(results => {
-                for (const blocksInfo of results) {
-                    const { milestone, transaction, taggedData, noPayload } = blocksInfo;
-                    if (milestone || transaction || taggedData || noPayload) {
-                        // if any of these is not null we consider it a valid entry
-                        // console.log("Adding block with data", moment(blocksInfo.time).format("DD-MM-YYYY"));
-                        this._blocksDaily.push(blocksInfo);
-                    }
+        console.info(`Refreshing ${description} from date`, fromNanoDate.toISOString());
+        this.queryInflux<T>(queryTemplate, fromNanoDate, this.getToNanoDate()).then(results => {
+            for (const result of results) {
+                if (this.isAnyFieldNotNull<T>(result)) {
+                    cacheEntryToFetch.push(result);
                 }
-
-                console.log(
-                    "Blocks daily updated till",
-                    moment(this._blocksDaily[this._blocksDaily.length - 1].time).format("DD-MM-YYYY")
-                );
-            }).catch(e => {
-                console.log(`Influx query ${queryDesc} failed:`, e);
-            });
-    }
-
-    private getFromNanoDate(): INanoDate {
-        let fromNanoDate: INanoDate;
-        if (this._blocksDaily.length === 0) {
-            // From beginning
-            fromNanoDate = toNanoDate((DEFAULT_FROM_TIMESTAMP_MS * 1000 * 1000).toString());
-        } else {
-            // Day after the latest entry date
-            const lastDate = this._blocksDaily[this._blocksDaily.length - 1].time;
-            fromNanoDate = toNanoDate((moment(lastDate).add(1, "day").valueOf() * 1000 * 1000).toString());
-        }
-
-        return fromNanoDate;
+            }
+            console.log(
+                `${description} updated till`,
+                moment(cacheEntryToFetch[cacheEntryToFetch.length - 1].time).format("DD-MM-YYYY")
+            );
+        }).catch(e => {
+            console.log(`Influx query ${description} failed:`, e);
+        });
     }
 
     private async queryInflux<T>(queryTemplate: string, from: INanoDate, to: INanoDate): Promise<IResults<T>> {
         const params = { placeholders: { from: from.toNanoISOString(), to: to.toNanoISOString() } };
         return this._client.query<T>(queryTemplate, params);
+    }
+
+    private getFromNanoDate(cacheEntry: ITimedEntry[]): INanoDate {
+        let fromNanoDate: INanoDate;
+        if (cacheEntry.length === 0) {
+            // From beginning
+            fromNanoDate = toNanoDate((DEFAULT_FROM_TIMESTAMP_MS * NANOSECONDS_IN_MILLISECOND).toString());
+        } else {
+            // Day after the latest entry date
+            const lastDate = cacheEntry[cacheEntry.length - 1].time;
+            const lastDatePlusOneDay = moment(lastDate).add(1, "day").valueOf();
+            fromNanoDate = toNanoDate((lastDatePlusOneDay * NANOSECONDS_IN_MILLISECOND).toString());
+        }
+
+        return fromNanoDate;
+    }
+
+    private getToNanoDate(): INanoDate {
+        return toNanoDate((moment().valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+    }
+
+    private isAnyFieldNotNull<T>(data: T): boolean {
+        return Object.getOwnPropertyNames(data).filter(fName => fName !== "time").some(fName => data[fName] !== null);
     }
 }
 
