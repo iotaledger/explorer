@@ -58,6 +58,8 @@
     }
 
     .card--content {
+      padding-bottom: 0;
+
       .card--value {
         margin-left: auto;
         color: var(--type-color);
