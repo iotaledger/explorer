@@ -24,8 +24,6 @@ export async function get(config: IConfiguration): Promise<INetworkGetResponse> 
             protocolVersion: n.protocolVersion,
             coordinatorAddress: n.coordinatorAddress,
             coordinatorSecurityLevel: n.coordinatorSecurityLevel,
-            primaryColor: n.primaryColor,
-            secondaryColor: n.secondaryColor,
             isEnabled: n.isEnabled,
             showMarket: n.showMarket,
             description: n.description,

@@ -99,16 +99,6 @@ export interface INetwork {
     bechHrp?: string;
 
     /**
-     * The primary color.
-     */
-    primaryColor?: string;
-
-    /**
-     * The secondary color.
-     */
-    secondaryColor?: string;
-
-    /**
      * Is the network enabled.
      */
     isEnabled: boolean;
