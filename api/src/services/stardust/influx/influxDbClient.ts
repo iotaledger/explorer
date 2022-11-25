@@ -1,7 +1,13 @@
 import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import { INetwork } from "../../../models/db/INetwork";
-import { BLOCK_DAILY_PARAMETERIZED_QUERY, OUTPUTS_DAILY_PARAMETERIZED_QUERY, TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY, TRANSACTION_DAILY_PARAMETERIZED_QUERY } from "./influxQueries";
+import {
+    ADDRESSES_WITH_BALANCE_DAILY_PARAMETERIZED_QUERY,
+    AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_PARAMETERIZED_QUERY,
+    BLOCK_DAILY_PARAMETERIZED_QUERY, OUTPUTS_DAILY_PARAMETERIZED_QUERY,
+    TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY, TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY,
+    TRANSACTION_DAILY_PARAMETERIZED_QUERY
+} from "./influxQueries";
 
 export interface ITimedEntry {
     time: INanoDate;
@@ -33,11 +39,27 @@ export type ITokensHeldPerOutputDailyInflux = {
     nft: number | null;
 } & ITimedEntry;
 
+export type IAddressesWithBalanceDailyInflux = ITimedEntry & {
+    addressesWithBalance: number | null;
+};
+
+export type IAvgAddressesPerMilestoneDailyInflux = ITimedEntry & {
+    addressesReceiving: number | null;
+    addressesSending: number | null;
+};
+
+export type ITokensTransferredDailyInflux = ITimedEntry & {
+    tokens: number | null;
+};
+
 export interface InfluxDbClientCache {
     blocksDaily: IBlocksDailyInflux[];
     transactionsDaily: ITransactionsDailyInflux[];
     outputsDaily: IOutputsDailyInflux[];
     tokensHeldDaily: ITokensHeldPerOutputDailyInflux[];
+    addressesWithBalanceDaily: IAddressesWithBalanceDailyInflux[];
+    avgAddressesPerMilestoneDaily: IAvgAddressesPerMilestoneDailyInflux[];
+    tokensTransferredDaily: ITokensTransferredDailyInflux[];
 }
 
 // Tuesday, 27 September 2022 00:00:00
@@ -64,7 +86,10 @@ export abstract class InfluxDbClient {
             blocksDaily: [],
             transactionsDaily: [],
             outputsDaily: [],
-            tokensHeldDaily: []
+            tokensHeldDaily: [],
+            addressesWithBalanceDaily: [],
+            avgAddressesPerMilestoneDaily: [],
+            tokensTransferredDaily: []
         };
     }
 
@@ -128,6 +153,9 @@ export abstract class InfluxDbClient {
         this.fetchDailyTransactionsData();
         this.fetchDailyOutputsData();
         this.fetchDailyTokensHeldData();
+        this.fetchDailyAddressesWithBalanceData();
+        this.fetchDailyAvgActiveAddressPerMilestoneData();
+        this.fetchDailyTokensTransferredData();
     }
 
     private fetchDailyBlocksData() {
@@ -142,7 +170,6 @@ export abstract class InfluxDbClient {
                     const { milestone, transaction, taggedData, noPayload } = result;
                     // if any of these is not null we consider it a valid entry
                     if (milestone || transaction || taggedData || noPayload) {
-                        // console.log("Adding block with data", moment(blocksInfo.time).format("DD-MM-YYYY"));
                         blocksDailyCache.push(result);
                     }
                 }
@@ -170,7 +197,6 @@ export abstract class InfluxDbClient {
                 const { confirmed, conflicting } = result;
                 // if any of these is not null we consider it a valid entry
                 if (confirmed || conflicting) {
-                    // console.log("Adding block with data", moment(blocksInfo.time).format("DD-MM-YYYY"));
                     transactionsDailyCache.push(result);
                 }
             }
@@ -198,7 +224,6 @@ export abstract class InfluxDbClient {
                 const { basic, alias, foundry, nft } = result;
                 // if any of these is not null we consider it a valid entry
                 if (basic || alias || foundry || nft) {
-                    // console.log("Adding block with data", moment(blocksInfo.time).format("DD-MM-YYYY"));
                     outputsDailyCache.push(result);
                 }
             }
@@ -226,13 +251,93 @@ export abstract class InfluxDbClient {
                 const { basic, alias, foundry, nft } = result;
                 // if any of these is not null we consider it a valid entry
                 if (basic || alias || foundry || nft) {
-                    // console.log("Adding block with data", moment(blocksInfo.time).format("DD-MM-YYYY"));
                     tokenHeldCache.push(result);
                 }
             }
             console.log(
                 `${queryDesc} updated till`,
                 moment(tokenHeldCache[tokenHeldCache.length - 1].time).format("DD-MM-YYYY")
+            );
+        }).catch(e => {
+            console.log(`Influx query ${queryDesc} failed:`, e);
+        });
+    }
+
+    private fetchDailyAddressesWithBalanceData() {
+        const queryDesc = "Addresses With Balance Daily";
+        const addressesWithBalanceCache: IAddressesWithBalanceDailyInflux[] = this._cache.addressesWithBalanceDaily;
+        const fromNanoDate: INanoDate = this.getFromNanoDate(addressesWithBalanceCache);
+
+        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
+        this.queryInflux<IAddressesWithBalanceDailyInflux>(
+            ADDRESSES_WITH_BALANCE_DAILY_PARAMETERIZED_QUERY,
+            fromNanoDate,
+            this.getToNanoDate()
+        ).then(results => {
+            for (const result of results) {
+                const { addressesWithBalance } = result;
+                // if any of these is not null we consider it a valid entry
+                if (addressesWithBalance) {
+                    addressesWithBalanceCache.push(result);
+                }
+            }
+            console.log(
+                `${queryDesc} updated till`,
+                moment(addressesWithBalanceCache[addressesWithBalanceCache.length - 1].time).format("DD-MM-YYYY")
+            );
+        }).catch(e => {
+            console.log(`Influx query ${queryDesc} failed:`, e);
+        });
+    }
+
+    private fetchDailyAvgActiveAddressPerMilestoneData() {
+        const queryDesc = "Avg Addresses Per Milestone Daily";
+        const avgAddressesPerMsCache = this._cache.avgAddressesPerMilestoneDaily;
+        const fromNanoDate: INanoDate = this.getFromNanoDate(avgAddressesPerMsCache);
+
+        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
+        this.queryInflux<IAvgAddressesPerMilestoneDailyInflux>(
+            AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_PARAMETERIZED_QUERY,
+            fromNanoDate,
+            this.getToNanoDate()
+        ).then(results => {
+            for (const result of results) {
+                const { addressesReceiving, addressesSending } = result;
+                // if any of these is not null we consider it a valid entry
+                if (addressesReceiving || addressesSending) {
+                    avgAddressesPerMsCache.push(result);
+                }
+            }
+            console.log(
+                `${queryDesc} updated till`,
+                moment(avgAddressesPerMsCache[avgAddressesPerMsCache.length - 1].time).format("DD-MM-YYYY")
+            );
+        }).catch(e => {
+            console.log(`Influx query ${queryDesc} failed:`, e);
+        });
+    }
+
+    private fetchDailyTokensTransferredData() {
+        const queryDesc = "Tokens Transferred Daily";
+        const tokensTransferredCache: ITokensTransferredDailyInflux[] = this._cache.tokensTransferredDaily;
+        const fromNanoDate: INanoDate = this.getFromNanoDate(tokensTransferredCache);
+
+        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
+        this.queryInflux<ITokensTransferredDailyInflux>(
+            TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY,
+            fromNanoDate,
+            this.getToNanoDate()
+        ).then(results => {
+            for (const result of results) {
+                const { tokens } = result;
+                // if any of these is not null we consider it a valid entry
+                if (tokens) {
+                    tokensTransferredCache.push(result);
+                }
+            }
+            console.log(
+                `${queryDesc} updated till`,
+                moment(tokensTransferredCache[tokensTransferredCache.length - 1].time).format("DD-MM-YYYY")
             );
         }).catch(e => {
             console.log(`Influx query ${queryDesc} failed:`, e);

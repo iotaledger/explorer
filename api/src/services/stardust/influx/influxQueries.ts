@@ -40,3 +40,28 @@ export const TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY = `
     GROUP BY time(1d) fill(null)
 `;
 
+export const ADDRESSES_WITH_BALANCE_DAILY_PARAMETERIZED_QUERY = `
+    SELECT
+        last("address_with_balance_count") AS "addressesWithBalance"
+    FROM "stardust_addresses"
+    WHERE time >= $from and time <= $to
+    GROUP BY time(1d) fill(null)
+`;
+
+export const AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_PARAMETERIZED_QUERY = `
+    SELECT
+        mean("receiving_count") AS "addressesReceiving",
+        mean("sending_count") AS "addressesSending"
+    FROM "stardust_address_activity"
+    WHERE time >= $from and time <= $to
+    GROUP BY time(1d) fill(null)
+`;
+
+export const TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY = `
+    SELECT
+        sum("transferred_value") / 1000000 AS "tokens"
+    FROM "stardust_base_token_activity"
+    WHERE time >= $from and time <= $to
+    GROUP BY time(1d) fill(null)
+`;
+

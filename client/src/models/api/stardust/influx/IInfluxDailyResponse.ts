@@ -30,10 +30,29 @@ export interface ITokensHeldPerOutputDailyInflux {
     nft: number | null;
 }
 
+export interface IAddressesWithBalanceDailyInflux {
+    time: Date;
+    addressesWithBalance: number | null;
+}
+
+export interface IAvgAddressesPerMilestoneDailyInflux {
+    time: Date;
+    addressesReceiving: number | null;
+    addressesSending: number | null;
+}
+
+export interface ITokensTransferredDailyInflux {
+    time: Date;
+    tokens: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily: IBlocksDailyInflux[];
     transactionsDaily: ITransactionsDailyInflux[];
     outputsDaily?: IOutputsDailyInflux[];
     tokensHeldDaily?: ITokensHeldPerOutputDailyInflux[];
+    addressesWithBalanceDaily?: IAddressesWithBalanceDailyInflux[];
+    avgAddressesPerMilestoneDaily?: IAvgAddressesPerMilestoneDailyInflux[];
+    tokensTransferredDaily?: ITokensTransferredDailyInflux[];
 }
 

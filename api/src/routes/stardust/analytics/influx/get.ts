@@ -3,7 +3,10 @@ import { INetworkBoundGetRequest } from "../../../../models/api/stardust/INetwor
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { NetworkService } from "../../../../services/networkService";
 import {
-    IBlocksDailyInflux, IOutputsDailyInflux, ITokensHeldPerOutputDailyInflux, ITransactionsDailyInflux
+    IAddressesWithBalanceDailyInflux,
+    IAvgAddressesPerMilestoneDailyInflux,
+    IBlocksDailyInflux, IOutputsDailyInflux, ITokensHeldPerOutputDailyInflux,
+    ITokensTransferredDailyInflux, ITransactionsDailyInflux
 } from "../../../../services/stardust/influx/influxDbClient";
 import { InfluxDBService } from "../../../../services/stardust/influx/influxDbService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
@@ -14,6 +17,9 @@ export interface IDailyAnalyticsResponse {
     transactionsDaily?: ITransactionsDailyInflux[];
     outputsDaily?: IOutputsDailyInflux[];
     tokensHeldDaily?: ITokensHeldPerOutputDailyInflux[];
+    addressesWithBalanceDaily?: IAddressesWithBalanceDailyInflux[];
+    avgAddressesPerMilestoneDaily?: IAvgAddressesPerMilestoneDailyInflux[];
+    tokensTransferredDaily?: ITokensTransferredDailyInflux[];
 }
 
 /**
@@ -36,7 +42,10 @@ export async function get(
         blocksDaily: influxService.blocksDaily,
         transactionsDaily: influxService.transactionsDaily,
         outputsDaily: influxService.outputsDaily,
-        tokensHeldDaily: influxService.tokensHeldDaily
+        tokensHeldDaily: influxService.tokensHeldDaily,
+        addressesWithBalanceDaily: influxService.addressesWithBalanceDaily,
+        avgAddressesPerMilestoneDaily: influxService.avgAddressesPerMilestoneDaily,
+        tokensTransferredDaily: influxService.tokensTransferredDaily
     } : {
         error: "Influx service not found for this network."
     };

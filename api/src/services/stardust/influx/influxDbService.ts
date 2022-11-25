@@ -16,5 +16,17 @@ export class InfluxDBService extends InfluxDbClient {
     public get tokensHeldDaily() {
         return this._cache.tokensHeldDaily;
     }
+
+    public get addressesWithBalanceDaily() {
+        return this._cache.addressesWithBalanceDaily;
+    }
+
+    public get avgAddressesPerMilestoneDaily() {
+        return this._cache.avgAddressesPerMilestoneDaily;
+    }
+
+    public get tokensTransferredDaily() {
+        return this._cache.tokensTransferredDaily;
+    }
 }
 
