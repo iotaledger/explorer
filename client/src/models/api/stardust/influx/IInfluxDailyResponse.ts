@@ -14,8 +14,26 @@ export interface ITransactionsDailyInflux {
     conflicting: number | null;
 }
 
+export interface IOutputsDailyInflux {
+    time: Date;
+    basic: number | null;
+    alias: number | null;
+    foundry: number | null;
+    nft: number | null;
+}
+
+export interface ITokensHeldPerOutputDailyInflux {
+    time: Date;
+    basic: number | null;
+    alias: number | null;
+    foundry: number | null;
+    nft: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily: IBlocksDailyInflux[];
     transactionsDaily: ITransactionsDailyInflux[];
+    outputsDaily?: IOutputsDailyInflux[];
+    tokensHeldDaily?: ITokensHeldPerOutputDailyInflux[];
 }
 

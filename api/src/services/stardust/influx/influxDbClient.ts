@@ -1,7 +1,7 @@
 import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import { INetwork } from "../../../models/db/INetwork";
-import { BLOCK_DAILY_PARAMETERIZED_QUERY, TRANSACTION_DAILY_PARAMETERIZED_QUERY } from "./influxQueries";
+import { BLOCK_DAILY_PARAMETERIZED_QUERY, OUTPUTS_DAILY_PARAMETERIZED_QUERY, TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY, TRANSACTION_DAILY_PARAMETERIZED_QUERY } from "./influxQueries";
 
 export interface ITimedEntry {
     time: INanoDate;
@@ -19,9 +19,25 @@ export type ITransactionsDailyInflux = {
     conflicting: number | null;
 } & ITimedEntry;
 
+export type IOutputsDailyInflux = {
+    basic: number | null;
+    alias: number | null;
+    foundry: number | null;
+    nft: number | null;
+} & ITimedEntry;
+
+export type ITokensHeldPerOutputDailyInflux = {
+    basic: number | null;
+    alias: number | null;
+    foundry: number | null;
+    nft: number | null;
+} & ITimedEntry;
+
 export interface InfluxDbClientCache {
     blocksDaily: IBlocksDailyInflux[];
     transactionsDaily: ITransactionsDailyInflux[];
+    outputsDaily: IOutputsDailyInflux[];
+    tokensHeldDaily: ITokensHeldPerOutputDailyInflux[];
 }
 
 // Tuesday, 27 September 2022 00:00:00
@@ -46,7 +62,9 @@ export abstract class InfluxDbClient {
         this._network = network;
         this._cache = {
             blocksDaily: [],
-            transactionsDaily: []
+            transactionsDaily: [],
+            outputsDaily: [],
+            tokensHeldDaily: []
         };
     }
 
@@ -108,6 +126,8 @@ export abstract class InfluxDbClient {
         console.info("Collecting analytics influx data for", this._network.network);
         this.fetchDailyBlocksData();
         this.fetchDailyTransactionsData();
+        this.fetchDailyOutputsData();
+        this.fetchDailyTokensHeldData();
     }
 
     private fetchDailyBlocksData() {
@@ -157,6 +177,62 @@ export abstract class InfluxDbClient {
             console.log(
                 `${queryDesc} updated till`,
                 moment(transactionsDailyCache[transactionsDailyCache.length - 1].time).format("DD-MM-YYYY")
+            );
+        }).catch(e => {
+            console.log(`Influx query ${queryDesc} failed:`, e);
+        });
+    }
+
+    private fetchDailyOutputsData() {
+        const queryDesc = "Daily Outputs";
+        const outputsDailyCache: IOutputsDailyInflux[] = this._cache.outputsDaily;
+        const fromNanoDate: INanoDate = this.getFromNanoDate(outputsDailyCache);
+
+        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
+        this.queryInflux<IOutputsDailyInflux>(
+            OUTPUTS_DAILY_PARAMETERIZED_QUERY,
+            fromNanoDate,
+            this.getToNanoDate()
+        ).then(results => {
+            for (const result of results) {
+                const { basic, alias, foundry, nft } = result;
+                // if any of these is not null we consider it a valid entry
+                if (basic || alias || foundry || nft) {
+                    // console.log("Adding block with data", moment(blocksInfo.time).format("DD-MM-YYYY"));
+                    outputsDailyCache.push(result);
+                }
+            }
+            console.log(
+                `${queryDesc} updated till`,
+                moment(outputsDailyCache[outputsDailyCache.length - 1].time).format("DD-MM-YYYY")
+            );
+        }).catch(e => {
+            console.log(`Influx query ${queryDesc} failed:`, e);
+        });
+    }
+
+    private fetchDailyTokensHeldData() {
+        const queryDesc = "Tokens Held Per Output Daily";
+        const tokenHeldCache: ITokensHeldPerOutputDailyInflux[] = this._cache.tokensHeldDaily;
+        const fromNanoDate: INanoDate = this.getFromNanoDate(tokenHeldCache);
+
+        console.info(`Refreshing ${queryDesc} from date`, fromNanoDate.toISOString());
+        this.queryInflux<ITokensHeldPerOutputDailyInflux>(
+            TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY,
+            fromNanoDate,
+            this.getToNanoDate()
+        ).then(results => {
+            for (const result of results) {
+                const { basic, alias, foundry, nft } = result;
+                // if any of these is not null we consider it a valid entry
+                if (basic || alias || foundry || nft) {
+                    // console.log("Adding block with data", moment(blocksInfo.time).format("DD-MM-YYYY"));
+                    tokenHeldCache.push(result);
+                }
+            }
+            console.log(
+                `${queryDesc} updated till`,
+                moment(tokenHeldCache[tokenHeldCache.length - 1].time).format("DD-MM-YYYY")
             );
         }).catch(e => {
             console.log(`Influx query ${queryDesc} failed:`, e);
