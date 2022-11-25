@@ -1,0 +1,176 @@
+@import "../../../../scss/fonts";
+@import "../../../../scss/mixins";
+@import "../../../../scss/media-queries";
+@import "../../../../scss/variables";
+@import "../../../../scss/themes";
+
+.landing-protonet {
+    display: flex;
+    flex-direction: column;
+
+    .header-wrapper.protonet {
+        flex-direction: column;
+        position: relative;
+        z-index: 0;
+        overflow: hidden;
+        background: var(--protonet-header-bg);
+
+        &::after,
+        &::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            width: 400px;
+            height: 800px;
+        }
+
+        &::before {
+            right: -2px;
+            top: -80px;
+            background: var(--shimmer-bg);
+            background-repeat: no-repeat;
+            background-size: 100%;
+
+            @include desktop-down {
+                bottom: inherit;
+                transform: none;
+            }
+        }
+
+        .inner {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            flex: 1;
+
+            .header {
+                display: flex;
+                align-items: center;
+                min-height: 400px;
+
+                .header--title {
+                    text-align: center;
+
+                    @include desktop-down {
+                        margin: 0;
+                        margin-bottom: 28px;
+                    }
+
+                    @include tablet-down {
+                        margin-bottom: 66px;
+                    }
+
+                    h1 {
+                        @include font-size(48px, 58px);
+
+                        font-family: $metropolis-semi-bold;
+                        letter-spacing: 0.02em;
+
+                        @include phone-down {
+                            @include font-size(32px, 36px);
+                        }
+                    }
+
+                    h2 {
+                        @include font-size(16px, 24px);
+
+                        color: $mint-green-6;
+                        font-family: $metropolis-bold;
+                        letter-spacing: 0.15em;
+                        text-transform: uppercase;
+                    }
+
+                    .network-name {
+                        text-align: center;
+                    }
+                }
+
+                .switcher {
+                    margin: 0 20px 20px 20px;
+                }
+            }
+        }
+    }
+
+    .feeds-wrapper.protonet {
+        display: flex;
+        background: var(--protonet-feeds-bg);
+        justify-content: center;
+        padding: 0 $inner-padding 44px;
+
+        .inner {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            max-width: 960px;
+
+            .feeds-section {
+                display: flex;
+                flex-direction: column;
+
+                h1 {
+                    @include font-size(32px);
+
+                    margin-bottom: 28px;
+                    font-family: $metropolis;
+                }
+
+                .tabs-wrapper {
+                    display: flex;
+                    padding-left: 4px;
+
+                    .tab {
+                        background: $gray-4;
+                        border: 1px solid var(--body-background);
+                        border-bottom: none;
+                        border-radius: 6px 6px 0 0;
+
+                        &.active {
+                            background: $mint-green-6;
+                        }
+
+                        &:focus {
+                            box-shadow: none;
+                        }
+                    }
+                }
+
+                .feeds {
+                    @include desktop-down {
+                        flex-direction: column;
+                    }
+
+                    .feed {
+                        flex: 1;
+                        overflow: hidden;
+
+                        @include desktop-down {
+                            width: 100%;
+                            margin-top: 20px;
+                            margin-right: 0;
+                        }
+
+                        h2 {
+                            margin-bottom: 0;
+                            padding-top: 0;
+                            padding-left: 0;
+                        }
+                    }
+                }
+            }
+
+            .description {
+                display: flex;
+                justify-content: center;
+                padding: 20px;
+
+                @include font-size(14px);
+
+                color: $gray;
+                font-family: $metropolis;
+            }
+        }
+
+    }
+}
+

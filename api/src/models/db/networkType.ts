@@ -6,6 +6,7 @@ const SHIMMER = "shimmer";
 const TESTNET = "testnet";
 const ALPHANET = "alphanet";
 const CUSTOM = "custom";
+const PROTONET = "protonet";
 
 const networkTypes = [
     LEGACY_MAINNET,
@@ -14,6 +15,7 @@ const networkTypes = [
     SHIMMER,
     TESTNET,
     ALPHANET,
+    PROTONET,
     CUSTOM
 ] as const;
 

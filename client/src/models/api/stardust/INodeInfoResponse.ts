@@ -5,6 +5,7 @@ import { IResponse } from "../IResponse";
  * The response with node info for a specific network.
  */
 export interface INodeInfoResponse extends IResponse {
+
     /**
      * The base token info of the node.
      */

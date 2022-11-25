@@ -2,11 +2,13 @@
 export const OG = "og";
 export const CHRYSALIS = "chrysalis";
 export const STARDUST = "stardust";
+export const PROTO = "proto";
 
 const protocolVersions = [
     OG,
     CHRYSALIS,
-    STARDUST
+    STARDUST,
+    PROTO
 ] as const;
 
 /**

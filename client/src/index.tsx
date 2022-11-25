@@ -7,7 +7,7 @@ import App from "./app/App";
 import { AppRouteProps } from "./app/AppRouteProps";
 import { ServiceFactory } from "./factories/serviceFactory";
 import "./index.scss";
-import { CHRYSALIS, STARDUST } from "./models/config/protocolVersion";
+import { CHRYSALIS, PROTO, STARDUST } from "./models/config/protocolVersion";
 import { ChrysalisApiClient } from "./services/chrysalis/chrysalisApiClient";
 import { ChrysalisFeedClient } from "./services/chrysalis/chrysalisFeedClient";
 import { ChrysalisTangleCacheService } from "./services/chrysalis/chrysalisTangleCacheService";
@@ -23,6 +23,8 @@ import { StardustFeedClient } from "./services/stardust/stardustFeedClient";
 import { StardustTangleCacheService } from "./services/stardust/stardustTangleCacheService";
 import "@fontsource/ibm-plex-mono";
 import "@fontsource/material-icons";
+import { ProtoApiClient } from "./services/proto/protoApiClient";
+import { ProtoFeedClient } from "./services/proto/protoFeedClient";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
@@ -49,6 +51,7 @@ initialiseServices().then(() => {
 async function initialiseServices(): Promise<void> {
     ServiceFactory.register(`api-client-${CHRYSALIS}`, () => new ChrysalisApiClient(apiEndpoint));
     ServiceFactory.register(`api-client-${STARDUST}`, () => new StardustApiClient(apiEndpoint));
+    ServiceFactory.register(`api-client-${PROTO}`, () => new ProtoApiClient(apiEndpoint));
     ServiceFactory.register("settings", () => new SettingsService());
     ServiceFactory.register("local-storage", () => new LocalStorageService());
 
@@ -74,6 +77,11 @@ async function initialiseServices(): Promise<void> {
                 ServiceFactory.register(
                     `feed-${netConfig.network}`,
                     serviceName => new StardustFeedClient(apiEndpoint, serviceName.slice(5))
+                );
+            } else if (netConfig.protocolVersion === PROTO) {
+                ServiceFactory.register(
+                    `feed-${netConfig.network}`,
+                    serviceName => new ProtoFeedClient(apiEndpoint, serviceName.slice(5))
                 );
             } else {
                 ServiceFactory.register(

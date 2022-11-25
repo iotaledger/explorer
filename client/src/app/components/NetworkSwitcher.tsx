@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { getNetworkOrder } from "../../helpers/networkHelper";
 import { MAINNET } from "../../models/config/networkType";
-import { CHRYSALIS, OG, STARDUST } from "../../models/config/protocolVersion";
+import { CHRYSALIS, OG, PROTO, STARDUST } from "../../models/config/protocolVersion";
 import { ReactComponent as DevnetIcon } from "./../../assets/devnet.svg";
 import { ReactComponent as MainnetIcon } from "./../../assets/mainnet.svg";
 import "./NetworkSwitcher.scss";
@@ -11,7 +11,8 @@ import { NetworkSwitcherProps } from "./NetworkSwitcherProps";
 const PROTOCOL_VERIONS_TO_LABEL = {
     [OG]: "Legacy",
     [CHRYSALIS]: "Chrysalis",
-    [STARDUST]: "Stardust"
+    [STARDUST]: "Stardust",
+    [PROTO]: "Proto"
 };
 
 /**

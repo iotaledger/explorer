@@ -7,7 +7,7 @@ import { ICurrencyState } from "./models/db/ICurrencyState";
 import { IMarket } from "./models/db/IMarket";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
 import { INetwork } from "./models/db/INetwork";
-import { CHRYSALIS, OG, STARDUST } from "./models/db/protocolVersion";
+import { CHRYSALIS, OG, PROTO, STARDUST } from "./models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "./models/services/chrysalis/IItemsService";
 import { IFeedService } from "./models/services/IFeedService";
 import { IItemsService as IItemsServiceStardust } from "./models/services/stardust/IItemsService";
@@ -31,8 +31,8 @@ import { StardustStatsService } from "./services/stardust/stardustStatsService";
 
 const isKnownProtocolVersion = (networkConfig: INetwork) =>
     networkConfig.protocolVersion === OG ||
-         networkConfig.protocolVersion === CHRYSALIS ||
-             networkConfig.protocolVersion === STARDUST;
+    networkConfig.protocolVersion === CHRYSALIS ||
+    networkConfig.protocolVersion === STARDUST;
 
 /**
  * Initialise all the services for the workers.
@@ -54,6 +54,8 @@ export async function initServices(config: IConfiguration) {
             initChrysalisServices(networkConfig);
         } else if (networkConfig.protocolVersion === STARDUST && networkConfig.feedEndpoint) {
             initStardustServices(networkConfig);
+        } else if (networkConfig.protocolVersion === PROTO && networkConfig.feedEndpoint) {
+            initProtoServices(networkConfig);
         }
 
         if (isKnownProtocolVersion(networkConfig) && networkConfig.feedEndpoint) {
@@ -199,6 +201,14 @@ function initStardustServices(networkConfig: INetwork): void {
             () => new ChronicleService(networkConfig)
         );
     }
+}
+
+/**
+ * Register services for prototype network
+ * @param networkConfig The Network Config.
+ */
+function initProtoServices(networkConfig: INetwork): void {
+
 }
 
 /**

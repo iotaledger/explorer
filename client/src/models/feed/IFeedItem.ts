@@ -27,7 +27,7 @@ export interface IFeedItem {
     /**
      * The payload type for Chrysalis/Stardust.
      */
-    payloadType?: "Transaction" | IndexationPayloadType | "MS" | "None";
+    payloadType?: "Transaction" | IndexationPayloadType | "MS" | "None" | "Epoch";
 
     /**
      * Metadata for the item.

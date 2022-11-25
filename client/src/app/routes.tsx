@@ -24,6 +24,9 @@ import Tag from "./routes/og/Tag";
 import { TagRouteProps } from "./routes/og/TagRouteProps";
 import Transaction from "./routes/og/Transaction";
 import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
+import BlockPage from "./routes/proto/BlockPage";
+import EpochPage from "./routes/proto/EpochPage";
+import ProtoLanding from "./routes/proto/landing/Landing";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddressPage from "./routes/stardust/AddressPage";
 import Alias from "./routes/stardust/Alias";
@@ -55,6 +58,7 @@ function *keyGenerator(count: number): IterableIterator<number> {
 
 const buildAppRoutes = (
     isStardust: boolean,
+    isProtoNet: boolean,
     isMarketed: boolean,
     protocolVersion: string,
     withNetworkContext: (wrappedComponent: React.ReactNode) => JSX.Element | null
@@ -66,7 +70,7 @@ const buildAppRoutes = (
             key={keys.next().value}
             component={(props: RouteComponentProps<StreamsV0RouteProps>) => (
                 <StreamsV0 {...props} />
-            )}
+               )}
         />,
         <Route path="/:network/identity-resolver/:did?"
             key={keys.next().value}
@@ -74,7 +78,7 @@ const buildAppRoutes = (
                 <IdentityResolver {...props}
                     isSupported={protocolVersion === CHRYSALIS}
                 />
-            )}
+               )}
         />
     ];
 
@@ -92,61 +96,61 @@ const buildAppRoutes = (
             key={keys.next().value}
             component={(props: RouteComponentProps<LandingRouteProps>) => (
                 <ChrysalisLanding {...props} />
-            )}
+               )}
         />,
         <Route path="/:network/visualizer/"
             key={keys.next().value}
             component={(props: RouteComponentProps<VisualizerRouteProps>) => (
                 <ChrysalisVisualizer {...props} />
-            )}
+               )}
         />,
         <Route path="/:network/search/:query?"
             key={keys.next().value}
             component={(props: RouteComponentProps<SearchRouteProps>) => (
                 <ChrysalisSearch {...props} />
-            )}
+               )}
         />,
         <Route path="/:network/addr/:address"
             key={keys.next().value}
             component={(props: RouteComponentProps<AddressRouteProps>) => (
                 <ChrysalisAddress {...props} />
-            )}
+               )}
         />,
         <Route path="/:network/address/:hash"
             key={keys.next().value}
             component={(props: RouteComponentProps<OgAddressRouteProps>) => (
                 <Address {...props} />
-            )}
+               )}
         />,
         <Route path="/:network/message/:messageId"
             key={keys.next().value}
             component={(props: RouteComponentProps<MessageProps>) => (
                 <ChrysalisMessage {...props} />
-            )}
+               )}
         />,
         <Route path="/:network/indexed/:index"
             key={keys.next().value}
             component={(props: RouteComponentProps<IndexedRouteProps>) => (
                 <Indexed {...props} />
-            )}
+               )}
         />,
         <Route path="/:network/transaction/:hash"
             key={keys.next().value}
             component={(props: RouteComponentProps<TransactionRouteProps>) => (
                 <Transaction {...props} />
-            )}
+               )}
         />,
         <Route path="/:network/tag/:hash"
             key={keys.next().value}
             component={(props: RouteComponentProps<TagRouteProps>) => (
                 <Tag {...props} />
-            )}
+               )}
         />,
         <Route path="/:network/bundle/:hash"
             key={keys.next().value}
             component={(props: RouteComponentProps<BundleRouteProps>) => (
                 <Bundle {...props} />
-            )}
+               )}
         />
     ];
 
@@ -201,14 +205,46 @@ const buildAppRoutes = (
         />
     ];
 
+    const protoRoutes = [
+        <Route exact path="/:network"
+            key={keys.next().value}
+            component={ProtoLanding}
+        />,
+        <Route exact path="/:network/epoch/:epochId"
+            key={keys.next().value}
+            component={EpochPage}
+        />,
+        <Route exact path="/:network/block/:blockId"
+            key={keys.next().value}
+            component={BlockPage}
+        />
+        /* ,
+        <Route path="/:network/visualizer/"
+            key={keys.next().value}
+            component={StardustVisualizer}
+        />,
+        <Route path="/:network/network/"
+            key={keys.next().value}
+            component={StardustVisualizer}
+        />,
+        <Route exact path="/:network/validators/:epochId"
+            key={keys.next().value}
+            component={StardustLanding}
+        />,
+        <Route exact path="/:network/addr/:address"
+            key={keys.next().value}
+            component={StardustLanding}
+        />
+         */
+
+    ];
+
     return (
         <Switch>
             {commonRoutes}
-            {
-                isStardust ?
-                    withNetworkContext(stardustRoutes) :
-                    ogAndChrysalisRoutes
-            }
+            {isStardust && withNetworkContext(stardustRoutes)}
+            {!isStardust && !isProtoNet && ogAndChrysalisRoutes}
+            {isProtoNet && protoRoutes}
         </Switch>
     );
 };

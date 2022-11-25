@@ -5,6 +5,7 @@ export const DEVNET = "devnet";
 export const SHIMMER = "shimmer";
 export const TESTNET = "testnet";
 export const ALPHANET = "alphanet";
+export const PROTONET = "protonet";
 export const CUSTOM = "custom";
 
 /**

@@ -1,7 +1,16 @@
 import React, { ReactNode } from "react";
 import { Helmet } from "react-helmet";
 import { INetwork } from "../models/config/INetwork";
-import { ALPHANET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
+import {
+    ALPHANET,
+    DEVNET,
+    LEGACY_MAINNET,
+    MAINNET,
+    NetworkType,
+    PROTONET,
+    SHIMMER,
+    TESTNET
+} from "../models/config/networkType";
 import { IReducedNodeInfo } from "../services/nodeInfoService";
 import NetworkContext from "./context/NetworkContext";
 
@@ -37,7 +46,7 @@ export const buildUtilities = (
     identityResolverEnabled: boolean
 ) => {
     const utilities = [];
-    if (networks.length > 0) {
+    if (networks.length > 0 && currentNetwork !== PROTONET) {
         utilities.push({ label: "Streams v0", url: `/${currentNetwork}/streams/0/` });
         if (isMarketed) {
             utilities.push({ label: "Markets", url: `/${currentNetwork}/markets/` });

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { isMarketedNetwork, isShimmerNetwork } from "../helpers/networkHelper";
+import { isMarketedNetwork, isProtoNetwork, isShimmerNetwork } from "../helpers/networkHelper";
 import { INetwork } from "../models/config/INetwork";
 import { MAINNET } from "../models/config/networkType";
 import { OG, STARDUST } from "../models/config/protocolVersion";
@@ -11,8 +11,13 @@ import { NetworkService } from "../services/networkService";
 import { NodeInfoService } from "../services/nodeInfoService";
 import { AppRouteProps } from "./AppRouteProps";
 import {
-    buildMetaLabel, buildUtilities, copyrightInner, getFooterItems,
-    getPages, getFaviconHelmet, networkContextWrapper
+    buildMetaLabel,
+    buildUtilities,
+    copyrightInner,
+    getFaviconHelmet,
+    getFooterItems,
+    getPages,
+    networkContextWrapper
 } from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
@@ -54,6 +59,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
 
     const currentNetwork = networkConfig?.network;
     const isShimmer = isShimmerNetwork(networkConfig?.network);
+    const isProtoNet = isProtoNetwork(networkConfig?.network);
     const isMarketed = isMarketedNetwork(networkConfig?.network);
     const isStardust = networkConfig?.protocolVersion === STARDUST;
     const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
@@ -67,10 +73,13 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
 
     const routes = buildAppRoutes(
         isStardust,
+        isProtoNet,
         isMarketed,
         networkConfig?.protocolVersion ?? "",
         withNetworkContext
     );
+
+    console.log(routes);
 
     const metaLabel = buildMetaLabel(currentNetwork);
     const faviconHelmet = getFaviconHelmet(isShimmer);

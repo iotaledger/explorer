@@ -1,4 +1,14 @@
-import { ALPHANET, CUSTOM, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
+import {
+    ALPHANET,
+    CUSTOM,
+    DEVNET,
+    LEGACY_MAINNET,
+    MAINNET,
+    NetworkType,
+    PROTONET,
+    SHIMMER,
+    TESTNET
+} from "../models/config/networkType";
 
 /**
  * Helper function to determine network order based on network type.
@@ -24,6 +34,8 @@ export const getNetworkOrder = (networkType: NetworkType) => {
     }
 };
 
+export const isProtoNetwork = (networkType: NetworkType | string | undefined) => networkType === PROTONET;
+
 export const isShimmerNetwork = (networkType: NetworkType | string | undefined) => {
     if (networkType === ALPHANET || networkType === TESTNET || networkType === SHIMMER) {
         return true;
@@ -33,7 +45,7 @@ export const isShimmerNetwork = (networkType: NetworkType | string | undefined) 
 };
 
 export const isMarketedNetwork = (networkType: NetworkType | string | undefined) => {
-    if (networkType === ALPHANET || networkType === TESTNET || networkType === SHIMMER || networkType === CUSTOM) {
+    if (networkType === ALPHANET || networkType === TESTNET || networkType === SHIMMER || networkType === PROTONET || networkType === CUSTOM) {
         return false;
     }
 

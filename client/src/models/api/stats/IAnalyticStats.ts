@@ -1,6 +1,7 @@
 /** Chronicle analytics [stardust] */
 
 import { IResponse } from "../IResponse";
+import { IProtoStats } from "./IProtoStats";
 import { IShimmerClaimed } from "./IShimmerClaimed";
 
 /**
@@ -58,5 +59,6 @@ export interface IAnalyticStats extends IResponse {
     dailyAddresses?: IAddressesStats;
     lockedStorageDeposit?: ILockedStorageDeposit;
     shimmerClaimed?: IShimmerClaimed;
+    mana?: IProtoStats;
 }
 

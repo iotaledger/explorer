@@ -1,0 +1,162 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.link {
+  @include font-size(14px);
+
+  color: var(--link-color);
+  font-family: $ibm-plex-mono;
+  font-weight: normal;
+  letter-spacing: 0.02em;
+  line-height: 20px;
+}
+
+.block-page {
+  display: flex;
+  flex-direction: column;
+
+  .block--header {
+    display: flex;
+    align-items: center;
+
+    .block--header__switch {
+      display: flex;
+      align-items: center;
+
+      & > span {
+        @include font-size(12px, 18px);
+
+        margin-right: 16px;
+        color: $gray-6;
+        font-family: $inter;
+        font-weight: 500;
+      }
+
+      .switch {
+        display: inline-block;
+        position: relative;
+        width: 32px;
+        height: 20px;
+      }
+
+      .switch input {
+        width: 0;
+        height: 0;
+        opacity: 0;
+      }
+
+      .slider {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        transition: 0.4s;
+        background-color: $gray-4;
+        cursor: pointer;
+      }
+
+      .slider::before {
+        content: "";
+        position: absolute;
+        bottom: 2.5px;
+        left: 2.5px;
+        width: 15px;
+        height: 15px;
+        transition: 0.4s;
+        background-color: white;
+      }
+
+      input:checked + .slider {
+        background-color: $green-6;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px $green-6;
+      }
+
+      input:checked + .slider::before {
+        transform: translateX(12px);
+      }
+
+      .slider.round {
+        border-radius: 16px;
+      }
+
+      .slider.round::before {
+        border-radius: 50%;
+      }
+    }
+  }
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+
+    .inner {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      max-width: $desktop-width;
+      margin: 40px 20px;
+
+      @include desktop-down {
+        max-width: 100%;
+        padding-right: 20px;
+        padding-left: 20px;
+
+        > .row {
+          flex-direction: column;
+        }
+      }
+
+      .cards {
+        flex: 1;
+        margin-right: 24px;
+
+        @include desktop-down {
+          flex: unset;
+          width: 100%;
+          margin-right: 0;
+        }
+
+        .value-buttons {
+          .col {
+            flex: 1;
+            width: auto;
+          }
+        }
+
+        @include desktop-down {
+          .value-buttons {
+            flex-direction: column;
+
+            .col {
+              flex: unset;
+              width: 100%;
+            }
+
+            .col + .col {
+              margin-top: 23px;
+              margin-left: 0;
+            }
+          }
+        }
+
+        .col + .col {
+          margin-left: 23px;
+
+          @include tablet-down {
+            margin-left: 0;
+          }
+        }
+      }
+
+      .card + .card {
+        margin-top: 23px;
+      }
+    }
+  }
+}

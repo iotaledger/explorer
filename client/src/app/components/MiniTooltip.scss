@@ -1,15 +1,16 @@
 @import '../../scss/fonts.scss';
+@import "../../scss/themes";
 
 .tooltip {
-    position: relative;
+    position: absolute;
     display: flex;
 
     .wrap {
         visibility: hidden;
         position: absolute;
-        top: 100%;
-        margin-top: 10px;
-        margin-left: 20px;
+        left: 0;
+        top: 0;
+        width: 200px !important;
         padding: 12px;
         border-radius: 0.25rem;
         background: var(--modal-color);
@@ -17,29 +18,20 @@
         color: var(--body-background);
         z-index: 1;
         opacity: 0;
-        transition: all 250ms;
-        right: 0;
-        width: 300px;
-        text-align: center;
-        white-space: break-spaces;
+        transition: all 100ms;
         font-family: $inter;
         word-break: keep-all;
-
-        .arrow {
-            background: var(--modal-color);
-            width: 12px;
-            height: 12px;
-            position: absolute;
-            top: -6px;
-            right: 12px;
-            transform: rotate(45deg);
-        }
+        text-align: center !important;
     }
 
     .children {
         white-space: nowrap;
         font-weight: 200;
-        color: var(--modal-color);
+        color: $gray-5;
         cursor: pointer;
+
+        .material-icons {
+            font-size: 14px;
+        }
     }
 }

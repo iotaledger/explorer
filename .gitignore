@@ -8,6 +8,7 @@ application-data
 /api/dist
 /api/.env
 /client/build
+.idea/
 
 config.dev.json
 config.local.json
