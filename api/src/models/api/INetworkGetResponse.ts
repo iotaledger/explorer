@@ -47,6 +47,10 @@ interface INetworkView {
      */
     showMarket?: boolean;
     /**
+     * Has stardust statistics support (influx)
+     */
+    hasStatisticsSupport: boolean;
+    /**
      * An example for an Identity DID address.
      */
     didExample?: string;

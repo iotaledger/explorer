@@ -45,6 +45,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             label: "Custom network",
             network: CUSTOM,
             protocolVersion: STARDUST,
+            hasStatisticsSupport: false,
             isEnabled: false
         };
 

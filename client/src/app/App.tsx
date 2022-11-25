@@ -94,7 +94,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                         protocolVersion={networkConfig?.protocolVersion ?? OG}
                     />
                 }
-                pages={getPages(network ?? "", networks)}
+                pages={getPages(networkConfig, networks)}
                 utilities={buildUtilities(network ?? "", networks, identityResolverEnabled)}
             />
             <div className="content">
