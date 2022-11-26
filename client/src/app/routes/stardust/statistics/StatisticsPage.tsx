@@ -4,32 +4,34 @@ import { RouteComponentProps } from "react-router";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustApiClient } from "../../../../services/stardust/stardustApiClient";
-import BarChart from "./BarChart";
+import StackedBarChart from "../../../components/stardust/statistics/StackedBarChart";
 import "./StatisticsPage.scss";
 
 interface StatisticsPageProps {
     network: string;
 }
 
+export interface BlocksDailyView {
+    time: string;
+    transaction: number | null;
+    milestone: number | null;
+    taggedData: number | null;
+    noPayload: number | null;
+}
+
 const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ match: { params: { network } } }) => {
     const [apiClient] = useState(
         ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
     );
-    const [data, setData] = useState<{ time: string; blocks: number }[] | null>(null);
+    const [data, setData] = useState<BlocksDailyView[] | null>(null);
 
     useEffect(() => {
         apiClient.influxAnalytics({ network }).then(response => {
             if (!response.error) {
                 console.log("Influx response", response);
-                // normalize data
-                const update: { time: string; blocks: number }[] = response.blocksDaily.map(day => {
-                    const blocks =
-                        (day.milestone ?? 0) +
-                        (day.transaction ?? 0) +
-                        (day.noPayload ?? 0) +
-                        (day.taggedData ?? 0);
-                    return { time: moment(day.time).add(1, "minute").format("DD MMM"), blocks };
-                });
+                const update = response.blocksDaily.map(day => (
+                    { ...day, time: moment(day.time).add(1, "minute").format("DD MMM") }
+                ));
 
                 setData(update.slice(-7));
             } else {
@@ -55,7 +57,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <h2>Daily Blocks</h2>
                             </div>
                             {data && (
-                                <BarChart
+                                <StackedBarChart
                                     width={1172}
                                     height={550}
                                     data={data}
