@@ -2,14 +2,17 @@ import { max } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
+import moment from "moment";
 import React, { useLayoutEffect, useRef } from "react";
 import "./BarChart.scss";
 
 interface BarChartProps {
     width: number;
     height: number;
-    data: { time: string; blocks: number }[];
+    data: { [name: string]: number; time: number }[];
 }
+
+const DAY_LABEL_FORMAT = "DD MMM";
 
 const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
     const theSvg = useRef<SVGSVGElement>(null);
@@ -19,11 +22,11 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
         const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
         const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
-        const x = scaleBand().domain(data.map(d => d.time))
+        const x = scaleBand().domain(data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT)))
             .range([0, INNER_WIDTH])
             .paddingInner(0.1);
 
-        const dataMaxN = max(data, d => d.blocks) ?? 1;
+        const dataMaxN = max(data, d => d.n) ?? 1;
         const y = scaleLinear().domain([0, dataMaxN])
             .range([INNER_HEIGHT, 0]);
 
@@ -43,10 +46,10 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
             .enter()
             .append("rect")
             .attr("class", "bar")
-            .attr("x", d => x(d.time) ?? 0)
+            .attr("x", d => x(moment.unix(d.time).format(DAY_LABEL_FORMAT)) ?? 0)
             .attr("width", x.bandwidth())
-            .attr("y", d => y(d.blocks))
-            .attr("height", d => INNER_HEIGHT - y(d.blocks))
+            .attr("y", d => y(d.n))
+            .attr("height", d => INNER_HEIGHT - y(d.n))
             .attr("fill", "#14cabf");
 
         const xAxis = axisBottom(x).tickPadding(10).tickFormat(time => time);
@@ -64,3 +67,4 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
 };
 
 export default BarChart;
+

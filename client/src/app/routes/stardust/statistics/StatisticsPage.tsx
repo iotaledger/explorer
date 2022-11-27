@@ -5,13 +5,14 @@ import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustApiClient } from "../../../../services/stardust/stardustApiClient";
 import StackedBarChart from "../../../components/stardust/statistics/StackedBarChart";
+import BarChart from "./BarChart";
 import "./StatisticsPage.scss";
 
 interface StatisticsPageProps {
     network: string;
 }
 
-export interface BlocksDailyView {
+export interface DataView {
     [key: string]: number;
     time: number;
 }
@@ -20,13 +21,14 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     const [apiClient] = useState(
         ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
     );
-    const [data, setData] = useState<BlocksDailyView[] | null>(null);
+    const [dailyBlocksSum, setDailyBlocksSum] = useState<DataView[] | null>(null);
+    const [dailyBlocks, setDailyBlocks] = useState<DataView[] | null>(null);
 
     useEffect(() => {
         apiClient.influxAnalytics({ network }).then(response => {
             if (!response.error) {
                 console.log("Influx response", response);
-                const update: BlocksDailyView[] = response.blocksDaily.map(day => (
+                const update: DataView[] = response.blocksDaily.map(day => (
                     {
                         time: moment(day.time).add(1, "minute").unix(),
                         transaction: day.transaction ?? 0,
@@ -36,7 +38,15 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                     }
                 ));
 
-                setData(update.slice(-7));
+                const updateSum: DataView[] = response.blocksDaily.map(day => (
+                    {
+                        time: moment(day.time).add(1, "minute").unix(),
+                        n: (day.transaction ?? 0) + (day.milestone ?? 0) + (day.taggedData ?? 0) + (day.noPayload ?? 0)
+                    }
+                ));
+
+                setDailyBlocksSum(updateSum.slice(-7));
+                setDailyBlocks(update.slice(-7));
             } else {
                 console.log("Fetching statistics failed", response.error);
             }
@@ -59,13 +69,20 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="section--header">
                                 <h2>Daily Blocks</h2>
                             </div>
-                            {data && (
+                            {dailyBlocksSum && (
+                                <BarChart
+                                    width={1172}
+                                    height={550}
+                                    data={dailyBlocksSum}
+                                />
+                            )}
+                            {dailyBlocks && (
                                 <StackedBarChart
                                     width={1172}
                                     height={550}
                                     subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
                                     colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
-                                    data={data}
+                                    data={dailyBlocks}
                                 />
                             )}
                         </div>

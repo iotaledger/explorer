@@ -86,3 +86,4 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({ height, width, subgro
 };
 
 export default StackedBarChart;
+
