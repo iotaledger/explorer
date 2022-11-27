@@ -51,7 +51,10 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({ height, width, subgro
             .append("g")
             .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-        const yAxisGrid = axisLeft(y.nice()).tickSize(-INNER_WIDTH).tickPadding(4);
+        const yAxisGrid = axisLeft(y.nice())
+            .ticks(5)
+            .tickSize(-INNER_WIDTH)
+            .tickPadding(8);
         svg.append("g")
             .attr("class", "axis axis--y")
             .call(yAxisGrid);

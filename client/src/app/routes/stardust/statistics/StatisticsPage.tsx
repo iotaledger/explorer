@@ -22,6 +22,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
         ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
     );
     const [dailyBlocksSum, setDailyBlocksSum] = useState<DataView[] | null>(null);
+    const [transactions, setTransactions] = useState<DataView[] | null>(null);
     const [dailyBlocks, setDailyBlocks] = useState<DataView[] | null>(null);
 
     useEffect(() => {
@@ -38,6 +39,14 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                     }
                 ));
 
+                const updateTransactions: DataView[] = response.transactionsDaily.map(t => (
+                    {
+                        time: moment(t.time).add(1, "minute").unix(),
+                        confirmed: t.confirmed ?? 0,
+                        conflicting: t.conflicting ?? 0
+                    }
+                ));
+
                 const updateSum: DataView[] = response.blocksDaily.map(day => (
                     {
                         time: moment(day.time).add(1, "minute").unix(),
@@ -46,6 +55,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                 ));
 
                 setDailyBlocksSum(updateSum.slice(-7));
+                setTransactions(updateTransactions.slice(-7));
                 setDailyBlocks(update.slice(-7));
             } else {
                 console.log("Fetching statistics failed", response.error);
@@ -67,22 +77,33 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                     <div className="statistics-page--content">
                         <div className="section">
                             <div className="section--header">
-                                <h2>Daily Blocks</h2>
+                                <h2>Blocks</h2>
+                            </div>
+                            <div className="row space-between">
+                                {dailyBlocks && (
+                                    <StackedBarChart
+                                        width={560}
+                                        height={350}
+                                        subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
+                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                        data={dailyBlocks}
+                                    />
+                                )}
+                                {transactions && (
+                                    <StackedBarChart
+                                        width={560}
+                                        height={350}
+                                        subgroups={["confirmed", "conflicting"]}
+                                        colors={["#73bf69", "#f2cc0d"]}
+                                        data={transactions}
+                                    />
+                                )}
                             </div>
                             {dailyBlocksSum && (
                                 <BarChart
                                     width={1172}
                                     height={550}
                                     data={dailyBlocksSum}
-                                />
-                            )}
-                            {dailyBlocks && (
-                                <StackedBarChart
-                                    width={1172}
-                                    height={550}
-                                    subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
-                                    colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
-                                    data={dailyBlocks}
                                 />
                             )}
                         </div>
