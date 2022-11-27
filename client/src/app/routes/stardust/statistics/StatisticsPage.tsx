@@ -4,6 +4,7 @@ import { RouteComponentProps } from "react-router";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustApiClient } from "../../../../services/stardust/stardustApiClient";
+import LineChart from "../../../components/stardust/statistics/LineChart";
 import StackedBarChart from "../../../components/stardust/statistics/StackedBarChart";
 import BarChart from "./BarChart";
 import "./StatisticsPage.scss";
@@ -24,6 +25,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     const [dailyBlocksSum, setDailyBlocksSum] = useState<DataView[] | null>(null);
     const [transactions, setTransactions] = useState<DataView[] | null>(null);
     const [dailyBlocks, setDailyBlocks] = useState<DataView[] | null>(null);
+    const [addressesWithBalance, setAddressesWithBalance] = useState<DataView[] | null>(null);
 
     useEffect(() => {
         apiClient.influxAnalytics({ network }).then(response => {
@@ -54,9 +56,18 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                     }
                 ));
 
+                const updateAddresses: DataView[] = response.addressesWithBalanceDaily?.map(entry => (
+                    {
+                        time: moment(entry.time).add(1, "minute").unix(),
+                        n: entry.addressesWithBalance ?? 0
+                    }
+                )) ?? [];
+
                 setDailyBlocksSum(updateSum.slice(-7));
                 setTransactions(updateTransactions.slice(-7));
                 setDailyBlocks(update.slice(-7));
+
+                setAddressesWithBalance(updateAddresses.slice(-7));
             } else {
                 console.log("Fetching statistics failed", response.error);
             }
@@ -77,7 +88,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                     <div className="statistics-page--content">
                         <div className="section">
                             <div className="section--header">
-                                <h2>Blocks</h2>
+                                <h2>Block</h2>
                             </div>
                             <div className="row space-between">
                                 {dailyBlocks && (
@@ -98,6 +109,20 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         data={transactions}
                                     />
                                 )}
+                            </div>
+                            <div className="section">
+                                <div className="section--header">
+                                    <h2>Output</h2>
+                                </div>
+                                <div className="row space-between">
+                                    {addressesWithBalance && (
+                                        <LineChart
+                                            width={560}
+                                            height={350}
+                                            data={addressesWithBalance}
+                                        />
+                                    )}
+                                </div>
                             </div>
                             {dailyBlocksSum && (
                                 <BarChart

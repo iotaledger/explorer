@@ -82,7 +82,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({ height, width, subgro
     }, [width, height, data]);
 
     return (
-        <div className="multi-bar-chart--wrapper">
+        <div className="stack-bar-chart--wrapper">
             <svg className="hook" ref={theSvg} />
         </div>
     );
