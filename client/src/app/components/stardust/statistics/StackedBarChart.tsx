@@ -1,19 +1,22 @@
-import { max } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { select } from "d3-selection";
 import { stack } from "d3-shape";
+import moment from "moment";
 import React, { useLayoutEffect, useRef } from "react";
-import { BlocksDailyView } from "../../../routes/stardust/statistics/StatisticsPage";
 import "./StackedBarChart.scss";
 
 interface StackedBarChartProps {
     width: number;
     height: number;
-    data: BlocksDailyView[];
+    subgroups: string[];
+    colors: string[];
+    data: { [name: string]: number; time: number }[];
 }
 
-const StackedBarChart: React.FC<StackedBarChartProps> = ({ height, width, data }) => {
+const DAY_LABEL_FORMAT = "DD MMM";
+
+const StackedBarChart: React.FC<StackedBarChartProps> = ({ height, width, subgroups, colors, data }) => {
     const theSvg = useRef<SVGSVGElement>(null);
 
     useLayoutEffect(() => {
@@ -21,20 +24,25 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({ height, width, data }
         const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
         const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
-        const subgroups = ["transaction", "milestone", "taggedData", "noPayload"];
-        const color = scaleOrdinal<string>().domain(subgroups).range(["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]);
+        const color = scaleOrdinal<string>().domain(subgroups).range(colors);
 
-        const groups = data.map(d => d.time);
+        const groups = data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT));
 
         const x = scaleBand().domain(groups)
             .range([0, INNER_WIDTH])
             .paddingInner(0.1);
 
-        const dataMaxN = max(
-            data, d => Math.max(d.transaction ?? 0, d.milestone ?? 0, d.taggedData ?? 0, d.noPayload ?? 0)
-        ) ?? 1;
+        const computeYMax = (entries: { [name: string]: number; time: number }[]) => Math.max(
+            ...entries.map(d => {
+                let sum = 0;
+                for (const key of subgroups) {
+                    sum += d[key];
+                }
+                return sum;
+            })
+        );
 
-        const y = scaleLinear().domain([0, dataMaxN])
+        const y = scaleLinear().domain([0, computeYMax(data)])
             .range([INNER_HEIGHT, 0]);
 
         const svg = select(theSvg.current)
@@ -48,8 +56,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({ height, width, data }
             .attr("class", "axis axis--y")
             .call(yAxisGrid);
 
-        // @ts-expect-error TS complains cause of the time field being a string but its fine
-        // as we are accessing only number fields in the stack
         const stackedData = stack().keys(subgroups)(data);
 
         svg.append("g")
@@ -60,7 +66,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({ height, width, data }
             .selectAll("rect")
             .data(d => d)
             .join("rect")
-            .attr("x", d => x(d.data.time as unknown as string) ?? 0)
+            .attr("x", d => x(moment.unix(d.data.time).format(DAY_LABEL_FORMAT)) ?? 0)
             .attr("y", d => y(d[1]))
             .attr("height", d => y(d[0]) - y(d[1]))
             .attr("width", x.bandwidth());

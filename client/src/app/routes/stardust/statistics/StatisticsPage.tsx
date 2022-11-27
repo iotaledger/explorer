@@ -12,11 +12,8 @@ interface StatisticsPageProps {
 }
 
 export interface BlocksDailyView {
-    time: string;
-    transaction: number | null;
-    milestone: number | null;
-    taggedData: number | null;
-    noPayload: number | null;
+    [key: string]: number;
+    time: number;
 }
 
 const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ match: { params: { network } } }) => {
@@ -29,8 +26,14 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
         apiClient.influxAnalytics({ network }).then(response => {
             if (!response.error) {
                 console.log("Influx response", response);
-                const update = response.blocksDaily.map(day => (
-                    { ...day, time: moment(day.time).add(1, "minute").format("DD MMM") }
+                const update: BlocksDailyView[] = response.blocksDaily.map(day => (
+                    {
+                        time: moment(day.time).add(1, "minute").unix(),
+                        transaction: day.transaction ?? 0,
+                        milestone: day.milestone ?? 0,
+                        taggedData: day.taggedData ?? 0,
+                        noPayload: day.noPayload ?? 0
+                    }
                 ));
 
                 setData(update.slice(-7));
@@ -60,6 +63,8 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <StackedBarChart
                                     width={1172}
                                     height={550}
+                                    subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
+                                    colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
                                     data={data}
                                 />
                             )}
