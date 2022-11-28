@@ -53,13 +53,6 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                     }
                 ));
 
-                const updateSum: DataView[] = response.blocksDaily.map(day => (
-                    {
-                        time: moment(day.time).add(1, "minute").unix(),
-                        n: (day.transaction ?? 0) + (day.milestone ?? 0) + (day.taggedData ?? 0) + (day.noPayload ?? 0)
-                    }
-                ));
-
                 const updateOutputs: DataView[] = response.outputsDaily?.map(output => (
                     {
                         time: moment(output.time).add(1, "minute").unix(),
@@ -102,7 +95,6 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                     }
                 )) ?? [];
 
-                setDailyBlocksSum(updateSum.slice(-7));
                 setDailyBlocks(update.slice(-7));
                 setTransactions(updateTransactions.slice(-7));
                 setOutputs(updateOutputs.slice(-7));
@@ -209,13 +201,6 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     )}
                                 </div>
                             </div>
-                            {dailyBlocksSum && (
-                                <BarChart
-                                    width={1172}
-                                    height={550}
-                                    data={dailyBlocksSum}
-                                />
-                            )}
                         </div>
                     </div>
                 </div>
