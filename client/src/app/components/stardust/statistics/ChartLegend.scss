@@ -1,0 +1,18 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/fonts";
+@import "../../../../scss/variables";
+
+.chart-legend {
+    .chart-legend__label {
+        @include font-size(12px);
+
+        display: flex;
+        align-items: center;
+        height: 32px;
+        color: var(--card-color);
+        font-family: $inter;
+        font-weight: 400;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+}

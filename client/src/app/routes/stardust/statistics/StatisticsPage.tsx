@@ -4,7 +4,8 @@ import { RouteComponentProps } from "react-router";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustApiClient } from "../../../../services/stardust/stardustApiClient";
-import BarChart from "./BarChart";
+import BarChart from "../../../components/stardust/statistics/BarChart";
+import ChartLegend from "../../../components/stardust/statistics/ChartLegend";
 import "./StatisticsPage.scss";
 
 interface StatisticsPageProps {
@@ -55,11 +56,16 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <h2>Daily Blocks</h2>
                             </div>
                             {data && (
-                                <BarChart
-                                    width={1172}
-                                    height={550}
-                                    data={data}
-                                />
+                                <div>
+                                    <ChartLegend
+                                        labels={["block", "output", "milestone"]}
+                                    />
+                                    <BarChart
+                                        width={1172}
+                                        height={550}
+                                        data={data}
+                                    />
+                                </div>
                             )}
                         </div>
                     </div>
