@@ -22,7 +22,6 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     const [apiClient] = useState(
         ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
     );
-    const [dailyBlocksSum, setDailyBlocksSum] = useState<DataView[] | null>(null);
     const [transactions, setTransactions] = useState<DataView[] | null>(null);
     const [dailyBlocks, setDailyBlocks] = useState<DataView[] | null>(null);
     const [outputs, setOutputs] = useState<DataView[] | null>(null);

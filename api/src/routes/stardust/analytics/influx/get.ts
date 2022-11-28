@@ -1,13 +1,14 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { INetworkBoundGetRequest } from "../../../../models/api/stardust/INetworkBoundGetRequest";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
-import { NetworkService } from "../../../../services/networkService";
 import {
-    IAddressesWithBalanceDailyInflux,
-    IAvgAddressesPerMilestoneDailyInflux,
-    IBlocksDailyInflux, IOutputsDailyInflux, ITokensHeldPerOutputDailyInflux,
-    ITokensTransferredDailyInflux, ITransactionsDailyInflux
-} from "../../../../services/stardust/influx/influxDbClient";
+    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IAvgAddressesPerMilestoneDailyInflux,
+    IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
+    IStorageDepositDailyInflux, ITokensHeldPerOutputDailyInflux, ITokensHeldWithUnlockConditionDailyInflux,
+    ITokensTransferredDailyInflux, ITransactionsDailyInflux, IUnclaimedGenesisOutputsDailyInflux,
+    IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
+} from "../../../../models/influx/influxData";
+import { NetworkService } from "../../../../services/networkService";
 import { InfluxDBService } from "../../../../services/stardust/influx/influxDbService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
@@ -20,6 +21,14 @@ export interface IDailyAnalyticsResponse {
     addressesWithBalanceDaily?: IAddressesWithBalanceDailyInflux[];
     avgAddressesPerMilestoneDaily?: IAvgAddressesPerMilestoneDailyInflux[];
     tokensTransferredDaily?: ITokensTransferredDailyInflux[];
+    aliasActivityDaily?: IAliasActivityDailyInflux[];
+    unlockConditionsPerTypeDaily?: IUnlockConditionsPerTypeDailyInflux[];
+    nftActivityDaily?: INftActivityDailyInflux[];
+    tokensHeldWithUnlockConditionDaily?: ITokensHeldWithUnlockConditionDailyInflux[];
+    unclaimedTokensDaily?: IUnclaimedTokensDailyInflux[];
+    unclaimedGenesisOutputsDaily?: IUnclaimedGenesisOutputsDailyInflux[];
+    ledgerSizeDaily?: ILedgerSizeDailyInflux[];
+    storageDepositDaily?: IStorageDepositDailyInflux[];
 }
 
 /**
@@ -45,7 +54,15 @@ export async function get(
         tokensHeldDaily: influxService.tokensHeldDaily,
         addressesWithBalanceDaily: influxService.addressesWithBalanceDaily,
         avgAddressesPerMilestoneDaily: influxService.avgAddressesPerMilestoneDaily,
-        tokensTransferredDaily: influxService.tokensTransferredDaily
+        tokensTransferredDaily: influxService.tokensTransferredDaily,
+        aliasActivityDaily: influxService.aliasActivityDaily,
+        unlockConditionsPerTypeDaily: influxService.unlockConditionsPerTypeDaily,
+        nftActivityDaily: influxService.nftActivityDaily,
+        tokensHeldWithUnlockConditionDaily: influxService.tokensHeldWithUnlockConditionDaily,
+        unclaimedTokensDaily: influxService.unclaimedTokensDaily,
+        unclaimedGenesisOutputsDaily: influxService.unclaimedGenesisOutputsDaily,
+        ledgerSizeDaily: influxService.ledgerSizeDaily,
+        storageDepositDaily: influxService.storageDepositDaily
     } : {
         error: "Influx service not found for this network."
     };

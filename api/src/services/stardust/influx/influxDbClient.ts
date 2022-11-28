@@ -2,55 +2,23 @@ import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import { INetwork } from "../../../models/db/INetwork";
 import {
-    ADDRESSES_WITH_BALANCE_DAILY_PARAMETERIZED_QUERY,
-    AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_PARAMETERIZED_QUERY,
-    BLOCK_DAILY_PARAMETERIZED_QUERY, OUTPUTS_DAILY_PARAMETERIZED_QUERY,
-    TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY, TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY,
-    TRANSACTION_DAILY_PARAMETERIZED_QUERY
+    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IAvgAddressesPerMilestoneDailyInflux,
+    IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
+    IStorageDepositDailyInflux, ITimedEntry, ITokensHeldPerOutputDailyInflux, ITokensHeldWithUnlockConditionDailyInflux,
+    ITokensTransferredDailyInflux, ITransactionsDailyInflux, IUnclaimedGenesisOutputsDailyInflux,
+    IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
+} from "../../../models/influx/influxData";
+import {
+    ADDRESSES_WITH_BALANCE_DAILY_PARAMETERIZED_QUERY, ALIAS_ACTIVITY_DAILY_PARAMETERIZED_QUERY,
+    AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_PARAMETERIZED_QUERY, BLOCK_DAILY_PARAMETERIZED_QUERY,
+    LEDGER_SIZE_DAILY_PARAMETERIZED_QUERY, NFT_ACTIVITY_DAILY_PARAMETERIZED_QUERY, OUTPUTS_DAILY_PARAMETERIZED_QUERY,
+    STORAGE_DEPOSIT_DAILY_PARAMETERIZED_QUERY,
+    TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY, TOKENS_HELD_WITH_UC_DAILY_PARAMETERIZED_QUERY,
+    TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY, TRANSACTION_DAILY_PARAMETERIZED_QUERY,
+    UNCLAIMED_GENESIS_OUTPUTS_DAILY_PARAMETERIZED_QUERY, UNCLAIMED_TOKENS_DAILY_PARAMETERIZED_QUERY,
+    UNLOCK_CONDITIONS_PER_TYPE_DAILY_PARAMETERIZED_QUERY
 } from "./influxQueries";
 
-export interface ITimedEntry {
-    time: INanoDate;
-}
-
-export type IBlocksDailyInflux = {
-    transaction: number | null;
-    milestone: number | null;
-    taggedData: number | null;
-    noPayload: number | null;
-} & ITimedEntry;
-
-export type ITransactionsDailyInflux = {
-    confirmed: number | null;
-    conflicting: number | null;
-} & ITimedEntry;
-
-export type IOutputsDailyInflux = {
-    basic: number | null;
-    alias: number | null;
-    foundry: number | null;
-    nft: number | null;
-} & ITimedEntry;
-
-export type ITokensHeldPerOutputDailyInflux = {
-    basic: number | null;
-    alias: number | null;
-    foundry: number | null;
-    nft: number | null;
-} & ITimedEntry;
-
-export type IAddressesWithBalanceDailyInflux = ITimedEntry & {
-    addressesWithBalance: number | null;
-};
-
-export type IAvgAddressesPerMilestoneDailyInflux = ITimedEntry & {
-    addressesReceiving: number | null;
-    addressesSending: number | null;
-};
-
-export type ITokensTransferredDailyInflux = ITimedEntry & {
-    tokens: number | null;
-};
 
 export interface InfluxDbClientCache {
     blocksDaily: IBlocksDailyInflux[];
@@ -60,6 +28,14 @@ export interface InfluxDbClientCache {
     addressesWithBalanceDaily: IAddressesWithBalanceDailyInflux[];
     avgAddressesPerMilestoneDaily: IAvgAddressesPerMilestoneDailyInflux[];
     tokensTransferredDaily: ITokensTransferredDailyInflux[];
+    aliasActivityDaily: IAliasActivityDailyInflux[];
+    unlockConditionsPerTypeDaily: IUnlockConditionsPerTypeDailyInflux[];
+    nftActivityDaily: INftActivityDailyInflux[];
+    tokensHeldWithUnlockConditionDaily: ITokensHeldWithUnlockConditionDailyInflux[];
+    unclaimedTokensDaily: IUnclaimedTokensDailyInflux[];
+    unclaimedGenesisOutputsDaily: IUnclaimedGenesisOutputsDailyInflux[];
+    ledgerSizeDaily: ILedgerSizeDailyInflux[];
+    storageDepositDaily: IStorageDepositDailyInflux[];
 }
 
 // Tuesday, 27 September 2022 00:00:00
@@ -89,7 +65,15 @@ export abstract class InfluxDbClient {
             tokensHeldDaily: [],
             addressesWithBalanceDaily: [],
             avgAddressesPerMilestoneDaily: [],
-            tokensTransferredDaily: []
+            tokensTransferredDaily: [],
+            aliasActivityDaily: [],
+            unlockConditionsPerTypeDaily: [],
+            nftActivityDaily: [],
+            tokensHeldWithUnlockConditionDaily: [],
+            unclaimedTokensDaily: [],
+            unclaimedGenesisOutputsDaily: [],
+            ledgerSizeDaily: [],
+            storageDepositDaily: []
         };
     }
 
@@ -184,6 +168,46 @@ export abstract class InfluxDbClient {
             TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY,
             this._cache.tokensTransferredDaily,
             "Tokens transferred Daily"
+        );
+        this.fetchInfluxCacheEntry<IAliasActivityDailyInflux>(
+            ALIAS_ACTIVITY_DAILY_PARAMETERIZED_QUERY,
+            this._cache.aliasActivityDaily,
+            "Alias activity Daily"
+        );
+        this.fetchInfluxCacheEntry<IUnlockConditionsPerTypeDailyInflux>(
+            UNLOCK_CONDITIONS_PER_TYPE_DAILY_PARAMETERIZED_QUERY,
+            this._cache.unlockConditionsPerTypeDaily,
+            "Unlock conditions per type Daily"
+        );
+        this.fetchInfluxCacheEntry<INftActivityDailyInflux>(
+            NFT_ACTIVITY_DAILY_PARAMETERIZED_QUERY,
+            this._cache.nftActivityDaily,
+            "Nft activity Daily"
+        );
+        this.fetchInfluxCacheEntry<ITokensHeldWithUnlockConditionDailyInflux>(
+            TOKENS_HELD_WITH_UC_DAILY_PARAMETERIZED_QUERY,
+            this._cache.tokensHeldWithUnlockConditionDaily,
+            "Tokens held with Unlock condition Daily"
+        );
+        this.fetchInfluxCacheEntry<IUnclaimedTokensDailyInflux>(
+            UNCLAIMED_TOKENS_DAILY_PARAMETERIZED_QUERY,
+            this._cache.unclaimedTokensDaily,
+            "Unclaimed Tokens Daily"
+        );
+        this.fetchInfluxCacheEntry<IUnclaimedGenesisOutputsDailyInflux>(
+            UNCLAIMED_GENESIS_OUTPUTS_DAILY_PARAMETERIZED_QUERY,
+            this._cache.unclaimedGenesisOutputsDaily,
+            "Unclaimed genesis outputs Daily"
+        );
+        this.fetchInfluxCacheEntry<ILedgerSizeDailyInflux>(
+            LEDGER_SIZE_DAILY_PARAMETERIZED_QUERY,
+            this._cache.ledgerSizeDaily,
+            "Ledger size Daily"
+        );
+        this.fetchInfluxCacheEntry<IStorageDepositDailyInflux>(
+            STORAGE_DEPOSIT_DAILY_PARAMETERIZED_QUERY,
+            this._cache.storageDepositDaily,
+            "Storage Deposit Daily"
         );
     }
 
