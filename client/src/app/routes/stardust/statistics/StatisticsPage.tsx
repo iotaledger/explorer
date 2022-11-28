@@ -29,6 +29,14 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     const [addressesWithBalance, setAddressesWithBalance] = useState<DataView[] | null>(null);
     const [avgAddressesPerMilestone, setAvgAddressesPerMilestone] = useState<DataView[] | null>(null);
     const [tokensTransferred, setTokensTransferred] = useState<DataView[] | null>(null);
+    const [aliasActivity, setAliasActivity] = useState<DataView[] | null>(null);
+    const [unlockConditionsPerType, setUnlockConditionsPerType] = useState<DataView[] | null>(null);
+    const [nftActivity, setNftActivity] = useState<DataView[] | null>(null);
+    const [tokensHeldWithUnlockCondition, setTokensHeldWithUnlockCondition] = useState<DataView[] | null>(null);
+    const [unclaimedTokens, setUnclaimedTokens] = useState<DataView[] | null>(null);
+    const [unclaimedGenesisOutputs, setUnclaimedGenesisOutputs] = useState<DataView[] | null>(null);
+    const [ledgerSize, setLedgerSize] = useState<DataView[] | null>(null);
+    const [storageDeposit, setStorageDeposit] = useState<DataView[] | null>(null);
 
     useEffect(() => {
         apiClient.influxAnalytics({ network }).then(response => {
@@ -43,7 +51,6 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                         noPayload: day.noPayload ?? 0
                     }
                 ));
-
                 const updateTransactions: DataView[] = response.transactionsDaily.map(t => (
                     {
                         time: moment(t.time).add(1, "minute").unix(),
@@ -51,7 +58,6 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                         conflicting: t.conflicting ?? 0
                     }
                 ));
-
                 const updateOutputs: DataView[] = response.outputsDaily?.map(output => (
                     {
                         time: moment(output.time).add(1, "minute").unix(),
@@ -61,7 +67,6 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                         nft: output.nft ?? 0
                     }
                 )) ?? [];
-
                 const updateTokensHeld: DataView[] = response.tokensHeldDaily?.map(day => (
                     {
                         time: moment(day.time).add(1, "minute").unix(),
@@ -71,14 +76,12 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                         nft: day.nft ?? 0
                     }
                 )) ?? [];
-
                 const updateAddresses: DataView[] = response.addressesWithBalanceDaily?.map(entry => (
                     {
                         time: moment(entry.time).add(1, "minute").unix(),
                         n: entry.addressesWithBalance ?? 0
                     }
                 )) ?? [];
-
                 const updateAvgAddressPerMilestone: DataView[] = response.avgAddressesPerMilestoneDaily?.map(day => (
                     {
                         time: moment(day.time).add(1, "minute").unix(),
@@ -86,13 +89,54 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                         receiving: day.addressesReceiving ?? 0
                     }
                 )) ?? [];
-
                 const updateTokensTransferred: DataView[] = response.tokensTransferredDaily?.map(day => (
                     {
                         time: moment(day.time).add(1, "minute").unix(),
                         n: day.tokens ?? 0
                     }
                 )) ?? [];
+                const updateAliasActivity: DataView[] = response.aliasActivityDaily?.map(day => ({
+                        time: moment(day.time).add(1, "minute").unix(),
+                        created: day.created ?? 0,
+                        governorChanged: day.governorChanged ?? 0,
+                        stateChanged: day.stateChanged ?? 0,
+                        destroyed: day.destroyed ?? 0
+                })) ?? [];
+                const updateUnlockConditions: DataView[] = response.unlockConditionsPerTypeDaily?.map(day => ({
+                        time: moment(day.time).add(1, "minute").unix(),
+                        timelock: day.timelock ?? 0,
+                        storageDepositReturn: day.storageDepositReturn ?? 0,
+                        expiration: day.expiration ?? 0
+                })) ?? [];
+                const updateNftActivity: DataView[] = response.nftActivityDaily?.map(day => ({
+                        time: moment(day.time).add(1, "minute").unix(),
+                        created: day.created ?? 0,
+                        transferred: day.transferred ?? 0,
+                        destroyed: day.destroyed ?? 0
+                })) ?? [];
+                const updateTokensHeldWithUc: DataView[] = response.tokensHeldWithUnlockConditionDaily?.map(day => ({
+                        time: moment(day.time).add(1, "minute").unix(),
+                        timelock: day.timelock ?? 0,
+                        storageDepositReturn: day.storageDepositReturn ?? 0,
+                        expiration: day.expiration ?? 0
+                })) ?? [];
+                const updateUnclaimedTokens: DataView[] = response.unclaimedTokensDaily?.map(day => ({
+                        time: moment(day.time).add(1, "minute").unix(),
+                        n: day.unclaimed ?? 0
+                })) ?? [];
+                const updateUnclaimedGenesisOutputs: DataView[] = response.unclaimedGenesisOutputsDaily?.map(day => ({
+                        time: moment(day.time).add(1, "minute").unix(),
+                        n: day.unclaimed ?? 0
+                })) ?? [];
+                const updateLedgerSize: DataView[] = response.ledgerSizeDaily?.map(day => ({
+                        time: moment(day.time).add(1, "minute").unix(),
+                        keyBytes: day.keyBytes ?? 0,
+                        dataBytes: day.dataBytes ?? 0
+                })) ?? [];
+                const updateStorageDeposit: DataView[] = response.storageDepositDaily?.map(day => ({
+                        time: moment(day.time).add(1, "minute").unix(),
+                        n: day.storageDeposit ?? 0
+                })) ?? [];
 
                 setDailyBlocks(update.slice(-7));
                 setTransactions(updateTransactions.slice(-7));
@@ -101,6 +145,14 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                 setAddressesWithBalance(updateAddresses.slice(-7));
                 setAvgAddressesPerMilestone(updateAvgAddressPerMilestone.slice(-7));
                 setTokensTransferred(updateTokensTransferred.slice(-7));
+                setAliasActivity(updateAliasActivity.slice(-7));
+                setUnlockConditionsPerType(updateUnlockConditions.slice(-7));
+                setNftActivity(updateNftActivity.slice(-7));
+                setTokensHeldWithUnlockCondition(updateTokensHeldWithUc.slice(-7));
+                setUnclaimedTokens(updateUnclaimedTokens.slice(-7));
+                setUnclaimedGenesisOutputs(updateUnclaimedGenesisOutputs.slice(-7));
+                setLedgerSize(updateLedgerSize.slice(-7));
+                setStorageDeposit(updateStorageDeposit.slice(-7));
             } else {
                 console.log("Fetching statistics failed", response.error);
             }
@@ -196,6 +248,102 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                             width={560}
                                             height={350}
                                             data={tokensTransferred}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                            <div className="section">
+                                <div className="section--header">
+                                    <h2>Output Activity</h2>
+                                </div>
+                                <div className="row space-between">
+                                    {aliasActivity && (
+                                        <StackedBarChart
+                                            width={560}
+                                            height={350}
+                                            subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
+                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                            data={aliasActivity}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                            <div className="section">
+                                <div className="section--header">
+                                    <h2>Unlock Conditions</h2>
+                                </div>
+                                <div className="row space-between">
+                                    {unlockConditionsPerType && (
+                                        <StackedBarChart
+                                            width={560}
+                                            height={350}
+                                            subgroups={["timelock", "storageDepositReturn", "expiration"]}
+                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
+                                            data={unlockConditionsPerType}
+                                        />
+                                    )}
+                                    {nftActivity && (
+                                        <StackedBarChart
+                                            width={560}
+                                            height={350}
+                                            subgroups={["created", "transferred", "destroyed"]}
+                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
+                                            data={nftActivity}
+                                        />
+                                    )}
+                                </div>
+                                <div className="row space-between">
+                                    {tokensHeldWithUnlockCondition && (
+                                        <StackedBarChart
+                                            width={560}
+                                            height={350}
+                                            subgroups={["timelock", "storageDepositReturn", "expiration"]}
+                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
+                                            data={tokensHeldWithUnlockCondition}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                            <div className="section">
+                                <div className="section--header">
+                                    <h2>Shimmer Claiming Rewards</h2>
+                                </div>
+                                <div className="row space-between">
+                                    {unclaimedTokens && (
+                                        <LineChart
+                                            width={560}
+                                            height={350}
+                                            data={unclaimedTokens}
+                                        />
+                                    )}
+                                    {unclaimedGenesisOutputs && (
+                                        <LineChart
+                                            width={560}
+                                            height={350}
+                                            data={unclaimedGenesisOutputs}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                            <div className="section">
+                                <div className="section--header">
+                                    <h2>Byte Cost</h2>
+                                </div>
+                                <div className="row space-between">
+                                    {ledgerSize && (
+                                        <StackedBarChart
+                                            width={560}
+                                            height={350}
+                                            subgroups={["keyBytes", "dataBytes"]}
+                                            colors={["#8ab8ff", "#ff780a"]}
+                                            data={ledgerSize}
+                                        />
+                                    )}
+                                    {storageDeposit && (
+                                        <LineChart
+                                            width={560}
+                                            height={350}
+                                            data={storageDeposit}
                                         />
                                     )}
                                 </div>
