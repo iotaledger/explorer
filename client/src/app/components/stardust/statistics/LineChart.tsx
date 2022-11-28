@@ -65,7 +65,7 @@ const LineChart: React.FC<LineChartProps> = ({ height, width, data }) => {
             .attr("fill", "#14cabf")
             .attr("transform", d => `translate(${x(moment.unix(d.time).format("DD MMM"))}, ${y(d.n)})`);
 
-        const xAxis = axisBottom(x).tickPadding(10).tickFormat(time => moment(time).format("DD MMM"));
+        const xAxis = axisBottom(x).tickPadding(10).tickFormat(time => time);
         svg.append("g")
             .attr("class", "axis axis--x")
             .attr("transform", `translate(0, ${INNER_HEIGHT})`)
