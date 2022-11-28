@@ -4,10 +4,9 @@ import { RouteComponentProps } from "react-router";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustApiClient } from "../../../../services/stardust/stardustApiClient";
+import BarChart from "../../../components/stardust/statistics/BarChart";
 import LineChart from "../../../components/stardust/statistics/LineChart";
 import StackedBarChart from "../../../components/stardust/statistics/StackedBarChart";
-import BarChart from "../../../components/stardust/statistics/BarChart";
-import ChartLegend from "../../../components/stardust/statistics/ChartLegend";
 import "./StatisticsPage.scss";
 
 interface StatisticsPageProps {
@@ -127,20 +126,24 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row space-between">
                                 {dailyBlocks && (
                                     <StackedBarChart
+                                        title="Daily blocks"
                                         width={560}
                                         height={350}
                                         subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
                                         colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
                                         data={dailyBlocks}
+                                        onTimespanSelected={value => console.log("Daily blocks TS changed:", value)}
                                     />
                                 )}
                                 {transactions && (
                                     <StackedBarChart
+                                        title="Daily transactions"
                                         width={560}
                                         height={350}
                                         subgroups={["confirmed", "conflicting"]}
                                         colors={["#73bf69", "#f2cc0d"]}
                                         data={transactions}
+                                        onTimespanSelected={value => console.log("Tsx TS changed:", value)}
                                     />
                                 )}
                             </div>
@@ -151,6 +154,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <div className="row space-between">
                                     {outputs && (
                                         <StackedBarChart
+                                            title="Outputs"
                                             width={560}
                                             height={350}
                                             subgroups={["basic", "alias", "foundry", "nft"]}
@@ -160,6 +164,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     )}
                                     {tokensHeld && (
                                         <StackedBarChart
+                                            title="Tokens held"
                                             width={560}
                                             height={350}
                                             subgroups={["basic", "alias", "foundry", "nft"]}
@@ -183,6 +188,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     )}
                                     {avgAddressesPerMilestone && (
                                         <StackedBarChart
+                                            title="Avg. addresses per milestone"
                                             width={560}
                                             height={350}
                                             subgroups={["sending", "receiving"]}
@@ -194,6 +200,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <div className="row space-between">
                                     {tokensTransferred && (
                                         <BarChart
+                                            title="Tokens transferred"
                                             width={560}
                                             height={350}
                                             data={tokensTransferred}

@@ -5,8 +5,10 @@ import { select } from "d3-selection";
 import moment from "moment";
 import React, { useLayoutEffect, useRef } from "react";
 import "./BarChart.scss";
+import ChatTitle from "./ChartTitle";
 
 interface BarChartProps {
+    title: string;
     width: number;
     height: number;
     data: { [name: string]: number; time: number }[];
@@ -14,7 +16,7 @@ interface BarChartProps {
 
 const DAY_LABEL_FORMAT = "DD MMM";
 
-const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
+const BarChart: React.FC<BarChartProps> = ({ title, height, width, data }) => {
     const theSvg = useRef<SVGSVGElement>(null);
 
     useLayoutEffect(() => {
@@ -64,6 +66,11 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
 
     return (
         <div className="bar-chart--wrapper">
+            {title && (
+                <ChatTitle
+                    title={title}
+                />
+            )}
             <svg className="hook" ref={theSvg} />
         </div>
     );
