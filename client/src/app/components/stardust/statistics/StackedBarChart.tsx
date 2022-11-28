@@ -1,20 +1,22 @@
-import { max } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
-import { scaleBand, scaleLinear } from "d3-scale";
+import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { select } from "d3-selection";
+import { stack } from "d3-shape";
 import moment from "moment";
 import React, { useLayoutEffect, useRef } from "react";
-import "./BarChart.scss";
+import "./StackedBarChart.scss";
 
-interface BarChartProps {
+interface StackedBarChartProps {
     width: number;
     height: number;
+    subgroups: string[];
+    colors: string[];
     data: { [name: string]: number; time: number }[];
 }
 
 const DAY_LABEL_FORMAT = "DD MMM";
 
-const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
+const StackedBarChart: React.FC<StackedBarChartProps> = ({ height, width, subgroups, colors, data }) => {
     const theSvg = useRef<SVGSVGElement>(null);
 
     useLayoutEffect(() => {
@@ -22,12 +24,25 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
         const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
         const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
-        const x = scaleBand().domain(data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT)))
+        const color = scaleOrdinal<string>().domain(subgroups).range(colors);
+
+        const groups = data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT));
+
+        const x = scaleBand().domain(groups)
             .range([0, INNER_WIDTH])
             .paddingInner(0.1);
 
-        const dataMaxN = max(data, d => d.n) ?? 1;
-        const y = scaleLinear().domain([0, dataMaxN])
+        const computeYMax = (entries: { [name: string]: number; time: number }[]) => Math.max(
+            ...entries.map(d => {
+                let sum = 0;
+                for (const key of subgroups) {
+                    sum += d[key];
+                }
+                return sum;
+            })
+        );
+
+        const y = scaleLinear().domain([0, computeYMax(data)])
             .range([INNER_HEIGHT, 0]);
 
         const svg = select(theSvg.current)
@@ -44,16 +59,20 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
             .attr("class", "axis axis--y")
             .call(yAxisGrid);
 
-        svg.selectAll(".bar")
-            .data(data)
-            .enter()
-            .append("rect")
-            .attr("class", "bar")
-            .attr("x", d => x(moment.unix(d.time).format(DAY_LABEL_FORMAT)) ?? 0)
-            .attr("width", x.bandwidth())
-            .attr("y", d => y(d.n))
-            .attr("height", d => INNER_HEIGHT - y(d.n))
-            .attr("fill", "#14cabf");
+        const stackedData = stack().keys(subgroups)(data);
+
+        svg.append("g")
+            .selectAll("g")
+            .data(stackedData)
+            .join("g")
+            .attr("fill", d => color(d.key))
+            .selectAll("rect")
+            .data(d => d)
+            .join("rect")
+            .attr("x", d => x(moment.unix(d.data.time).format(DAY_LABEL_FORMAT)) ?? 0)
+            .attr("y", d => y(d[1]))
+            .attr("height", d => y(d[0]) - y(d[1]))
+            .attr("width", x.bandwidth());
 
         const xAxis = axisBottom(x).tickPadding(10).tickFormat(time => time);
         svg.append("g")
@@ -63,11 +82,11 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
     }, [width, height, data]);
 
     return (
-        <div className="bar-chart--wrapper">
+        <div className="stack-bar-chart--wrapper">
             <svg className="hook" ref={theSvg} />
         </div>
     );
 };
 
-export default BarChart;
+export default StackedBarChart;
 

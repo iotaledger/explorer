@@ -28,5 +28,37 @@ export class InfluxDBService extends InfluxDbClient {
     public get tokensTransferredDaily() {
         return this._cache.tokensTransferredDaily;
     }
+
+    public get aliasActivityDaily() {
+        return this._cache.aliasActivityDaily;
+    }
+
+    public get unlockConditionsPerTypeDaily() {
+        return this._cache.unlockConditionsPerTypeDaily;
+    }
+
+    public get nftActivityDaily() {
+        return this._cache.nftActivityDaily;
+    }
+
+    public get tokensHeldWithUnlockConditionDaily() {
+        return this._cache.tokensHeldWithUnlockConditionDaily;
+    }
+
+    public get unclaimedTokensDaily() {
+        return this._cache.unclaimedTokensDaily;
+    }
+
+    public get unclaimedGenesisOutputsDaily() {
+        return this._cache.unclaimedGenesisOutputsDaily;
+    }
+
+    public get ledgerSizeDaily() {
+        return this._cache.ledgerSizeDaily;
+    }
+
+    public get storageDepositDaily() {
+        return this._cache.storageDepositDaily;
+    }
 }
 

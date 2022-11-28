@@ -324,7 +324,7 @@ export class StardustApiClient extends ApiClient {
         );
     }
 
-    public async influxAnalytics(request: { network: string }): Promise<IInfluxDailyResponse > {
+    public async influxAnalytics(request: { network: string }): Promise<IInfluxDailyResponse> {
         return this.callApi<unknown, IInfluxDailyResponse>(
             `stardust/analytics/daily/${request.network}`, "get"
         );

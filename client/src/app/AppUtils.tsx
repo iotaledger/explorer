@@ -23,13 +23,19 @@ export const networkContextWrapper = (
     ) : null;
 };
 
-export const getPages = (currentNetwork: string, networks: INetwork[]) => (
-    networks.length > 0 ? [
-        { label: "Explorer", url: `/${currentNetwork}/` },
-        { label: "Visualizer", url: `/${currentNetwork}/visualizer/` },
-        { label: "Statistics", url: `/${currentNetwork}/statistics/` }
-    ] : []
-);
+export const getPages = (currentNetwork: INetwork | undefined, networks: INetwork[]) => {
+    const pages = [];
+    if (networks.length > 0 && currentNetwork !== undefined) {
+        pages.push({ label: "Explorer", url: `/${currentNetwork.network}/` });
+        pages.push({ label: "Visualizer", url: `/${currentNetwork.network}/visualizer/` });
+
+        if (currentNetwork.hasStatisticsSupport) {
+            pages.push({ label: "Statistics", url: `/${currentNetwork.network}/statistics/` });
+        }
+    }
+
+    return pages;
+};
 
 export const buildUtilities = (
     currentNetwork: string,

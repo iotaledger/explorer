@@ -2,11 +2,12 @@ import { max } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
+import { line } from "d3-shape";
 import moment from "moment";
 import React, { useLayoutEffect, useRef } from "react";
-import "./BarChart.scss";
+import "./LineChart.scss";
 
-interface BarChartProps {
+interface LineChartProps {
     width: number;
     height: number;
     data: { [name: string]: number; time: number }[];
@@ -14,7 +15,7 @@ interface BarChartProps {
 
 const DAY_LABEL_FORMAT = "DD MMM";
 
-const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
+const LineChart: React.FC<LineChartProps> = ({ height, width, data }) => {
     const theSvg = useRef<SVGSVGElement>(null);
 
     useLayoutEffect(() => {
@@ -44,18 +45,27 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
             .attr("class", "axis axis--y")
             .call(yAxisGrid);
 
-        svg.selectAll(".bar")
+        svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "#14cabf")
+            .attr("stroke-width", 1.5)
+            .attr(
+                "d",
+                line<{ [name: string]: number; time: number }>()
+                    .x(d => x(moment.unix(d.time).format("DD MMM")) ?? 0)
+                    .y(d => y(d.n))
+            );
+
+        svg.selectAll("circle")
             .data(data)
             .enter()
-            .append("rect")
-            .attr("class", "bar")
-            .attr("x", d => x(moment.unix(d.time).format(DAY_LABEL_FORMAT)) ?? 0)
-            .attr("width", x.bandwidth())
-            .attr("y", d => y(d.n))
-            .attr("height", d => INNER_HEIGHT - y(d.n))
-            .attr("fill", "#14cabf");
+            .append("circle")
+            .attr("r", 3)
+            .attr("fill", "#14cabf")
+            .attr("transform", d => `translate(${x(moment.unix(d.time).format("DD MMM"))}, ${y(d.n)})`);
 
-        const xAxis = axisBottom(x).tickPadding(10).tickFormat(time => time);
+        const xAxis = axisBottom(x).tickPadding(10).tickFormat(time => moment(time).format("DD MMM"));
         svg.append("g")
             .attr("class", "axis axis--x")
             .attr("transform", `translate(0, ${INNER_HEIGHT})`)
@@ -63,11 +73,11 @@ const BarChart: React.FC<BarChartProps> = ({ height, width, data }) => {
     }, [width, height, data]);
 
     return (
-        <div className="bar-chart--wrapper">
+        <div className="line-chart--wrapper">
             <svg className="hook" ref={theSvg} />
         </div>
     );
 };
 
-export default BarChart;
+export default LineChart;
 

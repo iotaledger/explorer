@@ -46,6 +46,56 @@ export interface ITokensTransferredDailyInflux {
     tokens: number | null;
 }
 
+export interface IAliasActivityDailyInflux {
+    time: Date;
+    created: number | null;
+    governorChanged: number | null;
+    stateChanged: number | null;
+    destroyed: number | null;
+}
+
+export interface IUnlockConditionsPerTypeDailyInflux {
+    time: Date;
+    timelock: number | null;
+    storageDepositReturn: number | null;
+    expiration: number | null;
+}
+
+export interface INftActivityDailyInflux {
+    time: Date;
+    created: number | null;
+    transferred: number | null;
+    destroyed: number | null;
+}
+
+export interface ITokensHeldWithUnlockConditionDailyInflux {
+    time: Date;
+    timelock: number | null;
+    storageDepositReturn: number | null;
+    expiration: number | null;
+}
+
+export interface IUnclaimedTokensDailyInflux {
+    time: Date;
+    unclaimed: number | null;
+}
+
+export interface IUnclaimedGenesisOutputsDailyInflux {
+    time: Date;
+    unclaimed: number | null;
+}
+
+export interface ILedgerSizeDailyInflux {
+    time: Date;
+    keyBytes: number | null;
+    dataBytes: number | null;
+}
+
+export interface IStorageDepositDailyInflux {
+    time: Date;
+    storageDeposit: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily: IBlocksDailyInflux[];
     transactionsDaily: ITransactionsDailyInflux[];
@@ -54,5 +104,13 @@ export interface IInfluxDailyResponse extends IResponse {
     addressesWithBalanceDaily?: IAddressesWithBalanceDailyInflux[];
     avgAddressesPerMilestoneDaily?: IAvgAddressesPerMilestoneDailyInflux[];
     tokensTransferredDaily?: ITokensTransferredDailyInflux[];
+    aliasActivityDaily?: IAliasActivityDailyInflux[];
+    unlockConditionsPerTypeDaily?: IUnlockConditionsPerTypeDailyInflux[];
+    nftActivityDaily?: INftActivityDailyInflux[];
+    tokensHeldWithUnlockConditionDaily?: ITokensHeldWithUnlockConditionDailyInflux[];
+    unclaimedTokensDaily?: IUnclaimedTokensDailyInflux[];
+    unclaimedGenesisOutputsDaily?: IUnclaimedGenesisOutputsDailyInflux[];
+    ledgerSizeDaily?: ILedgerSizeDailyInflux[];
+    storageDepositDaily?: IStorageDepositDailyInflux[];
 }
 
