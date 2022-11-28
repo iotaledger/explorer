@@ -25,7 +25,11 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     const [dailyBlocksSum, setDailyBlocksSum] = useState<DataView[] | null>(null);
     const [transactions, setTransactions] = useState<DataView[] | null>(null);
     const [dailyBlocks, setDailyBlocks] = useState<DataView[] | null>(null);
+    const [outputs, setOutputs] = useState<DataView[] | null>(null);
+    const [tokensHeld, setTokensHeld] = useState<DataView[] | null>(null);
     const [addressesWithBalance, setAddressesWithBalance] = useState<DataView[] | null>(null);
+    const [avgAddressesPerMilestone, setAvgAddressesPerMilestone] = useState<DataView[] | null>(null);
+    const [tokensTransferred, setTokensTransferred] = useState<DataView[] | null>(null);
 
     useEffect(() => {
         apiClient.influxAnalytics({ network }).then(response => {
@@ -56,6 +60,26 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                     }
                 ));
 
+                const updateOutputs: DataView[] = response.outputsDaily?.map(output => (
+                    {
+                        time: moment(output.time).add(1, "minute").unix(),
+                        basic: output.basic ?? 0,
+                        alias: output.alias ?? 0,
+                        foundry: output.foundry ?? 0,
+                        nft: output.nft ?? 0
+                    }
+                )) ?? [];
+
+                const updateTokensHeld: DataView[] = response.tokensHeldDaily?.map(day => (
+                    {
+                        time: moment(day.time).add(1, "minute").unix(),
+                        basic: day.basic ?? 0,
+                        alias: day.alias ?? 0,
+                        foundry: day.foundry ?? 0,
+                        nft: day.nft ?? 0
+                    }
+                )) ?? [];
+
                 const updateAddresses: DataView[] = response.addressesWithBalanceDaily?.map(entry => (
                     {
                         time: moment(entry.time).add(1, "minute").unix(),
@@ -63,11 +87,29 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                     }
                 )) ?? [];
 
-                setDailyBlocksSum(updateSum.slice(-7));
-                setTransactions(updateTransactions.slice(-7));
-                setDailyBlocks(update.slice(-7));
+                const updateAvgAddressPerMilestone: DataView[] = response.avgAddressesPerMilestoneDaily?.map(day => (
+                    {
+                        time: moment(day.time).add(1, "minute").unix(),
+                        sending: day.addressesSending ?? 0,
+                        receiving: day.addressesReceiving ?? 0
+                    }
+                )) ?? [];
 
+                const updateTokensTransferred: DataView[] = response.tokensTransferredDaily?.map(day => (
+                    {
+                        time: moment(day.time).add(1, "minute").unix(),
+                        n: day.tokens ?? 0
+                    }
+                )) ?? [];
+
+                setDailyBlocksSum(updateSum.slice(-7));
+                setDailyBlocks(update.slice(-7));
+                setTransactions(updateTransactions.slice(-7));
+                setOutputs(updateOutputs.slice(-7));
+                setTokensHeld(updateTokensHeld.slice(-7));
                 setAddressesWithBalance(updateAddresses.slice(-7));
+                setAvgAddressesPerMilestone(updateAvgAddressPerMilestone.slice(-7));
+                setTokensTransferred(updateTokensTransferred.slice(-7));
             } else {
                 console.log("Fetching statistics failed", response.error);
             }
@@ -88,7 +130,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                     <div className="statistics-page--content">
                         <div className="section">
                             <div className="section--header">
-                                <h2>Block</h2>
+                                <h2>Blocks</h2>
                             </div>
                             <div className="row space-between">
                                 {dailyBlocks && (
@@ -112,7 +154,32 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             </div>
                             <div className="section">
                                 <div className="section--header">
-                                    <h2>Output</h2>
+                                    <h2>Outputs</h2>
+                                </div>
+                                <div className="row space-between">
+                                    {outputs && (
+                                        <StackedBarChart
+                                            width={560}
+                                            height={350}
+                                            subgroups={["basic", "alias", "foundry", "nft"]}
+                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                            data={outputs}
+                                        />
+                                    )}
+                                    {tokensHeld && (
+                                        <StackedBarChart
+                                            width={560}
+                                            height={350}
+                                            subgroups={["basic", "alias", "foundry", "nft"]}
+                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                            data={tokensHeld}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                            <div className="section">
+                                <div className="section--header">
+                                    <h2>Addresses and Tokens</h2>
                                 </div>
                                 <div className="row space-between">
                                     {addressesWithBalance && (
@@ -120,6 +187,24 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                             width={560}
                                             height={350}
                                             data={addressesWithBalance}
+                                        />
+                                    )}
+                                    {avgAddressesPerMilestone && (
+                                        <StackedBarChart
+                                            width={560}
+                                            height={350}
+                                            subgroups={["sending", "receiving"]}
+                                            colors={["#73bf69", "#f2cc0d"]}
+                                            data={avgAddressesPerMilestone}
+                                        />
+                                    )}
+                                </div>
+                                <div className="row space-between">
+                                    {tokensTransferred && (
+                                        <BarChart
+                                            width={560}
+                                            height={350}
+                                            data={tokensTransferred}
                                         />
                                     )}
                                 </div>
