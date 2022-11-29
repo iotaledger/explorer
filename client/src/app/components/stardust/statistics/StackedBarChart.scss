@@ -10,21 +10,27 @@
     background-color:  $gray-daylight;
     border-radius: 8px;
 
-    .axis {
-        color: $gray-3;
-
-        .tick text {
-            @include font-size(10px);
-            color: $gray-7;
+    svg.hook {
+        & rect:hover {
+            stroke: $gray-6;
         }
-    }
 
-    .axis--y path, .axis--x path {
-        stroke: none;
-    }
+        .axis {
+            color: $gray-3;
 
-    .axis--y g.tick line {
-        stroke-width: 1.8px;
+            .tick text {
+                @include font-size(10px);
+                color: $gray-7;
+            }
+        }
+
+        .axis--y path, .axis--x path {
+            stroke: none;
+        }
+
+        .axis--y g.tick line {
+            stroke-width: 1.8px;
+        }
     }
 }
 
