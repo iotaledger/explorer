@@ -1,14 +1,16 @@
 @import "../../../../scss/mixins";
 @import "../../../../scss/variables";
+@import "../../../../scss/fonts";
 
 .stack-bar-chart--wrapper {
+    position: relative;
     width: fit-content;
     padding: 14px;
     margin-bottom: 14px;
-    background-color:  var(--light-bg);
+    background-color:  $gray-daylight;
     border-radius: 8px;
 
-    .axis, {
+    .axis {
         color: $gray-3;
 
         .tick text {

@@ -4,19 +4,32 @@ import { select } from "d3-selection";
 import { stack } from "d3-shape";
 import moment from "moment";
 import React, { useLayoutEffect, useRef } from "react";
+import ChartLegend from "./ChartLegend";
+import ChartSelect from "./ChartSelect";
+import ChatTitle from "./ChartTitle";
 import "./StackedBarChart.scss";
 
 interface StackedBarChartProps {
+    title?: string;
     width: number;
     height: number;
     subgroups: string[];
     colors: string[];
     data: { [name: string]: number; time: number }[];
+    onTimespanSelected?: (value: string) => void;
 }
 
 const DAY_LABEL_FORMAT = "DD MMM";
 
-const StackedBarChart: React.FC<StackedBarChartProps> = ({ height, width, subgroups, colors, data }) => {
+const StackedBarChart: React.FC<StackedBarChartProps> = ({
+    title,
+    height,
+    width,
+    subgroups,
+    colors,
+    data,
+    onTimespanSelected
+}) => {
     const theSvg = useRef<SVGSVGElement>(null);
 
     useLayoutEffect(() => {
@@ -83,9 +96,32 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({ height, width, subgro
 
     return (
         <div className="stack-bar-chart--wrapper">
+            {title && (
+                <ChatTitle
+                    title={title}
+                />
+            )}
+            <ChartSelect
+                onTimespanSelected={value => {
+                    if (onTimespanSelected) {
+                        onTimespanSelected(value);
+                    }
+                }}
+            />
+
+            <ChartLegend
+                labels={subgroups}
+                colors={colors}
+            />
+
             <svg className="hook" ref={theSvg} />
         </div>
     );
+};
+
+StackedBarChart.defaultProps = {
+    onTimespanSelected: undefined,
+    title: undefined
 };
 
 export default StackedBarChart;
