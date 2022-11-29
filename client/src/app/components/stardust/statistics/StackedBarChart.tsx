@@ -4,9 +4,7 @@ import { select } from "d3-selection";
 import { stack } from "d3-shape";
 import moment from "moment";
 import React, { useLayoutEffect, useRef } from "react";
-import ChartLegend from "./ChartLegend";
-import ChartSelect from "./ChartSelect";
-import ChatTitle from "./ChartTitle";
+import ChartHeader from "./ChartHeader";
 import "./StackedBarChart.scss";
 
 interface StackedBarChartProps {
@@ -96,24 +94,19 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
     return (
         <div className="stack-bar-chart--wrapper">
-            {title && (
-                <ChatTitle
-                    title={title}
-                />
-            )}
-            <ChartSelect
+
+            <ChartHeader
+                title={title}
                 onTimespanSelected={value => {
                     if (onTimespanSelected) {
                         onTimespanSelected(value);
                     }
                 }}
+                legend={{
+                    labels: subgroups,
+                    colors
+                }}
             />
-
-            <ChartLegend
-                labels={subgroups}
-                colors={colors}
-            />
-
             <svg className="hook" ref={theSvg} />
         </div>
     );

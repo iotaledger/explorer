@@ -5,7 +5,7 @@ import { select } from "d3-selection";
 import moment from "moment";
 import React, { useLayoutEffect, useRef } from "react";
 import "./BarChart.scss";
-import ChatTitle from "./ChartTitle";
+import ChartHeader from "./ChartHeader";
 
 interface BarChartProps {
     title: string;
@@ -66,11 +66,9 @@ const BarChart: React.FC<BarChartProps> = ({ title, height, width, data }) => {
 
     return (
         <div className="bar-chart--wrapper">
-            {title && (
-                <ChatTitle
-                    title={title}
-                />
-            )}
+            <ChartHeader
+                title={title}
+            />
             <svg className="hook" ref={theSvg} />
         </div>
     );

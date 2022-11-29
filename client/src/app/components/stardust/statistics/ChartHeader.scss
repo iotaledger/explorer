@@ -1,0 +1,85 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/fonts";
+@import "../../../../scss/variables";
+
+.chart-header {
+    .chart-header__title {
+        h2 {
+            padding-left: 7px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            height: 32px;
+            color: var(--card-color);
+            font-family: $inter;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+    }
+
+    .chart-header__select {
+        .select-container {
+            select {
+                position: absolute;
+                top: 16px;
+                right: 24px;
+                background: var(--body-background);
+                color: var(--body-color);
+                cursor: pointer;
+                min-height: 34px;
+                max-width: 200px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                padding: 4px 8px;
+    
+                &:focus-visible {
+                    outline: none;
+                }
+    
+                option {
+                    color: var(--modal-color);
+                    font-family: $inter;
+                    font-weight: 400;
+                }
+            }
+        }
+    }
+    .charts-css.legend {
+        padding: 1rem;
+        border: 1px solid var(--legend-border-color);
+        list-style: none;
+        font-size: 1rem;
+        &.legend-inline {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-direction: normal;
+            -webkit-box-orient: horizontal;
+            -ms-flex-direction: row;
+            flex-direction: row;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+        }
+    }
+    .charts-css.legend li:first-child::before {
+        background-color: var(--modal-color,transparent);
+        border-color: var(--border-color,var(--border-color,#000));
+    }
+
+    .charts-css.legend-circle li::before {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+    }
+
+    .charts-css.legend li::before {
+        content: "";
+        display: inline-block;
+        vertical-align: middle;
+        -webkit-margin-end: .5rem;
+        margin-inline-end: .5rem;
+        border-width: 2px;
+        border-style: solid;
+    }
+}
