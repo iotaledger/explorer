@@ -61,7 +61,20 @@ const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, onTimes
             .attr("height", d => INNER_HEIGHT - y(d.n))
             .attr("fill", "#14cabf");
 
-        const xAxis = axisBottom(x).tickPadding(10).tickFormat(time => time);
+        let tickValues;
+        switch (timespan) {
+            case "7":
+                tickValues = x.domain();
+                break;
+            case "30":
+                tickValues = x.domain().filter((_, i) => !(i % 3));
+                break;
+            default:
+                tickValues = x.domain().filter((_, i) => !(i % 4));
+                break;
+        }
+
+        const xAxis = axisBottom(x).tickValues(tickValues);
         svg.append("g")
             .attr("class", "axis axis--x")
             .attr("transform", `translate(0, ${INNER_HEIGHT})`)

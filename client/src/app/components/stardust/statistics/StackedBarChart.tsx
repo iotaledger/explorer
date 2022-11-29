@@ -88,7 +88,20 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             .attr("height", d => y(d[0]) - y(d[1]))
             .attr("width", x.bandwidth());
 
-        const xAxis = axisBottom(x).tickPadding(10).tickFormat(time => time);
+        let tickValues;
+        switch (timespan) {
+            case "7":
+                tickValues = x.domain();
+                break;
+            case "30":
+                tickValues = x.domain().filter((_, i) => !(i % 3));
+                break;
+            default:
+                tickValues = x.domain().filter((_, i) => !(i % 4));
+                break;
+        }
+
+        const xAxis = axisBottom(x).tickValues(tickValues);
         svg.append("g")
             .attr("class", "axis axis--x")
             .attr("transform", `translate(0, ${INNER_HEIGHT})`)
@@ -99,6 +112,10 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
         <div className="stack-bar-chart--wrapper">
             <ChartHeader
                 title={title}
+                legend={{
+                    labels: subgroups,
+                    colors
+                }}
                 onTimespanSelected={value => setTimespan(value)}
             />
             <svg className="hook" ref={theSvg} />
