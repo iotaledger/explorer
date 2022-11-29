@@ -18,7 +18,7 @@ const ChartHeader: React.FC<ChartHeaderProps> = ({ title, onTimespanSelected, le
         <div className="chart-header">
             {title && (
                 <div className="chart-header__title">
-                    <h2>{title}</h2>
+                    <h4>{title}</h4>
                 </div>
             )}
 

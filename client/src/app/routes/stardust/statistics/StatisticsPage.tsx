@@ -239,7 +239,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     )}
                                     {avgAddressesPerMilestone && (
                                         <StackedBarChart
-                                            title="Avg. Active Addresses per Milestone"
+                                            title="Avarage Number of Active Addresses per Milestone"
                                             width={560}
                                             height={350}
                                             subgroups={["sending", "receiving"]}
@@ -266,6 +266,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <div className="row space-between">
                                     {aliasActivity && (
                                         <StackedBarChart
+                                            title="Alias Activity Counts"
                                             width={560}
                                             height={350}
                                             subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
@@ -282,6 +283,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <div className="row space-between">
                                     {unlockConditionsPerType && (
                                         <StackedBarChart
+                                            title="Number of Unlock Conditions by Type"
                                             width={560}
                                             height={350}
                                             subgroups={["timelock", "storageDepositReturn", "expiration"]}
@@ -291,6 +293,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     )}
                                     {nftActivity && (
                                         <StackedBarChart
+                                            title="NFT Activity Counts"
                                             width={560}
                                             height={350}
                                             subgroups={["created", "transferred", "destroyed"]}
@@ -302,6 +305,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <div className="row space-between">
                                     {tokensHeldWithUnlockCondition && (
                                         <StackedBarChart
+                                            title="Tokens Held by Outputs with Unlock Conditions"
                                             width={560}
                                             height={350}
                                             subgroups={["timelock", "storageDepositReturn", "expiration"]}
@@ -318,6 +322,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <div className="row space-between">
                                     {unclaimedTokens && (
                                         <LineChart
+                                            title="Unclimed Tokens"
                                             width={560}
                                             height={350}
                                             data={unclaimedTokens}
@@ -325,6 +330,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     )}
                                     {unclaimedGenesisOutputs && (
                                         <LineChart
+                                            title="Number of Unclaimed Shimmer Genesis Outputs"
                                             width={560}
                                             height={350}
                                             data={unclaimedGenesisOutputs}
@@ -339,6 +345,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <div className="row space-between">
                                     {ledgerSize && (
                                         <StackedBarChart
+                                            title="Ledger Size"
                                             width={560}
                                             height={350}
                                             subgroups={["keyBytes", "dataBytes"]}
@@ -348,6 +355,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     )}
                                     {storageDeposit && (
                                         <LineChart
+                                            title="Storage Deposit"
                                             width={560}
                                             height={350}
                                             data={storageDeposit}

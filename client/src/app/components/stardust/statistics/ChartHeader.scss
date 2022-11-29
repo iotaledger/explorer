@@ -4,12 +4,14 @@
 
 .chart-header {
     .chart-header__title {
-        h2 {
+        h4 {
+            @include font-size(14px);
+
             padding-left: 7px;
-            margin-bottom: 5px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            height: 32px;
+            height: 21px;
             color: var(--card-color);
             font-family: $inter;
             font-weight: 700;

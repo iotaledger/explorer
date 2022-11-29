@@ -8,16 +8,15 @@ import ChartHeader, { TimespanOption } from "./ChartHeader";
 import "./BarChart.scss";
 
 interface BarChartProps {
-    title: string;
+    title?: string;
     width: number;
     height: number;
     data: { [name: string]: number; time: number }[];
-    onTimespanSelected?: (value: string) => void;
 }
 
 const DAY_LABEL_FORMAT = "DD MMM";
 
-const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, onTimespanSelected }) => {
+const BarChart: React.FC<BarChartProps> = ({ title, height, width, data }) => {
     const theSvg = useRef<SVGSVGElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("7");
 
@@ -93,7 +92,6 @@ const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, onTimes
 };
 
 BarChart.defaultProps = {
-    onTimespanSelected: undefined,
     title: undefined
 };
 

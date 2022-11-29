@@ -13,12 +13,11 @@ interface LineChartProps {
     width: number;
     height: number;
     data: { [name: string]: number; time: number }[];
-    onTimespanSelected?: (value: string) => void;
 }
 
 const DAY_LABEL_FORMAT = "DD MMM";
 
-const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, onTimespanSelected }) => {
+const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => {
     const theSvg = useRef<SVGSVGElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("7");
 
@@ -94,6 +93,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, onTim
     return (
         <div className="line-chart--wrapper">
             <ChartHeader
+                title={title}
                 onTimespanSelected={value => setTimespan(value)}
             />
             <svg className="hook" ref={theSvg} />
@@ -102,7 +102,6 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, onTim
 };
 
 LineChart.defaultProps = {
-    onTimespanSelected: undefined,
     title: undefined
 };
 
