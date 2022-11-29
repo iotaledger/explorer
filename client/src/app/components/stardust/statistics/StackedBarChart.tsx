@@ -13,6 +13,7 @@ interface StackedBarChartProps {
     width: number;
     height: number;
     subgroups: string[];
+    groupLabels?: string[];
     colors: string[];
     data: { [name: string]: number; time: number }[];
 }
@@ -24,6 +25,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     height,
     width,
     subgroups,
+    groupLabels,
     colors,
     data
 }) => {
@@ -38,7 +40,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 `
                     <p>
                         <span class="dot" style="background-color: ${colors[idx]}"></span>
-                        <span class="label">${subgroup}: </span>
+                        <span class="label">${groupLabels ? groupLabels[idx] : subgroup}: </span>
                         <span class="value">${dataPoint[subgroup]}</span>
                     </p>
                 `
@@ -138,7 +140,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             <ChartHeader
                 title={title}
                 legend={{
-                    labels: subgroups,
+                    labels: groupLabels ?? subgroups,
                     colors
                 }}
                 onTimespanSelected={value => setTimespan(value)}
@@ -150,6 +152,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 };
 
 StackedBarChart.defaultProps = {
+    groupLabels: undefined,
     title: undefined
 };
 
