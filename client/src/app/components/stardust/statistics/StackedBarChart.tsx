@@ -3,8 +3,8 @@ import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { select } from "d3-selection";
 import { stack } from "d3-shape";
 import moment from "moment";
-import React, { useLayoutEffect, useRef } from "react";
-import ChartHeader from "./ChartHeader";
+import React, { useLayoutEffect, useRef, useState } from "react";
+import ChartHeader, { TimespanOption } from "./ChartHeader";
 import "./StackedBarChart.scss";
 
 interface StackedBarChartProps {
@@ -14,7 +14,6 @@ interface StackedBarChartProps {
     subgroups: string[];
     colors: string[];
     data: { [name: string]: number; time: number }[];
-    onTimespanSelected?: (value: string) => void;
 }
 
 const DAY_LABEL_FORMAT = "DD MMM";
@@ -25,17 +24,21 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     width,
     subgroups,
     colors,
-    data,
-    onTimespanSelected
+    data
 }) => {
     const theSvg = useRef<SVGSVGElement>(null);
+    const [timespan, setTimespan] = useState<TimespanOption>("7");
 
     useLayoutEffect(() => {
         const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
         const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
         const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
+        // reset
+        select(theSvg.current).select("*").remove();
 
         const color = scaleOrdinal<string>().domain(subgroups).range(colors);
+
+        data = timespan !== "all" ? data.slice(-timespan) : data;
 
         const groups = data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT));
 
@@ -90,22 +93,13 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             .attr("class", "axis axis--x")
             .attr("transform", `translate(0, ${INNER_HEIGHT})`)
             .call(xAxis);
-    }, [width, height, data]);
+    }, [width, height, data, timespan]);
 
     return (
         <div className="stack-bar-chart--wrapper">
-
             <ChartHeader
                 title={title}
-                onTimespanSelected={value => {
-                    if (onTimespanSelected) {
-                        onTimespanSelected(value);
-                    }
-                }}
-                legend={{
-                    labels: subgroups,
-                    colors
-                }}
+                onTimespanSelected={value => setTimespan(value)}
             />
             <svg className="hook" ref={theSvg} />
         </div>
@@ -113,7 +107,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 };
 
 StackedBarChart.defaultProps = {
-    onTimespanSelected: undefined,
     title: undefined
 };
 

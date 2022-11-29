@@ -138,21 +138,21 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                         n: day.storageDeposit ?? 0
                 })) ?? [];
 
-                setDailyBlocks(update.slice(-7));
-                setTransactions(updateTransactions.slice(-7));
-                setOutputs(updateOutputs.slice(-7));
-                setTokensHeld(updateTokensHeld.slice(-7));
-                setAddressesWithBalance(updateAddresses.slice(-7));
-                setAvgAddressesPerMilestone(updateAvgAddressPerMilestone.slice(-7));
-                setTokensTransferred(updateTokensTransferred.slice(-7));
-                setAliasActivity(updateAliasActivity.slice(-7));
-                setUnlockConditionsPerType(updateUnlockConditions.slice(-7));
-                setNftActivity(updateNftActivity.slice(-7));
-                setTokensHeldWithUnlockCondition(updateTokensHeldWithUc.slice(-7));
-                setUnclaimedTokens(updateUnclaimedTokens.slice(-7));
-                setUnclaimedGenesisOutputs(updateUnclaimedGenesisOutputs.slice(-7));
-                setLedgerSize(updateLedgerSize.slice(-7));
-                setStorageDeposit(updateStorageDeposit.slice(-7));
+                setDailyBlocks(update);
+                setTransactions(updateTransactions);
+                setOutputs(updateOutputs);
+                setTokensHeld(updateTokensHeld);
+                setAddressesWithBalance(updateAddresses);
+                setAvgAddressesPerMilestone(updateAvgAddressPerMilestone);
+                setTokensTransferred(updateTokensTransferred);
+                setAliasActivity(updateAliasActivity);
+                setUnlockConditionsPerType(updateUnlockConditions);
+                setNftActivity(updateNftActivity);
+                setTokensHeldWithUnlockCondition(updateTokensHeldWithUc);
+                setUnclaimedTokens(updateUnclaimedTokens);
+                setUnclaimedGenesisOutputs(updateUnclaimedGenesisOutputs);
+                setLedgerSize(updateLedgerSize);
+                setStorageDeposit(updateStorageDeposit);
             } else {
                 console.log("Fetching statistics failed", response.error);
             }
@@ -184,7 +184,6 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
                                         colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
                                         data={dailyBlocks}
-                                        onTimespanSelected={value => console.log("Daily blocks TS changed:", value)}
                                     />
                                 )}
                                 {transactions && (
@@ -195,7 +194,6 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         subgroups={["confirmed", "conflicting"]}
                                         colors={["#73bf69", "#f2cc0d"]}
                                         data={transactions}
-                                        onTimespanSelected={value => console.log("Tsx TS changed:", value)}
                                     />
                                 )}
                             </div>
