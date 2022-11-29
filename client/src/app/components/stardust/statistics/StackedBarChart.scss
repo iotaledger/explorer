@@ -11,8 +11,10 @@
     border-radius: 8px;
 
     svg.hook {
-        & rect:hover {
-            stroke: $gray-6;
+        rect {
+            &:hover {
+                stroke: $gray-6;
+            }
         }
 
         .axis {

@@ -3,8 +3,9 @@ import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { select } from "d3-selection";
 import { stack } from "d3-shape";
 import moment from "moment";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "./ChartHeader";
+import ChartTooltip from "./ChartTooltip";
 import "./StackedBarChart.scss";
 
 interface StackedBarChartProps {
@@ -27,7 +28,23 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     data
 }) => {
     const theSvg = useRef<SVGSVGElement>(null);
+    const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("7");
+
+    const buildTooltipHtml = useCallback((dataPoint: { [key: string]: number }): string => (
+        `
+            <p>${moment.unix(dataPoint.time).format("DD-MM-YYYY")}</p>
+            ${subgroups.map((subgroup, idx) => (
+                `
+                    <p>
+                        <span class="dot" style="background-color: ${colors[idx]}"></span>
+                        <span class="label">${subgroup}: </span>
+                        <span class="value">${dataPoint[subgroup]}</span>
+                    </p>
+                `
+            )).join("")}
+        `
+    ), [subgroups, data]);
 
     useLayoutEffect(() => {
         const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
@@ -36,10 +53,10 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
         // reset
         select(theSvg.current).select("*").remove();
 
-        const color = scaleOrdinal<string>().domain(subgroups).range(colors);
 
         data = timespan !== "all" ? data.slice(-timespan) : data;
 
+        const color = scaleOrdinal<string>().domain(subgroups).range(colors);
         const groups = data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT));
 
         const x = scaleBand().domain(groups)
@@ -85,13 +102,21 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             .join("rect")
             .attr("x", d => x(moment.unix(d.data.time).format(DAY_LABEL_FORMAT)) ?? 0)
             .attr("y", d => y(d[1]))
+            .on("mouseover", (_, d) => {
+                select(theTooltip.current)
+                    .style("display", "block")
+                    .select("#content")
+                    .html(buildTooltipHtml(d.data));
+            })
+            .on("mouseout", () => {
+                select(theTooltip.current).style("display", "none");
+            })
             .attr("height", d => y(d[0]) - y(d[1]))
             .attr("width", x.bandwidth());
 
-        let tickValues;
+        let tickValues = x.domain();
         switch (timespan) {
             case "7":
-                tickValues = x.domain();
                 break;
             case "30":
                 tickValues = x.domain().filter((_, i) => !(i % 3));
@@ -118,6 +143,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 }}
                 onTimespanSelected={value => setTimespan(value)}
             />
+            <ChartTooltip tooltipRef={theTooltip} />
             <svg className="hook" ref={theSvg} />
         </div>
     );
