@@ -3,8 +3,9 @@ import { axisBottom, axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
 import moment from "moment";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "./ChartHeader";
+import ChartTooltip from "./ChartTooltip";
 import "./BarChart.scss";
 
 interface BarChartProps {
@@ -12,11 +13,13 @@ interface BarChartProps {
     width: number;
     height: number;
     data: { [name: string]: number; time: number }[];
+    label?: string;
 }
 
 const DAY_LABEL_FORMAT = "DD MMM";
 
-const BarChart: React.FC<BarChartProps> = ({ title, height, width, data }) => {
+const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, label }) => {
+    const theTooltip = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("7");
 
@@ -60,7 +63,16 @@ const BarChart: React.FC<BarChartProps> = ({ title, height, width, data }) => {
             .attr("width", x.bandwidth())
             .attr("y", d => y(d.n))
             .attr("height", d => INNER_HEIGHT - y(d.n))
-            .attr("fill", "#14cabf");
+            .attr("fill", "#14cabf")
+            .on("mouseover", (_, d) => {
+                select(theTooltip.current)
+                    .style("display", "block")
+                    .select("#content")
+                    .html(buildTooltipHtml(d));
+            })
+            .on("mouseout", () => {
+                select(theTooltip.current).style("display", "none");
+            });
 
         let tickValues;
         switch (timespan) {
@@ -82,18 +94,30 @@ const BarChart: React.FC<BarChartProps> = ({ title, height, width, data }) => {
             .call(xAxis);
     }, [width, height, data, timespan]);
 
+    const buildTooltipHtml = useCallback((dataPoint: { [name: string]: number; time: number }): string => (
+        `
+            <p>${moment.unix(dataPoint.time).format("DD-MM-YYYY")}</p>
+            <p>
+                <span class="label">${label ?? "count"}: </span>
+                <span class="value">${dataPoint.n}</span>
+            </p>
+        `
+    ), [data]);
+
     return (
         <div className="bar-chart--wrapper">
             <ChartHeader
                 title={title}
                 onTimespanSelected={value => setTimespan(value)}
             />
+            <ChartTooltip tooltipRef={theTooltip} />
             <svg className="hook" ref={theSvg} />
         </div>
     );
 };
 
 BarChart.defaultProps = {
+    label: undefined,
     title: undefined
 };
 

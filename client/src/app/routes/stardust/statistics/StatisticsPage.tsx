@@ -260,6 +260,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                             width={560}
                                             height={350}
                                             data={tokensTransferred}
+                                            label="Tokens"
                                         />
                                     )}
                                 </div>
