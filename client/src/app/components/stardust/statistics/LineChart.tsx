@@ -4,7 +4,8 @@ import { scaleBand, scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
 import { line } from "d3-shape";
 import moment from "moment";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
+import ChartHeader, { TimespanOption } from "./ChartHeader";
 import "./LineChart.scss";
 
 interface LineChartProps {
@@ -17,11 +18,14 @@ const DAY_LABEL_FORMAT = "DD MMM";
 
 const LineChart: React.FC<LineChartProps> = ({ height, width, data }) => {
     const theSvg = useRef<SVGSVGElement>(null);
+    const [timespan, setTimespan] = useState<TimespanOption>("7");
 
     useLayoutEffect(() => {
         const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
         const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
         const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
+
+        data = timespan !== "all" ? data.slice(-timespan) : data;
 
         const x = scaleBand().domain(data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT)))
             .range([0, INNER_WIDTH])
@@ -70,10 +74,13 @@ const LineChart: React.FC<LineChartProps> = ({ height, width, data }) => {
             .attr("class", "axis axis--x")
             .attr("transform", `translate(0, ${INNER_HEIGHT})`)
             .call(xAxis);
-    }, [width, height, data]);
+    }, [width, height, data, timespan]);
 
     return (
         <div className="line-chart--wrapper">
+            <ChartHeader
+                onTimespanSelected={value => setTimespan(value)}
+            />
             <svg className="hook" ref={theSvg} />
         </div>
     );

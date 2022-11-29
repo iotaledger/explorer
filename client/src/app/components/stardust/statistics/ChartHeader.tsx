@@ -10,7 +10,8 @@ interface ChartHeaderProps {
         colors: string[];
     };
 }
-type TimespanOption = "7days" | "one" | "six" | "year";
+
+export type TimespanOption = "7" | "30" | "90" | "all";
 
 const ChartHeader: React.FC<ChartHeaderProps> = ({ title, onTimespanSelected, legend }) =>
     (
@@ -33,10 +34,10 @@ const ChartHeader: React.FC<ChartHeaderProps> = ({ title, onTimespanSelected, le
                                 }
                             }}
                         >
-                            <option value="7days">Last 7 days</option>
-                            <option value="one">Last month</option>
-                            <option value="six">Last six months</option>
-                            <option value="year">Last year</option>
+                            <option value="7">Last 7 days</option>
+                            <option value="30">Last month</option>
+                            <option value="90">Last six months</option>
+                            <option value="all">All time</option>
                         </select>
                     </div>
                 </div>
