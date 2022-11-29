@@ -25,6 +25,8 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => 
         const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
         const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
         const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
+        // reset
+        select(theSvg.current).select("*").remove();
 
         data = timespan !== "all" ? data.slice(-timespan) : data;
 
