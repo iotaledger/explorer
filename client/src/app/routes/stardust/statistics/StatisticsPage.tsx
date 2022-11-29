@@ -178,7 +178,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row space-between">
                                 {dailyBlocks && (
                                     <StackedBarChart
-                                        title="Daily blocks"
+                                        title="Blocks"
                                         width={560}
                                         height={350}
                                         subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
@@ -189,7 +189,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 )}
                                 {transactions && (
                                     <StackedBarChart
-                                        title="Daily transactions"
+                                        title="Transaction Payload"
                                         width={560}
                                         height={350}
                                         subgroups={["confirmed", "conflicting"]}
@@ -206,7 +206,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <div className="row space-between">
                                     {outputs && (
                                         <StackedBarChart
-                                            title="Outputs"
+                                            title="Number of Outputs"
                                             width={560}
                                             height={350}
                                             subgroups={["basic", "alias", "foundry", "nft"]}
@@ -216,7 +216,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     )}
                                     {tokensHeld && (
                                         <StackedBarChart
-                                            title="Tokens held"
+                                            title="Tokens Held by Outputs"
                                             width={560}
                                             height={350}
                                             subgroups={["basic", "alias", "foundry", "nft"]}
@@ -233,6 +233,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <div className="row space-between">
                                     {addressesWithBalance && (
                                         <LineChart
+                                            title="Addresses with Balance"
                                             width={560}
                                             height={350}
                                             data={addressesWithBalance}
@@ -240,7 +241,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     )}
                                     {avgAddressesPerMilestone && (
                                         <StackedBarChart
-                                            title="Avg. addresses per milestone"
+                                            title="Avg. Active Addresses per Milestone"
                                             width={560}
                                             height={350}
                                             subgroups={["sending", "receiving"]}

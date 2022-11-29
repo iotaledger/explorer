@@ -5,17 +5,20 @@ import { select } from "d3-selection";
 import { line } from "d3-shape";
 import moment from "moment";
 import React, { useLayoutEffect, useRef } from "react";
+import ChartHeader from "./ChartHeader";
 import "./LineChart.scss";
 
 interface LineChartProps {
+    title?: string;
     width: number;
     height: number;
     data: { [name: string]: number; time: number }[];
+    onTimespanSelected?: (value: string) => void;
 }
 
 const DAY_LABEL_FORMAT = "DD MMM";
 
-const LineChart: React.FC<LineChartProps> = ({ height, width, data }) => {
+const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, onTimespanSelected }) => {
     const theSvg = useRef<SVGSVGElement>(null);
 
     useLayoutEffect(() => {
@@ -74,9 +77,22 @@ const LineChart: React.FC<LineChartProps> = ({ height, width, data }) => {
 
     return (
         <div className="line-chart--wrapper">
+            <ChartHeader
+                title={title}
+                onTimespanSelected={value => {
+                    if (onTimespanSelected) {
+                        onTimespanSelected(value);
+                    }
+                }}
+            />
             <svg className="hook" ref={theSvg} />
         </div>
     );
+};
+
+LineChart.defaultProps = {
+    onTimespanSelected: undefined,
+    title: undefined
 };
 
 export default LineChart;

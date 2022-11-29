@@ -12,11 +12,12 @@ interface BarChartProps {
     width: number;
     height: number;
     data: { [name: string]: number; time: number }[];
+    onTimespanSelected?: (value: string) => void;
 }
 
 const DAY_LABEL_FORMAT = "DD MMM";
 
-const BarChart: React.FC<BarChartProps> = ({ title, height, width, data }) => {
+const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, onTimespanSelected }) => {
     const theSvg = useRef<SVGSVGElement>(null);
 
     useLayoutEffect(() => {
@@ -68,10 +69,20 @@ const BarChart: React.FC<BarChartProps> = ({ title, height, width, data }) => {
         <div className="bar-chart--wrapper">
             <ChartHeader
                 title={title}
+                onTimespanSelected={value => {
+                    if (onTimespanSelected) {
+                        onTimespanSelected(value);
+                    }
+                }}
             />
             <svg className="hook" ref={theSvg} />
         </div>
     );
+};
+
+BarChart.defaultProps = {
+    onTimespanSelected: undefined,
+    title: undefined
 };
 
 export default BarChart;
