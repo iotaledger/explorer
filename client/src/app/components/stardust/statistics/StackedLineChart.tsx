@@ -25,7 +25,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
     data
 }) => {
     const theSvg = useRef<SVGSVGElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("7");
+    const [timespan, setTimespan] = useState<TimespanOption>("30");
 
     useLayoutEffect(() => {
         const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };

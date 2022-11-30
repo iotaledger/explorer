@@ -21,7 +21,7 @@ const DAY_LABEL_FORMAT = "DD MMM";
 const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, label }) => {
     const theTooltip = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("7");
+    const [timespan, setTimespan] = useState<TimespanOption>("30");
 
     useLayoutEffect(() => {
         const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
