@@ -1,3 +1,4 @@
+import { scaleTime } from "d3";
 import { max } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear } from "d3-scale";
@@ -15,8 +16,6 @@ interface LineChartProps {
     data: { [name: string]: number; time: number }[];
 }
 
-const DAY_LABEL_FORMAT = "DD MMM";
-
 const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => {
     const theSvg = useRef<SVGSVGElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("7");
@@ -30,13 +29,19 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => 
 
         data = timespan !== "all" ? data.slice(-timespan) : data;
 
-        const x = scaleBand().domain(data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT)))
-            .range([0, INNER_WIDTH])
-            .paddingInner(0.1);
+        const timestampToDate = (timestampInSec: number) => (
+            moment.unix(timestampInSec).hours(0).minutes(0).toDate()
+        )
+
+        const domain = [
+            data.length > 0 ? timestampToDate(data[0].time) : new Date(),
+            data.length > 0 ? timestampToDate(data[data.length - 1].time) : new Date(),
+        ];
+
+        const x = scaleTime().domain(domain).range([0, INNER_WIDTH]).nice();
 
         const dataMaxN = max(data, d => d.n) ?? 1;
-        const y = scaleLinear().domain([0, dataMaxN])
-            .range([INNER_HEIGHT, 0]);
+        const y = scaleLinear().domain([0, dataMaxN]).range([INNER_HEIGHT, 0]);
 
         const svg = select(theSvg.current)
             .attr("width", INNER_WIDTH + MARGIN.left + MARGIN.right)
@@ -60,9 +65,10 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => 
             .attr(
                 "d",
                 line<{ [name: string]: number; time: number }>()
-                    .x(d => x(moment.unix(d.time).format("DD MMM")) ?? 0)
+                    .x(d => x(timestampToDate(d.time)) ?? 0)
                     .y(d => y(d.n))
             );
+            // .attr("transform", `translate(${x.bandwidth() / 2}, 0)`);
 
         svg.selectAll("circle")
             .data(data)
@@ -70,22 +76,22 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => 
             .append("circle")
             .attr("r", 3)
             .attr("fill", "#14cabf")
-            .attr("transform", d => `translate(${x(moment.unix(d.time).format("DD MMM"))}, ${y(d.n)})`);
+            .attr("transform", d => `translate(${x(timestampToDate(d.time))}, ${y(d.n)})`);
 
-        let tickValues;
+        let ticks;
         switch (timespan) {
             case "7":
-                tickValues = x.domain();
+                ticks = 7;
                 break;
             case "30":
-                tickValues = x.domain().filter((_, i) => !(i % 3));
+                ticks = 7;
                 break;
             default:
-                tickValues = x.domain().filter((_, i) => !(i % 4));
+                ticks = data.length / 4;
                 break;
         }
 
-        const xAxis = axisBottom(x).tickValues(tickValues);
+        const xAxis = axisBottom(x).ticks(ticks);
         svg.append("g")
             .attr("class", "axis axis--x")
             .attr("transform", `translate(0, ${INNER_HEIGHT})`)
