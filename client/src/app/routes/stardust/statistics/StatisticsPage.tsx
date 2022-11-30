@@ -7,6 +7,7 @@ import { StardustApiClient } from "../../../../services/stardust/stardustApiClie
 import BarChart from "../../../components/stardust/statistics/BarChart";
 import LineChart from "../../../components/stardust/statistics/LineChart";
 import StackedBarChart from "../../../components/stardust/statistics/StackedBarChart";
+import StackedLineChart from "../../../components/stardust/statistics/StackedLineChart";
 import "./StatisticsPage.scss";
 
 interface StatisticsPageProps {
@@ -238,7 +239,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         />
                                     )}
                                     {avgAddressesPerMilestone && (
-                                        <StackedBarChart
+                                        <StackedLineChart
                                             title="Avarage Number of Active Addresses per Milestone"
                                             width={560}
                                             height={350}
@@ -282,7 +283,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 </div>
                                 <div className="row space-between">
                                     {unlockConditionsPerType && (
-                                        <StackedBarChart
+                                        <StackedLineChart
                                             title="Number of Unlock Conditions by Type"
                                             width={560}
                                             height={350}
@@ -304,7 +305,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 </div>
                                 <div className="row space-between">
                                     {tokensHeldWithUnlockCondition && (
-                                        <StackedBarChart
+                                        <StackedLineChart
                                             title="Tokens Held by Outputs with Unlock Conditions"
                                             width={560}
                                             height={350}
