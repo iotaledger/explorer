@@ -12,8 +12,9 @@
 
     svg.hook {
         rect {
-            &:hover {
-                stroke: $gray-6;
+            &.hover-highlight {
+                stroke: $gray-5;
+                stroke-width: 1px;
             }
         }
 

@@ -1,7 +1,7 @@
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
-import { select } from "d3-selection";
-import { stack } from "d3-shape";
+import { BaseType, select } from "d3-selection";
+import { SeriesPoint, stack } from "d3-shape";
 import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "./ChartHeader";
@@ -32,21 +32,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("7");
-
-    const buildTooltipHtml = useCallback((dataPoint: { [key: string]: number }): string => (
-        `
-            <p>${moment.unix(dataPoint.time).format("DD-MM-YYYY")}</p>
-            ${subgroups.map((subgroup, idx) => (
-                `
-                    <p>
-                        <span class="dot" style="background-color: ${colors[idx]}"></span>
-                        <span class="label">${groupLabels ? groupLabels[idx] : subgroup}: </span>
-                        <span class="value">${dataPoint[subgroup]}</span>
-                    </p>
-                `
-            )).join("")}
-        `
-    ), [subgroups, data]);
 
     useLayoutEffect(() => {
         const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
@@ -104,15 +89,9 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             .join("rect")
             .attr("x", d => x(moment.unix(d.data.time).format(DAY_LABEL_FORMAT)) ?? 0)
             .attr("y", d => y(d[1]))
-            .on("mouseover", (_, d) => {
-                select(theTooltip.current)
-                    .style("display", "block")
-                    .select("#content")
-                    .html(buildTooltipHtml(d.data));
-            })
-            .on("mouseout", () => {
-                select(theTooltip.current).style("display", "none");
-            })
+            .attr("class", (_, i) => `rect-${i}`)
+            .on("mouseover", mouseoverHandler)
+            .on("mouseout", mouseoutHandler)
             .attr("height", d => y(d[0]) - y(d[1]))
             .attr("width", x.bandwidth());
 
@@ -134,6 +113,59 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             .attr("transform", `translate(0, ${INNER_HEIGHT})`)
             .call(xAxis);
     }, [width, height, data, timespan]);
+
+    const buildTooltipHtml = useCallback((dataPoint: { [key: string]: number }): string => (
+        `
+            <p>${moment.unix(dataPoint.time).format("DD-MM-YYYY")}</p>
+            ${subgroups.map((subgroup, idx) => (
+            `
+                <p>
+                    <span class="dot" style="background-color: ${colors[idx]}"></span>
+                    <span class="label">${groupLabels ? groupLabels[idx] : subgroup}: </span>
+                    <span class="value">${dataPoint[subgroup]}</span>
+                </p>
+            `
+        )).join("")}
+        `
+    ), [subgroups, data]);
+
+    /**
+     * Handles mouseover event of a bar "part"
+     * @param this The mouse hovered element
+     * @param _ The unused event param
+     * @param dataPoint The data point rendered by this rect
+     */
+    function mouseoverHandler(
+        this: SVGRectElement | BaseType,
+        _: unknown,
+        dataPoint: SeriesPoint<{ [key: string]: number }>
+    ) {
+        // show tooltip
+        select(theTooltip.current)
+            .style("display", "block")
+            .select("#content")
+            .html(buildTooltipHtml(dataPoint.data));
+        // add highlight
+        const targetClass = (this as SVGRectElement).classList.value;
+        select(theSvg.current).selectAll(`.${targetClass}`).attr("class", `${targetClass} hover-highlight`);
+    }
+
+    /**
+     * Handles mouseout event of a bar "part"
+     * @param this The mouse hovered element
+     * @param _ The unused event param
+     */
+    function mouseoutHandler(
+        this: SVGRectElement | BaseType,
+        _: unknown
+    ) {
+        // remove tooltip
+        select(theTooltip.current).style("display", "none");
+        // remove highlight
+        const targetClass = (this as SVGRectElement).classList.value;
+        const noHightlight = targetClass.replace("hover-highlight", "").trim();
+        select(theSvg.current).selectAll(`.${noHightlight}`).attr("class", noHightlight);
+    }
 
     return (
         <div className="stack-bar-chart--wrapper">
