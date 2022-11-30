@@ -97,8 +97,8 @@ export interface IStorageDepositDailyInflux {
 }
 
 export interface IInfluxDailyResponse extends IResponse {
-    blocksDaily: IBlocksDailyInflux[];
-    transactionsDaily: ITransactionsDailyInflux[];
+    blocksDaily?: IBlocksDailyInflux[];
+    transactionsDaily?: ITransactionsDailyInflux[];
     outputsDaily?: IOutputsDailyInflux[];
     tokensHeldDaily?: ITokensHeldPerOutputDailyInflux[];
     addressesWithBalanceDaily?: IAddressesWithBalanceDailyInflux[];

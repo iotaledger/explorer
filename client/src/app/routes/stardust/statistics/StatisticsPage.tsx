@@ -1,7 +1,9 @@
-import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
+import {
+    DataPoint, IStatisticsGraphsData, mapDailyStatsToGraphsData
+} from "../../../../helpers/stardust/statisticsUtils";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustApiClient } from "../../../../services/stardust/stardustApiClient";
 import BarChart from "../../../components/stardust/statistics/BarChart";
@@ -14,146 +16,46 @@ interface StatisticsPageProps {
     network: string;
 }
 
-export interface DataView {
-    [key: string]: number;
-    time: number;
-}
-
 const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ match: { params: { network } } }) => {
     const [apiClient] = useState(
         ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
     );
-    const [transactions, setTransactions] = useState<DataView[] | null>(null);
-    const [dailyBlocks, setDailyBlocks] = useState<DataView[] | null>(null);
-    const [outputs, setOutputs] = useState<DataView[] | null>(null);
-    const [tokensHeld, setTokensHeld] = useState<DataView[] | null>(null);
-    const [addressesWithBalance, setAddressesWithBalance] = useState<DataView[] | null>(null);
-    const [avgAddressesPerMilestone, setAvgAddressesPerMilestone] = useState<DataView[] | null>(null);
-    const [tokensTransferred, setTokensTransferred] = useState<DataView[] | null>(null);
-    const [aliasActivity, setAliasActivity] = useState<DataView[] | null>(null);
-    const [unlockConditionsPerType, setUnlockConditionsPerType] = useState<DataView[] | null>(null);
-    const [nftActivity, setNftActivity] = useState<DataView[] | null>(null);
-    const [tokensHeldWithUnlockCondition, setTokensHeldWithUnlockCondition] = useState<DataView[] | null>(null);
-    const [unclaimedTokens, setUnclaimedTokens] = useState<DataView[] | null>(null);
-    const [unclaimedGenesisOutputs, setUnclaimedGenesisOutputs] = useState<DataView[] | null>(null);
-    const [ledgerSize, setLedgerSize] = useState<DataView[] | null>(null);
-    const [storageDeposit, setStorageDeposit] = useState<DataView[] | null>(null);
+    const [transactions, setTransactions] = useState<DataPoint[] | null>(null);
+    const [dailyBlocks, setDailyBlocks] = useState<DataPoint[] | null>(null);
+    const [outputs, setOutputs] = useState<DataPoint[] | null>(null);
+    const [tokensHeld, setTokensHeld] = useState<DataPoint[] | null>(null);
+    const [addressesWithBalance, setAddressesWithBalance] = useState<DataPoint[] | null>(null);
+    const [avgAddressesPerMilestone, setAvgAddressesPerMilestone] = useState<DataPoint[] | null>(null);
+    const [tokensTransferred, setTokensTransferred] = useState<DataPoint[] | null>(null);
+    const [aliasActivity, setAliasActivity] = useState<DataPoint[] | null>(null);
+    const [unlockConditionsPerType, setUnlockConditionsPerType] = useState<DataPoint[] | null>(null);
+    const [nftActivity, setNftActivity] = useState<DataPoint[] | null>(null);
+    const [tokensHeldWithUnlockCondition, setTokensHeldWithUnlockCondition] = useState<DataPoint[] | null>(null);
+    const [unclaimedTokens, setUnclaimedTokens] = useState<DataPoint[] | null>(null);
+    const [unclaimedGenesisOutputs, setUnclaimedGenesisOutputs] = useState<DataPoint[] | null>(null);
+    const [ledgerSize, setLedgerSize] = useState<DataPoint[] | null>(null);
+    const [storageDeposit, setStorageDeposit] = useState<DataPoint[] | null>(null);
 
     useEffect(() => {
         apiClient.influxAnalytics({ network }).then(response => {
             if (!response.error) {
-                console.log("Influx response", response);
-                const update: DataView[] = response.blocksDaily.map(day => (
-                    {
-                        time: moment(day.time).add(1, "minute").unix(),
-                        transaction: day.transaction ?? 0,
-                        milestone: day.milestone ?? 0,
-                        taggedData: day.taggedData ?? 0,
-                        noPayload: day.noPayload ?? 0
-                    }
-                ));
-                const updateTransactions: DataView[] = response.transactionsDaily.map(t => (
-                    {
-                        time: moment(t.time).add(1, "minute").unix(),
-                        confirmed: t.confirmed ?? 0,
-                        conflicting: t.conflicting ?? 0
-                    }
-                ));
-                const updateOutputs: DataView[] = response.outputsDaily?.map(output => (
-                    {
-                        time: moment(output.time).add(1, "minute").unix(),
-                        basic: output.basic ?? 0,
-                        alias: output.alias ?? 0,
-                        foundry: output.foundry ?? 0,
-                        nft: output.nft ?? 0
-                    }
-                )) ?? [];
-                const updateTokensHeld: DataView[] = response.tokensHeldDaily?.map(day => (
-                    {
-                        time: moment(day.time).add(1, "minute").unix(),
-                        basic: day.basic ?? 0,
-                        alias: day.alias ?? 0,
-                        foundry: day.foundry ?? 0,
-                        nft: day.nft ?? 0
-                    }
-                )) ?? [];
-                const updateAddresses: DataView[] = response.addressesWithBalanceDaily?.map(entry => (
-                    {
-                        time: moment(entry.time).add(1, "minute").unix(),
-                        n: entry.addressesWithBalance ?? 0
-                    }
-                )) ?? [];
-                const updateAvgAddressPerMilestone: DataView[] = response.avgAddressesPerMilestoneDaily?.map(day => (
-                    {
-                        time: moment(day.time).add(1, "minute").unix(),
-                        sending: day.addressesSending ?? 0,
-                        receiving: day.addressesReceiving ?? 0
-                    }
-                )) ?? [];
-                const updateTokensTransferred: DataView[] = response.tokensTransferredDaily?.map(day => (
-                    {
-                        time: moment(day.time).add(1, "minute").unix(),
-                        n: day.tokens ?? 0
-                    }
-                )) ?? [];
-                const updateAliasActivity: DataView[] = response.aliasActivityDaily?.map(day => ({
-                        time: moment(day.time).add(1, "minute").unix(),
-                        created: day.created ?? 0,
-                        governorChanged: day.governorChanged ?? 0,
-                        stateChanged: day.stateChanged ?? 0,
-                        destroyed: day.destroyed ?? 0
-                })) ?? [];
-                const updateUnlockConditions: DataView[] = response.unlockConditionsPerTypeDaily?.map(day => ({
-                        time: moment(day.time).add(1, "minute").unix(),
-                        timelock: day.timelock ?? 0,
-                        storageDepositReturn: day.storageDepositReturn ?? 0,
-                        expiration: day.expiration ?? 0
-                })) ?? [];
-                const updateNftActivity: DataView[] = response.nftActivityDaily?.map(day => ({
-                        time: moment(day.time).add(1, "minute").unix(),
-                        created: day.created ?? 0,
-                        transferred: day.transferred ?? 0,
-                        destroyed: day.destroyed ?? 0
-                })) ?? [];
-                const updateTokensHeldWithUc: DataView[] = response.tokensHeldWithUnlockConditionDaily?.map(day => ({
-                        time: moment(day.time).add(1, "minute").unix(),
-                        timelock: day.timelock ?? 0,
-                        storageDepositReturn: day.storageDepositReturn ?? 0,
-                        expiration: day.expiration ?? 0
-                })) ?? [];
-                const updateUnclaimedTokens: DataView[] = response.unclaimedTokensDaily?.map(day => ({
-                        time: moment(day.time).add(1, "minute").unix(),
-                        n: day.unclaimed ?? 0
-                })) ?? [];
-                const updateUnclaimedGenesisOutputs: DataView[] = response.unclaimedGenesisOutputsDaily?.map(day => ({
-                        time: moment(day.time).add(1, "minute").unix(),
-                        n: day.unclaimed ?? 0
-                })) ?? [];
-                const updateLedgerSize: DataView[] = response.ledgerSizeDaily?.map(day => ({
-                        time: moment(day.time).add(1, "minute").unix(),
-                        keyBytes: day.keyBytes ?? 0,
-                        dataBytes: day.dataBytes ?? 0
-                })) ?? [];
-                const updateStorageDeposit: DataView[] = response.storageDepositDaily?.map(day => ({
-                        time: moment(day.time).add(1, "minute").unix(),
-                        n: day.storageDeposit ?? 0
-                })) ?? [];
+                const graphsData: IStatisticsGraphsData = mapDailyStatsToGraphsData(response);
 
-                setDailyBlocks(update);
-                setTransactions(updateTransactions);
-                setOutputs(updateOutputs);
-                setTokensHeld(updateTokensHeld);
-                setAddressesWithBalance(updateAddresses);
-                setAvgAddressesPerMilestone(updateAvgAddressPerMilestone);
-                setTokensTransferred(updateTokensTransferred);
-                setAliasActivity(updateAliasActivity);
-                setUnlockConditionsPerType(updateUnlockConditions);
-                setNftActivity(updateNftActivity);
-                setTokensHeldWithUnlockCondition(updateTokensHeldWithUc);
-                setUnclaimedTokens(updateUnclaimedTokens);
-                setUnclaimedGenesisOutputs(updateUnclaimedGenesisOutputs);
-                setLedgerSize(updateLedgerSize);
-                setStorageDeposit(updateStorageDeposit);
+                setDailyBlocks(graphsData.blocksDaily);
+                setTransactions(graphsData.transactionsDaily);
+                setOutputs(graphsData.outputsDaily);
+                setTokensHeld(graphsData.tokensHeldDaily);
+                setAddressesWithBalance(graphsData.addressesWithBalanceDaily);
+                setAvgAddressesPerMilestone(graphsData.avgAddressesPerMilestoneDaily);
+                setTokensTransferred(graphsData.tokensTransferredDaily);
+                setAliasActivity(graphsData.aliasActivityDaily);
+                setUnlockConditionsPerType(graphsData.unlockConditionsPerTypeDaily);
+                setNftActivity(graphsData.nftActivityDaily);
+                setTokensHeldWithUnlockCondition(graphsData.tokensHeldWithUnlockConditionDaily);
+                setUnclaimedTokens(graphsData.unclaimedTokensDaily);
+                setUnclaimedGenesisOutputs(graphsData.unclaimedGenesisOutputsDaily);
+                setLedgerSize(graphsData.ledgerSizeDaily);
+                setStorageDeposit(graphsData.storageDepositDaily);
             } else {
                 console.log("Fetching statistics failed", response.error);
             }
@@ -206,7 +108,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 </div>
                                 <div className="row space-between">
                                     {outputs && (
-                                        <StackedBarChart
+                                        <StackedLineChart
                                             title="Number of Outputs"
                                             width={560}
                                             height={350}
@@ -217,7 +119,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         />
                                     )}
                                     {tokensHeld && (
-                                        <StackedBarChart
+                                        <StackedLineChart
                                             title="Tokens Held by Outputs"
                                             width={560}
                                             height={350}

@@ -1,7 +1,7 @@
 import { scaleTime } from "d3";
 import { max } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
-import { scaleBand, scaleLinear } from "d3-scale";
+import { scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
 import { line } from "d3-shape";
 import moment from "moment";
@@ -30,15 +30,18 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => 
         data = timespan !== "all" ? data.slice(-timespan) : data;
 
         const timestampToDate = (timestampInSec: number) => (
-            moment.unix(timestampInSec).hours(0).minutes(0).toDate()
-        )
+            moment.unix(timestampInSec)
+                .hours(0).minutes(0)
+                .toDate()
+        );
 
         const domain = [
             data.length > 0 ? timestampToDate(data[0].time) : new Date(),
-            data.length > 0 ? timestampToDate(data[data.length - 1].time) : new Date(),
+            data.length > 0 ? timestampToDate(data[data.length - 1].time) : new Date()
         ];
 
-        const x = scaleTime().domain(domain).range([0, INNER_WIDTH]).nice();
+        const x = scaleTime().domain(domain).range([0, INNER_WIDTH])
+            .nice();
 
         const dataMaxN = max(data, d => d.n) ?? 1;
         const y = scaleLinear().domain([0, dataMaxN]).range([INNER_HEIGHT, 0]);
@@ -68,7 +71,6 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => 
                     .x(d => x(timestampToDate(d.time)) ?? 0)
                     .y(d => y(d.n))
             );
-            // .attr("transform", `translate(${x.bandwidth() / 2}, 0)`);
 
         svg.selectAll("circle")
             .data(data)

@@ -11,6 +11,7 @@ interface StackedLineChartProps {
     width: number;
     height: number;
     subgroups: string[];
+    groupLabels?: string[];
     colors: string[];
     data: { [name: string]: number; time: number }[];
 }
@@ -130,6 +131,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
 };
 
 StackedLineChart.defaultProps = {
+    groupLabels: undefined,
     title: undefined
 };
 
