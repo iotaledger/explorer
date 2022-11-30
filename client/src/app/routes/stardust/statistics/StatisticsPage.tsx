@@ -5,7 +5,7 @@ import {
     DataPoint, IStatisticsGraphsData, mapDailyStatsToGraphsData
 } from "../../../../helpers/stardust/statisticsUtils";
 import { STARDUST } from "../../../../models/config/protocolVersion";
-import { StardustApiClient } from "../../../../services/stardust/stardustApiClient";
+import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
 import BarChart from "../../../components/stardust/statistics/BarChart";
 import LineChart from "../../../components/stardust/statistics/LineChart";
 import StackedBarChart from "../../../components/stardust/statistics/StackedBarChart";
@@ -17,8 +17,8 @@ interface StatisticsPageProps {
 }
 
 const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ match: { params: { network } } }) => {
-    const [apiClient] = useState(
-        ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
+    const [cacheService] = useState(
+        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
     const [transactions, setTransactions] = useState<DataPoint[] | null>(null);
     const [dailyBlocks, setDailyBlocks] = useState<DataPoint[] | null>(null);
@@ -37,9 +37,9 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     const [storageDeposit, setStorageDeposit] = useState<DataPoint[] | null>(null);
 
     useEffect(() => {
-        apiClient.influxAnalytics({ network }).then(response => {
-            if (!response.error) {
-                const graphsData: IStatisticsGraphsData = mapDailyStatsToGraphsData(response);
+        cacheService.influxStatisticsData(network).then(response => {
+            if (!response.error && response.influxStats) {
+                const graphsData: IStatisticsGraphsData = mapDailyStatsToGraphsData(response.influxStats);
 
                 setDailyBlocks(graphsData.blocksDaily);
                 setTransactions(graphsData.transactionsDaily);

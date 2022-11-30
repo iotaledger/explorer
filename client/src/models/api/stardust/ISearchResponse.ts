@@ -4,6 +4,7 @@ import { IResponse } from "../IResponse";
 import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
 import { IAssociationsResponse } from "./IAssociationsResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
+import { IInfluxDailyResponse } from "./influx/IInfluxDailyResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
 import { INftRegistryDetailsResponse } from "./nft/INftRegistryDetailsResponse";
 
@@ -97,6 +98,11 @@ export interface ISearchResponse extends IResponse {
      * Milestone chornicle stats.
      */
     milestoneStats?: IMilestoneAnalyticStats;
+
+    /**
+     * Statistics data from influxDb.
+     */
+    influxStats?: IInfluxDailyResponse;
 
     /**
      * DiD identifier.
