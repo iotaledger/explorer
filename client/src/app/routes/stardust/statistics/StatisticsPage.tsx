@@ -160,7 +160,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     {tokensTransferred && (
                                         <BarChart
                                             title="Tokens transferred"
-                                            width={560}
+                                            width={1172}
                                             height={350}
                                             data={tokensTransferred}
                                             label="Tokens"
@@ -176,7 +176,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     {aliasActivity && (
                                         <StackedBarChart
                                             title="Alias Activity Counts"
-                                            width={560}
+                                            width={1172}
                                             height={350}
                                             subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
                                             groupLabels={["Created", "Governot changed", "State changed", "Destroyed"]}
@@ -218,7 +218,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     {tokensHeldWithUnlockCondition && (
                                         <StackedLineChart
                                             title="Tokens Held by Outputs with Unlock Conditions"
-                                            width={560}
+                                            width={1172}
                                             height={350}
                                             subgroups={["timelock", "storageDepositReturn", "expiration"]}
                                             groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
