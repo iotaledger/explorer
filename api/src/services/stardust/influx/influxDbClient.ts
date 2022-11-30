@@ -8,6 +8,7 @@ import {
     ITokensTransferredDailyInflux, ITransactionsDailyInflux, IUnclaimedGenesisOutputsDailyInflux,
     IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
 } from "../../../models/influx/influxData";
+import { CACHE_INIT, InfluxDbClientCache } from "../../../models/influx/influxDbCache";
 import {
     ADDRESSES_WITH_BALANCE_DAILY_PARAMETERIZED_QUERY, ALIAS_ACTIVITY_DAILY_PARAMETERIZED_QUERY,
     AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_PARAMETERIZED_QUERY, BLOCK_DAILY_PARAMETERIZED_QUERY,
@@ -19,64 +20,56 @@ import {
     UNLOCK_CONDITIONS_PER_TYPE_DAILY_PARAMETERIZED_QUERY
 } from "./influxQueries";
 
-
-export interface InfluxDbClientCache {
-    blocksDaily: IBlocksDailyInflux[];
-    transactionsDaily: ITransactionsDailyInflux[];
-    outputsDaily: IOutputsDailyInflux[];
-    tokensHeldDaily: ITokensHeldPerOutputDailyInflux[];
-    addressesWithBalanceDaily: IAddressesWithBalanceDailyInflux[];
-    avgAddressesPerMilestoneDaily: IAvgAddressesPerMilestoneDailyInflux[];
-    tokensTransferredDaily: ITokensTransferredDailyInflux[];
-    aliasActivityDaily: IAliasActivityDailyInflux[];
-    unlockConditionsPerTypeDaily: IUnlockConditionsPerTypeDailyInflux[];
-    nftActivityDaily: INftActivityDailyInflux[];
-    tokensHeldWithUnlockConditionDaily: ITokensHeldWithUnlockConditionDailyInflux[];
-    unclaimedTokensDaily: IUnclaimedTokensDailyInflux[];
-    unclaimedGenesisOutputsDaily: IUnclaimedGenesisOutputsDailyInflux[];
-    ledgerSizeDaily: ILedgerSizeDailyInflux[];
-    storageDepositDaily: IStorageDepositDailyInflux[];
-}
-
-// Tuesday, 27 September 2022 00:00:00
-const DEFAULT_FROM_TIMESTAMP_MS = 1664229600000;
+/**
+ * The collect job interval (1h).
+ */
+const COLLECT_DATA_FREQ_MS = 1000 * 60 * 60;
 
 const NANOSECONDS_IN_MILLISECOND = 1000000;
 
-// 10 min
-const COLLECT_DATA_FREQ = 1000 * 60 * 10;
+/**
+ * The timestamp to collect data FROM for Shimmer.
+ * Tuesday, 27 September 2022 00:00:00
+ */
+const DEFAULT_FROM_TIMESTAMP_MS = 1664229600000;
 
+/**
+ * The InfluxDb Client wrapper.
+ */
 export abstract class InfluxDbClient {
+    /**
+     * The InfluxDb Client.
+     */
     protected _client: InfluxDB;
 
-    // This needs to preserve ordering
+    /**
+     * The current cache instance.
+     */
     protected readonly _cache: InfluxDbClientCache;
 
+    /**
+     * The network in context for this client.
+     */
     private readonly _network: INetwork;
 
+    /**
+     * The collect job handle.
+     */
     private _collectIntervalHandle: NodeJS.Timer;
 
+    /**
+     * Create a new instance of InfluxDbClient.
+     * @param network The network configuration.
+     */
     constructor(network: INetwork) {
         this._network = network;
-        this._cache = {
-            blocksDaily: [],
-            transactionsDaily: [],
-            outputsDaily: [],
-            tokensHeldDaily: [],
-            addressesWithBalanceDaily: [],
-            avgAddressesPerMilestoneDaily: [],
-            tokensTransferredDaily: [],
-            aliasActivityDaily: [],
-            unlockConditionsPerTypeDaily: [],
-            nftActivityDaily: [],
-            tokensHeldWithUnlockConditionDaily: [],
-            unclaimedTokensDaily: [],
-            unclaimedGenesisOutputsDaily: [],
-            ledgerSizeDaily: [],
-            storageDepositDaily: []
-        };
+        this._cache = CACHE_INIT;
     }
 
+    /**
+     * Build a new client instance asynchronously.
+     * @returns Boolean rapresenting that the client ping succeeded.
+     */
     public async buildClient(): Promise<boolean> {
         const protocol = "https";
         const network = this._network.network;
@@ -86,8 +79,7 @@ export abstract class InfluxDbClient {
         const password = this._network.analyticsInfluxDbPassword;
 
         if (host && database && username && password) {
-            console.info("Found analytics Influx configuration for", network, "network.");
-
+            console.info("[InfluxDbClient(", network, ")] configuration found.");
             const token = Buffer.from(`${username}:${password}`, "utf8").toString("base64");
             const options = {
                 headers: {
@@ -97,43 +89,51 @@ export abstract class InfluxDbClient {
 
             const influxDbClient = new InfluxDB({ protocol, port: 443, host, database, username, password, options });
 
-            return influxDbClient.ping(1500).then((hosts: IPingStats[]) => {
-                console.log("Hosts influx", hosts);
-                if (hosts.length > 0) {
-                    const lastHostIsOnline = hosts[hosts.length - 1].online;
+            return influxDbClient.ping(1500).then((pingResults: IPingStats[]) => {
+                if (pingResults.length > 0) {
+                    const anyHostIsOnline = pingResults.some(ping => ping.online);
 
-                    if (lastHostIsOnline) {
+                    if (anyHostIsOnline) {
+                        console.info("[InfluxDbClient(", network, ")] started!");
                         this._client = influxDbClient;
                         // here we hook into periodic data collection
                         this.setupDataCollection();
                     }
 
-                    return lastHostIsOnline;
+                    return anyHostIsOnline;
                 }
 
                 return false;
             }).catch(e => {
-                console.log("Failed to ping influxDb for", network, e);
+                console.log("[InfluxDbClient(", network, ")] ping failed:", e);
                 return false;
             });
         }
 
-        console.info("Analytics Influx not configured for", network, "network.");
+        console.info("[InfluxDbClient(", network, ")] configuration not found.");
         return false;
     }
 
+    /**
+     * Setup a InfluxDb data collection periodic job.
+     * Runs once at the start, then every COLLECT_DATA_FREQ_MS interval.
+     */
     private setupDataCollection() {
+        const network = this._network.network;
         this.collectData();
         if (!this._collectIntervalHandle && this._client) {
-            this._collectIntervalHandle = setInterval(() => this.collectData(), COLLECT_DATA_FREQ);
+            this._collectIntervalHandle = setInterval(() => this.collectData(), COLLECT_DATA_FREQ_MS);
         } else {
-            console.log("Data is already collecting or client isn't configured for", this._network.network);
+            console.log("[InfluxDbClient(", network, ")] data is already collecting or client isn't configured for");
         }
     }
 
+    /**
+     * Performs the InfluxDb bulk data collection.
+     * Populates the cache.
+     */
     private collectData() {
-        console.info("Collecting analytics influx data for", this._network.network);
-
+        console.info("[InfluxDbClient(", this._network.network, ")] collecting analytics data...");
         this.fetchInfluxCacheEntry<IBlocksDailyInflux>(
             BLOCK_DAILY_PARAMETERIZED_QUERY,
             this._cache.blocksDaily,
@@ -211,6 +211,13 @@ export abstract class InfluxDbClient {
         );
     }
 
+    /**
+     * Update one cache entry with InfluxDb data.
+     * Uses the date from the latest entry as FROM timestamp for the update.
+     * @param queryTemplate The query template.
+     * @param cacheEntryToFetch The cache entry to fetch.
+     * @param description The optional entry description for logging.
+     */
     private fetchInfluxCacheEntry<T extends ITimedEntry>(
         queryTemplate: string,
         cacheEntryToFetch: T[],
@@ -234,11 +241,22 @@ export abstract class InfluxDbClient {
         });
     }
 
+    /**
+     * Execute InfluxQL query.
+     * @param queryTemplate The query template.
+     * @param from The starting Date to use in the query.
+     * @param to The ending Date to use in the query.
+     */
     private async queryInflux<T>(queryTemplate: string, from: INanoDate, to: INanoDate): Promise<IResults<T>> {
         const params = { placeholders: { from: from.toNanoISOString(), to: to.toNanoISOString() } };
         return this._client.query<T>(queryTemplate, params);
     }
 
+    /**
+     * Compute the FROM Date for data update query from current cache entry.
+     * @param cacheEntry The current data.
+     * @returns The (from) (INano)Date.
+     */
     private getFromNanoDate(cacheEntry: ITimedEntry[]): INanoDate {
         let fromNanoDate: INanoDate;
         if (cacheEntry.length === 0) {
@@ -254,10 +272,19 @@ export abstract class InfluxDbClient {
         return fromNanoDate;
     }
 
+    /**
+     * Compute the TO Date for data update query.
+     * @returns Current datetime as INanoDate.
+     */
     private getToNanoDate(): INanoDate {
         return toNanoDate((moment().valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
     }
 
+    /**
+     * Helper function to check if any of the fields (except time) are non-null.
+     * @param data Any object.
+     * @returns True if any of the object fields (excludes time) is not null.
+     */
     private isAnyFieldNotNull<T>(data: T): boolean {
         return Object.getOwnPropertyNames(data).filter(fName => fName !== "time").some(fName => data[fName] !== null);
     }

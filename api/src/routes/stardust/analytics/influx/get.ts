@@ -12,6 +12,9 @@ import { NetworkService } from "../../../../services/networkService";
 import { InfluxDBService } from "../../../../services/stardust/influx/influxDbService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
+/**
+ * The response with the current cached analytic data.
+ */
 export interface IDailyAnalyticsResponse {
     error?: string;
     blocksDaily?: IBlocksDailyInflux[];

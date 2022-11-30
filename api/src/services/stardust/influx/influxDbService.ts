@@ -1,5 +1,8 @@
 import { InfluxDbClient } from "./influxDbClient";
 
+/**
+ * Wrapper class around a InfluxDb client to access the cache data.
+ */
 export class InfluxDBService extends InfluxDbClient {
     public get blocksDaily() {
         return this._cache.blocksDaily;
