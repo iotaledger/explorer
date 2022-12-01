@@ -6,8 +6,8 @@ import { select } from "d3-selection";
 import { line } from "d3-shape";
 import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
-import ChartHeader, { TimespanOption } from "./ChartHeader";
-import ChartTooltip from "./ChartTooltip";
+import ChartHeader, { TimespanOption } from "../ChartHeader";
+import ChartTooltip from "../ChartTooltip";
 import "./LineChart.scss";
 
 interface LineChartProps {

@@ -4,8 +4,8 @@ import { BaseType, select } from "d3-selection";
 import { SeriesPoint, stack } from "d3-shape";
 import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
-import ChartHeader, { TimespanOption } from "./ChartHeader";
-import ChartTooltip from "./ChartTooltip";
+import ChartHeader, { TimespanOption } from "../ChartHeader";
+import ChartTooltip from "../ChartTooltip";
 import "./StackedBarChart.scss";
 
 interface StackedBarChartProps {

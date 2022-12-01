@@ -6,10 +6,10 @@ import {
 } from "../../../../helpers/stardust/statisticsUtils";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
-import BarChart from "../../../components/stardust/statistics/BarChart";
-import LineChart from "../../../components/stardust/statistics/LineChart";
-import StackedBarChart from "../../../components/stardust/statistics/StackedBarChart";
-import StackedLineChart from "../../../components/stardust/statistics/StackedLineChart";
+import BarChart from "../../../components/stardust/statistics/charts/BarChart";
+import LineChart from "../../../components/stardust/statistics/charts/LineChart";
+import StackedBarChart from "../../../components/stardust/statistics/charts/StackedBarChart";
+import StackedLineChart from "../../../components/stardust/statistics/charts/StackedLineChart";
 import "./StatisticsPage.scss";
 
 interface StatisticsPageProps {

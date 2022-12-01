@@ -1,20 +1,18 @@
-@import "../../../../scss/mixins";
-@import "../../../../scss/variables";
-@import "../../../../scss/fonts";
+@import "../../../../../scss/mixins";
+@import "../../../../../scss/variables";
 
-.stack-bar-chart--wrapper {
+.bar-chart--wrapper {
     position: relative;
     width: fit-content;
     padding: 14px;
     margin-bottom: 14px;
-    background-color: $gray-daylight;
+    background-color:  var(--light-bg);
     border-radius: 8px;
 
     svg.hook {
         rect {
-            &.hover-highlight {
-                stroke: $gray-5;
-                stroke-width: 1px;
+            &:hover {
+                stroke: $gray-6;
             }
         }
 

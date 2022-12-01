@@ -4,8 +4,8 @@ import { scaleBand, scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
 import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
-import ChartHeader, { TimespanOption } from "./ChartHeader";
-import ChartTooltip from "./ChartTooltip";
+import ChartHeader, { TimespanOption } from "../ChartHeader";
+import ChartTooltip from "../ChartTooltip";
 import "./BarChart.scss";
 
 interface BarChartProps {
