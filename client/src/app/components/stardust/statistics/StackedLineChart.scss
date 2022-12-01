@@ -1,0 +1,12 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/variables";
+@import "../../../../scss/fonts";
+
+svg.hook {
+    rect {
+        &.hover-highlight {
+            stroke: $gray-5;
+            stroke-width: 1px;
+        }
+    }
+}

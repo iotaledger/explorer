@@ -1,9 +1,10 @@
-import { area, scaleLinear, scaleOrdinal, scaleTime, SeriesPoint, stack } from "d3";
+import { area, BaseType, line, scaleLinear, scaleOrdinal, scaleTime, SeriesPoint, stack } from "d3";
 import { axisBottom, axisLeft } from "d3-axis";
 import { select } from "d3-selection";
 import moment from "moment";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "./ChartHeader";
+import ChartTooltip from "./ChartTooltip";
 import "./StackedLineChart.scss";
 
 interface StackedLineChartProps {
@@ -21,10 +22,12 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
     height,
     width,
     subgroups,
+    groupLabels,
     colors,
     data
 }) => {
     const theSvg = useRef<SVGSVGElement>(null);
+    const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("7");
 
     useLayoutEffect(() => {
@@ -112,8 +115,103 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             .data(stackedData)
             .join("path")
             .style("fill", d => color(d.key))
+            .attr("opacity", 0.5)
             .attr("d", areaGen);
+
+        const lineGen = line<SeriesPoint<{ [key: string]: number }>>()
+            .x(
+                d => x(moment.unix(d.data.time)
+                .hours(0)
+                .minutes(0)
+                .toDate()) ??
+                0
+            )
+            .y(d => y(d[1]));
+
+        svg.append("g")
+            .selectAll("g")
+            .data(stackedData)
+            .join("path")
+            .attr("fill", "none")
+            .attr("stroke", d => color(d.key))
+            .attr("stroke-width", 2)
+            .attr("d", lineGen);
+
+        for (const dataStack of stackedData) {
+            svg.append("g")
+                .selectAll("g")
+                .data(dataStack)
+                .enter()
+                .append("circle")
+                .attr("fill", color(dataStack.key))
+                .style("stroke", color(dataStack.key))
+                .style("stroke-width", 5)
+                .style("stroke-opacity", 0)
+                .attr("cx", d => x(moment.unix(d.data.time)
+                        .hours(0)
+                        .minutes(0)
+                        .toDate()) ??
+                        0
+                )
+                .attr("cy", d => y(d[1]))
+                .attr("r", 3)
+                .attr("class", (_, i) => `rect-${i}`)
+                .on("mouseover", mouseoverHandler)
+                .on("mouseout", mouseoutHandler);
+        }
     }, [width, height, data, timespan]);
+
+    const buildTooltipHtml = useCallback((dataPoint: { [key: string]: number }): string => (
+        `
+            <p>${moment.unix(dataPoint.time).format("DD-MM-YYYY")}</p>
+            ${subgroups.map((subgroup, idx) => (
+            `
+                <p>
+                    <span class="dot" style="background-color: ${colors[idx]}"></span>
+                    <span class="label">${groupLabels ? groupLabels[idx] : subgroup}: </span>
+                    <span class="value">${dataPoint[subgroup]}</span>
+                </p>
+            `
+        )).join("")}
+        `
+    ), [subgroups, data]);
+
+    /**
+     * Handles mouseover event of a circle
+     * @param this The mouse hovered element
+     * @param _ The unused event param
+     * @param dataPoint The data point rendered by this rect
+     */
+     function mouseoverHandler(
+        this: SVGRectElement | BaseType,
+        _: unknown,
+        dataPoint: SeriesPoint<{ [key: string]: number }>
+    ) {
+        // show tooltip
+        select(theTooltip.current)
+            .style("display", "block")
+            .select("#content")
+            .html(buildTooltipHtml(dataPoint.data));
+        // add highlight
+        select(this)
+            .style("stroke-opacity", 0.5);
+    }
+
+    /**
+     * Handles mouseout event of a circle
+     * @param this The mouse hovered element
+     * @param _ The unused event param
+     */
+    function mouseoutHandler(
+        this: SVGRectElement | BaseType,
+        _: unknown
+    ) {
+        // remove tooltip
+        select(theTooltip.current).style("display", "none");
+        // remove highlight
+        select(this)
+            .style("stroke-opacity", 0);
+    }
 
     return (
         <div className="line-chart--wrapper">
@@ -125,6 +223,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                     colors
                 }}
             />
+            <ChartTooltip tooltipRef={theTooltip} />
             <svg className="hook" ref={theSvg} />
         </div>
     );
