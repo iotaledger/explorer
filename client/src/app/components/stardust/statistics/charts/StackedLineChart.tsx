@@ -1,6 +1,7 @@
-import { area, BaseType, line, scaleLinear, scaleOrdinal, scaleTime, SeriesPoint, stack } from "d3";
 import { axisBottom, axisLeft } from "d3-axis";
-import { select } from "d3-selection";
+import { scaleTime, scaleLinear, scaleOrdinal } from "d3-scale";
+import { area, line, SeriesPoint, stack } from "d3-shape";
+import { BaseType, select } from "d3-selection";
 import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
