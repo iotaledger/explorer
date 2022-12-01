@@ -4,6 +4,7 @@ import { ServiceFactory } from "../../../../factories/serviceFactory";
 import {
     DataPoint, IStatisticsGraphsData, mapDailyStatsToGraphsData
 } from "../../../../helpers/stardust/statisticsUtils";
+import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
 import BarChart from "../../../components/stardust/statistics/charts/BarChart";
@@ -36,6 +37,8 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     const [ledgerSize, setLedgerSize] = useState<DataPoint[] | null>(null);
     const [storageDeposit, setStorageDeposit] = useState<DataPoint[] | null>(null);
 
+    const [analyticStats, setAnalyticStats] = useState<IAnalyticStats | null>(null);
+
     useEffect(() => {
         cacheService.influxStatisticsData(network).then(response => {
             if (!response.error && response.influxStats) {
@@ -57,9 +60,17 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                 setLedgerSize(graphsData.ledgerSizeDaily);
                 setStorageDeposit(graphsData.storageDepositDaily);
             } else {
-                console.log("Fetching statistics failed", response.error);
+                console.log("Fetching influx stats failed", response.error);
             }
-        }).catch(e => console.log("Influx analytics query failed", e));
+        }).catch(e => console.log("Influx analytics fetch failed", e));
+
+        cacheService.chronicleAnalytics(network).then(response => {
+            if (!response.error && response.analyticStats) {
+                setAnalyticStats(response.analyticStats);
+            } else {
+                console.log("Fetching chronicle stats failed", response.error);
+            }
+        }).catch(e => console.log("Chronicle analytics fetch failed", e));
     }, []);
 
     return (
