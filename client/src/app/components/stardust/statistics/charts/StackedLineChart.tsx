@@ -28,7 +28,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
 }) => {
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("30");
+    const [timespan, setTimespan] = useState<TimespanOption>("7");
 
     useLayoutEffect(() => {
         const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
@@ -107,15 +107,16 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                             .toDate()) ??
                     0
             )
-            .y0(d => y(d[0]))
-            .y1(d => y(d[1]));
+            .y0(d => y(0))
+            .y1(d => y(d[1] - d[0]));
 
         svg.append("g")
             .selectAll("g")
             .data(stackedData)
             .join("path")
-            .style("fill", d => color(d.key))
+            .style("fill", d => getGradient(d.key, color(d.key)))
             .attr("opacity", 0.5)
+            .attr("class", "area")
             .attr("d", areaGen);
 
         const lineGen = line<SeriesPoint<{ [key: string]: number }>>()
@@ -126,7 +127,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .toDate()) ??
                 0
             )
-            .y(d => y(d[1]));
+            .y(d => y(d[1] - d[0]));
 
         svg.append("g")
             .selectAll("g")
@@ -153,7 +154,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                         .toDate()) ??
                         0
                 )
-                .attr("cy", d => y(d[1]))
+                .attr("cy", d => y(d[1] - d[0]))
                 .attr("r", 3)
                 .attr("class", (_, i) => `rect-${i}`)
                 .on("mouseover", mouseoverHandler)
@@ -175,6 +176,35 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
         )).join("")}
         `
     ), [subgroups, data]);
+
+    /**
+     * Get linear gradient for selected color
+     * @param id The id for the gradient element
+     * @param color The color for the gradient
+     * @returns The gradient
+     */
+    function getGradient(id: string, color: string): string {
+        const areaGradient = select(theSvg.current).append("defs")
+            .append("linearGradient")
+            .attr("id", `aG-${id}`)
+            .attr("x1", "0%")
+            .attr("y1", "0%")
+            .attr("x2", "0%")
+            .attr("y2", "100%");
+
+        areaGradient
+            .append("stop")
+            .attr("offset", "30%")
+            .attr("stop-color", color)
+            .attr("stop-opacity", 0.6);
+
+        areaGradient.append("stop")
+            .attr("offset", "90%")
+            .attr("stop-color", "white")
+            .attr("stop-opacity", 0);
+
+        return `url(#aG-${id})`;
+    }
 
     /**
      * Handles mouseover event of a circle
