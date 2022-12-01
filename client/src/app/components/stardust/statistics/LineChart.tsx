@@ -1,12 +1,13 @@
-import { scaleTime } from "d3";
+import { BaseType, scaleTime } from "d3";
 import { max } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
 import { line } from "d3-shape";
 import moment from "moment";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "./ChartHeader";
+import ChartTooltip from "./ChartTooltip";
 import "./LineChart.scss";
 
 interface LineChartProps {
@@ -14,10 +15,13 @@ interface LineChartProps {
     width: number;
     height: number;
     data: { [name: string]: number; time: number }[];
+    label?: string;
+    color: string;
 }
 
-const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => {
+const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label, color }) => {
     const theSvg = useRef<SVGSVGElement>(null);
+    const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("30");
 
     useLayoutEffect(() => {
@@ -63,7 +67,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => 
         svg.append("path")
             .datum(data)
             .attr("fill", "none")
-            .attr("stroke", "#14cabf")
+            .attr("stroke", color)
             .attr("stroke-width", 1.5)
             .attr(
                 "d",
@@ -77,8 +81,14 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => 
             .enter()
             .append("circle")
             .attr("r", 3)
-            .attr("fill", "#14cabf")
-            .attr("transform", d => `translate(${x(timestampToDate(d.time))}, ${y(d.n)})`);
+            .attr("fill", color)
+            .style("stroke", color)
+            .style("stroke-width", 5)
+            .style("stroke-opacity", 0)
+            .attr("transform", d => `translate(${x(timestampToDate(d.time))}, ${y(d.n)})`)
+            .attr("class", (_, i) => `rect-${i}`)
+            .on("mouseover", mouseoverHandler)
+            .on("mouseout", mouseoutHandler);
 
         let ticks;
         switch (timespan) {
@@ -100,20 +110,69 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data }) => 
             .call(xAxis);
     }, [width, height, data, timespan]);
 
+    const buildTooltipHtml = useCallback((dataPoint: { [key: string]: number }): string => (
+        `
+            <p>${moment.unix(dataPoint.time).format("DD-MM-YYYY")}</p>
+            <p>
+                <span class="dot" style="background-color: ${color}"></span>
+                <span class="label">${label}: </span>
+                <span class="value">${dataPoint.n}</span>
+            </p>
+        `
+    ), [data]);
+
+    /**
+     * Handles mouseover event of a circle
+     * @param this The mouse hovered element
+     * @param _ The unused event param
+     * @param dataPoint The data point rendered by this rect
+     */
+     function mouseoverHandler(
+        this: SVGRectElement | BaseType,
+        _: unknown,
+        dataPoint: { [key: string]: number }
+    ) {
+        // show tooltip
+        select(theTooltip.current)
+            .style("display", "block")
+            .select("#content")
+            .html(buildTooltipHtml(dataPoint));
+        // add highlight
+        select(this)
+            .style("stroke-opacity", 0.5);
+    }
+
+    /**
+     * Handles mouseout event of a circle
+     * @param this The mouse hovered element
+     * @param _ The unused event param
+     */
+    function mouseoutHandler(
+        this: SVGRectElement | BaseType,
+        _: unknown
+    ) {
+        // remove tooltip
+        select(theTooltip.current).style("display", "none");
+        // remove highlight
+        select(this)
+            .style("stroke-opacity", 0);
+    }
+
     return (
         <div className="line-chart--wrapper">
             <ChartHeader
                 title={title}
                 onTimespanSelected={value => setTimespan(value)}
             />
+            <ChartTooltip tooltipRef={theTooltip} />
             <svg className="hook" ref={theSvg} />
         </div>
     );
 };
 
 LineChart.defaultProps = {
+    label: undefined,
     title: undefined
 };
 
 export default LineChart;
-

@@ -142,6 +142,8 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                             width={560}
                                             height={350}
                                             data={addressesWithBalance}
+                                            label="Addresses"
+                                            color="#14cabf"
                                         />
                                     )}
                                     {avgAddressesPerMilestone && (
@@ -239,6 +241,8 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                             width={560}
                                             height={350}
                                             data={unclaimedTokens}
+                                            label="Unclimed Tokens"
+                                            color="#14cabf"
                                         />
                                     )}
                                     {unclaimedGenesisOutputs && (
@@ -247,6 +251,8 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                             width={560}
                                             height={350}
                                             data={unclaimedGenesisOutputs}
+                                            label="Outputs"
+                                            color="#14cabf"
                                         />
                                     )}
                                 </div>
@@ -273,6 +279,8 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                             width={560}
                                             height={350}
                                             data={storageDeposit}
+                                            label="Storage Deposit"
+                                            color="#14cabf"
                                         />
                                     )}
                                 </div>
