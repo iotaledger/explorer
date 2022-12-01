@@ -1,6 +1,7 @@
 import { IBlock, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 import { IResponse } from "../IResponse";
+import { IAnalyticStats } from "../stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
 import { IAssociationsResponse } from "./IAssociationsResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
@@ -98,6 +99,11 @@ export interface ISearchResponse extends IResponse {
      * Milestone chornicle stats.
      */
     milestoneStats?: IMilestoneAnalyticStats;
+
+    /**
+     * The chronicle analytic stats.
+     */
+    analyticStats?: IAnalyticStats;
 
     /**
      * Statistics data from influxDb.

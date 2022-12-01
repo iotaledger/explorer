@@ -1,22 +1,22 @@
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IAnalyticStats } from "../../../models/api/stats/IAnalyticStats";
-import { IAnalyticStatsRequest } from "../../../models/api/stats/IAnalyticStatsRequest";
-import { IConfiguration } from "../../../models/configuration/IConfiguration";
-import { IShimmerClaimedResponse } from "../../../models/services/stardust/IShimmerClaimedResponse";
-import { NetworkService } from "../../../services/networkService";
-import { StardustStatsService } from "../../../services/stardust/stardustStatsService";
-import { ValidationHelper } from "../../../utils/validationHelper";
+import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
+import { IAnalyticStatsRequest } from "../../../../models/api/stats/IAnalyticStatsRequest";
+import { IConfiguration } from "../../../../models/configuration/IConfiguration";
+import { IShimmerClaimedResponse } from "../../../../models/services/stardust/IShimmerClaimedResponse";
+import { NetworkService } from "../../../../services/networkService";
+import { StardustStatsService } from "../../../../services/stardust/stardustStatsService";
+import { ValidationHelper } from "../../../../utils/validationHelper";
 
 type IAnalyticStatsReponse = IAnalyticStats & IShimmerClaimedResponse;
 
 /**
  * Get chornicle analytics for the requested network.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function get(
-    config: IConfiguration,
+    _: IConfiguration,
     request: IAnalyticStatsRequest
 ): Promise<IAnalyticStatsReponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");

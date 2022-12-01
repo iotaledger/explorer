@@ -14,7 +14,6 @@ export class StardustStatsService extends BaseStatsService {
      */
     protected async updateStatistics(): Promise<void> {
         void this.refreshGeneralStatistics();
-        void this.refreshShimmerClaimedCount();
     }
 
     /**
@@ -30,7 +29,13 @@ export class StardustStatsService extends BaseStatsService {
         try {
             const latestMsFromStatistics: number = this._statistics[this._statistics.length - 1].latestMilestoneIndex;
 
+
             if (analyticsStore && chronicleService && latestMsFromStatistics !== 0) {
+                // if we have some stats in storage, we can load it in mem already
+                if (analyticsStore.analytics && !this._analyticStats) {
+                    this._analyticStats = analyticsStore.analytics;
+                }
+
                 const analyitcsMsFirst = analyticsStore.dailyMilestones?.first;
                 const analyticsMsLast = analyticsStore.dailyMilestones?.last;
 
@@ -63,6 +68,19 @@ export class StardustStatsService extends BaseStatsService {
         }
     }
 
+    protected async refreshShimmerClaimedCount(): Promise<void> {
+        const network = this._networkConfiguration.network;
+        const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${network}`);
+
+        if (chronicleService) {
+            const claimingStats = await chronicleService.fetchShimmerClaimedCount();
+
+            if (claimingStats?.count) {
+                this._shimmerClaimed = claimingStats;
+            }
+        }
+    }
+
     private async refreshGeneralStatistics(): Promise<void> {
         try {
             const client = new SingleNodeClient(this._networkConfiguration.provider);
@@ -85,17 +103,5 @@ export class StardustStatsService extends BaseStatsService {
             console.error(err);
         }
     }
-
-    private async refreshShimmerClaimedCount(): Promise<void> {
-        const network = this._networkConfiguration.network;
-        const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${network}`);
-
-        if (chronicleService) {
-            const claimingStats = await chronicleService.fetchShimmerClaimedCount();
-
-            if (claimingStats?.count) {
-                this._shimmerClaimed = claimingStats;
-            }
-        }
-    }
 }
+

@@ -1,7 +1,15 @@
 /** Chronicle analytics [stardust] */
-
 import { IResponse } from "../IResponse";
-import { IShimmerClaimed } from "./IShimmerClaimed";
+
+/**
+ * Compiled statistics about claimed tokens.
+ */
+export interface IShimmerClaimed {
+    /**
+     * The total number of claimed tokens.
+     */
+    count: string;
+}
 
 /**
  * The count stat.

@@ -22,6 +22,7 @@ import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsReq
 import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
 import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
 import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
+import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { TangleCacheService } from "../tangleCacheService";
@@ -547,6 +548,37 @@ export class StardustTangleCacheService extends TangleCacheService {
 
         return this._stardustSearchCache[request.network][`${request.nftId}--nft-mock-details`]
             ?.data?.nftRegistryDetails;
+    }
+
+    /**
+     * Get the chronicle analytics Statistics.
+     * @param network The network to fetch data for.
+     * @param skipCache Skip looking in the cache.
+     * @returns The cached data.
+     */
+    public async chronicleAnalytics(
+        network: string,
+        skipCache: boolean = false
+    ): Promise<{ analyticStats?: IAnalyticStats; error?: string }> {
+        const cacheKey = `${network}--analytics-stats`;
+        const cacheEntry = this._stardustSearchCache[network][cacheKey];
+
+        if (!cacheEntry?.data?.analyticStats || skipCache) {
+            const response = await this._api.chronicleAnalytics({ network });
+
+            if (!response.error && Object.getOwnPropertyNames(response).length > 0) {
+                this._stardustSearchCache[network][cacheKey] = {
+                    data: { analyticStats: response },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
+        }
+
+        return {
+            analyticStats: this._stardustSearchCache[network][cacheKey]?.data?.analyticStats
+        };
     }
 
     /**

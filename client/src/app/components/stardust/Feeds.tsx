@@ -1,5 +1,6 @@
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { IShimmerClaimed } from "../../../models/api/stats/IAnalyticStats";
 import { INetwork } from "../../../models/config/INetwork";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
@@ -8,6 +9,7 @@ import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import { StardustApiClient } from "../../../services/stardust/stardustApiClient";
 import { StardustFeedClient } from "../../../services/stardust/stardustFeedClient";
+import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import Currency from "../Currency";
 import { FeedsState } from "./FeedsState";
 
@@ -24,6 +26,11 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * Api client.
      */
     protected _apiClient?: StardustApiClient;
+
+    /**
+     * The cache serice.
+     */
+    protected _tangleCacheService?: StardustTangleCacheService;
 
     /**
      * Settings service.
@@ -46,9 +53,14 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     protected _feedProbeTimerId?: NodeJS.Timer;
 
     /**
+     * Constant in minutes to perform the chronicle analytics refresh.
+     */
+    protected readonly CHRONICLE_ANALYTICS_REFRESH_MINUTES = 5;
+
+    /**
      * Shimmer token claiming stats timer id.
      */
-    protected _shimmerClaimedTimerId?: NodeJS.Timer;
+    protected _chronicleAnalyticsTimerHandle?: NodeJS.Timer;
 
     /**
      * The last update items call in epoch time.
@@ -93,7 +105,6 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         if (this.props.match.params.network !== prevProps.match.params.network) {
             this.closeItems();
             this.setState({ latestMilestoneIndex: undefined });
-            this.setState({ shimmerClaimed: undefined });
 
             this.initNetworkServices();
         }
@@ -176,10 +187,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             this._updateTpstimerId = undefined;
         }
 
-        if (this._shimmerClaimedTimerId) {
-            clearInterval(this._shimmerClaimedTimerId);
-            this._shimmerClaimedTimerId = undefined;
-        }
+        this.stopChronicleAnalyticsJob();
 
         this._lastUpdateItems = undefined;
         if (this._feedProbeTimerId) {
@@ -235,33 +243,30 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     }
 
     /**
-     * Refresh shimmer token claim stats.
-     */
-    private async refreshShimmerClaimedCount(): Promise<void> {
-        if (this._networkConfig?.network) {
-            const shimmerClaimingStatsResponse = await this._apiClient?.shimmerClaimingAnalytics(
-                { network: this._networkConfig.network }
-            );
-
-            if (!shimmerClaimingStatsResponse?.code && shimmerClaimingStatsResponse?.shimmerClaimed) {
-                const shimmerClaimed = shimmerClaimingStatsResponse?.shimmerClaimed;
-                this.setState({ shimmerClaimed });
-            }
-        }
-    }
-
-    /**
      * Fetch the chronicle analytics.
      */
     private async fetchAnalytics(): Promise<void> {
         if (this._networkConfig?.network) {
-            const analytics = await this._apiClient?.analytics({ network: this._networkConfig?.network });
-            const hasAnaytics = Object.getOwnPropertyNames(analytics).length > 0;
+            const response = await this._tangleCacheService?.chronicleAnalytics(this._networkConfig?.network);
 
-            if (hasAnaytics) {
+            if (!response?.error) {
+                let shimmerClaimed: IShimmerClaimed | undefined;
+                if (response?.analyticStats?.shimmerClaimed?.count !== undefined) {
+                    shimmerClaimed = { count: response.analyticStats.shimmerClaimed.count };
+                }
+
                 this.setState({
-                    networkAnalytics: analytics
+                    networkAnalytics: {
+                        nativeTokens: response?.analyticStats?.nativeTokens,
+                        nfts: response?.analyticStats?.nfts,
+                        totalAddresses: response?.analyticStats?.totalAddresses,
+                        dailyAddresses: response?.analyticStats?.dailyAddresses,
+                        lockedStorageDeposit: response?.analyticStats?.lockedStorageDeposit,
+                        shimmerClaimed
+                    }
                 });
+            } else {
+                console.log("Analytics stats refresh failed.");
             }
         }
     }
@@ -276,27 +281,37 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             : undefined;
 
         this._apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+        this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(
+            `tangle-cache-${STARDUST}`
+        );
         this._feedClient = ServiceFactory.get<StardustFeedClient>(
             `feed-${this.props.match.params.network}`);
 
-
         this.updateTps();
         this.buildItems();
-        // eslint-disable-next-line no-void
-        void this.fetchAnalytics();
 
-        this.setupShimmerClaimedCountRefresh();
+        this.setupChronicleAnalyticsRefresh();
         this.setupFeedLivenessProbe();
     }
 
     /**
      * Set up the shimmer claimed count stat refresh.
      */
-    private setupShimmerClaimedCountRefresh(): void {
-        this._shimmerClaimedTimerId = setInterval(() => {
+    private setupChronicleAnalyticsRefresh(): void {
+        this.stopChronicleAnalyticsJob();
+        // eslint-disable-next-line no-void
+        void this.fetchAnalytics();
+        this._chronicleAnalyticsTimerHandle = setInterval(() => {
             // eslint-disable-next-line no-void
-            void this.refreshShimmerClaimedCount();
-        }, 3000);
+            void this.fetchAnalytics();
+        }, this.CHRONICLE_ANALYTICS_REFRESH_MINUTES * 60 * 1000);
+    }
+
+    private stopChronicleAnalyticsJob(): void {
+        if (this._chronicleAnalyticsTimerHandle) {
+            clearInterval(this._chronicleAnalyticsTimerHandle);
+            this._chronicleAnalyticsTimerHandle = undefined;
+        }
     }
 
     /**

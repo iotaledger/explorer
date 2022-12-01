@@ -6,6 +6,7 @@ import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyt
 import { IShimmerClaimed } from "../../models/api/stats/IShimmerClaimed";
 import { IAnalyticsStore } from "../../models/db/IAnalyticsStore";
 import { INetwork } from "../../models/db/INetwork";
+import { STARDUST } from "../../models/db/protocolVersion";
 import { IStatistics } from "../../models/services/IStatistics";
 import { IStatsService } from "../../models/services/IStatsService";
 import { IStorageService } from "../../models/services/IStorageService";
@@ -30,6 +31,11 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
      * Interval in hours of analytics stats refresh.
      */
     protected readonly ANALYTICS_REFERSH_FREQ_HOURS = 1;
+
+    /**
+     * Interval in minutes to perform shimmer claimed refresh.
+     */
+    protected readonly SHIMMER_CLAIMED_REFRESH_INTERVAL_SECONDS = 30;
 
     /**
      * The analytics storage.
@@ -59,6 +65,11 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
     private _analyticsTimer?: NodeJS.Timer;
 
     /**
+     * Timer handle of shimmer claimed refresh job.
+     */
+    private _shimmerClaimedTimer?: NodeJS.Timer;
+
+    /**
      * Create a new instance of BaseStatsService.
      * @param networkConfiguration The network configuration.
      */
@@ -78,10 +89,15 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
 
         // eslint-disable-next-line no-void
         void this.initAnalyticsStoreIfNeeded(networkConfiguration.network).then(() => {
-            setInterval(async () => this.updateStatistics(), 2000);
+            setInterval(async () => this.updateStatistics(), 5000);
             this.setupDailyMilestonesJob();
             this.setupAnalytics();
         });
+
+        // shimmer claimed job
+        if (this._networkConfiguration.protocolVersion === STARDUST) {
+            this.setupShimmerClaimedJob();
+        }
     }
 
     /**
@@ -158,6 +174,18 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
         return initialized;
     }
 
+    /**
+     * Setup the shimmer claimed refresh interval.
+     */
+    protected setupShimmerClaimedJob() {
+        this.stopShimmerClaimed();
+        // eslint-disable-next-line no-void
+        void this.refreshShimmerClaimedCount();
+        this._shimmerClaimedTimer = setInterval(
+            async () => this.refreshShimmerClaimedCount(),
+            this.SHIMMER_CLAIMED_REFRESH_INTERVAL_SECONDS * 1000
+        );
+    }
 
     /**
      * Stop the analytics refresh job.
@@ -166,6 +194,16 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
         if (this._analyticsTimer) {
             clearInterval(this._analyticsTimer);
             this._analyticsTimer = undefined;
+        }
+    }
+
+    /**
+     * Stop the shimmer claimed refresh interval.
+     */
+    private stopShimmerClaimed(): void {
+        if (this._shimmerClaimedTimer) {
+            clearInterval(this._shimmerClaimedTimer);
+            this._shimmerClaimedTimer = undefined;
         }
     }
 
@@ -208,4 +246,11 @@ export abstract class BaseStatsService implements IStatsService, IAnalyticsStats
      * Refresh analytic stats from chronicle.
      */
     protected abstract fetchAnalyticStats(): Promise<void>;
+
+    /**
+     * Refresh shimmer claimed count.
+     * Only called if the networks is 'shimmer'
+     */
+    protected abstract refreshShimmerClaimedCount(): Promise<void>;
 }
+

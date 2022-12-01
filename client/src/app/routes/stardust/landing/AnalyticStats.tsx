@@ -2,19 +2,17 @@ import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React from "react";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
-import { IShimmerClaimed } from "../../../../models/api/stats/IShimmerClaimed";
 import { buildShimmerClaimedStats, COMMAS_REGEX } from "./ShimmerClaimedUtils";
 import "./AnalyticStats.scss";
 
 interface AnalyticStatsProps {
     analytics: IAnalyticStats | undefined;
     circulatingSupply: number | undefined;
-    shimmerClaimed: IShimmerClaimed | undefined;
     tokenInfo: INodeInfoBaseToken;
 }
 
 const AnalyticStats: React.FC<AnalyticStatsProps> = (
-    { analytics, shimmerClaimed, circulatingSupply, tokenInfo }
+    { analytics, circulatingSupply, tokenInfo }
 ) => {
     const nativeTokensCount = analytics?.nativeTokens?.count;
     const nftsCount = analytics?.nfts?.count;
@@ -22,13 +20,7 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
     const lockedStorageDepositValue = analytics?.lockedStorageDeposit?.totalByteCost;
 
     let claimedAndPercentLabels: [string, string] | undefined;
-    if (shimmerClaimed?.count && circulatingSupply) {
-        claimedAndPercentLabels = buildShimmerClaimedStats(
-            shimmerClaimed.count,
-            String(circulatingSupply),
-            tokenInfo
-        );
-    } else if (analytics?.shimmerClaimed?.count && circulatingSupply) {
+    if (analytics?.shimmerClaimed?.count && circulatingSupply) {
         claimedAndPercentLabels = buildShimmerClaimedStats(
             analytics.shimmerClaimed.count,
             String(circulatingSupply),
