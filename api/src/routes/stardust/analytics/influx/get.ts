@@ -7,7 +7,7 @@ import {
     IStorageDepositDailyInflux, ITokensHeldPerOutputDailyInflux, ITokensHeldWithUnlockConditionDailyInflux,
     ITokensTransferredDailyInflux, ITransactionsDailyInflux, IUnclaimedGenesisOutputsDailyInflux,
     IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
-} from "../../../../models/influx/influxData";
+} from "../../../../models/influx/IInfluxTimedEntries";
 import { NetworkService } from "../../../../services/networkService";
 import { InfluxDBService } from "../../../../services/stardust/influx/influxDbService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
