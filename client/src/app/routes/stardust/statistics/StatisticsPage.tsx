@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import {
     DataPoint, IStatisticsGraphsData, mapDailyStatsToGraphsData
 } from "../../../../helpers/stardust/statisticsUtils";
+import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
+import ChartInfoPanel from "../../../components/stardust/statistics/ChartInfoPanel";
 import BarChart from "../../../components/stardust/statistics/charts/BarChart";
 import LineChart from "../../../components/stardust/statistics/charts/LineChart";
 import StackedBarChart from "../../../components/stardust/statistics/charts/StackedBarChart";
 import StackedLineChart from "../../../components/stardust/statistics/charts/StackedLineChart";
+import NetworkContext from "../../../context/NetworkContext";
+import { COMMAS_REGEX } from "../landing/ShimmerClaimedUtils";
 import "./StatisticsPage.scss";
 
 interface StatisticsPageProps {
@@ -18,6 +22,7 @@ interface StatisticsPageProps {
 }
 
 const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ match: { params: { network } } }) => {
+    const { tokenInfo } = useContext(NetworkContext);
     const [cacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -72,6 +77,8 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
             }
         }).catch(e => console.log("Chronicle analytics fetch failed", e));
     }, []);
+
+    const lockedStorageDepositValue = analyticStats?.lockedStorageDeposit?.totalByteCost;
 
     return (
         <div className="statistics-page">
@@ -145,6 +152,24 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="section">
                                 <div className="section--header">
                                     <h2>Addresses and Tokens</h2>
+                                </div>
+                                <div className="row info-panel">
+                                    <ChartInfoPanel
+                                        label="Native tokens minted"
+                                        value={analyticStats?.nativeTokens?.count ?? "-"}
+                                    />
+                                    <ChartInfoPanel
+                                        label="NFTs minted"
+                                        value={analyticStats?.nfts?.count ?? "-"}
+                                    />
+                                    <ChartInfoPanel
+                                        label="Locked storage deposit"
+                                        value={formatAmount(
+                                            Number(lockedStorageDepositValue),
+                                            tokenInfo
+                                            ).replace(COMMAS_REGEX, ",") ??
+                                            "-"}
+                                    />
                                 </div>
                                 <div className="row space-between">
                                     {addressesWithBalance && (
