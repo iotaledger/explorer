@@ -6,7 +6,7 @@ import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import "./BarChart.scss";
+import "./Chart.scss";
 
 interface BarChartProps {
     title?: string;
@@ -105,7 +105,7 @@ const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, label }
     ), [data]);
 
     return (
-        <div className="bar-chart--wrapper">
+        <div className="chart-wrapper">
             <ChartHeader
                 title={title}
                 onTimespanSelected={value => setTimespan(value)}

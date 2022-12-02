@@ -7,7 +7,7 @@ import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import "./StackedLineChart.scss";
+import "./Chart.scss";
 
 interface StackedLineChartProps {
     title?: string;
@@ -247,12 +247,12 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
     }
 
     return (
-        <div className="line-chart--wrapper">
+        <div className="chart-wrapper">
             <ChartHeader
                 title={title}
                 onTimespanSelected={value => setTimespan(value)}
                 legend={{
-                    labels: subgroups,
+                    labels: groupLabels ?? subgroups,
                     colors
                 }}
             />

@@ -7,7 +7,7 @@ import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import "./LineChart.scss";
+import "./Chart.scss";
 
 interface LineChartProps {
     title?: string;
@@ -158,7 +158,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
     }
 
     return (
-        <div className="line-chart--wrapper">
+        <div className="chart-wrapper">
             <ChartHeader
                 title={title}
                 onTimespanSelected={value => setTimespan(value)}
