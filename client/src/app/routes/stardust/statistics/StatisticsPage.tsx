@@ -217,7 +217,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                             width={1172}
                                             height={350}
                                             subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
-                                            groupLabels={["Created", "Governot changed", "State changed", "Destroyed"]}
+                                            groupLabels={["Created", "Governor changed", "State changed", "Destroyed"]}
                                             colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
                                             data={aliasActivity}
                                         />
