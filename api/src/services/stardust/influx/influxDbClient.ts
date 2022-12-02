@@ -12,14 +12,14 @@ import {
     IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
 } from "../../../models/influx/IInfluxTimedEntries";
 import {
-    ADDRESSES_WITH_BALANCE_DAILY_PARAMETERIZED_QUERY, ALIAS_ACTIVITY_DAILY_PARAMETERIZED_QUERY,
-    AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_PARAMETERIZED_QUERY, BLOCK_DAILY_PARAMETERIZED_QUERY,
-    LEDGER_SIZE_DAILY_PARAMETERIZED_QUERY, NFT_ACTIVITY_DAILY_PARAMETERIZED_QUERY, OUTPUTS_DAILY_PARAMETERIZED_QUERY,
-    STORAGE_DEPOSIT_DAILY_PARAMETERIZED_QUERY,
-    TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY, TOKENS_HELD_WITH_UC_DAILY_PARAMETERIZED_QUERY,
-    TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY, TRANSACTION_DAILY_PARAMETERIZED_QUERY,
-    UNCLAIMED_GENESIS_OUTPUTS_DAILY_PARAMETERIZED_QUERY, UNCLAIMED_TOKENS_DAILY_PARAMETERIZED_QUERY,
-    UNLOCK_CONDITIONS_PER_TYPE_DAILY_PARAMETERIZED_QUERY
+    ADDRESSES_WITH_BALANCE_DAILY_QUERY, ALIAS_ACTIVITY_DAILY_QUERY,
+    AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_QUERY, BLOCK_DAILY_QUERY,
+    LEDGER_SIZE_DAILY_QUERY, NFT_ACTIVITY_DAILY_QUERY, OUTPUTS_DAILY_QUERY,
+    STORAGE_DEPOSIT_DAILY_QUERY,
+    TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY, TOKENS_HELD_WITH_UC_DAILY_QUERY,
+    TOKENS_TRANSFERRED_DAILY_QUERY, TRANSACTION_DAILY_QUERY,
+    UNCLAIMED_GENESIS_OUTPUTS_DAILY_QUERY, UNCLAIMED_TOKENS_DAILY_QUERY,
+    UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY
 } from "./influxQueries";
 
 /**
@@ -31,13 +31,6 @@ const COLLECT_DATA_FREQ_MS = 1000 * 60 * 60;
  * N of nanoseconds in a millsecond.
  */
 const NANOSECONDS_IN_MILLISECOND = 1000000;
-
-/**
- * The timestamp to collect data FROM for Shimmer.
- * Tuesday, 27 September 2022 00:00:00
- */
-const DEFAULT_FROM_TIMESTAMP_MS = 1664229600000;
-
 
 /**
  * The InfluxDb Client wrapper.
@@ -152,77 +145,77 @@ export abstract class InfluxDbClient {
     private collectData() {
         console.info("[InfluxDbClient(", this._network.network, ")] collecting analytics data...");
         this.updateCacheEntry<IBlocksDailyInflux>(
-            BLOCK_DAILY_PARAMETERIZED_QUERY,
+            BLOCK_DAILY_QUERY,
             this._cache.blocksDaily,
             "Blocks Daily"
         );
         this.updateCacheEntry<ITransactionsDailyInflux>(
-            TRANSACTION_DAILY_PARAMETERIZED_QUERY,
+            TRANSACTION_DAILY_QUERY,
             this._cache.transactionsDaily,
             "Transactions Daily"
         );
         this.updateCacheEntry<IOutputsDailyInflux>(
-            OUTPUTS_DAILY_PARAMETERIZED_QUERY,
+            OUTPUTS_DAILY_QUERY,
             this._cache.outputsDaily,
             "Outpus Daily"
         );
         this.updateCacheEntry<ITokensHeldPerOutputDailyInflux>(
-            TOKENS_HELD_BY_OUTPUTS_DAILY_PARAMETERIZED_QUERY,
+            TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY,
             this._cache.tokensHeldDaily,
             "Tokens Held Daily"
         );
         this.updateCacheEntry<IAddressesWithBalanceDailyInflux>(
-            ADDRESSES_WITH_BALANCE_DAILY_PARAMETERIZED_QUERY,
+            ADDRESSES_WITH_BALANCE_DAILY_QUERY,
             this._cache.addressesWithBalanceDaily,
             "Addresses with balance Daily"
         );
         this.updateCacheEntry<IAvgAddressesPerMilestoneDailyInflux>(
-            AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_PARAMETERIZED_QUERY,
+            AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_QUERY,
             this._cache.avgAddressesPerMilestoneDaily,
             "Avarage addresses with balance Daily"
         );
         this.updateCacheEntry<ITokensTransferredDailyInflux>(
-            TOKENS_TRANSFERRED_DAILY_PARAMETERIZED_QUERY,
+            TOKENS_TRANSFERRED_DAILY_QUERY,
             this._cache.tokensTransferredDaily,
             "Tokens transferred Daily"
         );
         this.updateCacheEntry<IAliasActivityDailyInflux>(
-            ALIAS_ACTIVITY_DAILY_PARAMETERIZED_QUERY,
+            ALIAS_ACTIVITY_DAILY_QUERY,
             this._cache.aliasActivityDaily,
             "Alias activity Daily"
         );
         this.updateCacheEntry<IUnlockConditionsPerTypeDailyInflux>(
-            UNLOCK_CONDITIONS_PER_TYPE_DAILY_PARAMETERIZED_QUERY,
+            UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY,
             this._cache.unlockConditionsPerTypeDaily,
             "Unlock conditions per type Daily"
         );
         this.updateCacheEntry<INftActivityDailyInflux>(
-            NFT_ACTIVITY_DAILY_PARAMETERIZED_QUERY,
+            NFT_ACTIVITY_DAILY_QUERY,
             this._cache.nftActivityDaily,
             "Nft activity Daily"
         );
         this.updateCacheEntry<ITokensHeldWithUnlockConditionDailyInflux>(
-            TOKENS_HELD_WITH_UC_DAILY_PARAMETERIZED_QUERY,
+            TOKENS_HELD_WITH_UC_DAILY_QUERY,
             this._cache.tokensHeldWithUnlockConditionDaily,
             "Tokens held with Unlock condition Daily"
         );
         this.updateCacheEntry<IUnclaimedTokensDailyInflux>(
-            UNCLAIMED_TOKENS_DAILY_PARAMETERIZED_QUERY,
+            UNCLAIMED_TOKENS_DAILY_QUERY,
             this._cache.unclaimedTokensDaily,
             "Unclaimed Tokens Daily"
         );
         this.updateCacheEntry<IUnclaimedGenesisOutputsDailyInflux>(
-            UNCLAIMED_GENESIS_OUTPUTS_DAILY_PARAMETERIZED_QUERY,
+            UNCLAIMED_GENESIS_OUTPUTS_DAILY_QUERY,
             this._cache.unclaimedGenesisOutputsDaily,
             "Unclaimed genesis outputs Daily"
         );
         this.updateCacheEntry<ILedgerSizeDailyInflux>(
-            LEDGER_SIZE_DAILY_PARAMETERIZED_QUERY,
+            LEDGER_SIZE_DAILY_QUERY,
             this._cache.ledgerSizeDaily,
             "Ledger size Daily"
         );
         this.updateCacheEntry<IStorageDepositDailyInflux>(
-            STORAGE_DEPOSIT_DAILY_PARAMETERIZED_QUERY,
+            STORAGE_DEPOSIT_DAILY_QUERY,
             this._cache.storageDepositDaily,
             "Storage Deposit Daily"
         );
@@ -231,28 +224,34 @@ export abstract class InfluxDbClient {
     /**
      * Update one cache entry with InfluxDb data.
      * Uses the date from the latest entry as FROM timestamp for the update.
-     * @param queryTemplate The query template.
+     * @param queryTemplate The query template object.
+     * @param queryTemplate.full Full query (no timespan) and parameterized (from, to).
+     * @param queryTemplate.parameterized Parameterized query (from, to).
      * @param cacheEntryToFetch The cache entry to fetch.
      * @param description The optional entry description for logging.
      * @param debug The optional debug boolean to show more logs.
      */
     private updateCacheEntry<T extends ITimedEntry>(
-        queryTemplate: string,
+        queryTemplate: { full: string; parameterized: string },
         cacheEntryToFetch: Map<DayKey, T>,
         description: string = "Daily entry",
         debug: boolean = false
     ) {
         const network = this._network.network;
-        const fromNanoDate: INanoDate = this.getFromNanoDate(cacheEntryToFetch);
+        const fromNanoDate: INanoDate | null = this.getFromNanoDate(cacheEntryToFetch);
 
         if (debug) {
             console.debug(
                 `[InfluxDbClient(${network})]Refreshing ${description} from date`,
-                fromNanoDate.toISOString()
+                fromNanoDate ? fromNanoDate.toISOString() : null
             );
         }
 
-        this.queryInflux<T>(queryTemplate, fromNanoDate, this.getToNanoDate()).then(results => {
+        const query = fromNanoDate ?
+            queryTemplate.parameterized :
+            queryTemplate.full;
+
+        this.queryInflux<T>(query, fromNanoDate, this.getToNanoDate()).then(results => {
             for (const update of results) {
                 if (this.isAnyFieldNotNull<T>(update)) {
                     if (debug) {
@@ -277,13 +276,15 @@ export abstract class InfluxDbClient {
 
     /**
      * Execute InfluxQL query.
-     * @param queryTemplate The query template.
+     * @param query The query.
      * @param from The starting Date to use in the query.
      * @param to The ending Date to use in the query.
      */
-    private async queryInflux<T>(queryTemplate: string, from: INanoDate, to: INanoDate): Promise<IResults<T>> {
-        const params = { placeholders: { from: from.toNanoISOString(), to: to.toNanoISOString() } };
-        return this._client.query<T>(queryTemplate, params);
+    private async queryInflux<T>(query: string, from: INanoDate | null, to: INanoDate): Promise<IResults<T>> {
+        const params = from ?
+            { placeholders: { from: from.toNanoISOString(), to: to.toNanoISOString() } } :
+            undefined;
+        return this._client.query<T>(query, params);
     }
 
     /**
@@ -291,16 +292,16 @@ export abstract class InfluxDbClient {
      * @param cacheEntry The current cache entry map.
      * @returns The (from) (INano)Date.
      */
-    private getFromNanoDate(cacheEntry: Map<DayKey, ITimedEntry>): INanoDate {
-        let fromNanoDate: INanoDate;
+    private getFromNanoDate(cacheEntry: Map<DayKey, ITimedEntry>): INanoDate | null {
+        let fromNanoDate: INanoDate | null;
         if (cacheEntry.size === 0) {
-            // From beginning
-            fromNanoDate = toNanoDate((DEFAULT_FROM_TIMESTAMP_MS * NANOSECONDS_IN_MILLISECOND).toString());
+            fromNanoDate = null;
         } else {
             const lastDate = this.computeLastDateOfContinousSeries(cacheEntry);
 
             fromNanoDate = toNanoDate(
-                (lastDate.valueOf() * NANOSECONDS_IN_MILLISECOND).toString()
+                // eslint-disable-next-line newline-per-chained-call
+                (lastDate.hours(0).minutes(0).seconds(1).valueOf() * NANOSECONDS_IN_MILLISECOND).toString()
             );
         }
 
