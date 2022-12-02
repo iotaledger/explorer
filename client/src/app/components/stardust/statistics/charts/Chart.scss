@@ -1,27 +1,30 @@
 @import "../../../../../scss/mixins";
 @import "../../../../../scss/variables";
+@import "../../../../../scss/fonts";
+@import "../../../../../scss/themes";
 
-.bar-chart--wrapper {
+.chart-wrapper {
     position: relative;
     width: fit-content;
     padding: 14px;
     margin-bottom: 14px;
-    background-color:  var(--light-bg);
+    background-color: var(--light-bg);
     border-radius: 8px;
 
     svg.hook {
         rect {
-            &:hover {
-                stroke: $gray-6;
+            &.hover-highlight {
+                stroke: $gray-5;
+                stroke-width: 1px;
             }
         }
 
         .axis {
-            color: $gray-3;
+            color: var(--border-color);
 
             .tick text {
                 @include font-size(10px);
-                color: $gray-7;
+                color: var(--card-color);
             }
         }
 
@@ -34,4 +37,3 @@
         }
     }
 }
-

@@ -6,7 +6,7 @@ import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import "./StackedBarChart.scss";
+import "./Chart.scss";
 
 interface StackedBarChartProps {
     title?: string;
@@ -168,7 +168,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     }
 
     return (
-        <div className="stack-bar-chart--wrapper">
+        <div className="chart-wrapper">
             <ChartHeader
                 title={title}
                 legend={{
