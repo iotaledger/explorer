@@ -1,7 +1,8 @@
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleTime, scaleLinear, scaleOrdinal } from "d3-scale";
-import { area, line, SeriesPoint, stack } from "d3-shape";
 import { BaseType, select } from "d3-selection";
+import { area, line, SeriesPoint, stack } from "d3-shape";
+import { timeFormat } from "d3-time-format";
 import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
@@ -29,14 +30,14 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
 }) => {
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("7");
+    const [timespan, setTimespan] = useState<TimespanOption>("30");
 
     useLayoutEffect(() => {
         const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
         const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
         const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
         // reset
-        select(theSvg.current).select("*").remove();
+        select(theSvg.current).selectAll("*").remove();
 
         const color = scaleOrdinal<string>().domain(subgroups).range(colors);
 
@@ -93,8 +94,9 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 break;
         }
 
-        const xAxis = axisBottom(x)
-                    .ticks(tickValues);
+        const xAxis = axisBottom<Date>(x)
+                    .ticks(tickValues)
+                    .tickFormat(timeFormat("%d %b"));
 
         svg.append("g")
             .attr("class", "axis axis--x")
