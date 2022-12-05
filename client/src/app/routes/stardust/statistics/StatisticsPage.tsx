@@ -184,7 +184,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     )}
                                     {avgAddressesPerMilestone && (
                                         <StackedLineChart
-                                            title="Avarage Number of Active Addresses per Milestone"
+                                            title="Avg. Number of Active Addresses per Milestone"
                                             width={560}
                                             height={350}
                                             subgroups={["sending", "receiving"]}

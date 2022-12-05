@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 import "./ChartHeader.scss";
 import ChartLegend from "./ChartLegend";
@@ -24,9 +25,8 @@ const ChartHeader: React.FC<ChartHeaderProps> = ({ title, onTimespanSelected, le
 
             {onTimespanSelected && (
                 <div className="chart-header__select">
-                    <div className="select-container">
+                    <div className="select-wrapper">
                         <select
-                            className="period-select"
                             defaultValue="30"
                             onChange={({ target: { value } }) => {
                                 if (onTimespanSelected) {
@@ -39,6 +39,9 @@ const ChartHeader: React.FC<ChartHeaderProps> = ({ title, onTimespanSelected, le
                             <option value="90">Last six months</option>
                             <option value="all">All time</option>
                         </select>
+                        <span className={classNames("material-icons chevron", { opened: false })}>
+                            expand_more
+                        </span>
                     </div>
                 </div>
             )}

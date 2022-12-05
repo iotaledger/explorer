@@ -1,6 +1,7 @@
 @import "../../../../scss/mixins";
 @import "../../../../scss/fonts";
 @import "../../../../scss/variables";
+@import "../../../../scss/media-queries";
 
 .chart-header {
     .chart-header__title {
@@ -21,29 +22,18 @@
     }
 
     .chart-header__select {
-        .select-container {
+        position: absolute;
+        top: 16px;
+        right: 24px;
+
+        .select-wrapper {
             select {
-                position: absolute;
-                top: 16px;
-                right: 24px;
                 background: var(--body-background);
-                color: var(--body-color);
-                cursor: pointer;
-                min-height: 34px;
-                max-width: 200px;
-                border: 1px solid #ccc;
-                border-radius: 6px;
-                padding: 4px 8px;
-    
-                &:focus-visible {
-                    outline: none;
-                }
-    
-                option {
-                    color: var(--modal-color);
-                    font-family: $inter;
-                    font-weight: 400;
-                }
+                color: var(--card-color);
+            }
+
+            .chevron {
+                color: var(--card-color);
             }
         }
     }
