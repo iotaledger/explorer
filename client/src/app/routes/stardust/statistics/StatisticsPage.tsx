@@ -103,7 +103,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     height={350}
                                     subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
                                     groupLabels={["Transaction", "Milestone", "Tagged Data", "No payload"]}
-                                    colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                    colors={["#7AFFF2", "#00E0CA", "#36A1AC", "#186575"]}
                                     data={dailyBlocks}
                                 />
                                 <StackedBarChart
@@ -112,7 +112,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     height={350}
                                     subgroups={["confirmed", "conflicting"]}
                                     groupLabels={["Confirmed", "Conflicting"]}
-                                    colors={["#73bf69", "#f2cc0d"]}
+                                    colors={["#00E0CA", "#36A1AC"]}
                                     data={transactions}
                                 />
                             </div>
@@ -127,7 +127,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         height={350}
                                         subgroups={["basic", "alias", "foundry", "nft"]}
                                         groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
-                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
                                         data={outputs}
                                     />
                                     <StackedLineChart
@@ -136,7 +136,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         height={350}
                                         subgroups={["basic", "alias", "foundry", "nft"]}
                                         groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
-                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
                                         data={tokensHeld}
                                     />
                                 </div>
@@ -156,11 +156,12 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     />
                                     <ChartInfoPanel
                                         label="Locked storage deposit"
-                                        value={formatAmount(
-                                            Number(lockedStorageDepositValue),
-                                            tokenInfo
-                                        ).replace(COMMAS_REGEX, ",") ??
-                                            "-"}
+                                        value={
+                                            formatAmount(
+                                                Number(lockedStorageDepositValue),
+                                                tokenInfo
+                                            ).replace(COMMAS_REGEX, ",") ?? "-"
+                                        }
                                     />
                                 </div>
                                 <div className="row space-between">
@@ -169,7 +170,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         width={560}
                                         height={350}
                                         label="Addresses"
-                                        color="#14cabf"
+                                        color="#00F5DD"
                                         data={addressesWithBalance}
                                     />
                                     <StackedLineChart
@@ -178,7 +179,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         height={350}
                                         subgroups={["sending", "receiving"]}
                                         groupLabels={["Sending", "Receiving"]}
-                                        colors={["#73bf69", "#f2cc0d"]}
+                                        colors={["#4140DF", "#36A1AC"]}
                                         data={avgAddressesPerMilestone}
                                     />
                                 </div>
@@ -187,8 +188,9 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         title="Tokens transferred"
                                         width={1172}
                                         height={350}
-                                        data={tokensTransferred}
+                                        color="#00E0CA"
                                         label="Tokens"
+                                        data={tokensTransferred}
                                     />
                                 </div>
                             </div>
@@ -203,7 +205,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         height={350}
                                         subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
                                         groupLabels={["Created", "Governor changed", "State changed", "Destroyed"]}
-                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
                                         data={aliasActivity}
                                     />
                                 </div>
@@ -219,7 +221,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         height={350}
                                         subgroups={["timelock", "storageDepositReturn", "expiration"]}
                                         groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
-                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
+                                        colors={["#4140DF", "#00F5DD", "#36A1AC"]}
                                         data={unlockConditionsPerType}
                                     />
                                     <StackedBarChart
@@ -228,7 +230,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         height={350}
                                         subgroups={["created", "transferred", "destroyed"]}
                                         groupLabels={["Created", "Transferred", "Destroyed"]}
-                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
+                                        colors={["#4140DF", "#00F5DD", "#36A1AC"]}
                                         data={nftActivity}
                                     />
                                 </div>
@@ -239,7 +241,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         height={350}
                                         subgroups={["timelock", "storageDepositReturn", "expiration"]}
                                         groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
-                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
+                                        colors={["#4140DF", "#00F5DD", "#36A1AC"]}
                                         data={tokensHeldWithUnlockCondition}
                                     />
                                 </div>
@@ -254,7 +256,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         width={560}
                                         height={350}
                                         label="Unclimed Tokens"
-                                        color="#14cabf"
+                                        color="#00F5DD"
                                         data={unclaimedTokens}
                                     />
                                     <LineChart
@@ -262,7 +264,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         width={560}
                                         height={350}
                                         label="Outputs"
-                                        color="#14cabf"
+                                        color="#00F5DD"
                                         data={unclaimedGenesisOutputs}
                                     />
                                 </div>
@@ -278,7 +280,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         height={350}
                                         subgroups={["keyBytes", "dataBytes"]}
                                         groupLabels={["Key bytes", "Data bytes"]}
-                                        colors={["#8ab8ff", "#ff780a"]}
+                                        colors={["#00E0CA", "#36A1AC"]}
                                         data={ledgerSize}
                                     />
                                     <LineChart
@@ -286,7 +288,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         width={560}
                                         height={350}
                                         label="Storage Deposit"
-                                        color="#14cabf"
+                                        color="#00F5DD"
                                         data={storageDeposit}
                                     />
                                 </div>

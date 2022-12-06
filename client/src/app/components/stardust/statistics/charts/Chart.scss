@@ -8,7 +8,6 @@
     width: fit-content;
     padding: 14px;
     margin-bottom: 14px;
-    background-color: var(--light-bg);
     border-radius: 8px;
 
     svg.hook {
@@ -20,11 +19,11 @@
         }
 
         .axis {
-            color: var(--border-color);
+            color: var(--statistics-charts-axis);
 
             .tick text {
                 @include font-size(10px);
-                color: var(--card-color);
+                color: $gray-6;
             }
         }
 

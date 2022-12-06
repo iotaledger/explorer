@@ -15,11 +15,12 @@ interface BarChartProps {
     height: number;
     data: { [name: string]: number; time: number }[];
     label?: string;
+    color: string;
 }
 
 const DAY_LABEL_FORMAT = "DD MMM";
 
-const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, label }) => {
+const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, label, color }) => {
     const theTooltip = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("30");
@@ -66,7 +67,7 @@ const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, label }
                 .attr("width", x.bandwidth())
                 .attr("y", d => y(d.n))
                 .attr("height", d => INNER_HEIGHT - y(d.n))
-                .attr("fill", "#14cabf")
+                .attr("fill", color)
                 .on("mouseover", (_, d) => {
                     select(theTooltip.current)
                         .style("display", "block")
