@@ -36,4 +36,13 @@
             stroke-width: 1.8px;
         }
     }
+
+    .no-data--wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .no-data {
+            color: var(--card-color);
+        }
+    }
 }

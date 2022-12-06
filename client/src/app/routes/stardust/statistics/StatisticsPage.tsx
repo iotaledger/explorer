@@ -26,21 +26,21 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     const [cacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [transactions, setTransactions] = useState<DataPoint[] | null>(null);
-    const [dailyBlocks, setDailyBlocks] = useState<DataPoint[] | null>(null);
-    const [outputs, setOutputs] = useState<DataPoint[] | null>(null);
-    const [tokensHeld, setTokensHeld] = useState<DataPoint[] | null>(null);
-    const [addressesWithBalance, setAddressesWithBalance] = useState<DataPoint[] | null>(null);
-    const [avgAddressesPerMilestone, setAvgAddressesPerMilestone] = useState<DataPoint[] | null>(null);
-    const [tokensTransferred, setTokensTransferred] = useState<DataPoint[] | null>(null);
-    const [aliasActivity, setAliasActivity] = useState<DataPoint[] | null>(null);
-    const [unlockConditionsPerType, setUnlockConditionsPerType] = useState<DataPoint[] | null>(null);
-    const [nftActivity, setNftActivity] = useState<DataPoint[] | null>(null);
-    const [tokensHeldWithUnlockCondition, setTokensHeldWithUnlockCondition] = useState<DataPoint[] | null>(null);
-    const [unclaimedTokens, setUnclaimedTokens] = useState<DataPoint[] | null>(null);
-    const [unclaimedGenesisOutputs, setUnclaimedGenesisOutputs] = useState<DataPoint[] | null>(null);
-    const [ledgerSize, setLedgerSize] = useState<DataPoint[] | null>(null);
-    const [storageDeposit, setStorageDeposit] = useState<DataPoint[] | null>(null);
+    const [transactions, setTransactions] = useState<DataPoint[]>([]);
+    const [dailyBlocks, setDailyBlocks] = useState<DataPoint[]>([]);
+    const [outputs, setOutputs] = useState<DataPoint[]>([]);
+    const [tokensHeld, setTokensHeld] = useState<DataPoint[]>([]);
+    const [addressesWithBalance, setAddressesWithBalance] = useState<DataPoint[]>([]);
+    const [avgAddressesPerMilestone, setAvgAddressesPerMilestone] = useState<DataPoint[]>([]);
+    const [tokensTransferred, setTokensTransferred] = useState<DataPoint[]>([]);
+    const [aliasActivity, setAliasActivity] = useState<DataPoint[]>([]);
+    const [unlockConditionsPerType, setUnlockConditionsPerType] = useState<DataPoint[]>([]);
+    const [nftActivity, setNftActivity] = useState<DataPoint[]>([]);
+    const [tokensHeldWithUnlockCondition, setTokensHeldWithUnlockCondition] = useState<DataPoint[]>([]);
+    const [unclaimedTokens, setUnclaimedTokens] = useState<DataPoint[]>([]);
+    const [unclaimedGenesisOutputs, setUnclaimedGenesisOutputs] = useState<DataPoint[]>([]);
+    const [ledgerSize, setLedgerSize] = useState<DataPoint[]>([]);
+    const [storageDeposit, setStorageDeposit] = useState<DataPoint[]>([]);
 
     const [analyticStats, setAnalyticStats] = useState<IAnalyticStats | null>(null);
 
@@ -97,56 +97,48 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <h2>Blocks</h2>
                             </div>
                             <div className="row space-between">
-                                {dailyBlocks && (
-                                    <StackedBarChart
-                                        title="Blocks"
-                                        width={560}
-                                        height={350}
-                                        subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
-                                        groupLabels={["Transaction", "Milestone", "Tagged Data", "No payload"]}
-                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
-                                        data={dailyBlocks}
-                                    />
-                                )}
-                                {transactions && (
-                                    <StackedBarChart
-                                        title="Transaction Payload"
-                                        width={560}
-                                        height={350}
-                                        subgroups={["confirmed", "conflicting"]}
-                                        groupLabels={["Confirmed", "Conflicting"]}
-                                        colors={["#73bf69", "#f2cc0d"]}
-                                        data={transactions}
-                                    />
-                                )}
+                                <StackedBarChart
+                                    title="Blocks"
+                                    width={560}
+                                    height={350}
+                                    subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
+                                    groupLabels={["Transaction", "Milestone", "Tagged Data", "No payload"]}
+                                    colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                    data={dailyBlocks}
+                                />
+                                <StackedBarChart
+                                    title="Transaction Payload"
+                                    width={560}
+                                    height={350}
+                                    subgroups={["confirmed", "conflicting"]}
+                                    groupLabels={["Confirmed", "Conflicting"]}
+                                    colors={["#73bf69", "#f2cc0d"]}
+                                    data={transactions}
+                                />
                             </div>
                             <div className="section">
                                 <div className="section--header">
                                     <h2>Outputs</h2>
                                 </div>
                                 <div className="row space-between">
-                                    {outputs && (
-                                        <StackedLineChart
-                                            title="Number of Outputs"
-                                            width={560}
-                                            height={350}
-                                            subgroups={["basic", "alias", "foundry", "nft"]}
-                                            groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
-                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
-                                            data={outputs}
-                                        />
-                                    )}
-                                    {tokensHeld && (
-                                        <StackedLineChart
-                                            title="Tokens Held by Outputs"
-                                            width={560}
-                                            height={350}
-                                            subgroups={["basic", "alias", "foundry", "nft"]}
-                                            groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
-                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
-                                            data={tokensHeld}
-                                        />
-                                    )}
+                                    <StackedLineChart
+                                        title="Number of Outputs"
+                                        width={560}
+                                        height={350}
+                                        subgroups={["basic", "alias", "foundry", "nft"]}
+                                        groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
+                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                        data={outputs}
+                                    />
+                                    <StackedLineChart
+                                        title="Tokens Held by Outputs"
+                                        width={560}
+                                        height={350}
+                                        subgroups={["basic", "alias", "foundry", "nft"]}
+                                        groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
+                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                        data={tokensHeld}
+                                    />
                                 </div>
                             </div>
                             <div className="section">
@@ -167,43 +159,37 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                         value={formatAmount(
                                             Number(lockedStorageDepositValue),
                                             tokenInfo
-                                            ).replace(COMMAS_REGEX, ",") ??
+                                        ).replace(COMMAS_REGEX, ",") ??
                                             "-"}
                                     />
                                 </div>
                                 <div className="row space-between">
-                                    {addressesWithBalance && (
-                                        <LineChart
-                                            title="Addresses with Balance"
-                                            width={560}
-                                            height={350}
-                                            data={addressesWithBalance}
-                                            label="Addresses"
-                                            color="#14cabf"
-                                        />
-                                    )}
-                                    {avgAddressesPerMilestone && (
-                                        <StackedLineChart
-                                            title="Avg. Number of Active Addresses per Milestone"
-                                            width={560}
-                                            height={350}
-                                            subgroups={["sending", "receiving"]}
-                                            groupLabels={["Sending", "Receiving"]}
-                                            colors={["#73bf69", "#f2cc0d"]}
-                                            data={avgAddressesPerMilestone}
-                                        />
-                                    )}
+                                    <LineChart
+                                        title="Addresses with Balance"
+                                        width={560}
+                                        height={350}
+                                        label="Addresses"
+                                        color="#14cabf"
+                                        data={addressesWithBalance}
+                                    />
+                                    <StackedLineChart
+                                        title="Avg. Number of Active Addresses per Milestone"
+                                        width={560}
+                                        height={350}
+                                        subgroups={["sending", "receiving"]}
+                                        groupLabels={["Sending", "Receiving"]}
+                                        colors={["#73bf69", "#f2cc0d"]}
+                                        data={avgAddressesPerMilestone}
+                                    />
                                 </div>
                                 <div className="row space-between">
-                                    {tokensTransferred && (
-                                        <BarChart
-                                            title="Tokens transferred"
-                                            width={1172}
-                                            height={350}
-                                            data={tokensTransferred}
-                                            label="Tokens"
-                                        />
-                                    )}
+                                    <BarChart
+                                        title="Tokens transferred"
+                                        width={1172}
+                                        height={350}
+                                        data={tokensTransferred}
+                                        label="Tokens"
+                                    />
                                 </div>
                             </div>
                             <div className="section">
@@ -211,17 +197,15 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <h2>Output Activity</h2>
                                 </div>
                                 <div className="row space-between">
-                                    {aliasActivity && (
-                                        <StackedBarChart
-                                            title="Alias Activity Counts"
-                                            width={1172}
-                                            height={350}
-                                            subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
-                                            groupLabels={["Created", "Governor changed", "State changed", "Destroyed"]}
-                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
-                                            data={aliasActivity}
-                                        />
-                                    )}
+                                    <StackedBarChart
+                                        title="Alias Activity Counts"
+                                        width={1172}
+                                        height={350}
+                                        subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
+                                        groupLabels={["Created", "Governor changed", "State changed", "Destroyed"]}
+                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff", "#ff780a"]}
+                                        data={aliasActivity}
+                                    />
                                 </div>
                             </div>
                             <div className="section">
@@ -229,41 +213,35 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <h2>Unlock Conditions</h2>
                                 </div>
                                 <div className="row space-between">
-                                    {unlockConditionsPerType && (
-                                        <StackedLineChart
-                                            title="Number of Unlock Conditions by Type"
-                                            width={560}
-                                            height={350}
-                                            subgroups={["timelock", "storageDepositReturn", "expiration"]}
-                                            groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
-                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
-                                            data={unlockConditionsPerType}
-                                        />
-                                    )}
-                                    {nftActivity && (
-                                        <StackedBarChart
-                                            title="NFT Activity Counts"
-                                            width={560}
-                                            height={350}
-                                            subgroups={["created", "transferred", "destroyed"]}
-                                            groupLabels={["Created", "Transferred", "Destroyed"]}
-                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
-                                            data={nftActivity}
-                                        />
-                                    )}
+                                    <StackedLineChart
+                                        title="Number of Unlock Conditions by Type"
+                                        width={560}
+                                        height={350}
+                                        subgroups={["timelock", "storageDepositReturn", "expiration"]}
+                                        groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
+                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
+                                        data={unlockConditionsPerType}
+                                    />
+                                    <StackedBarChart
+                                        title="NFT Activity Counts"
+                                        width={560}
+                                        height={350}
+                                        subgroups={["created", "transferred", "destroyed"]}
+                                        groupLabels={["Created", "Transferred", "Destroyed"]}
+                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
+                                        data={nftActivity}
+                                    />
                                 </div>
                                 <div className="row space-between">
-                                    {tokensHeldWithUnlockCondition && (
-                                        <StackedLineChart
-                                            title="Tokens Held by Outputs with Unlock Conditions"
-                                            width={1172}
-                                            height={350}
-                                            subgroups={["timelock", "storageDepositReturn", "expiration"]}
-                                            groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
-                                            colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
-                                            data={tokensHeldWithUnlockCondition}
-                                        />
-                                    )}
+                                    <StackedLineChart
+                                        title="Tokens Held by Outputs with Unlock Conditions"
+                                        width={1172}
+                                        height={350}
+                                        subgroups={["timelock", "storageDepositReturn", "expiration"]}
+                                        groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
+                                        colors={["#73bf69", "#f2cc0d", "#8ab8ff"]}
+                                        data={tokensHeldWithUnlockCondition}
+                                    />
                                 </div>
                             </div>
                             <div className="section">
@@ -271,26 +249,22 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <h2>Shimmer Claiming Rewards</h2>
                                 </div>
                                 <div className="row space-between">
-                                    {unclaimedTokens && (
-                                        <LineChart
-                                            title="Unclimed Tokens"
-                                            width={560}
-                                            height={350}
-                                            data={unclaimedTokens}
-                                            label="Unclimed Tokens"
-                                            color="#14cabf"
-                                        />
-                                    )}
-                                    {unclaimedGenesisOutputs && (
-                                        <LineChart
-                                            title="Number of Unclaimed Shimmer Genesis Outputs"
-                                            width={560}
-                                            height={350}
-                                            data={unclaimedGenesisOutputs}
-                                            label="Outputs"
-                                            color="#14cabf"
-                                        />
-                                    )}
+                                    <LineChart
+                                        title="Unclimed Tokens"
+                                        width={560}
+                                        height={350}
+                                        label="Unclimed Tokens"
+                                        color="#14cabf"
+                                        data={unclaimedTokens}
+                                    />
+                                    <LineChart
+                                        title="Number of Unclaimed Shimmer Genesis Outputs"
+                                        width={560}
+                                        height={350}
+                                        label="Outputs"
+                                        color="#14cabf"
+                                        data={unclaimedGenesisOutputs}
+                                    />
                                 </div>
                             </div>
                             <div className="section">
@@ -298,27 +272,23 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <h2>Byte Cost</h2>
                                 </div>
                                 <div className="row space-between">
-                                    {ledgerSize && (
-                                        <StackedBarChart
-                                            title="Ledger Size"
-                                            width={560}
-                                            height={350}
-                                            subgroups={["keyBytes", "dataBytes"]}
-                                            groupLabels={["Key bytes", "Data bytes"]}
-                                            colors={["#8ab8ff", "#ff780a"]}
-                                            data={ledgerSize}
-                                        />
-                                    )}
-                                    {storageDeposit && (
-                                        <LineChart
-                                            title="Storage Deposit"
-                                            width={560}
-                                            height={350}
-                                            data={storageDeposit}
-                                            label="Storage Deposit"
-                                            color="#14cabf"
-                                        />
-                                    )}
+                                    <StackedBarChart
+                                        title="Ledger Size"
+                                        width={560}
+                                        height={350}
+                                        subgroups={["keyBytes", "dataBytes"]}
+                                        groupLabels={["Key bytes", "Data bytes"]}
+                                        colors={["#8ab8ff", "#ff780a"]}
+                                        data={ledgerSize}
+                                    />
+                                    <LineChart
+                                        title="Storage Deposit"
+                                        width={560}
+                                        height={350}
+                                        label="Storage Deposit"
+                                        color="#14cabf"
+                                        data={storageDeposit}
+                                    />
                                 </div>
                             </div>
                         </div>

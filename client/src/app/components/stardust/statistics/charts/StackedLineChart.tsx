@@ -4,9 +4,10 @@ import { BaseType, select } from "d3-selection";
 import { area, line, SeriesPoint, stack } from "d3-shape";
 import { timeFormat } from "d3-time-format";
 import moment from "moment";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
+import { noDataView, useMultiValueTooltip } from "../ChartUtils";
 import "./Chart.scss";
 
 interface StackedLineChartProps {
@@ -31,154 +32,142 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("30");
+    const buildTootip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
 
     useLayoutEffect(() => {
-        const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
-        const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
-        const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
-        // reset
-        select(theSvg.current).selectAll("*").remove();
+        if (data.length > 0) {
+            const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
+            const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
+            const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
+            // reset
+            select(theSvg.current).selectAll("*").remove();
 
-        const color = scaleOrdinal<string>().domain(subgroups).range(colors);
+            const color = scaleOrdinal<string>().domain(subgroups).range(colors);
 
-        data = timespan !== "all" ? data.slice(-timespan) : data;
+            data = timespan !== "all" ? data.slice(-timespan) : data;
 
-        const stackedData = stack()
-            .keys(subgroups)(data);
+            const stackedData = stack()
+                .keys(subgroups)(data);
 
-        const groups = data.map(
-                        d => moment.unix(d.time)
-                            .hours(0)
-                            .minutes(0)
-                            .toDate()
-                    );
-        const svg = select(theSvg.current)
-            .attr("width", INNER_WIDTH + MARGIN.left + MARGIN.right)
-            .attr("height", INNER_HEIGHT + MARGIN.top + MARGIN.bottom)
-            .append("g")
-            .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
+            const groups = data.map(
+                d => moment.unix(d.time)
+                    .hours(0)
+                    .minutes(0)
+                    .toDate()
+            );
+            const svg = select(theSvg.current)
+                .attr("width", INNER_WIDTH + MARGIN.left + MARGIN.right)
+                .attr("height", INNER_HEIGHT + MARGIN.top + MARGIN.bottom)
+                .append("g")
+                .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-        const x = scaleTime()
+            const x = scaleTime()
                 .domain([groups[0], groups[groups.length - 1]])
                 .range([0, INNER_WIDTH]);
 
-        const computeYMax = (entries: { [name: string]: number; time: number }[]) => Math.max(
-            ...entries.map(d => {
-                let sum = 0;
-                for (const key of subgroups) {
-                    sum += d[key];
-                }
-                return sum;
-            })
-        );
+            const computeYMax = (entries: { [name: string]: number; time: number }[]) => Math.max(
+                ...entries.map(d => {
+                    let sum = 0;
+                    for (const key of subgroups) {
+                        sum += d[key];
+                    }
+                    return sum;
+                })
+            );
 
-        const y = scaleLinear().domain([0, computeYMax(data)])
-            .range([INNER_HEIGHT, 0]);
+            const y = scaleLinear().domain([0, computeYMax(data)])
+                .range([INNER_HEIGHT, 0]);
 
-        const yAxisGrid = axisLeft(y.nice())
-            .ticks(5)
-            .tickSize(-INNER_WIDTH)
-            .tickPadding(8);
+            const yAxisGrid = axisLeft(y.nice())
+                .ticks(5)
+                .tickSize(-INNER_WIDTH)
+                .tickPadding(8);
 
-        svg.append("g")
-            .attr("class", "axis axis--y")
-            .call(yAxisGrid);
+            svg.append("g")
+                .attr("class", "axis axis--y")
+                .call(yAxisGrid);
 
-        let tickValues;
-        switch (timespan) {
-            case "7":
-                tickValues = 7;
-                break;
-            default:
-                tickValues = Math.floor(data.length / 4);
-                break;
-        }
+            let tickValues;
+            switch (timespan) {
+                case "7":
+                    tickValues = 7;
+                    break;
+                default:
+                    tickValues = Math.floor(data.length / 4);
+                    break;
+            }
 
-        const xAxis = axisBottom<Date>(x)
-                    .ticks(tickValues)
-                    .tickFormat(timeFormat("%d %b"));
+            const xAxis = axisBottom<Date>(x)
+                .ticks(tickValues)
+                .tickFormat(timeFormat("%d %b"));
 
-        svg.append("g")
-            .attr("class", "axis axis--x")
-            .attr("transform", `translate(0, ${INNER_HEIGHT})`)
-            .call(xAxis);
+            svg.append("g")
+                .attr("class", "axis axis--x")
+                .attr("transform", `translate(0, ${INNER_HEIGHT})`)
+                .call(xAxis);
 
-        const areaGen = area<SeriesPoint<{ [key: string]: number }>>()
-            .x(d => x(moment.unix(d.data.time)
-                            .hours(0)
-                            .minutes(0)
-                            .toDate()) ??
+            const areaGen = area<SeriesPoint<{ [key: string]: number }>>()
+                .x(d => x(moment.unix(d.data.time)
+                    .hours(0)
+                    .minutes(0)
+                    .toDate()) ??
                     0
-            )
-            .y0(d => y(0))
-            .y1(d => y(d[1] - d[0]));
+                )
+                .y0(_ => y(0))
+                .y1(d => y(d[1] - d[0]));
 
-        svg.append("g")
-            .selectAll("g")
-            .data(stackedData)
-            .join("path")
-            .style("fill", d => getGradient(d.key, color(d.key)))
-            .attr("opacity", 0.5)
-            .attr("class", "area")
-            .attr("d", areaGen);
-
-        const lineGen = line<SeriesPoint<{ [key: string]: number }>>()
-            .x(
-                d => x(moment.unix(d.data.time)
-                .hours(0)
-                .minutes(0)
-                .toDate()) ??
-                0
-            )
-            .y(d => y(d[1] - d[0]));
-
-        svg.append("g")
-            .selectAll("g")
-            .data(stackedData)
-            .join("path")
-            .attr("fill", "none")
-            .attr("stroke", d => color(d.key))
-            .attr("stroke-width", 2)
-            .attr("d", lineGen);
-
-        for (const dataStack of stackedData) {
             svg.append("g")
                 .selectAll("g")
-                .data(dataStack)
-                .enter()
-                .append("circle")
-                .attr("fill", color(dataStack.key))
-                .style("stroke", color(dataStack.key))
-                .style("stroke-width", 5)
-                .style("stroke-opacity", 0)
-                .attr("cx", d => x(moment.unix(d.data.time)
+                .data(stackedData)
+                .join("path")
+                .style("fill", d => getGradient(d.key, color(d.key)))
+                .attr("opacity", 0.5)
+                .attr("class", "area")
+                .attr("d", areaGen);
+
+            const lineGen = line<SeriesPoint<{ [key: string]: number }>>()
+                .x(
+                    d => x(moment.unix(d.data.time)
                         .hours(0)
                         .minutes(0)
                         .toDate()) ??
                         0
                 )
-                .attr("cy", d => y(d[1] - d[0]))
-                .attr("r", 3)
-                .attr("class", (_, i) => `rect-${i}`)
-                .on("mouseover", mouseoverHandler)
-                .on("mouseout", mouseoutHandler);
+                .y(d => y(d[1] - d[0]));
+
+            svg.append("g")
+                .selectAll("g")
+                .data(stackedData)
+                .join("path")
+                .attr("fill", "none")
+                .attr("stroke", d => color(d.key))
+                .attr("stroke-width", 2)
+                .attr("d", lineGen);
+
+            for (const dataStack of stackedData) {
+                svg.append("g")
+                    .selectAll("g")
+                    .data(dataStack)
+                    .enter()
+                    .append("circle")
+                    .attr("fill", color(dataStack.key))
+                    .style("stroke", color(dataStack.key))
+                    .style("stroke-width", 5)
+                    .style("stroke-opacity", 0)
+                    .attr("cx", d => x(moment.unix(d.data.time)
+                        .hours(0)
+                        .minutes(0)
+                        .toDate()) ??
+                        0
+                    )
+                    .attr("cy", d => y(d[1] - d[0]))
+                    .attr("r", 3)
+                    .attr("class", (_, i) => `rect-${i}`)
+                    .on("mouseover", mouseoverHandler)
+                    .on("mouseout", mouseoutHandler);
+            }
         }
     }, [width, height, data, timespan]);
-
-    const buildTooltipHtml = useCallback((dataPoint: { [key: string]: number }): string => (
-        `
-            <p>${moment.unix(dataPoint.time).format("DD-MM-YYYY")}</p>
-            ${subgroups.map((subgroup, idx) => (
-            `
-                <p>
-                    <span class="dot" style="background-color: ${colors[idx]}"></span>
-                    <span class="label">${groupLabels ? groupLabels[idx] : subgroup}: </span>
-                    <span class="value">${dataPoint[subgroup]}</span>
-                </p>
-            `
-        )).join("")}
-        `
-    ), [subgroups, data]);
 
     /**
      * Get linear gradient for selected color
@@ -215,7 +204,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
      * @param _ The unused event param
      * @param dataPoint The data point rendered by this rect
      */
-     function mouseoverHandler(
+    function mouseoverHandler(
         this: SVGRectElement | BaseType,
         _: unknown,
         dataPoint: SeriesPoint<{ [key: string]: number }>
@@ -224,7 +213,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
         select(theTooltip.current)
             .style("display", "block")
             .select("#content")
-            .html(buildTooltipHtml(dataPoint.data));
+            .html(buildTootip(dataPoint.data));
         // add highlight
         select(this)
             .style("stroke-opacity", 0.5);
@@ -255,9 +244,16 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                     labels: groupLabels ?? subgroups,
                     colors
                 }}
+                disabled={data.length === 0}
             />
-            <ChartTooltip tooltipRef={theTooltip} />
-            <svg className="hook" ref={theSvg} />
+            {data.length === 0 ? (
+                noDataView(width, height)
+            ) : (
+                <React.Fragment>
+                    <ChartTooltip tooltipRef={theTooltip} />
+                    <svg className="hook" ref={theSvg} />
+                </React.Fragment>
+            )}
         </div>
     );
 };
