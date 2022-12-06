@@ -1,8 +1,8 @@
 import moment from "moment";
 import React, { useCallback } from "react";
 
-export const noDataView = (width: number, height: number) => (
-    <div className="no-data--wrapper" style={{ width, height }}>
+export const noDataView = () => (
+    <div className="no-data--wrapper">
         <p>No Data</p>
     </div>
 );

@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { max } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleLinear, scaleTime } from "d3-scale";
@@ -12,14 +13,13 @@ import "./Chart.scss";
 
 interface LineChartProps {
     title?: string;
-    width: number;
-    height: number;
     data: { [name: string]: number; time: number }[];
     label?: string;
     color: string;
 }
 
-const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label, color }) => {
+const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
+    const chartRef = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("30");
@@ -27,6 +27,9 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
 
     useLayoutEffect(() => {
         if (data.length > 0) {
+            const width = chartRef.current?.clientWidth ?? 0;
+            const height = chartRef.current?.clientHeight ?? 0;
+
             const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
@@ -53,8 +56,8 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
             const y = scaleLinear().domain([0, dataMaxN]).range([INNER_HEIGHT, 0]);
 
             const svg = select(theSvg.current)
-                .attr("width", INNER_WIDTH + MARGIN.left + MARGIN.right)
-                .attr("height", INNER_HEIGHT + MARGIN.top + MARGIN.bottom)
+                .attr("viewBox", `0 0 ${width} ${height}`)
+                .attr("preserveAspectRatio", "xMidYMid meet")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
@@ -111,7 +114,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
                 .call(xAxis);
         }
-    }, [width, height, data, timespan]);
+    }, [data, timespan]);
 
     /**
      * Handles mouseover event of a circle
@@ -151,19 +154,19 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
     }
 
     return (
-        <div className="chart-wrapper">
+        <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data.length === 0 })}>
             <ChartHeader
                 title={title}
                 onTimespanSelected={value => setTimespan(value)}
                 disabled={data.length === 0}
             />
             {data.length === 0 ? (
-                noDataView(width, height)
+                noDataView()
             ) : (
-                <React.Fragment>
+                <div className="chart-wrapper__content" ref={chartRef}>
                     <ChartTooltip tooltipRef={theTooltip} />
                     <svg className="hook" ref={theSvg} />
-                </React.Fragment>
+                </div>
             )}
         </div>
     );

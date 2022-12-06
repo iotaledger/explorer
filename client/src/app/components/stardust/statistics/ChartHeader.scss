@@ -16,17 +16,12 @@
             font-family: $inter;
             font-weight: 700;
             letter-spacing: 0.5px;
-            padding-right: 200px;
             line-height: 24px;
             font-feature-settings: 'pnum' on, 'lnum' on, 'ss01' on;
         }
     }
 
     .chart-header__select {
-        position: absolute;
-        top: 16px;
-        right: 24px;
-
         .select-wrapper {
             select {
                 background: var(--statistics-select-bg);

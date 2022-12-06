@@ -96,11 +96,9 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="section--header">
                                 <h2>Blocks</h2>
                             </div>
-                            <div className="row space-between">
+                            <div className="row statistics-row">
                                 <StackedBarChart
                                     title="Blocks"
-                                    width={560}
-                                    height={350}
                                     subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
                                     groupLabels={["Transaction", "Milestone", "Tagged Data", "No payload"]}
                                     colors={["#7AFFF2", "#00E0CA", "#36A1AC", "#186575"]}
@@ -108,190 +106,162 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 />
                                 <StackedBarChart
                                     title="Transaction Payload"
-                                    width={560}
-                                    height={350}
                                     subgroups={["confirmed", "conflicting"]}
                                     groupLabels={["Confirmed", "Conflicting"]}
                                     colors={["#00E0CA", "#36A1AC"]}
                                     data={transactions}
                                 />
                             </div>
-                            <div className="section">
-                                <div className="section--header">
-                                    <h2>Outputs</h2>
-                                </div>
-                                <div className="row space-between">
-                                    <StackedLineChart
-                                        title="Number of Outputs"
-                                        width={560}
-                                        height={350}
-                                        subgroups={["basic", "alias", "foundry", "nft"]}
-                                        groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
-                                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
-                                        data={outputs}
-                                    />
-                                    <StackedLineChart
-                                        title="Tokens Held by Outputs"
-                                        width={560}
-                                        height={350}
-                                        subgroups={["basic", "alias", "foundry", "nft"]}
-                                        groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
-                                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
-                                        data={tokensHeld}
-                                    />
-                                </div>
+                        </div>
+                        <div className="section">
+                            <div className="section--header">
+                                <h2>Outputs</h2>
                             </div>
-                            <div className="section">
-                                <div className="section--header">
-                                    <h2>Addresses and Tokens</h2>
-                                </div>
-                                <div className="row info-panel">
-                                    <ChartInfoPanel
-                                        label="Native tokens minted"
-                                        value={analyticStats?.nativeTokens?.count ?? "-"}
-                                    />
-                                    <ChartInfoPanel
-                                        label="NFTs minted"
-                                        value={analyticStats?.nfts?.count ?? "-"}
-                                    />
-                                    <ChartInfoPanel
-                                        label="Locked storage deposit"
-                                        value={
-                                            formatAmount(
-                                                Number(lockedStorageDepositValue),
-                                                tokenInfo
-                                            ).replace(COMMAS_REGEX, ",") ?? "-"
-                                        }
-                                    />
-                                </div>
-                                <div className="row space-between">
-                                    <LineChart
-                                        title="Addresses with Balance"
-                                        width={560}
-                                        height={350}
-                                        label="Addresses"
-                                        color="#00F5DD"
-                                        data={addressesWithBalance}
-                                    />
-                                    <StackedLineChart
-                                        title="Avg. Number of Active Addresses per Milestone"
-                                        width={560}
-                                        height={350}
-                                        subgroups={["sending", "receiving"]}
-                                        groupLabels={["Sending", "Receiving"]}
-                                        colors={["#4140DF", "#36A1AC"]}
-                                        data={avgAddressesPerMilestone}
-                                    />
-                                </div>
-                                <div className="row space-between">
-                                    <BarChart
-                                        title="Tokens transferred"
-                                        width={1172}
-                                        height={350}
-                                        color="#00E0CA"
-                                        label="Tokens"
-                                        data={tokensTransferred}
-                                    />
-                                </div>
+                            <div className="row statistics-row">
+                                <StackedLineChart
+                                    title="Number of Outputs"
+                                    subgroups={["basic", "alias", "foundry", "nft"]}
+                                    groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
+                                    colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
+                                    data={outputs}
+                                />
+                                <StackedLineChart
+                                    title="Tokens Held by Outputs"
+                                    subgroups={["basic", "alias", "foundry", "nft"]}
+                                    groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
+                                    colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
+                                    data={tokensHeld}
+                                />
                             </div>
-                            <div className="section">
-                                <div className="section--header">
-                                    <h2>Output Activity</h2>
-                                </div>
-                                <div className="row space-between">
-                                    <StackedBarChart
-                                        title="Alias Activity Counts"
-                                        width={1172}
-                                        height={350}
-                                        subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
-                                        groupLabels={["Created", "Governor changed", "State changed", "Destroyed"]}
-                                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
-                                        data={aliasActivity}
-                                    />
-                                </div>
+                        </div>
+                        <div className="section">
+                            <div className="section--header">
+                                <h2>Addresses and Tokens</h2>
                             </div>
-                            <div className="section">
-                                <div className="section--header">
-                                    <h2>Unlock Conditions</h2>
-                                </div>
-                                <div className="row space-between">
-                                    <StackedLineChart
-                                        title="Number of Unlock Conditions by Type"
-                                        width={560}
-                                        height={350}
-                                        subgroups={["timelock", "storageDepositReturn", "expiration"]}
-                                        groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
-                                        colors={["#4140DF", "#00F5DD", "#36A1AC"]}
-                                        data={unlockConditionsPerType}
-                                    />
-                                    <StackedBarChart
-                                        title="NFT Activity Counts"
-                                        width={560}
-                                        height={350}
-                                        subgroups={["created", "transferred", "destroyed"]}
-                                        groupLabels={["Created", "Transferred", "Destroyed"]}
-                                        colors={["#4140DF", "#00F5DD", "#36A1AC"]}
-                                        data={nftActivity}
-                                    />
-                                </div>
-                                <div className="row space-between">
-                                    <StackedLineChart
-                                        title="Tokens Held by Outputs with Unlock Conditions"
-                                        width={1172}
-                                        height={350}
-                                        subgroups={["timelock", "storageDepositReturn", "expiration"]}
-                                        groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
-                                        colors={["#4140DF", "#00F5DD", "#36A1AC"]}
-                                        data={tokensHeldWithUnlockCondition}
-                                    />
-                                </div>
+                            <div className="row info-panel">
+                                <ChartInfoPanel
+                                    label="Native tokens minted"
+                                    value={analyticStats?.nativeTokens?.count ?? "-"}
+                                />
+                                <ChartInfoPanel
+                                    label="NFTs minted"
+                                    value={analyticStats?.nfts?.count ?? "-"}
+                                />
+                                <ChartInfoPanel
+                                    label="Locked storage deposit"
+                                    value={
+                                        formatAmount(
+                                            Number(lockedStorageDepositValue),
+                                            tokenInfo
+                                        ).replace(COMMAS_REGEX, ",") ?? "-"
+                                    }
+                                />
                             </div>
-                            <div className="section">
-                                <div className="section--header">
-                                    <h2>Shimmer Claiming Rewards</h2>
-                                </div>
-                                <div className="row space-between">
-                                    <LineChart
-                                        title="Unclimed Tokens"
-                                        width={560}
-                                        height={350}
-                                        label="Unclimed Tokens"
-                                        color="#00F5DD"
-                                        data={unclaimedTokens}
-                                    />
-                                    <LineChart
-                                        title="Number of Unclaimed Shimmer Genesis Outputs"
-                                        width={560}
-                                        height={350}
-                                        label="Outputs"
-                                        color="#00F5DD"
-                                        data={unclaimedGenesisOutputs}
-                                    />
-                                </div>
+                            <div className="row statistics-row">
+                                <LineChart
+                                    title="Addresses with Balance"
+                                    label="Addresses"
+                                    color="#00F5DD"
+                                    data={addressesWithBalance}
+                                />
+                                <StackedLineChart
+                                    title="Avg. Number of Active Addresses per Milestone"
+                                    subgroups={["sending", "receiving"]}
+                                    groupLabels={["Sending", "Receiving"]}
+                                    colors={["#4140DF", "#36A1AC"]}
+                                    data={avgAddressesPerMilestone}
+                                />
                             </div>
-                            <div className="section">
-                                <div className="section--header">
-                                    <h2>Byte Cost</h2>
-                                </div>
-                                <div className="row space-between">
-                                    <StackedBarChart
-                                        title="Ledger Size"
-                                        width={560}
-                                        height={350}
-                                        subgroups={["keyBytes", "dataBytes"]}
-                                        groupLabels={["Key bytes", "Data bytes"]}
-                                        colors={["#00E0CA", "#36A1AC"]}
-                                        data={ledgerSize}
-                                    />
-                                    <LineChart
-                                        title="Storage Deposit"
-                                        width={560}
-                                        height={350}
-                                        label="Storage Deposit"
-                                        color="#00F5DD"
-                                        data={storageDeposit}
-                                    />
-                                </div>
+                            <div className="row statistics-row">
+                                <BarChart
+                                    title="Tokens transferred"
+                                    color="#00E0CA"
+                                    label="Tokens"
+                                    data={tokensTransferred}
+                                />
+                            </div>
+                        </div>
+                        <div className="section">
+                            <div className="section--header">
+                                <h2>Output Activity</h2>
+                            </div>
+                            <div className="row">
+                                <StackedBarChart
+                                    title="Alias Activity Counts"
+                                    subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
+                                    groupLabels={["Created", "Governor changed", "State changed", "Destroyed"]}
+                                    colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
+                                    data={aliasActivity}
+                                />
+                            </div>
+                        </div>
+                        <div className="section">
+                            <div className="section--header">
+                                <h2>Unlock Conditions</h2>
+                            </div>
+                            <div className="row statistics-row">
+                                <StackedLineChart
+                                    title="Number of Unlock Conditions by Type"
+                                    subgroups={["timelock", "storageDepositReturn", "expiration"]}
+                                    groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
+                                    colors={["#4140DF", "#00F5DD", "#36A1AC"]}
+                                    data={unlockConditionsPerType}
+                                />
+                                <StackedBarChart
+                                    title="NFT Activity Counts"
+                                    subgroups={["created", "transferred", "destroyed"]}
+                                    groupLabels={["Created", "Transferred", "Destroyed"]}
+                                    colors={["#4140DF", "#00F5DD", "#36A1AC"]}
+                                    data={nftActivity}
+                                />
+                            </div>
+                            <div className="row">
+                                <StackedLineChart
+                                    title="Tokens Held by Outputs with Unlock Conditions"
+                                    subgroups={["timelock", "storageDepositReturn", "expiration"]}
+                                    groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
+                                    colors={["#4140DF", "#00F5DD", "#36A1AC"]}
+                                    data={tokensHeldWithUnlockCondition}
+                                />
+                            </div>
+                        </div>
+                        <div className="section">
+                            <div className="section--header">
+                                <h2>Shimmer Claiming Rewards</h2>
+                            </div>
+                            <div className="row statistics-row">
+                                <LineChart
+                                    title="Unclimed Tokens"
+                                    label="Unclimed Tokens"
+                                    color="#00F5DD"
+                                    data={unclaimedTokens}
+                                />
+                                <LineChart
+                                    title="Number of Unclaimed Shimmer Genesis Outputs"
+                                    label="Outputs"
+                                    color="#00F5DD"
+                                    data={unclaimedGenesisOutputs}
+                                />
+                            </div>
+                        </div>
+                        <div className="section">
+                            <div className="section--header">
+                                <h2>Byte Cost</h2>
+                            </div>
+                            <div className="row statistics-row">
+                                <StackedBarChart
+                                    title="Ledger Size"
+                                    subgroups={["keyBytes", "dataBytes"]}
+                                    groupLabels={["Key bytes", "Data bytes"]}
+                                    colors={["#00E0CA", "#36A1AC"]}
+                                    data={ledgerSize}
+                                />
+                                <LineChart
+                                    title="Storage Deposit"
+                                    label="Storage Deposit"
+                                    color="#00F5DD"
+                                    data={storageDeposit}
+                                />
                             </div>
                         </div>
                     </div>

@@ -2,9 +2,14 @@
 @import "../../../../scss/media-queries";
 @import "../../../../scss/variables";
 @import "../../../../scss/fonts";
-@import "../../../../scss/themes";
+@import "../../../../scss/themes"; 
 
 .statistics-page {
+    .statistics-row {
+        @include tablet-down {
+            flex-direction: column;
+        }
+    }
     .info-panel {
         column-gap: 24px;
         margin-bottom: 24px;

@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleTime, scaleLinear, scaleOrdinal } from "d3-scale";
 import { BaseType, select } from "d3-selection";
@@ -12,8 +13,6 @@ import "./Chart.scss";
 
 interface StackedLineChartProps {
     title?: string;
-    width: number;
-    height: number;
     subgroups: string[];
     groupLabels?: string[];
     colors: string[];
@@ -22,13 +21,12 @@ interface StackedLineChartProps {
 
 const StackedLineChart: React.FC<StackedLineChartProps> = ({
     title,
-    height,
-    width,
     subgroups,
     groupLabels,
     colors,
     data
 }) => {
+    const chartRef = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("30");
@@ -36,6 +34,9 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
 
     useLayoutEffect(() => {
         if (data.length > 0) {
+            const width = chartRef.current?.clientWidth ?? 0;
+            const height = chartRef.current?.clientHeight ?? 0;
+
             const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
@@ -56,8 +57,8 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                     .toDate()
             );
             const svg = select(theSvg.current)
-                .attr("width", INNER_WIDTH + MARGIN.left + MARGIN.right)
-                .attr("height", INNER_HEIGHT + MARGIN.top + MARGIN.bottom)
+                .attr("viewBox", `0 0 ${width} ${height}`)
+                .attr("preserveAspectRatio", "xMidYMid meet")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
@@ -167,7 +168,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                     .on("mouseout", mouseoutHandler);
             }
         }
-    }, [width, height, data, timespan]);
+    }, [data, timespan]);
 
     /**
      * Get linear gradient for selected color
@@ -238,7 +239,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
     }
 
     return (
-        <div className="chart-wrapper">
+        <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data.length === 0 })}>
             <ChartHeader
                 title={title}
                 onTimespanSelected={value => setTimespan(value)}
@@ -249,12 +250,12 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 disabled={data.length === 0}
             />
             {data.length === 0 ? (
-                noDataView(width, height)
+                noDataView()
             ) : (
-                <React.Fragment>
+                <div className="chart-wrapper__content" ref={chartRef}>
                     <ChartTooltip tooltipRef={theTooltip} />
                     <svg className="hook" ref={theSvg} />
-                </React.Fragment>
+                </div>
             )}
         </div>
     );
