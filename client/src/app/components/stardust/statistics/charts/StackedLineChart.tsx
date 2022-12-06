@@ -42,19 +42,21 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             // reset
             select(theSvg.current).selectAll("*").remove();
 
+            const timestampToDate = (timestamp: number) => moment.unix(timestamp)
+                .hours(0)
+                .minutes(0)
+                .toDate();
+
             const color = scaleOrdinal<string>().domain(subgroups).range(colors);
 
             data = timespan !== "all" ? data.slice(-timespan) : data;
 
-            const stackedData = stack()
-                .keys(subgroups)(data);
+            const stackedData = stack().keys(subgroups)(data);
 
             const groups = data.map(
-                d => moment.unix(d.time)
-                    .hours(0)
-                    .minutes(0)
-                    .toDate()
+                d => timestampToDate(d.time)
             );
+
             const svg = select(theSvg.current)
                 .attr("width", INNER_WIDTH + MARGIN.left + MARGIN.right)
                 .attr("height", INNER_HEIGHT + MARGIN.top + MARGIN.bottom)
@@ -107,12 +109,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .call(xAxis);
 
             const areaGen = area<SeriesPoint<{ [key: string]: number }>>()
-                .x(d => x(moment.unix(d.data.time)
-                    .hours(0)
-                    .minutes(0)
-                    .toDate()) ??
-                    0
-                )
+                .x(d => x(timestampToDate(d.data.time)) ?? 0)
                 .y0(_ => y(0))
                 .y1(d => y(d[1] - d[0]));
 
@@ -126,13 +123,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .attr("d", areaGen);
 
             const lineGen = line<SeriesPoint<{ [key: string]: number }>>()
-                .x(
-                    d => x(moment.unix(d.data.time)
-                        .hours(0)
-                        .minutes(0)
-                        .toDate()) ??
-                        0
-                )
+                .x(d => x(timestampToDate(d.data.time)) ?? 0)
                 .y(d => y(d[1] - d[0]));
 
             svg.append("g")
@@ -154,18 +145,41 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                     .style("stroke", color(dataStack.key))
                     .style("stroke-width", 5)
                     .style("stroke-opacity", 0)
-                    .attr("cx", d => x(moment.unix(d.data.time)
-                        .hours(0)
-                        .minutes(0)
-                        .toDate()) ??
-                        0
-                    )
+                    .attr("cx", d => x(timestampToDate(d.data.time)) ?? 0)
                     .attr("cy", d => y(d[1] - d[0]))
                     .attr("r", 1)
-                    .attr("class", (_, i) => `rect-${i}`)
-                    .on("mouseover", mouseoverHandler)
-                    .on("mouseout", mouseoutHandler);
+                    .attr("class", (_, i) => `circle-${i}`);
             }
+
+            const halfLineWidth = data.length > 1 ?
+                ((x(timestampToDate(data[1].time)) ?? 0) - (x(timestampToDate(data[0].time)) ?? 0)) / 2 :
+                18;
+
+            svg.append("g")
+                .attr("class", "hover-lines")
+                // .attr("transform", `translate(0, ${INNER_HEIGHT})`)
+                .selectAll("g")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("fill", "transparent")
+                .attr("x", (_, idx) => (
+                    idx === 0 ? 0 : (x(timestampToDate(data[idx].time)) ?? 0) - halfLineWidth
+                ))
+                .attr("y", 0)
+                .attr("class", (_, i) => `rect-${i}`)
+                .attr("height", INNER_HEIGHT)
+                .attr("width", (_, idx) => {
+                    if (idx === 0) {
+                        return halfLineWidth;
+                    } else if (idx === data.length - 1) {
+                        return halfLineWidth;
+                    }
+
+                    return halfLineWidth * 2;
+                })
+                .on("mouseover", mouseoverHandler)
+                .on("mouseout", mouseoutHandler);
         }
     }, [width, height, data, timespan]);
 
@@ -199,29 +213,32 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
     }
 
     /**
-     * Handles mouseover event of a circle
+     * Handles mouseover event.
      * @param this The mouse hovered element
      * @param _ The unused event param
      * @param dataPoint The data point rendered by this rect
      */
     function mouseoverHandler(
         this: SVGRectElement | BaseType,
-        _: unknown,
-        dataPoint: SeriesPoint<{ [key: string]: number }>
+        _: MouseEvent,
+        dataPoint: { [key: string]: number }
     ) {
         // show tooltip
         select(theTooltip.current)
             .style("display", "block")
             .select("#content")
-            .html(buildTootip(dataPoint.data));
-        // add highlight
-        select(this)
+            .html(buildTootip(dataPoint));
+            // add highlight
+        const eleClass = (this as SVGRectElement).classList.value;
+        const idx = eleClass.slice(eleClass.indexOf("-") + 1);
+        select(theSvg.current)
+            .selectAll(`.circle-${idx}`)
             .attr("r", 2)
             .style("stroke-opacity", 0.5);
     }
 
     /**
-     * Handles mouseout event of a circle
+     * Handles mouseout event.
      * @param this The mouse hovered element
      * @param _ The unused event param
      */
@@ -232,7 +249,10 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
         // remove tooltip
         select(theTooltip.current).style("display", "none");
         // remove highlight
-        select(this)
+        const eleClass = (this as SVGRectElement).classList.value;
+        const idx = eleClass.slice(eleClass.indexOf("-") + 1);
+        select(theSvg.current)
+            .selectAll(`.circle-${idx}`)
             .attr("r", 1)
             .style("stroke-opacity", 0);
     }

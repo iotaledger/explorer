@@ -82,15 +82,13 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
                 .data(data)
                 .enter()
                 .append("circle")
-                .attr("r", 3)
+                .attr("r", 1)
                 .attr("fill", color)
                 .style("stroke", color)
                 .style("stroke-width", 5)
                 .style("stroke-opacity", 0)
                 .attr("transform", d => `translate(${x(timestampToDate(d.time))}, ${y(d.n)})`)
-                .attr("class", (_, i) => `rect-${i}`)
-                .on("mouseover", mouseoverHandler)
-                .on("mouseout", mouseoutHandler);
+                .attr("class", (_, i) => `circle-${i}`);
 
             let ticks;
             switch (timespan) {
@@ -110,18 +108,47 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
                 .call(xAxis);
+
+            const halfLineWidth = data.length > 1 ?
+                ((x(timestampToDate(data[1].time)) ?? 0) - (x(timestampToDate(data[0].time)) ?? 0)) / 2 :
+                18;
+
+            svg.append("g")
+                .attr("class", "hover-lines")
+                // .attr("transform", `translate(0, ${INNER_HEIGHT})`)
+                .selectAll("g")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("fill", "transparent")
+                .attr("x", (_, idx) => (
+                    idx === 0 ? 0 : (x(timestampToDate(data[idx].time)) ?? 0) - halfLineWidth
+                ))
+                .attr("y", 0)
+                .attr("class", (_, i) => `rect-${i}`)
+                .attr("height", INNER_HEIGHT)
+                .attr("width", (_, idx) => {
+                    if (idx === 0) {
+                        return halfLineWidth;
+                    } else if (idx === data.length - 1) {
+                        return halfLineWidth;
+                    }
+                    return halfLineWidth * 2;
+                })
+                .on("mouseover", mouseoverHandler)
+                .on("mouseout", mouseoutHandler);
         }
     }, [width, height, data, timespan]);
 
     /**
-     * Handles mouseover event of a circle
+     * Handles mouseover event.
      * @param this The mouse hovered element
      * @param _ The unused event param
      * @param dataPoint The data point rendered by this rect
      */
     function mouseoverHandler(
         this: SVGRectElement | BaseType,
-        _: unknown,
+        _: MouseEvent,
         dataPoint: { [key: string]: number }
     ) {
         // show tooltip
@@ -129,13 +156,17 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
             .style("display", "block")
             .select("#content")
             .html(buildTooltip(dataPoint));
-        // add highlight
-        select(this)
+            // add highlight
+        const eleClass = (this as SVGRectElement).classList.value;
+        const idx = eleClass.slice(eleClass.indexOf("-") + 1);
+        select(theSvg.current)
+            .selectAll(`.circle-${idx}`)
+            .attr("r", 2)
             .style("stroke-opacity", 0.5);
     }
 
     /**
-     * Handles mouseout event of a circle
+     * Handles mouseout event.
      * @param this The mouse hovered element
      * @param _ The unused event param
      */
@@ -146,7 +177,11 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
         // remove tooltip
         select(theTooltip.current).style("display", "none");
         // remove highlight
-        select(this)
+        const eleClass = (this as SVGRectElement).classList.value;
+        const idx = eleClass.slice(eleClass.indexOf("-") + 1);
+        select(theSvg.current)
+            .selectAll(`.circle-${idx}`)
+            .attr("r", 1)
             .style("stroke-opacity", 0);
     }
 
