@@ -158,7 +158,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                         0
                 )
                 .attr("cy", d => y(d[1] - d[0]))
-                .attr("r", 3)
+                .attr("r", 1)
                 .attr("class", (_, i) => `rect-${i}`)
                 .on("mouseover", mouseoverHandler)
                 .on("mouseout", mouseoutHandler);
@@ -227,6 +227,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             .html(buildTooltipHtml(dataPoint.data));
         // add highlight
         select(this)
+            .attr("r", 2)
             .style("stroke-opacity", 0.5);
     }
 
@@ -243,6 +244,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
         select(theTooltip.current).style("display", "none");
         // remove highlight
         select(this)
+            .attr("r", 1)
             .style("stroke-opacity", 0);
     }
 
