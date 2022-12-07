@@ -1,5 +1,6 @@
+import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import { max } from "d3-array";
-import { axisBottom, axisLeft } from "d3-axis";
+import { axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
 import moment from "moment";
@@ -23,12 +24,12 @@ const DAY_LABEL_FORMAT = "DD MMM";
 const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, label, color }) => {
     const theTooltip = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("30");
+    const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useSingleValueTooltip(data, label);
 
     useLayoutEffect(() => {
         if (data.length > 0) {
-            const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
+            const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
             // reset
@@ -78,23 +79,19 @@ const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, label, 
                     select(theTooltip.current).style("display", "none");
                 });
 
-            let tickValues;
-            switch (timespan) {
-                case "7":
-                    tickValues = x.domain();
-                    break;
-                case "30":
-                    tickValues = x.domain().filter((_, i) => !(i % 3));
-                    break;
-                default:
-                    tickValues = x.domain().filter((_, i) => !(i % 4));
-                    break;
-            }
 
-            const xAxis = axisBottom(x).tickValues(tickValues);
+            const tickValues = timespan === "7" ?
+                x.domain() :
+                // every third label
+                x.domain().filter((_, i) => !(i % 3));
+            const xAxis = axisLabelRotate(
+                axisBottom(x).tickValues(tickValues)
+            );
+
             svg.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 .call(xAxis);
         }
     }, [width, height, data, timespan]);

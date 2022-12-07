@@ -27,7 +27,7 @@ const ChartHeader: React.FC<ChartHeaderProps> = ({ title, onTimespanSelected, di
             <div className="chart-header__select">
                 <div className="select-wrapper">
                     <select
-                        defaultValue="30"
+                        defaultValue="all"
                         onChange={({ target: { value } }) => {
                             if (onTimespanSelected) {
                                 onTimespanSelected(value as TimespanOption);

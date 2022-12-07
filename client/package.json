@@ -17,6 +17,7 @@
         "test": "craco test"
     },
     "dependencies": {
+        "@d3fc/d3fc-axis": "^3.0.6",
         "@fontsource/ibm-plex-mono": "^4.5.12",
         "@fontsource/material-icons": "^4.5.4",
         "@iota/crypto.js": "^1.8.6",

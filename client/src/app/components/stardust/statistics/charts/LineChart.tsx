@@ -1,8 +1,10 @@
+import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import { max } from "d3-array";
-import { axisBottom, axisLeft } from "d3-axis";
+import { axisLeft } from "d3-axis";
 import { scaleLinear, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { line } from "d3-shape";
+import { timeFormat } from "d3-time-format";
 import moment from "moment";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
@@ -22,12 +24,12 @@ interface LineChartProps {
 const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label, color }) => {
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("30");
+    const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useSingleValueTooltip(data, label);
 
     useLayoutEffect(() => {
         if (data.length > 0) {
-            const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
+            const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
             // reset
@@ -90,23 +92,14 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
                 .attr("transform", d => `translate(${x(timestampToDate(d.time))}, ${y(d.n)})`)
                 .attr("class", (_, i) => `circle-${i}`);
 
-            let ticks;
-            switch (timespan) {
-                case "7":
-                    ticks = 7;
-                    break;
-                case "30":
-                    ticks = 7;
-                    break;
-                default:
-                    ticks = data.length / 4;
-                    break;
-            }
+            const xAxis = axisLabelRotate(
+                axisBottom(x).tickFormat(timeFormat("%d %b"))
+            );
 
-            const xAxis = axisBottom(x).ticks(ticks);
             svg.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 .call(xAxis);
 
             const halfLineWidth = data.length > 1 ?
@@ -115,7 +108,6 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
 
             svg.append("g")
                 .attr("class", "hover-lines")
-                // .attr("transform", `translate(0, ${INNER_HEIGHT})`)
                 .selectAll("g")
                 .data(data)
                 .enter()

@@ -100,7 +100,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <StackedBarChart
                                     title="Blocks"
                                     width={560}
-                                    height={350}
+                                    height={370}
                                     subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
                                     groupLabels={["Transaction", "Milestone", "Tagged Data", "No payload"]}
                                     colors={["#7AFFF2", "#00E0CA", "#36A1AC", "#186575"]}
@@ -109,7 +109,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 <StackedBarChart
                                     title="Transaction Payload"
                                     width={560}
-                                    height={350}
+                                    height={370}
                                     subgroups={["confirmed", "conflicting"]}
                                     groupLabels={["Confirmed", "Conflicting"]}
                                     colors={["#00E0CA", "#36A1AC"]}
@@ -124,7 +124,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <StackedLineChart
                                         title="Number of Outputs"
                                         width={560}
-                                        height={350}
+                                        height={370}
                                         subgroups={["basic", "alias", "foundry", "nft"]}
                                         groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
                                         colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
@@ -133,7 +133,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <StackedLineChart
                                         title="Tokens Held by Outputs"
                                         width={560}
-                                        height={350}
+                                        height={370}
                                         subgroups={["basic", "alias", "foundry", "nft"]}
                                         groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
                                         colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
@@ -168,7 +168,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <LineChart
                                         title="Addresses with Balance"
                                         width={560}
-                                        height={350}
+                                        height={370}
                                         label="Addresses"
                                         color="#00F5DD"
                                         data={addressesWithBalance}
@@ -176,7 +176,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <StackedLineChart
                                         title="Avg. Number of Active Addresses per Milestone"
                                         width={560}
-                                        height={350}
+                                        height={370}
                                         subgroups={["sending", "receiving"]}
                                         groupLabels={["Sending", "Receiving"]}
                                         colors={["#4140DF", "#36A1AC"]}
@@ -187,7 +187,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <BarChart
                                         title="Tokens transferred"
                                         width={1172}
-                                        height={350}
+                                        height={370}
                                         color="#00E0CA"
                                         label="Tokens"
                                         data={tokensTransferred}
@@ -202,7 +202,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <StackedBarChart
                                         title="Alias Activity Counts"
                                         width={1172}
-                                        height={350}
+                                        height={370}
                                         subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
                                         groupLabels={["Created", "Governor changed", "State changed", "Destroyed"]}
                                         colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
@@ -218,7 +218,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <StackedLineChart
                                         title="Number of Unlock Conditions by Type"
                                         width={560}
-                                        height={350}
+                                        height={370}
                                         subgroups={["timelock", "storageDepositReturn", "expiration"]}
                                         groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
                                         colors={["#4140DF", "#00F5DD", "#36A1AC"]}
@@ -227,7 +227,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <StackedBarChart
                                         title="NFT Activity Counts"
                                         width={560}
-                                        height={350}
+                                        height={370}
                                         subgroups={["created", "transferred", "destroyed"]}
                                         groupLabels={["Created", "Transferred", "Destroyed"]}
                                         colors={["#4140DF", "#00F5DD", "#36A1AC"]}
@@ -238,7 +238,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <StackedLineChart
                                         title="Tokens Held by Outputs with Unlock Conditions"
                                         width={1172}
-                                        height={350}
+                                        height={370}
                                         subgroups={["timelock", "storageDepositReturn", "expiration"]}
                                         groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
                                         colors={["#4140DF", "#00F5DD", "#36A1AC"]}
@@ -254,7 +254,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <LineChart
                                         title="Unclimed Tokens"
                                         width={560}
-                                        height={350}
+                                        height={370}
                                         label="Unclimed Tokens"
                                         color="#00F5DD"
                                         data={unclaimedTokens}
@@ -262,7 +262,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <LineChart
                                         title="Number of Unclaimed Shimmer Genesis Outputs"
                                         width={560}
-                                        height={350}
+                                        height={370}
                                         label="Outputs"
                                         color="#00F5DD"
                                         data={unclaimedGenesisOutputs}
@@ -277,7 +277,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <StackedBarChart
                                         title="Ledger Size"
                                         width={560}
-                                        height={350}
+                                        height={370}
                                         subgroups={["keyBytes", "dataBytes"]}
                                         groupLabels={["Key bytes", "Data bytes"]}
                                         colors={["#00E0CA", "#36A1AC"]}
@@ -286,7 +286,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     <LineChart
                                         title="Storage Deposit"
                                         width={560}
-                                        height={350}
+                                        height={370}
                                         label="Storage Deposit"
                                         color="#00F5DD"
                                         data={storageDeposit}
