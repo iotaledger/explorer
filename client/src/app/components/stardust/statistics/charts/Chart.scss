@@ -2,11 +2,9 @@
 @import "../../../../../scss/variables";
 @import "../../../../../scss/fonts";
 @import "../../../../../scss/themes";
+@import "../../../../../scss/media-queries";
 
 .chart-wrapper {
-    position: relative;
-    padding: 14px;
-    margin-bottom: 14px;
     border-radius: 8px;
     flex: 1;
 

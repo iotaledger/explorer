@@ -118,7 +118,6 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
 
             svg.append("g")
                 .attr("class", "hover-lines")
-                // .attr("transform", `translate(0, ${INNER_HEIGHT})`)
                 .selectAll("g")
                 .data(data)
                 .enter()
@@ -189,7 +188,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
     }
 
     return (
-        <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data.length === 0 })}>
+        <div className={classNames("chart-wrapper line-chart", { "chart-wrapper--no-data": data.length === 0 })}>
             <ChartHeader
                 title={title}
                 onTimespanSelected={value => setTimespan(value)}

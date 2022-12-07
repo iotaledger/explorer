@@ -78,7 +78,11 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
         }).catch(e => console.log("Chronicle analytics fetch failed", e));
     }, []);
 
-    const lockedStorageDepositValue = analyticStats?.lockedStorageDeposit?.totalByteCost;
+    const lockedStorageDepositValue = formatAmount(
+            Number(analyticStats?.lockedStorageDeposit?.totalByteCost),
+            tokenInfo
+        ).replace(COMMAS_REGEX, ",") ??
+        "-";
 
     return (
         <div className="statistics-page">
@@ -149,15 +153,10 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 />
                                 <ChartInfoPanel
                                     label="Locked storage deposit"
-                                    value={
-                                        formatAmount(
-                                            Number(lockedStorageDepositValue),
-                                            tokenInfo
-                                        ).replace(COMMAS_REGEX, ",") ?? "-"
-                                    }
+                                    value={lockedStorageDepositValue}
                                 />
                             </div>
-                            <div className="row statistics-row">
+                            <div className="row statistics-row statistics-row--header-margin-lg">
                                 <LineChart
                                     title="Addresses with Balance"
                                     label="Addresses"
@@ -248,7 +247,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="section--header">
                                 <h2>Byte Cost</h2>
                             </div>
-                            <div className="row statistics-row">
+                            <div className="row statistics-row statistics-row--header-margin-lg">
                                 <StackedBarChart
                                     title="Ledger Size"
                                     subgroups={["keyBytes", "dataBytes"]}

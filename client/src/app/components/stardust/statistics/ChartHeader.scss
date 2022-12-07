@@ -8,7 +8,6 @@
         h4 {
             @include font-size(16px);
 
-            padding-left: 7px;
             min-height: 40px;
             display: flex;
             align-items: center;
@@ -27,9 +26,11 @@
                 background: var(--statistics-select-bg);
                 color: var(--card-color);
                 border-color: var(--statistics-select-border);
+                height: 48px;
             }
 
             .chevron {
+                top: 12px;
                 color: var(--card-color);
             }
         }
