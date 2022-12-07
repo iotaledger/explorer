@@ -31,10 +31,17 @@
             .tick text {
                 @include font-size(10px);
                 color: $gray-6;
+                fill: $gray-6;
             }
         }
 
-        .axis--y path, .axis--x path {
+        .axis--x {
+            path {
+                stroke: $gray-6;
+            }
+        }
+
+        .axis--y path {
             stroke: none;
         }
 

@@ -1,5 +1,6 @@
+import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
-import { axisBottom, axisLeft } from "d3-axis";
+import { axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { SeriesPoint, stack } from "d3-shape";
@@ -30,7 +31,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     const chartRef = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("30");
+    const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTootip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
 
     useLayoutEffect(() => {
@@ -38,7 +39,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             const width = chartRef.current?.clientWidth ?? 0;
             const height = chartRef.current?.clientHeight ?? 0;
 
-            const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
+            const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
             // reset
@@ -100,22 +101,18 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 .attr("height", d => y(d[0]) - y(d[1]))
                 .attr("width", x.bandwidth());
 
-            let tickValues = x.domain();
-            switch (timespan) {
-                case "7":
-                    break;
-                case "30":
-                    tickValues = x.domain().filter((_, i) => !(i % 3));
-                    break;
-                default:
-                    tickValues = x.domain().filter((_, i) => !(i % 4));
-                    break;
-            }
+            const tickValues = timespan === "7" ?
+                x.domain() :
+                // every third label
+                x.domain().filter((_, i) => !(i % 3));
+            const xAxis = axisLabelRotate(
+                axisBottom(x).tickValues(tickValues)
+            );
 
-            const xAxis = axisBottom(x).tickValues(tickValues);
             svg.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 .call(xAxis);
         }
     }, [data, timespan]);

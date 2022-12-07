@@ -1,5 +1,6 @@
+import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
-import { axisBottom, axisLeft } from "d3-axis";
+import { axisLeft } from "d3-axis";
 import { scaleTime, scaleLinear, scaleOrdinal } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { area, line, SeriesPoint, stack } from "d3-shape";
@@ -29,7 +30,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
     const chartRef = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("30");
+    const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTootip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
 
     useLayoutEffect(() => {
@@ -37,7 +38,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             const width = chartRef.current?.clientWidth ?? 0;
             const height = chartRef.current?.clientHeight ?? 0;
 
-            const MARGIN = { top: 30, right: 20, bottom: 30, left: 50 };
+            const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
             // reset
@@ -69,13 +70,8 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .range([0, INNER_WIDTH]);
 
             const computeYMax = (entries: { [name: string]: number; time: number }[]) => Math.max(
-                ...entries.map(d => {
-                    let sum = 0;
-                    for (const key of subgroups) {
-                        sum += d[key];
-                    }
-                    return sum;
-                })
+                ...entries.map(d => Math.max(...subgroups.map(key => d[key])
+                ))
             );
 
             const y = scaleLinear().domain([0, computeYMax(data)])
@@ -90,23 +86,14 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .attr("class", "axis axis--y")
                 .call(yAxisGrid);
 
-            let tickValues;
-            switch (timespan) {
-                case "7":
-                    tickValues = 7;
-                    break;
-                default:
-                    tickValues = Math.floor(data.length / 4);
-                    break;
-            }
-
-            const xAxis = axisBottom<Date>(x)
-                .ticks(tickValues)
-                .tickFormat(timeFormat("%d %b"));
+            const xAxis = axisLabelRotate(
+                axisBottom(x).tickFormat(timeFormat("%d %b"))
+            );
 
             svg.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 .call(xAxis);
 
             const areaGen = area<SeriesPoint<{ [key: string]: number }>>()
@@ -158,7 +145,6 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
 
             svg.append("g")
                 .attr("class", "hover-lines")
-                // .attr("transform", `translate(0, ${INNER_HEIGHT})`)
                 .selectAll("g")
                 .data(data)
                 .enter()
@@ -229,7 +215,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             .style("display", "block")
             .select("#content")
             .html(buildTootip(dataPoint));
-            // add highlight
+        // add highlight
         const eleClass = (this as SVGRectElement).classList.value;
         const idx = eleClass.slice(eleClass.indexOf("-") + 1);
         select(theSvg.current)
