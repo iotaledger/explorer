@@ -26,7 +26,7 @@ const ChartTooltip: React.FC<ChartTooltipProps> = ({ tooltipRef }) => {
             ref={tooltipRef}
             style={{
                 top: position.y + 16,
-                left: position.x
+                left: position.x + 8
             }}
         >
             <div id="content" />
