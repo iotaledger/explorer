@@ -5,10 +5,10 @@ import { axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
 import moment from "moment";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { noDataView, useSingleValueTooltip } from "../ChartUtils";
+import { noDataView, useChartWrapperSize, useSingleValueTooltip } from "../ChartUtils";
 import "./Chart.scss";
 
 interface BarChartProps {
@@ -21,16 +21,21 @@ interface BarChartProps {
 const DAY_LABEL_FORMAT = "DD MMM";
 
 const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
-    const chartRef = useRef<HTMLDivElement>(null);
+    const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
+    const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
+        if (chartWrapper !== null) {
+            setTheRef(chartWrapper);
+        }
+    }, []);
     const theTooltip = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useSingleValueTooltip(data, label);
 
     useLayoutEffect(() => {
-        if (data.length > 0) {
-            const width = chartRef.current?.clientWidth ?? 0;
-            const height = chartRef.current?.clientHeight ?? 0;
+        if (data.length > 0 && wrapperWidth && wrapperHeight) {
+            const width = wrapperWidth;
+            const height = wrapperHeight;
 
             const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
@@ -97,7 +102,7 @@ const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 .call(xAxis);
         }
-    }, [data, timespan]);
+    }, [data, timespan, wrapperWidth, wrapperHeight]);
 
     return (
         <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data.length === 0 })}>
@@ -109,7 +114,7 @@ const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
             {data.length === 0 ? (
                 noDataView()
             ) : (
-                <div className="chart-wrapper__content" ref={chartRef}>
+                <div className="chart-wrapper__content" ref={chartWrapperRef}>
                     <ChartTooltip tooltipRef={theTooltip} />
                     <svg className="hook" ref={theSvg} />
                 </div>

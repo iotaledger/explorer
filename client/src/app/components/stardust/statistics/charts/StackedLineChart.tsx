@@ -6,10 +6,10 @@ import { BaseType, select } from "d3-selection";
 import { area, line, SeriesPoint, stack } from "d3-shape";
 import { timeFormat } from "d3-time-format";
 import moment from "moment";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { noDataView, useMultiValueTooltip } from "../ChartUtils";
+import { noDataView, useChartWrapperSize, useMultiValueTooltip } from "../ChartUtils";
 import "./Chart.scss";
 
 interface StackedLineChartProps {
@@ -27,16 +27,21 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
     colors,
     data
 }) => {
-    const chartRef = useRef<HTMLDivElement>(null);
+    const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
+    const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
+        if (chartWrapper !== null) {
+            setTheRef(chartWrapper);
+        }
+    }, []);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTootip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
 
     useLayoutEffect(() => {
-        if (data.length > 0) {
-            const width = chartRef.current?.clientWidth ?? 0;
-            const height = chartRef.current?.clientHeight ?? 0;
+        if (data.length > 0 && wrapperWidth && wrapperHeight) {
+            const width = wrapperWidth;
+            const height = wrapperHeight;
 
             const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
@@ -168,7 +173,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .on("mouseover", mouseoverHandler)
                 .on("mouseout", mouseoutHandler);
         }
-    }, [data, timespan]);
+    }, [data, timespan, wrapperWidth, wrapperHeight]);
 
     /**
      * Get linear gradient for selected color
@@ -258,7 +263,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             {data.length === 0 ? (
                 noDataView()
             ) : (
-                <div className="chart-wrapper__content" ref={chartRef}>
+                <div className="chart-wrapper__content" ref={chartWrapperRef}>
                     <ChartTooltip tooltipRef={theTooltip} />
                     <svg className="hook" ref={theSvg} />
                 </div>

@@ -7,10 +7,10 @@ import { BaseType, select } from "d3-selection";
 import { line } from "d3-shape";
 import { timeFormat } from "d3-time-format";
 import moment from "moment";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { noDataView, useSingleValueTooltip } from "../ChartUtils";
+import { noDataView, useChartWrapperSize, useSingleValueTooltip } from "../ChartUtils";
 import "./Chart.scss";
 
 interface LineChartProps {
@@ -21,16 +21,21 @@ interface LineChartProps {
 }
 
 const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
-    const chartRef = useRef<HTMLDivElement>(null);
+    const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
+    const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
+        if (chartWrapper !== null) {
+            setTheRef(chartWrapper);
+        }
+    }, []);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useSingleValueTooltip(data, label);
 
     useLayoutEffect(() => {
-        if (data.length > 0) {
-            const width = chartRef.current?.clientWidth ?? 0;
-            const height = chartRef.current?.clientHeight ?? 0;
+        if (data.length > 0 && wrapperWidth && wrapperHeight) {
+            const width = wrapperWidth;
+            const height = wrapperHeight;
 
             const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
@@ -133,7 +138,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
                 .on("mouseover", mouseoverHandler)
                 .on("mouseout", mouseoutHandler);
         }
-    }, [data, timespan]);
+    }, [data, timespan, wrapperWidth, wrapperHeight]);
 
     /**
      * Handles mouseover event.
@@ -190,7 +195,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
             {data.length === 0 ? (
                 noDataView()
             ) : (
-                <div className="chart-wrapper__content" ref={chartRef}>
+                <div className="chart-wrapper__content" ref={chartWrapperRef}>
                     <ChartTooltip tooltipRef={theTooltip} />
                     <svg className="hook" ref={theSvg} />
                 </div>
