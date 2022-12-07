@@ -8,7 +8,7 @@ import moment from "moment";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { useMultiValueTooltip, noDataView } from "../ChartUtils";
+import { useMultiValueTooltip, noDataView, useChartWrapperSize } from "../ChartUtils";
 import "./Chart.scss";
 
 interface StackedBarChartProps {
@@ -33,11 +33,12 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTootip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
+    const { wrapperWidth, wrapperHeight } = useChartWrapperSize(chartRef);
 
     useLayoutEffect(() => {
         if (data.length > 0) {
-            const width = chartRef.current?.clientWidth ?? 0;
-            const height = chartRef.current?.clientHeight ?? 0;
+            const width = wrapperWidth ?? 0;
+            const height = wrapperHeight ?? 0;
 
             const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
@@ -66,7 +67,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
             const y = scaleLinear().domain([0, computeYMax(data)])
                 .range([INNER_HEIGHT, 0]);
-
 
             const svg = select(theSvg.current)
                 .attr("viewBox", `0 0 ${width} ${height}`)
@@ -115,7 +115,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 .call(xAxis);
         }
-    }, [data, timespan]);
+    }, [data, timespan, wrapperWidth, wrapperHeight]);
 
     /**
      * Handles mouseover event of a bar "part"
