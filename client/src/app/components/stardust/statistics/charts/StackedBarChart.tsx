@@ -36,9 +36,9 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     const { wrapperWidth, wrapperHeight } = useChartWrapperSize(chartRef);
 
     useLayoutEffect(() => {
-        if (data.length > 0) {
-            const width = wrapperWidth ?? 0;
-            const height = wrapperHeight ?? 0;
+        if (data.length > 0 && wrapperWidth && wrapperHeight) {
+            const width = wrapperWidth;
+            const height = wrapperHeight;
 
             const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;

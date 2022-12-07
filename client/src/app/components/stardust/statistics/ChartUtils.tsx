@@ -61,7 +61,7 @@ export const useChartWrapperSize = (ref: React.RefObject<HTMLDivElement> | null)
         window.addEventListener("resize", handleResize);
         handleResize();
         return () => window.removeEventListener("resize", handleResize);
-    }, [ref?.current]); // Empty array ensures that effect is only run on mount
+    }, [ref?.current]);
 
     return wrapperSize;
 };
