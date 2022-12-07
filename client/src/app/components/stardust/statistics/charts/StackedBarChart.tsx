@@ -5,7 +5,7 @@ import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { SeriesPoint, stack } from "d3-shape";
 import moment from "moment";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import { useMultiValueTooltip, noDataView, useChartWrapperSize } from "../ChartUtils";
@@ -28,12 +28,16 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     colors,
     data
 }) => {
-    const chartRef = useRef<HTMLDivElement>(null);
+    const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
+    const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
+        if (chartWrapper !== null) {
+            setTheRef(chartWrapper);
+        }
+    }, []);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTootip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
-    const { wrapperWidth, wrapperHeight } = useChartWrapperSize(chartRef);
 
     useLayoutEffect(() => {
         if (data.length > 0 && wrapperWidth && wrapperHeight) {
@@ -169,7 +173,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             {data.length === 0 ? (
                 noDataView()
             ) : (
-                <div className="chart-wrapper__content" ref={chartRef}>
+                <div className="chart-wrapper__content" ref={chartWrapperRef}>
                     <ChartTooltip tooltipRef={theTooltip} />
                     <svg className="hook" ref={theSvg} />
                 </div>

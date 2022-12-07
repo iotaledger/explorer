@@ -44,7 +44,11 @@ export const useMultiValueTooltip = (
     return buildTooltip;
 };
 
-export const useChartWrapperSize = (ref: React.RefObject<HTMLDivElement> | null) => {
+export const useChartWrapperSize: () => [
+    { wrapperWidth?: number; wrapperHeight?: number },
+    React.Dispatch<React.SetStateAction<HTMLDivElement | null>>
+] = () => {
+    const [chartWrapper, setChartWrapper] = useState<HTMLDivElement | null>(null);
     const [wrapperSize, setWrapperSize] = useState<{ wrapperWidth?: number; wrapperHeight?: number }>({
         wrapperWidth: undefined,
         wrapperHeight: undefined
@@ -52,17 +56,17 @@ export const useChartWrapperSize = (ref: React.RefObject<HTMLDivElement> | null)
 
     const handleResize = useCallback(() => {
         setWrapperSize({
-            wrapperWidth: ref?.current?.clientWidth ?? 0,
-            wrapperHeight: ref?.current?.clientHeight ?? 0
+            wrapperWidth: chartWrapper?.clientWidth ?? 0,
+            wrapperHeight: chartWrapper?.clientHeight ?? 0
         });
-    }, [ref?.current]);
+    }, [chartWrapper]);
 
     useEffect(() => {
         window.addEventListener("resize", handleResize);
         handleResize();
         return () => window.removeEventListener("resize", handleResize);
-    }, [ref?.current]);
+    }, [chartWrapper]);
 
-    return wrapperSize;
+    return [wrapperSize, setChartWrapper];
 };
 
