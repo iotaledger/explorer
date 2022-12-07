@@ -69,13 +69,8 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .range([0, INNER_WIDTH]);
 
             const computeYMax = (entries: { [name: string]: number; time: number }[]) => Math.max(
-                ...entries.map(d => {
-                    let sum = 0;
-                    for (const key of subgroups) {
-                        sum += d[key];
-                    }
-                    return sum;
-                })
+                ...entries.map(d => Math.max(...subgroups.map(key => d[key])
+                ))
             );
 
             const y = scaleLinear().domain([0, computeYMax(data)])
