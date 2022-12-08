@@ -1,19 +1,18 @@
 import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
+import classNames from "classnames";
 import { max } from "d3-array";
 import { axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
 import moment from "moment";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { noDataView, useSingleValueTooltip } from "../ChartUtils";
+import { noDataView, useChartWrapperSize, useSingleValueTooltip } from "../ChartUtils";
 import "./Chart.scss";
 
 interface BarChartProps {
     title?: string;
-    width: number;
-    height: number;
     data: { [name: string]: number; time: number }[];
     label?: string;
     color: string;
@@ -21,14 +20,23 @@ interface BarChartProps {
 
 const DAY_LABEL_FORMAT = "DD MMM";
 
-const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, label, color }) => {
+const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
+    const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
+    const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
+        if (chartWrapper !== null) {
+            setTheRef(chartWrapper);
+        }
+    }, []);
     const theTooltip = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useSingleValueTooltip(data, label);
 
     useLayoutEffect(() => {
-        if (data.length > 0) {
+        if (data.length > 0 && wrapperWidth && wrapperHeight) {
+            const width = wrapperWidth;
+            const height = wrapperHeight;
+
             const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
@@ -46,8 +54,8 @@ const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, label, 
                 .range([INNER_HEIGHT, 0]);
 
             const svg = select(theSvg.current)
-                .attr("width", INNER_WIDTH + MARGIN.left + MARGIN.right)
-                .attr("height", INNER_HEIGHT + MARGIN.top + MARGIN.bottom)
+                .attr("viewBox", `0 0 ${width} ${height}`)
+                .attr("preserveAspectRatio", "xMidYMid meet")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
@@ -94,22 +102,22 @@ const BarChart: React.FC<BarChartProps> = ({ title, height, width, data, label, 
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 .call(xAxis);
         }
-    }, [width, height, data, timespan]);
+    }, [data, timespan, wrapperWidth, wrapperHeight]);
 
     return (
-        <div className="chart-wrapper">
+        <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data.length === 0 })}>
             <ChartHeader
                 title={title}
                 onTimespanSelected={value => setTimespan(value)}
                 disabled={data.length === 0}
             />
             {data.length === 0 ? (
-                noDataView(width, height)
+                noDataView()
             ) : (
-                <React.Fragment>
+                <div className="chart-wrapper__content" ref={chartWrapperRef}>
                     <ChartTooltip tooltipRef={theTooltip} />
                     <svg className="hook" ref={theSvg} />
-                </React.Fragment>
+                </div>
             )}
         </div>
     );

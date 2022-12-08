@@ -2,13 +2,20 @@
 @import "../../../../../scss/variables";
 @import "../../../../../scss/fonts";
 @import "../../../../../scss/themes";
+@import "../../../../../scss/media-queries";
 
 .chart-wrapper {
-    position: relative;
-    width: fit-content;
-    padding: 14px;
-    margin-bottom: 14px;
     border-radius: 8px;
+    flex: 1;
+
+    &.chart-wrapper--no-data{
+        background-color: var(--light-bg);
+        border-radius: 6px;
+    }
+    
+    .chart-wrapper__content {
+        height: 350px;
+    }
 
     svg.hook {
         rect {
@@ -47,6 +54,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        height: 100%;
         .no-data {
             color: var(--card-color);
         }

@@ -14,9 +14,8 @@ const ChartLegend: React.FC<ChartLegendProps> = ({ labels, colors }) => {
     useLayoutEffect(() => {
         const ITEM_HEIGHT = 18;
 
-        const MARGIN = { top: 10, right: 10, bottom: 10, left: 10 };
+        const MARGIN = { top: 10, right: 10, bottom: 10, left: 3 };
         const HEIGHT = ITEM_HEIGHT + MARGIN.top + MARGIN.bottom;
-
 
         const color = scaleOrdinal<string>().domain(labels).range(colors);
 

@@ -2,9 +2,24 @@
 @import "../../../../scss/media-queries";
 @import "../../../../scss/variables";
 @import "../../../../scss/fonts";
-@import "../../../../scss/themes";
+@import "../../../../scss/themes"; 
 
 .statistics-page {
+    .statistics-row {
+        gap: 15px 30px;
+        @include tablet-down {
+            flex-direction: column;
+        }
+
+        &.statistics-row--header-margin-lg {
+            .line-chart .chart-header .row {
+                margin-bottom: 72px;
+                @include tablet-down {
+                    margin-bottom: 30px;
+                }
+            }
+        }
+    }
     .info-panel {
         column-gap: 24px;
         margin-bottom: 24px;

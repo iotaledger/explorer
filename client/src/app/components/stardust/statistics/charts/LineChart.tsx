@@ -1,4 +1,5 @@
 import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
+import classNames from "classnames";
 import { max } from "d3-array";
 import { axisLeft } from "d3-axis";
 import { scaleLinear, scaleTime } from "d3-scale";
@@ -6,29 +7,36 @@ import { BaseType, select } from "d3-selection";
 import { line } from "d3-shape";
 import { timeFormat } from "d3-time-format";
 import moment from "moment";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { noDataView, useSingleValueTooltip } from "../ChartUtils";
+import { noDataView, useChartWrapperSize, useSingleValueTooltip } from "../ChartUtils";
 import "./Chart.scss";
 
 interface LineChartProps {
     title?: string;
-    width: number;
-    height: number;
     data: { [name: string]: number; time: number }[];
     label?: string;
     color: string;
 }
 
-const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label, color }) => {
+const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
+    const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
+    const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
+        if (chartWrapper !== null) {
+            setTheRef(chartWrapper);
+        }
+    }, []);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useSingleValueTooltip(data, label);
 
     useLayoutEffect(() => {
-        if (data.length > 0) {
+        if (data.length > 0 && wrapperWidth && wrapperHeight) {
+            const width = wrapperWidth;
+            const height = wrapperHeight;
+
             const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
@@ -55,8 +63,8 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
             const y = scaleLinear().domain([0, dataMaxN]).range([INNER_HEIGHT, 0]);
 
             const svg = select(theSvg.current)
-                .attr("width", INNER_WIDTH + MARGIN.left + MARGIN.right)
-                .attr("height", INNER_HEIGHT + MARGIN.top + MARGIN.bottom)
+                .attr("viewBox", `0 0 ${width} ${height}`)
+                .attr("preserveAspectRatio", "xMidYMid meet")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
@@ -130,7 +138,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
                 .on("mouseover", mouseoverHandler)
                 .on("mouseout", mouseoutHandler);
         }
-    }, [width, height, data, timespan]);
+    }, [data, timespan, wrapperWidth, wrapperHeight]);
 
     /**
      * Handles mouseover event.
@@ -178,19 +186,19 @@ const LineChart: React.FC<LineChartProps> = ({ title, height, width, data, label
     }
 
     return (
-        <div className="chart-wrapper">
+        <div className={classNames("chart-wrapper line-chart", { "chart-wrapper--no-data": data.length === 0 })}>
             <ChartHeader
                 title={title}
                 onTimespanSelected={value => setTimespan(value)}
                 disabled={data.length === 0}
             />
             {data.length === 0 ? (
-                noDataView(width, height)
+                noDataView()
             ) : (
-                <React.Fragment>
+                <div className="chart-wrapper__content" ref={chartWrapperRef}>
                     <ChartTooltip tooltipRef={theTooltip} />
                     <svg className="hook" ref={theSvg} />
-                </React.Fragment>
+                </div>
             )}
         </div>
     );
