@@ -1,10 +1,8 @@
-/* eslint-disable no-void */
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional/dist/Optional";
-import React, { ReactNode } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { AsyncState } from "../../../helpers/promise/AsyncState";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
@@ -12,7 +10,6 @@ import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import AsyncComponent from "../../components/AsyncComponent";
 import QR from "../../components/chrysalis/QR";
 import CopyButton from "../../components/CopyButton";
 import Spinner from "../../components/Spinner";
@@ -25,7 +22,6 @@ import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
 import mainHeaderMessage from "./../../../assets/modals/stardust/address/main-header.json";
 import Modal from "./../../components/Modal";
-import { AddressPageState } from "./AddressPageState";
 import NftSection from "./NftSection";
 import "./AddressPage.scss";
 
@@ -36,56 +32,34 @@ interface IAddressPageLocationProps {
     addressDetails: IBech32AddressDetails;
 }
 
-type State = AddressPageState & AsyncState;
+const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
+    { location, match: { params: { network, address } } }
+) => {
+    const isMounted = useRef(false);
+    const { tokenInfo, bech32Hrp, rentStructure } = useContext(NetworkContext);
+    const [tangleCacheService] = useState(
+        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
+    );
 
-/**
- * Component which will show the address page for stardust.
- */
-class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>, State> {
-    /**
-     * The component context type.
-     */
-    public static contextType = NetworkContext;
+    const [jobToStatus, setJobToStatus] = useState(new Map<string, PromiseStatus>());
 
-    /**
-     * The component context.
-     */
-    public declare context: React.ContextType<typeof NetworkContext>;
+    const [bech32AddressDetails, setBech32AddressDetails] = useState<IBech32AddressDetails | undefined>();
+    const [balance, setBalance] = useState<number | undefined>();
+    const [sigLockedBalance, setSigLockedBalance] = useState<number | undefined>();
+    const [storageRentBalance, setStorageRentBalance] = useState<number | undefined>();
+    const [outputResponse, setOutputResponse] = useState<IOutputResponse[] | undefined>();
+    const [isFormatStorageRentFull, setIsFormatStorageRentFull] = useState<boolean>(false);
 
-    /**
-     * API Client for tangle requests.
-     */
-    private readonly _tangleCacheService: StardustTangleCacheService;
+    useEffect(() => {
+        isMounted.current = true;
 
-    /**
-     * Create a new instance of AddressPage.
-     * @param props The props.
-     */
-    constructor(props: RouteComponentProps<AddressRouteProps>) {
-        super(props);
-
-        this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
-
-        this.state = {
-            jobToStatus: new Map<string, PromiseStatus>(),
-            isFormatStorageRentFull: true
-        };
-    }
-
-    /**
-     * The component mounted.
-     */
-    public async componentDidMount(): Promise<void> {
-        super.componentDidMount();
-        const { bech32Hrp } = this.context;
-
-        if (!this.props.location.state) {
-            this.props.location.state = {
-                addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, this.props.match.params.address)
+        if (!location.state) {
+            location.state = {
+                addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address)
             };
         }
 
-        const { addressDetails } = this.props.location.state as IAddressPageLocationProps;
+        const { addressDetails } = location.state as IAddressPageLocationProps;
 
         if (addressDetails?.hex) {
             window.scrollTo({
@@ -94,165 +68,56 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                 behavior: "smooth"
             });
 
-            this.setState({
-                bech32AddressDetails: addressDetails
-            }, async () => {
-                void this.getAddressBalance();
-                void this.getAddressOutputs();
-            });
+            if (isMounted.current) {
+                setBech32AddressDetails(addressDetails);
+            }
         }
+
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (bech32AddressDetails) {
+            // eslint-disable-next-line no-void
+            void loadAddressData();
+        }
+    }, [bech32AddressDetails]);
+
+    /**
+     * Load the Address balance and UTXOs.
+     */
+    async function loadAddressData() {
+        // eslint-disable-next-line no-void
+        void getAddressBalance();
+        // eslint-disable-next-line no-void
+        void getAddressOutputs();
     }
 
     /**
-     * Render the component.
-     * @returns The node to render.
+     * Fetch the address balance details.
      */
-    public render(): ReactNode {
-        const {
-            bech32AddressDetails, balance, sigLockedBalance,
-            outputResponse, jobToStatus, storageRentBalance, isFormatStorageRentFull
-        } = this.state;
-        const { tokenInfo } = this.context;
-
-        const networkId = this.props.match.params.network;
-        const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
-        const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
-
-        return (
-            <div className="address-page">
-                <div className="wrapper">
-                    {bech32AddressDetails && (
-                        <div className="inner">
-                            <div className="addr--header">
-                                <div className="row middle">
-                                    <h1>
-                                        Address
-                                    </h1>
-                                    <Modal icon="info" data={mainHeaderMessage} />
-                                </div>
-                                {isLoading && <Spinner />}
-                            </div>
-                            <div className="top">
-                                <div className="sections">
-                                    <div className="section">
-                                        <div className="section--header">
-                                            <div className="row middle">
-                                                <h2>
-                                                    General
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        <div className="row space-between general-content">
-                                            <div className="section--data">
-                                                <Bech32Address
-                                                    addressDetails={bech32AddressDetails}
-                                                    advancedMode={true}
-                                                    showCopyButton={true}
-                                                />
-                                                {balance !== undefined && (
-                                                    <AddressBalance
-                                                        balance={balance}
-                                                        spendableBalance={sigLockedBalance}
-                                                    />
-                                                )}
-                                            </div>
-                                            <div className="section--data">
-                                                {bech32AddressDetails?.bech32 && (
-                                                    //  eslint-disable-next-line react/jsx-pascal-case
-                                                    <QR data={bech32AddressDetails.bech32} />
-                                                )}
-                                            </div>
-                                        </div>
-                                        {storageRentBalance ?
-                                            <div className="section--data margin-t-m">
-                                                <div className="label">
-                                                    Storage deposit
-                                                </div>
-                                                <div className="row middle value featured">
-                                                    <span
-                                                        onClick={() => {
-                                                            this.setState({
-                                                                isFormatStorageRentFull: !isFormatStorageRentFull
-                                                            });
-                                                        }}
-                                                        className="pointer margin-r-5"
-                                                    >
-                                                        {formatAmount(
-                                                            storageRentBalance,
-                                                            tokenInfo,
-                                                            isFormatStorageRentFull
-                                                        )}
-                                                    </span>
-                                                    <CopyButton copy={String(storageRentBalance)} />
-                                                </div>
-                                            </div> : ""}
-                                    </div>
-                                    {outputResponse && outputResponse.length === 0 && (
-                                        <div className="section">
-                                            <div className="section--data">
-                                                <p>
-                                                    There are no transactions for this address.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
-                                    <AssetsTable
-                                        networkId={networkId}
-                                        outputs={outputResponse?.map(output => output.output)}
-                                    />
-                                    <NftSection
-                                        network={networkId}
-                                        bech32Address={addressBech32}
-                                        outputs={outputResponse}
-                                    />
-                                    {addressBech32 && (
-                                        <TransactionHistory
-                                            network={networkId}
-                                            address={addressBech32}
-                                            onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("history")}
-                                        />
-                                    )}
-                                    {bech32AddressDetails && (
-                                        <AssociatedOutputs
-                                            network={networkId}
-                                            addressDetails={bech32AddressDetails}
-                                            onAsyncStatusChange={this.buildOnAsyncStatusJobHandler("assoc")}
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-    }
-
-    private async getAddressBalance() {
-        const { name: network } = this.context;
-        const { bech32AddressDetails } = this.state;
-
-        optional(bech32AddressDetails?.bech32).foreach(async address => {
-            const response = await this._tangleCacheService.addressBalanceFromChronicle({
+    async function getAddressBalance(): Promise<void> {
+        optional(bech32AddressDetails?.bech32).foreach(async addr => {
+            const response = await tangleCacheService.addressBalanceFromChronicle({
                 network,
-                address
+                address: addr
             });
 
             if (response?.totalBalance !== undefined) {
-                this.setState({
-                    balance: response.totalBalance,
-                    sigLockedBalance: response.sigLockedBalance
-                });
+                if (isMounted.current) {
+                    setBalance(response.totalBalance);
+                    setSigLockedBalance(response.sigLockedBalance);
+                }
             } else {
                 // Fallback balance from iotajs (node)
-                const addressDetailsWithBalance = await this._tangleCacheService.addressBalance(
-                    { network, address }
+                const addressDetailsWithBalance = await tangleCacheService.addressBalance(
+                    { network, address: addr }
                 );
 
-                if (addressDetailsWithBalance) {
-                    this.setState({
-                        balance: Number(addressDetailsWithBalance.balance)
-                    });
+                if (addressDetailsWithBalance && isMounted.current) {
+                    setBalance(Number(addressDetailsWithBalance.balance));
                 }
             }
         });
@@ -261,39 +126,42 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
     /**
      * Fetch the address relevant outputs (basic, alias and nft)
      */
-    private async getAddressOutputs(): Promise<void> {
-        const networkId = this.props.match.params.network;
-        const { rentStructure } = this.context;
-        const addressBech32 = this.state.bech32AddressDetails?.bech32;
+    async function getAddressOutputs(): Promise<void> {
+        const addressBech32 = bech32AddressDetails?.bech32;
         if (!addressBech32) {
             return;
         }
 
         const outputIdsMonitor = new PromiseMonitor((status: PromiseStatus) => {
-            this.buildOnAsyncStatusJobHandler("outputIds")(status);
+            buildOnAsyncStatusJobHandler("outputIds")(status);
         });
 
+        // eslint-disable-next-line no-void
         void outputIdsMonitor.enqueue(
-            async () => this._tangleCacheService.addressOutputs(networkId, addressBech32).then(idsResponse => {
+            async () => tangleCacheService.addressOutputs(network, addressBech32).then(idsResponse => {
                 if (idsResponse?.outputIds) {
-                    const outputResponse: IOutputResponse[] = [];
+                    const outputResponsesUpdate: IOutputResponse[] = [];
                     const addressOutputIds = idsResponse.outputIds;
-                    let storageRentBalance: number | undefined;
+                    let storageRentBalanceUpdate: number | undefined;
 
                     const outputDetailsMonitor = new PromiseMonitor((status: PromiseStatus) => {
-                        this.buildOnAsyncStatusJobHandler("outputDetails")(status);
-                        if (status === PromiseStatus.DONE && this._isMounted) {
-                            storageRentBalance = TransactionsHelper.computeStorageRentBalance(
-                                outputResponse.map(or => or.output),
+                        buildOnAsyncStatusJobHandler("outputDetails")(status);
+                        if (status === PromiseStatus.DONE && isMounted.current) {
+                            storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(
+                                outputResponsesUpdate.map(or => or.output),
                                 rentStructure
                             );
-                            this.setState({ outputResponse, storageRentBalance });
+                            if (isMounted.current) {
+                                setOutputResponse(outputResponsesUpdate);
+                                setStorageRentBalance(storageRentBalanceUpdate);
+                            }
                         }
                     });
 
                     for (const outputId of addressOutputIds) {
+                        // eslint-disable-next-line no-void
                         void outputDetailsMonitor.enqueue(
-                            async () => this._tangleCacheService.outputDetails(networkId, outputId).then(
+                            async () => tangleCacheService.outputDetails(network, outputId).then(
                                 response => {
                                     if (!response.error && response.output && response.metadata) {
                                         const outputDetails = {
@@ -301,7 +169,7 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
                                             metadata: response.metadata
                                         };
 
-                                        outputResponse.push(outputDetails);
+                                        outputResponsesUpdate.push(outputDetails);
                                     }
                                 })
                         );
@@ -311,12 +179,131 @@ class AddressPage extends AsyncComponent<RouteComponentProps<AddressRouteProps>,
         );
     }
 
-    private buildOnAsyncStatusJobHandler(jobName: string): (status: PromiseStatus) => void {
+    /**
+     * Helper function to build a asyncJobHandler.
+     * @param jobName The job name.
+     * @returns Function than can be used to update job PromiseStatus.
+     */
+    function buildOnAsyncStatusJobHandler(jobName: string): (status: PromiseStatus) => void {
         return (status: PromiseStatus) => {
-            this.setState(prevState => ({ ...prevState, jobToStatus: prevState.jobToStatus.set(jobName, status) }));
+            if (isMounted.current) {
+                setJobToStatus(jobToStatus.set(jobName, status));
+            }
         };
     }
-}
+
+    const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
+    const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
+
+    return (
+        <div className="address-page">
+            <div className="wrapper">
+                {bech32AddressDetails && (
+                    <div className="inner">
+                        <div className="addr--header">
+                            <div className="row middle">
+                                <h1>
+                                    Address
+                                </h1>
+                                <Modal icon="info" data={mainHeaderMessage} />
+                            </div>
+                            {isLoading && <Spinner />}
+                        </div>
+                        <div className="top">
+                            <div className="sections">
+                                <div className="section">
+                                    <div className="section--header">
+                                        <div className="row middle">
+                                            <h2>
+                                                General
+                                            </h2>
+                                        </div>
+                                    </div>
+                                    <div className="row space-between general-content">
+                                        <div className="section--data">
+                                            <Bech32Address
+                                                addressDetails={bech32AddressDetails}
+                                                advancedMode={true}
+                                                showCopyButton={true}
+                                            />
+                                            {balance !== undefined && (
+                                                <AddressBalance
+                                                    balance={balance}
+                                                    spendableBalance={sigLockedBalance}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className="section--data">
+                                            {bech32AddressDetails?.bech32 && (
+                                                //  eslint-disable-next-line react/jsx-pascal-case
+                                                <QR data={bech32AddressDetails.bech32} />
+                                            )}
+                                        </div>
+                                    </div>
+                                    {storageRentBalance ?
+                                        <div className="section--data margin-t-m">
+                                            <div className="label">
+                                                Storage deposit
+                                            </div>
+                                            <div className="row middle value featured">
+                                                <span
+                                                    onClick={() => {
+                                                        if (isMounted.current) {
+                                                            setIsFormatStorageRentFull(!isFormatStorageRentFull);
+                                                        }
+                                                    }}
+                                                    className="pointer margin-r-5"
+                                                >
+                                                    {formatAmount(
+                                                        storageRentBalance,
+                                                        tokenInfo,
+                                                        isFormatStorageRentFull
+                                                    )}
+                                                </span>
+                                                <CopyButton copy={String(storageRentBalance)} />
+                                            </div>
+                                        </div> : ""}
+                                </div>
+                                {outputResponse && outputResponse.length === 0 && (
+                                    <div className="section">
+                                        <div className="section--data">
+                                            <p>
+                                                There are no transactions for this address.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                                <AssetsTable
+                                    networkId={network}
+                                    outputs={outputResponse?.map(output => output.output)}
+                                />
+                                <NftSection
+                                    network={network}
+                                    bech32Address={addressBech32}
+                                    outputs={outputResponse}
+                                />
+                                {addressBech32 && (
+                                    <TransactionHistory
+                                        network={network}
+                                        address={addressBech32}
+                                        onAsyncStatusChange={buildOnAsyncStatusJobHandler("history")}
+                                    />
+                                )}
+                                {bech32AddressDetails && (
+                                    <AssociatedOutputs
+                                        network={network}
+                                        addressDetails={bech32AddressDetails}
+                                        onAsyncStatusChange={buildOnAsyncStatusJobHandler("assoc")}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
 
 export default AddressPage;
 
