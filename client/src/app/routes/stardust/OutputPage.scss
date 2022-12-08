@@ -57,4 +57,28 @@
 
         }
     }
+
+    .tooltip {
+        .tooltip__special {
+            background-color: #FFF4DF;
+            border-radius: 4px;
+            padding: 0 4px;
+            font-weight: 400;
+        }
+    
+        .wrap {
+            left: 0; 
+            right: 0; 
+            margin-left: auto; 
+            margin-right: auto; 
+            width: 170px;
+
+            .arrow {
+                left: 0; 
+                right: 0; 
+                margin-left: auto; 
+                margin-right: auto;
+            }
+        }
+    }
 }

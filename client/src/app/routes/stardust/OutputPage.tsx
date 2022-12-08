@@ -10,8 +10,14 @@ import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Output from "../../components/stardust/Output";
+import Tooltip from "../../components/Tooltip";
 import OutputPageProps from "./OutputPageProps";
 import "./OutputPage.scss";
+
+/**
+ * The id of the Genesis block.
+ */
+ export const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
     { match: { params: { network, outputId } } }
@@ -38,6 +44,22 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
             }
         }).catch(() => { });
     }, []);
+
+    /**
+     * Add tooltip content for special block id i.e Genesis block.
+     * @param id The id of the block.
+     * @returns The tooltip content or id.
+     */
+    const formatBlockId = (id: string): React.ReactNode => {
+        if (id === GENESIS_BLOCK_ID) {
+            return (
+                <Tooltip tooltipContent="Genesis block">
+                    <span className="tooltip__special">{id}</span>
+                </Tooltip>
+            );
+        }
+        return id;
+    };
 
     if (outputError) {
         return (
@@ -104,9 +126,9 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="value code row middle highlight">
                                     <Link
                                         to={`/${network}/block/${blockId}`}
-                                        className="margin-r-t"
+                                        className="margin-r-t text--no-decoration"
                                     >
-                                        {blockId}
+                                        {formatBlockId(blockId)}
                                     </Link>
                                     <CopyButton copy={blockId} />
                                 </div>
