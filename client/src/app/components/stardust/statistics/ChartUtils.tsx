@@ -54,12 +54,12 @@ export const useChartWrapperSize: () => [
         wrapperHeight: undefined
     });
 
-    const handleResize = useCallback(() => {
+    const handleResize = useCallback(debounce(() => {
         setWrapperSize({
             wrapperWidth: chartWrapper?.clientWidth ?? 0,
             wrapperHeight: chartWrapper?.clientHeight ?? 0
         });
-    }, [chartWrapper]);
+    }), [chartWrapper]);
 
     useEffect(() => {
         window.addEventListener("resize", handleResize);
@@ -70,3 +70,10 @@ export const useChartWrapperSize: () => [
     return [wrapperSize, setChartWrapper];
 };
 
+const debounce = (func: () => void) => {
+    let timerId: NodeJS.Timeout | undefined;
+    return () => {
+      clearTimeout(timerId);
+      timerId = setTimeout(() => func(), 150);
+    };
+};
