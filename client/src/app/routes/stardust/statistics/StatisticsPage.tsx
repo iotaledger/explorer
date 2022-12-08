@@ -79,10 +79,9 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     }, []);
 
     const lockedStorageDepositValue = formatAmount(
-            Number(analyticStats?.lockedStorageDeposit?.totalByteCost),
-            tokenInfo
-        ).replace(COMMAS_REGEX, ",") ??
-        "-";
+        Number(analyticStats?.lockedStorageDeposit?.totalByteCost),
+        tokenInfo
+    ).replace(COMMAS_REGEX, ",") ?? "-";
 
     return (
         <div className="statistics-page">
@@ -156,7 +155,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     value={lockedStorageDepositValue}
                                 />
                             </div>
-                            <div className="row statistics-row statistics-row--header-margin-lg">
+                            <div className="row statistics-row statistics-row--header-margin-lg margin-b-s">
                                 <LineChart
                                     title="Addresses with Balance"
                                     label="Addresses"
@@ -198,7 +197,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="section--header">
                                 <h2>Unlock Conditions</h2>
                             </div>
-                            <div className="row statistics-row">
+                            <div className="row statistics-row margin-b-s">
                                 <StackedLineChart
                                     title="Number of Unlock Conditions by Type"
                                     subgroups={["timelock", "storageDepositReturn", "expiration"]}
