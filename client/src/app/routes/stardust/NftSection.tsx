@@ -11,11 +11,12 @@ interface NftSectionProps {
     network: string;
     bech32Address?: string;
     outputs: IOutputResponse[] | undefined;
+    setNftCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const PAGE_SIZE = 10;
 
-const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs }) => {
+const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs, setNftCount }) => {
     const mounted = useRef(false);
     const [nfts, setNfts] = useState<INftDetails[]>([]);
     const [page, setPage] = useState<INftDetails[]>([]);
@@ -46,6 +47,10 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                 }
             }
             setNfts(theNfts);
+
+            if (setNftCount) {
+                setNftCount(theNfts.length);
+            }
         }
 
         return unmount;
@@ -62,7 +67,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
 
     return (
         nfts.length > 0 ? (
-            <div className="section transaction--section">
+            <div className="section nft--section">
                 <div className="section--header row space-between">
                     <div className="row middle">
                         <h2>
@@ -71,7 +76,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                         <Modal icon="info" data={nftsMessage} />
                     </div>
                 </div>
-                <div className="row wrap">
+                <div className="row wrap center">
                     {page?.map((nft, idx) => (
                         <Nft
                             key={idx}
@@ -95,7 +100,8 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
 };
 
 NftSection.defaultProps = {
-    bech32Address: undefined
+    bech32Address: undefined,
+    setNftCount: undefined
 };
 
 export default NftSection;

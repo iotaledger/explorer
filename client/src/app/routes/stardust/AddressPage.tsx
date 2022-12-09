@@ -12,6 +12,7 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import QR from "../../components/chrysalis/QR";
 import CopyButton from "../../components/CopyButton";
+import TabbedSection from "../../components/hoc/TabbedSection";
 import Spinner from "../../components/Spinner";
 import AddressBalance from "../../components/stardust/AddressBalance";
 import AssetsTable from "../../components/stardust/AssetsTable";
@@ -32,6 +33,17 @@ interface IAddressPageLocationProps {
     addressDetails: IBech32AddressDetails;
 }
 
+enum ADDRESS_PAGE_TABS {
+    Transactions = "Transactions",
+    NativeTokens = "Native Tokens",
+    Nfts = "NFTs",
+    AssocOutputs = "Associated Outputs"
+}
+
+const TX_HISTORY_JOB = "tx-history";
+const ADDR_OUTPUTS_JOB = "addr-outputs";
+const ASSOC_OUTPUTS_JOB = "assoc-outputs";
+
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     { location, match: { params: { network, address } } }
 ) => {
@@ -40,15 +52,17 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-
     const [jobToStatus, setJobToStatus] = useState(new Map<string, PromiseStatus>());
-
     const [bech32AddressDetails, setBech32AddressDetails] = useState<IBech32AddressDetails | undefined>();
     const [balance, setBalance] = useState<number | undefined>();
     const [sigLockedBalance, setSigLockedBalance] = useState<number | undefined>();
     const [storageRentBalance, setStorageRentBalance] = useState<number | undefined>();
     const [outputResponse, setOutputResponse] = useState<IOutputResponse[] | undefined>();
     const [isFormatStorageRentFull, setIsFormatStorageRentFull] = useState<boolean>(false);
+
+    const [tokensCount, setTokenCount] = useState<number>(0);
+    const [nftCount, setNftCount] = useState<number>(0);
+    const [associatedOutputCount, setAssociatedOutputCount] = useState<number>(0);
 
     useEffect(() => {
         isMounted.current = true;
@@ -133,7 +147,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         }
 
         const outputIdsMonitor = new PromiseMonitor((status: PromiseStatus) => {
-            buildOnAsyncStatusJobHandler("outputIds")(status);
+            buildOnAsyncStatusJobHandler(ADDR_OUTPUTS_JOB)(status);
         });
 
         // eslint-disable-next-line no-void
@@ -211,7 +225,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                         </div>
                         <div className="top">
                             <div className="sections">
-                                <div className="section">
+                                <div className="section no-border-bottom">
                                     <div className="section--header">
                                         <div className="row middle">
                                             <h2>
@@ -240,7 +254,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                             )}
                                         </div>
                                     </div>
-                                    {storageRentBalance ?
+                                    {storageRentBalance && (
                                         <div className="section--data margin-t-m">
                                             <div className="label">
                                                 Storage deposit
@@ -262,7 +276,8 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                                 </span>
                                                 <CopyButton copy={String(storageRentBalance)} />
                                             </div>
-                                        </div> : ""}
+                                        </div>
+                                    )}
                                 </div>
                                 {outputResponse && outputResponse.length === 0 && (
                                     <div className="section">
@@ -273,29 +288,53 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                         </div>
                                     </div>
                                 )}
-                                <AssetsTable
-                                    networkId={network}
-                                    outputs={outputResponse?.map(output => output.output)}
-                                />
-                                <NftSection
-                                    network={network}
-                                    bech32Address={addressBech32}
-                                    outputs={outputResponse}
-                                />
-                                {addressBech32 && (
+                                <TabbedSection
+                                    tabsEnum={ADDRESS_PAGE_TABS}
+                                    tabOptions={{
+                                        [ADDRESS_PAGE_TABS.Transactions]: {
+                                            disabled: jobToStatus.get(TX_HISTORY_JOB) !== PromiseStatus.DONE,
+                                            isLoading: jobToStatus.get(TX_HISTORY_JOB) !== PromiseStatus.DONE
+                                        },
+                                        [ADDRESS_PAGE_TABS.NativeTokens]: {
+                                            disabled: tokensCount === 0,
+                                            counter: tokensCount,
+                                            isLoading: jobToStatus.get(ADDR_OUTPUTS_JOB) !== PromiseStatus.DONE
+                                        },
+                                        [ADDRESS_PAGE_TABS.Nfts]: {
+                                            disabled: nftCount === 0,
+                                            counter: nftCount,
+                                            isLoading: jobToStatus.get(ADDR_OUTPUTS_JOB) !== PromiseStatus.DONE
+                                        },
+                                        [ADDRESS_PAGE_TABS.AssocOutputs]: {
+                                            disabled: associatedOutputCount === 0,
+                                            counter: associatedOutputCount,
+                                            isLoading: jobToStatus.get(ASSOC_OUTPUTS_JOB) !== PromiseStatus.DONE
+                                        }
+                                    }}
+                                >
                                     <TransactionHistory
                                         network={network}
                                         address={addressBech32}
-                                        onAsyncStatusChange={buildOnAsyncStatusJobHandler("history")}
+                                        onAsyncStatusChange={buildOnAsyncStatusJobHandler(TX_HISTORY_JOB)}
                                     />
-                                )}
-                                {bech32AddressDetails && (
+                                    <AssetsTable
+                                        networkId={network}
+                                        outputs={outputResponse?.map(output => output.output)}
+                                        setTokenCount={setTokenCount}
+                                    />
+                                    <NftSection
+                                        network={network}
+                                        bech32Address={addressBech32}
+                                        outputs={outputResponse}
+                                        setNftCount={setNftCount}
+                                    />
                                     <AssociatedOutputs
                                         network={network}
                                         addressDetails={bech32AddressDetails}
-                                        onAsyncStatusChange={buildOnAsyncStatusJobHandler("assoc")}
+                                        onAsyncStatusChange={buildOnAsyncStatusJobHandler(ASSOC_OUTPUTS_JOB)}
+                                        setOutputCount={setAssociatedOutputCount}
                                     />
-                                )}
+                                </TabbedSection>
                             </div>
                         </div>
                     </div>

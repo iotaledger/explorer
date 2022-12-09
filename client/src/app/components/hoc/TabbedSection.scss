@@ -1,0 +1,78 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.tabbed-section {
+    .tabbed-section--tabs-wrapper {
+        display: flex;
+        margin-top:36px;
+        border-bottom: 1px solid var(--border-color);
+
+        .tab-wrapper {
+            display: flex;
+            padding: 24px 32px;
+            align-items: center;
+            cursor: pointer;
+
+            @include tablet-down {
+                padding: 12px 8px;
+            }
+
+            @include phone-down {
+                padding: 8px 4px;
+            }
+
+            &.active {
+                color: $mint-green-6;
+                border-bottom: 3px solid $mint-green-6;
+            }
+
+            button.tab {
+                background: var(--associated-outputs-tabs-bg);
+                color: $gray-6;
+                border-radius: 0;
+                border: none;
+
+                &:focus {
+                    box-shadow: none;
+                }
+
+                @include phone-down {
+                    font-size: 12px;
+                    padding: 3px 5px;
+                }
+            }
+
+            .tab-counter {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 30px;
+                font-size: 12px;
+                font-family: $inter;
+                font-weight: 500;
+                padding: 8px;
+                border-radius: 16px;
+                background: $gray-1;
+                color: $gray-6;
+
+                @include tablet-down {
+                    font-size: 10px;
+                }
+
+                @include phone-down {
+                    font-size: 8px;
+                }
+            }
+        }
+    }
+
+    .tab-content {
+        &:not(.active) {
+            position: absolute;
+            left: -4000px;
+        };
+    }
+}
+
