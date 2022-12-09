@@ -13,17 +13,17 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import QR from "../../components/chrysalis/QR";
 import CopyButton from "../../components/CopyButton";
 import TabbedSection from "../../components/hoc/TabbedSection";
+import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import AddressBalance from "../../components/stardust/AddressBalance";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputs from "../../components/stardust/AssociatedOutputs";
 import Bech32Address from "../../components/stardust/Bech32Address";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
+import NftSection from "../../components/stardust/NftSection";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
 import mainHeaderMessage from "./../../../assets/modals/stardust/address/main-header.json";
-import Modal from "./../../components/Modal";
-import NftSection from "./NftSection";
 import "./AddressPage.scss";
 
 interface IAddressPageLocationProps {

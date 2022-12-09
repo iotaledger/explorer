@@ -5,13 +5,21 @@ import Modal from "../../components/Modal";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
 import nftsMessage from "./../../../assets/modals/stardust/address/nfts-in-wallet.json";
-import INftDetails from "./INftDetails";
 
 interface NftSectionProps {
     network: string;
     bech32Address?: string;
     outputs: IOutputResponse[] | undefined;
     setNftCount?: React.Dispatch<React.SetStateAction<number>>;
+}
+
+interface INftDetails {
+    /** NFT image. */
+    image?: string;
+    /** NFT name. */
+    name?: string;
+    /** NFT id. */
+    id: string;
 }
 
 const PAGE_SIZE = 10;

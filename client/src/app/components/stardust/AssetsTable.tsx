@@ -3,7 +3,6 @@ import {
     FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE, OutputTypes
 } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
-import ITokenDetails from "../../routes/stardust/ITokenDetails";
 import Modal from "../Modal";
 import Pagination from "../Pagination";
 import assetsMessage from "./../../../assets/modals/stardust/address/assets-in-wallet.json";
@@ -14,6 +13,19 @@ interface AssetsTableProps {
     networkId: string;
     outputs: OutputTypes[] | undefined;
     setTokenCount?: React.Dispatch<React.SetStateAction<number>>;
+}
+
+interface ITokenDetails {
+    /** Token name. */
+    name: string;
+    /** Token symbol. */
+    symbol?: string;
+    /** Token held amount. */
+    amount: number;
+    /** Token price. */
+    price?: number;
+    /** Token total value held. */
+    value?: number;
 }
 
 const TOKEN_PAGE_SIZE: number = 10;
