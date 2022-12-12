@@ -27,10 +27,10 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
             </div>
             {
                 isExpanded && (
-                    <div>
+                    <div className="left-border">
                         {
                             unlocks.map((unlock, idx) => (
-                                <div key={idx} className="padding-l-t left-border">
+                                <div key={idx} className="padding-l-t">
                                     <div className="card--label"> Public Key</div>
                                     <div className="card--value">{unlock.signature.publicKey}</div>
                                     <div className="card--label"> Signature</div>
