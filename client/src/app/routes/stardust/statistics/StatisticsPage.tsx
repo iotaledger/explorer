@@ -101,14 +101,14 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             </div>
                             <div className="row statistics-row">
                                 <StackedBarChart
-                                    title="Blocks"
+                                    title="Number of Blocks"
                                     subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
                                     groupLabels={["Transaction", "Milestone", "Tagged Data", "No payload"]}
                                     colors={["#7AFFF2", "#00E0CA", "#36A1AC", "#186575"]}
                                     data={dailyBlocks}
                                 />
                                 <StackedBarChart
-                                    title="Transaction Payload"
+                                    title="Number of Transactions"
                                     subgroups={["confirmed", "conflicting"]}
                                     groupLabels={["Confirmed", "Conflicting"]}
                                     colors={["#00E0CA", "#36A1AC"]}
