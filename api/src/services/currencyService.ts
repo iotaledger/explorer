@@ -32,7 +32,7 @@ export class CurrencyService {
     /**
      * Currencies that will trigger a stats update.
      */
-    private static readonly SUPPORTED_CURRENCIES = ["iota"];
+    private static readonly SUPPORTED_CURRENCIES = ["iota", "shimmer"];
 
     /**
      * Is the service already updating.
