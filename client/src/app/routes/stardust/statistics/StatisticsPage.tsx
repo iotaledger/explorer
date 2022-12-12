@@ -235,7 +235,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     data={unclaimedTokens}
                                 />
                                 <LineChart
-                                    title="Number of Unclaimed Shimmer Genesis Outputs"
+                                    title="Number of Unclaimed Genesis Outputs"
                                     label="Outputs"
                                     color="#00F5DD"
                                     data={unclaimedGenesisOutputs}
