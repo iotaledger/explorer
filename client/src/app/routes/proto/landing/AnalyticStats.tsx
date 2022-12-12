@@ -1,15 +1,10 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React from "react";
-import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
 import "./AnalyticStats.scss";
 import { IProtoStats } from "../../../../models/api/stats/IProtoStats";
 import MiniTooltip from "../../../components/MiniTooltip";
 
 interface AnalyticStatsProps {
-    analytics: IAnalyticStats | undefined;
-    circulatingSupply: number | undefined;
     protoStats: IProtoStats | undefined;
-    tokenInfo: INodeInfoBaseToken;
 }
 
 const MANA_STAT_HELPER_TXT = "The amount of mana which is active in comparison to the theoretical maximum" +
@@ -21,7 +16,7 @@ const CONFLICTS_RESOLVED_24H_HELPER_TXT = "Amount of conflicts which got activel
     "last 24 hours";
 
 const AnalyticStats: React.FC<AnalyticStatsProps> = (
-    { analytics, protoStats, circulatingSupply, tokenInfo }
+    { protoStats }
 ) => {
     const conflictsResolved24h = protoStats?.conflictsResolved24h ?? 23;
     const nodesOnline = protoStats?.nodesOnline ?? 100;

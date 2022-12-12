@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
+import { WsMsgType } from "@iota/protonet.js";
 import compression from "compression";
 import express, { Application } from "express";
 import { Server } from "http";
@@ -118,6 +119,17 @@ socketServer.on("connection", socket => {
             delete sockets[socket.id];
         }
     });
+
+    for (const wsMsgTypeKey in WsMsgType) {
+        socket.on(`proto-${wsMsgTypeKey}`, () => {
+            // eslint-disable-next-line no-void
+            void socket.join(`proto-${wsMsgTypeKey}`);
+        });
+        socket.on(`proto-${wsMsgTypeKey}-leave`, () => {
+            // eslint-disable-next-line no-void
+            void socket.leave(`proto-${wsMsgTypeKey}`);
+        });
+    }
 });
 
 server.listen(port, async () => {
@@ -126,7 +138,7 @@ server.listen(port, async () => {
 
     try {
         console.log("Initializing Services");
-        await initServices(config);
+        await initServices(socketServer, config);
         console.log("Services Initialized");
     } catch (err) {
         if (err instanceof NetworkConfigurationError) {

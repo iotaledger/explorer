@@ -1,0 +1,72 @@
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.card--content__output {
+  padding: 0 30px;
+
+  .card--value.card-header--wrapper {
+    width: 100%;
+    display: flex;
+
+
+    .output-header {
+      display: flex;
+      width: 100%;
+
+      .output-type--name {
+        white-space: nowrap;
+      }
+
+      .output-id--link {
+        display: flex;
+        margin-right: 2px;
+
+        a {
+          margin-right: 0px;
+        }
+
+        .highlight {
+          font-weight: 500;
+          color: $gray-6;
+          margin-left: 2px;
+        }
+
+        .copy-button {
+          margin-left: 4px;
+        }
+      }
+    }
+
+    .amount-size {
+      width: 180px;
+      text-align: end;
+      cursor: pointer;
+
+      span {
+        word-break: keep-all;
+      }
+    }
+  }
+
+  .unlock-condiiton-icon {
+    color: #FEC900;
+    font-size: 18px;
+  }
+}
+
+.card--content--dropdown {
+  cursor: pointer;
+
+  svg {
+    transition: transform 0.25s ease;
+
+    path {
+      fill: var(--card-color);
+    }
+  }
+
+  &.opened > svg {
+    transform: rotate(90deg);
+  }
+}
+

@@ -1,5 +1,7 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { MqttClient as StardustMqttClient } from "@iota/mqtt.js-stardust";
+import { WebSocketClient, WsMsgType } from "@iota/protonet.js";
+import { Server as SocketIOServer } from "socket.io";
 import { ServiceFactory } from "./factories/serviceFactory";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { IAnalyticsStore } from "./models/db/IAnalyticsStore";
@@ -32,13 +34,15 @@ import { StardustStatsService } from "./services/stardust/stardustStatsService";
 const isKnownProtocolVersion = (networkConfig: INetwork) =>
     networkConfig.protocolVersion === OG ||
     networkConfig.protocolVersion === CHRYSALIS ||
-    networkConfig.protocolVersion === STARDUST;
+    networkConfig.protocolVersion === STARDUST ||
+    networkConfig.protocolVersion === PROTO;
 
 /**
  * Initialise all the services for the workers.
+ * @param socketServer
  * @param config The configuration to initialisation the service with.
  */
-export async function initServices(config: IConfiguration) {
+export async function initServices(socketServer: SocketIOServer, config: IConfiguration) {
     await registerStorageServices(config);
 
     const networkService = new NetworkService();
@@ -55,10 +59,11 @@ export async function initServices(config: IConfiguration) {
         } else if (networkConfig.protocolVersion === STARDUST && networkConfig.feedEndpoint) {
             initStardustServices(networkConfig);
         } else if (networkConfig.protocolVersion === PROTO && networkConfig.feedEndpoint) {
-            initProtoServices(networkConfig);
+            initProtoServices(socketServer, networkConfig);
         }
 
-        if (isKnownProtocolVersion(networkConfig) && networkConfig.feedEndpoint) {
+        if (isKnownProtocolVersion(networkConfig) && networkConfig.feedEndpoint &&
+            networkConfig.protocolVersion !== "proto") {
             ServiceFactory.register(
                 `milestones-${networkConfig.network}`,
                 () => new MilestonesService(networkConfig.network));
@@ -77,6 +82,14 @@ export async function initServices(config: IConfiguration) {
             const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
             if (milestonesService) {
                 await milestonesService.init();
+            }
+        }
+
+        if (isKnownProtocolVersion(networkConfig)) {
+            const websocketClient = ServiceFactory.get<WebSocketClient>(`ws-${networkConfig.network}`);
+            if (websocketClient) {
+                console.log("init websocket proto");
+                websocketClient.init();
             }
         }
 
@@ -205,10 +218,88 @@ function initStardustServices(networkConfig: INetwork): void {
 
 /**
  * Register services for prototype network
+ * @param socketServer
  * @param networkConfig The Network Config.
  */
-function initProtoServices(networkConfig: INetwork): void {
+function initProtoServices(socketServer: SocketIOServer, networkConfig: INetwork): void {
+    const protoWebSocketClient = new WebSocketClient(networkConfig.feedEndpoint);
+    ServiceFactory.register(
+        `ws-${networkConfig.network}`, () => protoWebSocketClient
+    );
+    protoWebSocketClient.onNodeStatus(msg => {
+        const key = WsMsgType.NodeStatus.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
 
+    protoWebSocketClient.onBpsMetric(msg => {
+        const key = WsMsgType.BPSMetric.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onBlock(msg => {
+        const key = WsMsgType.Block.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onNeighborMetrics(msg => {
+        const key = WsMsgType.NeighborMetrics.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onComponentCounterMetric(msg => {
+        const key = WsMsgType.ComponentCounterMetrics.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onTipsMetric(msg => {
+        const key = WsMsgType.TipsMetric.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onVertex(msg => {
+        const key = WsMsgType.Vertex.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onTipInfo(msg => {
+        const key = WsMsgType.TipInfo.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onManaValue(msg => {
+        const key = WsMsgType.ManaValue.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onManaMapOverall(msg => {
+        const key = WsMsgType.ManaMapOverall.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onManaMapOnline(msg => {
+        const key = WsMsgType.ManaMapOnline.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onChat(msg => {
+        const key = WsMsgType.Chat.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onRateSetterMetric(msg => {
+        const key = WsMsgType.RateSetterMetric.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onConflictsConflictSet(msg => {
+        const key = WsMsgType.ConflictsConflictSet.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
+
+    protoWebSocketClient.onConflictsConflict(msg => {
+        const key = WsMsgType.ConflictsConflict.toString();
+        socketServer.to(`proto-${key}`).emit(key, msg);
+    });
 }
 
 /**

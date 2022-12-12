@@ -82,6 +82,39 @@ export const routes: IRoute[] = [
         path: "/stardust/analytics/shimmer/:network", method: "get",
         folder: "stardust/analytics/shimmer", func: "get", sign: true
     },
+    { path: "/proto/block/:network/:blockId", method: "get", folder: "proto/block", func: "get" },
+    {
+        path: "/proto/block/metadata/:network/:blockId", method: "get",
+        folder: "proto/block/metadata", func: "get"
+    },
+    { path: "/proto/address/:network/:addressBase58", method: "get", folder: "proto/address", func: "get" },
+    { path: "/proto/epoch/:network/:epochId", method: "get", folder: "proto/epoch", func: "get" },
+    {
+        path: "/proto/epoch/:network/index/:index", method: "get",
+        folder: "proto/epoch/index", func: "get"
+    },
+    {
+        path: "/proto/epoch/:network/transactions/:index", method: "get",
+        folder: "proto/epoch/transactions", func: "get"
+    },
+    {
+        path: "/proto/epoch/:network/blocks/:index", method: "get",
+        folder: "proto/epoch/blocks", func: "get"
+    },
+    {
+        path: "/proto/epoch/:network/voters/:index", method: "get",
+        folder: "proto/epoch/voters", func: "get"
+    },
+    { path: "/proto/output/:network/:outputId", method: "get", folder: "proto/output", func: "get" },
+    {
+        path: "/proto/output/metadata/:network/:outputId", method: "get",
+        folder: "proto/output/metadata", func: "get"
+    },
+    { path: "/proto/transaction/:network/:txId", method: "get", folder: "proto/transaction", func: "get" },
+    {
+        path: "/proto/transaction/metadata/:network/:txId", method: "get",
+        folder: "proto/transaction/metadata", func: "get"
+    },
     { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
     { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
     { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true },

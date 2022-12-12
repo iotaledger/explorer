@@ -29,7 +29,7 @@ export const getDefaultLandingState = (networkConfig: INetwork): LandingState =>
         itemsPerSecondHistory: [],
         epochs: [
             {
-                id: "123",
+                id: "HXXTtSGm2ZEmEKJCzQdWm9RdcNPDvAYJnhUt7KTi3XW3:47",
                 properties: {
                     index: 1337,
                     commitment: "abcdfedghjiklmnyupop",

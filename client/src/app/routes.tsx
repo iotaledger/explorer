@@ -24,9 +24,11 @@ import Tag from "./routes/og/Tag";
 import { TagRouteProps } from "./routes/og/TagRouteProps";
 import Transaction from "./routes/og/Transaction";
 import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
-import BlockPage from "./routes/proto/BlockPage";
-import EpochPage from "./routes/proto/EpochPage";
+import ProtoAddressPage from "./routes/proto/AddressPage";
+import ProtoBlockPage from "./routes/proto/BlockPage";
+import ProtoEpochPage from "./routes/proto/EpochPage";
 import ProtoLanding from "./routes/proto/landing/Landing";
+import ProtoTransactionPage from "./routes/proto/TransactionPage";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddressPage from "./routes/stardust/AddressPage";
 import Alias from "./routes/stardust/Alias";
@@ -212,11 +214,19 @@ const buildAppRoutes = (
         />,
         <Route exact path="/:network/epoch/:epochId"
             key={keys.next().value}
-            component={EpochPage}
+            component={ProtoEpochPage}
         />,
         <Route exact path="/:network/block/:blockId"
             key={keys.next().value}
-            component={BlockPage}
+            component={ProtoBlockPage}
+        />,
+        <Route exact path="/:network/transaction/:txId"
+            key={keys.next().value}
+            component={ProtoTransactionPage}
+        />,
+        <Route exact path="/:network/address/:address"
+            key={keys.next().value}
+            component={ProtoAddressPage}
         />
         /* ,
         <Route path="/:network/visualizer/"

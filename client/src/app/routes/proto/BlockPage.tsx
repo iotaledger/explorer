@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import "./BlockPage.scss";
+import moment from "moment";
+import { IDataPayload } from "../../../../../../protonet.js/packages";
 import metadataMessage from "../../../assets/modals/stardust/block/metadata.json";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IBlockMetadataResponse } from "../../../models/api/proto/IBlockMetadataResponse";
-import { IBlockResponse } from "../../../models/api/proto/IBlockResponse";
-import { PROTO } from "../../../models/config/protocolVersion";
-import { ProtoApiClient } from "../../../services/proto/protoApiClient";
+import { pastMarkersToNodes } from "../../../helpers/proto/misc";
+import { useBlock, useBlockMeta } from "../../../helpers/proto/useBlock";
+import { useStatusStream } from "../../../helpers/proto/useStatusStream";
 import Modal from "../../components/Modal";
+import BlockTransaction from "../../components/proto/BlockTransaction";
 import Spinner from "../../components/Spinner";
+import ShortID, { LinkType } from "./ShortID";
 
 interface BlockPageProps {
     network: string;
@@ -18,85 +20,26 @@ interface BlockPageProps {
 const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
     { history, match: { params: { network, blockId } } }
 ) => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [block, setBlock] = useState<IBlockResponse | null>(null);
-    const [blockMeta, setBlockMeta] = useState<IBlockMetadataResponse | null>(null);
-    const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
+    const [block, payloadName, isBlockLoading] = useBlock(network, blockId);
+    const [blockMeta, isBlockMetaLoading] = useBlockMeta(network, blockId);
 
-    useEffect(() => {
-        setIsLoading(true);
-        (async () => {
-            const fetchedBlock = await apiClient.block({ id: blockId });
-            setBlock(fetchedBlock);
-            if (fetchedBlock.error) {
-                // eslint-disable-next-line no-warning-comments
-                // TODO: handle error
-                setBlock({
-                    epochCommitment: "0x123",
-                    error: "",
-                    id: "0x4af647910ba47000108b87c63abe0545643f9b203eacee2b713729b0450983fe",
-                    issuerPublicKey: "0xa921841628d64c3f08bd344118b8106ade072e68c774beff30135e036194493a",
-                    issuingTime: 1337,
-                    latestConfirmedEpoch: 345,
-                    nonce: "2342342342394890234",
-                    parents: [
-                        "0x16ee3356c21e410a0aaab42896021b1a857eb8d97a14a66fed9b13d634c21317",
-                        "0x1df26178a7914126fd8cb934c7a7437073794c1c8ce99319172436b1d4973eba"
-                    ],
-                    payloadBytes: "",
-                    sequenceNumber: 9001,
-                    signature: "",
-                    version: 1
-                });
-            }
-            setIsLoading(false);
-        })();
-        return () => setBlock(null);
-    }, [blockId]);
-
-    useEffect(() => {
-        setIsLoading(true);
-        (async () => {
-            const fetchedBlockMeta = await apiClient.blockMeta({ id: blockId });
-            setBlockMeta(fetchedBlockMeta);
-            if (fetchedBlockMeta.error) {
-                // eslint-disable-next-line no-warning-comments
-                // TODO: handle error
-                setBlockMeta({
-                    accepted: false,
-                    acceptedTime: 0,
-                    addedConflictIDs: [],
-                    booked: false,
-                    bookedTime: 0,
-                    confirmed: false,
-                    confirmedByEpoch: false,
-                    confirmedTime: false,
-                    conflictIDs: [],
-                    dropped: false,
-                    error: "",
-                    id: "",
-                    invalid: false,
-                    likedInsteadChildren: [],
-                    orphaned: false,
-                    orphanedBlocksInPastCone: [],
-                    scheduled: false,
-                    schedulerTime: 0,
-                    skipped: false,
-                    solid: false,
-                    solidTime: 0,
-                    strongChildren: [],
-                    structureDetails: undefined,
-                    subjectivelyInvalid: false,
-                    subtractedConflictIDs: [],
-                    tracked: false,
-                    trackedTime: 0,
-                    weakChildren: []
-                });
-            }
-            setIsLoading(false);
-        })();
-        return () => setBlock(null);
-    }, [blockId]);
+    if (isBlockLoading || isBlockMetaLoading || !block || !blockMeta) {
+        return (
+            <div className="block-page">
+                <div className="wrapper">
+                    <div className="inner">
+                        <div className="block--header row space-between">
+                            <div className="row middle">
+                                <h1>Block</h1>
+                                <Modal icon="info" data={metadataMessage} />
+                                <Spinner />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="block-page">
@@ -104,9 +47,8 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                 <div className="inner">
                     <div className="block--header row space-between">
                         <div className="row middle">
-                            <h1>Block</h1>
+                            <h1>{payloadName} Block</h1>
                             <Modal icon="info" data={metadataMessage} />
-                            {isLoading && <Spinner />}
                         </div>
                     </div>
                     <div className="top">
@@ -123,37 +65,48 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                             <div className="label">
                                                 ID
                                             </div>
-                                            <div className="value">{block?.id}</div>
-                                        </div>
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Issuer Public Key
-                                            </div>
-                                            <div className="value">{block?.issuerPublicKey}</div>
+                                            <div className="value text-truncate">{blockId}</div>
                                         </div>
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
                                             <div className="label">version</div>
-                                            <div className="value">{block?.version}</div>
-                                        </div>
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Sequence Number
-                                            </div>
-                                            <div className="value">{block?.sequenceNumber}</div>
+                                            <div className="value">{block.version}</div>
                                         </div>
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
                                             <div className="label">Issuing Time</div>
-                                            <div className="value">{block?.issuingTime}</div>
+                                            <div
+                                                className="value"
+                                            >{moment(block.issuingTime * 1000).format()}
+                                            </div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">
+                                                Issuer Public Key
+                                            </div>
+                                            <div className="value text-truncate">{block.issuerPublicKey}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">
+                                                Sequence Number
+                                            </div>
+                                            <div className="value">{block.sequenceNumber}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
                                         <div className="section--data">
                                             <div className="label">
                                                 Nonce
                                             </div>
-                                            <div className="value">{block?.nonce}</div>
+                                            <div className="value">{block.nonce}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -166,15 +119,22 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
                                             <div className="label">Commitment</div>
-                                            <div className="value">{block?.epochCommitment}</div>
+                                            <div className="value">
+                                                <ShortID
+                                                    hasEpoch={true}
+                                                    linkType={LinkType.Epoch}
+                                                    network={network} id={block.commitmentID}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
                                             <div className="label">Latest Confirmed Epoch</div>
-                                            <div className="value">{block?.latestConfirmedEpoch}</div>
+                                            <div className="value">{block.latestConfirmedEpoch}</div>
                                         </div>
                                     </div>
+                                    <div className="col fill margin-b-s" />
                                 </div>
                                 <div className="section--header">
                                     <div className="row middle">
@@ -184,43 +144,384 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                 <div className="row row--tablet-responsive fill margin-b-s">
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
-                                            <div className="label">Commitment</div>
-                                            <div className="value">{block?.epochCommitment}</div>
+                                            <div className="label">Solid</div>
+                                            <div className="value">{blockMeta.solid ? "true" : "false"}</div>
                                         </div>
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
-                                            <div className="label">Latest Confirmed Epoch</div>
-                                            <div className="value">{block?.latestConfirmedEpoch}</div>
+                                            <div className="label">Invalid</div>
+                                            <div className="value">{blockMeta.invalid ? "true" : "false"}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Orphaned</div>
+                                            <div className="value">{blockMeta.orphaned ? "true" : "false"}</div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="section--header">
                                     <div className="row middle">
-                                        <h2>Parents</h2>
+                                        <h2>Booker</h2>
                                     </div>
                                 </div>
-                                <div className="row middle">
-                                    <div className="section--data">
-                                        {block?.parents.map((parent, idx) => (
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Booked</div>
+                                            <div className="value">{blockMeta.booked ? "true" : "false"}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Booked Time</div>
+                                            <div className="value">{moment(blockMeta.bookedTime).format()}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s" />
+                                </div>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Conflict IDs</div>
+                                            <div className="value">
+                                                {Object.keys(blockMeta.conflictIDs).length === 0 ?
+                                                    "-"
+                                                    :
+                                                    Object.entries(blockMeta.conflictIDs).map(entry => (
+                                                        <ShortID
+                                                            hasEpoch={false} marginTop={true}
+                                                            linkType={LinkType.Conflict} key={entry[0]}
+                                                            network={network} id={entry[0]}
+                                                        />))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Added Conflict IDs</div>
+                                            <div className="value">
+                                                {Object.keys(blockMeta.addedConflictIDs).length === 0 ?
+                                                    "-"
+                                                    :
+                                                    Object.entries(blockMeta.addedConflictIDs).map(entry => (
+                                                        <ShortID
+                                                            hasEpoch={false} marginTop={true}
+                                                            linkType={LinkType.Conflict} key={entry[0]}
+                                                            network={network} id={entry[0]}
+                                                        />))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Subtracted Conflict IDs</div>
+                                            <div className="value">
+                                                {Object.keys(blockMeta.subtractedConflictIDs).length === 0 ?
+                                                    "-"
+                                                    :
+                                                    Object.entries(blockMeta.subtractedConflictIDs).map(entry => (
+                                                        <ShortID
+                                                            hasEpoch={false} marginTop={true}
+                                                            linkType={LinkType.Conflict} key={entry[0]}
+                                                            network={network} id={entry[0]}
+                                                        />))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="section--header">
+                                    <div className="row middle">
+                                        <h2>Virtual Voting</h2>
+                                    </div>
+                                </div>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Tracked</div>
+                                            <div className="value">{blockMeta.tracked ? "true" : "false"}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Subjectively Invalid</div>
+                                            <div className="value">{blockMeta.subjectivelyInvalid ? "true" : "false"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Tracked Time</div>
+                                            <div className="value">{blockMeta.trackedTime}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="section--header">
+                                    <div className="row middle">
+                                        <h2>Scheduler</h2>
+                                    </div>
+                                </div>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Scheduled</div>
+                                            <div className="value">{blockMeta.scheduled ? "true" : "false"}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Dropped</div>
+                                            <div className="value">{blockMeta.dropped ? "true" : "false"}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Scheduler Time</div>
+                                            <div className="value">{blockMeta.schedulerTime}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Skipped</div>
+                                            <div className="value">{blockMeta.skipped ? "true" : "false"}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s" />
+                                    <div className="col fill margin-b-s" />
+                                </div>
+                                <div className="section--header">
+                                    <div className="row middle">
+                                        <h2>Block Gadget</h2>
+                                    </div>
+                                </div>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Accepted</div>
+                                            <div className="value">{blockMeta.accepted ? "true" : "false"}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Accepted Time</div>
+                                            <div className="value">{blockMeta.acceptedTime}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s" />
+                                </div>
+                                <div className="section--header">
+                                    <div className="row middle">
+                                        <h2>Confirmation</h2>
+                                    </div>
+                                </div>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Confirmed</div>
+                                            <div className="value">{blockMeta.confirmed ? "true" : "false"}</div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Confirmed Time</div>
                                             <div
-                                                key={idx}
-                                                style={{ marginTop: "8px" }}
-                                                className="value code link"
-                                            >
-                                                <div
-                                                    className="pointer"
-                                                    onClick={() => history.replace(
-                                                        `/${network}/block/${parent}`
-                                                    )}
-                                                >
-                                                    {parent}
+                                                className="value"
+                                            >{moment(blockMeta.confirmedTime).format()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Confirmed By Epoch</div>
+                                            <div className="value">{blockMeta.confirmedByEpoch}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="section--header">
+                                    <div className="row middle">
+                                        <h2>Structure Details</h2>
+                                    </div>
+                                </div>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Rank</div>
+                                            <div className="value">
+                                                {blockMeta.structureDetails.rank}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Past Marker Gap</div>
+                                            <div className="value">
+                                                {blockMeta.structureDetails.pastMarkerGap}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Is Past Marker</div>
+                                            <div className="value">
+                                                {blockMeta.structureDetails.isPastMarker ? "true" : "false"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Past Markers</div>
+                                            <div className="value">
+                                                {pastMarkersToNodes(blockMeta.structureDetails.pastMarkers)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="section--header">
+                                    <div className="row middle">
+                                        <h2>References</h2>
+                                    </div>
+                                </div>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Strong Parents</div>
+                                            <div className="value">
+                                                {block.strongParents.length === 0 ?
+                                                    "-"
+                                                    :
+                                                    block.strongParents.map((parent, _) => (
+                                                        <ShortID
+                                                            hasEpoch={true} marginTop={true}
+                                                            linkType={LinkType.Block} key={parent}
+                                                            network={network} id={parent}
+                                                        />
+                                                    ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Weak Parents</div>
+                                            <div className="value">
+                                                {block.weakParents.length === 0 ?
+                                                    "-"
+                                                    :
+                                                    block.weakParents.map((parent, _) => (
+                                                        <ShortID
+                                                            hasEpoch={true} marginTop={true}
+                                                            linkType={LinkType.Block} key={parent}
+                                                            network={network} id={parent}
+                                                        />
+                                                    ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Shallow Like Parents</div>
+                                            <div className="value">
+                                                {block.shallowLikeParents.length === 0 ?
+                                                    "-"
+                                                    :
+                                                    block.shallowLikeParents.map((parent, _) => (
+                                                        <ShortID
+                                                            hasEpoch={true} marginTop={true}
+                                                            linkType={LinkType.Block} key={parent}
+                                                            network={network} id={parent}
+                                                        />
+                                                    ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="section--data">
+                                                <div className="label">Strong Children</div>
+                                                <div className="value">
+                                                    {Object.keys(blockMeta.strongChildren).length === 0 ?
+                                                        "-"
+                                                        :
+                                                        Object.keys(blockMeta.strongChildren ?? {})
+                                                            .map((parent, _) => (
+                                                                <ShortID
+                                                                    hasEpoch={true} marginTop={true}
+                                                                    linkType={LinkType.Block} key={parent}
+                                                                    network={network} id={parent}
+                                                                />
+                                                            ))}
                                                 </div>
                                             </div>
-                                        ))}
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Weak Children</div>
+                                            <div className="value">
+                                                {Object.keys(blockMeta.weakChildren).length === 0 ?
+                                                    "-"
+                                                    :
+                                                    Object.keys(blockMeta.weakChildren ?? {})
+                                                        .map((parent, _) => (
+                                                            <ShortID
+                                                                hasEpoch={true} marginTop={true}
+                                                                linkType={LinkType.Block} key={parent}
+                                                                network={network} id={parent}
+                                                            />
+                                                        ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Liked Instead Children</div>
+                                            <div className="value">
+                                                {Object.keys(blockMeta.likedInsteadChildren).length === 0 ?
+                                                    "-"
+                                                    :
+                                                    Object.keys(blockMeta.likedInsteadChildren ?? {})
+                                                        .map((parent, idx) => (
+                                                            <ShortID
+                                                                hasEpoch={true} marginTop={true}
+                                                                linkType={LinkType.Block} key={parent}
+                                                                network={network} id={parent}
+                                                            />
+                                                        ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                                {
+                                    block.payloadType.toString() === "GenericDataPayloadType(0)" &&
+                                    <div>
+                                        <div className="section--header">
+                                            <div className="row middle">
+                                                <h2>Data Payload</h2>
+                                            </div>
+                                        </div>
+                                        <div className="row row--tablet-responsive fill margin-b-s">
+                                            <div className="col fill margin-b-s">
+                                                <div className="section--data">
+                                                    <div className="label">Data</div>
+                                                    <div className="value">
+                                                        {(block.payload as IDataPayload).data ?? "Empty"}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                             </div>
+                            {
+                                block.transactionID &&
+                                <BlockTransaction network={network} txId={block.transactionID} />
+                            }
                         </div>
                     </div>
                 </div>

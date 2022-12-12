@@ -1,0 +1,118 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.asset-items {
+  padding: 15px 0;
+
+  p {
+    color: var(--body-color);
+  }
+
+  .asset-item--header {
+    justify-content: flex-start;
+    margin-bottom: 10px;
+    padding: 0 8px;
+
+    .label {
+      @include font-size(12px, 18px);
+
+      min-width: 90px;
+      color: var(--header-color);
+      font-family: $inter;
+      font-weight: 500;
+      text-transform: uppercase;
+
+      @include tablet-down {
+        display: none;
+      }
+
+      &.asset-id, &.asset-balance {
+        text-align: left;
+      }
+
+      &.asset-id {
+        min-width: 300px;
+      }
+
+      &.asset-balance {
+        min-width: 60px;
+      }
+    }
+  }
+
+  .asset-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 8px;
+
+    @include tablet-down {
+      padding: 12px;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      margin-bottom: 4px;
+    }
+
+    &:hover {
+      border-radius: 6px;
+      background-color: var(--light-bg);
+    }
+
+    .asset-item__content {
+      display: flex;
+
+      @include tablet-down {
+        &:first-child {
+          margin-bottom: 0;
+        }
+      }
+
+      &.desktop-only {
+        @include tablet-down {
+          display: none;
+        }
+      }
+    }
+
+    .asset-item--label {
+      display: none;
+
+      @include tablet-down {
+        display: block;
+        color: var(--header-color);
+        font-family: $inter;
+        letter-spacing: 0.5px;
+
+        @include font-size(14px, 21px);
+      }
+    }
+
+    .asset-item--value {
+      @include font-size(12px);
+
+      min-width: 90px;
+      color: $main-green;
+      font-family: $inter;
+
+      &.asset-id {
+        min-width: 300px;
+        text-align: left;
+      }
+
+      &.asset-balance {
+        text-align: left;
+        min-width: 60px;
+      }
+
+      @include tablet-down {
+        &.asset-id, &.asset-balance {
+          text-align: left;
+        }
+      }
+    }
+  }
+}
+

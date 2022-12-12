@@ -237,7 +237,6 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             const deltaSinceLast = Date.now() - this._lastUpdateItems;
 
             if (this._lastUpdateItems && deltaSinceLast > this.FEER_PROBE_THRESHOLD) {
-                console.log("closing items and initiating network services");
                 this.closeItems();
 
                 this.initNetworkServices();

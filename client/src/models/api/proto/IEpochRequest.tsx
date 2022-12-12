@@ -1,4 +1,5 @@
 export interface IEpochRequest {
+    network: string;
     index?: number;
-    id?: string;
+    epochId?: string;
 }

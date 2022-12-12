@@ -3,19 +3,19 @@ import { NumberHelper } from "../../../../helpers/numberHelper";
 import "./InfoBox.scss";
 
 interface InfoBoxProps {
-    itemsPerSecond: string;
-    confirmedItemsPerSecondPercent: string;
-    confirmationLatency: number;
+    bps: number;
+    inclusionRate: number;
+    confLatency: number;
 }
 
 const InfoBox: React.FC<InfoBoxProps> = (
-    { itemsPerSecond, confirmedItemsPerSecondPercent, confirmationLatency }
+    { bps, inclusionRate, confLatency }
 ) => (
     <div className="main-info-boxes">
         <div className="info-box">
             <span className="info-box--title">Conf. Latency</span>
             <span className="info-box--value">
-                {confirmationLatency}s
+                {confLatency}s
             </span>
         </div>
         <div className="info-box">
@@ -23,14 +23,14 @@ const InfoBox: React.FC<InfoBoxProps> = (
             </span>
             <div className="info-box--value">
                 <span className="download-rate">
-                    {NumberHelper.roundTo(Number(itemsPerSecond), 1) || "--"}
+                    {NumberHelper.roundTo(Number(bps), 1)}
                 </span>
             </div>
         </div>
         <div className="info-box">
             <span className="info-box--title">Inclusion Rate</span>
             <span className="info-box--value">
-                {confirmedItemsPerSecondPercent}
+                {inclusionRate}
             </span>
         </div>
     </div>

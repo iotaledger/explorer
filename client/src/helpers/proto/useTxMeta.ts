@@ -1,0 +1,35 @@
+import { ITransactionMetadata } from "@iota/protonet.js";
+import { useEffect, useState } from "react";
+import { ServiceFactory } from "../../factories/serviceFactory";
+import { PROTO } from "../../models/config/protocolVersion";
+import { ProtoApiClient } from "../../services/proto/protoApiClient";
+
+type Result = ITransactionMetadata | null | undefined;
+
+/**
+ *
+ * @param network
+ * @param txId
+ */
+export function useTxMeta(network: string, txId: string): [Result, boolean] {
+    const [txMeta, setTxMeta] = useState<ITransactionMetadata | null>();
+    const [isLoading, setIsLoading] = useState(true);
+    const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
+
+    useEffect(() => {
+        (async () => {
+            setIsLoading(true);
+            const fetchedMeta = await apiClient.transactionMeta({ network, txId });
+            if (fetchedMeta.error || fetchedMeta.meta === undefined) {
+                // eslint-disable-next-line no-warning-comments
+                // TODO: handle error
+                setTxMeta(null);
+                return;
+            }
+            setTxMeta(fetchedMeta.meta);
+            setIsLoading(false);
+        })();
+    }, [txId]);
+
+    return [txMeta, isLoading];
+}

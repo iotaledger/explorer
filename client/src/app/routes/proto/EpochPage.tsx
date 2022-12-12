@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import "./EpochPage.scss";
 import metadataMessage from "../../../assets/modals/stardust/block/metadata.json";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IEpochResponse } from "../../../models/api/proto/IEpochResponse";
-import { PROTO } from "../../../models/config/protocolVersion";
-import { ProtoApiClient } from "../../../services/proto/protoApiClient";
+import { useEpoch, useEpochBlocks, useEpochTxs, useEpochVotersWeight } from "../../../helpers/proto/useEpoch";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
+import ShortID, { LinkType } from "./ShortID";
 
 interface EpochPageProps {
     network: string;
@@ -17,41 +15,14 @@ interface EpochPageProps {
 const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = (
     { history, match: { params: { network, epochId } } }
 ) => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [epoch, setEpoch] = useState<IEpochResponse | null>(null);
-    const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
+    const [epoch, isEpochLoading] = useEpoch(network, epochId);
+    const [txs, areTxsLoading] = useEpochTxs(network, epochId);
+    const [blocks, areBlocksLoading] = useEpochBlocks(network, epochId);
+    const [voters, areVotersLoading] = useEpochVotersWeight(network, epochId);
 
-    useEffect(() => {
-        setIsLoading(true);
-        (async () => {
-            const fetchedEpoch = await apiClient.epoch({ id: epochId });
-            setEpoch(fetchedEpoch);
-            if (fetchedEpoch.error) {
-                // eslint-disable-next-line no-warning-comments
-                // TODO: handle error
-                setEpoch({
-                    index: 9001,
-                    commitment: "0x123",
-                    commitmentRoot: "0x123",
-                    confirmed: true,
-                    cumulativeStake: 1234756734587693,
-                    error: "",
-                    manaRoot: "0x123",
-                    numAcceptedBlocks: 56,
-                    numAcceptedTxs: 12,
-                    numActiveValidators: 8,
-                    previousRoot: "0x123",
-                    nextRoot: "0x321",
-                    stateMutationRoot: "0x123",
-                    stateRoot: "0x123",
-                    tangleRoot: "0x123",
-                    timestamp: 1337
-                });
-            }
-            setIsLoading(false);
-        })();
-        return () => setEpoch(null);
-    }, [epochId]);
+    if (isEpochLoading || !epoch) {
+        return <div />;
+    }
 
     return (
         <div className="epoch-page">
@@ -59,38 +30,25 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = (
                 <div className="inner">
                     <div className="block--header row space-between">
                         <div className="row middle">
-                            <h1>Epoch {epoch?.index}</h1>
+                            <h1>Epoch {epoch.index}</h1>
                             <Modal icon="info" data={metadataMessage} />
-                            {isLoading && <Spinner />}
                         </div>
                         <div className="section--data row middle">
                             <button
                                 className="milestone-action margin-r-t"
                                 type="button"
-                                disabled={!epoch?.previousRoot}
-                                onClick={() => history?.push(`/${network}/epoch/${epoch?.previousRoot}`)}
+                                disabled={!epoch.previousRoot}
+                                onClick={() => history?.push(`/${network}/epoch/${epoch.previousRoot}`)}
                             >
                                 <span>Previous</span>
                             </button>
                             <button
                                 className="milestone-action margin-r-t"
                                 type="button"
-                                disabled={!epoch?.nextRoot}
-                                onClick={() => history?.push(`/${network}/epoch/${epoch?.nextRoot}`)}
+                                disabled={!epoch.nextRoot}
+                                onClick={() => history?.push(`/${network}/epoch/${epoch.nextRoot}`)}
                             >
                                 <span>Next</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div className="block--header row space-between">
-                        <div className="row middle">
-                            <button
-                                className="milestone-action margin-r-t"
-                                type="button"
-                                disabled={!epoch?.previousRoot}
-                                onClick={() => history?.push(`/${network}/block/0x123`)}
-                            >
-                                <span>To Block</span>
                             </button>
                         </div>
                     </div>
@@ -108,19 +66,24 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = (
                                             <div className="label">
                                                 Commitment
                                             </div>
-                                            <div className="value">{epoch?.commitment}</div>
+                                            <div className="value">
+                                                <ShortID
+                                                    network={network} id={epoch.commitment}
+                                                    linkType={LinkType.None} hasEpoch={false}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
-                                            <div className="label">Confirmed</div>
-                                            <div className="value">{epoch?.confirmed ? "true" : "false"}</div>
+                                            <div className="label">Committed</div>
+                                            <div className="value">{epoch.committed ? "true" : "false"}</div>
                                         </div>
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
-                                            <div className="label">Timestamp</div>
-                                            <div className="value">{epoch?.timestamp}</div>
+                                            <div className="label">Cumulative Stake</div>
+                                            <div className="value">{epoch.cumulativeStake}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -133,85 +96,123 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = (
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
                                             <div className="label">Commitment Root</div>
-                                            <div className="value">{epoch?.commitmentRoot}</div>
-                                        </div>
-                                        <div className="section--data">
-                                            <div className="label">Previous Root</div>
-                                            <div className="value">{epoch?.previousRoot}</div>
+                                            <div className="value">
+                                                <ShortID
+                                                    network={network} id={epoch.commitmentRoot}
+                                                    linkType={LinkType.None} hasEpoch={false}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
                                             <div className="label">Tangle Root</div>
-                                            <div className="value">{epoch?.tangleRoot}</div>
-                                        </div>
-                                        <div className="section--data">
-                                            <div className="label">State Mutation Root</div>
-                                            <div className="value">{epoch?.stateMutationRoot}</div>
+                                            <div className="value">
+                                                <ShortID
+                                                    network={network} id={epoch.tangleRoot}
+                                                    linkType={LinkType.None} hasEpoch={false}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
                                             <div className="label">State Root</div>
-                                            <div className="value">{epoch?.stateRoot}</div>
+                                            <div className="value">
+                                                <ShortID
+                                                    network={network} id={epoch.stateRoot}
+                                                    linkType={LinkType.None} hasEpoch={false}
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="section--data">
-                                            <div className="label">Mana Root</div>
-                                            <div className="value">{epoch?.manaRoot}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="section--header">
-                                    <div className="row middle">
-                                        <h2>Stats</h2>
                                     </div>
                                 </div>
                                 <div className="row row--tablet-responsive fill margin-b-s">
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
-                                            <div className="label"># Of Accepted Blocks</div>
-                                            <div className="value">{epoch?.numAcceptedBlocks}</div>
-                                        </div>
-                                        <div className="section--data">
-                                            <div className="label">Cumulative Stake</div>
-                                            <div className="value">{epoch?.cumulativeStake}</div>
-                                        </div>
-                                    </div>
-                                    <div className="col fill margin-b-s">
-                                        <div className="section--data">
-                                            <div className="label"># Of Active Validators</div>
-                                            <div className="value">{epoch?.numActiveValidators}</div>
+                                            <div className="label">Previous Root</div>
+                                            <div className="value">
+                                                <ShortID
+                                                    network={network} id={epoch.previousRoot}
+                                                    linkType={LinkType.None} hasEpoch={false}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
-                                            <div className="label"># Of Accepted Transactions</div>
-                                            <div className="value">{epoch?.numAcceptedTxs}</div>
+                                            <div className="label">State Mutation Root</div>
+                                            <div className="value">
+                                                <ShortID
+                                                    network={network} id={epoch.stateMutationRoot}
+                                                    linkType={LinkType.None} hasEpoch={false}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--data">
+                                            <div className="label">Mana Root</div>
+                                            <div className="value">
+                                                <ShortID
+                                                    network={network} id={epoch.manaRoot}
+                                                    linkType={LinkType.None} hasEpoch={false}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="section--header">
-                                    <div className="row middle">
-                                        <h2>Validators</h2>
+                                <div className="row row--tablet-responsive fill margin-b-s">
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--header">
+                                            <h2>Voters - {Object.keys(voters?.voters ?? {}).length}</h2>
+                                            {areVotersLoading && <Spinner />}
+                                        </div>
+                                        <div className="section--data">
+                                            <div className="value">
+                                                {blocks?.blocks.map((parent, _) => (
+                                                    <ShortID
+                                                        marginTop={true}
+                                                        linkType={LinkType.None} key={parent}
+                                                        network={network} id={parent}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="value code link">
-                                        <Link to="" className="margin-r-t">
-                                            123
-                                        </Link>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--header">
+                                            <h2>Blocks - {blocks?.blocks.length}</h2>
+                                            {areBlocksLoading && <Spinner />}
+                                        </div>
+                                        <div className="section--data">
+                                            <div className="value">
+                                                {blocks?.blocks.map((blockId, _) => (
+                                                    <ShortID
+                                                        hasEpoch={true} marginTop={true}
+                                                        linkType={LinkType.Block} key={blockId}
+                                                        network={network} id={blockId}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="section--header">
-                                    <div className="row middle">
-                                        <h2>Transactions</h2>
-                                    </div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="value code link">
-                                        <Link to="" className="margin-r-t">
-                                            123
-                                        </Link>
+                                    <div className="col fill margin-b-s">
+                                        <div className="section--header">
+                                            <h2>Transactions - {txs?.transactions.length}</h2>
+                                            {areTxsLoading && <Spinner />}
+                                        </div>
+                                        <div className="section--data">
+                                            <div className="value">
+                                                {txs?.transactions.map((txId, _) => (
+                                                    <ShortID
+                                                        marginTop={true}
+                                                        linkType={LinkType.Transaction} key={txId}
+                                                        network={network} id={txId}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
