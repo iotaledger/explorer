@@ -74,7 +74,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
             const svg = select(theSvg.current)
                 .attr("viewBox", `0 0 ${width} ${height}`)
-                .attr("preserveAspectRatio", "xMidYMid meet")
+                .attr("preserveAspectRatio", "none")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 

@@ -17,21 +17,43 @@
             letter-spacing: 0.5px;
             line-height: 24px;
             font-feature-settings: 'pnum' on, 'lnum' on, 'ss01' on;
+
+            @include phone-down {
+                padding-left: 4px;
+                padding-right: 4px;
+                @include font-size(14px);
+            }
         }
     }
 
     .chart-header__select {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         .select-wrapper {
+            position: relative;
+            margin-right: 20px;
+
             select {
+                cursor: pointer;
                 background: var(--statistics-select-bg);
                 color: var(--card-color);
                 border-color: var(--statistics-select-border);
-                height: 48px;
+                height: 40px;
+
+                @include phone-down {
+                    height: 32px;
+                }
             }
 
             .chevron {
-                top: 12px;
+                top: 23%;
                 color: var(--card-color);
+                z-index: 1;
+
+                @include phone-down {
+                    top: 13%;
+                }
             }
         }
     }

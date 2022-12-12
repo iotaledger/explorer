@@ -7,6 +7,7 @@
 .statistics-page {
     .statistics-row {
         gap: 15px 30px;
+
         @include tablet-down {
             flex-direction: column;
         }
@@ -14,16 +15,22 @@
         &.statistics-row--header-margin-lg {
             .line-chart .chart-header .row {
                 margin-bottom: 72px;
+
                 @include tablet-down {
                     margin-bottom: 30px;
                 }
             }
         }
+
+        .chart-wrapper:first-child {
+            @include tablet-down {
+                margin-bottom: 24px;
+            }
+        }
     }
     .info-panel {
         column-gap: 24px;
-        margin-bottom: 24px;
-
+        margin-bottom: 32px;
 
         @include tablet-down {
             padding-left: 8px;

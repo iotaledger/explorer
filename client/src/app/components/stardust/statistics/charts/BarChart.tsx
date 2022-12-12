@@ -55,7 +55,7 @@ const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
 
             const svg = select(theSvg.current)
                 .attr("viewBox", `0 0 ${width} ${height}`)
-                .attr("preserveAspectRatio", "xMidYMid meet")
+                .attr("preserveAspectRatio", "xMinYMid")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 

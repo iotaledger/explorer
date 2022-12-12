@@ -74,6 +74,7 @@ const debounce = (func: () => void) => {
     let timerId: NodeJS.Timeout | undefined;
     return () => {
       clearTimeout(timerId);
-      timerId = setTimeout(() => func(), 150);
+      timerId = setTimeout(() => func(), 100);
     };
 };
+

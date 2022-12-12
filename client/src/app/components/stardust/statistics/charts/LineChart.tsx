@@ -64,7 +64,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
 
             const svg = select(theSvg.current)
                 .attr("viewBox", `0 0 ${width} ${height}`)
-                .attr("preserveAspectRatio", "xMidYMid meet")
+                .attr("preserveAspectRatio", "none")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
