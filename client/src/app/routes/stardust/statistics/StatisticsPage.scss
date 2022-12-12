@@ -6,28 +6,20 @@
 
 .statistics-page {
     .statistics-row {
-        gap: 15px 30px;
+        gap: 15px 40px;
 
         @include tablet-down {
+            gap: 8px 30px;
             flex-direction: column;
-        }
-
-        &.statistics-row--header-margin-lg {
-            .line-chart .chart-header .row {
-                margin-bottom: 72px;
-
-                @include tablet-down {
-                    margin-bottom: 30px;
-                }
-            }
         }
 
         .chart-wrapper:first-child {
             @include tablet-down {
-                margin-bottom: 24px;
+                margin-bottom: 20px;
             }
         }
     }
+
     .info-panel {
         column-gap: 24px;
         margin-bottom: 32px;
@@ -40,22 +32,27 @@
         @include phone-down {
             flex-wrap: wrap;
         }
-    }
-    .card {
-        width: 100%;
-        background-color: var(--light-bg);
-        border: none;
 
-        @include phone-down {
-            margin-bottom: 24px;
+        .card {
+            width: 100%;
+            background-color: var(--light-bg);
+            border: none;
+
+            @include phone-down {
+                margin-bottom: 24px;
+            }
+
+            .card--content {
+                padding: 15px 25px;
+
+                .card--label {
+                    white-space: normal;
+                } 
+                .card--value {
+                    word-break: normal;
+                }
+            } 
         }
-
-       .card--label {
-            height: 24px;
-       } 
-       .card--content {
-            padding: 15px 25px;
-       } 
     }
 }
 

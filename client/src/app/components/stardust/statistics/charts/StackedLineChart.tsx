@@ -46,7 +46,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             const dataMaxY = Math.max(...data.map(d => Math.max(...subgroups.map(key => d[key]))));
             const leftMargin = determineGraphLeftPadding(dataMaxY);
 
-            const MARGIN = { top: 30, right: 10, bottom: 50, left: leftMargin };
+            const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
             // reset

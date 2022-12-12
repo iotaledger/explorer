@@ -40,7 +40,7 @@ const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
             const dataMaxY = max(data, d => d.n) ?? 1;
             const leftMargin = determineGraphLeftPadding(dataMaxY);
 
-            const MARGIN = { top: 30, right: 10, bottom: 50, left: leftMargin };
+            const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
             // reset

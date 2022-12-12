@@ -155,7 +155,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     value={lockedStorageDepositValue}
                                 />
                             </div>
-                            <div className="row statistics-row statistics-row--header-margin-lg margin-b-s">
+                            <div className="row statistics-row margin-b-s">
                                 <LineChart
                                     title="Addresses with Balance"
                                     label="Addresses"
@@ -183,7 +183,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="section--header">
                                 <h2>Output Activity</h2>
                             </div>
-                            <div className="row">
+                            <div className="row statistics-row">
                                 <StackedBarChart
                                     title="Alias Activity Counts"
                                     subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
@@ -213,7 +213,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     data={nftActivity}
                                 />
                             </div>
-                            <div className="row">
+                            <div className="row statistics-row">
                                 <StackedLineChart
                                     title="Tokens Held by Outputs with Unlock Conditions"
                                     subgroups={["timelock", "storageDepositReturn", "expiration"]}
@@ -246,7 +246,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="section--header">
                                 <h2>Byte Cost</h2>
                             </div>
-                            <div className="row statistics-row statistics-row--header-margin-lg">
+                            <div className="row statistics-row">
                                 <StackedBarChart
                                     title="Ledger Size"
                                     subgroups={["keyBytes", "dataBytes"]}
