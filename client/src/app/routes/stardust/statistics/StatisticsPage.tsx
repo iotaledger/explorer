@@ -229,8 +229,8 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             </div>
                             <div className="row statistics-row">
                                 <LineChart
-                                    title="Unclimed Tokens"
-                                    label="Unclimed Tokens"
+                                    title="Unclaimed Tokens"
+                                    label="Unclaimed Tokens"
                                     color="#00F5DD"
                                     data={unclaimedTokens}
                                 />
