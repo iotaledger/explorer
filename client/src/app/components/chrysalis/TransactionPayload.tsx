@@ -81,7 +81,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 <React.Fragment key={idx}>
                                     <div className="row middle">
                                         <div
-                                            className="card--content__input margin-b-s"
+                                            className={classNames("card--content__input", { "margin-b-s": idx + 1 < this.props.inputs.length })}
                                             onClick={() => this.setState({ showInputDetails: this.state.showInputDetails === idx ? -1 : idx })}
                                         >
                                             <div className={classNames("margin-r-t", "card--content__input--dropdown", { opened: this.state.showInputDetails === idx })}>
@@ -162,7 +162,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 <React.Fragment key={idx}>
                                     <div className="row middle">
                                         <div
-                                            className="card--content__input margin-b-s"
+                                            className={classNames("card--content__input", { "margin-b-s": idx + 1 < this.props.outputs.length })}
                                             onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx })}
                                         >
                                             <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === idx })}>
