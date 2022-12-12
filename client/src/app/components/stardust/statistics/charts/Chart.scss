@@ -12,8 +12,7 @@
     flex: 1;
 
     &.chart-wrapper--no-data{
-        background-color: var(--light-bg);
-        border-radius: 6px;
+        height: 350px;
     }
     
     .chart-wrapper__content {
