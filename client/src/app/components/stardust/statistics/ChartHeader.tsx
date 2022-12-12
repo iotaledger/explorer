@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React from "react";
-import "./ChartHeader.scss";
 import ChartLegend from "./ChartLegend";
+import "./ChartHeader.scss";
 
 interface ChartHeaderProps {
     title?: string;
