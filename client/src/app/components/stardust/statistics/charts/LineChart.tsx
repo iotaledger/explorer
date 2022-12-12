@@ -10,7 +10,7 @@ import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { noDataView, useChartWrapperSize, useSingleValueTooltip } from "../ChartUtils";
+import { determineGraphLeftPadding, noDataView, useChartWrapperSize, useSingleValueTooltip } from "../ChartUtils";
 import "./Chart.scss";
 
 interface LineChartProps {
@@ -37,7 +37,10 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
             const width = wrapperWidth;
             const height = wrapperHeight;
 
-            const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
+            const dataMaxY = max(data, d => d.n) ?? 1;
+            const leftMargin = determineGraphLeftPadding(dataMaxY);
+
+            const MARGIN = { top: 30, right: 10, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
             // reset
@@ -59,8 +62,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
             const x = scaleTime().domain(domain).range([0, INNER_WIDTH])
                 .nice();
 
-            const dataMaxN = max(data, d => d.n) ?? 1;
-            const y = scaleLinear().domain([0, dataMaxN]).range([INNER_HEIGHT, 0]);
+            const y = scaleLinear().domain([0, dataMaxY]).range([INNER_HEIGHT, 0]);
 
             const svg = select(theSvg.current)
                 .attr("viewBox", `0 0 ${width} ${height}`)

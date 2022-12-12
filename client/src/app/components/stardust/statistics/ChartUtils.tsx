@@ -73,8 +73,20 @@ export const useChartWrapperSize: () => [
 const debounce = (func: () => void) => {
     let timerId: NodeJS.Timeout | undefined;
     return () => {
-      clearTimeout(timerId);
-      timerId = setTimeout(() => func(), 100);
+        clearTimeout(timerId);
+        timerId = setTimeout(() => func(), 100);
     };
+};
+
+export const determineGraphLeftPadding = (dataMaxY: number) => {
+    const digitsN = Math.ceil(dataMaxY).toString().length;
+    if (digitsN <= 2) {
+        return digitsN * 14;
+    } else if (digitsN < 6) {
+        return digitsN * 8.5;
+    } else if (digitsN <= 8) {
+        return digitsN * 8;
+    }
+    return digitsN * 7.5;
 };
 

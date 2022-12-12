@@ -5,6 +5,9 @@
 @import "../../../../../scss/media-queries";
 
 .chart-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     border-radius: 8px;
     flex: 1;
 

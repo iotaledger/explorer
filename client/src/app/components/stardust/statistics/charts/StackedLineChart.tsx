@@ -9,7 +9,7 @@ import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { noDataView, useChartWrapperSize, useMultiValueTooltip } from "../ChartUtils";
+import { determineGraphLeftPadding, noDataView, useChartWrapperSize, useMultiValueTooltip } from "../ChartUtils";
 import "./Chart.scss";
 
 interface StackedLineChartProps {
@@ -43,7 +43,10 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             const width = wrapperWidth;
             const height = wrapperHeight;
 
-            const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
+            const dataMaxY = Math.max(...data.map(d => Math.max(...subgroups.map(key => d[key]))));
+            const leftMargin = determineGraphLeftPadding(dataMaxY);
+
+            const MARGIN = { top: 30, right: 10, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
             // reset
@@ -74,12 +77,8 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .domain([groups[0], groups[groups.length - 1]])
                 .range([0, INNER_WIDTH]);
 
-            const computeYMax = (entries: { [name: string]: number; time: number }[]) => Math.max(
-                ...entries.map(d => Math.max(...subgroups.map(key => d[key])
-                ))
-            );
 
-            const y = scaleLinear().domain([0, computeYMax(data)])
+            const y = scaleLinear().domain([0, dataMaxY])
                 .range([INNER_HEIGHT, 0]);
 
             const yAxisGrid = axisLeft(y.nice())

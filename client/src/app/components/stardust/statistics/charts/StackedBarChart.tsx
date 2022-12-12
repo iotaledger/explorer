@@ -8,7 +8,7 @@ import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { useMultiValueTooltip, noDataView, useChartWrapperSize } from "../ChartUtils";
+import { useMultiValueTooltip, noDataView, useChartWrapperSize, determineGraphLeftPadding } from "../ChartUtils";
 import "./Chart.scss";
 
 interface StackedBarChartProps {
@@ -44,7 +44,18 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             const width = wrapperWidth;
             const height = wrapperHeight;
 
-            const MARGIN = { top: 30, right: 20, bottom: 50, left: 50 };
+            const dataMaxY = Math.max(
+                ...data.map(d => {
+                    let sum = 0;
+                    for (const key of subgroups) {
+                        sum += d[key];
+                    }
+                    return sum;
+                })
+            );
+            const leftMargin = determineGraphLeftPadding(dataMaxY);
+
+            const MARGIN = { top: 30, right: 10, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
             // reset
@@ -59,17 +70,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 .range([0, INNER_WIDTH])
                 .paddingInner(0.1);
 
-            const computeYMax = (entries: { [name: string]: number; time: number }[]) => Math.max(
-                ...entries.map(d => {
-                    let sum = 0;
-                    for (const key of subgroups) {
-                        sum += d[key];
-                    }
-                    return sum;
-                })
-            );
-
-            const y = scaleLinear().domain([0, computeYMax(data)])
+            const y = scaleLinear().domain([0, dataMaxY])
                 .range([INNER_HEIGHT, 0]);
 
             const svg = select(theSvg.current)
