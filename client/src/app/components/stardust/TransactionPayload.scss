@@ -58,8 +58,6 @@
     }
 
     .card--content {
-      padding-bottom: 0;
-
       .card--value {
         margin-left: auto;
         color: var(--type-color);
@@ -81,6 +79,10 @@
           letter-spacing: 0.02em;
           line-height: 20px;
         }
+      }
+
+      .unlocks {
+        margin-bottom: 0px;
       }
     }
   }

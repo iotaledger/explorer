@@ -11,7 +11,7 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
-        <div className="card--content__output">
+        <div className="card--content__output unlocks">
             <div
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="card--value card-header--wrapper"
