@@ -19,8 +19,10 @@
 
     @include tablet-down {
         grid-template-rows: repeat(3, 90px);
+        grid-auto-columns: minmax(0, 1fr);
         backdrop-filter: none;
-        padding-top: 0;
+        padding: 0;
+        margin: 0;
     }
 
     .info-box {

@@ -50,7 +50,7 @@ export class CurrencyService {
     private readonly _apiClient: ChrysalisApiClient;
 
     /**
-     * Subsribers to settings updates.
+     * Subscribers to settings updates.
      */
     private readonly _subscribers: { [id: string]: () => void };
 

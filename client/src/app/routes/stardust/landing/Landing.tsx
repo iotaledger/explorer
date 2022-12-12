@@ -96,7 +96,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 confirmedItemsPerSecondPercent={confirmedItemsPerSecondPercent}
                                 marketCapCurrency={marketCapCurrency}
                                 priceCurrency={priceCurrency}
-                                isShimmer={isShimmer}
                                 showMarket={networkConfig.showMarket ?? false}
                             />
                         </div>
@@ -159,18 +158,18 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         if (this._currencyData) {
             this.setState({
                 marketCapCurrency:
-                    this._currencyData.coinStats?.iota?.marketCap ?
+                    this._currencyData.coinStats?.shimmer?.marketCap ?
                         this._currencyService.convertFiatBase(
-                            this._currencyData.coinStats.iota.marketCap,
+                            this._currencyData.coinStats.shimmer.marketCap,
                             this._currencyData,
                             true,
                             2,
                             undefined,
                             true)
                         : "--",
-                priceCurrency: this._currencyData.coinStats?.iota?.price ?
+                priceCurrency: this._currencyData.coinStats?.shimmer?.price ?
                     this._currencyService.convertFiatBase(
-                        this._currencyData.coinStats.iota.price,
+                        this._currencyData.coinStats.shimmer.price,
                         this._currencyData,
                         true,
                         3,

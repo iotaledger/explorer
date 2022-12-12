@@ -7,7 +7,7 @@ import mainMessage from "../../../assets/modals/chrysalis/search/main-header.jso
 import mainStardustMessage from "../../../assets/modals/stardust/search/main-header.json";
 import { ReactComponent as ShimmerLogo } from "../../../assets/shimmer-logo-header.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { isMarketedNetwork, isShimmerNetwork } from "../../../helpers/networkHelper";
+import { isShimmerNetwork } from "../../../helpers/networkHelper";
 import { SettingsService } from "../../../services/settingsService";
 import FiatSelector from "../FiatSelector";
 import "./Header.scss";
@@ -59,7 +59,7 @@ class Header extends Component<HeaderProps, HeaderState> {
     public render(): ReactNode {
         const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
         const isShimmer = isShimmerNetwork(currentNetwork?.network);
-        const isMarketed = isMarketedNetwork(currentNetwork?.network);
+        const showMarket = currentNetwork?.showMarket;
 
         return (
             <header className={classNames({ "shimmer-header-bg": isShimmer }, { "full-height": this.state.show })}>
@@ -148,7 +148,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 )}
                             </div>
                             {/* ----- Only visible in mobile ----- */}
-                            {isMarketed && (
+                            {showMarket && (
                                 <div className="mobile-fiat">
                                     <FiatSelector />
                                 </div>
@@ -163,7 +163,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                             />
 
                             {/* ----- Only visible in desktop ----- */}
-                            {isMarketed && (
+                            {showMarket && (
                                 <div className="desktop-fiat">
                                     <FiatSelector />
                                 </div>
