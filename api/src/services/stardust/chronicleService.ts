@@ -5,6 +5,7 @@ import { TimespanOption } from "../../models/api/stardust/ITransactionHistoryDow
 import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
+import { IMilestoneBlocksResponse } from "../../models/api/stardust/milestone/IMilestoneBlocksResponse";
 import {
     IAnalyticStats, ICountAndValueStats, IAddressesStats, ILockedStorageDeposit
 } from "../../models/api/stats/IAnalyticStats";
@@ -16,6 +17,7 @@ import { FetchHelper } from "../../utils/fetchHelper";
 const CHRONICLE_ENDPOINTS = {
     updatedByAddress: "/api/explorer/v2/ledger/updates/by-address/",
     balance: "/api/explorer/v2/balance/",
+    milestoneBlocks: ["/api/explorer/v2/milestones/", "/blocks"],
     nativeTokensStats: "/api/analytics/v2/ledger/native-tokens",
     nftStats: "/api/analytics/v2/ledger/nfts",
     addresses: "/api/analytics/v2/activity/addresses",
@@ -52,6 +54,29 @@ export class ChronicleService {
             return await FetchHelper.json<never, IAddressBalanceResponse>(
                 this._endpoint,
                 `${CHRONICLE_ENDPOINTS.balance}${address}`,
+                "get"
+            );
+        } catch (error) {
+            return { error };
+        }
+    }
+
+    /**
+     * Get the blocks in a given milestone.
+     * @param milestoneId The milestone id.
+     * @returns The milestone blocks response.
+     */
+    public async milestoneBlocks(
+        milestoneId: string
+    ): Promise<IMilestoneBlocksResponse | undefined> {
+        const path = `${CHRONICLE_ENDPOINTS.milestoneBlocks[0]}${milestoneId}${CHRONICLE_ENDPOINTS.milestoneBlocks[1]}`;
+        console.log("path", path);
+
+        // exhaust the cursor to fetch all (missing)
+        try {
+            return await FetchHelper.json<never, IMilestoneBlocksResponse>(
+                this._endpoint,
+                path,
                 "get"
             );
         } catch (error) {
