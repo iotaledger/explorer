@@ -4,21 +4,52 @@ import Spinner from "../Spinner";
 import "./TabbedSection.scss";
 
 interface TabOption {
+    /**
+     * Is the Tab disabled (it will make the tab unclickable).
+     */
     disabled?: boolean;
+    /**
+     * An optional "counter" from this section domain that can be displayed on the tab.
+     */
     counter?: number;
+    /**
+     * Is the Tab data loading (it will render a loading spinner on the tab).
+     */
     isLoading?: boolean;
 }
 
 interface TabOptions {
+    /**
+     * Each key must match one tab "key" from the 'tabsEnum' array.
+     */
     [tabName: string]: TabOption;
 }
 
 interface TabbedSectionProps {
+    /**
+     * An object with properties being the tabs to render (values are the tab labels).
+     */
     tabsEnum: Record<string, string>;
+    /**
+     * The components the render for each selected tab. Must have the same size and ordering as the
+     * corresponding 'tabsEnum' prop.
+     */
     children: React.ReactElement[];
+    /**
+     * Optional additional configuration for each tab.
+     */
     tabOptions?: TabOptions;
 }
 
+// eslint-disable-next-line jsdoc/require-param
+/**
+ * Generic component to render a TabbedSection (Sections passed in are split into tabs).
+ *
+ * WARNING: The tabs array passed into the 'tabsEnum' prop MUST have the same cardinality and the same ordering,
+ * as the React components passed into the children prop (wrapped by the TabbedSection component),
+ * for this to work properly.
+ * @returns The React component TSX.
+ */
 const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOptions }) => {
     const [selectedTab, setSelectedTab] = useState<number>(0);
     const TABS: string[] = [...Object.values(tabsEnum)];
@@ -86,3 +117,4 @@ TabbedSection.defaultProps = {
 };
 
 export default TabbedSection;
+
