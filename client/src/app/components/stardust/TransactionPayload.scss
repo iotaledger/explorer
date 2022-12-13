@@ -80,10 +80,14 @@
           line-height: 20px;
         }
       }
+
+      .unlocks {
+        margin-bottom: 0px;
+      }
     }
   }
 
-  .transaction-from.card--content .card--content__output {
+  .transaction-payload_outputs.card--content .card--content__output {
       padding: 0 0;
   }
 }
