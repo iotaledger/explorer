@@ -155,7 +155,7 @@ export class CurrencyService {
         }
         return converted;
     }
-    
+
     /**
      * Convert the base token to fiat.
      * @param value The value in token/subunit.

@@ -18,7 +18,7 @@ class FiatValue extends Currency<FiatValueProps, FiatValueState> {
      * The component context.
      */
     public declare context: React.ContextType<typeof NetworkContext>;
-    
+
     /**
      * Create a new instance of FiatValue.
      * @param props The props.
@@ -58,8 +58,8 @@ class FiatValue extends Currency<FiatValueProps, FiatValueState> {
     protected updateCurrency(): void {
         if (this._currencyData) {
             const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
-            
-            const valueCurrency = tokenInfo.name ? 
+
+            const valueCurrency = tokenInfo.name ?
                 this._currencyService.convertBaseToken(
                     this.props.value,
                     tokenInfo,
