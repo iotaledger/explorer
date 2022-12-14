@@ -81,7 +81,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 <React.Fragment key={idx}>
                                     <div className="row middle">
                                         <div
-                                            className="card--content__input"
+                                            className={classNames("card--content__input", { "margin-b-s": idx + 1 < this.props.inputs.length })}
                                             onClick={() => this.setState({ showInputDetails: this.state.showInputDetails === idx ? -1 : idx })}
                                         >
                                             <div className={classNames("margin-r-t", "card--content__input--dropdown", { opened: this.state.showInputDetails === idx })}>
@@ -103,13 +103,13 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                 className="margin-r-t"
                                                 onClick={() => this.setState({
                                                     isInputBalanceFormatted: !this.state.isInputBalanceFormatted.includes(idx)
-                                                            ? [...this.state.isInputBalanceFormatted, idx]
-                                                            : this.state.isInputBalanceFormatted.filter(id => id !== idx)
+                                                        ? [...this.state.isInputBalanceFormatted, idx]
+                                                        : this.state.isInputBalanceFormatted.filter(id => id !== idx)
                                                 })}
                                             >
                                                 {this.state.isInputBalanceFormatted.includes(idx) ?
-                                                `${input.amount} i` :
-                                                UnitsHelper.formatBest(input.amount)}
+                                                    `${input.amount} i` :
+                                                    UnitsHelper.formatBest(input.amount)}
                                             </span>
                                             <CopyButton copy={String(input.amount)} />
                                         </div>
@@ -162,7 +162,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 <React.Fragment key={idx}>
                                     <div className="row middle">
                                         <div
-                                            className="card--content__input"
+                                            className={classNames("card--content__input", { "margin-b-s": idx + 1 < this.props.outputs.length })}
                                             onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx })}
                                         >
                                             <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === idx })}>
@@ -184,13 +184,13 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                 className="margin-r-t"
                                                 onClick={() => this.setState({
                                                     isOutputBalanceFormatted: !this.state.isOutputBalanceFormatted.includes(idx) ?
-                                                    [...this.state.isOutputBalanceFormatted, idx] :
-                                                    this.state.isOutputBalanceFormatted.filter(id => id !== idx)
+                                                        [...this.state.isOutputBalanceFormatted, idx] :
+                                                        this.state.isOutputBalanceFormatted.filter(id => id !== idx)
                                                 })}
                                             >
                                                 {this.state.isOutputBalanceFormatted.includes(idx) ?
-                                                `${output.amount} i` :
-                                                UnitsHelper.formatBest(output.amount)}
+                                                    `${output.amount} i` :
+                                                    UnitsHelper.formatBest(output.amount)}
                                             </span>
                                             <CopyButton copy={String(output.amount)} />
                                         </div>

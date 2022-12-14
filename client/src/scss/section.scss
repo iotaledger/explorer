@@ -123,4 +123,8 @@
     color: $gray;
     font-family: $metropolis;
   }
+
+  .text--no-decoration:hover {
+    text-decoration: none;
+  }
 }
