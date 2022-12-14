@@ -28,6 +28,10 @@
                 border-bottom: 3px solid $mint-green-6;
             }
 
+            &.disabled {
+                pointer-events: none;
+            }
+
             button.tab {
                 background: var(--associated-outputs-tabs-bg);
                 color: $gray-6;

@@ -72,14 +72,14 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
                 return (
                     <div
                         key={`tab-btn-${idx}`}
-                        className={classNames("tab-wrapper", { "active": idx === selectedTab })}
+                        className={classNames("tab-wrapper", { "active": idx === selectedTab }, { "disabled": isDisabled })}
+                        onClick={() => setSelectedTab(idx)}
                     >
                         <button
                             className="tab"
                             type="button"
                             key={idx}
                             disabled={isDisabled}
-                            onClick={() => setSelectedTab(idx)}
                         >
                             {tab}
                         </button>
