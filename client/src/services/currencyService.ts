@@ -1,3 +1,4 @@
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { ICurrencySettings } from "../models/services/ICurrencySettings";
@@ -143,6 +144,43 @@ export class CurrencyService {
             if (selectedFiatToBase) {
                 const miota = valueIota / 1000000;
                 const fiat = miota * (selectedFiatToBase.rate * iotaStats.price);
+
+                if (includeSymbol) {
+                    converted += `${this.getSymbol(currencyData.fiatCode)} `;
+                }
+
+                converted += fiat.toFixed(numDigits).toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+        }
+        return converted;
+    }
+    
+    /**
+     * Convert the base token to fiat.
+     * @param value The value in token/subunit.
+     * @param tokenInfo The token info.
+     * @param currencyData The currency data.
+     * @param includeSymbol Include the symbol in the formatting.
+     * @param numDigits The number of digits to display.
+     * @returns The converted fiat.
+     */
+    public convertBaseToken(
+        value: number,
+        tokenInfo: INodeInfoBaseToken,
+        currencyData: ICurrencySettings,
+        includeSymbol: boolean,
+        numDigits: number): string {
+        let converted = "";
+        const coinName = tokenInfo.name.toLocaleLowerCase();
+
+        if (currencyData.fiatExchangeRatesEur && currencyData.fiatCode && currencyData.coinStats?.[coinName]?.price) {
+            const tokenStats = currencyData.coinStats[coinName];
+            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find(c => c.id === currencyData.fiatCode);
+
+            if (selectedFiatToBase) {
+                const baseTokenValue = tokenInfo.subunit ? value / Math.pow(10, tokenInfo.decimals) : value;
+                const fiat = baseTokenValue * (selectedFiatToBase.rate * tokenStats.price);
 
                 if (includeSymbol) {
                     converted += `${this.getSymbol(currencyData.fiatCode)} `;
