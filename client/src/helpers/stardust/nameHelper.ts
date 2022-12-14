@@ -116,7 +116,7 @@ export class NameHelper {
      * @param type The type to get the name for.
      * @returns The address type name.
      */
-     public static getAddressTypeName(type: number): string {
+    public static getAddressTypeName(type: number): string {
         if (type === ED25519_ADDRESS_TYPE) {
             return "Ed25519 address";
         } else if (type === ALIAS_ADDRESS_TYPE) {
@@ -127,4 +127,3 @@ export class NameHelper {
         return "Unknown Address Type";
     }
 }
-

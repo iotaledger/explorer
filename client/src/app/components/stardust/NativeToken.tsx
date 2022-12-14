@@ -20,7 +20,7 @@ class NativeToken extends AsyncComponent<NativeTokenProps, NativeTokenState> {
     /**
      * The component mounted.
      */
-     public async componentDidMount(): Promise<void> {
+    public async componentDidMount(): Promise<void> {
         super.componentDidMount();
     }
 
@@ -48,20 +48,20 @@ class NativeToken extends AsyncComponent<NativeTokenProps, NativeTokenState> {
                     </div>
                 </div>
                 {isExpanded && (
-                <div className="margin-l-t">
-                    <div className="card--label">
-                        Token id:
+                    <div className="padding-l-t left-border">
+                        <div className="card--label">
+                            Token id:
+                        </div>
+                        <div className="card--value row">
+                            {tokenId}
+                        </div>
+                        <div className="card--label">
+                            Amount:
+                        </div>
+                        <div className="card--value row">
+                            {Number(amount)}
+                        </div>
                     </div>
-                    <div className="card--value row">
-                        {tokenId}
-                    </div>
-                    <div className="card--label">
-                        Amount:
-                    </div>
-                    <div className="card--value row">
-                        {Number(amount)}
-                    </div>
-                </div>
                 )}
             </div>
         );
