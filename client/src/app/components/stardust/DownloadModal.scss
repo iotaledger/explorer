@@ -104,6 +104,10 @@
           .target-date::-webkit-datetime-edit {
             color: #909fbe;
           }
+
+          .target-date::-webkit-calendar-picker-indicator {
+            padding: 5px;
+          }
       }
 
       .confirm-button {
