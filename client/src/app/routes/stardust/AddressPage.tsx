@@ -59,6 +59,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [storageRentBalance, setStorageRentBalance] = useState<number | undefined>();
     const [outputResponse, setOutputResponse] = useState<IOutputResponse[] | undefined>();
     const [isFormatStorageRentFull, setIsFormatStorageRentFull] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const [tokensCount, setTokenCount] = useState<number>(0);
     const [nftCount, setNftCount] = useState<number>(0);
@@ -98,6 +99,11 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             void loadAddressData();
         }
     }, [bech32AddressDetails]);
+
+    useEffect(() => {
+        const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
+        setIsLoading(isLoading);
+    }, [jobToStatus.values()]);
 
     /**
      * Load the Address balance and UTXOs.
@@ -153,7 +159,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         // eslint-disable-next-line no-void
         void outputIdsMonitor.enqueue(
             async () => tangleCacheService.addressOutputs(network, addressBech32).then(idsResponse => {
-                if (idsResponse?.outputIds) {
+                if (idsResponse?.outputIds && idsResponse.outputIds.length > 0) {
                     const outputResponsesUpdate: IOutputResponse[] = [];
                     const addressOutputIds = idsResponse.outputIds;
                     let storageRentBalanceUpdate: number | undefined;
@@ -188,6 +194,8 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                 })
                         );
                     }
+                } else {
+                    setOutputResponse([]);
                 }
             })
         );
@@ -207,7 +215,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     }
 
     const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
-    const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
 
     return (
         <div className="address-page">
