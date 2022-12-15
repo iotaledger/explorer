@@ -93,12 +93,7 @@
             margin-right: 8px;
           }
 
-          .real-date {
-            display: none;
-          }
-
-          .real-date, 
-          .fake-date {
+          .target-date {
             background: var(--body-background);
             width: 200px;
             color: var(--body-color);

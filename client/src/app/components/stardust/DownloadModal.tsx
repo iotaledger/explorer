@@ -23,7 +23,6 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
     const [targetDate, setTargetDate] = useState<string | null>(null);
     const [jobStatus, setJobStatus] = useState(PromiseStatus.PENDING);
     const dateRef = React.useRef() as React.MutableRefObject<HTMLInputElement>;
-    const textRef = React.useRef() as React.MutableRefObject<HTMLInputElement>;
 
     const onDateSelect = (value: string) => {
         if (value) {
@@ -72,27 +71,6 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
         }
     };
 
-    const dateMouseEnter = () => {
-        if (!targetDate) {
-            dateRef.current.style.display = "block";
-            textRef.current.style.display = "none";
-        }
-    };
-
-    const dateMouseLeave = () => {
-        if (!targetDate && document.activeElement !== dateRef.current) {
-            dateRef.current.style.display = "none";
-            textRef.current.style.display = "block";
-        }
-    };
-
-    const textMouseEnter = () => {
-        if (!targetDate) {
-            dateRef.current.style.display = "block";
-            textRef.current.style.display = "none";
-        }
-    };
-
     const isDownloading = jobStatus === PromiseStatus.WORKING;
 
     return (
@@ -132,21 +110,14 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
                                 </div>
                                 <div>
                                     <input
-                                        type="date"
-                                        className="real-date"
+                                        type="text"
+                                        className="target-date"
                                         ref={dateRef}
+                                        placeholder="DD/MM/YYYY"
                                         max={moment().format("YYYY-MM-DD")}
                                         onChange={({ target: { value } }) => onDateSelect(value)}
-                                        onMouseEnter={() => dateMouseEnter()}
-                                        onMouseLeave={() => dateMouseLeave()}
-                                        onBlur={() => dateMouseLeave()}
-                                    />
-                                    <input
-                                        type="text"
-                                        className="fake-date"
-                                        ref={textRef}
-                                        onMouseEnter={() => textMouseEnter()}
-                                        placeholder="Enter target date"
+                                        onFocus={() => (dateRef.current.type = "date")}
+                                        onBlur={() => (dateRef.current.type = "text")}
                                     />
                                 </div>
                             </div>
