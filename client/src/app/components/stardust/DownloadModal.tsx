@@ -29,6 +29,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
             setTargetDate(value);
         } else {
             setTargetDate(null);
+            dateRef.current.type = "text";
         }
     };
 
@@ -117,7 +118,6 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
                                         max={moment().format("YYYY-MM-DD")}
                                         onChange={({ target: { value } }) => onDateSelect(value)}
                                         onFocus={() => (dateRef.current.type = "date")}
-                                        onBlur={() => (dateRef.current.type = "text")}
                                     />
                                 </div>
                             </div>

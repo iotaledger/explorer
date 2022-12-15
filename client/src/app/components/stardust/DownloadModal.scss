@@ -100,6 +100,14 @@
             padding: 10px;
             color-scheme: var(--date-input-theme);
           }
+
+          .target-date::-webkit-datetime-edit {
+            color: #909fbe;
+          }
+
+          .target-date::placeholder {
+            color: #909fbe;
+          }
       }
 
       .confirm-button {
