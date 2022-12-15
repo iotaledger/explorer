@@ -101,8 +101,8 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     }, [bech32AddressDetails]);
 
     useEffect(() => {
-        const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
-        setIsLoading(isLoading);
+        const loading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
+        setIsLoading(loading);
     }, [jobToStatus.values()]);
 
     /**
