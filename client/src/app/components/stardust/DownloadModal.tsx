@@ -22,14 +22,12 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
     const [showModal, setShowModal] = useState(false);
     const [targetDate, setTargetDate] = useState<string | null>(null);
     const [jobStatus, setJobStatus] = useState(PromiseStatus.PENDING);
-    const dateRef = React.useRef() as React.MutableRefObject<HTMLInputElement>;
 
     const onDateSelect = (value: string) => {
         if (value) {
             setTargetDate(value);
         } else {
             setTargetDate(null);
-            dateRef.current.type = "text";
         }
     };
 
@@ -111,13 +109,10 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
                                 </div>
                                 <div>
                                     <input
-                                        type="text"
+                                        type="date"
                                         className="target-date"
-                                        ref={dateRef}
-                                        placeholder="DD/MM/YYYY"
                                         max={moment().format("YYYY-MM-DD")}
                                         onChange={({ target: { value } }) => onDateSelect(value)}
-                                        onFocus={() => (dateRef.current.type = "date")}
                                     />
                                 </div>
                             </div>

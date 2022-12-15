@@ -96,16 +96,12 @@
           .target-date {
             background: var(--body-background);
             width: 200px;
-            color: var(--body-color);
             padding: 10px;
+            letter-spacing: 1px;
             color-scheme: var(--date-input-theme);
           }
 
           .target-date::-webkit-datetime-edit {
-            color: #909fbe;
-          }
-
-          .target-date::placeholder {
             color: #909fbe;
           }
       }
