@@ -20,13 +20,23 @@ const ChartTooltip: React.FC<ChartTooltipProps> = ({ tooltipRef }) => {
         };
     }, []);
 
+    const getX = () => {
+        let x = position.x + 8;
+        const remainingWidth = window.innerWidth - (position.x + 20);
+
+        if (tooltipRef.current && remainingWidth <= tooltipRef.current.offsetWidth) {
+            x = position.x - tooltipRef.current.offsetWidth;
+        }
+        return x;
+    };
+
     return (
         <div
             id="tooltip"
             ref={tooltipRef}
             style={{
                 top: position.y + 16,
-                left: position.x + 8
+                left: getX()
             }}
         >
             <div id="content" />
