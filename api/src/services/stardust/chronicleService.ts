@@ -162,7 +162,7 @@ export class ChronicleService {
      */
     public async transactionHistoryDownload(
         address: string,
-        targetDate: moment.Moment
+        targetDate: string
     ): Promise<ITransactionHistoryDownloadResponse | undefined> {
         try {
             let response: ITransactionHistoryResponse | undefined;

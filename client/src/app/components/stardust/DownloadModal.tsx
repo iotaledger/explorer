@@ -20,14 +20,14 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
         ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
     );
     const [showModal, setShowModal] = useState(false);
-    const [targetDate, setTargetDate] = useState<moment.Moment | null>(null);
+    const [targetDate, setTargetDate] = useState<string | null>(null);
     const [jobStatus, setJobStatus] = useState(PromiseStatus.PENDING);
     const dateRef = React.useRef() as React.MutableRefObject<HTMLInputElement>;
     const textRef = React.useRef() as React.MutableRefObject<HTMLInputElement>;
 
     const onDateSelect = (value: string) => {
         if (value) {
-            setTargetDate(moment(value));
+            setTargetDate(value);
         } else {
             setTargetDate(null);
         }
@@ -77,21 +77,21 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
             dateRef.current.style.display = "block";
             textRef.current.style.display = "none";
         }
-    }
+    };
 
     const dateMouseLeave = () => {
         if (!targetDate && document.activeElement !== dateRef.current) {
             dateRef.current.style.display = "none";
             textRef.current.style.display = "block";
         }
-    }
+    };
 
     const textMouseEnter = () => {
         if (!targetDate) {
             dateRef.current.style.display = "block";
             textRef.current.style.display = "none";
         }
-    }
+    };
 
     const isDownloading = jobStatus === PromiseStatus.WORKING;
 

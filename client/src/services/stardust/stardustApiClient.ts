@@ -1,4 +1,3 @@
-import moment from "moment";
 import { FetchHelper } from "../../helpers/fetchHelper";
 import { IIdentityStardustResolveRequest } from "../../models/api/IIdentityStardustResolveRequest";
 import { IIdentityStardustResolveResponse } from "../../models/api/IIdentityStardustResolveResponse";
@@ -223,7 +222,7 @@ export class StardustApiClient extends ApiClient {
     public async transactionHistoryDownload(
         network: string,
         address: string,
-        targetDate: moment.Moment
+        targetDate: string
     ): Promise<IRawResponse> {
         return this.callApiRaw(
             `stardust/transactionhistory/dl/${network}/${address}`,
