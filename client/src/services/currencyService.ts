@@ -174,16 +174,18 @@ export class CurrencyService {
         let converted = "";
         const coinName = tokenInfo.name.toLocaleLowerCase();
 
-        if (currencyData.fiatExchangeRatesEur && currencyData.fiatCode && currencyData.coinStats?.[coinName]?.price) {
-            const tokenStats = currencyData.coinStats[coinName];
-            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find(c => c.id === currencyData.fiatCode);
+        const { fiatExchangeRatesEur, fiatCode, coinStats } = currencyData;
+
+        if (fiatExchangeRatesEur && fiatCode && coinStats?.[coinName]?.price) {
+            const tokenStats = coinStats[coinName];
+            const selectedFiatToBase = fiatExchangeRatesEur.find(c => c.id === fiatCode);
 
             if (selectedFiatToBase) {
                 const baseTokenValue = tokenInfo.subunit ? value / Math.pow(10, tokenInfo.decimals) : value;
                 const fiat = baseTokenValue * (selectedFiatToBase.rate * tokenStats.price);
 
                 if (includeSymbol) {
-                    converted += `${this.getSymbol(currencyData.fiatCode)} `;
+                    converted += `${this.getSymbol(fiatCode)} `;
                 }
 
                 converted += fiat.toFixed(numDigits).toString()
