@@ -20,7 +20,7 @@ import "./TransactionHistory.scss";
 
 interface TransactionHistoryProps {
     network: string;
-    address: string;
+    address?: string;
 }
 
 interface IOutputDetailsMap {
@@ -61,22 +61,24 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
     }, [network, address]);
 
     const loadHistory = () => {
-        const request: ITransactionHistoryRequest = {
-            network,
-            address,
-            pageSize: PAGE_SIZE,
-            sort: SORT,
-            cursor
-        };
+        if (address) {
+            const request: ITransactionHistoryRequest = {
+                network,
+                address,
+                pageSize: PAGE_SIZE,
+                sort: SORT,
+                cursor
+            };
 
-        tangleService().transactionHistory(request)
-            .then((response: ITransactionHistoryResponse | undefined) => {
-                if (response?.items && mounted.current) {
-                    setHistory([...history, ...response.items]);
-                    setCursor(response.cursor);
-                }
-            })
-            .catch(e => console.log(e));
+            tangleService().transactionHistory(request)
+                .then((response: ITransactionHistoryResponse | undefined) => {
+                    if (response?.items && mounted.current) {
+                        setHistory([...history, ...response.items]);
+                        setCursor(response.cursor);
+                    }
+                })
+                .catch(e => console.log(e));
+        }
     };
 
     useEffect(() => {
@@ -137,7 +139,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
 
     let isDarkBackgroundRow = false;
 
-    return (historyView.length > 0 ? (
+    return (historyView.length > 0 && address ? (
         <div className="section transaction-history--section">
             <div className="section--header row space-between">
                 <div className="row middle">
@@ -246,6 +248,10 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
             )}
         </div>) : null
     );
+};
+
+TransactionHistory.defaultProps = {
+    address: undefined
 };
 
 export default TransactionHistory;

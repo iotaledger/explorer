@@ -1,7 +1,8 @@
-import { ALIAS_OUTPUT_TYPE, BASIC_OUTPUT_TYPE,
-    FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE, OutputTypes } from "@iota/iota.js-stardust";
+import {
+    ALIAS_OUTPUT_TYPE, BASIC_OUTPUT_TYPE,
+    FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE, OutputTypes
+} from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
-import ITokenDetails from "../../routes/stardust/ITokenDetails";
 import Modal from "../Modal";
 import Pagination from "../Pagination";
 import assetsMessage from "./../../../assets/modals/stardust/address/assets-in-wallet.json";
@@ -11,11 +12,25 @@ import "./AssetsTable.scss";
 interface AssetsTableProps {
     networkId: string;
     outputs: OutputTypes[] | undefined;
+    setTokenCount?: React.Dispatch<React.SetStateAction<number>>;
+}
+
+interface ITokenDetails {
+    /** Token name. */
+    name: string;
+    /** Token symbol. */
+    symbol?: string;
+    /** Token held amount. */
+    amount: number;
+    /** Token price. */
+    price?: number;
+    /** Token total value held. */
+    value?: number;
 }
 
 const TOKEN_PAGE_SIZE: number = 10;
 
-const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
+const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenCount }) => {
     const [tokens, setTokens] = useState<ITokenDetails[]>();
     const [currentPage, setCurrentPage] = useState<ITokenDetails[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
@@ -25,7 +40,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
             const theTokens: ITokenDetails[] = [];
             for (const output of outputs) {
                 if (output.type === BASIC_OUTPUT_TYPE || output.type === ALIAS_OUTPUT_TYPE ||
-                   output.type === FOUNDRY_OUTPUT_TYPE || output.type === NFT_OUTPUT_TYPE) {
+                    output.type === FOUNDRY_OUTPUT_TYPE || output.type === NFT_OUTPUT_TYPE) {
                     for (const token of output.nativeTokens ?? []) {
                         const existingToken = theTokens.find(t => t.name === token.id);
                         if (existingToken) {
@@ -38,6 +53,9 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
             }
 
             setTokens(theTokens);
+            if (setTokenCount) {
+                setTokenCount(theTokens.length);
+            }
         }
     }, [outputs]);
 
@@ -51,7 +69,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
 
     return (
         tokens && tokens?.length > 0 ? (
-            <div className="section transaction--section">
+            <div className="section">
                 <div className="section--header row space-between">
                     <div className="row middle">
                         <h2>
@@ -71,7 +89,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        { currentPage.map((token, k) => (
+                        {currentPage.map((token, k) => (
                             <React.Fragment key={`${token?.name}${k}`}>
                                 <Asset
                                     key={k}
@@ -114,6 +132,10 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs }) => {
             </div>
         ) : null
     );
+};
+
+AssetsTable.defaultProps = {
+    setTokenCount: undefined
 };
 
 export default AssetsTable;

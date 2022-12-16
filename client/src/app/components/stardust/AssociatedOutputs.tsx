@@ -22,10 +22,14 @@ interface AssociatedOutputsTableProps {
      * Address details
      */
     addressDetails: IBech32AddressDetails;
+    /**
+     * Callback setter to report the associated outputs count.
+     */
+    setOutputCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps> = (
-    { network, addressDetails, onAsyncStatusChange }
+    { network, addressDetails, onAsyncStatusChange, setOutputCount }
 ) => {
     const mounted = useRef(false);
     const [tangleCacheService] = useState(
@@ -51,6 +55,13 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
             async () => tangleCacheService.associatedOutputs(network, addressDetails).then(response => {
                 if (response?.associations && mounted.current) {
                     setAssociations(response.associations);
+
+                    if (setOutputCount) {
+                        const outputsCount = response.associations.flatMap(
+                            association => association.outputIds.length
+                        ).reduce((acc, next) => acc + next, 0);
+                        setOutputCount(outputsCount);
+                    }
                 }
             })
         );
@@ -104,6 +115,10 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
             </div>
         )
     );
+};
+
+AssociatedOutputsTable.defaultProps = {
+    setOutputCount: undefined
 };
 
 export default AssociatedOutputsTable;
