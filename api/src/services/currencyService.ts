@@ -179,7 +179,7 @@ export class CurrencyService {
             const volume24h = coinMarkets[0].total_volume;
 
             let marketCap = coinMarkets[0].market_cap;
-            if (coinMarkets[0].market_cap === 0) {
+            if (marketCap === 0) {
                 marketCap = coinMarkets[0].total_supply * price;
             }
 
