@@ -32,7 +32,7 @@ export class CurrencyService {
     /**
      * Currencies that will trigger a stats update.
      */
-    private static readonly SUPPORTED_CURRENCIES = ["iota"];
+    private static readonly SUPPORTED_CURRENCIES = ["iota", "shimmer"];
 
     /**
      * Is the service already updating.
@@ -176,8 +176,12 @@ export class CurrencyService {
 
         if (coinMarkets && coinMarkets.length > 0) {
             const price = coinMarkets[0].current_price;
-            const marketCap = coinMarkets[0].market_cap;
             const volume24h = coinMarkets[0].total_volume;
+
+            let marketCap = coinMarkets[0].market_cap;
+            if (marketCap === 0) {
+                marketCap = coinMarkets[0].total_supply * price;
+            }
 
             const coinStats: ICoinStats = {
                 price,

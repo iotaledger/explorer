@@ -1,4 +1,6 @@
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
+import NetworkContext from "../context/NetworkContext";
 import Currency from "./Currency";
 import "./CurrencyButton.scss";
 import { FiatValueProps } from "./FiatValueProps";
@@ -7,6 +9,16 @@ import { FiatValueState } from "./FiatValueState";
  * Component which will display a fiat value.
  */
 class FiatValue extends Currency<FiatValueProps, FiatValueState> {
+    /**
+     * The component context type.
+     */
+    public static contextType = NetworkContext;
+
+    /**
+     * The component context.
+     */
+    public declare context: React.ContextType<typeof NetworkContext>;
+
     /**
      * Create a new instance of FiatValue.
      * @param props The props.
@@ -45,14 +57,24 @@ class FiatValue extends Currency<FiatValueProps, FiatValueState> {
      */
     protected updateCurrency(): void {
         if (this._currencyData) {
-            this.setState({
-                valueCurrency: this._currencyService.convertIota(
+            const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
+
+            const valueCurrency = tokenInfo.name ?
+                this._currencyService.convertBaseToken(
+                    this.props.value,
+                    tokenInfo,
+                    this._currencyData,
+                    true,
+                    2
+                ) :
+                this._currencyService.convertIota(
                     this.props.value,
                     this._currencyData,
                     true,
                     2
-                )
-            });
+                );
+
+            this.setState({ valueCurrency });
         }
     }
 }

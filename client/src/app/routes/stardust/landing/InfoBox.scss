@@ -5,7 +5,7 @@
 @import "../../../../scss/themes";
 
 .main-info-boxes {
-    width: 324px;
+    max-width: 372px;
     position: absolute;
     right: 8%;
     top: 32%;
@@ -17,13 +17,14 @@
     backdrop-filter: blur(20px);
 
     @include desktop-down {
-        top: 60%;
+        top: 35%;
         right: 4%;
     }
 
     @include tablet-down {
-        padding: 0 20px;
+        padding: 0;
         width: 100%;
+        max-width: inherit;
         top: auto;
         right: 0;
         left: 0;

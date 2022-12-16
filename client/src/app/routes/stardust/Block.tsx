@@ -301,7 +301,11 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                                 )}
                             </span>
                             {isMarketed && (
-                                (<FiatValue value={transferTotal} />)
+                                <React.Fragment>
+                                    <span>(</span>
+                                    <FiatValue value={transferTotal} />
+                                    <span>)</span>
+                                </React.Fragment>
                             )}
                         </div>
                     </div>
