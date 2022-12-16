@@ -290,7 +290,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                     <div className="section">
                                         <div className="section--data">
                                             <p>
-                                                There are no transactions for this address.
+                                                There are no UTXOs for this address.
                                             </p>
                                         </div>
                                     </div>
