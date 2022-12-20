@@ -15,8 +15,7 @@
         "build-watch": "tsc --watch",
         "build-lint": "eslint src --ext .tsx,.ts",
         "build-config": "copyfiles -u 2 ./src/data/config*.json ./dist/data/",
-        "test": "jest",
-        "build": "npm-run-all build-clean build-compile build-lint build-config test",
+        "build": "npm-run-all build-clean build-compile build-lint build-config",
         "serve-mon": "nodemon ./dist/index",
         "start-dev": "run-p serve-mon build-watch",
         "start": "node ./dist/index"
