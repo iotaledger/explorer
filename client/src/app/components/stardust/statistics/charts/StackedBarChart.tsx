@@ -1,6 +1,7 @@
 import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
 import { axisLeft } from "d3-axis";
+import { format } from "d3-format";
 import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { SeriesPoint, stack } from "d3-shape";
@@ -8,7 +9,13 @@ import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { useMultiValueTooltip, noDataView, useChartWrapperSize, determineGraphLeftPadding } from "../ChartUtils";
+import {
+    useMultiValueTooltip,
+    noDataView,
+    useChartWrapperSize,
+    determineGraphLeftPadding,
+    d3FormatSpecifier
+} from "../ChartUtils";
 import "./Chart.scss";
 
 interface StackedBarChartProps {
@@ -79,10 +86,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-            const yAxisGrid = axisLeft(y.nice())
-                .ticks(5)
-                .tickSize(-INNER_WIDTH)
-                .tickPadding(8);
+            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(dataMaxY)));
 
             svg.append("g")
                 .attr("class", "axis axis--y")

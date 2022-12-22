@@ -2,13 +2,20 @@ import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
 import { max } from "d3-array";
 import { axisLeft } from "d3-axis";
+import { format } from "d3-format";
 import { scaleBand, scaleLinear } from "d3-scale";
 import { select } from "d3-selection";
 import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { determineGraphLeftPadding, noDataView, useChartWrapperSize, useSingleValueTooltip } from "../ChartUtils";
+import {
+    d3FormatSpecifier,
+    determineGraphLeftPadding,
+    noDataView,
+    useChartWrapperSize,
+    useSingleValueTooltip
+} from "../ChartUtils";
 import "./Chart.scss";
 
 interface BarChartProps {
@@ -61,10 +68,8 @@ const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-            const yAxisGrid = axisLeft(y.nice())
-                .ticks(5)
-                .tickSize(-INNER_WIDTH)
-                .tickPadding(8);
+            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(dataMaxY)));
+
             svg.append("g")
                 .attr("class", "axis axis--y")
                 .call(yAxisGrid);

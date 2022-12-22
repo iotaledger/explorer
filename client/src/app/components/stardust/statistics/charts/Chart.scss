@@ -35,6 +35,12 @@
                 color: $gray-6;
                 fill: $gray-6;
             }
+
+            @include phone-down {
+                .tick text {
+                    @include font-size(9px);
+                }
+            }
         }
 
         .axis--x {
