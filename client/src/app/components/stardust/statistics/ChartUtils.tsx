@@ -70,6 +70,15 @@ export const useChartWrapperSize: () => [
     return [wrapperSize, setChartWrapper];
 };
 
+export const useTouchMoveEffect = (eventHandler: () => void) => {
+    useEffect(() => {
+        window.addEventListener("touchmove", eventHandler);
+        return () => {
+            window.removeEventListener("touchmove", eventHandler);
+        };
+    }, []);
+};
+
 const debounce = (func: () => void) => {
     let timerId: NodeJS.Timeout | undefined;
     return () => {

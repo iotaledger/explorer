@@ -3,12 +3,12 @@ import classNames from "classnames";
 import { max } from "d3-array";
 import { axisLeft } from "d3-axis";
 import { scaleBand, scaleLinear } from "d3-scale";
-import { select } from "d3-selection";
+import { BaseType, select } from "d3-selection";
 import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { determineGraphLeftPadding, noDataView, useChartWrapperSize, useSingleValueTooltip } from "../ChartUtils";
+import { determineGraphLeftPadding, noDataView, useChartWrapperSize, useSingleValueTooltip, useTouchMoveEffect } from "../ChartUtils";
 import "./Chart.scss";
 
 interface BarChartProps {
@@ -31,6 +31,8 @@ const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
     const theSvg = useRef<SVGSVGElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useSingleValueTooltip(data, label);
+
+    useTouchMoveEffect(mouseoutHandler);
 
     useLayoutEffect(() => {
         if (data.length > 0 && wrapperWidth && wrapperHeight) {
@@ -79,16 +81,8 @@ const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
                 .attr("y", d => y(d.n))
                 .attr("height", d => INNER_HEIGHT - y(d.n))
                 .attr("fill", color)
-                .on("mouseover", (_, d) => {
-                    select(theTooltip.current)
-                        .style("display", "block")
-                        .select("#content")
-                        .html(buildTooltip(d));
-                })
-                .on("mouseout", () => {
-                    select(theTooltip.current).style("display", "none");
-                });
-
+                .on("mouseover", mouseoverHandler)
+                .on("mouseout", mouseoutHandler);
 
             const tickValues = timespan === "7" ?
                 x.domain() :
@@ -105,6 +99,38 @@ const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
                 .call(xAxis);
         }
     }, [data, timespan, wrapperWidth, wrapperHeight]);
+
+    /**
+     * Handles mouseover event of a bar "part"
+     * @param this The mouse hovered element
+     * @param _ The unused event param
+     * @param dataPoint The data point rendered by this rect
+     */
+    function mouseoverHandler(
+        this: SVGRectElement | BaseType,
+        _: unknown,
+        dataPoint: { [key: string]: number }
+    ) {
+        // show tooltip
+        select(theTooltip.current)
+            .style("display", "block")
+            .select("#content")
+            .html(buildTooltip(dataPoint));
+        // add highlight
+        select(this).classed("active", true);
+    }
+
+    /**
+     * Handles mouseout event of a bar "part"
+     */
+    function mouseoutHandler() {
+        // remove tooltip
+        select(theTooltip.current).style("display", "none");
+        // remove highlight
+        select(theSvg.current)
+            .select(".active")
+            .classed("active", false);
+    }
 
     return (
         <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data.length === 0 })}>
