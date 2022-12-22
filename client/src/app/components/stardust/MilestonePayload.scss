@@ -5,6 +5,8 @@
 @import "../../../scss/themes";
 
 .milestone-payload {
+  border-bottom: 0!important;
+
   .milestone-action {
     @include font-size(14px, 21px);
 

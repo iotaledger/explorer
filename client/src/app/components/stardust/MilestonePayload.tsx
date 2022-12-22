@@ -14,6 +14,7 @@ import ReceiptPayload from "../stardust/ReceiptPayload";
 import milestoneMessage from "./../../../assets/modals/stardust/block/milestone-payload.json";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
+import MilestoneSignaturesSection from "./MilestoneSignaturesSection";
 import "./MilestonePayload.scss";
 
 /**
@@ -90,117 +91,107 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
         }
 
         return (
-            <div className="milestone-payload">
-                <div className="section--header row space-between">
-                    <div className="row middle">
-                        <h2>Milestone Payload</h2>
-                        <Modal icon="info" data={milestoneMessage} />
-                    </div>
-                    {(previousMsBlockId || nextMsBlockId) && (
-                        <div className="section--data row middle">
-                            <button
-                                className="milestone-action margin-r-t"
-                                type="button"
-                                disabled={!previousMsBlockId}
-                                onClick={() => history?.push(`/${network}/block/${previousMsBlockId}`)}
-                            >
-                                <span>Previous</span>
-                            </button>
-                            <button
-                                className="milestone-action margin-r-t"
-                                type="button"
-                                disabled={!nextMsBlockId}
-                                onClick={() => history?.push(`/${network}/block/${nextMsBlockId}`)}
-                            >
-                                <span>Next</span>
-                            </button>
+            <React.Fragment>
+                <div className="section milestone-payload">
+                    <div className="section--header row space-between">
+                        <div className="row middle">
+                            <h2>Milestone Payload</h2>
+                            <Modal icon="info" data={milestoneMessage} />
                         </div>
+                        {(previousMsBlockId || nextMsBlockId) && (
+                            <div className="section--data row middle">
+                                <button
+                                    className="milestone-action margin-r-t"
+                                    type="button"
+                                    disabled={!previousMsBlockId}
+                                    onClick={() => history?.push(`/${network}/block/${previousMsBlockId}`)}
+                                >
+                                    <span>Previous</span>
+                                </button>
+                                <button
+                                    className="milestone-action margin-r-t"
+                                    type="button"
+                                    disabled={!nextMsBlockId}
+                                    onClick={() => history?.push(`/${network}/block/${nextMsBlockId}`)}
+                                >
+                                    <span>Next</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    <div className="section--data">
+                        <div className="label">Index</div>
+                        <div className="value">{index}</div>
+                    </div>
+                    <div className="section--data">
+                        <div className="label">Date</div>
+                        <div className="value">
+                            {timestamp && DateHelper.format(
+                                DateHelper.milliseconds(
+                                    timestamp
+                                )
+                            )}
+                        </div>
+                    </div>
+                    <div className="section--data">
+                        <div className="label">Previous milestone Id</div>
+                        <div className="value">{previousMilestoneId}</div>
+                    </div>
+                    {advancedMode && (
+                        <React.Fragment>
+                            <div className="section--data">
+                                <div className="label">Inclusion Merkle Root</div>
+                                <div className="value code">{inclusionMerkleRoot}</div>
+                            </div>
+                            <div className="section--data">
+                                <div className="label">Applied Merkle Root</div>
+                                <div className="value code">{appliedMerkleRoot}</div>
+                            </div>
+                            {metadata && (
+                                <div className="section--data">
+                                    <div className="label">Metadata</div>
+                                    <div className="value">
+                                        <DataToggle sourceData={metadata} withSpacedHex={true} />
+                                    </div>
+                                </div>
+                            )}
+                            {protocolParamsMilestoneOption && (
+                                <React.Fragment>
+                                    <div className="section--data">
+                                        <div className="label">Target milestone index</div>
+                                        <div className="value code">
+                                            {protocolParamsMilestoneOption?.targetMilestoneIndex}
+                                        </div>
+                                    </div>
+                                    <div className="section--data">
+                                        <div className="label">Target protocol version</div>
+                                        <div className="value code">
+                                            {protocolParamsMilestoneOption?.protocolVersion}
+                                        </div>
+                                    </div>
+                                    <div className="section--data">
+                                        <div className="label">Protocol paramaters</div>
+                                        <div className="value code">
+                                            {protocolParamsMilestoneOption?.params}
+                                        </div>
+                                    </div>
+                                </React.Fragment>
+                            )}
+                            {receiptMilestoneOption && (
+                                <div className="section">
+                                    <ReceiptPayload
+                                        network={network}
+                                        history={history}
+                                        payload={receiptMilestoneOption}
+                                        advancedMode={advancedMode}
+                                    />
+                                </div>
+                            )}
+                        </React.Fragment>
                     )}
                 </div>
-                <div className="section--data">
-                    <div className="label">Index</div>
-                    <div className="value">{index}</div>
-                </div>
-                <div className="section--data">
-                    <div className="label">Date</div>
-                    <div className="value">
-                        {timestamp && DateHelper.format(
-                            DateHelper.milliseconds(
-                                timestamp
-                            )
-                        )}
-                    </div>
-                </div>
-                <div className="section--data">
-                    <div className="label">Previous milestone Id</div>
-                    <div className="value">{previousMilestoneId}</div>
-                </div>
-                {advancedMode && (
-                    <React.Fragment>
-                        <div className="section--data">
-                            <div className="label">Inclusion Merkle Root</div>
-                            <div className="value code">{inclusionMerkleRoot}</div>
-                        </div>
-                        <div className="section--data">
-                            <div className="label">Applied Merkle Root</div>
-                            <div className="value code">{appliedMerkleRoot}</div>
-                        </div>
-                        {metadata && (
-                            <div className="section--data">
-                                <div className="label">Metadata</div>
-                                <div className="value">
-                                    <DataToggle sourceData={metadata} withSpacedHex={true} />
-                                </div>
-                            </div>
-                        )}
-                        {protocolParamsMilestoneOption && (
-                            <React.Fragment>
-                                <div className="section--data">
-                                    <div className="label">Target milestone index</div>
-                                    <div className="value code">
-                                        {protocolParamsMilestoneOption?.targetMilestoneIndex}
-                                    </div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">Target protocol version</div>
-                                    <div className="value code">
-                                        {protocolParamsMilestoneOption?.protocolVersion}
-                                    </div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">Protocol paramaters</div>
-                                    <div className="value code">
-                                        {protocolParamsMilestoneOption?.params}
-                                    </div>
-                                </div>
-                            </React.Fragment>
-                        )}
-                        {receiptMilestoneOption && (
-                            <div className="section">
-                                <ReceiptPayload
-                                    network={network}
-                                    history={history}
-                                    payload={receiptMilestoneOption}
-                                    advancedMode={advancedMode}
-                                />
-                            </div>
-                        )}
-                        <div className="section--data" >
-                            <div className="label">Signatures</div>
-                            <div className="section--data margin-t-s">
-                                {signatures.map((signature, idx) => (
-                                    <div key={idx} className="margin-b-s">
-                                        <div className="label indent">Public Key</div>
-                                        <div className="value code indent">{signature.publicKey}</div>
-                                        <div className="label indent margin-t-2">Signature</div>
-                                        <div className="value code indent">{signature.signature}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </React.Fragment>
-                )}
-            </div>
+                <MilestoneSignaturesSection signatures={signatures} />
+            </React.Fragment>
         );
     }
 
