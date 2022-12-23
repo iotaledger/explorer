@@ -35,9 +35,9 @@ export class InfluxDBService extends InfluxDbClient {
         );
     }
 
-    public get avgAddressesPerMilestoneDaily() {
+    public get activeAddressesDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.avgAddressesPerMilestoneDaily
+            this._cache.activeAddressesDaily
         );
     }
 

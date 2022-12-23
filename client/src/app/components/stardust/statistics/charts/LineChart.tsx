@@ -2,6 +2,7 @@ import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
 import { max } from "d3-array";
 import { axisLeft } from "d3-axis";
+import { format } from "d3-format";
 import { scaleLinear, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { line } from "d3-shape";
@@ -10,7 +11,14 @@ import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { determineGraphLeftPadding, noDataView, useChartWrapperSize, useSingleValueTooltip, useTouchMoveEffect } from "../ChartUtils";
+import {
+    d3FormatSpecifier,
+    determineGraphLeftPadding,
+    noDataView,
+    useChartWrapperSize,
+    useSingleValueTooltip,
+    useTouchMoveEffect
+} from "../ChartUtils";
 import "./Chart.scss";
 
 interface LineChartProps {
@@ -72,10 +80,8 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-            const yAxisGrid = axisLeft(y.nice())
-                .ticks(5)
-                .tickSize(-INNER_WIDTH)
-                .tickPadding(8);
+            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(dataMaxY)));
+
             svg.append("g")
                 .attr("class", "axis axis--y")
                 .call(yAxisGrid);
@@ -181,7 +187,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
         select(theTooltip.current).style("display", "none");
         // remove highlight
         const activeElement = select(theSvg.current)
-                            .select(".active");
+            .select(".active");
         if (activeElement.size() > 0) {
             const elClass = activeElement.attr("class");
             const idx = elClass.slice(

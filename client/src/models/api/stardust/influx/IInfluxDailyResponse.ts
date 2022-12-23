@@ -35,10 +35,9 @@ export interface IAddressesWithBalanceDailyInflux {
     addressesWithBalance: number | null;
 }
 
-export interface IAvgAddressesPerMilestoneDailyInflux {
+export interface IActiveAddressesDailyInflux {
     time: Date;
-    addressesReceiving: number | null;
-    addressesSending: number | null;
+    activeAddresses: number | null;
 }
 
 export interface ITokensTransferredDailyInflux {
@@ -102,7 +101,7 @@ export interface IInfluxDailyResponse extends IResponse {
     outputsDaily?: IOutputsDailyInflux[];
     tokensHeldDaily?: ITokensHeldPerOutputDailyInflux[];
     addressesWithBalanceDaily?: IAddressesWithBalanceDailyInflux[];
-    avgAddressesPerMilestoneDaily?: IAvgAddressesPerMilestoneDailyInflux[];
+    activeAddressesDaily?: IActiveAddressesDailyInflux[];
     tokensTransferredDaily?: ITokensTransferredDailyInflux[];
     aliasActivityDaily?: IAliasActivityDailyInflux[];
     unlockConditionsPerTypeDaily?: IUnlockConditionsPerTypeDailyInflux[];

@@ -1,6 +1,7 @@
 import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
 import { axisLeft } from "d3-axis";
+import { format } from "d3-format";
 import { scaleTime, scaleLinear, scaleOrdinal } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { area, line, SeriesPoint, stack } from "d3-shape";
@@ -9,7 +10,14 @@ import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
-import { determineGraphLeftPadding, noDataView, useTouchMoveEffect, useChartWrapperSize, useMultiValueTooltip } from "../ChartUtils";
+import {
+    d3FormatSpecifier,
+    determineGraphLeftPadding,
+    noDataView,
+    useChartWrapperSize,
+    useMultiValueTooltip,
+    useTouchMoveEffect
+} from "../ChartUtils";
 import "./Chart.scss";
 
 interface StackedLineChartProps {
@@ -79,14 +87,10 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .domain([groups[0], groups[groups.length - 1]])
                 .range([0, INNER_WIDTH]);
 
-
             const y = scaleLinear().domain([0, dataMaxY])
                 .range([INNER_HEIGHT, 0]);
 
-            const yAxisGrid = axisLeft(y.nice())
-                .ticks(5)
-                .tickSize(-INNER_WIDTH)
-                .tickPadding(8);
+            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(dataMaxY)));
 
             svg.append("g")
                 .attr("class", "axis axis--y")
@@ -241,7 +245,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
         select(theTooltip.current).style("display", "none");
         // remove highlight
         const activeElement = select(theSvg.current)
-                            .select(".active");
+            .select(".active");
         if (activeElement.size() > 0) {
             const elClass = activeElement.attr("class");
             const idx = elClass.slice(

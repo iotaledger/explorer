@@ -1,5 +1,5 @@
 import {
-    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IAvgAddressesPerMilestoneDailyInflux,
+    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
     IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
     IStorageDepositDailyInflux, ITokensHeldPerOutputDailyInflux, ITokensHeldWithUnlockConditionDailyInflux,
     ITokensTransferredDailyInflux, ITransactionsDailyInflux, IUnclaimedGenesisOutputsDailyInflux,
@@ -25,7 +25,7 @@ export interface IInfluxDbCache {
     outputsDaily: Map<DayKey, IOutputsDailyInflux>;
     tokensHeldDaily: Map<DayKey, ITokensHeldPerOutputDailyInflux>;
     addressesWithBalanceDaily: Map<DayKey, IAddressesWithBalanceDailyInflux>;
-    avgAddressesPerMilestoneDaily: Map<DayKey, IAvgAddressesPerMilestoneDailyInflux>;
+    activeAddressesDaily: Map<DayKey, IActiveAddressesDailyInflux>;
     tokensTransferredDaily: Map<DayKey, ITokensTransferredDailyInflux>;
     aliasActivityDaily: Map<DayKey, IAliasActivityDailyInflux>;
     unlockConditionsPerTypeDaily: Map<DayKey, IUnlockConditionsPerTypeDailyInflux>;
@@ -46,7 +46,7 @@ export const CACHE_INIT = {
     outputsDaily: new Map(),
     tokensHeldDaily: new Map(),
     addressesWithBalanceDaily: new Map(),
-    avgAddressesPerMilestoneDaily: new Map(),
+    activeAddressesDaily: new Map(),
     tokensTransferredDaily: new Map(),
     aliasActivityDaily: new Map(),
     unlockConditionsPerTypeDaily: new Map(),

@@ -89,13 +89,13 @@ const debounce = (func: () => void) => {
 
 export const determineGraphLeftPadding = (dataMaxY: number) => {
     const digitsN = Math.ceil(dataMaxY).toString().length;
-    if (digitsN <= 2) {
-        return digitsN * 14;
-    } else if (digitsN < 6) {
-        return digitsN * 8.5;
-    } else if (digitsN <= 8) {
-        return digitsN * 8;
+    if (digitsN > 8) {
+        return 35;
+    } else if (digitsN < 4 && dataMaxY > 1) {
+        return 25;
     }
-    return digitsN * 7.5;
+    return 30;
 };
+
+export const d3FormatSpecifier = (dataMaxY: number) => (dataMaxY < 1 ? "~g" : "~s");
 

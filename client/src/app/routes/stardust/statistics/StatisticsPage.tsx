@@ -31,7 +31,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     const [outputs, setOutputs] = useState<DataPoint[]>([]);
     const [tokensHeld, setTokensHeld] = useState<DataPoint[]>([]);
     const [addressesWithBalance, setAddressesWithBalance] = useState<DataPoint[]>([]);
-    const [avgAddressesPerMilestone, setAvgAddressesPerMilestone] = useState<DataPoint[]>([]);
+    const [activeAddresses, setActiveAddresses] = useState<DataPoint[]>([]);
     const [tokensTransferred, setTokensTransferred] = useState<DataPoint[]>([]);
     const [aliasActivity, setAliasActivity] = useState<DataPoint[]>([]);
     const [unlockConditionsPerType, setUnlockConditionsPerType] = useState<DataPoint[]>([]);
@@ -54,7 +54,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                 setOutputs(graphsData.outputsDaily);
                 setTokensHeld(graphsData.tokensHeldDaily);
                 setAddressesWithBalance(graphsData.addressesWithBalanceDaily);
-                setAvgAddressesPerMilestone(graphsData.avgAddressesPerMilestoneDaily);
+                setActiveAddresses(graphsData.activeAddresses);
                 setTokensTransferred(graphsData.tokensTransferredDaily);
                 setAliasActivity(graphsData.aliasActivityDaily);
                 setUnlockConditionsPerType(graphsData.unlockConditionsPerTypeDaily);
@@ -162,12 +162,11 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                     color="#00F5DD"
                                     data={addressesWithBalance}
                                 />
-                                <StackedLineChart
-                                    title="Avg. Number of Active Addresses per Milestone"
-                                    subgroups={["sending", "receiving"]}
-                                    groupLabels={["Sending", "Receiving"]}
-                                    colors={["#4140DF", "#36A1AC"]}
-                                    data={avgAddressesPerMilestone}
+                                <LineChart
+                                    title="Number of Daily Active Addresses"
+                                    label="Addresses"
+                                    color="#00F5DD"
+                                    data={activeAddresses}
                                 />
                             </div>
                             <div className="row statistics-row">
