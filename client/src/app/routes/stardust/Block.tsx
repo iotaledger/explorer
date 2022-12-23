@@ -15,6 +15,7 @@ import { SettingsService } from "../../../services/settingsService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
+import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
@@ -310,9 +311,16 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         </div>
                     </div>
                 )}
-            {block?.payload && (
+            <TabbedSection
+                tabsEnum={{ Payload: "Payload", Metadata: "Metadata" }}
+                tabOptions={{
+                    Payload: {
+                        disabled: !block?.payload
+                    }
+                }}
+            >
                 <React.Fragment>
-                    {block.payload.type === TRANSACTION_PAYLOAD_TYPE &&
+                    {block.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
                         inputs && unlocks && outputs && transferTotal !== undefined && (
                             <React.Fragment>
                                 <div className="section">
@@ -339,7 +347,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                                 }
                             </React.Fragment>
                         )}
-                    {block.payload.type === MILESTONE_PAYLOAD_TYPE && (
+                    {block.payload?.type === MILESTONE_PAYLOAD_TYPE && (
                         <MilestonePayload
                             network={network}
                             history={history}
@@ -348,7 +356,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             protocolVersion={protocolVersion}
                         />
                     )}
-                    {block.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (
+                    {block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE && (
                         <div className="section">
                             <TaggedDataPayload
                                 network={network}
@@ -359,8 +367,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         </div>
                     )}
                 </React.Fragment>
-            )}
-            {advancedMode && (
                 <div className="section metadata-section">
                     <div className="section--header section--header__space-between">
                         <div className="row middle">
@@ -432,8 +438,8 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         )}
                     </div>
                 </div>
-            )}
-        </React.Fragment>
+            </TabbedSection>
+        </React.Fragment >
     );
 
     return (
