@@ -2,7 +2,7 @@ import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { INetworkBoundGetRequest } from "../../../../models/api/stardust/INetworkBoundGetRequest";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import {
-    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IAvgAddressesPerMilestoneDailyInflux,
+    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
     IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
     IStorageDepositDailyInflux, ITokensHeldPerOutputDailyInflux, ITokensHeldWithUnlockConditionDailyInflux,
     ITokensTransferredDailyInflux, ITransactionsDailyInflux, IUnclaimedGenesisOutputsDailyInflux,
@@ -22,7 +22,7 @@ export interface IDailyAnalyticsResponse {
     outputsDaily?: IOutputsDailyInflux[];
     tokensHeldDaily?: ITokensHeldPerOutputDailyInflux[];
     addressesWithBalanceDaily?: IAddressesWithBalanceDailyInflux[];
-    avgAddressesPerMilestoneDaily?: IAvgAddressesPerMilestoneDailyInflux[];
+    activeAddressesDaily?: IActiveAddressesDailyInflux[];
     tokensTransferredDaily?: ITokensTransferredDailyInflux[];
     aliasActivityDaily?: IAliasActivityDailyInflux[];
     unlockConditionsPerTypeDaily?: IUnlockConditionsPerTypeDailyInflux[];
@@ -56,7 +56,7 @@ export async function get(
         outputsDaily: influxService.outputsDaily,
         tokensHeldDaily: influxService.tokensHeldDaily,
         addressesWithBalanceDaily: influxService.addressesWithBalanceDaily,
-        avgAddressesPerMilestoneDaily: influxService.avgAddressesPerMilestoneDaily,
+        activeAddressesDaily: influxService.activeAddressesDaily,
         tokensTransferredDaily: influxService.tokensTransferredDaily,
         aliasActivityDaily: influxService.aliasActivityDaily,
         unlockConditionsPerTypeDaily: influxService.unlockConditionsPerTypeDaily,

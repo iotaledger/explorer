@@ -98,19 +98,17 @@ export const ADDRESSES_WITH_BALANCE_DAILY_QUERY = {
     `
 };
 
-export const AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_QUERY = {
+export const TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY = {
     full: `
         SELECT
-            mean("receiving_count") AS "addressesReceiving",
-            mean("sending_count") AS "addressesSending"
-        FROM "stardust_address_activity"
+            last("count") AS activeAddresses
+        FROM "stardust_daily_active_addresses"
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
         SELECT
-            mean("receiving_count") AS "addressesReceiving",
-            mean("sending_count") AS "addressesSending"
-        FROM "stardust_address_activity"
+            last("count") AS activeAddresses
+        FROM "stardust_daily_active_addresses"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
     `

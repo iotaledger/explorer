@@ -5,7 +5,7 @@ import {
     CACHE_INIT, DayKey, DAY_KEY_FORMAT, IInfluxDbCache
 } from "../../../models/influx/IInfluxDbCache";
 import {
-    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IAvgAddressesPerMilestoneDailyInflux,
+    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
     IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
     IStorageDepositDailyInflux, ITimedEntry, ITokensHeldPerOutputDailyInflux, ITokensHeldWithUnlockConditionDailyInflux,
     ITokensTransferredDailyInflux, ITransactionsDailyInflux, IUnclaimedGenesisOutputsDailyInflux,
@@ -13,7 +13,7 @@ import {
 } from "../../../models/influx/IInfluxTimedEntries";
 import {
     ADDRESSES_WITH_BALANCE_DAILY_QUERY, ALIAS_ACTIVITY_DAILY_QUERY,
-    AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_QUERY, BLOCK_DAILY_QUERY,
+    TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY, BLOCK_DAILY_QUERY,
     LEDGER_SIZE_DAILY_QUERY, NFT_ACTIVITY_DAILY_QUERY, OUTPUTS_DAILY_QUERY,
     STORAGE_DEPOSIT_DAILY_QUERY,
     TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY, TOKENS_HELD_WITH_UC_DAILY_QUERY,
@@ -67,7 +67,7 @@ export abstract class InfluxDbClient {
 
     /**
      * Build a new client instance asynchronously.
-     * @returns Boolean rapresenting that the client ping succeeded.
+     * @returns Boolean representing that the client ping succeeded.
      */
     public async buildClient(): Promise<boolean> {
         const protocol = "https";
@@ -169,10 +169,10 @@ export abstract class InfluxDbClient {
             this._cache.addressesWithBalanceDaily,
             "Addresses with balance Daily"
         );
-        this.updateCacheEntry<IAvgAddressesPerMilestoneDailyInflux>(
-            AVG_ACTIVE_ADDRESSES_PER_MILESTONE_DAILY_QUERY,
-            this._cache.avgAddressesPerMilestoneDaily,
-            "Avarage addresses with balance Daily"
+        this.updateCacheEntry<IActiveAddressesDailyInflux>(
+            TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY,
+            this._cache.activeAddressesDaily,
+            "Number of Daily Active Addresses"
         );
         this.updateCacheEntry<ITokensTransferredDailyInflux>(
             TOKENS_TRANSFERRED_DAILY_QUERY,
