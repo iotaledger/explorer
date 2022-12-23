@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IAnalyticStatsRequest } from "../../../../models/api/stats/IAnalyticStatsRequest";
-import { ILatestMilestone } from "../../../../models/api/stats/ILatestMilestone";
+import { ILatestMilestone } from "../../../../models/api/latestmilestones/ILatestMilestone";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
