@@ -8,6 +8,7 @@ import { CUSTOM } from "../../../../models/config/networkType";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
 import { NetworkService } from "../../../../services/networkService";
+import { StardustApiClient } from "../../../../services/stardust/stardustApiClient";
 import Feeds from "../../../components/stardust/Feeds";
 import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
@@ -49,6 +50,18 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         };
 
         this.state = getDefaultLandingState(network);
+    }
+
+    public async componentDidMount(): Promise<void> {
+        await super.componentDidMount();
+
+        const stardustTangleService = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+        const latestMilestones: any = await stardustTangleService.latestMilestones({
+            network: this.state.networkConfig.network
+        });
+        this.setState({
+            latestMilestones
+        });
     }
 
     /**
@@ -188,6 +201,15 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         if (this._feedClient) {
             const milestones = this._feedClient.getItems()
                 .filter(item => item.payloadType === "MS").slice(0, MAX_MILESTONE_ITEMS);
+
+            if (this.state.latestMilestones.length > 0) {
+                milestones.push(...this.state.latestMilestones);
+                if (milestones.length > MAX_MILESTONE_ITEMS) {
+                    this.setState({
+                        latestMilestones: this.state.latestMilestones.slice(0, this.state.latestMilestones.length - 1)
+                    });
+                }
+            }
 
             this.setState({
                 milestones

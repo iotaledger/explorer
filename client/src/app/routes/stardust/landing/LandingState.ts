@@ -33,6 +33,11 @@ export interface LandingState extends CurrencyState, FeedsState {
      * The milestones from the feed.
      */
     milestones: IFeedItem[];
+
+    /**
+     * The cached milestones from the feed.
+     */
+    latestMilestones: IFeedItem[];
 }
 
 export const getDefaultLandingState = (networkConfig: INetwork): LandingState => (
@@ -47,6 +52,7 @@ export const getDefaultLandingState = (networkConfig: INetwork): LandingState =>
         priceEUR: 0,
         priceCurrency: "--",
         milestones: [],
+        latestMilestones: [],
         currency: "USD"
     }
 );

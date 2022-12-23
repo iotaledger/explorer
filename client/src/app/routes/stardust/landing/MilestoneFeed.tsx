@@ -57,7 +57,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
         void refreshMilestoneStats();
     }, [milestones]);
 
-    const milestonesWithStats: IFeedItem[] = [];
+    const milestonesWithStats: IFeedItem[] = milestones;
     let highestIndex = 0;
     for (const milestone of milestones) {
         const msIndex = milestone.properties?.index as number;
@@ -65,11 +65,13 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
             highestIndex = msIndex;
         }
         const milestoneId = milestone.properties?.milestoneId as string;
-        if (milestoneIdToStats.has(milestoneId)) {
-            milestonesWithStats.push(milestone);
-        }
-        if (milestonesWithStats.length === FEED_ITEMS_MAX) {
-            break;
+        if (!milestonesWithStats.some(ms => ms?.properties?.milestoneId === milestoneId)) {
+            if (milestoneIdToStats.has(milestoneId)) {
+                milestonesWithStats.push(milestone);
+            }
+            if (milestonesWithStats.length === FEED_ITEMS_MAX) {
+                break;
+            }
         }
     }
 

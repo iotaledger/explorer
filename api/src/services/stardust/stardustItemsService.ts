@@ -7,6 +7,13 @@ import { IFeedSubscriptionItem } from "../../models/api/stardust/IFeedSubscripti
 import { IFeedService } from "../../models/services/IFeedService";
 import { IItemsService } from "../../models/services/stardust/IItemsService";
 
+interface ILatestMilestone {
+    id: string;
+    milestoneId: string;
+    milestoneIndex: number;
+    timestamp: number;
+}
+
 /**
  * Service to handle blocks on stardust.
  */
@@ -57,6 +64,11 @@ export class StardustItemsService implements IItemsService {
      * The most recent item metadata.
      */
     private _itemMetadata: { [id: string]: IFeedItemMetadata };
+
+    /**
+     * The latest milestones.
+     */
+    private readonly _latestMilestones: ILatestMilestone[] = [];
 
     /**
      * Timer id.
@@ -113,6 +125,14 @@ export class StardustItemsService implements IItemsService {
      */
     public unsubscribe(subscriptionId: string): void {
         delete this._subscribers[subscriptionId];
+    }
+
+    /**
+     * Fetch the latest milestone stats.
+     * @returns The latest milestones.
+     */
+    public getLatestMilestones(): ILatestMilestone[] {
+        return this._latestMilestones;
     }
 
     /**
@@ -188,12 +208,23 @@ export class StardustItemsService implements IItemsService {
             });
 
         this._milestoneSubscriptionId = this._feedService.subscribeMilestones(
-            (milestone: number, id: string, timestamp: number) => {
+            (milestone: number, id: string, timestamp: number, milestoneId: string) => {
                 this._itemMetadata[id] = {
                     milestone,
                     timestamp,
                     ...this._itemMetadata[id]
                 };
+
+                this._latestMilestones.unshift({
+                    id,
+                    milestoneId,
+                    milestoneIndex: milestone,
+                    timestamp: timestamp / 1000
+                });
+
+                if (this._latestMilestones.length > 15) {
+                    this._latestMilestones.pop();
+                }
             });
     }
 
