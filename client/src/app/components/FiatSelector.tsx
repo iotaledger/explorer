@@ -58,7 +58,6 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                 className="fiat-selector__currency"
                 onClick={() => {
                     this.setCurrency(currency);
-                    this.updateCurrency();
                     this.closeDropdown();
                 }}
             >

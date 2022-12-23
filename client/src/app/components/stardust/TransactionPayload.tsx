@@ -89,7 +89,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                             <span className="dot-separator">•</span>
                             <span>{inputs.length}</span>
                         </div>
-                        <div className="transaction-from card--content">
+                        <div className="transaction-payload_outputs card--content">
                             {inputs.map((input, idx) => <Input key={idx} network={network} input={input} />)}
                             <Unlocks unlocks={unlocks} />
                         </div>
@@ -101,17 +101,19 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                             <span className="dot-separator">•</span>
                             <span>{outputs.length}</span>
                         </div>
-                        {outputs.map((output, idx) => (
-                            <Output
-                                key={idx}
-                                outputId={output.id}
-                                output={output.output}
-                                amount={output.amount}
-                                network={network}
-                                showCopyAmount={true}
-                                isLinksDisabled={isLinksDisabled}
-                            />
-                        ))}
+                        <div className="transaction-payload_outputs card--content">
+                            {outputs.map((output, idx) => (
+                                <Output
+                                    key={idx}
+                                    outputId={output.id}
+                                    output={output.output}
+                                    amount={output.amount}
+                                    network={network}
+                                    showCopyAmount={true}
+                                    isLinksDisabled={isLinksDisabled}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

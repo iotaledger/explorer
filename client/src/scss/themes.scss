@@ -48,6 +48,7 @@
   --shimmer-copyright: #{$white};
   --transaction-history-dark-row: #{$gray-1};
   --associated-outputs-tabs-bg: #{$white};
+  --date-input-theme: light;
 
   body.darkmode {
     --body-background: #091326;
@@ -65,7 +66,7 @@
     --header-label-color: #{$gray-3};
     --header-icon-color: #{$gray-5};
     --header-svg-bg: #202e4a;
-    --border-color: #ffffff1e;
+    --border-color: #{$gray-5};
     --fiat-acronym-color: #{$white};
     --expanded-color: #{$gray-5};
     --light-bg: #48577614;
@@ -97,6 +98,7 @@
     --shimmer-copyright: #0f202c;
     --transaction-history-dark-row: #{$gray-9};
     --associated-outputs-tabs-bg: #00121f;
+    --date-input-theme: dark;
   }
 
   body.shimmer.darkmode {

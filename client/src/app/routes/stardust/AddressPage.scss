@@ -102,6 +102,10 @@
         }
       }
 
+      .section.no-border-bottom {
+          padding-bottom: 0;
+      }
+
       .cards {
         flex: 1;
         margin-right: 24px;
@@ -231,51 +235,7 @@
       .section--header {
         flex-direction: column;
         align-items: flex-start;
-
-        .transactions-filter {
-          margin-top: 24px;
-        }
       }
-    }
-
-    .transactions-filter {
-      display: flex;
-      font-family: $inter;
-      font-size: 12px;
-      font-weight: 500;
-
-      button {
-        @include font-size(12px, 18px);
-
-        padding: 3px 12px;
-        border: 0.2px solid var(--input-border-color);
-        border-radius: 0;
-        background-color: var(--body-background);
-        color: $gray-5;
-        color: var(--header-color);
-        letter-spacing: 0.5px;
-
-        &:focus {
-          box-shadow: none;
-        }
-
-        &.active {
-          background-color: rgba(20, 202, 191, 0.12);
-          color: var(--header-color);
-        }
-
-        &:first-child {
-          border-radius: 6px 0 0 6px;
-        }
-
-        &:last-child {
-          border-radius: 0 6px 6px 0;
-        }
-      }
-    }
-
-    .section--header__filter {
-      display: flex;
     }
   }
 

@@ -23,7 +23,7 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
     /**
      * The component mounted.
      */
-     public async componentDidMount(): Promise<void> {
+    public async componentDidMount(): Promise<void> {
         super.componentDidMount();
     }
 
@@ -51,7 +51,7 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
                     </div>
                 </div>
                 {isExpanded && (
-                    <div className="margin-l-t">
+                    <div className="padding-l-t left-border">
                         {feature.type === SENDER_FEATURE_TYPE && (
                             <Address
                                 address={feature.address}
