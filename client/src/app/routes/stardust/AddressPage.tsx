@@ -286,15 +286,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                         </div>
                                     )}
                                 </div>
-                                {outputResponse && outputResponse.length === 0 && (
-                                    <div className="section">
-                                        <div className="section--data">
-                                            <p>
-                                                There are no UTXOs for this address.
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
                                 <TabbedSection
                                     tabsEnum={ADDRESS_PAGE_TABS}
                                     tabOptions={{
