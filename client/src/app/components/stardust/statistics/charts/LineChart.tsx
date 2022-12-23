@@ -16,7 +16,8 @@ import {
     determineGraphLeftPadding,
     noDataView,
     useChartWrapperSize,
-    useSingleValueTooltip
+    useSingleValueTooltip,
+    useTouchMoveEffect
 } from "../ChartUtils";
 import "./Chart.scss";
 
@@ -38,6 +39,8 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
     const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useSingleValueTooltip(data, label);
+
+    useTouchMoveEffect(mouseoutHandler);
 
     useLayoutEffect(() => {
         if (data.length > 0 && wrapperWidth && wrapperHeight) {
@@ -163,33 +166,43 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
             .style("display", "block")
             .select("#content")
             .html(buildTooltip(dataPoint));
-            // add highlight
-        const eleClass = (this as SVGRectElement).classList.value;
+        // add highlight
+        const eleClass = (this as SVGRectElement).classList[0];
         const idx = eleClass.slice(eleClass.indexOf("-") + 1);
+
         select(theSvg.current)
             .selectAll(`.circle-${idx}`)
             .attr("r", 2)
             .style("stroke-opacity", 0.5);
+
+        select(this)
+            .classed("active", true);
     }
 
     /**
      * Handles mouseout event.
-     * @param this The mouse hovered element
-     * @param _ The unused event param
      */
-    function mouseoutHandler(
-        this: SVGRectElement | BaseType,
-        _: unknown
-    ) {
+    function mouseoutHandler() {
         // remove tooltip
         select(theTooltip.current).style("display", "none");
         // remove highlight
-        const eleClass = (this as SVGRectElement).classList.value;
-        const idx = eleClass.slice(eleClass.indexOf("-") + 1);
-        select(theSvg.current)
-            .selectAll(`.circle-${idx}`)
-            .attr("r", 1)
-            .style("stroke-opacity", 0);
+        const activeElement = select(theSvg.current)
+            .select(".active");
+        if (activeElement.size() > 0) {
+            const elClass = activeElement.attr("class");
+            const idx = elClass.slice(
+                elClass.indexOf("rect-") + 5,
+                elClass.lastIndexOf(" ")
+            );
+
+            select(theSvg.current)
+                .selectAll(`.circle-${idx}`)
+                .attr("r", 1)
+                .style("stroke-opacity", 0);
+
+            activeElement
+                .classed("active", false);
+        }
     }
 
     return (

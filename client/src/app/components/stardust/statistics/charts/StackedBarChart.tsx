@@ -14,7 +14,8 @@ import {
     noDataView,
     useChartWrapperSize,
     determineGraphLeftPadding,
-    d3FormatSpecifier
+    d3FormatSpecifier,
+    useTouchMoveEffect
 } from "../ChartUtils";
 import "./Chart.scss";
 
@@ -44,7 +45,9 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
     const [timespan, setTimespan] = useState<TimespanOption>("all");
-    const buildTootip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
+    const buildTooltip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
+
+    useTouchMoveEffect(mouseoutHandler);
 
     useLayoutEffect(() => {
         if (data.length > 0 && wrapperWidth && wrapperHeight) {
@@ -104,7 +107,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 .join("rect")
                 .attr("x", d => x(moment.unix(d.data.time).format(DAY_LABEL_FORMAT)) ?? 0)
                 .attr("y", d => y(d[1]))
-                .attr("class", (_, i) => `rect-${i}`)
+                .attr("class", (_, i) => `stacked-bar rect-${i}`)
                 .on("mouseover", mouseoverHandler)
                 .on("mouseout", mouseoutHandler)
                 .attr("height", d => y(d[0]) - y(d[1]))
@@ -141,27 +144,21 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
         select(theTooltip.current)
             .style("display", "block")
             .select("#content")
-            .html(buildTootip(dataPoint.data));
+            .html(buildTooltip(dataPoint.data));
         // add highlight
-        const targetClass = (this as SVGRectElement).classList.value;
-        select(theSvg.current).selectAll(`.${targetClass}`).attr("class", `${targetClass} hover-highlight`);
+        select(this).classed("active", true);
     }
 
     /**
      * Handles mouseout event of a bar "part"
-     * @param this The mouse hovered element
-     * @param _ The unused event param
      */
-    function mouseoutHandler(
-        this: SVGRectElement | BaseType,
-        _: unknown
-    ) {
+    function mouseoutHandler() {
         // remove tooltip
         select(theTooltip.current).style("display", "none");
         // remove highlight
-        const targetClass = (this as SVGRectElement).classList.value;
-        const noHightlight = targetClass.replace("hover-highlight", "").trim();
-        select(theSvg.current).selectAll(`.${noHightlight}`).attr("class", noHightlight);
+        select(theSvg.current)
+            .select(".active")
+            .classed("active", false);
     }
 
     return (

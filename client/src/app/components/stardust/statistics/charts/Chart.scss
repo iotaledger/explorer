@@ -21,7 +21,7 @@
 
     svg.hook {
         rect {
-            &.hover-highlight {
+            &.bar.active, &.stacked-bar.active {
                 stroke: $gray-5;
                 stroke-width: 1px;
             }
