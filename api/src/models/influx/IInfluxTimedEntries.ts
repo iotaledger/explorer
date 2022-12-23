@@ -34,9 +34,8 @@ export type IAddressesWithBalanceDailyInflux = ITimedEntry & {
     addressesWithBalance: number | null;
 };
 
-export type IAvgAddressesPerMilestoneDailyInflux = ITimedEntry & {
-    addressesReceiving: number | null;
-    addressesSending: number | null;
+export type IActiveAddressesDailyInflux = ITimedEntry & {
+    activeAddresses: number | null;
 };
 
 export type ITokensTransferredDailyInflux = ITimedEntry & {

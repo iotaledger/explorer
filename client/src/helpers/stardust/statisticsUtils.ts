@@ -7,7 +7,7 @@ export interface IStatisticsGraphsData {
     outputsDaily: DataPoint[];
     tokensHeldDaily: DataPoint[];
     addressesWithBalanceDaily: DataPoint[];
-    avgAddressesPerMilestoneDaily: DataPoint[];
+    activeAddresses: DataPoint[];
     tokensTransferredDaily: DataPoint[];
     aliasActivityDaily: DataPoint[];
     unlockConditionsPerTypeDaily: DataPoint[];
@@ -61,10 +61,9 @@ export function mapDailyStatsToGraphsData(data: IInfluxDailyResponse): IStatisti
             time: moment(entry.time).add(1, "minute").unix(),
             n: entry.addressesWithBalance ?? 0
         })) ?? [],
-        avgAddressesPerMilestoneDaily: data.avgAddressesPerMilestoneDaily?.map(day => ({
+        activeAddresses: data.activeAddressesDaily?.map(day => ({
             time: moment(day.time).add(1, "minute").unix(),
-            sending: day.addressesSending ?? 0,
-            receiving: day.addressesReceiving ?? 0
+            n: day.activeAddresses ?? 0
         })) ?? [],
         tokensTransferredDaily: data.tokensTransferredDaily?.map(day => ({
             time: moment(day.time).add(1, "minute").unix(),
