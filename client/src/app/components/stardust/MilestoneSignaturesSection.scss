@@ -1,0 +1,62 @@
+.section.signatures-section {
+    padding: 24px 0;
+    border-bottom: 0;
+
+    .signatures--header {
+        margin-bottom: 0;
+        width: fit-content;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+
+        .dropdown-arrow {
+            svg {
+                transition: transform 0.25s ease;
+
+                path {
+                    fill: var(--card-color);
+                }
+            }
+            &.expanded > svg {
+                transform: rotate(90deg);
+            }
+        }
+
+        .label {
+            margin-left: 8px;
+            margin-bottom: 0;
+        }
+    }
+
+    .signatures--content {
+        margin-top: 24px;
+
+        .signatures--entry {
+            display: flex;
+            flex-direciton: column;
+            background-color: var(--light-bg);
+            border-radius: 8px;
+
+            &:not(last-child) {
+                margin-bottom: 12px;
+            }
+
+            .key-icon {
+                min-width: 64px;
+                margin: 0 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .entry-content {
+                padding: 12px 20px 12px 0;
+
+                .value {
+                    width: fit-content;
+                }
+            }
+        }
+    }
+}
+
