@@ -4,15 +4,9 @@ import { Converter } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedItemMetadata } from "../../models/api/stardust/IFeedItemMetadata";
 import { IFeedSubscriptionItem } from "../../models/api/stardust/IFeedSubscriptionItem";
+import { ILatestMilestone } from "../../models/api/stardust/milestone/ILatestMilestonesResponse";
 import { IFeedService } from "../../models/services/IFeedService";
 import { IItemsService } from "../../models/services/stardust/IItemsService";
-
-interface ILatestMilestone {
-    blockId: string;
-    milestoneId: string;
-    milestoneIndex: number;
-    timestamp: number;
-}
 
 /**
  * Service to handle blocks on stardust.
@@ -218,7 +212,7 @@ export class StardustItemsService implements IItemsService {
                 this._latestMilestones.unshift({
                     blockId: id,
                     milestoneId,
-                    milestoneIndex: milestone,
+                    index: milestone,
                     timestamp: timestamp / 1000
                 });
 

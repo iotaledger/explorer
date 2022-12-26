@@ -1,34 +1,35 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { ILatestMilestone, ILatestMilestones } from "../../../../models/api/latestmilestones/ILatestMilestone";
-import { IAnalyticStatsRequest } from "../../../../models/api/stats/IAnalyticStatsRequest";
+import { ILatestMilestonesReponse, ILatestMilestone } from "../../../../models/api/stardust/milestone/ILatestMilestonesResponse";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
 import { StardustItemsService } from "../../../../services/stardust/stardustItemsService";
-import { StardustStatsService } from "../../../../services/stardust/stardustStatsService";
+// import { StardustStatsService } from "../../../../services/stardust/stardustStatsService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
  * Find the object from the network.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
+ * @param request.network The network in context.
  * @returns The response.
  */
 export async function get(
-    config: IConfiguration,
-    request: IAnalyticStatsRequest
-): Promise<ILatestMilestones> {
+    _: IConfiguration,
+    request: { network: string }
+): Promise<ILatestMilestonesReponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
     const networkConfig = networkService.get(request.network);
 
     if (networkConfig.protocolVersion !== STARDUST) {
-        return {};
+        return { error: "Endpoint available only on Stardust networks.", milestones: [] };
     }
 
-    const statsService = ServiceFactory.get<StardustStatsService>(`stats-${request.network}`);
-    const currentMilesoneStats = statsService?.getMilestoneStats();
+    // Add the stats into the IMilestoneFeedItem
+    // const statsService = ServiceFactory.get<StardustStatsService>(`stats-${request.network}`);
+    // const currentMilesoneStats = statsService?.getMilestoneStats();
 
     const itemsService = ServiceFactory.get<StardustItemsService>(`items-${request.network}`);
     const latestMilestones = itemsService.getLatestMilestones();
@@ -36,17 +37,11 @@ export async function get(
     const milestones: ILatestMilestone[] = [];
 
     for (const milestone of latestMilestones) {
-        if (currentMilesoneStats[milestone.milestoneId]) {
-            milestones.push({
-                id: milestone.blockId,
-                properties: {
-                    milestoneId: milestone.milestoneId,
-                    index: milestone.milestoneIndex,
-                    timestamp: milestone.timestamp
-                }
-            });
+        if (milestones.length < 20) {
+            milestones.push(milestone);
         }
     }
 
     return { milestones };
 }
+

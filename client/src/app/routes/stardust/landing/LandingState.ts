@@ -1,5 +1,5 @@
 import { INetwork } from "../../../../models/config/INetwork";
-import { IFeedItem } from "../../../../models/feed/IFeedItem";
+import { IMilestoneFeedItem } from "../../../../models/IMilestoneFeedItem";
 import { CurrencyState } from "../../../components/CurrencyState";
 import { FeedsState } from "../../../components/stardust/FeedsState";
 
@@ -32,12 +32,7 @@ export interface LandingState extends CurrencyState, FeedsState {
     /**
      * The milestones from the feed.
      */
-    milestones: IFeedItem[];
-
-    /**
-     * The cached milestones from the feed.
-     */
-    latestMilestones: IFeedItem[];
+    milestones: IMilestoneFeedItem[];
 }
 
 export const getDefaultLandingState = (networkConfig: INetwork): LandingState => (
@@ -52,7 +47,6 @@ export const getDefaultLandingState = (networkConfig: INetwork): LandingState =>
         priceEUR: 0,
         priceCurrency: "--",
         milestones: [],
-        latestMilestones: [],
         currency: "USD"
     }
 );

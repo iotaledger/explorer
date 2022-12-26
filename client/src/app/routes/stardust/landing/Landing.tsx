@@ -3,6 +3,7 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { isShimmerNetwork } from "../../../../helpers/networkHelper";
+import { ILatestMilestonesReponse } from "../../../../models/api/stardust/ILatestMilestonesReponse";
 import { INetwork } from "../../../../models/config/INetwork";
 import { CUSTOM } from "../../../../models/config/networkType";
 import { STARDUST } from "../../../../models/config/protocolVersion";
@@ -56,11 +57,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         await super.componentDidMount();
 
         const stardustTangleService = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-        const latestMilestones = await stardustTangleService.latestMilestones({
-            network: this.state.networkConfig.network
-        });
+        const latestMilestones: ILatestMilestonesReponse = await stardustTangleService.latestMilestones(
+            this.state.networkConfig.network
+        );
+
+        // Cached milestones
         this.setState({
-            latestMilestones: latestMilestones.milestones
+            milestones: latestMilestones.milestones.slice(0, MAX_MILESTONE_ITEMS)
         });
     }
 
@@ -199,21 +202,35 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     protected itemsUpdated(newItems: IFeedItem[]): void {
         super.itemsUpdated(newItems);
         if (this._feedClient) {
-            const milestones = this._feedClient.getItems()
+            const milestoneFeedItems = this._feedClient.getItems()
                 .filter(item => item.payloadType === "MS").slice(0, MAX_MILESTONE_ITEMS);
 
-            if (this.state.latestMilestones.length > 0) {
-                milestones.push(...this.state.latestMilestones);
-                if (milestones.length > MAX_MILESTONE_ITEMS) {
-                    this.setState({
-                        latestMilestones: this.state.latestMilestones.slice(0, this.state.latestMilestones.length - 1)
+            const milestones = [...this.state.milestones];
+            let milestonesUpdated = false;
+
+            for (const milestoneFeedItem of milestoneFeedItems) {
+                if (!milestones.some(ms => ms.index === milestoneFeedItem.properties?.index)) {
+                    milestones.unshift({
+                        blockId: milestoneFeedItem.id,
+                        milestoneId: milestoneFeedItem.properties?.milestoneId as string,
+                        index: milestoneFeedItem.properties?.index as number,
+                        timestamp: milestoneFeedItem.properties?.timestamp as number
                     });
+
+                    if (milestones.length > 10) {
+                        milestones.pop();
+                    }
+
+                    milestonesUpdated = true;
+                    break;
                 }
             }
 
-            this.setState({
-                milestones
-            });
+            if (milestonesUpdated) {
+                this.setState({
+                    milestones
+                });
+            }
         }
     }
 }
