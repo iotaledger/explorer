@@ -46,6 +46,10 @@ const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
         if (data.length > 0 && wrapperWidth && wrapperHeight) {
             const width = wrapperWidth;
             const height = wrapperHeight;
+            // reset
+            select(theSvg.current).select("*").remove();
+
+            data = timespan !== "all" ? data.slice(-timespan) : data;
 
             const dataMaxY = max(data, d => d.n) ?? 1;
             const leftMargin = determineGraphLeftPadding(dataMaxY);
@@ -53,10 +57,6 @@ const BarChart: React.FC<BarChartProps> = ({ title, data, label, color }) => {
             const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
-            // reset
-            select(theSvg.current).select("*").remove();
-
-            data = timespan !== "all" ? data.slice(-timespan) : data;
 
             const x = scaleBand().domain(data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT)))
                 .range([0, INNER_WIDTH])

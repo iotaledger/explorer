@@ -52,6 +52,10 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
         if (data.length > 0 && wrapperWidth && wrapperHeight) {
             const width = wrapperWidth;
             const height = wrapperHeight;
+            // reset
+            select(theSvg.current).selectAll("*").remove();
+
+            data = timespan !== "all" ? data.slice(-timespan) : data;
 
             const dataMaxY = Math.max(...data.map(d => Math.max(...subgroups.map(key => d[key]))));
             const leftMargin = determineGraphLeftPadding(dataMaxY);
@@ -59,8 +63,6 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
-            // reset
-            select(theSvg.current).selectAll("*").remove();
 
             const timestampToDate = (timestamp: number) => moment.unix(timestamp)
                 .hours(0)
@@ -68,8 +70,6 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .toDate();
 
             const color = scaleOrdinal<string>().domain(subgroups).range(colors);
-
-            data = timespan !== "all" ? data.slice(-timespan) : data;
 
             const stackedData = stack().keys(subgroups)(data);
 
