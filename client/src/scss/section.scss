@@ -123,4 +123,12 @@
     color: $gray;
     font-family: $metropolis;
   }
+
+  &.no-border-bottom {
+    border-bottom: 0;
+  }
+
+  .text--no-decoration:hover {
+    text-decoration: none;
+  }
 }

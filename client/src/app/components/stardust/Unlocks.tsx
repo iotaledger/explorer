@@ -11,7 +11,7 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
-        <div className="card--content__output ">
+        <div className="card--content__output unlocks">
             <div
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="card--value card-header--wrapper"
@@ -25,20 +25,22 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
                     </button>
                 </div>
             </div>
-            {isExpanded && (
-                <div className="card--content">
-                    {
-                        unlocks.map((unlock, idx) => (
-                            <React.Fragment key={idx}>
-                                <div className="card--label"> Public Key</div>
-                                <div className="card--value">{unlock.signature.publicKey}</div>
-                                <div className="card--label"> Signature</div>
-                                <div className="card--value">{unlock.signature.signature}</div>
-                            </React.Fragment>
-                        ))
-                    }
-                </div>
-            )}
+            {
+                isExpanded && (
+                    <div className="left-border">
+                        {
+                            unlocks.map((unlock, idx) => (
+                                <div key={idx} className="padding-l-t">
+                                    <div className="card--label"> Public Key</div>
+                                    <div className="card--value">{unlock.signature.publicKey}</div>
+                                    <div className="card--label"> Signature</div>
+                                    <div className="card--value">{unlock.signature.signature}</div>
+                                </div>
+                            ))
+                        }
+                    </div>
+                )
+            }
         </div>
     );
 };

@@ -48,6 +48,7 @@
   --shimmer-copyright: #{$white};
   --transaction-history-dark-row: #{$gray-1};
   --associated-outputs-tabs-bg: #{$white};
+  --date-input-theme: light;
   --statistics-charts-tooltip-bg: #{$gray-2};
   --statistics-charts-axis: #{$gray-1};
   --statistics-select-bg: #{$gray-1};
@@ -69,7 +70,7 @@
     --header-label-color: #{$gray-3};
     --header-icon-color: #{$gray-5};
     --header-svg-bg: #202e4a;
-    --border-color: #ffffff1e;
+    --border-color: #{$gray-5};
     --fiat-acronym-color: #{$white};
     --expanded-color: #{$gray-5};
     --light-bg: #48577614;
@@ -101,6 +102,7 @@
     --shimmer-copyright: #0f202c;
     --transaction-history-dark-row: #{$gray-9};
     --associated-outputs-tabs-bg: #00121f;
+    --date-input-theme: dark;
     --statistics-charts-tooltip-bg: #{$gray-9};
     --statistics-charts-axis: #{$gray-9};
     --statistics-select-bg: #{$gray-9};

@@ -5,7 +5,12 @@
 @import "../../../scss/themes";
 
 .milestone-payload {
+  border-bottom: 0!important;
+
   .milestone-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     @include font-size(14px, 21px);
 
     position: relative;
@@ -23,33 +28,11 @@
     cursor: pointer;
 
     @include tablet-down {
-      width: 32px;
-      height: 32px;
-      border-radius: 100%;
+      width: 80px;
     }
 
     span {
       width: 100%;
-
-      @include tablet-down {
-        display: none;
-      }
-    }
-
-    svg {
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-
-      path {
-        stroke: var(--body-color);
-      }
-
-      @include tablet-down {
-        display: block;
-      }
     }
 
     &:hover {

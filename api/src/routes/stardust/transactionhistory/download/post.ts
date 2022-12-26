@@ -39,7 +39,7 @@ export async function post(
         `chronicle-${networkConfig.network}`
     );
 
-    const result = await chronicleService.transactionHistoryDownload(request.address, body.timespan);
+    const result = await chronicleService.transactionHistoryDownload(request.address, body.targetDate);
 
     const jsZip = new JSZip();
     let response: IDataResponse = null;

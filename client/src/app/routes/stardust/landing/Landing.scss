@@ -45,8 +45,18 @@
 
             .header {
                 display: flex;
+                justify-content: center;
                 align-items: center;
+                width: 100%;
                 min-height: 400px;
+
+                @include desktop-down {
+                    justify-content: start;
+                }
+
+                @include tablet-down {
+                    justify-content: center;
+                }
 
                 .header--title {
                     text-align: center;
@@ -54,6 +64,7 @@
                     @include desktop-down {
                         margin: 0;
                         margin-bottom: 28px;
+                        margin-left: 60px;
                     }
 
                     @include tablet-down {

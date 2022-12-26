@@ -138,7 +138,7 @@ class Output extends Component<OutputProps, OutputState> {
             <div className="card--content__output">
                 {outputHeader}
                 {isExpanded && (
-                    <div className="output margin-l-t">
+                    <div className="output padding-l-t left-border">
                         {output.type === ALIAS_OUTPUT_TYPE && (
                             <React.Fragment>
                                 <div className="card--label">Alias address:</div>

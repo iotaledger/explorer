@@ -1,4 +1,11 @@
 import { INodeInfoBaseToken, UnitsHelper } from "@iota/iota.js-stardust";
+import React from "react";
+import Tooltip from "../../app/components/Tooltip";
+
+/**
+ * The id of the Genesis block.
+ */
+export const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 /**
  * Format amount using passed base token info.
@@ -38,3 +45,19 @@ function toFixedNoRound(value: number, precision: number = 2) {
     return Math.floor(value * factor) / factor;
 }
 
+
+/**
+ * Add tooltip content for special block id i.e Genesis block.
+ * @param id The id of the block.
+ * @returns The tooltip content or id.
+ */
+export function formatSpecialBlockId(id: string): React.ReactNode {
+    if (id === GENESIS_BLOCK_ID) {
+        return (
+            <Tooltip tooltipContent="Genesis block">
+                <span className="tooltip__special">{id}</span>
+            </Tooltip>
+        );
+    }
+    return id;
+}

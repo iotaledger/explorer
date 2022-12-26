@@ -4,6 +4,7 @@ import { Link, RouteComponentProps } from "react-router-dom";
 import mainMessage from "../../../assets/modals/stardust/output/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
+import { formatSpecialBlockId } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import CopyButton from "../../components/CopyButton";
@@ -104,9 +105,9 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="value code row middle highlight">
                                     <Link
                                         to={`/${network}/block/${blockId}`}
-                                        className="margin-r-t"
+                                        className="margin-r-t text--no-decoration"
                                     >
-                                        {blockId}
+                                        {formatSpecialBlockId(blockId)}
                                     </Link>
                                     <CopyButton copy={blockId} />
                                 </div>
