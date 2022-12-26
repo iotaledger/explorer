@@ -40,7 +40,7 @@ import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRe
 import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IAnalyticStatsRequest } from "../../models/api/stats/IAnalyticStatsRequest";
-import { ILatestMilestone, IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
+import { ILatestMilestones, IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IShimmerClaimedResponse } from "../../models/api/stats/IShimmerClaimed";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
@@ -198,9 +198,9 @@ export class StardustApiClient extends ApiClient {
      * @param request The latest milestones get request.
      * @returns The latest milestones response.
      */
-    public async latestMilestones(request: IAnalyticStatsRequest): Promise<ILatestMilestone> {
-        return this.callApi<unknown, ILatestMilestone>(
-            `stardust/milestone/latestmilestones/${request.network}`,
+    public async latestMilestones(request: IAnalyticStatsRequest): Promise<ILatestMilestones> {
+        return this.callApi<unknown, ILatestMilestones>(
+            `stardust/milestone/latest/${request.network}`,
             "get"
         );
     }

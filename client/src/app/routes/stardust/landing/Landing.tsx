@@ -56,11 +56,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         await super.componentDidMount();
 
         const stardustTangleService = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-        const latestMilestones: any = await stardustTangleService.latestMilestones({
+        const latestMilestones = await stardustTangleService.latestMilestones({
             network: this.state.networkConfig.network
         });
         this.setState({
-            latestMilestones
+            latestMilestones: latestMilestones.milestones
         });
     }
 

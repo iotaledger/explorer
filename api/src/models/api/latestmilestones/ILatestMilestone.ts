@@ -7,5 +7,16 @@ export interface ILatestMilestone {
     /**
      * Metadata for the item.
      */
-    properties?: { [key: string]: unknown };
+    properties?: {
+        milestoneId: string;
+        index: number;
+        timestamp: number;
+    };
+}
+
+export interface ILatestMilestones {
+    /**
+     * Array of latest milestones.
+     */
+    milestones?: ILatestMilestone[];
 }

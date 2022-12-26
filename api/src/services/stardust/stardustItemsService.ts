@@ -8,7 +8,7 @@ import { IFeedService } from "../../models/services/IFeedService";
 import { IItemsService } from "../../models/services/stardust/IItemsService";
 
 interface ILatestMilestone {
-    id: string;
+    blockId: string;
     milestoneId: string;
     milestoneIndex: number;
     timestamp: number;
@@ -216,7 +216,7 @@ export class StardustItemsService implements IItemsService {
                 };
 
                 this._latestMilestones.unshift({
-                    id,
+                    blockId: id,
                     milestoneId,
                     milestoneIndex: milestone,
                     timestamp: timestamp / 1000

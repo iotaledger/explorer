@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { ILatestMilestone, ILatestMilestones } from "../../../../models/api/latestmilestones/ILatestMilestone";
 import { IAnalyticStatsRequest } from "../../../../models/api/stats/IAnalyticStatsRequest";
-import { ILatestMilestone } from "../../../../models/api/latestmilestones/ILatestMilestone";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -17,7 +17,7 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
 export async function get(
     config: IConfiguration,
     request: IAnalyticStatsRequest
-): Promise<ILatestMilestone[] | Record<string, unknown>> {
+): Promise<ILatestMilestones> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -38,15 +38,15 @@ export async function get(
     for (const milestone of latestMilestones) {
         if (currentMilesoneStats[milestone.milestoneId]) {
             milestones.push({
-                id: milestone.id,
+                id: milestone.blockId,
                 properties: {
-                    index: milestone.milestoneIndex,
                     milestoneId: milestone.milestoneId,
+                    index: milestone.milestoneIndex,
                     timestamp: milestone.timestamp
                 }
             });
         }
     }
 
-    return milestones;
+    return { milestones };
 }
