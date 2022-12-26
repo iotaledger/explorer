@@ -36,8 +36,8 @@ const ChartHeader: React.FC<ChartHeaderProps> = ({ title, onTimespanSelected, di
                             }}
                         >
                             <option value="7">Last 7 days</option>
-                            <option value="30">Last month</option>
-                            <option value="90">Last six months</option>
+                            <option value="30">Last 30 days</option>
+                            <option value="90">Last 90 days</option>
                             <option value="all">All time</option>
                         </select>
                         <span className={classNames("material-icons chevron", { opened: false })}>
