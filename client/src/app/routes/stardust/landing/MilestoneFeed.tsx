@@ -8,7 +8,7 @@ import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInte
 import { IMilestoneAnalyticStats } from "../../../../models/api/stats/IMilestoneAnalyticStats";
 import { INetwork } from "../../../../models/config/INetwork";
 import { STARDUST } from "../../../../models/config/protocolVersion";
-import { IFeedItem } from "../../../../models/feed/IFeedItem";
+import { IMilestoneFeedItem } from "../../../../models/IMilestoneFeedItem";
 import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
 import Tooltip from "../../../components/Tooltip";
 import "./MilestoneFeed.scss";
@@ -17,7 +17,7 @@ const FEED_ITEMS_MAX = 10;
 
 interface MilestoneFeedProps {
     networkConfig: INetwork;
-    milestones: IFeedItem[];
+    milestones: IMilestoneFeedItem[];
     latestMilestoneIndex?: number;
 }
 
@@ -37,7 +37,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
 
         const refreshMilestoneStats = async () => {
             for (const milestone of milestones) {
-                const milestoneId = milestone.properties?.milestoneId as string;
+                const milestoneId = milestone.milestoneId;
 
                 const msStat = milestoneIdToStats.get(milestoneId);
                 if (!msStat) {
@@ -57,18 +57,20 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
         void refreshMilestoneStats();
     }, [milestones]);
 
-    const milestonesWithStats: IFeedItem[] = milestones;
+    const milestonesWithStats: IMilestoneFeedItem[] = [];
+
     let highestIndex = 0;
     for (const milestone of milestones) {
-        const msIndex = milestone.properties?.index as number;
+        const msIndex = milestone.index;
         if (msIndex > highestIndex) {
             highestIndex = msIndex;
         }
-        const milestoneId = milestone.properties?.milestoneId as string;
-        if (!milestonesWithStats.some(ms => ms?.properties?.milestoneId === milestoneId)) {
+        const milestoneId = milestone.milestoneId;
+        if (!milestonesWithStats.some(ms => ms.milestoneId === milestoneId)) {
             if (milestoneIdToStats.has(milestoneId)) {
                 milestonesWithStats.push(milestone);
             }
+
             if (milestonesWithStats.length === FEED_ITEMS_MAX) {
                 break;
             }
@@ -92,18 +94,18 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                     <p>There are no milestones in the feed.</p>
                 )}
                 {milestonesWithStats.map(milestone => {
-                    const blockId = HexHelper.addPrefix(milestone.id);
-                    const index = milestone.properties?.index as number;
-                    const milestoneId = milestone.properties?.milestoneId as string;
+                    const blockId = HexHelper.addPrefix(milestone.blockId);
+                    const index = milestone.index;
+                    const milestoneId = milestone.milestoneId;
                     const milestoneIdShort = `${milestoneId.slice(0, 6)}....${milestoneId.slice(-6)}`;
-                    const timestamp = milestone.properties?.timestamp as number * 1000;
+                    const timestamp = milestone.timestamp * 1000;
                     const includedBlocks = milestoneIdToStats.get(milestoneId)?.blocksCount ?? "";
                     const txs = milestoneIdToStats.get(milestoneId)?.perPayloadType?.txPayloadCount ?? "";
                     const ago = moment(timestamp).fromNow();
                     const tooltipContent = DateHelper.formatShort(timestamp);
 
                     return (
-                        <div className="feed-item ms-feed" key={milestone.id}>
+                        <div className="feed-item ms-feed" key={milestone.blockId}>
                             <div className="feed-item__content">
                                 <span className="feed-item--label">Index</span>
                                 <span className="feed-item--value ms-index">

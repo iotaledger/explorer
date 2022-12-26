@@ -21,6 +21,7 @@ import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsReq
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IBlockRequest } from "../../models/api/stardust/IBlockRequest";
 import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
+import { ILatestMilestonesReponse } from "../../models/api/stardust/ILatestMilestonesReponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { IMilestoneStatsRequest } from "../../models/api/stardust/IMilestoneStatsRequest";
 import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
@@ -40,7 +41,7 @@ import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRe
 import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IAnalyticStatsRequest } from "../../models/api/stats/IAnalyticStatsRequest";
-import { ILatestMilestones, IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
+import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IShimmerClaimedResponse } from "../../models/api/stats/IShimmerClaimed";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
@@ -195,12 +196,12 @@ export class StardustApiClient extends ApiClient {
 
     /**
      * Get the latest milestones.
-     * @param request The latest milestones get request.
+     * @param network The network in context.
      * @returns The latest milestones response.
      */
-    public async latestMilestones(request: IAnalyticStatsRequest): Promise<ILatestMilestones> {
-        return this.callApi<unknown, ILatestMilestones>(
-            `stardust/milestone/latest/${request.network}`,
+    public async latestMilestones(network: string): Promise<ILatestMilestonesReponse> {
+        return this.callApi<unknown, ILatestMilestonesReponse>(
+            `stardust/milestone/latest/${network}`,
             "get"
         );
     }

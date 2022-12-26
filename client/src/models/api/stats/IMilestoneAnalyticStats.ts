@@ -54,21 +54,3 @@ export interface IMilestoneAnalyticStats extends IResponse {
     perInclusionState?: IMilestoneStatsPerInclusionState;
 }
 
-export interface ILatestMilestone {
-    /**
-     * The hash.
-     */
-    id: string;
-
-    /**
-     * Metadata for the item.
-     */
-    properties: { [key: string]: unknown };
-}
-
-export interface ILatestMilestones extends IResponse {
-    /**
-     * Array of latest milestones.
-     */
-    milestones: ILatestMilestone[];
-}
