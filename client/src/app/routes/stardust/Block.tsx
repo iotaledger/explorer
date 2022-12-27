@@ -340,15 +340,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             </React.Fragment>
                         )}
                     {block.payload.type === MILESTONE_PAYLOAD_TYPE && (
-                        <div className="section">
-                            <MilestonePayload
-                                network={network}
-                                history={history}
-                                milestonePayload={block.payload}
-                                advancedMode={advancedMode}
-                                protocolVersion={protocolVersion}
-                            />
-                        </div>
+                        <MilestonePayload
+                            network={network}
+                            history={history}
+                            milestonePayload={block.payload}
+                            advancedMode={advancedMode}
+                            protocolVersion={protocolVersion}
+                        />
                     )}
                     {block.payload.type === TAGGED_DATA_PAYLOAD_TYPE && (
                         <div className="section">
