@@ -4,7 +4,7 @@ import { IConfiguration } from "../../../../models/configuration/IConfiguration"
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
 import { StardustItemsService } from "../../../../services/stardust/stardustItemsService";
-// import { StardustStatsService } from "../../../../services/stardust/stardustStatsService";
+import { StardustStatsService } from "../../../../services/stardust/stardustStatsService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
@@ -27,9 +27,8 @@ export async function get(
         return { error: "Endpoint available only on Stardust networks.", milestones: [] };
     }
 
-    // Add the stats into the IMilestoneFeedItem
-    // const statsService = ServiceFactory.get<StardustStatsService>(`stats-${request.network}`);
-    // const currentMilesoneStats = statsService?.getMilestoneStats();
+    const statsService = ServiceFactory.get<StardustStatsService>(`stats-${request.network}`);
+    const currentMilesoneStats = statsService?.getMilestoneStats();
 
     const itemsService = ServiceFactory.get<StardustItemsService>(`items-${request.network}`);
     const latestMilestones = itemsService.getLatestMilestones();
@@ -37,8 +36,14 @@ export async function get(
     const milestones: ILatestMilestone[] = [];
 
     for (const milestone of latestMilestones) {
-        if (milestones.length < 20) {
-            milestones.push(milestone);
+        const milestoneWithStats = currentMilesoneStats[milestone.milestoneId];
+        if (milestones.length < 20 && milestoneWithStats) {
+            milestones.push({
+                ...milestone,
+                blocksCount: milestoneWithStats.blocksCount,
+                perPayloadType: milestoneWithStats.perPayloadType,
+                perInclusionState: milestoneWithStats.perInclusionState
+            });
         }
     }
 

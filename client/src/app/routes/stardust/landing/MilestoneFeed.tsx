@@ -68,7 +68,12 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
         const milestoneId = milestone.milestoneId;
         if (!milestonesWithStats.some(ms => ms.milestoneId === milestoneId)) {
             if (milestoneIdToStats.has(milestoneId)) {
-                milestonesWithStats.push(milestone);
+                milestonesWithStats.push({
+                    ...milestone,
+                    blocksCount: milestoneIdToStats.get(milestoneId)?.blocksCount,
+                    perPayloadType: milestoneIdToStats.get(milestoneId)?.perPayloadType,
+                    perInclusionState: milestoneIdToStats.get(milestoneId)?.perInclusionState
+                });
             }
 
             if (milestonesWithStats.length === FEED_ITEMS_MAX) {
@@ -99,8 +104,8 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                     const milestoneId = milestone.milestoneId;
                     const milestoneIdShort = `${milestoneId.slice(0, 6)}....${milestoneId.slice(-6)}`;
                     const timestamp = milestone.timestamp * 1000;
-                    const includedBlocks = milestoneIdToStats.get(milestoneId)?.blocksCount ?? "";
-                    const txs = milestoneIdToStats.get(milestoneId)?.perPayloadType?.txPayloadCount ?? "";
+                    const includedBlocks = milestone.blocksCount ?? "";
+                    const txs = milestone.perPayloadType?.txPayloadCount ?? "";
                     const ago = moment(timestamp).fromNow();
                     const tooltipContent = DateHelper.formatShort(timestamp);
 

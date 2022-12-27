@@ -1,6 +1,6 @@
 import { IResponse } from "../IResponse";
 
-interface IMilestoneStatsPerPayloadType {
+export interface IMilestoneStatsPerPayloadType {
     /**
      * The number of transaction payloads referenced by the requested milestone.
      */
@@ -24,7 +24,7 @@ interface IMilestoneStatsPerPayloadType {
     noPayloadCount: number;
 }
 
-interface IMilestoneStatsPerInclusionState {
+export interface IMilestoneStatsPerInclusionState {
     /**
      * The number of confirmed transactions referenced by the requested milestone.
      */
