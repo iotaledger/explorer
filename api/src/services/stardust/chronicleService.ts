@@ -69,18 +69,29 @@ export class ChronicleService {
         milestoneId: string
     ): Promise<IMilestoneBlocksResponse | undefined> {
         const path = `${CHRONICLE_ENDPOINTS.milestoneBlocks[0]}${milestoneId}${CHRONICLE_ENDPOINTS.milestoneBlocks[1]}`;
-        console.log("path", path);
+        let cursor: string | undefined;
+        const blocks: string[] = [];
 
-        // exhaust the cursor to fetch all (missing)
-        try {
-            return await FetchHelper.json<never, IMilestoneBlocksResponse>(
-                this._endpoint,
-                path,
-                "get"
-            );
-        } catch (error) {
-            return { error };
-        }
+        do {
+            const params = FetchHelper.urlParams({ pageSize: 20, sort: "newest", cursor });
+
+            try {
+                const response = await FetchHelper.json<never, IMilestoneBlocksResponse>(
+                    this._endpoint,
+                    `${path}${params}`,
+                    "get"
+                );
+                cursor = response.cursor;
+
+                if (response.blocks) {
+                    blocks.push(...response.blocks);
+                }
+            } catch (error) {
+                return { error };
+            }
+        } while (cursor);
+
+        return { blocks };
     }
 
     /**
