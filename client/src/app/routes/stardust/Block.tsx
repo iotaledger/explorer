@@ -19,11 +19,9 @@ import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
+import BlockPayload from "../../components/stardust/BlockPayload";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import InclusionState from "../../components/stardust/InclusionState";
-import MilestonePayload from "../../components/stardust/MilestonePayload";
-import TaggedDataPayload from "../../components/stardust/TaggedDataPayload";
-import TransactionPayload from "../../components/stardust/TransactionPayload";
 import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
 import mainHeaderMessage from "./../../../assets/modals/stardust/block/main-header.json";
@@ -319,54 +317,18 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     }
                 }}
             >
-                <React.Fragment>
-                    {block.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-                        inputs && unlocks && outputs && transferTotal !== undefined && (
-                            <React.Fragment>
-                                <div className="section">
-                                    <TransactionPayload
-                                        network={network}
-                                        inputs={inputs}
-                                        unlocks={unlocks}
-                                        outputs={outputs}
-                                        transferTotal={transferTotal}
-                                        header="Transaction Payload"
-                                        isLinksDisabled={isLinksDisabled}
-                                    />
-                                </div>
-                                {
-                                    block.payload.essence.payload &&
-                                    <div className="section">
-                                        <TaggedDataPayload
-                                            network={network}
-                                            history={history}
-                                            payload={block.payload.essence.payload}
-                                            advancedMode={advancedMode}
-                                        />
-                                    </div>
-                                }
-                            </React.Fragment>
-                        )}
-                    {block.payload?.type === MILESTONE_PAYLOAD_TYPE && (
-                        <MilestonePayload
-                            network={network}
-                            history={history}
-                            milestonePayload={block.payload}
-                            advancedMode={advancedMode}
-                            protocolVersion={protocolVersion}
-                        />
-                    )}
-                    {block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE && (
-                        <div className="section">
-                            <TaggedDataPayload
-                                network={network}
-                                history={history}
-                                payload={block.payload}
-                                advancedMode={advancedMode}
-                            />
-                        </div>
-                    )}
-                </React.Fragment>
+                <BlockPayload
+                    network={network}
+                    protocolVersion={protocolVersion}
+                    block={block}
+                    inputs={inputs}
+                    unlocks={unlocks}
+                    outputs={outputs}
+                    transferTotal={transferTotal}
+                    history={history}
+                    advancedMode={advancedMode}
+                    isLinksDisabled={isLinksDisabled}
+                />
                 <div className="section metadata-section">
                     <div className="section--header section--header__space-between">
                         <div className="row middle">

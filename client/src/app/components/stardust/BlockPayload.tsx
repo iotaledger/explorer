@@ -1,0 +1,87 @@
+import {
+    IBlock, ISignatureUnlock, IUTXOInput, MILESTONE_PAYLOAD_TYPE,
+    TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE
+} from "@iota/iota.js-stardust";
+import * as H from "history";
+import React from "react";
+import { IInput } from "../../../models/api/stardust/IInput";
+import { IOutput } from "../../../models/api/stardust/IOutput";
+import MilestonePayload from "./MilestonePayload";
+import TaggedDataPayload from "./TaggedDataPayload";
+import TransactionPayload from "./TransactionPayload";
+
+interface BlockPayloadProps {
+    network: string;
+    protocolVersion: number;
+    block: IBlock;
+    inputs?: (IUTXOInput & IInput)[];
+    unlocks?: ISignatureUnlock[];
+    outputs?: IOutput[];
+    transferTotal?: number;
+    history: H.History;
+    advancedMode: boolean;
+    isLinksDisabled: boolean;
+}
+
+const BlockPayload: React.FC<BlockPayloadProps> = (
+    { network, protocolVersion, block, inputs, outputs, unlocks, transferTotal, advancedMode, history, isLinksDisabled }
+) => (
+    <React.Fragment>
+        {block.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+            inputs && unlocks && outputs && transferTotal !== undefined && (
+                <React.Fragment>
+                    <div className="section">
+                        <TransactionPayload
+                            network={network}
+                            inputs={inputs}
+                            unlocks={unlocks}
+                            outputs={outputs}
+                            transferTotal={transferTotal}
+                            header="Transaction Payload"
+                            isLinksDisabled={isLinksDisabled}
+                        />
+                    </div>
+                    {
+                        block.payload.essence.payload &&
+                        <div className="section">
+                            <TaggedDataPayload
+                                network={network}
+                                history={history}
+                                payload={block.payload.essence.payload}
+                                advancedMode={advancedMode}
+                            />
+                        </div>
+                    }
+                </React.Fragment>
+            )}
+        {block.payload?.type === MILESTONE_PAYLOAD_TYPE && (
+            <MilestonePayload
+                network={network}
+                history={history}
+                milestonePayload={block.payload}
+                advancedMode={advancedMode}
+                protocolVersion={protocolVersion}
+            />
+        )}
+        {block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE && (
+            <div className="section">
+                <TaggedDataPayload
+                    network={network}
+                    history={history}
+                    payload={block.payload}
+                    advancedMode={advancedMode}
+                />
+            </div>
+        )}
+    </React.Fragment>
+);
+
+BlockPayload.defaultProps = {
+    inputs: undefined,
+    outputs: undefined,
+    transferTotal: undefined,
+    unlocks: undefined
+};
+
+export default BlockPayload;
+
