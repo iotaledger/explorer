@@ -10,7 +10,7 @@ import MilestonePayload from "./MilestonePayload";
 import TaggedDataPayload from "./TaggedDataPayload";
 import TransactionPayload from "./TransactionPayload";
 
-interface BlockPayloadProps {
+interface BlockPayloadSectionProps {
     network: string;
     protocolVersion: number;
     block: IBlock;
@@ -23,7 +23,7 @@ interface BlockPayloadProps {
     isLinksDisabled: boolean;
 }
 
-const BlockPayload: React.FC<BlockPayloadProps> = (
+const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
     { network, protocolVersion, block, inputs, outputs, unlocks, transferTotal, advancedMode, history, isLinksDisabled }
 ) => (
     <React.Fragment>
@@ -76,12 +76,12 @@ const BlockPayload: React.FC<BlockPayloadProps> = (
     </React.Fragment>
 );
 
-BlockPayload.defaultProps = {
+BlockPayloadSection.defaultProps = {
     inputs: undefined,
     outputs: undefined,
     transferTotal: undefined,
     unlocks: undefined
 };
 
-export default BlockPayload;
+export default BlockPayloadSection;
 

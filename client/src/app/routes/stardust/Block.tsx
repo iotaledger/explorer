@@ -19,13 +19,12 @@ import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
-import BlockPayload from "../../components/stardust/BlockPayload";
+import BlockMetadataSection from "../../components/stardust/BlockMetadataSection";
+import BlockPayloadSection from "../../components/stardust/BlockPayloadSection";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
-import InclusionState from "../../components/stardust/InclusionState";
 import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
 import mainHeaderMessage from "./../../../assets/modals/stardust/block/main-header.json";
-import metadataMessage from "./../../../assets/modals/stardust/block/metadata.json";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
 import { BlockData, BlockMetadata } from "./BlockState";
@@ -317,7 +316,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     }
                 }}
             >
-                <BlockPayload
+                <BlockPayloadSection
                     network={network}
                     protocolVersion={protocolVersion}
                     block={block}
@@ -329,77 +328,14 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     advancedMode={advancedMode}
                     isLinksDisabled={isLinksDisabled}
                 />
-                <div className="section metadata-section">
-                    <div className="section--header section--header__space-between">
-                        <div className="row middle">
-                            <h2>
-                                Metadata
-                            </h2>
-                            <Modal icon="info" data={metadataMessage} />
-                        </div>
-                    </div>
-                    <div className="section--data">
-                        {!metadata && !metadataError && (<Spinner />)}
-                        {metadataError && (
-                            <p className="danger">Failed to retrieve metadata. {metadataError}</p>
-                        )}
-                        {metadata && !metadataError && (
-                            <React.Fragment>
-                                <div className="section--data">
-                                    <div className="label">Is Solid</div>
-                                    <div className="value row middle">
-                                        <span className="margin-r-t">
-                                            {metadata?.isSolid ? "Yes" : "No"}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">
-                                        Ledger Inclusion
-                                    </div>
-                                    <div className="value row middle">
-                                        <InclusionState state={metadata?.ledgerInclusionState} />
-                                    </div>
-                                </div>
-                                {conflictReason && (
-                                    <div className="section--data">
-                                        <div className="label">Conflict Reason</div>
-                                        <div className="value">{conflictReason}</div>
-                                    </div>
-                                )}
-                                {metadata?.parents && (
-                                    <div className="section--data">
-                                        <div className="label">
-                                            Parents
-                                        </div>
-                                        {metadata.parents.map((parent, idx) => (
-                                            <div
-                                                key={idx}
-                                                style={{ marginTop: "8px" }}
-                                                className="value code link"
-                                            >
-                                                {isLinksDisabled ? (
-                                                    <span className="margin-r-t">
-                                                        {parent}
-                                                    </span>
-                                                ) : (
-                                                    <div
-                                                        className="pointer"
-                                                        onClick={() => history.replace(
-                                                            `/${network}/block/${parent}`
-                                                        )}
-                                                    >
-                                                        {parent}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </React.Fragment>
-                        )}
-                    </div>
-                </div>
+                <BlockMetadataSection
+                    network={network}
+                    metadata={metadata}
+                    metadataError={metadataError}
+                    conflictReason={conflictReason}
+                    isLinksDisabled={isLinksDisabled}
+                    history={history}
+                />
             </TabbedSection>
         </React.Fragment >
     );
