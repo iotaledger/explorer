@@ -41,9 +41,15 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
 
                 const msStat = milestoneIdToStats.get(milestoneId);
                 if (!msStat) {
-                    const milestoneStats = await stardustTangleCacheService.milestoneStats(
-                        networkConfig.network, milestoneId
-                    );
+                    const milestoneStats = !milestone.blocksCount ?
+                        await stardustTangleCacheService.milestoneStats(
+                            networkConfig.network, milestoneId
+                        ) :
+                        {
+                            blocksCount: milestone.blocksCount,
+                            perPayloadType: milestone.perPayloadType,
+                            perInclusionState: milestone.perInclusionState
+                        };
 
                     if (milestoneStats) {
                         milestoneIdToStats.set(milestoneId, milestoneStats);
