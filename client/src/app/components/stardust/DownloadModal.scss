@@ -17,9 +17,6 @@
   }
 
   .modal--icon {
-    display: flex;
-    align-items: center;
-    padding: 0 8px;
 
     span {
       color: #b0bfd9;
@@ -91,22 +88,6 @@
             font-weight: 500;
             margin-bottom: 8px;
             margin-right: 8px;
-          }
-
-          .target-date {
-            background: var(--body-background);
-            width: 200px;
-            padding: 10px;
-            letter-spacing: 1px;
-            color-scheme: var(--date-input-theme);
-          }
-
-          .target-date::-webkit-datetime-edit {
-            color: #909fbe;
-          }
-
-          .target-date::-webkit-calendar-picker-indicator {
-            padding: 5px;
           }
       }
 
