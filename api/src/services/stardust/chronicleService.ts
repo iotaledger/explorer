@@ -76,11 +76,12 @@ export class ChronicleService {
             const params = FetchHelper.urlParams({ pageSize: 20, sort: "newest", cursor });
 
             try {
-                const response = await FetchHelper.json<never, IMilestoneBlocksResponse>(
+                const response = await FetchHelper.json<never, { blocks?: string[]; cursor?: string }>(
                     this._endpoint,
                     `${path}${params}`,
                     "get"
                 );
+
                 cursor = response.cursor;
 
                 if (response.blocks) {
@@ -91,7 +92,7 @@ export class ChronicleService {
             }
         } while (cursor);
 
-        return { blocks };
+        return { milestoneId, blocks };
     }
 
     /**

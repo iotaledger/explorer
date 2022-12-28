@@ -25,7 +25,7 @@ export async function get(
     const networkConfig = networkService.get(request.network);
 
     if (networkConfig.protocolVersion !== STARDUST) {
-        return {};
+        return { error: "Endpoint available only on Stardust networks." };
     }
 
     const chronicleService = ServiceFactory.get<ChronicleService>(
@@ -33,7 +33,6 @@ export async function get(
     );
 
     if (chronicleService) {
-        console.log(chronicleService);
         const milestoneBlocksResponse = await chronicleService.milestoneBlocks(request.milestoneId);
         return milestoneBlocksResponse;
     }

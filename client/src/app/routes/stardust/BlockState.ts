@@ -12,10 +12,12 @@ export interface BlockData {
      * The block fetching failed.
      */
     blockError?: string;
+
     /**
      * The transaction id.
      */
     transactionId?: string;
+
     /**
      * The inputs of the transaction
      */
@@ -30,6 +32,7 @@ export interface BlockData {
      * The outputs.
      */
     outputs?: IOutput[];
+
     /**
      * The total of the transfer excluding remainders.
      */

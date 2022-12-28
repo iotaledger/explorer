@@ -3,6 +3,7 @@ import { IBech32AddressDetails } from "../IBech32AddressDetails";
 import { IResponse } from "../IResponse";
 import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
 import { IAssociationsResponse } from "./IAssociationsResponse";
+import { IMilestoneBlocksResponse } from "./IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
 import { INftRegistryDetailsResponse } from "./nft/INftRegistryDetailsResponse";
@@ -97,6 +98,11 @@ export interface ISearchResponse extends IResponse {
      * Milestone chornicle stats.
      */
     milestoneStats?: IMilestoneAnalyticStats;
+
+    /**
+     * Milestone referenced blocks from chornicle.
+     */
+    milestoneBlocks?: IMilestoneBlocksResponse;
 
     /**
      * DiD identifier.

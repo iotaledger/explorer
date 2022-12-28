@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import {
     MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE,
-    TAGGED_DATA_PAYLOAD_TYPE, milestoneIdFromMilestonePayload
+    TAGGED_DATA_PAYLOAD_TYPE, milestoneIdFromMilestonePayload, IMilestonePayload
 } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
@@ -22,6 +22,7 @@ import Spinner from "../../components/Spinner";
 import BlockMetadataSection from "../../components/stardust/BlockMetadataSection";
 import BlockPayloadSection from "../../components/stardust/BlockPayloadSection";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
+import ReferenceBlocksSection from "../../components/stardust/ReferencedBlocksSection";
 import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
 import mainHeaderMessage from "./../../../assets/modals/stardust/block/main-header.json";
@@ -45,6 +46,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const [updateMetadataTimerId, setUpdateMetadataTimerId] = useState<NodeJS.Timer | undefined>();
     const [blockData, setBlockData] = useState<BlockData>({});
     const [blockMetadata, setBlockMetadata] = useState<BlockMetadata>({ blockTangleStatus: "pending" });
+    const [milestoneReferencedBlocks, setMilestoneReferencedBlocks] = useState<
+        { milestoneId?: string; blocks?: string[]; error?: string } | undefined
+    >();
 
     useEffect(() => {
         isMounted.current = true;
@@ -76,6 +80,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         if (!blockData.blockError) {
             // eslint-disable-next-line no-void
             void updateBlockDetails();
+        }
+
+        if (blockData.block?.payload?.type === MILESTONE_PAYLOAD_TYPE) {
+            const milestonePayload = blockData.block?.payload;
+            const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
+            // eslint-disable-next-line no-void
+            void loadMilestoneReferencedBlocks(milestoneId);
         }
     }, [blockData]);
 
@@ -163,14 +174,36 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         );
     };
 
+    /**
+     * Load milestone referenced blocks.
+     * @param milestoneId The computed milestone id.
+     */
+    const loadMilestoneReferencedBlocks = async (milestoneId: string): Promise<void> => {
+        const referencedBlocksPromiseMonitor = new PromiseMonitor(status => {
+            setJobToStatus(jobToStatus.set("loadMilestoneRefBlocks", status));
+        });
+
+        // eslint-disable-next-line no-void
+        void referencedBlocksPromiseMonitor.enqueue(
+            async () => tangleCacheService.milestoneReferencedBlocks(network, milestoneId).then(
+                milestoneBlocksResponse => {
+                    if (isMounted.current) {
+                        setMilestoneReferencedBlocks(milestoneBlocksResponse);
+                    }
+                }
+            )
+        );
+    };
+
     const { block, blockError, transactionId, inputs, unlocks, outputs, transferTotal } = blockData;
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
 
     const isMarketed = isMarketedNetwork(network);
+    const isMilestoneBlock = block?.payload?.type === MILESTONE_PAYLOAD_TYPE;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
     const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
-    const milestoneId = block?.payload?.type === MILESTONE_PAYLOAD_TYPE ?
-        milestoneIdFromMilestonePayload(block.payload) : undefined;
+    const milestoneId = isMilestoneBlock ?
+        milestoneIdFromMilestonePayload(block.payload as IMilestonePayload) : undefined;
 
     if (blockError) {
         return (
@@ -192,6 +225,42 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                 </div>
             </div>
+        );
+    }
+
+    const tabbedSections = [];
+    let idx = 0;
+    if (isMilestoneBlock) {
+        tabbedSections.push(
+            <ReferenceBlocksSection key={++idx} blockIds={milestoneReferencedBlocks?.blocks} />
+        );
+    }
+    if (block) {
+        tabbedSections.push(
+            <BlockPayloadSection
+                key={++idx}
+                network={network}
+                protocolVersion={protocolVersion}
+                block={block}
+                inputs={inputs}
+                unlocks={unlocks}
+                outputs={outputs}
+                transferTotal={transferTotal}
+                history={history}
+                advancedMode={advancedMode}
+                isLinksDisabled={isLinksDisabled}
+            />
+        );
+        tabbedSections.push(
+            <BlockMetadataSection
+                key={++idx}
+                network={network}
+                metadata={metadata}
+                metadataError={metadataError}
+                conflictReason={conflictReason}
+                isLinksDisabled={isLinksDisabled}
+                history={history}
+            />
         );
     }
 
@@ -309,33 +378,24 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                 )}
             <TabbedSection
-                tabsEnum={{ Payload: "Payload", Metadata: "Metadata" }}
-                tabOptions={{
-                    Payload: {
-                        disabled: !block?.payload
-                    }
-                }}
+                tabsEnum={
+                    isMilestoneBlock ?
+                        { RefBlocks: "Referenced Blocks", Payload: "Milestone Payload", Metadata: "Metadata" } :
+                        { Payload: "Payload", Metadata: "Metadata" }
+                }
+                tabOptions={
+                    isMilestoneBlock ?
+                        {
+                            "Referenced Blocks": {
+                                disabled: !milestoneReferencedBlocks,
+                                counter: milestoneReferencedBlocks?.blocks?.length ?? undefined
+                            },
+                            Payload: { disabled: !block?.payload }
+                        } :
+                        { Payload: { disabled: !block?.payload } }
+                }
             >
-                <BlockPayloadSection
-                    network={network}
-                    protocolVersion={protocolVersion}
-                    block={block}
-                    inputs={inputs}
-                    unlocks={unlocks}
-                    outputs={outputs}
-                    transferTotal={transferTotal}
-                    history={history}
-                    advancedMode={advancedMode}
-                    isLinksDisabled={isLinksDisabled}
-                />
-                <BlockMetadataSection
-                    network={network}
-                    metadata={metadata}
-                    metadataError={metadataError}
-                    conflictReason={conflictReason}
-                    isLinksDisabled={isLinksDisabled}
-                    history={history}
-                />
+                {tabbedSections}
             </TabbedSection>
         </React.Fragment >
     );

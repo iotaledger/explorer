@@ -21,6 +21,7 @@ import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsReq
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IBlockRequest } from "../../models/api/stardust/IBlockRequest";
 import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
+import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { IMilestoneStatsRequest } from "../../models/api/stardust/IMilestoneStatsRequest";
 import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
@@ -189,6 +190,18 @@ export class StardustApiClient extends ApiClient {
     public async milestoneStats(request: IMilestoneStatsRequest): Promise<IMilestoneAnalyticStats> {
         return this.callApi<unknown, IMilestoneAnalyticStats>(
             `stardust/milestone/stats/${request.networkId}/${request.milestoneId}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the blocks (Ids) referenced by a Milestone.
+     * @param request The milestone analytic stats get request.
+     * @returns The milestone referenced blocks.
+     */
+    public async milestoneReferencedBlocks(request: IMilestoneStatsRequest): Promise<IMilestoneBlocksResponse> {
+        return this.callApi<unknown, IMilestoneBlocksResponse>(
+            `stardust/milestone/blocks/${request.networkId}/${request.milestoneId}`,
             "get"
         );
     }

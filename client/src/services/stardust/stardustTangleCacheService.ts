@@ -10,6 +10,7 @@ import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetail
 import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutputsResponse";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
+import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
@@ -179,10 +180,10 @@ export class StardustTangleCacheService extends TangleCacheService {
      * @param transactionId The transaction to get the metadata for.
      * @returns The details response.
      */
-     public async transactionIncludedBlockDetails(
+    public async transactionIncludedBlockDetails(
         networkId: string,
         transactionId: string
-        ): Promise<{ block?: IBlock; error?: string }> {
+    ): Promise<{ block?: IBlock; error?: string }> {
         const cacheKey = `blockByTxId-${transactionId}`;
         if (!this._stardustSearchCache[networkId][cacheKey]?.data?.transactionBlock) {
             const response = await this._api.transactionIncludedBlockDetails({ network: networkId, transactionId });
@@ -253,10 +254,10 @@ export class StardustTangleCacheService extends TangleCacheService {
      * @param addressDetails The address details of the address to get the associated outputs for.
      * @returns The associated outputs response.
      */
-     public async associatedOutputs(
-         network: string,
-         addressDetails: IBech32AddressDetails
-        ): Promise<IAssociationsResponse | undefined> {
+    public async associatedOutputs(
+        network: string,
+        addressDetails: IBech32AddressDetails
+    ): Promise<IAssociationsResponse | undefined> {
         const address = addressDetails.bech32;
         if (!this._stardustSearchCache[network][`${address}-associated-outputs`]?.data?.addressAssociatedOutputs) {
             const response = await this._api.associatedOutputs({ network, addressDetails });
@@ -332,6 +333,43 @@ export class StardustTangleCacheService extends TangleCacheService {
         }
 
         return this._stardustSearchCache[networkId][key]?.data?.milestoneStats;
+    }
+
+    /**
+     * Get the milestone referenced blocks by milestone id.
+     * @param networkId The network to search
+     * @param milestoneId The milestone to get the details for.
+     * @returns The details response.
+     */
+    public async milestoneReferencedBlocks(
+        networkId: string,
+        milestoneId: string
+    ): Promise<{ milestoneId?: string; blocks?: string[]; error?: string }> {
+        const key = `milestoneBlocks-${milestoneId}`;
+        const cacheEntry = this._stardustSearchCache[networkId][key]?.data?.milestoneBlocks;
+
+        if (!cacheEntry) {
+            const response: IMilestoneBlocksResponse = await this._api.milestoneReferencedBlocks({
+                networkId,
+                milestoneId
+            });
+
+            if (!response.error) {
+                this._stardustSearchCache[networkId][key] = {
+                    data: {
+                        milestoneBlocks: response
+                    },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
+        }
+
+        return {
+            milestoneId: this._stardustSearchCache[networkId][key]?.data?.milestoneBlocks?.milestoneId,
+            blocks: this._stardustSearchCache[networkId][key]?.data?.milestoneBlocks?.blocks
+        };
     }
 
     /**
@@ -430,7 +468,7 @@ export class StardustTangleCacheService extends TangleCacheService {
      * @param skipCache Skip looking in the cache.
      * @returns The Foundry output ids response.
      */
-     public async foundriesByAliasAddress(
+    public async foundriesByAliasAddress(
         request: IFoundriesRequest,
         skipCache: boolean = false
     ): Promise<{ foundryOutputsResponse?: IOutputsResponse; error?: string }> {
@@ -492,7 +530,7 @@ export class StardustTangleCacheService extends TangleCacheService {
      * @param skipCache Skip looking in the cache.
      * @returns The NFT outputs response.
      */
-     public async nftDetails(
+    public async nftDetails(
         request: INftDetailsRequest,
         skipCache: boolean = false
     ): Promise<{ nftDetails?: IOutputResponse; error?: string }> {
@@ -524,7 +562,7 @@ export class StardustTangleCacheService extends TangleCacheService {
      * @param skipCache Skip looking in the cache.
      * @returns The NFT outputs response.
      */
-     public async nftRegistryDetails(
+    public async nftRegistryDetails(
         request: INftRegistryDetailsRequest,
         skipCache: boolean = false
     ): Promise<INftRegistryDetailsResponse | undefined> {
